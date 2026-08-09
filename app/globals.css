@@ -2153,3 +2153,360 @@ body {
   background: var(--stereophonie-red);
   color: white;
 }
+
+/* =========================================================
+   STEREOPHONIE — DIGITAL DESIGN SYSTEM V1
+   ========================================================= */
+
+:root {
+  --stereo-red: #e21c23;
+  --stereo-black: #070707;
+  --stereo-carbon: #111111;
+  --stereo-white: #ffffff;
+  --stereo-offwhite: #f4f4f2;
+  --stereo-surface: #eeeeeb;
+  --stereo-line: rgba(0, 0, 0, 0.1);
+  --stereo-muted: #707070;
+
+  --stereo-radius-sm: 6px;
+  --stereo-radius-md: 12px;
+  --stereo-radius-lg: 20px;
+
+  --stereo-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  background: var(--stereo-white);
+}
+
+body {
+  background: var(--stereo-white);
+  color: var(--stereo-black);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   PAGE TRANSITION
+   ========================================================= */
+
+.stereo-transition {
+  position: fixed;
+  inset: 0;
+
+  z-index: 2147483000;
+
+  visibility: hidden;
+  pointer-events: none;
+
+  overflow: hidden;
+}
+
+.stereo-transition--entering,
+.stereo-transition--holding,
+.stereo-transition--leaving {
+  visibility: visible;
+}
+
+.stereo-transition__panel {
+  position: absolute;
+
+  left: 0;
+  width: 100%;
+  height: 51%;
+
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px), #070707;
+
+  background-size: 46px 46px;
+
+  will-change: transform;
+}
+
+.stereo-transition__panel--top {
+  top: 0;
+  transform: translate3d(-102%, 0, 0);
+}
+
+.stereo-transition__panel--bottom {
+  bottom: 0;
+  transform: translate3d(102%, 0, 0);
+}
+
+.stereo-transition--entering .stereo-transition__panel--top,
+.stereo-transition--holding .stereo-transition__panel--top {
+  transform: translate3d(0, 0, 0);
+
+  transition: transform 330ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.stereo-transition--entering .stereo-transition__panel--bottom,
+.stereo-transition--holding .stereo-transition__panel--bottom {
+  transform: translate3d(0, 0, 0);
+
+  transition: transform 330ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.stereo-transition--leaving .stereo-transition__panel--top {
+  transform: translate3d(102%, 0, 0);
+
+  transition: transform 500ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.stereo-transition--leaving .stereo-transition__panel--bottom {
+  transform: translate3d(-102%, 0, 0);
+
+  transition: transform 500ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* CENTER SIGNAL */
+
+.stereo-transition__signal {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 28px;
+
+  opacity: 0;
+}
+
+.stereo-transition--entering .stereo-transition__signal,
+.stereo-transition--holding .stereo-transition__signal {
+  opacity: 1;
+
+  transition: opacity 160ms ease 150ms;
+}
+
+.stereo-transition--leaving .stereo-transition__signal {
+  opacity: 0;
+
+  transition: opacity 150ms ease;
+}
+
+.stereo-transition__signal-track {
+  position: relative;
+
+  width: min(520px, 76vw);
+  height: 2px;
+
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.stereo-transition__signal-track span {
+  position: absolute;
+  inset: 0;
+
+  background: var(--stereo-red);
+
+  transform: translateX(-100%);
+}
+
+.stereo-transition--entering .stereo-transition__signal-track span,
+.stereo-transition--holding .stereo-transition__signal-track span {
+  animation: stereoSignalScan 900ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.stereo-transition__identity {
+  width: min(520px, 76vw);
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr);
+
+  align-items: center;
+  gap: 22px;
+
+  margin-top: 18px;
+
+  color: white;
+}
+
+.stereo-transition__identity strong {
+  font-size: 18px;
+  line-height: 1;
+
+  font-weight: 600;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+.stereo-transition__status {
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+  line-height: 1;
+
+  font-weight: 600;
+
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.stereo-transition__status:last-child {
+  text-align: right;
+}
+
+@keyframes stereoSignalScan {
+  0% {
+    transform: translateX(-105%);
+  }
+
+  55% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(105%);
+  }
+}
+
+/* =========================================================
+   GLOBAL TECHNOLOGY UI
+   ========================================================= */
+
+.stereo-tech-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.stereo-tech-label::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  background: var(--stereo-red);
+}
+
+.stereo-red-link {
+  position: relative;
+
+  color: inherit;
+}
+
+.stereo-red-link::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 100%;
+  bottom: -5px;
+
+  height: 2px;
+
+  background: var(--stereo-red);
+
+  transition: right 350ms var(--stereo-ease);
+}
+
+.stereo-red-link:hover::after {
+  right: 0;
+}
+
+/* =========================================================
+   NEW STEREOPHONIE PRODUCT CARD OVERRIDES
+   ========================================================= */
+
+/*
+ * Electronics imagery should feel like a product studio,
+ * not fashion editorial photography.
+ */
+
+.stereo-product-stage {
+  position: relative;
+
+  overflow: hidden;
+
+  background: radial-gradient(
+    circle at 50% 38%,
+    #ffffff 0%,
+    #f7f7f5 46%,
+    #eeeeeb 100%
+  );
+}
+
+.stereo-product-stage::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+
+  background-size: 32px 32px;
+
+  opacity: 0;
+
+  transition: opacity 400ms ease;
+}
+
+@media (hover: hover) {
+  .stereo-product-stage:hover::before {
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 640px) {
+  .stereo-transition__identity {
+    grid-template-columns: 1fr;
+    justify-items: center;
+
+    gap: 11px;
+
+    text-align: center;
+  }
+
+  .stereo-transition__identity strong {
+    font-size: 17px;
+  }
+
+  .stereo-transition__status,
+  .stereo-transition__status:last-child {
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stereo-transition__panel,
+  .stereo-transition__signal,
+  .stereo-transition__signal-track span {
+    animation: none !important;
+    transition-duration: 150ms !important;
+  }
+}
+
+/* =========================================================
+   END STEREOPHONIE DIGITAL DESIGN SYSTEM V1
+   ========================================================= */
