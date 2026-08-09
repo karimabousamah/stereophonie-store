@@ -1,26 +1,30 @@
 import Image from "next/image";
 
 type BrandLogoProps = {
-  variant?: "black" | "white";
+  variant?: "dark" | "light";
   className?: string;
   priority?: boolean;
 };
 
 export default function BrandLogo({
-  variant = "black",
+  variant = "light",
   className = "",
   priority = false,
 }: BrandLogoProps) {
+  const src =
+    variant === "dark"
+      ? "/brand/stereophonie-logo-white-red.png"
+      : "/brand/stereophonie-logo-black-red.png";
+
   return (
     <Image
-      src="/brand/stereophonie-logo-white.png"
-      alt="Stereophonie"
-      width={1000}
-      height={300}
+      src={src}
+      alt="Stereophonie Store"
+      width={1500}
+      height={420}
       priority={priority}
-      className={`h-auto object-contain ${
-        variant === "black" ? "brightness-0" : ""
-      } ${className}`}
+      sizes="(max-width: 768px) 180px, 260px"
+      className={`block h-auto w-auto object-contain ${className}`}
     />
   );
 }

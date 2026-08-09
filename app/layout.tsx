@@ -47,10 +47,7 @@ export default async function RootLayout({
           <StoreAvailabilityGate>
             <CartProvider>
               <WishlistProvider>
-                <WebsiteIntro
-                  showOnFirstRender
-                  cookieName="stereophonie-intro-current-load"
-                />
+                <WebsiteIntro />
 
                 <Suspense fallback={null}>
                   <PageTransition />
