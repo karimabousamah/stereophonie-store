@@ -1,0 +1,2127 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --surface-soft: #f5f4f1;
+  --border-light: rgba(0, 0, 0, 0.1);
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--background);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background: #0a0a0a;
+    color: #ffffff;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 4px;
+  }
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1ef;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #f1f1ef;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* =========================================================
+   PAGE CONTENT ENTRANCE
+   ========================================================= */
+
+@keyframes pageContentEntrance {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 7px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.page-content-transition,
+.luxury-page-content {
+  animation: pageContentEntrance 480ms var(--ease-premium) both;
+}
+
+/* =========================================================
+   BLACK PAGE TRANSITION
+   ========================================================= */
+
+.page-wave-transition,
+.luxury-page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.page-wave-transition-active,
+.luxury-page-transition--active {
+  visibility: visible;
+}
+
+.page-wave-transition-shape {
+  position: absolute;
+  inset: -20%;
+  border-radius: 0 0 50% 50%;
+  background: #080808;
+  transform: translate3d(0, -115%, 0) scaleX(1.15);
+}
+
+.page-wave-transition-active .page-wave-transition-shape {
+  animation: pageWaveMotion 760ms var(--ease-premium) both;
+}
+
+.page-wave-transition-logo {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-wave-transition-logo span {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.page-wave-transition-active .page-wave-transition-logo {
+  animation: pageWaveLogo 760ms ease both;
+}
+
+@keyframes pageWaveMotion {
+  0% {
+    border-radius: 0 0 50% 50%;
+    transform: translate3d(0, -115%, 0) scaleX(1.15);
+  }
+
+  35% {
+    border-radius: 0 0 18% 18%;
+    transform: translate3d(0, 0, 0) scaleX(1.05);
+  }
+
+  58% {
+    border-radius: 0;
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+
+  100% {
+    border-radius: 50% 50% 0 0;
+    transform: translate3d(0, 115%, 0) scaleX(1.15);
+  }
+}
+
+@keyframes pageWaveLogo {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  40%,
+  58% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  82%,
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* =========================================================
+   PRODUCT IMAGE TRANSITION
+   ========================================================= */
+
+@keyframes productImageReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* =========================================================
+   SAFE INTERACTIONS
+
+   No universal white background.
+   No universal hover shadow.
+   Each component controls its own background.
+   ========================================================= */
+
+a,
+button {
+  transition:
+    color 250ms ease,
+    background-color 250ms ease,
+    border-color 250ms ease,
+    opacity 250ms ease,
+    transform 350ms var(--ease-premium);
+}
+
+a:hover,
+button:hover,
+a:active,
+button:active,
+a:focus,
+button:focus {
+  box-shadow: none;
+}
+
+a:active,
+button:not(:disabled):active {
+  transform: scale(0.985);
+}
+
+/* Header controls must never become white cards */
+
+header a,
+header button {
+  box-shadow: none !important;
+}
+
+header a:hover,
+header button:hover,
+header a:active,
+header button:active {
+  box-shadow: none !important;
+}
+
+/* Mobile-navigation links remain completely flat */
+
+[role="dialog"] nav a {
+  background-color: transparent;
+  box-shadow: none !important;
+}
+
+[role="dialog"] nav a:hover,
+[role="dialog"] nav a:active,
+[role="dialog"] nav a:focus {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Logo, cart and menu trigger remain flat */
+
+header a[href="/"],
+header button[aria-label*="navigation"],
+header button[aria-label*="cart"],
+header button[aria-label*="Cart"] {
+  background-color: transparent;
+  box-shadow: none !important;
+}
+
+header a[href="/"]:hover,
+header button[aria-label*="navigation"]:hover,
+header button[aria-label*="cart"]:hover,
+header button[aria-label*="Cart"]:hover {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   PRODUCT CARDS
+   ========================================================= */
+
+main article.group {
+  transition:
+    transform 440ms var(--ease-premium),
+    opacity 300ms ease;
+}
+
+main article.group img {
+  backface-visibility: hidden;
+  transform-origin: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  main article.group:hover {
+    transform: translateY(-4px);
+  }
+
+  main article.group:hover img {
+    filter: contrast(1.01) saturate(1.015);
+  }
+}
+
+/* =========================================================
+   IMAGE POLISH
+   ========================================================= */
+
+.storefront-image {
+  overflow: hidden;
+  background: var(--surface-soft);
+}
+
+.storefront-image img {
+  transition:
+    transform 750ms var(--ease-premium),
+    filter 450ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .storefront-image:hover img {
+    transform: scale(1.028);
+  }
+}
+
+/* =========================================================
+   TEXT LINK UNDERLINE
+   ========================================================= */
+
+.storefront-link {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+}
+
+.storefront-link::after {
+  position: absolute;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 350ms var(--ease-premium);
+}
+
+.storefront-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* =========================================================
+   LOADING SKELETON
+   ========================================================= */
+
+@keyframes storefrontShimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.storefront-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04) 25%,
+    rgba(0, 0, 0, 0.08) 50%,
+    rgba(0, 0, 0, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: storefrontShimmer 1.5s linear infinite;
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.storefront-input {
+  width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: 0;
+  background: #ffffff;
+  color: #0a0a0a;
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.storefront-input:hover {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+.storefront-input:focus {
+  border-color: #0a0a0a;
+  outline: none;
+  box-shadow: 0 0 0 1px #0a0a0a;
+}
+
+.storefront-input[aria-invalid="true"] {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 1px #dc2626;
+}
+
+/* =========================================================
+   HORIZONTAL SCROLL
+   ========================================================= */
+
+.storefront-horizontal-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.storefront-horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================================================
+   ADMIN INTERACTIONS
+
+   Dark highlight only. Never white.
+   ========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  body:has(a[href^="/admin"]) a:not([aria-current="page"]):hover,
+  body:has(a[href^="/admin"]) button:not(:disabled):hover {
+    box-shadow: none;
+  }
+
+  body:has(a[href^="/admin"]) main a:hover,
+  body:has(a[href^="/admin"]) main button:not(:disabled):hover {
+    border-color: rgba(255, 255, 255, 0.26);
+  }
+}
+
+/* =========================================================
+   MOBILE AND TABLET
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .page-wave-transition-logo span {
+    font-size: 13px;
+  }
+
+  .page-content-transition,
+  .luxury-page-content {
+    animation-duration: 380ms;
+  }
+
+  a:active,
+  button:not(:disabled):active {
+    transform: scale(0.99);
+  }
+
+  header a,
+  header button,
+  [role="dialog"] nav a {
+    box-shadow: none !important;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .page-wave-transition,
+  .luxury-page-transition {
+    display: none;
+  }
+
+  .page-content-transition,
+  .luxury-page-content,
+  main article.group,
+  main article.group:hover,
+  .storefront-image img,
+  .storefront-image:hover img {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+@keyframes assistantLauncherFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes assistantLauncherPulse {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.88);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+}
+
+.assistant-launcher-active {
+  animation: assistantLauncherFloat 2.8s ease-in-out infinite;
+}
+
+.assistant-launcher-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(0 0 0 / 30%);
+  border-radius: 9999px;
+  animation: assistantLauncherPulse 2.2s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-launcher-active,
+  .assistant-launcher-ring {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   PREMIUM STORE AVAILABILITY SCREEN
+   ========================================================= */
+
+.nita-status-page {
+  isolation: isolate;
+  background:
+    radial-gradient(
+      circle at 18% 18%,
+      rgba(255, 255, 255, 0.055),
+      transparent 36%
+    ),
+    linear-gradient(135deg, #090909 0%, #030303 58%, #080808 100%);
+}
+
+.nita-status-page--closed {
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 100, 100, 0.045),
+      transparent 38%
+    ),
+    linear-gradient(135deg, #090909 0%, #030303 58%, #080808 100%);
+}
+
+.nita-status-page__grain {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.8) 0.42px,
+    transparent 0.42px
+  );
+  background-size: 4px 4px;
+  mix-blend-mode: soft-light;
+}
+
+.nita-status-page__grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 110px 110px;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 18%,
+    black 82%,
+    transparent 100%
+  );
+}
+
+.nita-status-page__wordmark {
+  color: transparent;
+  font-size: clamp(9rem, 18vw, 20rem);
+  font-weight: 600;
+  line-height: 0.8;
+  letter-spacing: -0.09em;
+  opacity: 0.75;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.055);
+}
+
+.nita-status-page__light-beam {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 24vw;
+  pointer-events: none;
+  opacity: 0.2;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.06),
+    transparent
+  );
+  filter: blur(18px);
+  transform: skewX(-12deg);
+}
+
+@media (max-width: 767px) {
+  .nita-status-page__wordmark {
+    top: 22vh;
+    font-size: 7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nita-status-page *,
+  .nita-status-page *::before,
+  .nita-status-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* NITA MOBILE CURATED EDITS REFINEMENT START */
+
+@media (max-width: 639px) {
+  [data-collections-scroller="true"] {
+    gap: 12px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    scroll-padding-left: 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [data-collections-scroller="true"] > * {
+    width: min(60vw, 245px) !important;
+    min-width: min(60vw, 245px) !important;
+    max-width: 245px !important;
+    flex: 0 0 min(60vw, 245px) !important;
+  }
+
+  [data-collections-scroller="true"] img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover;
+  }
+}
+
+/* NITA MOBILE CURATED EDITS REFINEMENT END */
+
+/* NITA PREMIUM MOTION SYSTEM START */
+
+:root {
+  --nita-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --nita-motion-spring: cubic-bezier(0.2, 0.95, 0.3, 1);
+
+  --nita-pointer-x: 50%;
+  --nita-pointer-y: 50%;
+
+  --nita-parallax-1: 0px;
+  --nita-parallax-2: 0px;
+  --nita-ambient-y: 0px;
+}
+
+/* =========================================================
+   STRONG INTERACTIVE AMBIENT BACKGROUND
+   ========================================================= */
+
+.nita-premium-motion-enabled .nita-premium-ambient {
+  position: fixed;
+  inset: 0;
+
+  z-index: 150;
+
+  overflow: hidden;
+  pointer-events: none;
+
+  opacity: 0.58;
+}
+
+.nita-premium-motion-enabled .nita-premium-ambient::before {
+  content: "";
+
+  position: absolute;
+
+  top: -28vh;
+  left: -22vw;
+
+  width: 82vw;
+  height: 82vw;
+
+  border-radius: 9999px;
+
+  background: radial-gradient(
+    circle at var(--nita-pointer-x) var(--nita-pointer-y),
+    rgba(64, 112, 255, 0.28),
+    rgba(70, 102, 255, 0.12) 34%,
+    transparent 68%
+  );
+
+  filter: blur(90px);
+
+  transform: translate3d(0, var(--nita-ambient-y), 0);
+
+  will-change: transform;
+}
+
+.nita-premium-motion-enabled .nita-premium-ambient::after {
+  content: "";
+
+  position: absolute;
+
+  right: -24vw;
+  bottom: -30vh;
+
+  width: 72vw;
+  height: 72vw;
+
+  border-radius: 9999px;
+
+  background: radial-gradient(
+    circle,
+    rgba(132, 86, 255, 0.23),
+    rgba(82, 105, 255, 0.08) 42%,
+    transparent 70%
+  );
+
+  filter: blur(105px);
+
+  transform: translate3d(0, var(--nita-parallax-2), 0);
+}
+
+/* =========================================================
+   SCROLL PROGRESS
+   ========================================================= */
+
+.nita-premium-scroll-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  z-index: 2147483600;
+
+  height: 3px;
+
+  pointer-events: none;
+}
+
+.nita-premium-scroll-progress > div {
+  width: 100%;
+  height: 100%;
+
+  transform-origin: left;
+
+  background: linear-gradient(90deg, #111111, #4a76ff 55%, #9b74ff);
+
+  box-shadow: 0 0 18px rgba(72, 111, 255, 0.5);
+
+  will-change: transform;
+}
+
+/* =========================================================
+   STRONG BIDIRECTIONAL SECTION MOTION
+   ========================================================= */
+
+.nita-premium-motion-enabled [data-nita-motion] {
+  --nita-motion-delay: 0ms;
+
+  transition:
+    opacity 720ms var(--nita-motion-ease) var(--nita-motion-delay),
+    transform 950ms var(--nita-motion-spring) var(--nita-motion-delay),
+    filter 700ms var(--nita-motion-ease) var(--nita-motion-delay),
+    clip-path 950ms var(--nita-motion-ease) var(--nita-motion-delay);
+
+  will-change: opacity, transform, filter;
+}
+
+.nita-premium-motion-enabled
+  [data-nita-motion="section"][data-nita-in-view="false"] {
+  opacity: 0;
+
+  filter: blur(4px);
+
+  transform: translate3d(0, 72px, 0) scale(0.965);
+}
+
+.nita-premium-motion-enabled.nita-scroll-down
+  [data-nita-motion="section"][data-nita-in-view="false"] {
+  transform: translate3d(0, -48px, 0) scale(0.975);
+}
+
+.nita-premium-motion-enabled
+  [data-nita-motion="section"][data-nita-in-view="true"] {
+  opacity: 1;
+
+  filter: blur(0);
+
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* =========================================================
+   STRONG EDITORIAL HEADING REVEAL
+   ========================================================= */
+
+.nita-premium-motion-enabled
+  [data-nita-motion="heading"][data-nita-in-view="false"] {
+  opacity: 0;
+
+  transform: translate3d(0, 60px, 0) skewY(2deg);
+
+  clip-path: inset(0 0 92% 0);
+}
+
+.nita-premium-motion-enabled
+  [data-nita-motion="heading"][data-nita-in-view="true"] {
+  opacity: 1;
+
+  transform: translate3d(0, 0, 0) skewY(0deg);
+
+  clip-path: inset(0 0 0 0);
+}
+
+/* =========================================================
+   STRONG PRODUCT / COLLECTION STAGGER
+   ========================================================= */
+
+.nita-premium-motion-enabled
+  [data-nita-motion="card"][data-nita-in-view="false"] {
+  opacity: 0;
+
+  filter: blur(5px);
+
+  transform: translate3d(0, 58px, 0) scale(0.91);
+}
+
+.nita-premium-motion-enabled
+  [data-nita-motion="card"][data-nita-in-view="true"] {
+  opacity: 1;
+
+  filter: blur(0);
+
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* =========================================================
+   PRODUCT IMAGE DEPTH / PARALLAX FEEL
+   ========================================================= */
+
+.nita-premium-motion-enabled .nita-premium-image {
+  transition:
+    transform 1100ms var(--nita-motion-spring),
+    filter 650ms ease;
+
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nita-premium-motion-enabled a:hover .nita-premium-image {
+    transform: scale(1.075) translate3d(0, -5px, 0);
+  }
+
+  .nita-premium-motion-enabled [data-nita-motion="card"]:hover {
+    translate: 0 -9px;
+
+    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.11);
+  }
+}
+
+/* =========================================================
+   BUTTONS — STRONGER INTERACTION
+   ========================================================= */
+
+.nita-premium-motion-enabled button,
+.nita-premium-motion-enabled a {
+  transition:
+    color 260ms ease,
+    background-color 260ms ease,
+    border-color 260ms ease,
+    opacity 260ms ease,
+    transform 420ms var(--nita-motion-spring),
+    box-shadow 420ms var(--nita-motion-spring);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nita-premium-motion-enabled button:not(:disabled):hover {
+    transform: translate3d(0, -3px, 0) scale(1.015);
+  }
+
+  .nita-premium-motion-enabled a:hover {
+    transition-duration: 350ms;
+  }
+}
+
+.nita-premium-motion-enabled button:not(:disabled):active,
+.nita-premium-motion-enabled a:active {
+  transform: scale(0.945);
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.nita-premium-motion-enabled input,
+.nita-premium-motion-enabled textarea,
+.nita-premium-motion-enabled select {
+  transition:
+    border-color 280ms ease,
+    box-shadow 340ms ease,
+    background-color 280ms ease,
+    transform 400ms var(--nita-motion-ease);
+}
+
+.nita-premium-motion-enabled input:focus,
+.nita-premium-motion-enabled textarea:focus,
+.nita-premium-motion-enabled select:focus {
+  transform: translate3d(0, -2px, 0);
+
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 18px 42px rgba(0, 0, 0, 0.09);
+}
+
+/* =========================================================
+   STRONG AI ASSISTANT BEACON
+   ========================================================= */
+
+.nita-premium-motion-enabled .assistant-launcher-active {
+  isolation: isolate;
+
+  box-shadow:
+    0 16px 52px rgba(45, 87, 255, 0.45),
+    0 0 0 2px rgba(112, 145, 255, 0.36),
+    0 0 44px rgba(73, 113, 255, 0.38) !important;
+
+  animation: nitaStrongAssistant 2.8s ease-in-out infinite;
+}
+
+.nita-premium-motion-enabled .assistant-launcher-active::before {
+  content: "";
+
+  position: absolute;
+  inset: -15px;
+
+  z-index: -2;
+
+  border-radius: 9999px;
+
+  background: radial-gradient(
+    circle,
+    rgba(99, 149, 255, 0.78),
+    rgba(73, 105, 255, 0.34) 42%,
+    transparent 72%
+  );
+
+  filter: blur(13px);
+
+  animation: nitaStrongHalo 2.8s ease-in-out infinite;
+}
+
+.nita-premium-motion-enabled .assistant-launcher-active::after {
+  content: "";
+
+  position: absolute;
+  inset: -7px;
+
+  z-index: -1;
+
+  border: 1px solid rgba(136, 164, 255, 0.66);
+
+  border-radius: 9999px;
+
+  animation: nitaStrongRing 2.8s ease-in-out infinite;
+}
+
+@keyframes nitaStrongAssistant {
+  0%,
+  100% {
+    transform: scale(1);
+
+    box-shadow:
+      0 14px 44px rgba(45, 87, 255, 0.31),
+      0 0 0 1px rgba(104, 140, 255, 0.24),
+      0 0 30px rgba(73, 113, 255, 0.24);
+  }
+
+  50% {
+    transform: scale(1.045);
+
+    box-shadow:
+      0 22px 72px rgba(45, 87, 255, 0.58),
+      0 0 0 7px rgba(104, 140, 255, 0.12),
+      0 0 56px rgba(73, 113, 255, 0.48);
+  }
+}
+
+@keyframes nitaStrongHalo {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(0.84);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes nitaStrongRing {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+}
+
+/* =========================================================
+   MOBILE — STILL STRONG BUT OPTIMIZED
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .nita-premium-motion-enabled .nita-premium-ambient {
+    opacity: 0.34;
+  }
+
+  .nita-premium-motion-enabled
+    [data-nita-motion="section"][data-nita-in-view="false"] {
+    transform: translate3d(0, 44px, 0) scale(0.975);
+
+    filter: blur(2px);
+  }
+
+  .nita-premium-motion-enabled
+    [data-nita-motion="heading"][data-nita-in-view="false"] {
+    transform: translate3d(0, 38px, 0);
+  }
+
+  .nita-premium-motion-enabled
+    [data-nita-motion="card"][data-nita-in-view="false"] {
+    transform: translate3d(0, 38px, 0) scale(0.945);
+
+    filter: blur(2px);
+  }
+
+  .nita-premium-motion-enabled button:not(:disabled):active,
+  .nita-premium-motion-enabled a:active {
+    transform: scale(0.94);
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .nita-premium-ambient,
+  .nita-premium-scroll-progress {
+    display: none !important;
+  }
+
+  [data-nita-motion] {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+
+  .nita-premium-image {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .assistant-launcher-active,
+  .assistant-launcher-active::before,
+  .assistant-launcher-active::after {
+    animation: none !important;
+  }
+}
+
+/* NITA PREMIUM MOTION SYSTEM END */
+
+/* =========================================================
+   NITA PRECISE CURSOR GLOW — CENTER FIX
+   ========================================================= */
+
+/*
+ * This intentionally overrides only the ambient pointer layer.
+ * Existing page transitions, reveals, card movement and AI
+ * animations remain untouched.
+ */
+
+:root {
+  --nita-pointer-x: 50vw;
+  --nita-pointer-y: 50vh;
+}
+
+.nita-premium-ambient {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+
+/*
+ * Primary light.
+ * Its radial center is literally event.clientX / event.clientY.
+ */
+.nita-premium-ambient::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
+  border-radius: 0 !important;
+
+  background: radial-gradient(
+    230px circle at var(--nita-pointer-x) var(--nita-pointer-y),
+    rgba(80, 125, 255, 0.16) 0%,
+    rgba(79, 111, 255, 0.095) 23%,
+    rgba(65, 91, 240, 0.045) 43%,
+    transparent 72%
+  ) !important;
+
+  filter: none !important;
+  transform: none !important;
+  transition:
+    opacity 260ms ease,
+    background 220ms ease !important;
+
+  opacity: 0.82;
+  will-change: background;
+}
+
+/*
+ * Secondary ambient atmosphere.
+ * This is deliberately softer and larger so the cursor itself
+ * remains the obvious interaction center.
+ */
+.nita-premium-ambient::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
+  border-radius: 0 !important;
+
+  background: radial-gradient(
+    520px circle at var(--nita-pointer-x) var(--nita-pointer-y),
+    rgba(77, 101, 255, 0.045),
+    rgba(105, 75, 255, 0.018) 42%,
+    transparent 72%
+  ) !important;
+
+  filter: none !important;
+  transform: none !important;
+  opacity: 1;
+  will-change: background;
+}
+
+/* Clickable elements make the ambient response more noticeable. */
+
+html[data-nita-pointer-interactive="true"] .nita-premium-ambient::before {
+  background: radial-gradient(
+    260px circle at var(--nita-pointer-x) var(--nita-pointer-y),
+    rgba(85, 138, 255, 0.24) 0%,
+    rgba(73, 115, 255, 0.12) 24%,
+    rgba(62, 91, 245, 0.052) 48%,
+    transparent 74%
+  ) !important;
+}
+
+/* Premium desktop hover feedback */
+
+@media (hover: hover) and (pointer: fine) {
+  main a,
+  main button,
+  header a,
+  header button,
+  footer a,
+  footer button {
+    will-change: transform;
+  }
+
+  main button:not(:disabled):hover,
+  header button:not(:disabled):hover,
+  footer button:not(:disabled):hover {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+/*
+ * Touch screens don't need a cursor glow.
+ * Existing scroll/reveal animations stay enabled.
+ */
+@media (hover: none), (pointer: coarse) {
+  .nita-premium-ambient {
+    display: none !important;
+  }
+}
+
+/* Never interfere with accessibility preferences. */
+
+@media (prefers-reduced-motion: reduce) {
+  .nita-premium-ambient {
+    display: none !important;
+  }
+}
+
+/* =========================================================
+   END NITA PRECISE CURSOR GLOW
+   ========================================================= */
+
+/* NITA ABOUT VALUES INTERACTION START */
+
+/* =========================================================
+   ABOUT — OUR VALUES PREMIUM INTERACTION
+   ========================================================= */
+
+.nita-about-values {
+  position: relative;
+  overflow: hidden;
+}
+
+/*
+ * Very subtle atmosphere behind the values section.
+ */
+.nita-about-values::before {
+  content: "";
+  position: absolute;
+  left: 7%;
+  top: 16%;
+  width: min(38vw, 580px);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle,
+    rgba(91, 111, 255, 0.055),
+    rgba(107, 82, 255, 0.018) 43%,
+    transparent 72%
+  );
+
+  filter: blur(55px);
+  opacity: 0.65;
+}
+
+.nita-about-value-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  transition:
+    transform 560ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 420ms ease,
+    border-color 420ms ease,
+    box-shadow 560ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+ * Animated premium wash.
+ */
+.nita-about-value-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background: linear-gradient(
+    135deg,
+    rgba(248, 248, 248, 0.92),
+    rgba(240, 242, 255, 0.62)
+  );
+
+  opacity: 0;
+  transform: scale(0.94);
+
+  transition:
+    opacity 480ms ease,
+    transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+ * Bottom accent line.
+ */
+.nita-about-value-card::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+
+  background: linear-gradient(90deg, #111111, rgba(88, 108, 255, 0.8));
+
+  transform: scaleX(0);
+  transform-origin: left;
+
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nita-about-value-card svg {
+  transition:
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    stroke 320ms ease;
+}
+
+.nita-about-value-card h3,
+.nita-about-value-card p {
+  transition:
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 350ms ease,
+    opacity 350ms ease;
+}
+
+/* =========================================================
+   DESKTOP HOVER
+   ========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  .nita-about-value-card:hover {
+    transform: translate3d(0, -8px, 0);
+
+    background-color: rgba(255, 255, 255, 0.96);
+
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.07);
+  }
+
+  .nita-about-value-card:hover::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .nita-about-value-card:hover::after {
+    transform: scaleX(1);
+  }
+
+  .nita-about-value-card:hover svg {
+    transform: translate3d(0, -3px, 0) scale(1.12) rotate(-3deg);
+  }
+
+  .nita-about-value-card:hover h3 {
+    transform: translate3d(4px, 0, 0);
+  }
+
+  .nita-about-value-card:hover p {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+/* =========================================================
+   TOUCH FEEDBACK
+   ========================================================= */
+
+@media (hover: none), (pointer: coarse) {
+  .nita-about-value-card:active {
+    transform: scale(0.975);
+
+    background: rgba(245, 246, 252, 0.95);
+  }
+
+  .nita-about-value-card:active::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .nita-about-value-card:active::after {
+    transform: scaleX(1);
+  }
+
+  .nita-about-value-card:active svg {
+    transform: scale(1.08);
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .nita-about-value-card,
+  .nita-about-value-card::before,
+  .nita-about-value-card::after,
+  .nita-about-value-card svg,
+  .nita-about-value-card h3,
+  .nita-about-value-card p {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* NITA ABOUT VALUES INTERACTION END */
+
+/* NITA ACCOUNT SCROLL REVEAL START */
+
+/* =========================================================
+   ACCOUNT — SCROLL TO REVEAL
+   ========================================================= */
+
+.nita-account-scroll-reveal {
+  position: absolute;
+  z-index: 20;
+
+  left: 50%;
+  bottom: 28px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 150px;
+
+  padding: 12px 18px 8px;
+
+  border: 0;
+  background: transparent;
+
+  color: #0a0a0a;
+
+  transform: translate3d(-50%, 0, 0);
+
+  transition:
+    opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  isolation: isolate;
+}
+
+.nita-account-scroll-reveal--visible {
+  opacity: 1;
+
+  pointer-events: auto;
+}
+
+.nita-account-scroll-reveal--hidden {
+  opacity: 0;
+
+  pointer-events: none;
+
+  transform: translate3d(-50%, 15px, 0);
+}
+
+/* =========================================================
+   BLUE AMBIENT HALO
+   ========================================================= */
+
+.nita-account-scroll-reveal__halo {
+  position: absolute;
+
+  left: 50%;
+  top: 48%;
+
+  z-index: -1;
+
+  width: 140px;
+  height: 70px;
+
+  border-radius: 999px;
+
+  background: radial-gradient(
+    ellipse,
+    rgba(75, 111, 255, 0.17) 0%,
+    rgba(85, 103, 255, 0.08) 36%,
+    rgba(81, 92, 255, 0.025) 58%,
+    transparent 76%
+  );
+
+  filter: blur(13px);
+
+  transform: translate3d(-50%, -50%, 0);
+
+  animation: nitaAccountRevealHalo 2.8s ease-in-out infinite;
+}
+
+@keyframes nitaAccountRevealHalo {
+  0%,
+  100% {
+    opacity: 0.42;
+
+    transform: translate3d(-50%, -50%, 0) scale(0.9);
+  }
+
+  50% {
+    opacity: 0.95;
+
+    transform: translate3d(-50%, -50%, 0) scale(1.12);
+  }
+}
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.nita-account-scroll-reveal__label {
+  position: relative;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  line-height: 1;
+
+  letter-spacing: 0.25em;
+
+  text-transform: uppercase;
+
+  color: rgba(10, 10, 10, 0.48);
+
+  white-space: nowrap;
+
+  transition:
+    color 300ms ease,
+    letter-spacing 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* =========================================================
+   ANIMATED VERTICAL LINE
+   ========================================================= */
+
+.nita-account-scroll-reveal__track {
+  position: relative;
+
+  width: 1px;
+  height: 30px;
+
+  margin-top: 10px;
+
+  overflow: hidden;
+
+  background: rgba(0, 0, 0, 0.11);
+}
+
+.nita-account-scroll-reveal__line {
+  position: absolute;
+
+  top: -100%;
+  left: 0;
+
+  width: 100%;
+  height: 70%;
+
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(65, 98, 255, 0.92),
+    transparent
+  );
+
+  animation: nitaAccountRevealLine 1.7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes nitaAccountRevealLine {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(290%);
+  }
+}
+
+/* =========================================================
+   CHEVRON
+   ========================================================= */
+
+.nita-account-scroll-reveal__arrow {
+  width: 14px;
+  height: 14px;
+
+  margin-top: 4px;
+
+  stroke-width: 1.5;
+
+  color: rgba(50, 77, 205, 0.72);
+
+  animation: nitaAccountRevealArrow 1.7s ease-in-out infinite;
+}
+
+@keyframes nitaAccountRevealArrow {
+  0%,
+  100% {
+    opacity: 0.38;
+
+    transform: translate3d(0, -2px, 0);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform: translate3d(0, 4px, 0);
+  }
+}
+
+/* =========================================================
+   DESKTOP HOVER
+   ========================================================= */
+
+@media (hover: hover) and (pointer: fine) {
+  .nita-account-scroll-reveal:hover .nita-account-scroll-reveal__label {
+    color: rgba(20, 47, 180, 0.86);
+
+    letter-spacing: 0.29em;
+  }
+
+  .nita-account-scroll-reveal:hover .nita-account-scroll-reveal__halo {
+    opacity: 1;
+
+    filter: blur(15px);
+  }
+
+  .nita-account-scroll-reveal:hover .nita-account-scroll-reveal__arrow {
+    color: rgba(48, 79, 255, 1);
+  }
+}
+
+/* =========================================================
+   MOBILE / TABLET
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .nita-account-scroll-reveal {
+    bottom: 18px;
+
+    min-width: 130px;
+
+    padding: 10px 14px 6px;
+  }
+
+  .nita-account-scroll-reveal__label {
+    font-size: 8px;
+
+    letter-spacing: 0.21em;
+  }
+
+  .nita-account-scroll-reveal__track {
+    height: 24px;
+
+    margin-top: 8px;
+  }
+
+  .nita-account-scroll-reveal__halo {
+    width: 115px;
+    height: 60px;
+  }
+}
+
+/* =========================================================
+   TOUCH FEEDBACK
+   ========================================================= */
+
+@media (hover: none), (pointer: coarse) {
+  .nita-account-scroll-reveal:active {
+    transform: translate3d(-50%, 2px, 0) scale(0.96);
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .nita-account-scroll-reveal__halo,
+  .nita-account-scroll-reveal__line,
+  .nita-account-scroll-reveal__arrow {
+    animation: none !important;
+  }
+}
+
+/* NITA ACCOUNT SCROLL REVEAL END */
+
+/* =========================================================
+   NITA STOREFRONT — MAXIMUM PHOTOGRAPH FIDELITY
+   ========================================================= */
+
+/*
+ * Product photography is intentionally rendered without
+ * browser effects that can visually soften an image.
+ */
+
+main img {
+  image-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
+}
+
+/*
+ * Avoid filters applied by global motion/hover systems from
+ * softening product photography.
+ */
+
+main a[href^="/shop/"] img {
+  filter: none !important;
+}
+
+/*
+ * Allow GPU compositing during animations without permanently
+ * applying a scale that can make photographs appear softer.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  main a[href^="/shop/"] img {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+}
+
+/* =========================================================
+   END STOREFRONT PHOTOGRAPH FIDELITY
+   ========================================================= */
+
+/* =========================================================
+   NITA STYLE — FINAL PRODUCT PHOTO FIDELITY OVERRIDE
+   ========================================================= */
+
+/*
+ * The product files are already loaded directly from Supabase.
+ * Do not transform, blur, scale, filter or force them onto a
+ * composited GPU layer. These operations can soften photography,
+ * particularly in Safari.
+ */
+
+.nita-product-photo {
+  image-rendering: auto !important;
+
+  filter: none !important;
+
+  transform: none !important;
+
+  translate: none !important;
+
+  scale: 1 !important;
+
+  perspective: none !important;
+
+  backface-visibility: visible !important;
+
+  will-change: auto !important;
+
+  transition: opacity 300ms ease !important;
+}
+
+/*
+ * Previous premium-motion rules targeted every image inside
+ * /shop links. Product photography must remain optically sharp.
+ */
+
+main a[href^="/shop/"] .nita-product-photo,
+main a[href^="/shop/"]:hover .nita-product-photo,
+main a[href^="/shop/"]:active .nita-product-photo {
+  transform: none !important;
+
+  translate: none !important;
+
+  scale: 1 !important;
+
+  filter: none !important;
+
+  will-change: auto !important;
+}
+
+/*
+ * Prevent the browser from treating photography like pixel art
+ * or applying non-standard interpolation modes.
+ */
+
+img.nita-product-photo {
+  image-rendering: auto !important;
+
+  -ms-interpolation-mode: bicubic;
+}
+
+/*
+ * Keep the photo itself static while allowing the CARD around
+ * it to retain your premium movement/interaction effects.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  .nita-product-photo {
+    transform: none !important;
+  }
+}
+
+/* =========================================================
+   END FINAL PRODUCT PHOTO FIDELITY OVERRIDE
+   ========================================================= */
+
+/* =========================================================
+   NITA STYLE — PREMIUM MERCHANDISE BADGES
+   ========================================================= */
+
+/*
+ * Automatically targets the small black merchandise badges
+ * used throughout the customer storefront.
+ *
+ * The JS below adds .nita-merch-badge only to elements whose
+ * visible text is exactly NEW or NEW ARRIVAL.
+ */
+
+.nita-merch-badge {
+  position: relative !important;
+  isolation: isolate;
+  overflow: hidden !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 42px;
+  padding: 0 19px !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+
+  background: linear-gradient(
+    135deg,
+    #050505 0%,
+    #151515 52%,
+    #050505 100%
+  ) !important;
+
+  color: #fff !important;
+
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.24em !important;
+  text-transform: uppercase !important;
+
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  transform-origin: center;
+
+  animation:
+    nitaBadgeEntrance 700ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    nitaBadgeFloat 4.8s ease-in-out 900ms infinite;
+
+  transition:
+    transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 350ms ease !important;
+}
+
+.nita-merch-badge::before {
+  content: "";
+
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: -55%;
+
+  width: 42%;
+
+  z-index: -1;
+
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.32),
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+
+  transform: skewX(-20deg);
+
+  animation: nitaBadgeSheen 5.8s ease-in-out 1.25s infinite;
+}
+
+.nita-merch-badge::after {
+  content: "";
+
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+
+  width: 28%;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.62),
+    transparent
+  );
+
+  transform: translateX(-50%);
+
+  opacity: 0.42;
+}
+
+@keyframes nitaBadgeEntrance {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 9px, 0) scale(0.93);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes nitaBadgeFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes nitaBadgeSheen {
+  0%,
+  58% {
+    left: -60%;
+    opacity: 0;
+  }
+
+  66% {
+    opacity: 1;
+  }
+
+  83% {
+    left: 130%;
+    opacity: 0.82;
+  }
+
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nita-merch-badge:hover {
+    transform: translate3d(0, -3px, 0) scale(1.025);
+
+    box-shadow:
+      0 15px 34px rgba(0, 0, 0, 0.17),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+@media (max-width: 767px) {
+  .nita-merch-badge {
+    min-height: 38px;
+    padding: 0 16px !important;
+
+    font-size: 9px !important;
+    letter-spacing: 0.21em !important;
+  }
+}
+
+/* =========================================================
+   NITA ASSISTANT — VOICE CONTROL
+   ========================================================= */
+
+.nita-assistant-voice-button {
+  isolation: isolate;
+
+  overflow: visible !important;
+}
+
+.nita-assistant-voice-halo {
+  position: absolute;
+
+  inset: -7px;
+
+  z-index: 0;
+
+  border-radius: 999px;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  background: radial-gradient(
+    circle,
+    rgba(93, 133, 255, 0.46) 0%,
+    rgba(74, 104, 255, 0.19) 38%,
+    rgba(74, 104, 255, 0.04) 64%,
+    transparent 75%
+  );
+
+  filter: blur(7px);
+}
+
+.nita-assistant-voice-button--listening {
+  box-shadow:
+    0 8px 30px rgba(63, 91, 255, 0.24),
+    0 0 0 1px rgba(100, 130, 255, 0.16);
+
+  animation: nitaVoiceButtonBreath 1.8s ease-in-out infinite;
+}
+
+.nita-assistant-voice-button--listening .nita-assistant-voice-halo {
+  animation: nitaVoiceHaloBreath 1.8s ease-in-out infinite;
+}
+
+@keyframes nitaVoiceButtonBreath {
+  0%,
+  100% {
+    transform: scale(1);
+
+    box-shadow:
+      0 7px 24px rgba(63, 91, 255, 0.18),
+      0 0 0 1px rgba(100, 130, 255, 0.12);
+  }
+
+  50% {
+    transform: scale(1.045);
+
+    box-shadow:
+      0 12px 38px rgba(63, 91, 255, 0.36),
+      0 0 0 4px rgba(100, 130, 255, 0.08);
+  }
+}
+
+@keyframes nitaVoiceHaloBreath {
+  0%,
+  100% {
+    opacity: 0.32;
+    transform: scale(0.86);
+  }
+
+  50% {
+    opacity: 0.95;
+    transform: scale(1.17);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nita-merch-badge,
+  .nita-merch-badge::before,
+  .nita-assistant-voice-button--listening,
+  .nita-assistant-voice-button--listening .nita-assistant-voice-halo {
+    animation: none !important;
+  }
+}
+
+/* =========================================================
+   END PREMIUM BADGES + ASSISTANT VOICE
+   ========================================================= */

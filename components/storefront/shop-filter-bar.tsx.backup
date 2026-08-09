@@ -1,0 +1,842 @@
+"use client";
+
+import {
+  Check,
+  ChevronDown,
+  Filter,
+  RotateCcw,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import {
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
+import { createPortal } from "react-dom";
+import {
+  usePathname,
+  useRouter,
+} from "next/navigation";
+
+type MerchandiseFilter =
+  | ""
+  | "new"
+  | "featured"
+  | "trending";
+
+type AvailabilityFilter =
+  | ""
+  | "in-stock";
+
+type SortOption =
+  | "newest"
+  | "price-asc"
+  | "price-desc";
+
+type ShopFilterBarProps = {
+  categories: string[];
+  productCount: number;
+  selectedFilter: MerchandiseFilter;
+  selectedCategory: string;
+  selectedAvailability: AvailabilityFilter;
+  selectedSort: SortOption;
+};
+
+const merchandiseFilters: {
+  label: string;
+  value: MerchandiseFilter;
+}[] = [
+  {
+    label: "All",
+    value: "",
+  },
+  {
+    label: "New arrivals",
+    value: "new",
+  },
+  {
+    label: "Featured",
+    value: "featured",
+  },
+  {
+    label: "Trending",
+    value: "trending",
+  },
+];
+
+const sortOptions: {
+  label: string;
+  value: SortOption;
+}[] = [
+  {
+    label: "Newest first",
+    value: "newest",
+  },
+  {
+    label: "Price: low to high",
+    value: "price-asc",
+  },
+  {
+    label: "Price: high to low",
+    value: "price-desc",
+  },
+];
+
+function filterButtonClass(
+  active: boolean
+) {
+  return active
+    ? "border-black bg-black text-white"
+    : "border-black/10 bg-white text-black/45 hover:border-black hover:text-black";
+}
+
+export default function ShopFilterBar({
+  categories,
+  productCount,
+  selectedFilter,
+  selectedCategory,
+  selectedAvailability,
+  selectedSort,
+}: ShopFilterBarProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [
+    mobileFiltersOpen,
+    setMobileFiltersOpen,
+  ] = useState(false);
+
+  const [mounted, setMounted] =
+    useState(false);
+
+  const [isPending, startTransition] =
+    useTransition();
+
+  const [
+    draftFilter,
+    setDraftFilter,
+  ] =
+    useState<MerchandiseFilter>(
+      selectedFilter
+    );
+
+  const [
+    draftCategory,
+    setDraftCategory,
+  ] = useState(selectedCategory);
+
+  const [
+    draftAvailability,
+    setDraftAvailability,
+  ] =
+    useState<AvailabilityFilter>(
+      selectedAvailability
+    );
+
+  const [draftSort, setDraftSort] =
+    useState<SortOption>(
+      selectedSort
+    );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    setDraftFilter(
+      selectedFilter
+    );
+
+    setDraftCategory(
+      selectedCategory
+    );
+
+    setDraftAvailability(
+      selectedAvailability
+    );
+
+    setDraftSort(selectedSort);
+  }, [
+    selectedAvailability,
+    selectedCategory,
+    selectedFilter,
+    selectedSort,
+  ]);
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) {
+      return;
+    }
+
+    const body = document.body;
+    const html =
+      document.documentElement;
+
+    const scrollPosition =
+      window.scrollY;
+
+    const previousBodyPosition =
+      body.style.position;
+
+    const previousBodyTop =
+      body.style.top;
+
+    const previousBodyWidth =
+      body.style.width;
+
+    const previousBodyOverflow =
+      body.style.overflow;
+
+    const previousHtmlOverflow =
+      html.style.overflow;
+
+    body.style.position = "fixed";
+    body.style.top =
+      `-${scrollPosition}px`;
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+
+    html.style.overflow = "hidden";
+
+    return () => {
+      body.style.position =
+        previousBodyPosition;
+
+      body.style.top =
+        previousBodyTop;
+
+      body.style.width =
+        previousBodyWidth;
+
+      body.style.overflow =
+        previousBodyOverflow;
+
+      html.style.overflow =
+        previousHtmlOverflow;
+
+      window.scrollTo(
+        0,
+        scrollPosition
+      );
+    };
+  }, [mobileFiltersOpen]);
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) {
+      return;
+    }
+
+    function closeWithEscape(
+      event: KeyboardEvent
+    ) {
+      if (event.key === "Escape") {
+        setMobileFiltersOpen(false);
+      }
+    }
+
+    window.addEventListener(
+      "keydown",
+      closeWithEscape
+    );
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        closeWithEscape
+      );
+    };
+  }, [mobileFiltersOpen]);
+
+  function updateFilters(
+    values: {
+      filter?: MerchandiseFilter;
+      category?: string;
+      availability?: AvailabilityFilter;
+      sort?: SortOption;
+    },
+    closeMobilePanel = false
+  ) {
+    const parameters =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    if (
+      values.filter !== undefined
+    ) {
+      if (values.filter) {
+        parameters.set(
+          "filter",
+          values.filter
+        );
+      } else {
+        parameters.delete("filter");
+      }
+    }
+
+    if (
+      values.category !== undefined
+    ) {
+      if (values.category) {
+        parameters.set(
+          "category",
+          values.category
+        );
+      } else {
+        parameters.delete(
+          "category"
+        );
+      }
+    }
+
+    if (
+      values.availability !==
+      undefined
+    ) {
+      if (values.availability) {
+        parameters.set(
+          "availability",
+          values.availability
+        );
+      } else {
+        parameters.delete(
+          "availability"
+        );
+      }
+    }
+
+    if (
+      values.sort !== undefined
+    ) {
+      if (
+        values.sort &&
+        values.sort !== "newest"
+      ) {
+        parameters.set(
+          "sort",
+          values.sort
+        );
+      } else {
+        parameters.delete("sort");
+      }
+    }
+
+    parameters.delete("page");
+
+    const queryString =
+      parameters.toString();
+
+    const destination =
+      queryString
+        ? `${pathname}?${queryString}`
+        : pathname;
+
+    if (closeMobilePanel) {
+      setMobileFiltersOpen(false);
+    }
+
+    startTransition(() => {
+      router.push(destination, {
+        scroll: false,
+      });
+    });
+  }
+
+  function clearFilters() {
+    setDraftFilter("");
+    setDraftCategory("");
+    setDraftAvailability("");
+    setDraftSort("newest");
+
+    startTransition(() => {
+      router.push(pathname, {
+        scroll: false,
+      });
+    });
+
+    setMobileFiltersOpen(false);
+  }
+
+  function openMobileFilters() {
+    setDraftFilter(
+      selectedFilter
+    );
+
+    setDraftCategory(
+      selectedCategory
+    );
+
+    setDraftAvailability(
+      selectedAvailability
+    );
+
+    setDraftSort(selectedSort);
+
+    setMobileFiltersOpen(true);
+  }
+
+  function applyMobileFilters() {
+    updateFilters(
+      {
+        filter: draftFilter,
+        category: draftCategory,
+        availability:
+          draftAvailability,
+        sort: draftSort,
+      },
+      true
+    );
+  }
+
+  const activeFilterCount = [
+    Boolean(selectedFilter),
+    Boolean(selectedCategory),
+    Boolean(selectedAvailability),
+    selectedSort !== "newest",
+  ].filter(Boolean).length;
+
+  const mobilePanel = (
+    <div
+      className={`fixed inset-0 z-[2147483006] md:hidden ${
+        mobileFiltersOpen
+          ? "pointer-events-auto"
+          : "pointer-events-none"
+      }`}
+    >
+      <button
+        type="button"
+        aria-label="Close shop filters"
+        onClick={() =>
+          setMobileFiltersOpen(false)
+        }
+        className={`fixed inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300 ${
+          mobileFiltersOpen
+            ? "opacity-100"
+            : "opacity-0"
+        }`}
+      />
+
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label="Shop filters"
+        className={`fixed inset-x-0 bottom-0 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-25px_80px_rgba(0,0,0,0.2)] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          mobileFiltersOpen
+            ? "translate-y-0"
+            : "translate-y-full"
+        }`}
+      >
+        <header className="flex min-h-[78px] shrink-0 items-center justify-between border-b border-black/10 px-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center border border-black/10">
+              <SlidersHorizontal className="h-4 w-4" />
+            </div>
+
+            <div>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
+                Refine collection
+              </p>
+
+              <h2 className="mt-1 text-base font-semibold">
+                Filters & sorting
+              </h2>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setMobileFiltersOpen(
+                false
+              )
+            }
+            aria-label="Close filters"
+            className="flex h-11 w-11 items-center justify-center border border-black/10 transition hover:border-black hover:bg-black hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </header>
+
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-6">
+          <section>
+            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
+              Collection
+            </p>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {merchandiseFilters.map(
+                (filter) => {
+                  const active =
+                    draftFilter ===
+                    filter.value;
+
+                  return (
+                    <button
+                      key={
+                        filter.value ||
+                        "all"
+                      }
+                      type="button"
+                      onClick={() =>
+                        setDraftFilter(
+                          filter.value
+                        )
+                      }
+                      className={`flex min-h-[52px] items-center justify-between border px-4 text-left text-[10px] font-semibold uppercase tracking-[0.12em] transition ${filterButtonClass(
+                        active
+                      )}`}
+                    >
+                      {filter.label}
+
+                      {active ? (
+                        <Check className="h-4 w-4" />
+                      ) : null}
+                    </button>
+                  );
+                }
+              )}
+            </div>
+          </section>
+
+          <section className="mt-8 border-t border-black/10 pt-7">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
+              Category
+            </p>
+
+            <div className="relative mt-4">
+              <select
+                value={draftCategory}
+                onChange={(event) =>
+                  setDraftCategory(
+                    event.target.value
+                  )
+                }
+                className="h-14 w-full appearance-none border border-black/15 bg-white px-4 pr-12 text-sm font-medium outline-none transition focus:border-black"
+              >
+                <option value="">
+                  All categories
+                </option>
+
+                {categories.map(
+                  (category) => (
+                    <option
+                      key={category}
+                      value={category}
+                    >
+                      {category}
+                    </option>
+                  )
+                )}
+              </select>
+
+              <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
+            </div>
+          </section>
+
+          <section className="mt-8 border-t border-black/10 pt-7">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
+              Availability
+            </p>
+
+            <button
+              type="button"
+              onClick={() =>
+                setDraftAvailability(
+                  draftAvailability ===
+                    "in-stock"
+                    ? ""
+                    : "in-stock"
+                )
+              }
+              className={`mt-4 flex min-h-[58px] w-full items-center justify-between border px-4 text-sm font-semibold transition ${filterButtonClass(
+                draftAvailability ===
+                  "in-stock"
+              )}`}
+            >
+              Show in-stock products only
+
+              <span
+                className={`flex h-5 w-5 items-center justify-center border ${
+                  draftAvailability ===
+                  "in-stock"
+                    ? "border-white bg-white text-black"
+                    : "border-black/20 bg-white"
+                }`}
+              >
+                {draftAvailability ===
+                "in-stock" ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : null}
+              </span>
+            </button>
+          </section>
+
+          <section className="mt-8 border-t border-black/10 pt-7">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
+              Sort products
+            </p>
+
+            <div className="relative mt-4">
+              <select
+                value={draftSort}
+                onChange={(event) =>
+                  setDraftSort(
+                    event.target
+                      .value as SortOption
+                  )
+                }
+                className="h-14 w-full appearance-none border border-black/15 bg-white px-4 pr-12 text-sm font-medium outline-none transition focus:border-black"
+              >
+                {sortOptions.map(
+                  (option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </option>
+                  )
+                )}
+              </select>
+
+              <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
+            </div>
+          </section>
+        </div>
+
+        <footer className="shrink-0 border-t border-black/10 bg-white px-5 pb-[max(20px,env(safe-area-inset-bottom))] pt-4">
+          <div className="grid grid-cols-[auto_1fr] gap-3">
+            <button
+              type="button"
+              onClick={clearFilters}
+              disabled={isPending}
+              className="flex min-h-[54px] items-center justify-center gap-2 border border-black/15 px-5 text-[10px] font-semibold uppercase tracking-[0.14em] transition hover:border-black disabled:opacity-50"
+            >
+              <RotateCcw className="h-4 w-4" />
+
+              Clear
+            </button>
+
+            <button
+              type="button"
+              onClick={
+                applyMobileFilters
+              }
+              disabled={isPending}
+              className="min-h-[54px] border border-black bg-black px-5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#242424] disabled:opacity-50"
+            >
+              {isPending
+                ? "Applying..."
+                : `Show ${productCount} ${
+                    productCount === 1
+                      ? "product"
+                      : "products"
+                  }`}
+            </button>
+          </div>
+        </footer>
+      </section>
+    </div>
+  );
+
+  return (
+    <>
+      <section className="border-b border-black/10 bg-white">
+        <div className="mx-auto max-w-[1600px] px-5 py-4 sm:px-8 lg:px-12">
+          <div className="flex items-center justify-between gap-4 md:hidden">
+            <div>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-black/35">
+                Collection
+              </p>
+
+              <p className="mt-1 text-sm font-semibold">
+                {productCount}{" "}
+                {productCount === 1
+                  ? "product"
+                  : "products"}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={
+                openMobileFilters
+              }
+              className="relative flex min-h-[48px] items-center gap-3 border border-black px-5 text-[10px] font-semibold uppercase tracking-[0.14em] transition hover:bg-black hover:text-white"
+            >
+              <Filter className="h-4 w-4" />
+
+              Filters
+
+              {activeFilterCount > 0 ? (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1 text-[9px] text-white">
+                  {activeFilterCount}
+                </span>
+              ) : null}
+            </button>
+          </div>
+
+          <div className="hidden md:block">
+            <div className="flex flex-wrap items-center justify-between gap-5">
+              <div className="flex flex-wrap items-center gap-2">
+                {merchandiseFilters.map(
+                  (filter) => (
+                    <button
+                      key={
+                        filter.value ||
+                        "all"
+                      }
+                      type="button"
+                      disabled={isPending}
+                      onClick={() =>
+                        updateFilters({
+                          filter:
+                            filter.value,
+                        })
+                      }
+                      className={`min-h-[44px] border px-4 text-[9px] font-semibold uppercase tracking-[0.14em] transition disabled:opacity-50 ${filterButtonClass(
+                        selectedFilter ===
+                          filter.value
+                      )}`}
+                    >
+                      {filter.label}
+                    </button>
+                  )
+                )}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <p className="whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.14em] text-black/40">
+                  {productCount}{" "}
+                  {productCount === 1
+                    ? "product"
+                    : "products"}
+                </p>
+
+                {activeFilterCount >
+                0 ? (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    disabled={isPending}
+                    className="flex h-11 items-center gap-2 px-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-black/40 transition hover:text-black disabled:opacity-50"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+
+                    Clear
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="mt-4 grid grid-cols-3 gap-3 border-t border-black/10 pt-4">
+              <label className="relative">
+                <span className="sr-only">
+                  Filter by category
+                </span>
+
+                <select
+                  value={
+                    selectedCategory
+                  }
+                  disabled={isPending}
+                  onChange={(event) =>
+                    updateFilters({
+                      category:
+                        event.target
+                          .value,
+                    })
+                  }
+                  className="h-12 w-full appearance-none border border-black/10 bg-white px-4 pr-10 text-[10px] font-semibold uppercase tracking-[0.12em] outline-none transition hover:border-black focus:border-black disabled:opacity-50"
+                >
+                  <option value="">
+                    All categories
+                  </option>
+
+                  {categories.map(
+                    (category) => (
+                      <option
+                        key={category}
+                        value={category}
+                      >
+                        {category}
+                      </option>
+                    )
+                  )}
+                </select>
+
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35" />
+              </label>
+
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() =>
+                  updateFilters({
+                    availability:
+                      selectedAvailability ===
+                      "in-stock"
+                        ? ""
+                        : "in-stock",
+                  })
+                }
+                className={`flex h-12 items-center justify-between border px-4 text-[10px] font-semibold uppercase tracking-[0.12em] transition disabled:opacity-50 ${filterButtonClass(
+                  selectedAvailability ===
+                    "in-stock"
+                )}`}
+              >
+                In stock only
+
+                {selectedAvailability ===
+                "in-stock" ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <span className="h-4 w-4 border border-black/20" />
+                )}
+              </button>
+
+              <label className="relative">
+                <span className="sr-only">
+                  Sort products
+                </span>
+
+                <select
+                  value={selectedSort}
+                  disabled={isPending}
+                  onChange={(event) =>
+                    updateFilters({
+                      sort: event.target
+                        .value as SortOption,
+                    })
+                  }
+                  className="h-12 w-full appearance-none border border-black/10 bg-white px-4 pr-10 text-[10px] font-semibold uppercase tracking-[0.12em] outline-none transition hover:border-black focus:border-black disabled:opacity-50"
+                >
+                  {sortOptions.map(
+                    (option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </option>
+                    )
+                  )}
+                </select>
+
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {mounted
+        ? createPortal(
+            mobilePanel,
+            document.body
+          )
+        : null}
+    </>
+  );
+}
