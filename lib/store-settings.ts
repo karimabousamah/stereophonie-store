@@ -22,7 +22,7 @@ export type PublicStoreSettings = {
 };
 
 export const defaultPublicStoreSettings: PublicStoreSettings = {
-  storeName: "Nita Style",
+  storeName: "Stereophonie",
   supportEmail: "thenitastyle@gmail.com",
   whatsappNumber: "+961 76 99 22 06",
   instagramHandle: "@thenitastyle",

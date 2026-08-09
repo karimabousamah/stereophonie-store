@@ -44,3 +44,6 @@ next-env.d.ts
 .nita-backups/
 *.before-*
 install-nita-v2.sh
+
+# Local Stereophonie development backups
+.stereophonie-backups/

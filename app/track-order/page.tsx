@@ -158,7 +158,7 @@ export default function TrackOrderPage() {
             href="/"
             className="text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
           >
-            Nita Style
+            Stereophonie
           </Link>
 
           <Link
@@ -319,7 +319,7 @@ export default function TrackOrderPage() {
 
                           <p className="mt-1 text-sm leading-6 text-red-700/70">
                             This order is no longer being fulfilled. Contact
-                            Nita Style for assistance.
+                            Stereophonie for assistance.
                           </p>
                         </div>
                       </div>

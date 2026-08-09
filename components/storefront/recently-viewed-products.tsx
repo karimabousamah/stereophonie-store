@@ -17,7 +17,7 @@ type RecentlyViewedProductsProps = {
   currentProduct: RecentlyViewedProduct;
 };
 
-const STORAGE_KEY = "nita-style-recently-viewed-v1";
+const STORAGE_KEY = "stereophonie-recently-viewed-v1";
 const MAXIMUM_STORED_PRODUCTS = 8;
 
 function isRecentlyViewedProduct(

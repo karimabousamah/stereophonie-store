@@ -30,7 +30,7 @@ export default function ProductInformationAccordions({
 
   const normalizedDescription =
     description?.trim() ||
-    `A selected ${categoryName.toLowerCase()} piece from the Nita Style collection.`;
+    `A selected ${categoryName.toLowerCase()} product from the Stereophonie selection.`;
 
   const items: AccordionItem[] = [
     {
@@ -43,21 +43,21 @@ export default function ProductInformationAccordions({
       id: "delivery",
       title: "Delivery",
       content:
-        "Orders are prepared carefully before dispatch. Delivery timing and availability depend on the destination and will be confirmed during checkout or by the Nita Style team.",
+        "Orders are prepared carefully before dispatch. Delivery timing and availability depend on the destination and will be confirmed during checkout or by the Stereophonie team.",
       icon: Truck,
     },
     {
       id: "returns",
       title: "Returns policy",
       content:
-        "Nita Style does not accept returns. Please review the product description, selected size, price, and availability carefully before completing your order.",
+        "Stereophonie does not accept returns. Please review the product description, selected size, price, and availability carefully before completing your order.",
       icon: RefreshCcw,
     },
     {
       id: "care",
       title: "Care guidance",
       content:
-        "Always follow the care label attached to the garment. For delicate pieces, use gentle cleaning methods and avoid high heat unless the product label specifically permits it.",
+        "Always follow the care label attached to the garment. For delicate products, use gentle cleaning methods and avoid high heat unless the product label specifically permits it.",
       icon: PackageCheck,
     },
     {

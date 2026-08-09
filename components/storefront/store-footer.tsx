@@ -6,7 +6,7 @@ import { FaInstagram, FaWhatsapp } from "react-icons/fa6";
 const exploreLinks = [
   { label: "Shop", href: "/shop" },
   { label: "Collections", href: "/collections" },
-  { label: "About Nita Style", href: "/about" },
+  { label: "About Stereophonie", href: "/about" },
   { label: "Track Order", href: "/track-order" },
   { label: "Wishlist", href: "/wishlist" },
   { label: "My Account", href: "/account" },
@@ -27,12 +27,12 @@ export default function StoreFooter() {
           <div>
             <Link
               href="/"
-              aria-label="Nita Style homepage"
+              aria-label="Stereophonie homepage"
               className="inline-flex items-center"
             >
               <Image
-                src="/brand/nita-style-logo-white.png"
-                alt="Nita Style"
+                src="/brand/stereophonie-logo-white.png"
+                alt="Stereophonie"
                 width={1200}
                 height={400}
                 className="h-auto w-[280px] object-contain sm:w-[325px] lg:w-[360px]"
@@ -40,12 +40,13 @@ export default function StoreFooter() {
             </Link>
 
             <p className="mt-8 max-w-sm text-sm leading-7 text-white/50">
-              A Lebanon-based online boutique founded by Nicole and Tania,
-              offering a curated selection of Italian apparel for modern women.
+              A Lebanon-based electronics store founded by Nicole and Tania,
+              offering a curated selection of electronics and technology for
+              modern customers.
             </p>
 
             <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-              Curated Italian apparel
+              Curated electronics and technology
             </p>
           </div>
 
@@ -146,7 +147,7 @@ export default function StoreFooter() {
 
         <div className="py-6 text-[10px] uppercase tracking-[0.14em] text-white/30">
           <p>
-            © {new Date().getFullYear()} NITA STYLE. ALL RIGHTS RESERVED.
+            © {new Date().getFullYear()} STEREOPHONIE. ALL RIGHTS RESERVED.
             <span className="mx-2 text-white/20">|</span>
             <span className="normal-case tracking-normal">
               Developed by{" "}

@@ -266,7 +266,7 @@ export default function VerificationForm({
             </p>
 
             <p className="mt-2 text-xs leading-6 text-neutral-500">
-              Nita Style will never ask you to share this code by telephone,
+              Stereophonie will never ask you to share this code by telephone,
               Instagram, WhatsApp, or email.
             </p>
           </div>

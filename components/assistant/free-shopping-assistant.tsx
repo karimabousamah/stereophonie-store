@@ -139,7 +139,7 @@ type AssistantMessage = {
 
 const translations = {
   en: {
-    title: "Nita Style Assistant",
+    title: "Stereophonie Assistant",
     subtitle: "Shopping and order assistance",
     welcome:
       "Hello! I can help you discover products, check available sizes and add items to your cart.",
@@ -160,7 +160,7 @@ const translations = {
   },
 
   fr: {
-    title: "Assistante Nita Style",
+    title: "Assistante Stereophonie",
     subtitle: "Conseils shopping et commandes",
     welcome:
       "Bonjour ! Je peux vous aider à découvrir nos produits, vérifier les tailles disponibles et ajouter des articles au panier.",
@@ -269,7 +269,7 @@ function ProductCard({
             />
           ) : (
             <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.16em] text-black/35">
-              Nita Style
+              Stereophonie
             </div>
           )}
         </div>
@@ -1094,7 +1094,7 @@ export default function FreeShoppingAssistant() {
               aria-label={
                 voiceListening
                   ? "Stop voice input"
-                  : "Speak to Nita Style Assistant"
+                  : "Speak to Stereophonie Assistant"
               }
               title={
                 voiceSupported

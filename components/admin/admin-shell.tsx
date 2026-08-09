@@ -207,7 +207,7 @@ export default function AdminShell({
             <Link href="/admin" className="inline-flex">
               <div className="min-w-0">
                 <p className="truncate text-xs font-semibold uppercase tracking-[0.26em]">
-                  Nita Style
+                  Stereophonie
                 </p>
 
                 <p className="mt-1 text-xs text-white/35">

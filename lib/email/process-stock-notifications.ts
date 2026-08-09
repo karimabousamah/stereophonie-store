@@ -292,7 +292,7 @@ function buildNotificationEmailHtml(input: NotificationEmailInput) {
                         text-transform:uppercase;
                       "
                     >
-                      Nita Style
+                      Stereophonie
                     </p>
                   </td>
                 </tr>
@@ -530,7 +530,7 @@ function buildNotificationEmailHtml(input: NotificationEmailInput) {
                         line-height:1.6;
                       "
                     >
-                      © Nita Style. Selected Italian women’s
+                      © Stereophonie. Selected Italian women’s
                       apparel.
                     </p>
 
@@ -892,8 +892,8 @@ export async function processStockNotificationsForProduct(
           to: email,
 
           subject: isLowStock
-            ? `${product.name} is running low — Nita Style`
-            : `${product.name} is now out of stock — Nita Style`,
+            ? `${product.name} is running low — Stereophonie`
+            : `${product.name} is now out of stock — Stereophonie`,
 
           eyebrow: isLowStock ? "Low stock warning" : "Availability update",
 
@@ -902,7 +902,7 @@ export async function processStockNotificationsForProduct(
             : "Your saved item is now out of stock",
 
           message: isLowStock
-            ? "A product in your wishlist is selling quickly. Shop soon before the remaining pieces are gone."
+            ? "A product in your wishlist is selling quickly. Shop soon before the remaining products are gone."
             : "A product in your wishlist has sold out. Request a restock notification and we will email you as soon as it becomes available again.",
 
           productName: product.name,
@@ -1044,8 +1044,8 @@ export async function processStockNotificationsForProduct(
         to: email,
 
         subject: singleVariant
-          ? `${product.name} in size ${singleVariant.size} is back — Nita Style`
-          : `${product.name} is back in stock — Nita Style`,
+          ? `${product.name} in size ${singleVariant.size} is back — Stereophonie`
+          : `${product.name} is back in stock — Stereophonie`,
 
         eyebrow: "Restock notification",
 

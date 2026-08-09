@@ -15,7 +15,7 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
         <section className="grid w-full gap-16 lg:grid-cols-[1fr_460px] lg:items-center">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.34em] text-neutral-400">
-              Nita Style Back Office
+              Stereophonie Back Office
             </p>
 
             <h1 className="mt-6 max-w-3xl text-5xl font-semibold uppercase leading-none tracking-[-0.03em] sm:text-7xl">

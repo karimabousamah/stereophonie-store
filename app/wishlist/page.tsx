@@ -30,8 +30,8 @@ export default function WishlistPage() {
 
             <div className="flex flex-col items-start gap-4 lg:items-end">
               <p className="max-w-xl text-sm leading-7 text-black/50 sm:text-base lg:text-right">
-                Save your favorite Nita Style pieces and return to them whenever
-                you are ready.
+                Save your favorite Stereophonie products and return to them
+                whenever you are ready.
               </p>
 
               {hydrated && productCount > 0 ? (

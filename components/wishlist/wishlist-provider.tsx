@@ -68,11 +68,11 @@ type WishlistContextValue = {
   clearWishlist: () => void;
 };
 
-const STORAGE_KEY = "nita-style-wishlist-v1";
+const STORAGE_KEY = "stereophonie-wishlist-v1";
 
-const GUEST_EMAIL_KEY = "nita-style-wishlist-email-v1";
+const GUEST_EMAIL_KEY = "stereophonie-wishlist-email-v1";
 
-const GUEST_TOKENS_KEY = "nita-style-wishlist-tokens-v1";
+const GUEST_TOKENS_KEY = "stereophonie-wishlist-tokens-v1";
 
 const WishlistContext = createContext<WishlistContextValue | null>(null);
 

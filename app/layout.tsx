@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${settings.storeName}`,
     },
 
-    description: `Selected Italian women’s apparel from ${settings.storeName}.`,
+    description: `Selected consumer electronics and technology from ${settings.storeName}.`,
   };
 }
 
@@ -49,7 +49,7 @@ export default async function RootLayout({
               <WishlistProvider>
                 <WebsiteIntro
                   showOnFirstRender
-                  cookieName="nita-style-intro-current-load"
+                  cookieName="stereophonie-intro-current-load"
                 />
 
                 <Suspense fallback={null}>

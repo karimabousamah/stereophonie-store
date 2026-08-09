@@ -15,7 +15,7 @@ import StoreHeader from "@/components/storefront/store-header";
 export const metadata: Metadata = {
   title: "Delivery Information",
   description:
-    "Learn about Nita Style delivery coverage, fees, estimated delivery times, and available payment methods in Lebanon.",
+    "Learn about Stereophonie delivery coverage, fees, estimated delivery times, and available payment methods in Lebanon.",
 };
 
 const deliveryDetails = [
@@ -59,8 +59,8 @@ export default function DeliveryPage() {
           </h1>
 
           <p className="mt-9 max-w-2xl text-sm leading-7 text-white/55 sm:text-base">
-            Everything you need to know about receiving your Nita Style order in
-            Lebanon.
+            Everything you need to know about receiving your Stereophonie order
+            in Lebanon.
           </p>
         </div>
       </section>

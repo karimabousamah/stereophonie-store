@@ -158,7 +158,7 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         label: "Order confirmed",
         headline: "Your order has been confirmed.",
         description:
-          "Nita Style has reviewed and confirmed your order. Your items will now move to preparation.",
+          "Stereophonie has reviewed and confirmed your order. Your items will now move to preparation.",
         nextStep: "Your items will be prepared for delivery.",
         accent: "#93c5fd",
         accentBackground: "rgba(59,130,246,0.10)",
@@ -170,7 +170,7 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         label: "Order being prepared",
         headline: "We are preparing your items.",
         description:
-          "Your Nita Style order is currently being prepared and checked before delivery.",
+          "Your Stereophonie order is currently being prepared and checked before delivery.",
         nextStep: "You will be notified when your order leaves for delivery.",
         accent: "#fcd34d",
         accentBackground: "rgba(245,158,11,0.10)",
@@ -182,7 +182,7 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         label: "Out for delivery",
         headline: "Your order is on its way.",
         description:
-          "Your Nita Style order has left for delivery. Please keep your phone available in case the delivery team needs to contact you.",
+          "Your Stereophonie order has left for delivery. Please keep your phone available in case the delivery team needs to contact you.",
         nextStep: "Your order should arrive soon.",
         accent: "#c4b5fd",
         accentBackground: "rgba(139,92,246,0.10)",
@@ -194,8 +194,8 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         label: "Order delivered",
         headline: "Your order has been delivered.",
         description:
-          "Your Nita Style order has been marked as successfully delivered. Thank you for shopping with us.",
-        nextStep: "We hope you enjoy your new Nita Style pieces.",
+          "Your Stereophonie order has been marked as successfully delivered. Thank you for shopping with us.",
+        nextStep: "We hope you enjoy your new Stereophonie products.",
         accent: "#86efac",
         accentBackground: "rgba(34,197,94,0.10)",
         subjectStatus: "has been delivered",
@@ -206,7 +206,7 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         label: "Order cancelled",
         headline: "Your order has been cancelled.",
         description:
-          "Your Nita Style order has been marked as cancelled. Contact Nita Style if you need more information about this update.",
+          "Your Stereophonie order has been marked as cancelled. Contact Stereophonie if you need more information about this update.",
         nextStep: "Please keep your order number when contacting us.",
         accent: "#fca5a5",
         accentBackground: "rgba(239,68,68,0.10)",
@@ -218,7 +218,7 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         label: "Order submitted",
         headline: "Your order is awaiting confirmation.",
         description:
-          "Your order has been received and is currently waiting for review by Nita Style.",
+          "Your order has been received and is currently waiting for review by Stereophonie.",
         nextStep: "You will be notified when your order is confirmed.",
         accent: "#d4d4d4",
         accentBackground: "rgba(255,255,255,0.06)",
@@ -448,7 +448,7 @@ function buildProductRows(items: OrderStatusUpdateItem[]) {
                 text-transform:uppercase;
               "
             >
-              Nita Style
+              Stereophonie
             </div>
           </div>
         `;
@@ -713,7 +713,7 @@ export async function sendOrderStatusUpdateEmail(
                         text-transform:uppercase;
                       "
                     >
-                      Nita Style
+                      Stereophonie
                     </p>
                   </td>
                 </tr>
@@ -1019,8 +1019,8 @@ export async function sendOrderStatusUpdateEmail(
                         color:#999999;
                       "
                     >
-                      © Nita Style. Selected
-                      Italian women’s apparel.
+                      © Stereophonie. Selected
+                      consumer electronics and technology.
                     </p>
                   </td>
                 </tr>
@@ -1037,7 +1037,7 @@ export async function sendOrderStatusUpdateEmail(
   const { data, error } = await resend.emails.send({
     from: fromAddress,
     to: [customerEmail],
-    subject: `Order ${input.orderNumber} ${statusContent.subjectStatus} — Nita Style`,
+    subject: `Order ${input.orderNumber} ${statusContent.subjectStatus} — Stereophonie`,
     html,
   });
 

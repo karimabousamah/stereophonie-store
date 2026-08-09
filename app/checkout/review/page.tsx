@@ -149,7 +149,7 @@ export default function CheckoutReviewPage() {
   useEffect(() => {
     try {
       const storedDetails = window.sessionStorage.getItem(
-        "nita-style-checkout-details",
+        "stereophonie-checkout-details",
       );
 
       if (!storedDetails) {
@@ -273,7 +273,7 @@ export default function CheckoutReviewPage() {
     };
 
     window.sessionStorage.setItem(
-      "nita-style-checkout-details",
+      "stereophonie-checkout-details",
       JSON.stringify(updatedCheckoutDetails),
     );
 
@@ -319,7 +319,7 @@ export default function CheckoutReviewPage() {
             href="/"
             className="text-center text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
           >
-            Nita Style
+            Stereophonie
           </Link>
 
           <div className="justify-self-end">

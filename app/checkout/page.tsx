@@ -1706,14 +1706,14 @@ export default function CheckoutPage() {
     };
 
     window.sessionStorage.setItem(
-      "nita-style-checkout-details",
+      "stereophonie-checkout-details",
       JSON.stringify(checkoutDetails),
     );
 
-    window.sessionStorage.removeItem("nita-style-last-order");
+    window.sessionStorage.removeItem("stereophonie-last-order");
 
     window.sessionStorage.setItem(
-      "nita-style-order-submission-status",
+      "stereophonie-order-submission-status",
       "ready",
     );
 
@@ -1759,7 +1759,7 @@ export default function CheckoutPage() {
             href="/"
             className="text-center text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
           >
-            Nita Style
+            Stereophonie
           </Link>
 
           <div className="justify-self-end">

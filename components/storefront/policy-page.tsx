@@ -120,7 +120,7 @@ export default function PolicyPage({
             <div className="mt-12 flex flex-col items-start justify-between gap-7 bg-black p-7 text-white sm:p-10 lg:flex-row lg:items-center">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                  Nita Style
+                  Stereophonie
                 </p>
 
                 <p className="mt-3 max-w-xl text-xl font-medium">

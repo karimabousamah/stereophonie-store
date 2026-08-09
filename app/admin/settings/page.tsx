@@ -9,7 +9,7 @@ import SettingsForm, { type StoreSettings } from "./settings-form";
 export const dynamic = "force-dynamic";
 
 const defaultSettings: StoreSettings = {
-  store_name: "Nita Style",
+  store_name: "Stereophonie",
   support_email: "thenitastyle@gmail.com",
   whatsapp_number: "+961 76 99 22 06",
   instagram_handle: "@thenitastyle",

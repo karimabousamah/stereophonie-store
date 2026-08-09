@@ -91,7 +91,7 @@ export default async function CollectionsPage() {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-                Curated by Nita Style
+                Curated by Stereophonie
               </p>
 
               <h1 className="mt-5 text-6xl font-semibold uppercase leading-[0.9] tracking-[-0.06em] sm:text-8xl lg:text-9xl">
@@ -101,8 +101,8 @@ export default async function CollectionsPage() {
 
             <p className="max-w-xl text-sm leading-7 text-black/50 sm:text-base">
               Explore our curated selections of Italian clothing and
-              accessories, organized to help you find the pieces that match your
-              style.
+              accessories, organized to help you find the products that match
+              your style.
             </p>
           </div>
         </div>
@@ -222,7 +222,7 @@ export default async function CollectionsPage() {
             <h2 className="mt-4 max-w-3xl text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.045em] sm:text-6xl">
               Discover the complete
               <br />
-              Nita Style selection
+              Stereophonie selection
             </h2>
           </div>
 

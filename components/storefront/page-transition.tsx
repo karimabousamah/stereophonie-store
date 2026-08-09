@@ -222,7 +222,7 @@ export default function PageTransition() {
 
       <div className="nita-page-transition__content">
         <p className="nita-page-transition__eyebrow">
-          Selected Italian apparel
+          Selected electronics and technology
         </p>
 
         <p className="nita-page-transition__logo">{storeName}</p>

@@ -55,7 +55,7 @@ export default async function UnsubscribePage({
               </h1>
 
               <p className="mt-5 text-sm leading-7 text-black/55">
-                You will no longer receive Nita Style wishlist, low-stock,
+                You will no longer receive Stereophonie wishlist, low-stock,
                 out-of-stock, or restock notification emails. Your saved
                 wishlist products remain available.
               </p>
@@ -95,8 +95,8 @@ export default async function UnsubscribePage({
 
               <p className="mt-5 text-sm leading-7 text-black/55">
                 This will stop wishlist, low-stock, out-of-stock, and restock
-                emails from Nita Style. Products already saved in your wishlist
-                will not be removed.
+                emails from Stereophonie. Products already saved in your
+                wishlist will not be removed.
               </p>
 
               {token ? (

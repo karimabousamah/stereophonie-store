@@ -60,7 +60,7 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const cartStorageKey = "nita-style-cart";
+const cartStorageKey = "stereophonie-cart";
 
 function createCartItemId(productId: string, variantId: string) {
   return `${productId}:${variantId}`;

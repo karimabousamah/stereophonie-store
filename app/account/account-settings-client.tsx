@@ -1003,7 +1003,7 @@ export default function AccountSettingsClient({
                     <p className="max-w-2xl text-sm leading-7 text-neutral-600">
                       {stockNotificationsEnabled
                         ? "You may receive relevant stock updates for products connected to this email address."
-                        : "Nita Style will not send stock notification emails to this email address."}
+                        : "Stereophonie will not send stock notification emails to this email address."}
                     </p>
 
                     <p className="mt-4 text-xs leading-6 text-neutral-400">
@@ -1221,7 +1221,7 @@ export default function AccountSettingsClient({
       <StableModal
         open={deleteAccountStep === "warning"}
         eyebrow="Permanent account deletion"
-        title="Delete your Nita Style account?"
+        title="Delete your Stereophonie account?"
         icon="!"
         onClose={closeAccountDeletion}
       >
@@ -1252,7 +1252,7 @@ export default function AccountSettingsClient({
 
         <div className="mt-5 border border-amber-200 bg-amber-50 px-4 py-4">
           <p className="text-xs leading-6 text-amber-900">
-            Store transaction records may remain available to Nita Style for
+            Store transaction records may remain available to Stereophonie for
             order, payment, delivery, accounting, and support purposes.
           </p>
         </div>

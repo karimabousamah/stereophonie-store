@@ -13,8 +13,8 @@ export default function BrandLogo({
 }: BrandLogoProps) {
   return (
     <Image
-      src="/brand/nita-style-logo-white.png"
-      alt="Nita Style"
+      src="/brand/stereophonie-logo-white.png"
+      alt="Stereophonie"
       width={1000}
       height={300}
       priority={priority}

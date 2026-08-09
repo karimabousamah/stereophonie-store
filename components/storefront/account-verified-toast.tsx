@@ -31,7 +31,7 @@ export default function AccountVerifiedToast() {
           eyebrow: "Signed in successfully",
           title: "Welcome back",
           description:
-            "You are now securely signed in to your Nita Style customer account.",
+            "You are now securely signed in to your Stereophonie customer account.",
           footer: "Customer session active",
           symbol: "✓",
         };
@@ -49,7 +49,7 @@ export default function AccountVerifiedToast() {
       case "created":
         return {
           eyebrow: "Account created",
-          title: "Welcome to Nita Style",
+          title: "Welcome to Stereophonie",
           description:
             "Your customer account has been created successfully and is ready to use.",
           footer: "Customer account active",
@@ -59,7 +59,7 @@ export default function AccountVerifiedToast() {
       case "verified":
         return {
           eyebrow: "Account verified",
-          title: "Welcome to Nita Style",
+          title: "Welcome to Stereophonie",
           description:
             "Your email has been confirmed and your customer account is ready to use.",
           footer: "Email verification completed",

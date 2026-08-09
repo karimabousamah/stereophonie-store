@@ -76,7 +76,7 @@ const searchSuggestions = [
   },
 ];
 
-const SEARCH_HISTORY_STORAGE_KEY = "nita-style-recent-searches";
+const SEARCH_HISTORY_STORAGE_KEY = "stereophonie-recent-searches";
 
 const MAX_RECENT_SEARCHES = 5;
 
@@ -565,8 +565,8 @@ export default function StoreHeader() {
 
               <div className="mt-7 border-t border-black/10 pt-5">
                 <p className="text-xs leading-6 text-black/40">
-                  Selected Italian women&apos;s apparel for modern everyday
-                  style.
+                  Selected consumer electronics and technology for modern
+                  everyday style.
                 </p>
               </div>
             </div>
@@ -924,7 +924,7 @@ export default function StoreHeader() {
             </span>
 
             <span className="mt-1 hidden text-[8px] font-medium uppercase tracking-[0.3em] text-black/35 sm:block">
-              Italian apparel
+              electronics and technology
             </span>
           </Link>
 

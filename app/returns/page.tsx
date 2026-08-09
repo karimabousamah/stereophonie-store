@@ -5,7 +5,7 @@ import PolicyPage from "@/components/storefront/policy-page";
 export const metadata: Metadata = {
   title: "No Returns Policy",
   description:
-    "Read the Nita Style returns, exchanges, damaged-item, and order-issue policy.",
+    "Read the Stereophonie returns, exchanges, damaged-item, and order-issue policy.",
 };
 
 const sections = [
@@ -14,7 +14,7 @@ const sections = [
     content: (
       <>
         <p>
-          All purchases from Nita Style are considered final. We do not accept
+          All purchases from Stereophonie are considered final. We do not accept
           returns, refunds, or exchanges because a customer changes their mind,
           no longer wants the item, or prefers another product.
         </p>
@@ -50,9 +50,9 @@ const sections = [
     content: (
       <>
         <p>
-          Please contact Nita Style promptly when an item received is incorrect,
-          materially damaged, or appears to contain a defect. Include the order
-          details and clear photographs showing the issue.
+          Please contact Stereophonie promptly when an item received is
+          incorrect, materially damaged, or appears to contain a defect. Include
+          the order details and clear photographs showing the issue.
         </p>
 
         <p>
@@ -107,7 +107,7 @@ export default function ReturnsPage() {
     <PolicyPage
       eyebrow="Customer care"
       title="No Returns Policy"
-      introduction="Please read this policy carefully before placing an order. Nita Style purchases are generally final, subject to the limited exceptions and mandatory rights explained below."
+      introduction="Please read this policy carefully before placing an order. Stereophonie purchases are generally final, subject to the limited exceptions and mandatory rights explained below."
       updated="29 July 2026"
       sections={sections}
     />

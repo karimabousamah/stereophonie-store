@@ -41,12 +41,12 @@ export type HomepageSettings = {
 
 export const defaultHomepageSettings: HomepageSettings = {
   id: "default",
-  hero_eyebrow: "Selected Italian apparel",
+  hero_eyebrow: "Selected electronics and technology",
   hero_line_one: "Modern",
   hero_line_two: "Italian",
   hero_line_three: "Style",
   hero_description:
-    "Discover selected Italian women's apparel designed for modern elegance, distinctive details, and effortless everyday styling.",
+    "Discover selected consumer electronics and technology designed for modern elegance, distinctive details, and effortless everyday styling.",
   primary_button_label: "Shop collection",
   primary_button_href: "/shop",
   secondary_button_label: "Our story",

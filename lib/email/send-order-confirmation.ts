@@ -148,7 +148,7 @@ function buildProductRows(items: OrderConfirmationItem[]) {
                 text-transform:uppercase;
               "
             >
-              Nita Style
+              Stereophonie
             </div>
           </div>
         `;
@@ -472,7 +472,7 @@ export async function sendOrderConfirmationEmail(
                         text-transform:uppercase;
                       "
                     >
-                      Nita Style
+                      Stereophonie
                     </p>
                   </td>
                 </tr>
@@ -520,7 +520,7 @@ export async function sendOrderConfirmationEmail(
                       "
                     >
                       Your order was submitted successfully.
-                      Nita Style will review it and contact you
+                      Stereophonie will review it and contact you
                       to confirm delivery and payment.
                     </p>
                   </td>
@@ -709,7 +709,7 @@ export async function sendOrderConfirmationEmail(
                           color:#555555;
                         "
                       >
-                        1. Nita Style reviews your order.<br />
+                        1. Stereophonie reviews your order.<br />
                         2. You are contacted to confirm delivery.<br />
                         3. Payment arrangements are confirmed.
                       </p>
@@ -745,7 +745,7 @@ export async function sendOrderConfirmationEmail(
                         color:#999999;
                       "
                     >
-                      © Nita Style. Selected Italian
+                      © Stereophonie. Selected Italian
                       women’s apparel.
                     </p>
                   </td>
@@ -761,7 +761,7 @@ export async function sendOrderConfirmationEmail(
   const { data, error } = await resend.emails.send({
     from: fromAddress,
     to: [customerEmail],
-    subject: `Order ${input.orderNumber} received — Nita Style`,
+    subject: `Order ${input.orderNumber} received — Stereophonie`,
     html,
   });
 

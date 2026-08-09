@@ -534,11 +534,11 @@ export default function AccountAuthClient({
 
           <Link href="/" className="justify-self-center text-center">
             <span className="block text-lg font-semibold uppercase tracking-[0.34em] sm:text-xl">
-              Nita Style
+              Stereophonie
             </span>
 
             <span className="mt-1 block text-[7px] uppercase tracking-[0.34em] text-neutral-400">
-              Italian Apparel
+              Electronics & Technology
             </span>
           </Link>
 

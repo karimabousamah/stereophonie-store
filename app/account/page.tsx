@@ -274,7 +274,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           <div className="mt-9 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.23em] text-neutral-400">
-                My Nita Style
+                My Stereophonie
               </p>
 
               <h1 className="mt-3 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">

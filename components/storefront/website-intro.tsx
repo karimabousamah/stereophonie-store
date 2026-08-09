@@ -585,7 +585,7 @@ export default function WebsiteIntro({
         <div className="nita-intro__top-line" />
 
         <div className="nita-intro__corner nita-intro__corner--left">
-          Italian apparel
+          electronics and technology
         </div>
 
         <div className="nita-intro__corner nita-intro__corner--right">
@@ -593,7 +593,9 @@ export default function WebsiteIntro({
         </div>
 
         <div className="nita-intro__stage">
-          <p className="nita-intro__eyebrow">Selected Italian apparel</p>
+          <p className="nita-intro__eyebrow">
+            Selected electronics and technology
+          </p>
 
           <div className="nita-intro__logo-wrap">
             <span className="nita-intro__logo nita-intro__logo--left">
@@ -606,7 +608,7 @@ export default function WebsiteIntro({
           </div>
 
           <p className="nita-intro__message">
-            Modern pieces. Distinctive details.
+            Modern products. Distinctive details.
           </p>
 
           <div className="nita-intro__progress">

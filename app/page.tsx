@@ -254,7 +254,7 @@ export default async function HomePage() {
         name: product.name,
         slug: product.slug,
         imageUrl: image.image_url,
-        altText: image.alt_text ?? product.name ?? "Nita Style collection",
+        altText: image.alt_text ?? product.name ?? "Stereophonie collection",
       };
     })
     .filter((slide): slide is HeroFeaturedSlide => slide !== null)
@@ -416,7 +416,7 @@ export default async function HomePage() {
                       ) : (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black px-8 text-center text-white">
                           <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-white/45">
-                            Nita Style
+                            Stereophonie
                           </p>
 
                           <p className="mt-4 text-3xl font-semibold uppercase leading-[0.95] tracking-[-0.04em]">

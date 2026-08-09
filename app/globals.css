@@ -1790,7 +1790,7 @@ main a[href^="/shop/"] img {
    ========================================================= */
 
 /* =========================================================
-   NITA STYLE — FINAL PRODUCT PHOTO FIDELITY OVERRIDE
+   STEREOPHONIE — FINAL PRODUCT PHOTO FIDELITY OVERRIDE
    ========================================================= */
 
 /*
@@ -1866,7 +1866,7 @@ img.nita-product-photo {
    ========================================================= */
 
 /* =========================================================
-   NITA STYLE — PREMIUM MERCHANDISE BADGES
+   STEREOPHONIE — PREMIUM MERCHANDISE BADGES
    ========================================================= */
 
 /*
@@ -2125,3 +2125,31 @@ img.nita-product-photo {
 /* =========================================================
    END PREMIUM BADGES + ASSISTANT VOICE
    ========================================================= */
+
+/* ======================================================
+   STEREOPHONIE — BRAND FOUNDATION
+   ====================================================== */
+
+:root {
+  --stereophonie-red: #e31e24;
+  --stereophonie-black: #0a0a0a;
+  --stereophonie-white: #ffffff;
+  --stereophonie-surface: #f5f5f3;
+  --stereophonie-muted: #777777;
+}
+
+/*
+ * Century Gothic is used when available on the customer's device.
+ * The fallbacks preserve a similar geometric sans-serif character
+ * without bundling or redistributing proprietary font files.
+ */
+html,
+body {
+  font-family:
+    "Century Gothic", "Avenir Next", Avenir, "Helvetica Neue", Arial, sans-serif;
+}
+
+::selection {
+  background: var(--stereophonie-red);
+  color: white;
+}

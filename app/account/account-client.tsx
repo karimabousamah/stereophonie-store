@@ -46,7 +46,7 @@ const roadmap = [
   {
     value: "confirmed",
     label: "Confirmed",
-    description: "Nita Style confirmed your order.",
+    description: "Stereophonie confirmed your order.",
   },
   {
     value: "preparing",

@@ -477,7 +477,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     ? `Explore the ${selectedCollectionRecord.name} collection.`
     : selectedCategory
       ? `Explore our selected ${selectedCategory.toLowerCase()} collection.`
-      : "Explore selected Italian clothing and accessories, with availability managed individually for every size.";
+      : "Explore selected electronics, devices and accessories, with availability managed individually for every size.";
 
   const currentShopParameters = new URLSearchParams();
 
@@ -621,7 +621,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-                Selected Italian apparel
+                Selected electronics and technology
               </p>
 
               <h1 className="mt-5 text-6xl font-semibold uppercase leading-[0.9] tracking-[-0.06em] sm:text-8xl lg:text-9xl">
@@ -761,11 +761,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <div className="mx-auto flex max-w-[1600px] flex-col items-start justify-between gap-8 px-5 py-14 sm:px-8 md:flex-row md:items-end lg:px-12 lg:py-20">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-black/40">
-                Nita Style
+                Stereophonie
               </p>
 
               <h2 className="mt-4 max-w-3xl text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.045em] sm:text-6xl">
-                Selected pieces,
+                Selected products,
                 <br />
                 limited availability
               </h2>

@@ -7,9 +7,9 @@ import StoreFooter from "@/components/storefront/store-footer";
 import StoreHeader from "@/components/storefront/store-header";
 
 export const metadata: Metadata = {
-  title: "About Nita Style",
+  title: "About Stereophonie",
   description:
-    "Discover Nita Style, a Lebanon-based online boutique founded by Nicole and Tania and dedicated to curated Italian women's apparel.",
+    "Discover Stereophonie, a Lebanon-based electronics store founded by Nicole and Tania and dedicated to curated consumer electronics and technology.",
 };
 
 const values = [
@@ -28,13 +28,13 @@ const values = [
   {
     title: "Modern femininity",
     description:
-      "We select pieces that feel polished yet effortless, helping women express their personal style with confidence.",
+      "We select products that feel polished yet effortless, helping women express their personal style with confidence.",
     icon: Diamond,
   },
   {
     title: "Personal service",
     description:
-      "Nita Style is built around trust, attentive support, and a more personal approach to shopping online.",
+      "Stereophonie is built around trust, attentive support, and a more personal approach to shopping online.",
     icon: Heart,
   },
 ];
@@ -62,7 +62,7 @@ export default function AboutPage() {
           <div className="flex items-end border-b border-white/10 px-5 py-16 sm:px-8 lg:border-b-0 lg:border-r lg:px-12 lg:py-20">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/40">
-                About Nita Style
+                About Stereophonie
               </p>
 
               <h1 className="mt-6 text-[clamp(4rem,10vw,9rem)] font-semibold uppercase leading-[0.82] tracking-[-0.075em]">
@@ -80,15 +80,15 @@ export default function AboutPage() {
               </p>
 
               <p className="mt-7 text-2xl font-medium leading-[1.35] tracking-[-0.025em] text-white sm:text-3xl lg:text-4xl">
-                Nita Style was created from a shared love for elegant clothing,
-                distinctive details, and the effortless confidence of Italian
-                fashion.
+                Stereophonie was created from a shared love for quality
+                technology, distinctive details, and the effortless confidence
+                of Italian fashion.
               </p>
 
               <p className="mt-8 max-w-xl text-sm leading-7 text-white/50 sm:text-base">
                 Based in Lebanon and operating entirely online, we curate
-                Italian women&apos;s apparel that feels modern, refined, and
-                easy to make your own.
+                consumer electronics and technology that feels modern, refined,
+                and easy to make your own.
               </p>
 
               <Link
@@ -121,21 +121,22 @@ export default function AboutPage() {
 
           <div className="border-t border-black/10 pt-8">
             <p className="max-w-3xl text-xl leading-9 tracking-[-0.02em] text-black/75 sm:text-2xl sm:leading-10">
-              Nita Style is an online fashion destination for women who
-              appreciate distinctive pieces that remain easy to wear and style.
+              Stereophonie is an online technology destination for women who
+              appreciate distinctive products that remain easy to wear and
+              style.
             </p>
 
             <div className="mt-10 grid gap-8 text-sm leading-7 text-black/50 md:grid-cols-2">
               <p>
                 Rather than offering hundreds of unrelated products, we focus on
-                curated apparel that works together as a clear and considered
-                collection. Each arrival is selected for its shape, detail,
-                quality, and styling potential.
+                selected technology that works together as a clear and
+                considered collection. Each arrival is selected for its shape,
+                detail, quality, and styling potential.
               </p>
 
               <p>
                 Our goal is to make discovering fashion feel personal again:
-                fewer distractions, stronger pieces, and a shopping experience
+                fewer distractions, stronger products, and a shopping experience
                 built around elegance, confidence, and attention to detail.
               </p>
             </div>
@@ -186,7 +187,7 @@ export default function AboutPage() {
         <div className="mx-auto flex max-w-[1600px] flex-col gap-10 px-5 py-16 sm:px-8 lg:flex-row lg:items-end lg:justify-between lg:px-12 lg:py-20">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/35">
-              Discover Nita Style
+              Discover Stereophonie
             </p>
 
             <h2 className="mt-5 max-w-3xl text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.05em] sm:text-6xl">

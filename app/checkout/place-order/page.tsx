@@ -119,7 +119,9 @@ function money(value: number) {
 
 function readStoredOrder() {
   try {
-    const storedOrder = window.sessionStorage.getItem("nita-style-last-order");
+    const storedOrder = window.sessionStorage.getItem(
+      "stereophonie-last-order",
+    );
 
     if (!storedOrder) {
       return null;
@@ -164,13 +166,13 @@ export default function PlaceOrderPage() {
 
     async function placeOrder() {
       const storedCheckout = window.sessionStorage.getItem(
-        "nita-style-checkout-details",
+        "stereophonie-checkout-details",
       );
 
       const previousOrder = readStoredOrder();
 
       const submissionStatus = window.sessionStorage.getItem(
-        "nita-style-order-submission-status",
+        "stereophonie-order-submission-status",
       );
 
       /*
@@ -197,7 +199,7 @@ export default function PlaceOrderPage() {
 
       if (!checkoutDetails) {
         window.sessionStorage.setItem(
-          "nita-style-order-submission-status",
+          "stereophonie-order-submission-status",
           "failed",
         );
 
@@ -215,7 +217,7 @@ export default function PlaceOrderPage() {
         checkoutDetails.cart.length === 0
       ) {
         window.sessionStorage.setItem(
-          "nita-style-order-submission-status",
+          "stereophonie-order-submission-status",
           "failed",
         );
 
@@ -233,7 +235,7 @@ export default function PlaceOrderPage() {
          * completed status.
          */
         window.sessionStorage.setItem(
-          "nita-style-order-submission-status",
+          "stereophonie-order-submission-status",
           "submitting",
         );
 
@@ -269,7 +271,7 @@ export default function PlaceOrderPage() {
 
         if (!result.success || !result.order_id || !result.order_number) {
           window.sessionStorage.setItem(
-            "nita-style-order-submission-status",
+            "stereophonie-order-submission-status",
             "failed",
           );
 
@@ -318,16 +320,16 @@ export default function PlaceOrderPage() {
         };
 
         window.sessionStorage.setItem(
-          "nita-style-last-order",
+          "stereophonie-last-order",
           JSON.stringify(snapshot),
         );
 
         window.sessionStorage.setItem(
-          "nita-style-order-submission-status",
+          "stereophonie-order-submission-status",
           "completed",
         );
 
-        window.sessionStorage.removeItem("nita-style-checkout-details");
+        window.sessionStorage.removeItem("stereophonie-checkout-details");
 
         const purchasedProductIds = Array.from(
           new Set(checkoutDetails.cart.map((item) => item.productId)),
@@ -345,7 +347,7 @@ export default function PlaceOrderPage() {
         activeOrderSubmission = null;
 
         window.sessionStorage.setItem(
-          "nita-style-order-submission-status",
+          "stereophonie-order-submission-status",
           "failed",
         );
 
@@ -363,7 +365,7 @@ export default function PlaceOrderPage() {
   }, [clearCart, isCartReady, removeProduct]);
 
   function returnToCheckout() {
-    window.sessionStorage.removeItem("nita-style-order-submission-status");
+    window.sessionStorage.removeItem("stereophonie-order-submission-status");
 
     router.push("/checkout");
   }
@@ -428,7 +430,7 @@ export default function PlaceOrderPage() {
               href="/"
               className="text-lg font-semibold uppercase tracking-[0.22em]"
             >
-              Nita Style
+              Stereophonie
             </Link>
 
             <Link
@@ -522,7 +524,7 @@ export default function PlaceOrderPage() {
             href="/"
             className="text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
           >
-            Nita Style
+            Stereophonie
           </Link>
 
           <Link
@@ -554,7 +556,7 @@ export default function PlaceOrderPage() {
               </h1>
 
               <p className="mt-7 max-w-2xl text-sm leading-7 text-white/50 sm:text-base">
-                Your order was submitted successfully. Nita Style will review
+                Your order was submitted successfully. Stereophonie will review
                 the details and contact you to confirm delivery and payment.
               </p>
 
@@ -819,7 +821,7 @@ export default function PlaceOrderPage() {
 
                   <div className="mt-4 space-y-4">
                     {[
-                      "Nita Style reviews your order.",
+                      "Stereophonie reviews your order.",
                       "You are contacted to confirm delivery.",
                       "Payment arrangements are confirmed.",
                     ].map((step, index) => (

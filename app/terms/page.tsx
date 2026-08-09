@@ -5,18 +5,18 @@ import PolicyPage from "@/components/storefront/policy-page";
 export const metadata: Metadata = {
   title: "Terms and Conditions",
   description:
-    "Read the terms governing use of the Nita Style website and purchases made through the online store.",
+    "Read the terms governing use of the Stereophonie website and purchases made through the online store.",
 };
 
 const sections = [
   {
-    title: "About Nita Style",
+    title: "About Stereophonie",
     content: (
       <>
         <p>
-          Nita Style is a Lebanon-based online boutique founded by Nicole and
-          Tania. The store offers a curated selection of Italian women&apos;s
-          apparel.
+          Stereophonie is a Lebanon-based electronics store founded by Nicole
+          and Tania. The store offers a curated selection of Italian
+          women&apos;s apparel.
         </p>
 
         <p>
@@ -52,7 +52,7 @@ const sections = [
       <>
         <p>
           Submitting an order is a request to purchase the selected products. An
-          order may require confirmation by Nita Style before it is accepted.
+          order may require confirmation by Stereophonie before it is accepted.
         </p>
 
         <p>
@@ -87,7 +87,7 @@ const sections = [
     content: (
       <>
         <p>
-          Nita Style currently delivers across Lebanon. Estimated delivery is
+          Stereophonie currently delivers across Lebanon. Estimated delivery is
           normally within 3–4 working days, but this period is not a guaranteed
           deadline.
         </p>
@@ -143,10 +143,10 @@ const sections = [
     title: "Intellectual property",
     content: (
       <p>
-        The Nita Style name, logo, website design, original text, graphics, and
-        other store materials may not be copied, republished, distributed, or
-        used commercially without permission, except where use is permitted by
-        applicable law.
+        The Stereophonie name, logo, website design, original text, graphics,
+        and other store materials may not be copied, republished, distributed,
+        or used commercially without permission, except where use is permitted
+        by applicable law.
       </p>
     ),
   },
@@ -155,7 +155,7 @@ const sections = [
     content: (
       <>
         <p>
-          To the extent permitted by applicable law, Nita Style is not
+          To the extent permitted by applicable law, Stereophonie is not
           responsible for indirect or consequential loss arising from use of the
           website, delivery delays outside our reasonable control, device
           problems, or temporary website unavailability.
@@ -164,7 +164,7 @@ const sections = [
         <p>
           These terms are governed by the applicable laws of Lebanon, without
           limiting any mandatory consumer rights. Questions or disputes should
-          first be raised directly with Nita Style so that a reasonable
+          first be raised directly with Stereophonie so that a reasonable
           resolution can be attempted.
         </p>
       </>
@@ -195,7 +195,7 @@ export default function TermsPage() {
     <PolicyPage
       eyebrow="Legal information"
       title="Terms and Conditions"
-      introduction="These terms govern use of the Nita Style online store and orders placed through the website. Please review them before completing a purchase."
+      introduction="These terms govern use of the Stereophonie online store and orders placed through the website. Please review them before completing a purchase."
       updated="29 July 2026"
       sections={sections}
     />

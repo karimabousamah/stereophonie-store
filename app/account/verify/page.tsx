@@ -40,11 +40,11 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
             className="justify-self-center bg-transparent text-center shadow-none"
           >
             <span className="block text-lg font-semibold uppercase tracking-[0.32em]">
-              Nita Style
+              Stereophonie
             </span>
 
             <span className="mt-1 block text-[7px] uppercase tracking-[0.34em] text-neutral-400">
-              Italian Apparel
+              Electronics & Technology
             </span>
           </Link>
 
@@ -70,7 +70,7 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
 
               <p className="mt-7 max-w-sm text-sm leading-7 text-white/45">
                 Enter the private verification code sent to your email to
-                activate your Nita Style customer account.
+                activate your Stereophonie customer account.
               </p>
             </div>
 

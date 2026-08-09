@@ -5,7 +5,7 @@ import PolicyPage from "@/components/storefront/policy-page";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Learn how Nita Style collects, uses, stores, and protects customer information.",
+    "Learn how Stereophonie collects, uses, stores, and protects customer information.",
 };
 
 const sections = [
@@ -22,7 +22,7 @@ const sections = [
         <p>
           This information may include your name, email address, telephone
           number, delivery address, order details, account information, and
-          messages sent to Nita Style.
+          messages sent to Stereophonie.
         </p>
       </>
     ),
@@ -131,7 +131,7 @@ export default function PrivacyPage() {
     <PolicyPage
       eyebrow="Legal information"
       title="Privacy Policy"
-      introduction="This policy explains how Nita Style handles information connected with customers, orders, accounts, communications, and use of the website."
+      introduction="This policy explains how Stereophonie handles information connected with customers, orders, accounts, communications, and use of the website."
       updated="29 July 2026"
       sections={sections}
     />
