@@ -1,10 +1,10 @@
 create table if not exists public.store_settings (
   id text primary key default 'default',
 
-  store_name text not null default 'Nita Style',
-  support_email text not null default 'thenitastyle@gmail.com',
-  whatsapp_number text not null default '+961 76 99 22 06',
-  instagram_handle text not null default '@thenitastyle',
+  store_name text not null default 'Stereophonie',
+  support_email text not null default '',
+  whatsapp_number text not null default '+961 3 161 285',
+  instagram_handle text not null default '@stereophoniestore',
 
   delivery_fee numeric(12, 2) not null default 5,
   free_delivery_threshold numeric(12, 2) not null default 150,
@@ -12,7 +12,7 @@ create table if not exists public.store_settings (
   delivery_country text not null default 'Lebanon',
 
   cod_enabled boolean not null default true,
-  order_prefix text not null default 'NITA',
+  order_prefix text not null default 'STER',
 
   order_confirmation_emails_enabled boolean not null default true,
   stock_alert_emails_enabled boolean not null default true,
@@ -21,7 +21,7 @@ create table if not exists public.store_settings (
   assistant_model text not null default 'qwen3:8b',
   assistant_languages text not null default 'English, French, Arabic',
   assistant_welcome_message text not null default
-    'Hello! I can help you discover products, check available sizes and assist with your order.',
+    'Hello! I can help you discover products, compare specifications, check availability and assist with your order.',
 
   store_status text not null default 'operational'
     check (

@@ -164,7 +164,7 @@ BEGIN
     'notifications_enabled',
     false,
     'message',
-    'You have been unsubscribed from Nita Style stock notifications.'
+    'You have been unsubscribed from Stereophonie stock notifications.'
   );
 END;
 $function$;

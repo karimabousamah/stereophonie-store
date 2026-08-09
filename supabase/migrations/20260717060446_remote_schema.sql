@@ -639,7 +639,7 @@ begin
     calculated_delivery_fee;
 
   new_order_number :=
-    'NITA-' ||
+    'STER-' ||
     to_char(
       now(),
       'YYYYMMDD'

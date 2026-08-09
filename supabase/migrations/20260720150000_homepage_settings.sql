@@ -1,21 +1,21 @@
 create table if not exists public.homepage_settings (
   id text primary key default 'default',
-  hero_eyebrow text not null default 'Selected Italian apparel',
-  hero_line_one text not null default 'Modern',
-  hero_line_two text not null default 'Italian',
-  hero_line_three text not null default 'Style',
-  hero_description text not null default 'Discover selected Italian women''s apparel designed for modern elegance, distinctive details, and effortless everyday styling.',
-  primary_button_label text not null default 'Shop collection',
+  hero_eyebrow text not null default 'Premium electronics and technology',
+  hero_line_one text not null default 'Explore',
+  hero_line_two text not null default 'Premium',
+  hero_line_three text not null default 'Technology',
+  hero_description text not null default 'Discover smartphones, audio, accessories, electronics and technology selected by Stereophonie Store.',
+  primary_button_label text not null default 'Shop now',
   primary_button_href text not null default '/shop',
-  secondary_button_label text not null default 'Our story',
+  secondary_button_label text not null default 'Visit our store',
   secondary_button_href text not null default '/about',
   hero_product_id uuid references public.products(id) on delete set null,
 
   announcement_items text[] not null default array[
-    'Italian selection',
-    'Limited availability',
-    'Modern femininity',
-    'Distinctive details'
+    'Premium technology',
+    'Latest electronics',
+    'Trusted products',
+    'Store pickup available'
   ],
 
   products_eyebrow text not null default 'Selected for you',
@@ -28,7 +28,7 @@ create table if not exists public.homepage_settings (
 
   final_eyebrow text not null default 'Explore the full selection',
   final_line_one text not null default 'Find your next',
-  final_line_two text not null default 'signature piece',
+  final_line_two text not null default 'upgrade',
   final_button_label text not null default 'Shop now',
   final_button_href text not null default '/shop',
 

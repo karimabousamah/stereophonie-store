@@ -1,5 +1,5 @@
 -- =========================================================
--- NITA STYLE
+-- STEREOPHONIE
 -- Public storefront settings read permissions
 -- =========================================================
 
