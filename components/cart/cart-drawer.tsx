@@ -7,6 +7,10 @@ import { createPortal } from "react-dom";
 
 import { useCart } from "./cart-provider";
 
+function money(value: number) {
+  return `$${value.toFixed(2)}`;
+}
+
 export default function CartDrawer() {
   const {
     items,
@@ -33,24 +37,18 @@ export default function CartDrawer() {
 
     const body = document.body;
     const html = document.documentElement;
-
     const scrollPosition = window.scrollY;
 
     const previousBodyPosition = body.style.position;
-
     const previousBodyTop = body.style.top;
-
     const previousBodyWidth = body.style.width;
-
     const previousBodyOverflow = body.style.overflow;
-
     const previousHtmlOverflow = html.style.overflow;
 
     body.style.position = "fixed";
     body.style.top = `-${scrollPosition}px`;
     body.style.width = "100%";
     body.style.overflow = "hidden";
-
     html.style.overflow = "hidden";
 
     function closeWithEscape(event: KeyboardEvent) {
@@ -63,17 +61,12 @@ export default function CartDrawer() {
 
     return () => {
       body.style.position = previousBodyPosition;
-
       body.style.top = previousBodyTop;
-
       body.style.width = previousBodyWidth;
-
       body.style.overflow = previousBodyOverflow;
-
       html.style.overflow = previousHtmlOverflow;
 
       window.removeEventListener("keydown", closeWithEscape);
-
       window.scrollTo(0, scrollPosition);
     };
   }, [isCartOpen, closeCart]);
@@ -82,210 +75,330 @@ export default function CartDrawer() {
     return null;
   }
 
+  const configurationCount = items.length;
+
   return createPortal(
     <div
-      className={`fixed inset-0 z-[2147483005] ${
-        isCartOpen ? "pointer-events-auto" : "pointer-events-none"
-      }`}
+      className={`st-cart-os ${isCartOpen ? "st-cart-os--open" : ""}`}
       aria-hidden={!isCartOpen}
     >
       <button
         type="button"
+        className="st-cart-os__backdrop"
         onClick={closeCart}
-        aria-label="Close shopping cart"
-        className={`fixed inset-0 h-full w-full bg-black/50 backdrop-blur-[2px] transition-opacity duration-300 ${
-          isCartOpen ? "opacity-100" : "opacity-0"
-        }`}
+        aria-label="Close cart"
       />
 
-      <aside
+      <section
         role="dialog"
         aria-modal="true"
         aria-label="Shopping cart"
-        className={`fixed inset-y-0 right-0 flex h-[100dvh] w-full flex-col overflow-hidden bg-white text-black shadow-[0_0_90px_rgba(0,0,0,0.22)] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] sm:max-w-[520px] ${
-          isCartOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className="st-cart-terminal"
       >
-        <header className="flex min-h-[104px] shrink-0 items-center justify-between border-b border-black/10 px-5 py-5 sm:px-7">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-              Shopping bag
-            </p>
+        <div className="st-cart-terminal__top">
+          <div className="st-cart-terminal__identity">
+            <div className="st-cart-terminal__signal">
+              <span />
+            </div>
 
-            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.035em]">
-              Your cart
-            </h2>
+            <div>
+              <p>CART MODULE / PLAYER 01</p>
+              <h2>LOADOUT TERMINAL</h2>
+            </div>
+          </div>
+
+          <div className="st-cart-terminal__diagnostics">
+            <div>
+              <span>ITEMS</span>
+              <strong>{String(totalItems).padStart(2, "0")}</strong>
+            </div>
+
+            <div>
+              <span>CONFIGS</span>
+              <strong>{String(configurationCount).padStart(2, "0")}</strong>
+            </div>
+
+            <div className="st-cart-terminal__status">
+              <span>STATUS</span>
+              <strong>{items.length ? "LOADED" : "EMPTY"}</strong>
+            </div>
           </div>
 
           <button
             type="button"
             onClick={closeCart}
+            className="st-cart-terminal__close"
             aria-label="Close cart"
-            className="flex h-12 w-12 shrink-0 items-center justify-center border border-black/15 bg-white text-black transition duration-300 hover:border-black hover:bg-black/5 hover:text-black"
           >
-            <X className="h-5 w-5" />
+            <X />
+            <span>EXIT</span>
           </button>
-        </header>
+        </div>
 
-        {!isCartReady ? (
-          <div className="flex flex-1 items-center justify-center px-6">
-            <div className="text-center">
-              <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-black/15 border-t-black" />
-
-              <p className="mt-4 text-xs uppercase tracking-[0.16em] text-black/40">
-                Loading cart
-              </p>
-            </div>
+        <div className="st-cart-terminal__screen">
+          <div className="st-cart-terminal__screen-bar">
+            <span>STEREOPHONIE INVENTORY SYSTEM</span>
+            <span>MEMORY OK</span>
           </div>
-        ) : items.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 text-center">
-            <div className="flex h-16 w-16 items-center justify-center border border-black/10 bg-black/[0.025]">
-              <ShoppingBag className="h-7 w-7 text-black/35" />
-            </div>
 
-            <h3 className="mt-6 text-2xl font-semibold">Your cart is empty</h3>
+          {!isCartReady ? (
+            <div className="st-cart-loading">
+              <div className="st-cart-loading__disc" />
 
-            <p className="mt-3 max-w-sm text-sm leading-6 text-black/45">
-              Add a product and select a size to begin your order.
-            </p>
+              <p>READING CARTRIDGE MEMORY...</p>
 
-            <Link
-              href="/shop"
-              onClick={closeCart}
-              className="mt-7 inline-flex min-h-14 items-center justify-center bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.16em] !text-white transition hover:bg-[#242424]"
-            >
-              Continue shopping
-            </Link>
-          </div>
-        ) : (
-          <>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="divide-y divide-black/10">
-                {items.map((item) => (
-                  <article
-                    key={item.cartItemId}
-                    className="grid grid-cols-[100px_minmax(0,1fr)] gap-4 px-5 py-6 sm:grid-cols-[112px_minmax(0,1fr)] sm:px-7"
-                  >
-                    <Link
-                      href={`/shop/${item.slug}`}
-                      onClick={closeCart}
-                      className="aspect-[4/5] overflow-hidden bg-neutral-100"
-                    >
-                      {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <ShoppingBag className="h-6 w-6 text-black/20" />
-                        </div>
-                      )}
-                    </Link>
-
-                    <div className="flex min-w-0 flex-col">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <Link
-                            href={`/shop/${item.slug}`}
-                            onClick={closeCart}
-                            className="block truncate text-base font-semibold text-black transition hover:text-black/55"
-                          >
-                            {item.name}
-                          </Link>
-
-                          <p className="mt-1 text-sm text-black/45">
-                            Size {item.size}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => removeItem(item.cartItemId)}
-                          aria-label={`Remove ${item.name}`}
-                          className="flex h-9 w-9 shrink-0 items-center justify-center text-black/30 transition hover:text-red-600"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-
-                      <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex h-11 items-center border border-black/15">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateQuantity(item.cartItemId, item.quantity - 1)
-                            }
-                            disabled={item.quantity <= 1}
-                            aria-label="Decrease quantity"
-                            className="flex h-full w-11 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
-                          >
-                            <Minus className="h-4 w-4" />
-                          </button>
-
-                          <span className="flex h-full min-w-12 items-center justify-center border-x border-black/15 px-3 text-sm font-semibold leading-none">
-                            {item.quantity}
-                          </span>
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              updateQuantity(item.cartItemId, item.quantity + 1)
-                            }
-                            disabled={item.quantity >= item.maximumQuantity}
-                            aria-label="Increase quantity"
-                            className="flex h-full w-11 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </button>
-                        </div>
-
-                        <p className="text-base font-semibold">
-                          ${(item.unitPrice * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </article>
-                ))}
+              <div className="st-cart-loading__bar">
+                <span />
               </div>
             </div>
-
-            <footer className="shrink-0 border-t border-black/10 bg-white px-5 py-6 sm:px-7">
-              <div className="flex items-end justify-between gap-5">
-                <p className="text-sm text-black/50">
-                  Subtotal ({totalItems} {totalItems === 1 ? "item" : "items"})
-                </p>
-
-                <p className="text-2xl font-semibold tracking-[-0.025em]">
-                  ${subtotal.toFixed(2)}
-                </p>
+          ) : items.length === 0 ? (
+            <div className="st-cart-empty">
+              <div className="st-cart-empty__icon">
+                <ShoppingBag />
               </div>
 
-              <p className="mt-3 text-xs leading-5 text-black/40">
-                Delivery fees and final availability will be confirmed during
-                checkout.
+              <p className="st-cart-empty__code">SLOT STATUS / 000</p>
+
+              <h3>NO CARTRIDGES LOADED</h3>
+
+              <p className="st-cart-empty__copy">
+                Your loadout is currently empty. Insert a product configuration
+                to begin checkout.
               </p>
 
               <Link
-                href="/checkout"
+                href="/shop"
                 onClick={closeCart}
-                className="mt-5 flex min-h-14 w-full items-center justify-center bg-black px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.18em] !text-white transition duration-300 hover:bg-[#242424] hover:!text-white"
+                className="st-cart-command st-cart-command--primary"
               >
-                Proceed to checkout
+                <span className="st-cart-command__key">A</span>
+
+                <span>
+                  <small>COMMAND</small>
+                  CONTINUE SHOPPING
+                </span>
+              </Link>
+            </div>
+          ) : (
+            <div className="st-cart-inventory">
+              <div className="st-cart-inventory__heading">
+                <span>LOADED CARTRIDGES</span>
+                <span>{configurationCount} ACTIVE</span>
+              </div>
+
+              <div className="st-cart-inventory__list">
+                {items.map((item, index) => {
+                  const atMaximum = item.quantity >= item.maximumQuantity;
+
+                  return (
+                    <article
+                      key={item.cartItemId}
+                      className="st-cart-cartridge"
+                    >
+                      <div className="st-cart-cartridge__index">
+                        {String(index + 1).padStart(2, "0")}
+                      </div>
+
+                      <Link
+                        href={`/shop/${item.slug}`}
+                        onClick={closeCart}
+                        className="st-cart-cartridge__image"
+                      >
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.name} />
+                        ) : (
+                          <div>
+                            <ShoppingBag />
+                          </div>
+                        )}
+
+                        <span>PRODUCT FEED</span>
+                      </Link>
+
+                      <div className="st-cart-cartridge__body">
+                        <div className="st-cart-cartridge__header">
+                          <div>
+                            <p className="st-cart-cartridge__slot">
+                              CARTRIDGE {String(index + 1).padStart(2, "0")}
+                            </p>
+
+                            <Link
+                              href={`/shop/${item.slug}`}
+                              onClick={closeCart}
+                              className="st-cart-cartridge__name"
+                            >
+                              {item.name}
+                            </Link>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.cartItemId)}
+                            className="st-cart-cartridge__eject"
+                            aria-label={`Remove ${item.name}`}
+                          >
+                            <Trash2 />
+                            <span>EJECT</span>
+                          </button>
+                        </div>
+
+                        <div className="st-cart-cartridge__data">
+                          <div>
+                            <span>CONFIGURATION</span>
+                            <strong>{item.size}</strong>
+                          </div>
+
+                          <div>
+                            <span>UNIT PRICE</span>
+                            <strong>{money(item.unitPrice)}</strong>
+                          </div>
+
+                          <div>
+                            <span>STOCK LIMIT</span>
+                            <strong>
+                              {String(item.maximumQuantity).padStart(2, "0")}
+                            </strong>
+                          </div>
+                        </div>
+
+                        <div className="st-cart-cartridge__controls">
+                          <div className="st-cart-quantity">
+                            <span className="st-cart-quantity__label">
+                              QUANTITY
+                            </span>
+
+                            <div className="st-cart-quantity__hardware">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.cartItemId,
+                                    item.quantity - 1,
+                                  )
+                                }
+                                disabled={item.quantity <= 1}
+                                aria-label="Decrease quantity"
+                              >
+                                <Minus />
+                              </button>
+
+                              <strong>{item.quantity}</strong>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.cartItemId,
+                                    item.quantity + 1,
+                                  )
+                                }
+                                disabled={atMaximum}
+                                aria-label="Increase quantity"
+                              >
+                                <Plus />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div
+                            className={`st-cart-stock ${
+                              atMaximum ? "is-locked" : ""
+                            }`}
+                          >
+                            <span className="st-cart-stock__led" />
+
+                            <div>
+                              <small>INVENTORY</small>
+                              <strong>
+                                {atMaximum
+                                  ? "MAX LOAD"
+                                  : `${item.maximumQuantity - item.quantity} REMAIN`}
+                              </strong>
+                            </div>
+                          </div>
+
+                          <div className="st-cart-cartridge__total">
+                            <span>LINE TOTAL</span>
+                            <strong>
+                              {money(item.unitPrice * item.quantity)}
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {isCartReady && items.length > 0 ? (
+          <footer className="st-cart-terminal__footer">
+            <div className="st-cart-terminal__summary">
+              <div className="st-cart-terminal__summary-label">
+                <span>ORDER BUFFER</span>
+                <small>
+                  {totalItems} {totalItems === 1 ? "UNIT" : "UNITS"} /{" "}
+                  {configurationCount}{" "}
+                  {configurationCount === 1 ? "CONFIG" : "CONFIGS"}
+                </small>
+              </div>
+
+              <div className="st-cart-terminal__subtotal">
+                <span>SUBTOTAL</span>
+                <strong>{money(subtotal)}</strong>
+              </div>
+            </div>
+
+            <div className="st-cart-terminal__commands">
+              <Link
+                href="/shop"
+                onClick={closeCart}
+                className="st-cart-command st-cart-command--secondary"
+              >
+                <span className="st-cart-command__key">B</span>
+
+                <span>
+                  <small>RETURN</small>
+                  CONTINUE SHOPPING
+                </span>
               </Link>
 
               <button
                 type="button"
                 onClick={clearCart}
-                className="mt-3 min-h-12 w-full bg-white py-3 text-xs font-semibold uppercase tracking-[0.17em] text-black/40 transition hover:text-red-600"
+                className="st-cart-command st-cart-command--clear"
               >
-                Clear cart
+                <Trash2 />
+
+                <span>
+                  <small>MEMORY</small>
+                  CLEAR CART
+                </span>
               </button>
-            </footer>
-          </>
-        )}
-      </aside>
+
+              <Link
+                href="/checkout"
+                onClick={closeCart}
+                className="st-cart-command st-cart-command--checkout"
+              >
+                <span className="st-cart-command__start">START</span>
+
+                <span>
+                  <small>SECURE ROUTE</small>
+                  CHECKOUT
+                </span>
+              </Link>
+            </div>
+
+            <div className="st-cart-terminal__legal">
+              <span>PAYMENT / CASH ON DELIVERY</span>
+              <span>AVAILABILITY VERIFIED AT CHECKOUT</span>
+            </div>
+          </footer>
+        ) : null}
+      </section>
     </div>,
     document.body,
   );

@@ -1,0 +1,57 @@
+/* =========================================================
+   STEREOPHONIE V2
+   CORE DESIGN TOKENS
+   ========================================================= */
+
+:root {
+  /* Brand */
+  --st-red: #ed1c24;
+  --st-red-hover: #ff3038;
+
+  /* Dark system */
+  --st-black: #080808;
+  --st-black-soft: #0e0e0f;
+  --st-graphite: #161618;
+  --st-panel: #1c1c1f;
+
+  /* Light system */
+  --st-white: #ffffff;
+  --st-off-white: #f4f4f1;
+  --st-surface: #eeeeea;
+
+  /* Text */
+  --st-text: #080808;
+  --st-text-muted: #77777c;
+  --st-text-dark-muted: #99999f;
+
+  /* Borders */
+  --st-border: rgba(8, 8, 8, 0.14);
+  --st-border-dark: rgba(255, 255, 255, 0.14);
+
+  /* Arcade signal colors */
+  --st-signal-green: #8cff98;
+  --st-signal-amber: #ffd45c;
+  --st-signal-blue: #ed1c24;
+
+  /* Layout */
+  --st-page-width: 1600px;
+  --st-gutter: clamp(20px, 4vw, 72px);
+
+  /* Radius
+     Intentionally restrained.
+     Stereophonie uses hardware-like geometry.
+  */
+  --st-radius-xs: 2px;
+  --st-radius-sm: 4px;
+  --st-radius-md: 8px;
+
+  /* Motion */
+  --st-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --st-fast: 180ms;
+  --st-medium: 360ms;
+
+  /* Shadows */
+  --st-shadow-panel: 0 24px 70px rgba(0, 0, 0, 0.09);
+
+  --st-shadow-dark: 0 28px 80px rgba(0, 0, 0, 0.28);
+}

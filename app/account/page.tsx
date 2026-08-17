@@ -1,10 +1,8 @@
-import Link from "next/link";
-
 import { createClient } from "@/lib/supabase/server";
 
 import AccountAuthClient from "./account-auth-client";
+import AccountCommandCenter from "./account-command-center";
 import AccountClient, { type CustomerOrder } from "./account-client";
-import AccountScrollReveal from "@/components/storefront/account-scroll-reveal";
 import AccountSettingsClient, {
   type CustomerAddress,
   type CustomerProfile,
@@ -261,92 +259,17 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     Boolean(profileResponse.error) || Boolean(addressResponse.error);
 
   return (
-    <main className="min-h-screen bg-[#f6f6f4] text-black">
-      <section className="relative border-b border-neutral-200 bg-white">
-        <div className="mx-auto max-w-[1500px] px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
-          <Link
-            href="/"
-            className="inline-flex bg-transparent text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500 shadow-none transition hover:text-black"
-          >
-            ← Return to store
-          </Link>
-
-          <div className="mt-9 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.23em] text-neutral-400">
-                My Stereophonie
-              </p>
-
-              <h1 className="mt-3 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">
-                Welcome, {firstName}
-              </h1>
-
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-neutral-500">
-                Manage your personal details, security, saved delivery
-                addresses, and order activity.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="border border-emerald-200 bg-emerald-50 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-700">
-                Verified customer
-              </span>
-
-              <a
-                href="#customer-orders"
-                className="border border-black bg-black px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-black"
-              >
-                View orders
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <AccountScrollReveal />
-      </section>
-
-      <section className="mx-auto max-w-[1500px] px-5 py-10 sm:px-8 lg:px-12 lg:py-14">
-        {params.error ? (
-          <div className="mb-7 border border-red-200 bg-red-50 px-5 py-4 text-sm leading-6 text-red-700">
-            {params.error}
-          </div>
-        ) : null}
-
-        {params.message ? (
-          <div className="mb-7 border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm leading-6 text-emerald-800">
-            {params.message}
-          </div>
-        ) : null}
-
-        {hasAccountDataError ? (
-          <div className="mb-7 border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
-            Some account information could not be loaded. Confirm that the
-            customer profile and address SQL was successfully executed.
-          </div>
-        ) : null}
-
-        {orderResponse.error ? (
-          <div className="mb-7 border border-red-200 bg-red-50 px-5 py-4 text-sm leading-6 text-red-700">
-            Your account loaded, but your order history could not be retrieved.
-          </div>
-        ) : null}
-
-        {stockPreferenceError ? (
-          <div className="mb-7 border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
-            Your stock email preference could not be loaded.
-          </div>
-        ) : null}
-
-        <AccountSettingsClient
-          profile={profile}
-          addresses={addresses}
-          stockNotificationsEnabled={stockNotificationsEnabled}
-        />
-
-        <div className="mt-10">
-          <AccountClient orders={customerOrders} />
-        </div>
-      </section>
-    </main>
+    <AccountCommandCenter
+      firstName={firstName}
+      profile={profile}
+      addresses={addresses}
+      orders={customerOrders}
+      stockNotificationsEnabled={stockNotificationsEnabled}
+      error={params.error}
+      message={params.message}
+      hasAccountDataError={hasAccountDataError}
+      hasOrderError={Boolean(orderResponse.error)}
+      hasStockPreferenceError={Boolean(stockPreferenceError)}
+    />
   );
 }

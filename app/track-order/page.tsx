@@ -2,504 +2,969 @@
 
 import Link from "next/link";
 import {
-  ArrowLeft,
+  ArrowRight,
   Check,
-  CheckCircle2,
+  ChevronRight,
+  CircleDot,
   Clock3,
-  Loader2,
+  CreditCard,
+  Database,
+  Gamepad2,
+  LockKeyhole,
+  Mail,
+  MapPin,
   Package,
+  PackageCheck,
+  Radar,
+  Radio,
+  RotateCw,
+  ScanLine,
   Search,
+  ShieldCheck,
   ShoppingBag,
   Truck,
-  XCircle,
+  UserRound,
+  Wifi,
+  X,
+  Zap,
 } from "lucide-react";
-import { FormEvent, useState, useTransition } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
+
+import V2Footer from "@/components/stereophonie-v2/layout/v2-footer";
+import V2Header from "@/components/stereophonie-v2/layout/v2-header";
 
 import { trackOrder } from "./actions";
 
 type OrderStatus =
   | "pending"
   | "confirmed"
-  | "preparing"
+  | "processing"
   | "out_for_delivery"
-  | "completed"
+  | "delivered"
   | "cancelled";
 
-type PaymentStatus = "unpaid" | "paid" | "refunded";
-
 type TrackedOrder = {
-  order_number: string;
+  id?: string;
+  order_number?: string;
   status: OrderStatus;
-  payment_status: PaymentStatus;
+  created_at?: string | null;
+  status_updated_at?: string | null;
+
   customer_first_name: string;
   customer_last_name: string;
+
   delivery_city: string;
   delivery_area: string;
-  coupon_code: string | null;
+  delivery_address?: string | null;
+
   subtotal: number;
   discount_amount: number;
+  coupon_code?: string | null;
   delivery_fee: number;
   total: number;
-  created_at: string;
-  status_updated_at: string | null;
-  items: {
+
+  items: Array<{
     id: string;
     product_name: string;
-    size: string;
+    size?: string | null;
     quantity: number;
-    unit_price: number;
+    unit_price?: number;
     line_total: number;
-  }[];
+  }>;
 };
 
-const fulfilmentSteps: {
-  value: OrderStatus;
+const missionSteps: Array<{
+  value: Exclude<OrderStatus, "cancelled">;
+  number: string;
   label: string;
-  icon: typeof Clock3;
-}[] = [
+  shortLabel: string;
+  description: string;
+  icon: typeof Package;
+}> = [
   {
     value: "pending",
-    label: "Pending",
-    icon: Clock3,
+    number: "01",
+    label: "ORDER RECEIVED",
+    shortLabel: "RECEIVED",
+    description: "Your order has entered the Stereophonie order network.",
+    icon: Radio,
   },
   {
     value: "confirmed",
-    label: "Confirmed",
-    icon: CheckCircle2,
+    number: "02",
+    label: "ORDER CONFIRMED",
+    shortLabel: "CONFIRMED",
+    description: "Your order has been verified and confirmed.",
+    icon: ShieldCheck,
   },
   {
-    value: "preparing",
-    label: "Preparing",
+    value: "processing",
+    number: "03",
+    label: "LOADOUT PREPARATION",
+    shortLabel: "PROCESSING",
+    description: "Your equipment is being prepared for dispatch.",
     icon: Package,
   },
   {
     value: "out_for_delivery",
-    label: "Delivery",
+    number: "04",
+    label: "COURIER DEPLOYED",
+    shortLabel: "IN TRANSIT",
+    description: "Your shipment has left Stereophonie and is on the road.",
     icon: Truck,
   },
   {
-    value: "completed",
-    label: "Completed",
-    icon: CheckCircle2,
+    value: "delivered",
+    number: "05",
+    label: "MISSION COMPLETE",
+    shortLabel: "DELIVERED",
+    description: "Your order has reached its destination.",
+    icon: PackageCheck,
   },
 ];
 
-function money(value: number) {
-  return `$${Number(value).toFixed(2)}`;
+function money(value: number | string | null | undefined) {
+  const parsed = Number(value ?? 0);
+
+  return `$${Number.isFinite(parsed) ? parsed.toFixed(2) : "0.00"}`;
 }
 
-function formatDate(value: string | null) {
+function formatDate(value: string | null | undefined) {
   if (!value) {
-    return "Not available";
+    return "AWAITING DATA";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "AWAITING DATA";
   }
 
   return new Intl.DateTimeFormat("en", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(new Date(value));
+  }).format(date);
 }
 
-function getCurrentStepIndex(status: OrderStatus) {
+function statusLabel(status: OrderStatus) {
+  switch (status) {
+    case "pending":
+      return "ORDER RECEIVED";
+    case "confirmed":
+      return "ORDER CONFIRMED";
+    case "processing":
+      return "PREPARING LOADOUT";
+    case "out_for_delivery":
+      return "COURIER DEPLOYED";
+    case "delivered":
+      return "MISSION COMPLETE";
+    case "cancelled":
+      return "MISSION CANCELLED";
+  }
+}
+
+function statusIndex(status: OrderStatus) {
   if (status === "cancelled") {
     return -1;
   }
 
-  return fulfilmentSteps.findIndex((step) => step.value === status);
-}
-
-function getStatusLabel(status: OrderStatus) {
-  if (status === "out_for_delivery") {
-    return "Out for delivery";
-  }
-
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  return missionSteps.findIndex((step) => step.value === status);
 }
 
 export default function TrackOrderPage() {
   const [orderNumber, setOrderNumber] = useState("");
-
   const [email, setEmail] = useState("");
-
-  const [errorMessage, setErrorMessage] = useState("");
-
   const [order, setOrder] = useState<TrackedOrder | null>(null);
-
+  const [error, setError] = useState("");
+  const [searched, setSearched] = useState(false);
+  const [scanPhase, setScanPhase] = useState<
+    "idle" | "scanning" | "found" | "error"
+  >("idle");
   const [isPending, startTransition] = useTransition();
 
-  function submit(event: FormEvent) {
+  const resultRef = useRef<HTMLDivElement | null>(null);
+
+  const currentStepIndex = useMemo(
+    () => (order ? statusIndex(order.status) : -1),
+    [order],
+  );
+
+  const normalizedOrderNumber = orderNumber.trim().toUpperCase();
+
+  function submitTracking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setErrorMessage("");
+    const cleanOrder = orderNumber.trim();
+    const cleanEmail = email.trim();
+
+    if (!cleanOrder || !cleanEmail) {
+      setError("Enter both your order number and checkout email.");
+      setScanPhase("error");
+      return;
+    }
+
+    setError("");
     setOrder(null);
+    setSearched(true);
+    setScanPhase("scanning");
 
     startTransition(async () => {
-      const result = await trackOrder(orderNumber, email);
+      const startedAt = Date.now();
 
-      if (!result.success) {
-        setErrorMessage(result.message);
-        return;
+      try {
+        const result = await trackOrder(cleanOrder, cleanEmail);
+
+        const elapsed = Date.now() - startedAt;
+
+        if (elapsed < 700) {
+          await new Promise((resolve) => setTimeout(resolve, 700 - elapsed));
+        }
+
+        if (!result.success) {
+          setError(
+            result.message ??
+              "No order was found using this order number and email address.",
+          );
+          setOrder(null);
+          setScanPhase("error");
+          return;
+        }
+
+        setOrder(result.order as TrackedOrder);
+        setError("");
+        setScanPhase("found");
+
+        window.setTimeout(() => {
+          resultRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 180);
+      } catch {
+        setOrder(null);
+        setError(
+          "The secure tracking uplink could not be completed. Try again.",
+        );
+        setScanPhase("error");
       }
-
-      setOrder(result.order);
     });
   }
 
-  const currentStepIndex = order ? getCurrentStepIndex(order.status) : -1;
+  function resetTracking() {
+    setOrder(null);
+    setError("");
+    setSearched(false);
+    setScanPhase("idle");
+  }
 
-  const totalQuantity = order
-    ? order.items.reduce((sum, item) => sum + Number(item.quantity), 0)
-    : 0;
+  useEffect(() => {
+    function keyboardShortcut(event: KeyboardEvent) {
+      if (
+        event.key.toLowerCase() === "r" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey
+      ) {
+        const target = event.target as HTMLElement | null;
+
+        if (
+          target?.tagName === "INPUT" ||
+          target?.tagName === "TEXTAREA" ||
+          target?.isContentEditable
+        ) {
+          return;
+        }
+
+        resetTracking();
+      }
+    }
+
+    window.addEventListener("keydown", keyboardShortcut);
+
+    return () => window.removeEventListener("keydown", keyboardShortcut);
+  }, []);
+
+  const isScanning = isPending || scanPhase === "scanning";
 
   return (
-    <main className="min-h-screen bg-[#f6f5f2] text-black">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto flex min-h-[78px] max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
-          <Link
-            href="/"
-            className="text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
-          >
-            Stereophonie
-          </Link>
+    <>
+      <V2Header />
 
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-black/45 transition hover:text-black"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Return to shop
-          </Link>
+      <main className="st-track-z">
+        <div className="st-track-z__ambient" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </div>
-      </header>
 
-      <section className="border-b border-black/10 bg-[#0a0a0a] text-white">
-        <div className="mx-auto max-w-[1500px] px-5 py-16 sm:px-8 sm:py-20 lg:px-12">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/35">
-            Customer service
-          </p>
+        <section className="st-track-z__hero">
+          <div className="st-track-z__hero-grid" aria-hidden="true" />
 
-          <h1 className="mt-4 text-5xl font-semibold uppercase leading-[0.9] tracking-[-0.06em] sm:text-7xl lg:text-8xl">
-            Track
-            <br />
-            your order
-          </h1>
-
-          <p className="mt-7 max-w-2xl text-sm leading-7 text-white/45 sm:text-base">
-            Enter your order number and the email address used during checkout
-            to view the latest status.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1500px] px-5 py-10 sm:px-8 sm:py-14 lg:px-12">
-        <div className="grid gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
-          <form
-            onSubmit={submit}
-            className="h-fit border border-black/10 bg-white p-5 sm:p-7 xl:sticky xl:top-6"
-          >
-            <div className="flex h-12 w-12 items-center justify-center border border-black/10 bg-[#f7f7f5]">
-              <Search className="h-5 w-5 text-black/45" />
-            </div>
-
-            <h2 className="mt-6 text-2xl font-semibold tracking-[-0.03em]">
-              Find your order
-            </h2>
-
-            <div className="mt-7 space-y-5">
-              <label className="block">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                  Order number
-                </span>
-
-                <input
-                  value={orderNumber}
-                  onChange={(event) => setOrderNumber(event.target.value)}
-                  placeholder="Example: NITA-000123"
-                  className="mt-2 h-14 w-full border border-black/15 bg-white px-4 text-sm outline-none transition placeholder:text-black/25 focus:border-black"
-                />
-              </label>
-
-              <label className="block">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                  Email address
-                </span>
-
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="you@example.com"
-                  className="mt-2 h-14 w-full border border-black/15 bg-white px-4 text-sm outline-none transition placeholder:text-black/25 focus:border-black"
-                />
-              </label>
-            </div>
-
-            {errorMessage && (
-              <div className="mt-5 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {errorMessage}
+          <div className="st-v2-container st-track-z__hero-inner">
+            <div className="st-track-z__hero-copy">
+              <div className="st-track-z__system-line">
+                <span className="st-track-z__led" />
+                DELIVERY NETWORK / PLAYER 01
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={isPending}
-              className="mt-6 flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424] disabled:cursor-wait disabled:opacity-50"
+              <p className="st-track-z__eyebrow">
+                STEREOPHONIE MISSION CONTROL
+              </p>
+
+              <h1>
+                TRACK
+                <br />
+                YOUR
+                <br />
+                ORDER<span>.</span>
+              </h1>
+
+              <p className="st-track-z__hero-description">
+                Connect to the Stereophonie delivery network and retrieve the
+                current mission status of your order.
+              </p>
+
+              <div className="st-track-z__hero-codes">
+                <span>
+                  <Wifi />
+                  SECURE CHANNEL
+                </span>
+
+                <span>
+                  <Database />
+                  ORDER DATABASE
+                </span>
+
+                <span>
+                  <MapPin />
+                  LEBANON NETWORK
+                </span>
+              </div>
+            </div>
+
+            <div
+              className={[
+                "st-track-z__radar-console",
+                isScanning ? "is-scanning" : "",
+                scanPhase === "found" ? "is-found" : "",
+                scanPhase === "error" ? "is-error" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
-              {isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Searching
-                </>
-              ) : (
-                <>
-                  Track order
-                  <Search className="h-4 w-4" />
-                </>
-              )}
-            </button>
-          </form>
+              <div className="st-track-z__console-head">
+                <span>
+                  <span className="st-track-z__led" />
+                  DELIVERY RADAR
+                </span>
 
-          <div className="min-w-0">
-            {!order && !isPending && (
-              <div className="flex min-h-[520px] items-center justify-center border border-black/10 bg-white p-8 text-center">
-                <div>
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center border border-black/10 bg-[#f7f7f5]">
-                    <ShoppingBag className="h-7 w-7 text-black/25" />
-                  </div>
+                <span>
+                  {isScanning
+                    ? "SCANNING"
+                    : scanPhase === "found"
+                      ? "LOCKED"
+                      : scanPhase === "error"
+                        ? "NO SIGNAL"
+                        : "STANDBY"}
+                </span>
+              </div>
 
-                  <h2 className="mt-6 text-3xl font-semibold tracking-[-0.04em]">
-                    Your order details will appear here
-                  </h2>
+              <div className="st-track-z__radar">
+                <div className="st-track-z__radar-ring is-one" />
+                <div className="st-track-z__radar-ring is-two" />
+                <div className="st-track-z__radar-ring is-three" />
+                <div className="st-track-z__radar-cross is-x" />
+                <div className="st-track-z__radar-cross is-y" />
 
-                  <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-black/45">
-                    Use the exact order number shown on your confirmation page
-                    and the same email address entered during checkout.
-                  </p>
+                <div className="st-track-z__radar-sweep" />
+
+                <div className="st-track-z__radar-core">
+                  {isScanning ? (
+                    <ScanLine />
+                  ) : scanPhase === "found" ? (
+                    <PackageCheck />
+                  ) : scanPhase === "error" ? (
+                    <X />
+                  ) : (
+                    <Radar />
+                  )}
                 </div>
               </div>
-            )}
 
-            {order && (
-              <div className="space-y-7">
-                <section className="border border-black/10 bg-white">
-                  <div className="flex flex-col gap-5 border-b border-black/10 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                        Order number
-                      </p>
+              <div className="st-track-z__radar-readout">
+                <span>
+                  <small>MISSION ID</small>
+                  <strong>{normalizedOrderNumber || "WAITING"}</strong>
+                </span>
 
-                      <h2 className="mt-2 break-all text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
-                        {order.order_number}
-                      </h2>
+                <span>
+                  <small>NETWORK</small>
+                  <strong>ONLINE</strong>
+                </span>
 
-                      <p className="mt-2 text-xs text-black/40">
-                        Submitted {formatDate(order.created_at)}
-                      </p>
-                    </div>
+                <span>
+                  <small>CHANNEL</small>
+                  <strong>14</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-                    <div className="flex flex-wrap gap-2">
-                      <span className="border border-black/10 bg-[#f7f7f5] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.13em]">
-                        {getStatusLabel(order.status)}
-                      </span>
+        <section className="st-track-z__uplink">
+          <div className="st-v2-container st-track-z__uplink-grid">
+            <div className="st-track-z__terminal">
+              <div className="st-track-z__terminal-top">
+                <span>
+                  <LockKeyhole />
+                  SECURE ORDER UPLINK
+                </span>
 
-                      <span className="border border-black/10 bg-[#f7f7f5] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.13em]">
-                        {order.payment_status}
-                      </span>
-                    </div>
+                <span>PORT / 14</span>
+              </div>
+
+              <div className="st-track-z__terminal-body">
+                <div className="st-track-z__terminal-intro">
+                  <div className="st-track-z__terminal-icon">
+                    <Gamepad2 />
                   </div>
 
-                  <div className="p-5 sm:p-6">
-                    {order.status === "cancelled" ? (
-                      <div className="flex items-start gap-4 border border-red-200 bg-red-50 p-4">
-                        <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
-
-                        <div>
-                          <p className="font-semibold text-red-700">
-                            Order cancelled
-                          </p>
-
-                          <p className="mt-1 text-sm leading-6 text-red-700/70">
-                            This order is no longer being fulfilled. Contact
-                            Stereophonie for assistance.
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <div className="min-w-[650px]">
-                          <div className="grid grid-cols-5">
-                            {fulfilmentSteps.map((step, index) => {
-                              const Icon = step.icon;
-
-                              const completed = index <= currentStepIndex;
-
-                              const current = index === currentStepIndex;
-
-                              return (
-                                <div
-                                  key={step.value}
-                                  className="relative flex flex-col items-center text-center"
-                                >
-                                  {index < fulfilmentSteps.length - 1 && (
-                                    <div
-                                      className={`absolute left-1/2 top-5 h-px w-full ${
-                                        index < currentStepIndex
-                                          ? "bg-black"
-                                          : "bg-black/10"
-                                      }`}
-                                    />
-                                  )}
-
-                                  <div
-                                    className={`relative z-10 flex h-10 w-10 items-center justify-center border ${
-                                      completed
-                                        ? "border-black bg-black text-white"
-                                        : "border-black/10 bg-white text-black/25"
-                                    } ${
-                                      current ? "ring-4 ring-black/[0.05]" : ""
-                                    }`}
-                                  >
-                                    {index < currentStepIndex ? (
-                                      <Check className="h-4 w-4" />
-                                    ) : (
-                                      <Icon className="h-4 w-4" />
-                                    )}
-                                  </div>
-
-                                  <p
-                                    className={`mt-3 text-[9px] font-semibold uppercase tracking-[0.13em] ${
-                                      completed
-                                        ? "text-black/75"
-                                        : "text-black/25"
-                                    }`}
-                                  >
-                                    {step.label}
-                                  </p>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {order.status_updated_at && (
-                      <p className="mt-5 text-center text-xs text-black/35">
-                        Last updated {formatDate(order.status_updated_at)}
-                      </p>
-                    )}
-                  </div>
-                </section>
-
-                <section className="border border-black/10 bg-white">
-                  <div className="border-b border-black/10 px-5 py-5 sm:px-6">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                      Purchased products
-                    </p>
-
-                    <h2 className="mt-2 text-2xl font-semibold">
-                      {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
+                  <div>
+                    <small>MISSION DATABASE</small>
+                    <h2>
+                      LOCATE ORDER<span>.</span>
                     </h2>
                   </div>
+                </div>
 
-                  <div className="divide-y divide-black/10">
-                    {order.items.map((item) => (
-                      <article
-                        key={item.id}
-                        className="grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-6"
-                      >
-                        <div>
-                          <h3 className="font-semibold">{item.product_name}</h3>
+                <p className="st-track-z__terminal-copy">
+                  Enter the exact Stereophonie order number and the email
+                  address used during checkout.
+                </p>
 
-                          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/45">
-                            <span>Size {item.size}</span>
+                <form onSubmit={submitTracking} className="st-track-z__form">
+                  <label>
+                    <span>
+                      <Package />
+                      ORDER NUMBER
+                    </span>
 
-                            <span>Quantity {item.quantity}</span>
+                    <div className="st-track-z__input">
+                      <small>ID</small>
 
-                            <span>{money(item.unit_price)} each</span>
-                          </div>
-                        </div>
+                      <input
+                        value={orderNumber}
+                        onChange={(event) => setOrderNumber(event.target.value)}
+                        placeholder="Example: STEREO-000123"
+                        autoComplete="off"
+                        spellCheck={false}
+                        required
+                      />
+                    </div>
+                  </label>
 
-                        <p className="font-semibold">
-                          {money(item.line_total)}
-                        </p>
-                      </article>
+                  <label>
+                    <span>
+                      <Mail />
+                      CHECKOUT EMAIL
+                    </span>
+
+                    <div className="st-track-z__input">
+                      <small>@</small>
+
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="player@example.com"
+                        autoComplete="email"
+                        required
+                      />
+                    </div>
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="st-track-z__scan-command"
+                    disabled={isScanning}
+                  >
+                    <span className="st-track-z__scan-icon">
+                      {isScanning ? <RotateCw /> : <ScanLine />}
+                    </span>
+
+                    <span>
+                      <small>COMMAND / A</small>
+                      <strong>
+                        {isScanning ? "SCANNING NETWORK..." : "SCAN ORDER"}
+                      </strong>
+                    </span>
+
+                    <ArrowRight />
+                  </button>
+                </form>
+
+                {error ? (
+                  <div className="st-track-z__message is-error" role="alert">
+                    <X />
+                    <span>
+                      <small>TRACKING ERROR</small>
+                      <strong>{error}</strong>
+                    </span>
+                  </div>
+                ) : null}
+
+                <div className="st-track-z__terminal-foot">
+                  <span>
+                    <span className="st-track-z__led" />
+                    ENCRYPTED CONNECTION
+                  </span>
+
+                  <span>PLAYER / 01</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="st-track-z__stage">
+              {!searched && !order ? (
+                <div className="st-track-z__idle">
+                  <div className="st-track-z__idle-display">
+                    <div className="st-track-z__idle-rings">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+
+                    <Package />
+                  </div>
+
+                  <small>MISSION CONTROL / STANDBY</small>
+
+                  <h2>
+                    AWAITING
+                    <br />
+                    MISSION ID<span>.</span>
+                  </h2>
+
+                  <p>
+                    Your delivery telemetry, checkpoint progression and order
+                    loadout will initialize here after a successful scan.
+                  </p>
+
+                  <div className="st-track-z__idle-diagnostics">
+                    <span>
+                      <i />
+                      DATABASE / READY
+                    </span>
+
+                    <span>
+                      <i />
+                      COURIER NETWORK / READY
+                    </span>
+
+                    <span>
+                      <i />
+                      CUSTOMER CHANNEL / READY
+                    </span>
+                  </div>
+                </div>
+              ) : null}
+
+              {isScanning ? (
+                <div className="st-track-z__searching">
+                  <div className="st-track-z__searching-radar">
+                    <Radar />
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+
+                  <small>SEARCHING ORDER DATABASE</small>
+                  <h2>
+                    SCANNING NETWORK<span>.</span>
+                  </h2>
+
+                  <div className="st-track-z__search-meter">
+                    {Array.from({ length: 8 }, (_, index) => (
+                      <i
+                        key={index}
+                        style={{ animationDelay: `${index * 110}ms` }}
+                      />
                     ))}
                   </div>
-                </section>
+                </div>
+              ) : null}
 
-                <section className="grid gap-5 md:grid-cols-2">
-                  <div className="border border-black/10 bg-white p-5 sm:p-6">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                      Customer
-                    </p>
+              {searched && !isScanning && !order && error ? (
+                <div className="st-track-z__not-found">
+                  <div className="st-track-z__failure-icon">
+                    <X />
+                  </div>
 
-                    <h2 className="mt-4 text-2xl font-semibold">
-                      {order.customer_first_name} {order.customer_last_name}
+                  <small>MISSION LOOKUP / FAILED</small>
+                  <h2>
+                    ORDER NOT FOUND<span>.</span>
+                  </h2>
+
+                  <p>
+                    Check the order number and checkout email, then retry the
+                    secure scan.
+                  </p>
+
+                  <button type="button" onClick={resetTracking}>
+                    <RotateCw />
+                    RESET TERMINAL
+                  </button>
+                </div>
+              ) : null}
+
+              {order && !isScanning ? (
+                <div
+                  className={[
+                    "st-track-z__found",
+                    order.status === "cancelled" ? "is-cancelled" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  <div className="st-track-z__found-head">
+                    <div>
+                      <span className="st-track-z__led" />
+                      ORDER CONNECTION ESTABLISHED
+                    </div>
+
+                    <button type="button" onClick={resetTracking}>
+                      <RotateCw />
+                      NEW SCAN
+                    </button>
+                  </div>
+
+                  <div className="st-track-z__found-summary">
+                    <div>
+                      <small>MISSION ID</small>
+                      <strong>
+                        {order.order_number ?? normalizedOrderNumber ?? "ORDER"}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <small>CURRENT STATUS</small>
+                      <strong>{statusLabel(order.status)}</strong>
+                    </div>
+
+                    <div>
+                      <small>ORDER VALUE</small>
+                      <strong>{money(order.total)}</strong>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </section>
+
+        {order && !isScanning ? (
+          <div ref={resultRef}>
+            <section className="st-track-z__mission">
+              <div className="st-v2-container">
+                <div className="st-track-z__section-head">
+                  <div>
+                    <p>DELIVERY MISSION / LIVE TELEMETRY</p>
+                    <h2>
+                      MISSION
+                      <br />
+                      PROGRESS<span>.</span>
                     </h2>
                   </div>
 
-                  <div className="border border-black/10 bg-white p-5 sm:p-6">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                      Delivery location
-                    </p>
+                  <div className="st-track-z__mission-status">
+                    <span className="st-track-z__led" />
+                    <span>
+                      <small>STATUS</small>
+                      <strong>{statusLabel(order.status)}</strong>
+                    </span>
+                  </div>
+                </div>
 
-                    <h2 className="mt-4 text-2xl font-semibold">
-                      {order.delivery_area}
+                {order.status === "cancelled" ? (
+                  <div className="st-track-z__cancelled">
+                    <div className="st-track-z__cancelled-icon">
+                      <X />
+                    </div>
+
+                    <div>
+                      <small>MISSION CONTROL / TERMINATED</small>
+                      <h3>
+                        ORDER CANCELLED<span>.</span>
+                      </h3>
+
+                      <p>
+                        This delivery mission has been cancelled. No future
+                        checkpoints will be activated.
+                      </p>
+                    </div>
+
+                    <div className="st-track-z__cancelled-code">
+                      ERROR / CX-01
+                    </div>
+                  </div>
+                ) : (
+                  <div className="st-track-z__route">
+                    <div className="st-track-z__route-line" />
+
+                    {missionSteps.map((step, index) => {
+                      const Icon = step.icon;
+                      const completed = index < currentStepIndex;
+                      const current = index === currentStepIndex;
+                      const locked = index > currentStepIndex;
+
+                      return (
+                        <article
+                          key={step.value}
+                          className={[
+                            "st-track-z__checkpoint",
+                            completed ? "is-complete" : "",
+                            current ? "is-current" : "",
+                            locked ? "is-locked" : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                        >
+                          <div className="st-track-z__checkpoint-node">
+                            {completed ? <Check /> : <Icon />}
+                          </div>
+
+                          <div className="st-track-z__checkpoint-copy">
+                            <span>{step.number}</span>
+                            <small>{step.shortLabel}</small>
+                            <strong>{step.label}</strong>
+                            <p>{step.description}</p>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="st-track-z__timestamp">
+                  <Clock3 />
+
+                  <span>
+                    <small>MISSION TELEMETRY / LAST DATABASE UPDATE</small>
+                    <strong>
+                      {formatDate(order.status_updated_at ?? order.created_at)}
+                    </strong>
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <section className="st-track-z__data">
+              <div className="st-v2-container">
+                <div className="st-track-z__data-head">
+                  <div>
+                    <p>MISSION DATA / PLAYER 01</p>
+                    <h2>
+                      ORDER
+                      <br />
+                      LOADOUT<span>.</span>
                     </h2>
-
-                    <p className="mt-2 text-sm text-black/45">
-                      {order.delivery_city}, Lebanon
-                    </p>
-                  </div>
-                </section>
-
-                <section className="border border-black/10 bg-white">
-                  <div className="border-b border-black/10 px-5 py-5 sm:px-6">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                      Payment summary
-                    </p>
                   </div>
 
-                  <div className="space-y-4 p-5 sm:p-6">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-black/45">Subtotal</span>
+                  <div>
+                    <ShoppingBag />
+                    <span>
+                      <small>TOTAL EQUIPMENT</small>
+                      <strong>
+                        {String(
+                          order.items.reduce(
+                            (sum, item) => sum + Number(item.quantity || 0),
+                            0,
+                          ),
+                        ).padStart(2, "0")}
+                      </strong>
+                    </span>
+                  </div>
+                </div>
 
-                      <span>{money(order.subtotal)}</span>
+                <div className="st-track-z__data-grid">
+                  <section className="st-track-z__loadout">
+                    <header>
+                      <span>
+                        <Package />
+                        EQUIPMENT MANIFEST
+                      </span>
+
+                      <span>
+                        {String(order.items.length).padStart(2, "0")} LINES
+                      </span>
+                    </header>
+
+                    <div className="st-track-z__items">
+                      {order.items.map((item, index) => (
+                        <article key={item.id}>
+                          <div className="st-track-z__item-slot">
+                            {String(index + 1).padStart(2, "0")}
+                          </div>
+
+                          <div className="st-track-z__item-copy">
+                            <small>CARTRIDGE / LOADED</small>
+                            <strong>{item.product_name}</strong>
+
+                            <span>
+                              {item.size
+                                ? `CONFIG / ${item.size}`
+                                : "CONFIG / STANDARD"}
+                              {" · "}
+                              QTY / {item.quantity}
+                            </span>
+                          </div>
+
+                          <div className="st-track-z__item-price">
+                            <small>LINE VALUE</small>
+                            <strong>{money(item.line_total)}</strong>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+
+                  <aside className="st-track-z__side-stack">
+                    <section className="st-track-z__module is-dark">
+                      <header>
+                        <UserRound />
+                        PLAYER IDENTITY
+                      </header>
+
+                      <div>
+                        <small>CUSTOMER</small>
+                        <strong>
+                          {order.customer_first_name} {order.customer_last_name}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <small>MISSION CHANNEL</small>
+                        <strong>VERIFIED</strong>
+                      </div>
+                    </section>
+
+                    <section className="st-track-z__module">
+                      <header>
+                        <MapPin />
+                        DESTINATION COORDINATES
+                      </header>
+
+                      <div>
+                        <small>AREA</small>
+                        <strong>{order.delivery_area}</strong>
+                      </div>
+
+                      <div>
+                        <small>CITY / REGION</small>
+                        <strong>{order.delivery_city} / LEBANON</strong>
+                      </div>
+
+                      {order.delivery_address ? (
+                        <div>
+                          <small>DELIVERY ADDRESS</small>
+                          <strong>{order.delivery_address}</strong>
+                        </div>
+                      ) : null}
+                    </section>
+                  </aside>
+                </div>
+
+                <section className="st-track-z__credits">
+                  <div className="st-track-z__credits-display">
+                    <div>
+                      <CreditCard />
+                      <span>
+                        <small>CREDIT TERMINAL</small>
+                        <strong>PAYMENT DIAGNOSTICS</strong>
+                      </span>
+                    </div>
+
+                    <span className="st-track-z__credits-ready">
+                      <span className="st-track-z__led" />
+                      CALCULATED
+                    </span>
+                  </div>
+
+                  <div className="st-track-z__credits-lines">
+                    <div>
+                      <span>SUBTOTAL</span>
+                      <strong>{money(order.subtotal)}</strong>
                     </div>
 
                     {Number(order.discount_amount) > 0 ? (
-                      <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
+                      <div className="is-discount">
                         <span>
-                          Discount
-                          {order.coupon_code ? ` (${order.coupon_code})` : ""}
+                          DISCOUNT
+                          {order.coupon_code ? ` / ${order.coupon_code}` : ""}
                         </span>
 
-                        <span className="font-semibold">
-                          −{money(order.discount_amount)}
-                        </span>
+                        <strong>−{money(order.discount_amount)}</strong>
                       </div>
                     ) : null}
 
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-black/45">Delivery fee</span>
-
-                      <span>{money(order.delivery_fee)}</span>
+                    <div>
+                      <span>DELIVERY FEE</span>
+                      <strong>{money(order.delivery_fee)}</strong>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-black/10 pt-4">
-                      <span className="font-semibold">Total</span>
-
-                      <span className="text-2xl font-semibold">
-                        {money(order.total)}
-                      </span>
+                    <div className="is-total">
+                      <span>MISSION TOTAL</span>
+                      <strong>{money(order.total)}</strong>
                     </div>
                   </div>
                 </section>
               </div>
-            )}
+            </section>
           </div>
+        ) : null}
+
+        <section className="st-track-z__help">
+          <div className="st-v2-container st-track-z__help-inner">
+            <div>
+              <Zap />
+              <span>
+                <small>NEED ASSISTANCE?</small>
+                <strong>ORDER SUPPORT CHANNEL</strong>
+              </span>
+            </div>
+
+            <p>
+              Keep your order number and checkout email available when
+              contacting Stereophonie.
+            </p>
+
+            <Link href="/delivery">
+              DELIVERY INFO
+              <ChevronRight />
+            </Link>
+          </div>
+        </section>
+
+        <div className="st-track-z__bottom-hud" aria-hidden="true">
+          <span>
+            <CircleDot />
+            STEREOPHONIE DELIVERY NETWORK / ONLINE
+          </span>
+
+          <span>MISSION CONTROL / REV 14B</span>
+
+          <span>BEIRUT / LEBANON</span>
         </div>
-      </section>
-    </main>
+      </main>
+
+      <V2Footer />
+    </>
   );
 }

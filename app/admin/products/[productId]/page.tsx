@@ -29,6 +29,8 @@ type EditProductPageProps = {
 type ProductVariant = {
   id: string;
   size: string;
+  variant_name: string;
+  attributes: Record<string, string> | null;
   sku: string | null;
   regular_price: number | null;
   sale_price: number | null;
@@ -74,7 +76,7 @@ export default async function EditProductPage({
     redirect("/admin/login");
   }
 
-  const [productResult, categoriesResult, collectionsResult] =
+  const [productResult, categoriesResult, brandsResult, collectionsResult] =
     await Promise.all([
       supabase
         .from("products")
@@ -85,6 +87,7 @@ export default async function EditProductPage({
         slug,
         description,
         category_id,
+        brand_id,
         collection_id,
         status,
         availability,
@@ -96,6 +99,8 @@ export default async function EditProductPage({
         product_variants (
           id,
           size,
+          variant_name,
+          attributes,
           sku,
           regular_price,
           sale_price,
@@ -120,6 +125,12 @@ export default async function EditProductPage({
         ascending: true,
       }),
 
+      supabase
+        .from("brands")
+        .select("id, name")
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true }),
+
       supabase.from("collections").select("id, name").order("name", {
         ascending: true,
       }),
@@ -132,7 +143,10 @@ export default async function EditProductPage({
   const product = productResult.data;
 
   const variants = ((product.product_variants as ProductVariant[]) ?? []).sort(
-    (first, second) => first.size.localeCompare(second.size),
+    (first, second) =>
+      (first.variant_name || first.size).localeCompare(
+        second.variant_name || second.size,
+      ),
   );
 
   const images = ((product.product_images as ProductImage[]) ?? []).sort(
@@ -145,7 +159,8 @@ export default async function EditProductPage({
 
   const salePrice = firstVariant?.sale_price ?? null;
 
-  const loadingError = categoriesResult.error || collectionsResult.error;
+  const loadingError =
+    categoriesResult.error || brandsResult.error || collectionsResult.error;
 
   const errorMessage =
     resolvedSearchParams.error ??
@@ -270,6 +285,7 @@ export default async function EditProductPage({
               name: product.name,
               description: product.description ?? "",
               categoryId: product.category_id ?? "",
+              brandId: product.brand_id ?? "",
               collectionId: product.collection_id ?? "",
               status: product.status,
               availability: product.availability,
@@ -281,6 +297,7 @@ export default async function EditProductPage({
               variants,
             }}
             categories={categoriesResult.data ?? []}
+            brands={brandsResult.data ?? []}
             collections={collectionsResult.data ?? []}
             errorMessage={errorMessage}
           />

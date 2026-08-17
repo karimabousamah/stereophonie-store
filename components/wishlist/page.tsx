@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Heart, Trash2 } from "lucide-react";
+import { ArrowRight, Gamepad2, Heart, Trash2 } from "lucide-react";
 
 import StoreFooter from "@/components/storefront/store-footer";
 import StoreHeader from "@/components/storefront/store-header";
@@ -11,91 +11,245 @@ import { useWishlist } from "@/components/wishlist/wishlist-provider";
 export default function WishlistPage() {
   const { products, productCount, hydrated, clearWishlist } = useWishlist();
 
+  const memoryUsage = Math.min(productCount, 99);
+
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="st-wishlist-v2">
       <StoreHeader />
 
-      <section className="border-b border-black/10 bg-[#f5f4f1]">
-        <div className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <section className="st-wishlist-boot">
+        <div className="st-wishlist-boot__grid" />
+
+        <div className="st-wishlist-shell">
+          <div className="st-wishlist-boot__topline">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-                Your saved selection
-              </p>
+              <span className="st-wishlist-led" />
+              STEREOPHONIE ARCADE NETWORK / ONLINE
+            </div>
 
-              <h1 className="mt-5 text-6xl font-semibold uppercase leading-[0.9] tracking-[-0.06em] sm:text-8xl lg:text-9xl">
-                Wishlist
+            <div>PLAYER 01 / MEMORY CHANNEL</div>
+          </div>
+
+          <div className="st-wishlist-boot__layout">
+            <div className="st-wishlist-boot__identity">
+              <div className="st-wishlist-cartridge-icon">
+                <Gamepad2 />
+              </div>
+
+              <p>PLAYER INVENTORY MODULE</p>
+
+              <h1>
+                SAVED
+                <br />
+                <span>MEMORY.</span>
               </h1>
+
+              <div className="st-wishlist-boot__description">
+                Products stored by the player for later retrieval, comparison
+                and purchase.
+              </div>
             </div>
 
-            <div className="flex flex-col items-start gap-4 lg:items-end">
-              <p className="max-w-xl text-sm leading-7 text-black/50 sm:text-base lg:text-right">
-                Save your favorite Stereophonie products and return to them
-                whenever you are ready.
-              </p>
+            <div className="st-wishlist-memory-panel">
+              <div className="st-wishlist-memory-panel__head">
+                <div>
+                  <span>MEMORY STATUS</span>
+                  <strong>{hydrated ? "READY" : "SYNCING"}</strong>
+                </div>
 
-              {hydrated && productCount > 0 ? (
-                <button
-                  type="button"
-                  onClick={clearWishlist}
-                  className="inline-flex min-h-11 items-center gap-2 border border-black/15 px-4 text-[9px] font-semibold uppercase tracking-[0.15em] transition hover:border-black hover:bg-black hover:text-white"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Clear wishlist
-                </button>
-              ) : null}
+                <div>
+                  <span>SAVED SLOTS</span>
+                  <strong>
+                    {String(hydrated ? productCount : 0).padStart(2, "0")}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>CHANNEL</span>
+                  <strong>01</strong>
+                </div>
+              </div>
+
+              <div className="st-wishlist-memory-meter">
+                <div className="st-wishlist-memory-meter__track">
+                  <span
+                    style={{
+                      width: `${Math.max(
+                        hydrated && memoryUsage > 0
+                          ? Math.min(memoryUsage * 6, 100)
+                          : 4,
+                        4,
+                      )}%`,
+                    }}
+                  />
+                </div>
+
+                <div className="st-wishlist-memory-meter__labels">
+                  <span>LOCAL / CLOUD MEMORY</span>
+                  <span>
+                    {hydrated
+                      ? `${String(productCount).padStart(2, "0")} OBJECTS STORED`
+                      : "READING DATA..."}
+                  </span>
+                </div>
+              </div>
+
+              <div className="st-wishlist-memory-panel__commands">
+                <Link href="/shop">
+                  BROWSE STORE
+                  <ArrowRight />
+                </Link>
+
+                {hydrated && productCount > 0 ? (
+                  <button type="button" onClick={clearWishlist}>
+                    <Trash2 />
+                    ERASE MEMORY
+                  </button>
+                ) : (
+                  <div className="st-wishlist-memory-panel__standby">
+                    MEMORY CHANNEL STANDBY
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-b border-black/10">
-        <div className="mx-auto flex max-w-[1600px] items-center gap-3 px-5 py-5 sm:px-8 lg:px-12">
-          <Heart className="h-4 w-4" />
+      <section className="st-wishlist-status">
+        <div className="st-wishlist-shell">
+          <div className="st-wishlist-status__item">
+            <span className="st-wishlist-led" />
+            MEMORY BUS / CONNECTED
+          </div>
 
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em]">
-            {hydrated ? productCount : 0}{" "}
-            {productCount === 1 ? "saved product" : "saved products"}
-          </p>
+          <div className="st-wishlist-status__item">
+            SLOT COUNT /
+            <strong>
+              {String(hydrated ? productCount : 0).padStart(2, "0")}
+            </strong>
+          </div>
+
+          <div className="st-wishlist-status__item">AUTO SAVE / ENABLED</div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1600px] px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
-        {!hydrated ? (
-          <div className="min-h-[420px] animate-pulse bg-black/[0.025]" />
-        ) : null}
+      <section className="st-wishlist-content">
+        <div className="st-wishlist-shell">
+          {!hydrated ? (
+            <div className="st-wishlist-loading">
+              <div className="st-wishlist-loading__screen">
+                <span className="st-wishlist-loading__cursor" />
 
-        {hydrated && productCount === 0 ? (
-          <div className="flex min-h-[520px] flex-col items-center justify-center border border-dashed border-black/15 px-6 text-center">
-            <div className="flex h-16 w-16 items-center justify-center border border-black/10 bg-black/[0.025]">
-              <Heart className="h-7 w-7 text-black/30" />
+                <strong>READING PLAYER MEMORY</strong>
+
+                <p>SYNCHRONIZING SAVED PRODUCT DATA...</p>
+
+                <div className="st-wishlist-loading__bar">
+                  <span />
+                </div>
+              </div>
             </div>
+          ) : null}
 
-            <h2 className="mt-7 text-3xl font-semibold">
-              Your wishlist is empty
-            </h2>
+          {hydrated && productCount === 0 ? (
+            <div className="st-wishlist-empty">
+              <div className="st-wishlist-empty__screen">
+                <div className="st-wishlist-empty__scanlines" />
 
-            <p className="mt-3 max-w-md text-sm leading-6 text-black/45">
-              Tap the heart on any product to save it here for later.
-            </p>
+                <div className="st-wishlist-empty__icon">
+                  <Heart />
+                </div>
 
-            <Link
-              href="/shop"
-              className="group mt-7 inline-flex min-h-12 items-center gap-4 border border-black bg-black px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#242424]"
-            >
-              Explore the collection
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-            </Link>
-          </div>
-        ) : null}
+                <p>MEMORY SLOT 00</p>
 
-        {hydrated && productCount > 0 ? (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-3 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-16">
-            {products.map((product) => (
-              <StoreProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : null}
+                <h2>
+                  NO SAVED
+                  <br />
+                  DATA.
+                </h2>
+
+                <div className="st-wishlist-empty__terminal">
+                  <span>&gt;</span>
+                  PLAYER INVENTORY IS CURRENTLY EMPTY
+                </div>
+
+                <p className="st-wishlist-empty__copy">
+                  Save a product from the store and it will be written to this
+                  memory channel.
+                </p>
+
+                <Link href="/shop" className="st-wishlist-empty__command">
+                  ENTER STORE
+                  <ArrowRight />
+                </Link>
+              </div>
+
+              <div className="st-wishlist-empty__footer">
+                <span>INSERT PRODUCT DATA TO CONTINUE</span>
+                <span>A / ENTER / STORE</span>
+              </div>
+            </div>
+          ) : null}
+
+          {hydrated && productCount > 0 ? (
+            <>
+              <div className="st-wishlist-library-head">
+                <div>
+                  <span>INVENTORY MEMORY / PLAYER 01</span>
+
+                  <h2>SAVED CARTRIDGES</h2>
+                </div>
+
+                <div className="st-wishlist-library-head__counter">
+                  <small>ACTIVE SLOTS</small>
+                  <strong>{String(productCount).padStart(2, "0")}</strong>
+                </div>
+              </div>
+
+              <div className="st-wishlist-grid">
+                {products.map((product, index) => (
+                  <article key={product.id} className="st-wishlist-slot">
+                    <div className="st-wishlist-slot__hardware">
+                      <div className="st-wishlist-slot__topline">
+                        <span>SLOT {String(index + 1).padStart(2, "0")}</span>
+
+                        <span className="st-wishlist-slot__status">
+                          <i />
+                          STORED
+                        </span>
+                      </div>
+
+                      <div className="st-wishlist-slot__product">
+                        <StoreProductCard product={product} />
+                      </div>
+
+                      <div className="st-wishlist-slot__footer">
+                        <span>MEMORY OK</span>
+                        <span>
+                          PLAYER 01 / ITEM {String(index + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="st-wishlist-system-footer">
+        <div className="st-wishlist-shell">
+          <span>
+            <i />
+            STEREOPHONIE INVENTORY SYSTEM / ONLINE
+          </span>
+
+          <span>LOCAL MEMORY + CUSTOMER SYNC</span>
+
+          <span>BEIRUT / LEBANON</span>
+        </div>
       </section>
 
       <StoreFooter />

@@ -815,7 +815,7 @@ export default function AccountSettingsClient({
 
                   <button
                     type="submit"
-                    className="mt-7 border border-black bg-black px-7 py-4 text-[11px] font-semibold uppercase tracking-[0.17em] text-white transition hover:bg-white hover:text-black"
+                    className="st-player-command-button st-player-command-button--primary mt-7"
                   >
                     Save personal details
                   </button>

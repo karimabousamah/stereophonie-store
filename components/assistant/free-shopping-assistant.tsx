@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { useCart } from "@/components/cart/cart-provider";
 import {
@@ -142,20 +143,20 @@ const translations = {
     title: "Stereophonie Assistant",
     subtitle: "Shopping and order assistance",
     welcome:
-      "Hello! I can help you discover products, check available sizes and add items to your cart.",
-    placeholder: "Ask about products, sizes or prices...",
+      "SYSTEM ONLINE. I can search Stereophonie products, compare configurations, check live availability and control your cart.",
+    placeholder: "Enter command: product, configuration, price...",
     searching: "Thinking and checking our live collection...",
     results: "Here are the best available matches:",
     noResults: "I could not find an available product matching your request.",
-    selectSize: "Select a size",
+    selectSize: "Select configuration",
     addToCart: "Add to cart",
     added: "Added to cart",
     viewProduct: "View product",
     from: "From",
     suggestions: [
-      "Show me available dresses",
-      "I need a size M top",
-      "Show bags under $100",
+      "Show available gaming products",
+      "Find phones under $500",
+      "Show new audio releases",
     ],
   },
 
@@ -163,21 +164,21 @@ const translations = {
     title: "Assistante Stereophonie",
     subtitle: "Conseils shopping et commandes",
     welcome:
-      "Bonjour ! Je peux vous aider à découvrir nos produits, vérifier les tailles disponibles et ajouter des articles au panier.",
-    placeholder: "Demandez des produits, tailles ou prix...",
+      "SYSTÈME EN LIGNE. Je peux rechercher les produits Stereophonie, comparer les configurations, vérifier le stock et gérer votre panier.",
+    placeholder: "Commande : produit, configuration, prix...",
     searching: "Réflexion et vérification de notre collection...",
     results: "Voici les meilleures options disponibles :",
     noResults:
       "Je n’ai trouvé aucun produit disponible correspondant à votre demande.",
-    selectSize: "Sélectionnez une taille",
+    selectSize: "Sélectionnez la configuration",
     addToCart: "Ajouter au panier",
     added: "Ajouté au panier",
     viewProduct: "Voir le produit",
     from: "À partir de",
     suggestions: [
-      "Montrez-moi les robes disponibles",
-      "Je cherche un haut taille M",
-      "Montrez les sacs à moins de 100 $",
+      "Montrez les produits gaming disponibles",
+      "Trouvez des téléphones sous 500 $",
+      "Montrez les nouveautés audio",
     ],
   },
 
@@ -185,20 +186,20 @@ const translations = {
     title: "مساعدة نيتا ستايل",
     subtitle: "مساعدة للتسوق والطلبات",
     welcome:
-      "مرحبًا! يمكنني مساعدتك في اكتشاف المنتجات والتحقق من المقاسات وإضافة المنتجات إلى سلة التسوق.",
-    placeholder: "اسألي عن المنتجات أو المقاسات أو الأسعار...",
+      "النظام جاهز. يمكنني البحث عن منتجات Stereophonie ومقارنة الإعدادات والتحقق من التوفر وإدارة سلة التسوق.",
+    placeholder: "أدخل أمراً: منتج، إعداد، سعر...",
     searching: "جاري التفكير والتحقق من مجموعتنا...",
     results: "هذه أفضل المنتجات المتوفرة:",
     noResults: "لم أجد منتجًا متوفرًا يطابق طلبك.",
-    selectSize: "اختاري المقاس",
+    selectSize: "اختر الإعداد",
     addToCart: "إضافة إلى السلة",
     added: "تمت الإضافة إلى السلة",
     viewProduct: "عرض المنتج",
     from: "ابتداءً من",
     suggestions: [
-      "اعرضي الفساتين المتوفرة",
-      "أريد بلوزة مقاس M",
-      "اعرضي الحقائب تحت 100 دولار",
+      "اعرض منتجات الألعاب المتوفرة",
+      "ابحث عن هواتف تحت 500 دولار",
+      "اعرض أحدث منتجات الصوت",
     ],
   },
 } as const;
@@ -258,7 +259,7 @@ function ProductCard({
   }
 
   return (
-    <article className="overflow-hidden border border-black/10 bg-white">
+    <article className="st-arcade-assistant-product overflow-hidden border border-black/10 bg-white">
       <Link href={`/shop/${product.slug}`} className="block">
         <div className="aspect-[4/5] overflow-hidden bg-[#f2f2f2]">
           {product.imageUrl ? (
@@ -347,7 +348,7 @@ function ProductCard({
   );
 }
 
-export default function FreeShoppingAssistant() {
+function FreeShoppingAssistantContents() {
   const router = useRouter();
 
   const {
@@ -933,20 +934,18 @@ export default function FreeShoppingAssistant() {
         type="button"
         aria-label={text.title}
         onClick={() => setIsOpen(true)}
-        className={`group fixed bottom-5 right-5 z-[210] flex h-16 w-16 items-center justify-center rounded-full bg-black text-white shadow-[0_18px_50px_rgba(0,0,0,0.28)] transition duration-300 hover:scale-105 hover:shadow-[0_24px_65px_rgba(0,0,0,0.34)] ${
-          isOpen
-            ? "pointer-events-none scale-90 opacity-0"
-            : "assistant-launcher-active"
+        className={`st-arcade-assistant-launcher ${
+          isOpen ? "pointer-events-none scale-90 opacity-0" : ""
         }`}
       >
-        <span className="assistant-launcher-ring" />
+        <span className="st-arcade-assistant-launcher__signal" />
 
         <Bot className="relative z-10 h-7 w-7 transition duration-300 group-hover:scale-110" />
       </button>
 
       <div
         onClick={() => setIsOpen(false)}
-        className={`fixed inset-0 z-[230] bg-black/25 transition-opacity duration-300 ${
+        className={`st-arcade-assistant-backdrop ${
           isOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"
@@ -955,7 +954,8 @@ export default function FreeShoppingAssistant() {
 
       <section
         dir={language === "ar" ? "rtl" : "ltr"}
-        className={`fixed bottom-0 right-0 z-[240] flex h-[94dvh] w-full max-w-[430px] transform-gpu flex-col bg-white shadow-[-30px_0_90px_rgba(0,0,0,0.18)] will-change-transform transition-transform duration-300 ease-out sm:bottom-5 sm:right-5 sm:h-[calc(100dvh-40px)] ${
+        data-open={isOpen ? "true" : "false"}
+        className={`st-arcade-assistant-terminal transform-gpu will-change-transform transition-transform duration-300 ease-out ${
           isOpen
             ? "translate-y-0 sm:translate-x-0"
             : "translate-y-full sm:translate-x-[115%] sm:translate-y-0"
@@ -986,21 +986,62 @@ export default function FreeShoppingAssistant() {
             </button>
           </div>
 
-          <div className="mt-4 flex gap-2">
-            {(["en", "fr", "ar"] as Language[]).map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => changeLanguage(option)}
-                className={`min-h-8 flex-1 border text-[9px] font-semibold uppercase tracking-[0.15em] ${
-                  language === option
-                    ? "border-white bg-white text-black"
-                    : "border-white/25 text-white"
-                }`}
-              >
-                {option}
-              </button>
-            ))}
+          <div
+            className="st-arcade-language-deck"
+            aria-label="Assistant language"
+          >
+            <div className="st-arcade-language-deck__rail">
+              <span>LANGUAGE MODULE</span>
+
+              <span>
+                CH /{language === "en" ? "01" : language === "fr" ? "02" : "03"}
+              </span>
+            </div>
+
+            <div className="st-arcade-language-deck__slots">
+              {(["en", "fr", "ar"] as Language[]).map((option, index) => {
+                const active = language === option;
+
+                const label =
+                  option === "en"
+                    ? "ENGLISH"
+                    : option === "fr"
+                      ? "FRANÇAIS"
+                      : "العربية";
+
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => changeLanguage(option)}
+                    aria-pressed={active}
+                    className={`st-arcade-language-cartridge ${
+                      active ? "is-active" : ""
+                    }`}
+                  >
+                    <span className="st-arcade-language-cartridge__led" />
+
+                    <span className="st-arcade-language-cartridge__number">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+
+                    <span className="st-arcade-language-cartridge__copy">
+                      <strong>{option.toUpperCase()}</strong>
+                      <small>{label}</small>
+                    </span>
+
+                    <span className="st-arcade-language-cartridge__state">
+                      {active ? "CONNECTED" : "INSERT"}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="st-arcade-language-deck__footer">
+              <span>STEREOPHONIE LANGUAGE BUS</span>
+              <span>3 MODULES</span>
+            </div>
           </div>
         </header>
 
@@ -1052,7 +1093,7 @@ export default function FreeShoppingAssistant() {
           ) : null}
         </div>
 
-        <footer className="border-t border-black/10 bg-white p-4">
+        <footer className="st-arcade-assistant-controls">
           <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
             {text.suggestions.map((suggestion) => (
               <button
@@ -1085,7 +1126,7 @@ export default function FreeShoppingAssistant() {
               rows={1}
               maxLength={500}
               placeholder={text.placeholder}
-              className="min-h-12 flex-1 resize-none border border-black/15 px-4 py-3 text-sm outline-none focus:border-black"
+              className="min-h-12 flex-1 resize-none px-4 py-3 text-sm outline-none"
             />
 
             <button
@@ -1104,9 +1145,14 @@ export default function FreeShoppingAssistant() {
                   : "Voice input is not supported by this browser"
               }
               disabled={!voiceSupported}
-              className={`flex h-12 w-12 items-center justify-center border border-black/15 bg-white text-black transition hover:border-black hover:bg-black hover:text-white sm:h-12 sm:w-12  `}
+              className={`st-arcade-assistant-control-button st-arcade-assistant-voice ${
+                voiceListening ? "st-arcade-assistant-voice--listening" : ""
+              }`}
             >
-              <span aria-hidden="true" className="nita-assistant-voice-halo" />
+              <span
+                aria-hidden="true"
+                className="st-arcade-assistant-voice-halo"
+              />
 
               {voiceListening ? (
                 <MicOff className="relative z-10 h-5 w-5" />
@@ -1122,7 +1168,7 @@ export default function FreeShoppingAssistant() {
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="flex h-12 w-12 items-center justify-center bg-black text-white disabled:opacity-40"
+              className="st-arcade-assistant-control-button st-arcade-assistant-control-button--send disabled:opacity-40"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -1135,4 +1181,30 @@ export default function FreeShoppingAssistant() {
       </section>
     </>
   );
+}
+
+/* PHASE_8E_ASSISTANT_BODY_PORTAL */
+export default function FreeShoppingAssistant() {
+  const [assistantMounted, setAssistantMounted] = useState(false);
+
+  useEffect(() => {
+    setAssistantMounted(true);
+
+    return () => {
+      setAssistantMounted(false);
+    };
+  }, []);
+
+  if (!assistantMounted) {
+    return null;
+  }
+
+  /*
+   * IMPORTANT:
+   * The complete assistant now lives directly under document.body.
+   *
+   * This prevents transformed storefront parents from becoming
+   * the containing block for position: fixed.
+   */
+  return createPortal(<FreeShoppingAssistantContents />, document.body);
 }

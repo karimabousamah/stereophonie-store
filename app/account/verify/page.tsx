@@ -25,7 +25,7 @@ export default async function VerifyPage({ searchParams }: VerifyPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f3f2ee] text-black">
+    <main className="st-account-v2 st-account-verify-v2 min-h-screen bg-[#f3f2ee] text-black">
       <header className="border-b border-black/10">
         <div className="mx-auto grid max-w-[1380px] grid-cols-3 items-center px-5 py-6 sm:px-8 lg:px-12">
           <Link

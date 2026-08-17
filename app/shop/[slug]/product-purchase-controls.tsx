@@ -27,6 +27,8 @@ type AvailabilityStatus =
 type ProductVariant = {
   id: string;
   size: string;
+  variant_name: string | null;
+  attributes: Record<string, string> | null;
   sku: string | null;
   regular_price: number | null;
   sale_price: number | null;
@@ -59,6 +61,71 @@ type StockAlertResponse = {
   message?: string;
 };
 
+function getVariantDisplayName(variant: ProductVariant) {
+  const variantName = String(variant.variant_name ?? "").trim();
+
+  if (variantName) {
+    return variantName;
+  }
+
+  const legacyName = String(variant.size ?? "").trim();
+
+  return legacyName || "Standard";
+}
+
+const configurationAttributeLabels: Record<string, string> = {
+  storage: "Storage",
+  memory: "Memory",
+  ram: "Memory",
+  processor: "Processor",
+  cpu: "Processor",
+  gpu: "Graphics",
+  graphics: "Graphics",
+  color: "Colour",
+  colour: "Colour",
+  connectivity: "Connectivity",
+  network: "Network",
+  edition: "Edition",
+  model: "Model",
+  generation: "Generation",
+  capacity: "Capacity",
+  screen: "Display",
+  display: "Display",
+  size: "Dimensions",
+  battery: "Battery",
+  operating_system: "Operating system",
+  os: "Operating system",
+};
+
+function formatAttributeLabel(key: string) {
+  const normalizedKey = key.trim().toLowerCase();
+
+  if (configurationAttributeLabels[normalizedKey]) {
+    return configurationAttributeLabels[normalizedKey];
+  }
+
+  return key
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function getVariantAttributes(variant: ProductVariant) {
+  if (
+    !variant.attributes ||
+    typeof variant.attributes !== "object" ||
+    Array.isArray(variant.attributes)
+  ) {
+    return [];
+  }
+
+  return Object.entries(variant.attributes)
+    .map(([key, value]) => ({
+      key: key.trim(),
+      value: String(value ?? "").trim(),
+    }))
+    .filter((attribute) => attribute.key && attribute.value);
+}
+
 function variantIsPurchasable(variant: ProductVariant) {
   return (
     (variant.availability_status === "in_stock" ||
@@ -88,6 +155,9 @@ function isWholeProductMode(variants: ProductVariant[]) {
     "onesizefitsall",
     "universal",
     "nosize",
+    "standard",
+    "default",
+    "standardconfiguration",
     "na",
     "none",
   ].includes(normalized);
@@ -186,7 +256,7 @@ export default function ProductPurchaseControls({
 
   const [emailModalOpen, setEmailModalOpen] = useState(false);
 
-  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [configurationGuideOpen, setConfigurationGuideOpen] = useState(false);
 
   const [guestEmail, setGuestEmail] = useState("");
 
@@ -204,22 +274,30 @@ export default function ProductPurchaseControls({
       "XL",
       "XXL",
       "XXXL",
-      "ONE SIZE",
+      "STANDARD",
     ];
 
     return [...variants].sort((first, second) => {
-      const firstSize = first.size.trim().toUpperCase();
+      const firstConfiguration = getVariantDisplayName(first)
+        .trim()
+        .toUpperCase();
 
-      const secondSize = second.size.trim().toUpperCase();
+      const secondConfiguration = getVariantDisplayName(second)
+        .trim()
+        .toUpperCase();
 
-      const firstIndex = sizeOrder.indexOf(firstSize);
+      const firstIndex = sizeOrder.indexOf(firstConfiguration);
 
-      const secondIndex = sizeOrder.indexOf(secondSize);
+      const secondIndex = sizeOrder.indexOf(secondConfiguration);
 
       if (firstIndex === -1 && secondIndex === -1) {
-        return firstSize.localeCompare(secondSize, undefined, {
-          numeric: true,
-        });
+        return firstConfiguration.localeCompare(
+          secondConfiguration,
+          undefined,
+          {
+            numeric: true,
+          },
+        );
       }
 
       if (firstIndex === -1) {
@@ -245,6 +323,10 @@ export default function ProductPurchaseControls({
   const selectedIsPurchasable = selectedVariant
     ? variantIsPurchasable(selectedVariant)
     : false;
+
+  const selectedVariantAttributes = selectedVariant
+    ? getVariantAttributes(selectedVariant)
+    : [];
 
   const selectedPrice = selectedVariant ? getPrice(selectedVariant) : null;
 
@@ -298,7 +380,7 @@ export default function ProductPurchaseControls({
   }, [message]);
 
   useEffect(() => {
-    const modalOpen = emailModalOpen || sizeGuideOpen;
+    const modalOpen = emailModalOpen || configurationGuideOpen;
 
     if (!modalOpen) {
       return;
@@ -314,7 +396,7 @@ export default function ProductPurchaseControls({
       }
 
       setEmailModalOpen(false);
-      setSizeGuideOpen(false);
+      setConfigurationGuideOpen(false);
       setGuestEmailError("");
     }
 
@@ -325,7 +407,7 @@ export default function ProductPurchaseControls({
 
       window.removeEventListener("keydown", closeWithEscape);
     };
-  }, [emailModalOpen, sizeGuideOpen]);
+  }, [emailModalOpen, configurationGuideOpen]);
 
   useEffect(() => {
     if (!openStockNotification || notifyLinkHandled.current) {
@@ -356,7 +438,7 @@ export default function ProductPurchaseControls({
     }
 
     if (!wholeProductMode && !unavailableVariant) {
-      setMessage("All available sizes can currently be purchased.");
+      setMessage("All available configurations can currently be purchased.");
       setMessageType("success");
       return;
     }
@@ -378,7 +460,7 @@ export default function ProductPurchaseControls({
       setMessage(
         wholeProductMode
           ? "This product is currently unavailable."
-          : "Please select an available size.",
+          : "Please select an available configuration.",
       );
       setMessageType("error");
       return;
@@ -397,7 +479,7 @@ export default function ProductPurchaseControls({
         slug: product.slug,
         name: product.name,
         imageUrl: product.imageUrl,
-        size: selectedVariant.size,
+        size: getVariantDisplayName(selectedVariant),
         variantId: selectedVariant.id,
         unitPrice: price.unitPrice,
         regularPrice: price.regularPrice,
@@ -420,13 +502,13 @@ export default function ProductPurchaseControls({
 
   async function requestNotification(email?: string) {
     if (!wholeProductMode && !selectedVariant) {
-      setMessage("Please select an unavailable size first.");
+      setMessage("Please select an unavailable configuration first.");
       setMessageType("error");
       return;
     }
 
     if (selectedVariant && variantIsPurchasable(selectedVariant)) {
-      setMessage("This size is currently available.");
+      setMessage("This configuration is currently available.");
       setMessageType("error");
       return;
     }
@@ -523,21 +605,22 @@ export default function ProductPurchaseControls({
             <div className="flex items-end justify-between gap-5">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em]">
-                  Select size
+                  Select configuration
                 </p>
 
                 <p className="mt-2 text-xs leading-5 text-black/40">
-                  Select a size to view its exact price and availability.
+                  Choose an available configuration to view its exact price and
+                  stock status.
                 </p>
               </div>
 
               <button
                 type="button"
-                onClick={() => setSizeGuideOpen(true)}
+                onClick={() => setConfigurationGuideOpen(true)}
                 className="flex shrink-0 items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-black/45 underline underline-offset-4 transition hover:text-black"
               >
-                <Ruler className="h-3.5 w-3.5" />
-                Size guide
+                <Package className="h-3.5 w-3.5" />
+                Compare options
               </button>
             </div>
 
@@ -562,7 +645,7 @@ export default function ProductPurchaseControls({
                     }`}
                   >
                     <span className="flex items-center justify-center gap-2 text-sm font-semibold">
-                      {variant.size}
+                      {getVariantDisplayName(variant)}
 
                       {selected ? <Check className="h-3.5 w-3.5" /> : null}
                     </span>
@@ -582,7 +665,7 @@ export default function ProductPurchaseControls({
             </p>
 
             <p className="mt-2 text-xs leading-5 text-black/40">
-              This product does not require a size selection.
+              This product is sold in a single configuration.
             </p>
           </div>
         )}
@@ -597,10 +680,12 @@ export default function ProductPurchaseControls({
               <div>
                 {!wholeProductMode ? (
                   <p className="text-sm font-semibold">
-                    Size {selectedVariant.size}
+                    {getVariantDisplayName(selectedVariant)}
                   </p>
                 ) : (
-                  <p className="text-sm font-semibold">One size</p>
+                  <p className="text-sm font-semibold">
+                    Standard configuration
+                  </p>
                 )}
 
                 {selectedVariant.sku ? (
@@ -624,6 +709,43 @@ export default function ProductPurchaseControls({
                 ) : null}
               </div>
             </div>
+          </div>
+        ) : null}
+
+        {selectedVariant && selectedVariantAttributes.length > 0 ? (
+          <div className="mt-5 overflow-hidden border border-black/10">
+            <div className="flex items-center justify-between border-b border-black/10 bg-[#f5f5f3] px-4 py-3">
+              <div>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                  Technical configuration
+                </p>
+
+                <p className="mt-1 text-sm font-semibold">
+                  {getVariantDisplayName(selectedVariant)}
+                </p>
+              </div>
+
+              <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/30">
+                Specs
+              </span>
+            </div>
+
+            <dl className="divide-y divide-black/10">
+              {selectedVariantAttributes.map((attribute) => (
+                <div
+                  key={attribute.key}
+                  className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-5 px-4 py-3.5"
+                >
+                  <dt className="text-[10px] font-semibold uppercase tracking-[0.13em] text-black/40">
+                    {formatAttributeLabel(attribute.key)}
+                  </dt>
+
+                  <dd className="text-right text-sm font-semibold text-black">
+                    {attribute.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         ) : null}
 
@@ -758,7 +880,7 @@ export default function ProductPurchaseControls({
               className="flex min-h-14 w-full cursor-not-allowed items-center justify-center gap-3 bg-black/10 px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-black/40"
             >
               <Package className="h-4 w-4" />
-              Select a size
+              Select a configuration
             </button>
           ) : (
             <button
@@ -795,96 +917,84 @@ export default function ProductPurchaseControls({
         </div>
       </div>
 
-      {sizeGuideOpen ? (
+      {configurationGuideOpen ? (
         <div
           className="fixed inset-0 z-[2147483010] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
-              setSizeGuideOpen(false);
+              setConfigurationGuideOpen(false);
             }
           }}
         >
           <div
             role="dialog"
             aria-modal="true"
-            aria-labelledby="size-guide-title"
+            aria-labelledby="configuration-guide-title"
             className="relative w-full max-w-2xl bg-white p-6 shadow-2xl sm:p-9"
           >
             <button
               type="button"
-              onClick={() => setSizeGuideOpen(false)}
-              aria-label="Close size guide"
+              onClick={() => setConfigurationGuideOpen(false)}
+              aria-label="Close configuration guide"
               className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center border border-black/10 transition hover:border-black hover:bg-black hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
 
-            <Ruler className="h-6 w-6" />
+            <Package className="h-6 w-6" />
 
             <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-              Fit information
+              Configuration information
             </p>
 
             <h2
-              id="size-guide-title"
+              id="configuration-guide-title"
               className="mt-3 text-3xl font-semibold tracking-[-0.04em]"
             >
-              Size guide
+              Compare configurations
             </h2>
 
             <p className="mt-4 max-w-xl text-sm leading-6 text-black/50">
-              Measurements are general guidelines. Individual products may fit
-              differently depending on their material and cut.
+              Configuration options vary by product. Compare the available
+              storage, memory, processor, colour, connectivity, edition or other
+              technical specifications before ordering.
             </p>
 
-            <div className="mt-7 overflow-x-auto">
-              <table className="w-full min-w-[520px] border-collapse text-left text-sm">
-                <thead>
-                  <tr className="border-y border-black/15">
-                    <th className="px-3 py-4 text-[10px] uppercase tracking-[0.14em]">
-                      Size
-                    </th>
-                    <th className="px-3 py-4 text-[10px] uppercase tracking-[0.14em]">
-                      Bust
-                    </th>
-                    <th className="px-3 py-4 text-[10px] uppercase tracking-[0.14em]">
-                      Waist
-                    </th>
-                    <th className="px-3 py-4 text-[10px] uppercase tracking-[0.14em]">
-                      Hips
-                    </th>
-                  </tr>
-                </thead>
+            <div className="mt-7 grid gap-3 sm:grid-cols-3">
+              <div className="border border-black/10 bg-[#f5f5f3] p-4">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                  Storage
+                </p>
+                <p className="mt-2 text-sm leading-6 text-black/60">
+                  Some products are offered with different storage capacities.
+                </p>
+              </div>
 
-                <tbody className="divide-y divide-black/10 text-black/55">
-                  {[
-                    ["XS", "80–84", "62–66", "86–90"],
-                    ["S", "84–88", "66–70", "90–94"],
-                    ["M", "88–92", "70–74", "94–98"],
-                    ["L", "92–98", "74–80", "98–104"],
-                    ["XL", "98–104", "80–86", "104–110"],
-                  ].map((row) => (
-                    <tr key={row[0]}>
-                      {row.map((cell, index) => (
-                        <td
-                          key={cell}
-                          className={`px-3 py-4 ${
-                            index === 0 ? "font-semibold text-black" : ""
-                          }`}
-                        >
-                          {cell}
-                          {index > 0 ? " cm" : ""}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="border border-black/10 bg-[#f5f5f3] p-4">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                  Memory / specification
+                </p>
+                <p className="mt-2 text-sm leading-6 text-black/60">
+                  Configuration labels may represent RAM, model, capacity or
+                  technical specification.
+                </p>
+              </div>
+
+              <div className="border border-black/10 bg-[#f5f5f3] p-4">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                  Need help?
+                </p>
+                <p className="mt-2 text-sm leading-6 text-black/60">
+                  Contact Stereophonie and our team can help you choose the
+                  right option.
+                </p>
+              </div>
             </div>
 
             <p className="mt-5 text-xs leading-5 text-black/40">
-              For the most accurate recommendation, compare these measurements
-              with a similar item that fits you well.
+              Product configurations can differ in storage, memory, processor,
+              colour, connectivity, edition and other technical specifications.
+              Review the selected configuration before ordering.
             </p>
           </div>
         </div>
@@ -939,8 +1049,10 @@ export default function ProductPurchaseControls({
               <span className="font-semibold text-black">{product.name}</span>
               {wholeProductMode
                 ? " becomes available again."
-                : ` in size ${
-                    selectedVariant?.size ?? ""
+                : ` in configuration ${
+                    selectedVariant
+                      ? getVariantDisplayName(selectedVariant)
+                      : ""
                   } becomes available again.`}
             </p>
 

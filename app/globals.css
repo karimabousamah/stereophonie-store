@@ -752,8 +752,8 @@ main article.group img {
 
   background: radial-gradient(
     circle at var(--nita-pointer-x) var(--nita-pointer-y),
-    rgba(64, 112, 255, 0.28),
-    rgba(70, 102, 255, 0.12) 34%,
+    rgba(237, 28, 36, 0.28),
+    rgba(237, 28, 36, 0.12) 34%,
     transparent 68%
   );
 
@@ -779,8 +779,8 @@ main article.group img {
 
   background: radial-gradient(
     circle,
-    rgba(132, 86, 255, 0.23),
-    rgba(82, 105, 255, 0.08) 42%,
+    rgba(237, 28, 36, 0.23),
+    rgba(237, 28, 36, 0.08) 42%,
     transparent 70%
   );
 
@@ -814,7 +814,7 @@ main article.group img {
 
   background: linear-gradient(90deg, #111111, #4a76ff 55%, #9b74ff);
 
-  box-shadow: 0 0 18px rgba(72, 111, 255, 0.5);
+  box-shadow: 0 0 18px rgba(237, 28, 36, 0.5);
 
   will-change: transform;
 }
@@ -988,9 +988,9 @@ main article.group img {
   isolation: isolate;
 
   box-shadow:
-    0 16px 52px rgba(45, 87, 255, 0.45),
-    0 0 0 2px rgba(112, 145, 255, 0.36),
-    0 0 44px rgba(73, 113, 255, 0.38) !important;
+    0 16px 52px rgba(237, 28, 36, 0.32),
+    0 0 0 2px rgba(237, 28, 36, 0.24),
+    0 0 44px rgba(237, 28, 36, 0.28) !important;
 
   animation: nitaStrongAssistant 2.8s ease-in-out infinite;
 }
@@ -1007,8 +1007,8 @@ main article.group img {
 
   background: radial-gradient(
     circle,
-    rgba(99, 149, 255, 0.78),
-    rgba(73, 105, 255, 0.34) 42%,
+    rgba(237, 28, 36, 0.58),
+    rgba(237, 28, 36, 0.34) 42%,
     transparent 72%
   );
 
@@ -1025,7 +1025,7 @@ main article.group img {
 
   z-index: -1;
 
-  border: 1px solid rgba(136, 164, 255, 0.66);
+  border: 1px solid rgba(237, 28, 36, 0.46);
 
   border-radius: 9999px;
 
@@ -1038,18 +1038,18 @@ main article.group img {
     transform: scale(1);
 
     box-shadow:
-      0 14px 44px rgba(45, 87, 255, 0.31),
-      0 0 0 1px rgba(104, 140, 255, 0.24),
-      0 0 30px rgba(73, 113, 255, 0.24);
+      0 14px 44px rgba(237, 28, 36, 0.22),
+      0 0 0 1px rgba(237, 28, 36, 0.17),
+      0 0 30px rgba(237, 28, 36, 0.17);
   }
 
   50% {
     transform: scale(1.045);
 
     box-shadow:
-      0 22px 72px rgba(45, 87, 255, 0.58),
-      0 0 0 7px rgba(104, 140, 255, 0.12),
-      0 0 56px rgba(73, 113, 255, 0.48);
+      0 22px 72px rgba(237, 28, 36, 0.44),
+      0 0 0 7px rgba(237, 28, 36, 0.1),
+      0 0 56px rgba(237, 28, 36, 0.36);
   }
 }
 
@@ -1192,8 +1192,8 @@ main article.group img {
 
   background: radial-gradient(
     230px circle at var(--nita-pointer-x) var(--nita-pointer-y),
-    rgba(80, 125, 255, 0.16) 0%,
-    rgba(79, 111, 255, 0.095) 23%,
+    rgba(237, 28, 36, 0.16) 0%,
+    rgba(237, 28, 36, 0.095) 23%,
     rgba(65, 91, 240, 0.045) 43%,
     transparent 72%
   ) !important;
@@ -1226,8 +1226,8 @@ main article.group img {
 
   background: radial-gradient(
     520px circle at var(--nita-pointer-x) var(--nita-pointer-y),
-    rgba(77, 101, 255, 0.045),
-    rgba(105, 75, 255, 0.018) 42%,
+    rgba(237, 28, 36, 0.045),
+    rgba(237, 28, 36, 0.018) 42%,
     transparent 72%
   ) !important;
 
@@ -1242,8 +1242,8 @@ main article.group img {
 html[data-nita-pointer-interactive="true"] .nita-premium-ambient::before {
   background: radial-gradient(
     260px circle at var(--nita-pointer-x) var(--nita-pointer-y),
-    rgba(85, 138, 255, 0.24) 0%,
-    rgba(73, 115, 255, 0.12) 24%,
+    rgba(237, 28, 36, 0.24) 0%,
+    rgba(237, 28, 36, 0.12) 24%,
     rgba(62, 91, 245, 0.052) 48%,
     transparent 74%
   ) !important;
@@ -1316,8 +1316,8 @@ html[data-nita-pointer-interactive="true"] .nita-premium-ambient::before {
 
   background: radial-gradient(
     circle,
-    rgba(91, 111, 255, 0.055),
-    rgba(107, 82, 255, 0.018) 43%,
+    rgba(237, 28, 36, 0.055),
+    rgba(237, 28, 36, 0.018) 43%,
     transparent 72%
   );
 
@@ -1372,7 +1372,7 @@ html[data-nita-pointer-interactive="true"] .nita-premium-ambient::before {
   left: 0;
   height: 2px;
 
-  background: linear-gradient(90deg, #111111, rgba(88, 108, 255, 0.8));
+  background: linear-gradient(90deg, #111111, rgba(237, 28, 36, 0.8));
 
   transform: scaleX(0);
   transform-origin: left;
@@ -1541,9 +1541,9 @@ html[data-nita-pointer-interactive="true"] .nita-premium-ambient::before {
 
   background: radial-gradient(
     ellipse,
-    rgba(75, 111, 255, 0.17) 0%,
-    rgba(85, 103, 255, 0.08) 36%,
-    rgba(81, 92, 255, 0.025) 58%,
+    rgba(237, 28, 36, 0.17) 0%,
+    rgba(237, 28, 36, 0.08) 36%,
+    rgba(237, 28, 36, 0.025) 58%,
     transparent 76%
   );
 
@@ -1623,7 +1623,7 @@ html[data-nita-pointer-interactive="true"] .nita-premium-ambient::before {
   background: linear-gradient(
     to bottom,
     transparent,
-    rgba(65, 98, 255, 0.92),
+    rgba(237, 28, 36, 0.92),
     transparent
   );
 
@@ -1690,7 +1690,7 @@ html[data-nita-pointer-interactive="true"] .nita-premium-ambient::before {
   }
 
   .nita-account-scroll-reveal:hover .nita-account-scroll-reveal__arrow {
-    color: rgba(48, 79, 255, 1);
+    color: rgba(237, 28, 36, 1);
   }
 }
 
@@ -2060,9 +2060,9 @@ img.nita-product-photo {
 
   background: radial-gradient(
     circle,
-    rgba(93, 133, 255, 0.46) 0%,
-    rgba(74, 104, 255, 0.19) 38%,
-    rgba(74, 104, 255, 0.04) 64%,
+    rgba(237, 28, 36, 0.4) 0%,
+    rgba(237, 28, 36, 0.16) 38%,
+    rgba(237, 28, 36, 0.035) 64%,
     transparent 75%
   );
 
@@ -2071,8 +2071,8 @@ img.nita-product-photo {
 
 .nita-assistant-voice-button--listening {
   box-shadow:
-    0 8px 30px rgba(63, 91, 255, 0.24),
-    0 0 0 1px rgba(100, 130, 255, 0.16);
+    0 8px 30px rgba(237, 28, 36, 0.2),
+    0 0 0 1px rgba(237, 28, 36, 0.13);
 
   animation: nitaVoiceButtonBreath 1.8s ease-in-out infinite;
 }
@@ -2087,16 +2087,16 @@ img.nita-product-photo {
     transform: scale(1);
 
     box-shadow:
-      0 7px 24px rgba(63, 91, 255, 0.18),
-      0 0 0 1px rgba(100, 130, 255, 0.12);
+      0 7px 24px rgba(237, 28, 36, 0.15),
+      0 0 0 1px rgba(237, 28, 36, 0.1);
   }
 
   50% {
     transform: scale(1.045);
 
     box-shadow:
-      0 12px 38px rgba(63, 91, 255, 0.36),
-      0 0 0 4px rgba(100, 130, 255, 0.08);
+      0 12px 38px rgba(237, 28, 36, 0.3),
+      0 0 0 4px rgba(237, 28, 36, 0.07);
   }
 }
 
@@ -4042,3 +4042,1989 @@ a {
 /* =========================================================
    END STEREOPHONIE PREMIUM FRONTEND V1
    ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — TECHNICAL PRODUCT GALLERY
+   ========================================================= */
+
+.stereo-product-gallery {
+  width: 100%;
+}
+
+.stereo-product-gallery__stage {
+  position: relative;
+
+  min-height: 680px;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: radial-gradient(
+    circle at 50% 42%,
+    #ffffff 0%,
+    #f6f6f4 48%,
+    #ececea 100%
+  );
+
+  border: 1px solid rgba(0, 0, 0, 0.09);
+}
+
+.stereo-product-gallery__grid {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.32;
+
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+
+  background-size: 44px 44px;
+
+  mask-image: radial-gradient(circle at center, black, transparent 75%);
+}
+
+.stereo-product-gallery__main-image {
+  position: relative;
+
+  z-index: 2;
+
+  width: 82%;
+  height: 560px;
+
+  object-fit: contain;
+
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .stereo-product-gallery__stage:hover .stereo-product-gallery__main-image {
+    transform: scale(1.025);
+  }
+}
+
+.stereo-product-gallery__counter {
+  position: absolute;
+
+  z-index: 4;
+
+  top: 18px;
+  left: 18px;
+
+  padding: 10px 12px;
+
+  background: rgba(255, 255, 255, 0.84);
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+
+  backdrop-filter: blur(10px);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-product-gallery__expand {
+  position: absolute;
+
+  z-index: 4;
+
+  right: 18px;
+  bottom: 18px;
+
+  min-height: 43px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 0 14px;
+
+  background: #090909;
+
+  color: #fff;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.stereo-product-gallery__expand svg {
+  width: 15px;
+}
+
+.stereo-product-gallery__arrows {
+  position: absolute;
+
+  z-index: 4;
+
+  left: 18px;
+  bottom: 18px;
+
+  display: flex;
+  gap: 5px;
+}
+
+.stereo-product-gallery__arrows button {
+  width: 43px;
+  height: 43px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(0, 0, 0, 0.14);
+
+  background: rgba(255, 255, 255, 0.86);
+
+  transition:
+    background 200ms ease,
+    color 200ms ease;
+}
+
+.stereo-product-gallery__arrows button:hover {
+  background: #090909;
+  color: #fff;
+}
+
+.stereo-product-gallery__arrows svg {
+  width: 17px;
+}
+
+.stereo-product-gallery__thumbnails {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(90px, 120px));
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+.stereo-product-gallery__thumbnails button {
+  position: relative;
+
+  height: 105px;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f3f3f1;
+
+  border: 1px solid transparent;
+
+  opacity: 0.58;
+
+  transition:
+    opacity 220ms ease,
+    border-color 220ms ease;
+}
+
+.stereo-product-gallery__thumbnails button:hover,
+.stereo-product-gallery__thumbnails button.is-active {
+  opacity: 1;
+
+  border-color: #090909;
+}
+
+.stereo-product-gallery__thumbnails img {
+  width: 82%;
+  height: 82%;
+
+  object-fit: contain;
+}
+
+.stereo-product-gallery__thumbnails svg {
+  width: 22px;
+
+  color: rgba(0, 0, 0, 0.22);
+}
+
+.stereo-product-gallery__thumbnails span {
+  position: absolute;
+
+  right: 7px;
+  bottom: 6px;
+
+  font-size: 6px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+
+  color: rgba(0, 0, 0, 0.42);
+}
+
+/* EMPTY */
+
+.stereo-product-gallery-empty {
+  min-height: 680px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+  border: 1px solid rgba(0, 0, 0, 0.09);
+
+  background: #f3f3f1;
+
+  text-align: center;
+}
+
+.stereo-product-gallery-empty > svg {
+  width: 40px;
+  height: 40px;
+
+  color: rgba(0, 0, 0, 0.16);
+}
+
+.stereo-product-gallery-empty strong,
+.stereo-product-gallery-empty span {
+  display: block;
+}
+
+.stereo-product-gallery-empty strong {
+  font-size: 14px;
+}
+
+.stereo-product-gallery-empty span {
+  margin-top: 6px;
+
+  color: rgba(0, 0, 0, 0.42);
+
+  font-size: 10px;
+}
+
+/* LIGHTBOX */
+
+.stereo-gallery-lightbox {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 2147483010;
+
+  display: grid;
+
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  background: #080808;
+
+  color: white;
+}
+
+.stereo-gallery-lightbox__top {
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 16px 24px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.stereo-gallery-lightbox__top span,
+.stereo-gallery-lightbox__top strong {
+  display: block;
+}
+
+.stereo-gallery-lightbox__top span {
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.19em;
+}
+
+.stereo-gallery-lightbox__top strong {
+  margin-top: 6px;
+
+  font-size: 12px;
+}
+
+.stereo-gallery-lightbox__top button {
+  width: 43px;
+  height: 43px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stereo-gallery-lightbox__stage {
+  position: relative;
+
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+}
+
+.stereo-gallery-lightbox__stage img {
+  max-width: 86%;
+  max-height: 82vh;
+
+  object-fit: contain;
+}
+
+.stereo-gallery-lightbox__previous,
+.stereo-gallery-lightbox__next {
+  position: absolute;
+
+  top: 50%;
+
+  width: 50px;
+  height: 50px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  background: rgba(0, 0, 0, 0.35);
+
+  transform: translateY(-50%);
+}
+
+.stereo-gallery-lightbox__previous {
+  left: 24px;
+}
+
+.stereo-gallery-lightbox__next {
+  right: 24px;
+}
+
+.stereo-gallery-lightbox__counter {
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+
+  color: rgba(255, 255, 255, 0.4);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+@media (max-width: 700px) {
+  .stereo-product-gallery__stage {
+    min-height: 480px;
+  }
+
+  .stereo-product-gallery__main-image {
+    width: 88%;
+    height: 370px;
+  }
+
+  .stereo-product-gallery__thumbnails {
+    display: flex;
+
+    overflow-x: auto;
+  }
+
+  .stereo-product-gallery__thumbnails button {
+    width: 84px;
+
+    flex: 0 0 84px;
+  }
+
+  .stereo-gallery-lightbox__stage {
+    padding: 20px;
+  }
+
+  .stereo-gallery-lightbox__stage img {
+    max-width: 95%;
+  }
+}
+
+/* =========================================================
+   END TECHNICAL PRODUCT GALLERY
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — PRODUCT PURCHASE SYSTEM
+   ========================================================= */
+
+.stereo-purchase-fulfilment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.stereo-purchase-fulfilment__option {
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #f5f5f3;
+}
+
+.stereo-purchase-fulfilment__option strong {
+  font-size: 12px;
+}
+
+.stereo-purchase-fulfilment__option span {
+  margin-top: 8px;
+  color: rgba(0, 0, 0, 0.48);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .stereo-purchase-fulfilment {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   END PRODUCT PURCHASE SYSTEM
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — SHOP CATALOG ARCHITECTURE
+   ========================================================= */
+
+.stereo-shop-hero {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f0f0ee;
+}
+
+.stereo-shop-hero__inner {
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: 28px 20px 0;
+}
+
+.stereo-shop-hero__breadcrumb {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  color: rgba(0, 0, 0, 0.34);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-hero__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 80px;
+
+  align-items: end;
+
+  padding: 42px 0 40px;
+}
+
+.stereo-shop-hero__eyebrow {
+  color: var(--stereophonie-red);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-hero__title {
+  max-width: 850px;
+
+  margin-top: 16px;
+
+  font-size: clamp(44px, 5.4vw, 82px);
+  font-weight: 700;
+
+  line-height: 0.92;
+  letter-spacing: -0.065em;
+}
+
+.stereo-shop-hero__summary {
+  max-width: 520px;
+  justify-self: end;
+}
+
+.stereo-shop-hero__summary > p {
+  color: rgba(0, 0, 0, 0.52);
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.stereo-shop-hero__status {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 28px;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.stereo-shop-hero__status span {
+  min-height: 75px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 12px 15px;
+
+  color: rgba(0, 0, 0, 0.38);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-hero__status span + span {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-hero__status strong {
+  margin-bottom: 5px;
+
+  color: #0a0a0a;
+
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.stereo-shop-categories {
+  display: flex;
+
+  overflow-x: auto;
+
+  scrollbar-width: none;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.stereo-shop-categories a {
+  flex: 0 0 auto;
+
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 18px;
+
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+
+  color: rgba(0, 0, 0, 0.5);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.stereo-shop-categories a:hover,
+.stereo-shop-categories a.is-active {
+  background: #090909;
+  color: white;
+}
+
+/* RESULTS */
+
+.stereo-shop-results {
+  margin-bottom: 32px;
+
+  padding-bottom: 22px;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-results__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  gap: 25px;
+}
+
+.stereo-shop-results__label {
+  color: rgba(0, 0, 0, 0.32);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-results__count {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+
+  margin-top: 8px;
+}
+
+.stereo-shop-results__count strong {
+  font-size: 22px;
+}
+
+.stereo-shop-results__count span {
+  color: rgba(0, 0, 0, 0.43);
+
+  font-size: 10px;
+}
+
+.stereo-shop-results__meta {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  color: rgba(0, 0, 0, 0.38);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-results__meta a {
+  color: var(--stereophonie-red);
+}
+
+.stereo-shop-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-top: 16px;
+}
+
+.stereo-shop-active-filters a {
+  min-height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 11px;
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  background: #f6f6f4;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.stereo-shop-active-filters a:hover {
+  background: #090909;
+  color: white;
+}
+
+.stereo-shop-active-filters svg {
+  width: 11px;
+}
+
+/* SUPPORT */
+
+.stereo-shop-support {
+  margin-top: 80px;
+
+  background: #090909;
+
+  color: white;
+}
+
+.stereo-shop-support__inner {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.65fr);
+
+  gap: 80px;
+
+  padding: 70px 56px;
+}
+
+.stereo-shop-support__eyebrow {
+  color: var(--stereophonie-red);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-support h2 {
+  margin-top: 16px;
+
+  font-size: clamp(42px, 5vw, 76px);
+  font-weight: 700;
+
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.stereo-shop-support__content {
+  align-self: end;
+}
+
+.stereo-shop-support__content p {
+  max-width: 460px;
+
+  color: rgba(255, 255, 255, 0.52);
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.stereo-shop-support__actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 25px;
+}
+
+.stereo-shop-support__actions a {
+  min-height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 0 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.24);
+
+  color: white;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.stereo-shop-support__actions a:first-child {
+  border-color: var(--stereophonie-red);
+  background: var(--stereophonie-red);
+}
+
+.stereo-shop-support__actions a:hover {
+  border-color: white;
+  background: white;
+  color: black;
+}
+
+.stereo-shop-support__actions svg {
+  width: 14px;
+}
+
+@media (min-width: 640px) {
+  .stereo-shop-hero__inner {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stereo-shop-hero__inner {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+@media (max-width: 900px) {
+  .stereo-shop-hero__layout,
+  .stereo-shop-support__inner {
+    grid-template-columns: 1fr;
+
+    gap: 36px;
+  }
+
+  .stereo-shop-hero__summary {
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .stereo-shop-support__inner {
+    padding: 55px 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .stereo-shop-hero__inner {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .stereo-shop-hero__layout {
+    padding: 30px 0;
+  }
+
+  .stereo-shop-hero__title {
+    font-size: 46px;
+  }
+
+  .stereo-shop-hero__status {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stereo-shop-hero__status span:last-child {
+    display: none;
+  }
+
+  .stereo-shop-categories {
+    margin-left: -18px;
+    margin-right: -18px;
+
+    padding-left: 18px;
+  }
+
+  .stereo-shop-results__top {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .stereo-shop-results__meta {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .stereo-shop-support {
+    margin-top: 55px;
+  }
+
+  .stereo-shop-support__inner {
+    padding: 46px 20px;
+  }
+}
+
+/* =========================================================
+   END SHOP CATALOG ARCHITECTURE
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — SHOP CATALOG ARCHITECTURE
+   ========================================================= */
+
+.stereo-shop-hero {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f0f0ee;
+}
+
+.stereo-shop-hero__inner {
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: 28px 20px 0;
+}
+
+.stereo-shop-hero__breadcrumb {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  color: rgba(0, 0, 0, 0.34);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-hero__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 80px;
+
+  align-items: end;
+
+  padding: 42px 0 40px;
+}
+
+.stereo-shop-hero__eyebrow {
+  color: var(--stereophonie-red);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-hero__title {
+  max-width: 850px;
+
+  margin-top: 16px;
+
+  font-size: clamp(44px, 5.4vw, 82px);
+  font-weight: 700;
+
+  line-height: 0.92;
+  letter-spacing: -0.065em;
+}
+
+.stereo-shop-hero__summary {
+  max-width: 520px;
+  justify-self: end;
+}
+
+.stereo-shop-hero__summary > p {
+  color: rgba(0, 0, 0, 0.52);
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.stereo-shop-hero__status {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 28px;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.stereo-shop-hero__status span {
+  min-height: 75px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 12px 15px;
+
+  color: rgba(0, 0, 0, 0.38);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-hero__status span + span {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-hero__status strong {
+  margin-bottom: 5px;
+
+  color: #0a0a0a;
+
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.stereo-shop-categories {
+  display: flex;
+
+  overflow-x: auto;
+
+  scrollbar-width: none;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.stereo-shop-categories a {
+  flex: 0 0 auto;
+
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 18px;
+
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+
+  color: rgba(0, 0, 0, 0.5);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.stereo-shop-categories a:hover,
+.stereo-shop-categories a.is-active {
+  background: #090909;
+  color: white;
+}
+
+/* RESULTS */
+
+.stereo-shop-results {
+  margin-bottom: 32px;
+
+  padding-bottom: 22px;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-results__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  gap: 25px;
+}
+
+.stereo-shop-results__label {
+  color: rgba(0, 0, 0, 0.32);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-results__count {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+
+  margin-top: 8px;
+}
+
+.stereo-shop-results__count strong {
+  font-size: 22px;
+}
+
+.stereo-shop-results__count span {
+  color: rgba(0, 0, 0, 0.43);
+
+  font-size: 10px;
+}
+
+.stereo-shop-results__meta {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  color: rgba(0, 0, 0, 0.38);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-results__meta a {
+  color: var(--stereophonie-red);
+}
+
+.stereo-shop-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-top: 16px;
+}
+
+.stereo-shop-active-filters a {
+  min-height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 11px;
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  background: #f6f6f4;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.stereo-shop-active-filters a:hover {
+  background: #090909;
+  color: white;
+}
+
+.stereo-shop-active-filters svg {
+  width: 11px;
+}
+
+/* SUPPORT */
+
+.stereo-shop-support {
+  margin-top: 80px;
+
+  background: #090909;
+
+  color: white;
+}
+
+.stereo-shop-support__inner {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.65fr);
+
+  gap: 80px;
+
+  padding: 70px 56px;
+}
+
+.stereo-shop-support__eyebrow {
+  color: var(--stereophonie-red);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-support h2 {
+  margin-top: 16px;
+
+  font-size: clamp(42px, 5vw, 76px);
+  font-weight: 700;
+
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.stereo-shop-support__content {
+  align-self: end;
+}
+
+.stereo-shop-support__content p {
+  max-width: 460px;
+
+  color: rgba(255, 255, 255, 0.52);
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.stereo-shop-support__actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 25px;
+}
+
+.stereo-shop-support__actions a {
+  min-height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 0 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.24);
+
+  color: white;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.stereo-shop-support__actions a:first-child {
+  border-color: var(--stereophonie-red);
+  background: var(--stereophonie-red);
+}
+
+.stereo-shop-support__actions a:hover {
+  border-color: white;
+  background: white;
+  color: black;
+}
+
+.stereo-shop-support__actions svg {
+  width: 14px;
+}
+
+@media (min-width: 640px) {
+  .stereo-shop-hero__inner {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stereo-shop-hero__inner {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+@media (max-width: 900px) {
+  .stereo-shop-hero__layout,
+  .stereo-shop-support__inner {
+    grid-template-columns: 1fr;
+
+    gap: 36px;
+  }
+
+  .stereo-shop-hero__summary {
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .stereo-shop-support__inner {
+    padding: 55px 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .stereo-shop-hero__inner {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .stereo-shop-hero__layout {
+    padding: 30px 0;
+  }
+
+  .stereo-shop-hero__title {
+    font-size: 46px;
+  }
+
+  .stereo-shop-hero__status {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stereo-shop-hero__status span:last-child {
+    display: none;
+  }
+
+  .stereo-shop-categories {
+    margin-left: -18px;
+    margin-right: -18px;
+
+    padding-left: 18px;
+  }
+
+  .stereo-shop-results__top {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .stereo-shop-results__meta {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .stereo-shop-support {
+    margin-top: 55px;
+  }
+
+  .stereo-shop-support__inner {
+    padding: 46px 20px;
+  }
+}
+
+/* =========================================================
+   END SHOP CATALOG ARCHITECTURE
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — SHOP CATALOG ARCHITECTURE
+   ========================================================= */
+
+.stereo-shop-hero {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f0f0ee;
+}
+
+.stereo-shop-hero__inner {
+  width: min(100%, 1600px);
+  margin: 0 auto;
+  padding: 28px 20px 0;
+}
+
+.stereo-shop-hero__breadcrumb {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  color: rgba(0, 0, 0, 0.34);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-hero__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 80px;
+
+  align-items: end;
+
+  padding: 42px 0 40px;
+}
+
+.stereo-shop-hero__eyebrow {
+  color: var(--stereophonie-red);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-hero__title {
+  max-width: 850px;
+
+  margin-top: 16px;
+
+  font-size: clamp(44px, 5.4vw, 82px);
+  font-weight: 700;
+
+  line-height: 0.92;
+  letter-spacing: -0.065em;
+}
+
+.stereo-shop-hero__summary {
+  max-width: 520px;
+  justify-self: end;
+}
+
+.stereo-shop-hero__summary > p {
+  color: rgba(0, 0, 0, 0.52);
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.stereo-shop-hero__status {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 28px;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.stereo-shop-hero__status span {
+  min-height: 75px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 12px 15px;
+
+  color: rgba(0, 0, 0, 0.38);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-hero__status span + span {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-hero__status strong {
+  margin-bottom: 5px;
+
+  color: #0a0a0a;
+
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.stereo-shop-categories {
+  display: flex;
+
+  overflow-x: auto;
+
+  scrollbar-width: none;
+
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.stereo-shop-categories a {
+  flex: 0 0 auto;
+
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 18px;
+
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+
+  color: rgba(0, 0, 0, 0.5);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.stereo-shop-categories a:hover,
+.stereo-shop-categories a.is-active {
+  background: #090909;
+  color: white;
+}
+
+/* RESULTS */
+
+.stereo-shop-results {
+  margin-bottom: 32px;
+
+  padding-bottom: 22px;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.stereo-shop-results__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+
+  gap: 25px;
+}
+
+.stereo-shop-results__label {
+  color: rgba(0, 0, 0, 0.32);
+
+  font-size: 7px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-results__count {
+  display: flex;
+  align-items: baseline;
+
+  gap: 7px;
+
+  margin-top: 8px;
+}
+
+.stereo-shop-results__count strong {
+  font-size: 22px;
+}
+
+.stereo-shop-results__count span {
+  color: rgba(0, 0, 0, 0.43);
+
+  font-size: 10px;
+}
+
+.stereo-shop-results__meta {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  color: rgba(0, 0, 0, 0.38);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.stereo-shop-results__meta a {
+  color: var(--stereophonie-red);
+}
+
+.stereo-shop-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-top: 16px;
+}
+
+.stereo-shop-active-filters a {
+  min-height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 11px;
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  background: #f6f6f4;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.stereo-shop-active-filters a:hover {
+  background: #090909;
+  color: white;
+}
+
+.stereo-shop-active-filters svg {
+  width: 11px;
+}
+
+/* SUPPORT */
+
+.stereo-shop-support {
+  margin-top: 80px;
+
+  background: #090909;
+
+  color: white;
+}
+
+.stereo-shop-support__inner {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.65fr);
+
+  gap: 80px;
+
+  padding: 70px 56px;
+}
+
+.stereo-shop-support__eyebrow {
+  color: var(--stereophonie-red);
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.stereo-shop-support h2 {
+  margin-top: 16px;
+
+  font-size: clamp(42px, 5vw, 76px);
+  font-weight: 700;
+
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.stereo-shop-support__content {
+  align-self: end;
+}
+
+.stereo-shop-support__content p {
+  max-width: 460px;
+
+  color: rgba(255, 255, 255, 0.52);
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.stereo-shop-support__actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 25px;
+}
+
+.stereo-shop-support__actions a {
+  min-height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 0 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.24);
+
+  color: white;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.stereo-shop-support__actions a:first-child {
+  border-color: var(--stereophonie-red);
+  background: var(--stereophonie-red);
+}
+
+.stereo-shop-support__actions a:hover {
+  border-color: white;
+  background: white;
+  color: black;
+}
+
+.stereo-shop-support__actions svg {
+  width: 14px;
+}
+
+@media (min-width: 640px) {
+  .stereo-shop-hero__inner {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stereo-shop-hero__inner {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+}
+
+@media (max-width: 900px) {
+  .stereo-shop-hero__layout,
+  .stereo-shop-support__inner {
+    grid-template-columns: 1fr;
+
+    gap: 36px;
+  }
+
+  .stereo-shop-hero__summary {
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .stereo-shop-support__inner {
+    padding: 55px 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .stereo-shop-hero__inner {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .stereo-shop-hero__layout {
+    padding: 30px 0;
+  }
+
+  .stereo-shop-hero__title {
+    font-size: 46px;
+  }
+
+  .stereo-shop-hero__status {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stereo-shop-hero__status span:last-child {
+    display: none;
+  }
+
+  .stereo-shop-categories {
+    margin-left: -18px;
+    margin-right: -18px;
+
+    padding-left: 18px;
+  }
+
+  .stereo-shop-results__top {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .stereo-shop-results__meta {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+
+  .stereo-shop-support {
+    margin-top: 55px;
+  }
+
+  .stereo-shop-support__inner {
+    padding: 46px 20px;
+  }
+}
+
+/* =========================================================
+   END SHOP CATALOG ARCHITECTURE
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE V2 — FRESH STOREFRONT
+   ========================================================= */
+
+@import "../styles/stereophonie-v2/tokens.css";
+@import "../styles/stereophonie-v2/base.css";
+@import "../styles/stereophonie-v2/home.css";
+
+@import "../styles/stereophonie-v2/shop.css";
+@import "../styles/stereophonie-v2/product.css";
+
+@import "../styles/stereophonie-v2/arcade-game.css";
+
+@import "../styles/stereophonie-v2/assistant.css";
+
+@import "../styles/stereophonie-v2/boot.css";
+
+@import "../styles/stereophonie-v2/arcade-os.css";
+@import "../styles/stereophonie-v2/cart.css";
+
+/* =========================================================
+   STEREOPHONIE FINAL RED POINTER SIGNAL
+   ========================================================= */
+
+.st-arcade-os {
+  --cursor-glow-rgb: 237, 28, 36;
+  --pointer-glow-rgb: 237, 28, 36;
+  --mouse-glow-rgb: 237, 28, 36;
+  --spotlight-rgb: 237, 28, 36;
+}
+
+.st-arcade-os .cursor-glow,
+.st-arcade-os .mouse-glow,
+.st-arcade-os .pointer-glow,
+.st-arcade-os .nita-cursor-glow,
+.st-arcade-os .nita-pointer-glow,
+.st-arcade-os [class*="cursor-glow"],
+.st-arcade-os [class*="mouse-glow"],
+.st-arcade-os [class*="pointer-glow"] {
+  background: radial-gradient(
+    circle,
+    rgba(237, 28, 36, 0.18) 0%,
+    rgba(237, 28, 36, 0.08) 36%,
+    rgba(237, 28, 36, 0.025) 58%,
+    transparent 74%
+  ) !important;
+
+  box-shadow: none !important;
+}
+
+@import "../styles/stereophonie-v2/checkout.css";
+
+/* =========================================================
+   STEREOPHONIE FINAL SIGNAL OVERRIDE
+   Never use Nita blue/violet ambient mouse lighting
+   ========================================================= */
+
+body::before,
+body::after {
+  --st-signal-red: rgba(237, 28, 36, 0.18);
+}
+
+/*
+ * Existing premium pointer halo classes from the inherited
+ * storefront receive a final red-only rendering override.
+ */
+.nita-premium-motion-enabled::before,
+.nita-premium-motion-enabled::after {
+  border-color: rgba(237, 28, 36, 0.18) !important;
+}
+
+.st-arcade-os [class*="cursor"][class*="glow"],
+.st-arcade-os [class*="mouse"][class*="glow"],
+.st-arcade-os [class*="ambient"][class*="halo"] {
+  filter: none;
+}
+
+/*
+ * Fixed red ambient field. It cannot scroll with page content.
+ */
+.st-arcade-os::before {
+  position: fixed;
+  z-index: 1;
+
+  width: 380px;
+  height: 380px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(237, 28, 36, 0.105) 0%,
+    rgba(237, 28, 36, 0.046) 32%,
+    rgba(237, 28, 36, 0.012) 56%,
+    transparent 72%
+  );
+
+  pointer-events: none;
+
+  content: "";
+
+  opacity: 0.68;
+
+  transform: translate3d(
+    calc(var(--pointer-x, 50vw) - 190px),
+    calc(var(--pointer-y, 50vh) - 190px),
+    0
+  );
+
+  transition:
+    opacity 180ms ease,
+    transform 70ms linear;
+}
+
+@media (pointer: coarse) {
+  .st-arcade-os::before {
+    display: none;
+  }
+}
+
+@import "../styles/stereophonie-v2/account.css";
+
+/* =========================================================
+   STEREOPHONIE ACCOUNT OVERRIDES
+   Kill old Nita blue/purple account ambience
+   ========================================================= */
+
+.st-account-v2 .nita-account-scroll-reveal__halo {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(237, 28, 36, 0.18) 0%,
+    rgba(237, 28, 36, 0.08) 38%,
+    rgba(237, 28, 36, 0.025) 58%,
+    transparent 75%
+  ) !important;
+
+  border-color: rgba(237, 28, 36, 0.12) !important;
+
+  box-shadow:
+    0 0 34px rgba(237, 28, 36, 0.08),
+    0 0 84px rgba(237, 28, 36, 0.045) !important;
+}
+
+.st-account-v2 .nita-account-scroll-reveal__line {
+  background: linear-gradient(
+    to bottom,
+    rgba(237, 28, 36, 0.06),
+    rgba(237, 28, 36, 0.65),
+    rgba(237, 28, 36, 0.12)
+  ) !important;
+}

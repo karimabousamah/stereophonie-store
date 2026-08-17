@@ -47,3 +47,7 @@ install-nita-v2.sh
 
 # Local Stereophonie development backups
 .stereophonie-backups/
+.next/
+.turbo/
+node_modules/
+.env.local

@@ -414,7 +414,7 @@ export default function AccountClient({ orders }: AccountClientProps) {
               <OrderCard key={order.id} order={order} />
             ))
           ) : (
-            <div className="border border-dashed border-neutral-300 px-6 py-16 text-center">
+            <div className="st-player-order-empty border border-dashed border-neutral-300 px-6 py-16 text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.12em]">
                 {activeTab === "ongoing"
                   ? "No ongoing orders"
@@ -429,7 +429,7 @@ export default function AccountClient({ orders }: AccountClientProps) {
 
               <Link
                 href="/shop"
-                className="mt-7 inline-flex border border-black bg-black px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-black"
+                className="st-player-command-button st-player-command-button--primary mt-7"
               >
                 Continue shopping
               </Link>

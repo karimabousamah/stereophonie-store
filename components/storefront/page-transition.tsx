@@ -3,33 +3,40 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useStoreSettings } from "@/components/storefront/store-settings-provider";
+import BrandLogo from "@/components/storefront/brand-logo";
 
 type TransitionPhase = "idle" | "entering" | "holding" | "leaving";
 
-const ENTER_DURATION = 330;
-const LEAVE_DURATION = 500;
-const NAVIGATION_TIMEOUT = 8000;
+const ENTER_DURATION = 190;
+const MINIMUM_VISIBLE = 430;
+const LEAVE_DURATION = 300;
+const MAXIMUM_HOLD = 7000;
 
 export default function PageTransition() {
-  const { storeName } = useStoreSettings();
-
   const router = useRouter();
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const query = searchParams.toString();
+
   const route = query ? `${pathname}?${query}` : pathname;
 
   const [phase, setPhase] = useState<TransitionPhase>("idle");
 
   const phaseRef = useRef<TransitionPhase>("idle");
-  const routeRef = useRef(route);
-  const navigationPending = useRef(false);
 
-  const navigationTimer = useRef<number | null>(null);
-  const releaseTimer = useRef<number | null>(null);
-  const fallbackTimer = useRef<number | null>(null);
+  const currentRouteRef = useRef(route);
+
+  const navigationPendingRef = useRef(false);
+
+  const visibleSinceRef = useRef(0);
+
+  const enterTimerRef = useRef<number | null>(null);
+
+  const leaveTimerRef = useRef<number | null>(null);
+
+  const fallbackTimerRef = useRef<number | null>(null);
 
   const setTransitionPhase = useCallback((next: TransitionPhase) => {
     phaseRef.current = next;
@@ -37,77 +44,145 @@ export default function PageTransition() {
   }, []);
 
   const clearTimer = useCallback(
-    (timer: React.MutableRefObject<number | null>) => {
-      if (timer.current !== null) {
-        window.clearTimeout(timer.current);
-        timer.current = null;
+    (ref: React.MutableRefObject<number | null>) => {
+      if (ref.current !== null) {
+        window.clearTimeout(ref.current);
+        ref.current = null;
       }
     },
     [],
   );
 
   const clearTimers = useCallback(() => {
-    clearTimer(navigationTimer);
-    clearTimer(releaseTimer);
-    clearTimer(fallbackTimer);
+    clearTimer(enterTimerRef);
+    clearTimer(leaveTimerRef);
+    clearTimer(fallbackTimerRef);
   }, [clearTimer]);
 
-  const releasePage = useCallback(() => {
-    clearTimer(releaseTimer);
+  const hideTransition = useCallback(() => {
+    clearTimer(leaveTimerRef);
 
-    setTransitionPhase("leaving");
+    const elapsed = performance.now() - visibleSinceRef.current;
 
-    releaseTimer.current = window.setTimeout(() => {
-      setTransitionPhase("idle");
-      releaseTimer.current = null;
-    }, LEAVE_DURATION);
+    const delay = Math.max(0, MINIMUM_VISIBLE - elapsed);
+
+    leaveTimerRef.current = window.setTimeout(() => {
+      setTransitionPhase("leaving");
+
+      leaveTimerRef.current = window.setTimeout(() => {
+        setTransitionPhase("idle");
+        leaveTimerRef.current = null;
+      }, LEAVE_DURATION);
+    }, delay);
   }, [clearTimer, setTransitionPhase]);
+
+  const revealTransition = useCallback(() => {
+    if (phaseRef.current !== "idle") {
+      return false;
+    }
+
+    clearTimers();
+
+    visibleSinceRef.current = performance.now();
+
+    setTransitionPhase("entering");
+
+    return true;
+  }, [clearTimers, setTransitionPhase]);
 
   const navigate = useCallback(
     (destination: string) => {
-      if (phaseRef.current !== "idle") {
+      const current = new URL(window.location.href);
+
+      const next = new URL(destination, window.location.href);
+
+      if (current.origin !== next.origin) {
+        window.location.href = next.href;
         return;
       }
 
-      clearTimers();
+      const currentDestination =
+        current.pathname + current.search + current.hash;
 
-      navigationPending.current = true;
-      setTransitionPhase("entering");
+      const nextDestination = next.pathname + next.search + next.hash;
 
-      navigationTimer.current = window.setTimeout(() => {
+      if (currentDestination === nextDestination) {
+        return;
+      }
+
+      if (
+        current.pathname === next.pathname &&
+        current.search === next.search &&
+        next.hash
+      ) {
+        window.location.hash = next.hash;
+        return;
+      }
+
+      const didReveal = revealTransition();
+
+      navigationPendingRef.current = true;
+
+      if (!didReveal) {
+        router.push(nextDestination);
+        return;
+      }
+
+      enterTimerRef.current = window.setTimeout(() => {
         setTransitionPhase("holding");
-        router.push(destination);
-        navigationTimer.current = null;
+
+        router.push(nextDestination);
+
+        enterTimerRef.current = null;
       }, ENTER_DURATION);
 
-      fallbackTimer.current = window.setTimeout(() => {
-        navigationPending.current = false;
-        releasePage();
-        fallbackTimer.current = null;
-      }, NAVIGATION_TIMEOUT);
+      fallbackTimerRef.current = window.setTimeout(() => {
+        navigationPendingRef.current = false;
+
+        hideTransition();
+
+        fallbackTimerRef.current = null;
+      }, MAXIMUM_HOLD);
     },
-    [clearTimers, releasePage, router, setTransitionPhase],
+    [hideTransition, revealTransition, router, setTransitionPhase],
   );
 
+  /*
+   * Route observation is deliberately independent
+   * of click interception.
+   *
+   * This means router.push(), filter navigation,
+   * checkout navigation, account navigation, etc.
+   * still receive the Arcade OS transition.
+   */
   useEffect(() => {
-    if (route === routeRef.current) {
+    if (route === currentRouteRef.current) {
       return;
     }
 
-    routeRef.current = route;
+    currentRouteRef.current = route;
 
-    if (!navigationPending.current) {
-      return;
+    clearTimer(fallbackTimerRef);
+
+    if (!navigationPendingRef.current && phaseRef.current === "idle") {
+      visibleSinceRef.current = performance.now();
+
+      setTransitionPhase("holding");
+    } else {
+      setTransitionPhase("holding");
     }
 
-    navigationPending.current = false;
-    clearTimer(fallbackTimer);
+    navigationPendingRef.current = false;
 
-    const timer = window.setTimeout(releasePage, 70);
+    const release = window.setTimeout(hideTransition, 60);
 
-    return () => window.clearTimeout(timer);
-  }, [route, clearTimer, releasePage]);
+    return () => window.clearTimeout(release);
+  }, [route, clearTimer, hideTransition, setTransitionPhase]);
 
+  /*
+   * Standard link navigation:
+   * show transition BEFORE Next.js changes route.
+   */
   useEffect(() => {
     function handleClick(event: MouseEvent) {
       if (
@@ -140,14 +215,14 @@ export default function PageTransition() {
         return;
       }
 
-      const rawHref = anchor.getAttribute("href");
+      const href = anchor.getAttribute("href");
 
       if (
-        !rawHref ||
-        rawHref.startsWith("#") ||
-        rawHref.startsWith("mailto:") ||
-        rawHref.startsWith("tel:") ||
-        rawHref.startsWith("javascript:") ||
+        !href ||
+        href.startsWith("#") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:") ||
+        href.startsWith("javascript:") ||
         anchor.target === "_blank" ||
         anchor.hasAttribute("download")
       ) {
@@ -155,6 +230,7 @@ export default function PageTransition() {
       }
 
       const current = new URL(window.location.href);
+
       const next = new URL(anchor.href, window.location.href);
 
       if (current.origin !== next.origin) {
@@ -179,6 +255,7 @@ export default function PageTransition() {
       }
 
       event.preventDefault();
+
       navigate(nextDestination);
     }
 
@@ -186,31 +263,71 @@ export default function PageTransition() {
 
     return () => {
       document.removeEventListener("click", handleClick, true);
+
       clearTimers();
     };
   }, [clearTimers, navigate]);
+
+  /*
+   * Back / forward navigation.
+   * Browser history can change route without
+   * going through our intercepted link.
+   */
+  useEffect(() => {
+    function handlePopState() {
+      if (phaseRef.current === "idle") {
+        visibleSinceRef.current = performance.now();
+
+        setTransitionPhase("holding");
+      }
+    }
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [setTransitionPhase]);
 
   return (
     <div
       aria-hidden="true"
       className={`stereo-transition stereo-transition--${phase}`}
     >
-      <div className="stereo-transition__panel stereo-transition__panel--top" />
-      <div className="stereo-transition__panel stereo-transition__panel--bottom" />
+      <div className="st-route-signal">
+        <div className="st-route-signal__grid" />
 
-      <div className="stereo-transition__signal">
-        <div className="stereo-transition__signal-track">
-          <span />
-        </div>
+        <div className="st-route-signal__sweep" />
 
-        <div className="stereo-transition__identity">
-          <span className="stereo-transition__status">SYSTEM / ONLINE</span>
-
-          <strong>{storeName}</strong>
-
-          <span className="stereo-transition__status">
-            TECHNOLOGY / LEBANON
+        <div className="st-route-signal__core">
+          <span className="st-route-signal__status">
+            <i />
+            ROUTING STORE MODULE
           </span>
+
+          <div className="st-route-signal__mark">
+            <div className="st-route-signal__logo-hardware">
+              <span>ST</span>
+            </div>
+
+            <div className="st-route-signal__identity">
+              <BrandLogo
+                variant="dark"
+                className="st-route-signal__real-logo"
+                priority
+              />
+
+              <small>ARCADE RETAIL OPERATING SYSTEM</small>
+            </div>
+          </div>
+
+          <div className="st-route-signal__meter">
+            <span />
+          </div>
+
+          <div className="st-route-signal__diagnostics">
+            <span>CATALOG / LINKED</span>
+            <span>INTERFACE / SYNC</span>
+            <span>PLAYER 01 / READY</span>
+          </div>
         </div>
       </div>
     </div>

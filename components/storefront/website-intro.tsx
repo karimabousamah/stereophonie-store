@@ -1,5 +1,7 @@
 "use client";
 
+import ArcadeBootScreen from "@/components/stereophonie-v2/system/arcade-boot-screen";
+
 import { useEffect, useState } from "react";
 
 export default function WebsiteIntro() {
@@ -21,20 +23,7 @@ export default function WebsiteIntro() {
     <div className="stereo-intro">
       <div className="stereo-intro__grid" />
 
-      <div className="stereo-intro__content">
-        <div className="stereo-intro__status">
-          <span />
-          SYSTEM INITIALIZED
-        </div>
-
-        <h1>STEREOPHONIE</h1>
-
-        <p>TECHNOLOGY / RETAIL / LEBANON</p>
-
-        <div className="stereo-intro__loader">
-          <span />
-        </div>
-      </div>
+      <ArcadeBootScreen mode="intro" label="INITIALIZING STORE" />
 
       <button
         type="button"

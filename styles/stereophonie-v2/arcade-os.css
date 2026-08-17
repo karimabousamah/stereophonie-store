@@ -1,0 +1,549 @@
+/* =========================================================
+   STEREOPHONIE V2
+   GLOBAL ARCADE OS STOREFRONT SYSTEM
+   ========================================================= */
+
+.st-arcade-os {
+  min-height: 100vh;
+
+  background:
+    linear-gradient(90deg, rgba(8, 8, 8, 0.018) 1px, transparent 1px),
+    linear-gradient(rgba(8, 8, 8, 0.018) 1px, transparent 1px),
+    var(--st-off-white);
+
+  background-size: 34px 34px;
+
+  color: var(--st-black);
+}
+
+/* ---------------------------------------------------------
+   Global typography rhythm
+   --------------------------------------------------------- */
+
+.st-arcade-os main h1,
+.st-arcade-os main h2,
+.st-arcade-os main h3 {
+  text-wrap: balance;
+}
+
+.st-arcade-os main h1 {
+  letter-spacing: -0.055em;
+}
+
+.st-arcade-os main section {
+  position: relative;
+}
+
+/* ---------------------------------------------------------
+   Hardware interactions
+   --------------------------------------------------------- */
+
+.st-arcade-os button,
+.st-arcade-os a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-arcade-os button:not(:disabled),
+.st-arcade-os [role="button"],
+.st-arcade-os a {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 110ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-arcade-os button:not(:disabled):active,
+.st-arcade-os [role="button"]:active {
+  transform: translateY(2px);
+}
+
+/* ---------------------------------------------------------
+   Global form hardware
+   --------------------------------------------------------- */
+
+.st-arcade-os input,
+.st-arcade-os textarea,
+.st-arcade-os select {
+  border-radius: 0 !important;
+}
+
+.st-arcade-os input:focus,
+.st-arcade-os textarea:focus,
+.st-arcade-os select:focus {
+  outline: none;
+}
+
+/* Customer pages that have not yet received their dedicated
+   V2 stylesheet still inherit hardware-like control geometry. */
+
+.st-arcade-os main input:not([type="checkbox"]):not([type="radio"]),
+.st-arcade-os main textarea,
+.st-arcade-os main select {
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------
+   Generic storefront surfaces
+   --------------------------------------------------------- */
+
+.st-arcade-os main article,
+.st-arcade-os main [role="dialog"] {
+  border-radius: 0;
+}
+
+/* ---------------------------------------------------------
+   Selection signal
+   --------------------------------------------------------- */
+
+.st-arcade-os ::selection {
+  background: var(--st-red);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------
+   Global scrollbar
+   --------------------------------------------------------- */
+
+.st-arcade-os {
+  scrollbar-color: var(--st-red) #111;
+  scrollbar-width: thin;
+}
+
+.st-arcade-os ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.st-arcade-os ::-webkit-scrollbar-track {
+  background: #111;
+}
+
+.st-arcade-os ::-webkit-scrollbar-thumb {
+  border: 2px solid #111;
+  background: var(--st-red);
+}
+
+/* ---------------------------------------------------------
+   Footer — hardware terminal redesign
+   --------------------------------------------------------- */
+
+.st-v2-footer {
+  position: relative;
+
+  overflow: hidden;
+
+  border-top: 4px solid var(--st-red);
+
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px), #050506 !important;
+
+  background-size: 32px 32px;
+
+  color: white;
+}
+
+.st-v2-footer::before {
+  position: absolute;
+  top: 0;
+  right: 6%;
+
+  width: 160px;
+  height: 5px;
+
+  background: var(--st-red);
+
+  content: "";
+}
+
+.st-v2-footer__status {
+  min-height: 42px !important;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11) !important;
+
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.st-v2-footer__main {
+  position: relative;
+
+  gap: clamp(32px, 5vw, 76px) !important;
+
+  padding-block: 58px !important;
+}
+
+.st-v2-footer__brand {
+  position: relative;
+
+  padding-right: 34px;
+}
+
+.st-v2-footer__brand::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 1px;
+  height: 100%;
+
+  background: rgba(255, 255, 255, 0.09);
+
+  content: "";
+}
+
+.st-v2-footer__brand p {
+  max-width: 390px !important;
+
+  margin-top: 22px !important;
+
+  color: rgba(255, 255, 255, 0.44) !important;
+
+  font-size: 11px !important;
+  line-height: 1.8 !important;
+}
+
+.st-v2-footer__socials {
+  margin-top: 26px !important;
+}
+
+.st-v2-footer__socials a {
+  position: relative;
+
+  width: 42px !important;
+  height: 42px !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+
+  background: #0b0b0c;
+}
+
+.st-v2-footer__socials a::after {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+
+  width: 4px;
+  height: 4px;
+
+  background: rgba(255, 255, 255, 0.22);
+
+  content: "";
+}
+
+.st-v2-footer__socials a:hover {
+  border-color: var(--st-red) !important;
+  background: var(--st-red) !important;
+
+  transform: translateY(-2px);
+}
+
+.st-v2-footer__column {
+  gap: 13px !important;
+}
+
+.st-v2-footer__column > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: var(--st-red) !important;
+
+  font-size: 7px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.18em !important;
+}
+
+.st-v2-footer__column > span::before {
+  width: 5px;
+  height: 5px;
+
+  background: var(--st-red);
+
+  content: "";
+}
+
+.st-v2-footer__column a {
+  position: relative;
+
+  width: fit-content;
+
+  color: rgba(255, 255, 255, 0.5) !important;
+
+  font-size: 10px !important;
+  font-weight: 700;
+
+  letter-spacing: 0.025em;
+}
+
+.st-v2-footer__column a::before {
+  color: rgba(255, 255, 255, 0.18);
+
+  content: ">";
+}
+
+.st-v2-footer__column a:hover {
+  color: white !important;
+
+  transform: translateX(3px);
+}
+
+.st-v2-footer__system-strip {
+  min-height: 64px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 20px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  color: rgba(255, 255, 255, 0.3);
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.st-v2-footer__system-strip > span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.st-v2-footer__system-strip > span:nth-child(2) {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.st-v2-footer__system-strip > span:last-child {
+  justify-self: end;
+}
+
+.st-v2-footer__system-led {
+  width: 7px;
+  height: 7px;
+
+  display: inline-block;
+
+  border-radius: 50%;
+
+  background: var(--st-signal-green);
+
+  box-shadow:
+    0 0 7px rgba(140, 255, 152, 0.85),
+    0 0 16px rgba(140, 255, 152, 0.28);
+
+  animation: stFooterLed 1.8s steps(2, end) infinite;
+}
+
+.st-v2-footer__bottom {
+  min-height: 58px !important;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  font-size: 7px !important;
+  letter-spacing: 0.08em;
+}
+
+.st-v2-footer__display {
+  display: none !important;
+}
+
+@keyframes stFooterLed {
+  0%,
+  78% {
+    opacity: 1;
+  }
+
+  79%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------------------------------------------------------
+   Old Nita global effects are neutralized inside Arcade OS.
+   Dedicated Stereophonie components control their own motion.
+   --------------------------------------------------------- */
+
+.st-arcade-os .assistant-launcher-ring,
+.st-arcade-os .nita-assistant-voice-halo {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------
+   Mobile
+   --------------------------------------------------------- */
+
+@media (max-width: 800px) {
+  .st-v2-footer__main {
+    gap: 38px !important;
+    padding-block: 44px !important;
+  }
+
+  .st-v2-footer__brand {
+    padding-right: 0;
+  }
+
+  .st-v2-footer__brand::after {
+    display: none;
+  }
+
+  .st-v2-footer__system-strip {
+    grid-template-columns: 1fr auto;
+
+    padding-block: 18px;
+  }
+
+  .st-v2-footer__system-strip > span:nth-child(2) {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .st-v2-footer__system-strip {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .st-v2-footer__system-strip > span:last-child {
+    justify-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-v2-footer__system-led {
+    animation: none;
+  }
+}
+
+/* =========================================================
+   PHASE 7 — RED POINTER / AMBIENT SIGNAL
+   ========================================================= */
+
+.st-arcade-os {
+  --nita-premium-blue: #ed1c24;
+  --nita-motion-blue: #ed1c24;
+  --premium-blue: #ed1c24;
+  --st-signal-blue: #ed1c24;
+}
+
+.st-arcade-os [class*="cursor"][class*="glow"],
+.st-arcade-os [class*="mouse"][class*="glow"],
+.st-arcade-os [class*="ambient"][class*="halo"],
+.st-arcade-os [class*="ambient"][class*="glow"],
+.st-arcade-os [class*="pointer"][class*="glow"] {
+  background: radial-gradient(
+    circle,
+    rgba(237, 28, 36, 0.2) 0%,
+    rgba(237, 28, 36, 0.09) 35%,
+    rgba(237, 28, 36, 0.025) 58%,
+    transparent 75%
+  ) !important;
+}
+
+/* =========================================================
+   PHASE 8 — PREMIUM STOREFRONT MOTION
+   ========================================================= */
+
+.st-motion-ready {
+  opacity: 0;
+
+  transform: translate3d(0, 22px, 0) scale(0.99);
+
+  filter: blur(3px);
+
+  transition:
+    opacity 620ms cubic-bezier(0.16, 1, 0.3, 1) var(--st-reveal-delay, 0ms),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1) var(--st-reveal-delay, 0ms),
+    filter 520ms ease var(--st-reveal-delay, 0ms);
+}
+
+.st-motion-ready.st-motion-revealed {
+  opacity: 1;
+
+  transform: translate3d(0, 0, 0) scale(1);
+
+  filter: blur(0);
+}
+
+/* ---------------------------------------------------------
+   Premium hardware button feedback
+   --------------------------------------------------------- */
+
+.st-arcade-os a,
+.st-arcade-os button {
+  position: relative;
+}
+
+.st-arcade-os button:not(:disabled),
+.st-arcade-os a[href] {
+  transform-origin: center;
+}
+
+@media (hover: hover) {
+  .st-arcade-os button:not(:disabled):hover,
+  .st-arcade-os a[href]:hover {
+    will-change: transform;
+  }
+
+  .st-v2-button:hover,
+  .st-cart-command:hover,
+  .st-checkout-start:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+}
+
+/* Red signal line on major storefront commands. */
+.st-v2-button,
+.st-cart-command,
+.st-checkout-start {
+  overflow: hidden;
+}
+
+.st-v2-button::after,
+.st-cart-command::after,
+.st-checkout-start::after {
+  position: absolute;
+  left: -36%;
+  bottom: 0;
+
+  width: 34%;
+  height: 2px;
+
+  background: var(--st-red);
+
+  transform: skewX(-28deg);
+
+  transition: left 380ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  content: "";
+}
+
+.st-v2-button:hover::after,
+.st-cart-command:hover::after,
+.st-checkout-start:hover::after {
+  left: 105%;
+}
+
+/* Global mouse / ambient signal must be Stereophonie red. */
+.st-arcade-os {
+  --st-pointer-rgb: 237, 28, 36;
+  --st-ambient-rgb: 237, 28, 36;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-motion-ready,
+  .st-motion-ready.st-motion-revealed {
+    opacity: 1 !important;
+
+    transform: none !important;
+
+    filter: none !important;
+
+    transition: none !important;
+  }
+}

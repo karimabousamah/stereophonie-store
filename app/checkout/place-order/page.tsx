@@ -372,51 +372,37 @@ export default function PlaceOrderPage() {
 
   if (!isCartReady || isSubmitting) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#080808] px-5 text-white">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-1/2 top-1/2 h-[440px] w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.035] blur-3xl" />
-        </div>
-
-        <div className="relative z-10 max-w-lg text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center border border-white/15 bg-white/[0.045]">
-            <Loader2 className="h-7 w-7 animate-spin" />
+      <main className="st-order-transmission">
+        <div className="st-order-transmission__terminal">
+          <div className="st-order-transmission__top">
+            <span>ORDER TRANSMISSION / ACTIVE</span>
+            <span>SECURE BUS / CHANNEL 03</span>
           </div>
 
-          <p className="mt-7 text-[10px] font-semibold uppercase tracking-[0.25em] text-white/40">
-            Secure order submission
-          </p>
+          <div className="st-order-transmission__screen">
+            <div className="st-order-transmission__spinner">
+              <Loader2 className="animate-spin" />
+            </div>
 
-          <h1 className="mt-4 text-4xl font-semibold uppercase tracking-[-0.045em] sm:text-6xl">
-            Confirming
-            <br />
-            your order
-          </h1>
+            <small>CHECKOUT MODULE / STEP 03</small>
 
-          <p className="mx-auto mt-6 max-w-md text-sm leading-7 text-white/45">
-            We are checking the latest product availability and securely
-            creating your order. Please keep this page open.
-          </p>
+            <h1>
+              TRANSMITTING
+              <br />
+              ORDER.
+            </h1>
 
-          <div className="mx-auto mt-8 h-px w-48 overflow-hidden bg-white/10">
-            <span className="block h-full w-1/2 animate-[orderProgress_1.2s_ease-in-out_infinite] bg-white" />
+            <p>
+              Verifying inventory, customer data, delivery coordinates, coupon
+              state and Cash on Delivery configuration. Do not close this
+              window.
+            </p>
+
+            <div className="st-order-transmission__bar">
+              <span />
+            </div>
           </div>
         </div>
-
-        <style jsx global>{`
-          @keyframes orderProgress {
-            0% {
-              transform: translateX(-110%);
-            }
-
-            50% {
-              transform: translateX(100%);
-            }
-
-            100% {
-              transform: translateX(310%);
-            }
-          }
-        `}</style>
       </main>
     );
   }
@@ -477,7 +463,7 @@ export default function PlaceOrderPage() {
                 href="/shop"
                 className="inline-flex min-h-14 items-center justify-center border border-black/15 px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-black transition hover:border-black"
               >
-                Continue shopping
+                RETURN TO STORE
               </Link>
             </div>
           </div>
@@ -517,7 +503,7 @@ export default function PlaceOrderPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#f6f5f2] text-black">
+    <main className="st-order-success-v2 min-h-screen bg-[#f6f5f2] text-black">
       <header className="border-b border-black/10 bg-white">
         <div className="mx-auto flex min-h-[78px] max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
           <Link
@@ -531,7 +517,7 @@ export default function PlaceOrderPage() {
             href="/shop"
             className="group inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-black/45 transition hover:text-black"
           >
-            Continue shopping
+            RETURN TO STORE
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
           </Link>
         </div>
@@ -600,10 +586,10 @@ export default function PlaceOrderPage() {
 
             <div className="border border-white/15 bg-white/[0.045] p-6 backdrop-blur-md sm:p-7">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                Order number
+                TRANSACTION ID
               </p>
 
-              <p className="mt-3 break-all text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
+              <p className="st-order-success-number mt-3 break-all text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
                 {result.order_number}
               </p>
 
@@ -619,7 +605,7 @@ export default function PlaceOrderPage() {
               {accountLinked ? (
                 <Link
                   href="/account"
-                  className="mt-6 flex min-h-13 w-full items-center justify-center gap-3 border border-white bg-white px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-white"
+                  className="st-order-success-command mt-6 flex min-h-13 w-full items-center justify-center gap-3 border border-white bg-white px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-white"
                 >
                   View my account orders
                   <ArrowRight className="h-4 w-4" />
@@ -680,7 +666,7 @@ export default function PlaceOrderPage() {
                       </Link>
 
                       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/45">
-                        <span>Size {item.size}</span>
+                        <span>CONFIGURATION {item.size}</span>
 
                         <span>Quantity {item.quantity}</span>
                       </div>
@@ -773,7 +759,9 @@ export default function PlaceOrderPage() {
                   Payment summary
                 </p>
 
-                <h2 className="mt-2 text-2xl font-semibold">Order total</h2>
+                <h2 className="mt-2 text-2xl font-semibold">
+                  FINAL SYSTEM TOTAL
+                </h2>
               </div>
 
               <div className="space-y-4 p-5">
@@ -852,7 +840,7 @@ export default function PlaceOrderPage() {
                   href="/shop"
                   className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424]"
                 >
-                  Continue shopping
+                  RETURN TO STORE
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

@@ -22,7 +22,16 @@ import {
 } from "./direct-upload-client";
 import ImageUploader from "./image-uploader";
 
+import ElectronicsVariantEditor, {
+  type AdminElectronicsVariant,
+} from "@/components/admin/products/electronics-variant-editor";
+
 type Category = {
+  id: string;
+  name: string;
+};
+
+type Brand = {
   id: string;
   name: string;
 };
@@ -34,81 +43,23 @@ type Collection = {
 
 type ProductFormProps = {
   categories: Category[];
+  brands: Brand[];
   collections: Collection[];
   errorMessage?: string;
 };
 
-type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
-
-type SizeName = "XXS" | "XS" | "S" | "M" | "L" | "XL" | "XXL" | "One Size";
-
-type SizeVariant = {
-  size: SizeName;
-  enabled: boolean;
-  sku: string;
-  stock_quantity: number;
-  low_stock_threshold: number;
-  availability_status: AvailabilityStatus;
-};
-
-const sizeNames: SizeName[] = [
-  "XXS",
-  "XS",
-  "S",
-  "M",
-  "L",
-  "XL",
-  "XXL",
-  "One Size",
-];
-
-const availabilityOptions: {
-  value: AvailabilityStatus;
-  label: string;
-  description: string;
-  dotClass: string;
-  activeClass: string;
-}[] = [
-  {
-    value: "in_stock",
-    label: "In stock",
-    description: "Customers can order this size.",
-    dotClass: "bg-emerald-400",
-    activeClass: "border-emerald-400/50 bg-emerald-400/[0.08] text-emerald-200",
-  },
-  {
-    value: "low_stock",
-    label: "Low stock",
-    description: "Available with limited quantity.",
-    dotClass: "bg-amber-400",
-    activeClass: "border-amber-400/50 bg-amber-400/[0.08] text-amber-200",
-  },
-  {
-    value: "out_of_stock",
-    label: "Out of stock",
-    description: "Customers cannot order this size.",
-    dotClass: "bg-red-400",
-    activeClass: "border-red-400/50 bg-red-400/[0.08] text-red-200",
-  },
-  {
-    value: "coming_soon",
-    label: "Coming soon",
-    description: "This size will become available later.",
-    dotClass: "bg-sky-400",
-    activeClass: "border-sky-400/50 bg-sky-400/[0.08] text-sky-200",
-  },
-];
-
-function createInitialVariants(): SizeVariant[] {
-  return sizeNames.map((size) => ({
-    size,
-    enabled: false,
-    sku: "",
-    stock_quantity: 0,
-    low_stock_threshold: 2,
-    availability_status: "in_stock",
-  }));
+function createInitialVariants(): AdminElectronicsVariant[] {
+  return [
+    {
+      clientId: crypto.randomUUID(),
+      variant_name: "",
+      attributes: {},
+      sku: "",
+      stock_quantity: 0,
+      low_stock_threshold: 2,
+      availability_status: "in_stock",
+    },
+  ];
 }
 
 function SectionHeader({
@@ -139,6 +90,7 @@ function SectionHeader({
 
 export default function ProductForm({
   categories,
+  brands,
   collections,
   errorMessage,
 }: ProductFormProps) {
@@ -156,37 +108,30 @@ export default function ProductForm({
   const [uploadFileName, setUploadFileName] = useState("");
   const [submissionError, setSubmissionError] = useState("");
 
-  const [variants, setVariants] = useState<SizeVariant[]>(
+  const [variants, setVariants] = useState<AdminElectronicsVariant[]>(
     createInitialVariants,
   );
 
-  const [activeSize, setActiveSize] = useState<SizeName | null>(null);
-
-  const selectedVariants = useMemo(
-    () => variants.filter((variant) => variant.enabled),
-    [variants],
-  );
-
-  const activeVariant =
-    selectedVariants.find((variant) => variant.size === activeSize) ??
-    selectedVariants[0] ??
-    null;
-
   const totalStock = useMemo(() => {
-    return selectedVariants.reduce((total, variant) => {
+    return variants.reduce((total, variant) => {
       const unavailable =
         variant.availability_status === "out_of_stock" ||
         variant.availability_status === "coming_soon";
 
       return total + (unavailable ? 0 : Number(variant.stock_quantity) || 0);
     }, 0);
-  }, [selectedVariants]);
+  }, [variants]);
 
-  const orderableSizes = selectedVariants.filter(
-    (variant) =>
-      variant.availability_status === "in_stock" ||
-      variant.availability_status === "low_stock",
-  ).length;
+  const availableConfigurations = useMemo(
+    () =>
+      variants.filter(
+        (variant) =>
+          (variant.availability_status === "in_stock" ||
+            variant.availability_status === "low_stock") &&
+          Number(variant.stock_quantity) > 0,
+      ).length,
+    [variants],
+  );
 
   const handleImagesChange = useCallback(
     (images: DirectUploadSelectedImage[]) => {
@@ -270,44 +215,6 @@ export default function ProductForm({
     }
   }
 
-  function updateSize(size: SizeName, updates: Partial<SizeVariant>) {
-    setVariants((current) =>
-      current.map((variant) =>
-        variant.size === size
-          ? {
-              ...variant,
-              ...updates,
-            }
-          : variant,
-      ),
-    );
-  }
-
-  function toggleSize(size: SizeName) {
-    setVariants((current) => {
-      const updated = current.map((variant) =>
-        variant.size === size
-          ? {
-              ...variant,
-              enabled: !variant.enabled,
-            }
-          : variant,
-      );
-
-      const changed = updated.find((variant) => variant.size === size);
-
-      if (changed?.enabled) {
-        setActiveSize(size);
-      } else if (activeSize === size) {
-        const nextSelected = updated.find((variant) => variant.enabled);
-
-        setActiveSize(nextSelected?.size ?? null);
-      }
-
-      return updated;
-    });
-  }
-
   return (
     <form ref={formRef} action={createProduct} onSubmit={handleSubmit}>
       <input
@@ -321,22 +228,16 @@ export default function ProductForm({
         type="hidden"
         name="variants_json"
         value={JSON.stringify(
-          selectedVariants.map(
-            ({
-              size,
-              sku,
-              stock_quantity,
-              low_stock_threshold,
-              availability_status,
-            }) => ({
-              size,
-              sku,
-              stock_quantity,
-              low_stock_threshold,
-              availability_status,
-            }),
-          ),
+          variants.map((variant) => ({
+            variant_name: variant.variant_name,
+            attributes: variant.attributes,
+            sku: variant.sku,
+            stock_quantity: variant.stock_quantity,
+            low_stock_threshold: variant.low_stock_threshold,
+            availability_status: variant.availability_status,
+          })),
         )}
+        readOnly
       />
 
       {(errorMessage || submissionError) && (
@@ -402,7 +303,7 @@ export default function ProductForm({
                 />
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
+              <div className="grid gap-5 lg:grid-cols-3">
                 <div>
                   <label
                     htmlFor="category"
@@ -425,6 +326,30 @@ export default function ProductForm({
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="brand"
+                    className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
+                  >
+                    Brand
+                  </label>
+
+                  <select
+                    id="brand"
+                    name="brand_id"
+                    defaultValue=""
+                    className="mt-3 w-full border border-white/10 bg-[#111111] px-4 py-4 text-white outline-none focus:border-white/55"
+                  >
+                    <option value="">No brand</option>
+
+                    {brands.map((brand) => (
+                      <option key={brand.id} value={brand.id}>
+                        {brand.name}
                       </option>
                     ))}
                   </select>
@@ -540,270 +465,21 @@ export default function ProductForm({
           <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
               number="04"
-              title="Product sizes"
-              description="Select every size available for this product."
+              title="Product configurations"
+              description="Create every sellable version of this product and define its technical specifications, SKU, stock and availability."
             />
 
             <div className="p-6">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {variants.map((variant) => (
-                  <button
-                    key={variant.size}
-                    type="button"
-                    onClick={() => toggleSize(variant.size)}
-                    className={`relative min-h-[84px] border px-4 py-4 text-left transition ${
-                      variant.enabled
-                        ? "border-white bg-white text-black"
-                        : "border-white/10 bg-black/20 text-white/55 hover:border-white/35 hover:text-white"
-                    }`}
-                  >
-                    <span className="text-base font-semibold">
-                      {variant.size}
-                    </span>
-
-                    <span
-                      className={`mt-2 block text-xs ${
-                        variant.enabled ? "text-black/50" : "text-white/30"
-                      }`}
-                    >
-                      {variant.enabled ? "Selected" : "Not selected"}
-                    </span>
-
-                    {variant.enabled && (
-                      <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-black text-white">
-                        <Check className="h-3 w-3" />
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
+              <ElectronicsVariantEditor
+                variants={variants}
+                onChange={setVariants}
+              />
             </div>
           </section>
 
           <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
               number="05"
-              title="Inventory by size"
-              description="Each size has its own SKU, stock quantity and availability."
-            />
-
-            {selectedVariants.length === 0 ? (
-              <div className="p-6">
-                <div className="border border-dashed border-white/15 bg-black/20 px-6 py-14 text-center">
-                  <Package className="mx-auto h-7 w-7 text-white/30" />
-
-                  <p className="mt-4 font-semibold">No sizes selected</p>
-
-                  <p className="mt-2 text-sm text-white/35">
-                    Select at least one size above.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-wrap gap-2 border-b border-white/10 px-6 py-4">
-                  {selectedVariants.map((variant) => {
-                    const status = availabilityOptions.find(
-                      (option) => option.value === variant.availability_status,
-                    );
-
-                    const isActive = activeVariant?.size === variant.size;
-
-                    return (
-                      <button
-                        key={variant.size}
-                        type="button"
-                        onClick={() => setActiveSize(variant.size)}
-                        className={`flex items-center gap-3 border px-4 py-3 text-sm font-semibold transition ${
-                          isActive
-                            ? "border-white bg-white text-black"
-                            : "border-white/10 bg-black/20 text-white/55 hover:border-white/35 hover:text-white"
-                        }`}
-                      >
-                        <span>{variant.size}</span>
-
-                        <span
-                          className={`h-2.5 w-2.5 rounded-full ${
-                            status?.dotClass ?? "bg-white/30"
-                          }`}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {activeVariant && (
-                  <div className="p-6">
-                    <div className="flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/35">
-                          Editing
-                        </p>
-
-                        <h3 className="mt-2 text-2xl font-semibold">
-                          Size {activeVariant.size}
-                        </h3>
-
-                        <p className="mt-1 text-sm text-white/35">
-                          These settings affect only size {activeVariant.size}.
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => toggleSize(activeVariant.size)}
-                        className="border border-red-400/20 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-red-300 transition hover:bg-red-400/[0.08]"
-                      >
-                        Remove size
-                      </button>
-                    </div>
-
-                    <div className="mt-6 grid gap-5 md:grid-cols-3">
-                      <div>
-                        <label className="text-xs font-semibold uppercase tracking-[0.16em] text-white/50">
-                          SKU
-                        </label>
-
-                        <input
-                          type="text"
-                          value={activeVariant.sku}
-                          onChange={(event) =>
-                            updateSize(activeVariant.size, {
-                              sku: event.target.value,
-                            })
-                          }
-                          placeholder="Optional"
-                          className="mt-3 w-full border border-white/10 bg-black/30 px-4 py-4 text-white outline-none placeholder:text-white/20 focus:border-white/50"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-semibold uppercase tracking-[0.16em] text-white/50">
-                          Quantity
-                        </label>
-
-                        <input
-                          type="number"
-                          min="0"
-                          disabled={
-                            activeVariant.availability_status ===
-                              "out_of_stock" ||
-                            activeVariant.availability_status === "coming_soon"
-                          }
-                          value={
-                            activeVariant.availability_status ===
-                              "out_of_stock" ||
-                            activeVariant.availability_status === "coming_soon"
-                              ? 0
-                              : activeVariant.stock_quantity
-                          }
-                          onChange={(event) =>
-                            updateSize(activeVariant.size, {
-                              stock_quantity: Math.max(
-                                0,
-                                Number(event.target.value),
-                              ),
-                            })
-                          }
-                          className="mt-3 w-full border border-white/10 bg-black/30 px-4 py-4 text-white outline-none focus:border-white/50 disabled:cursor-not-allowed disabled:opacity-35"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-semibold uppercase tracking-[0.16em] text-white/50">
-                          Low-stock warning
-                        </label>
-
-                        <input
-                          type="number"
-                          min="0"
-                          value={activeVariant.low_stock_threshold}
-                          onChange={(event) =>
-                            updateSize(activeVariant.size, {
-                              low_stock_threshold: Math.max(
-                                0,
-                                Number(event.target.value),
-                              ),
-                            })
-                          }
-                          className="mt-3 w-full border border-white/10 bg-black/30 px-4 py-4 text-white outline-none focus:border-white/50"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-7">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/50">
-                        Availability for size {activeVariant.size}
-                      </p>
-
-                      <div className="mt-3 grid gap-3 md:grid-cols-2">
-                        {availabilityOptions.map((option) => {
-                          const isActive =
-                            activeVariant.availability_status === option.value;
-
-                          return (
-                            <button
-                              key={option.value}
-                              type="button"
-                              onClick={() =>
-                                updateSize(activeVariant.size, {
-                                  availability_status: option.value,
-                                  stock_quantity:
-                                    option.value === "out_of_stock" ||
-                                    option.value === "coming_soon"
-                                      ? 0
-                                      : activeVariant.stock_quantity,
-                                })
-                              }
-                              className={`relative min-h-[105px] border p-4 text-left transition ${
-                                isActive
-                                  ? option.activeClass
-                                  : "border-white/10 bg-black/20 text-white/55 hover:border-white/30 hover:text-white"
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-4">
-                                <div>
-                                  <div className="flex items-center gap-3">
-                                    <span
-                                      className={`h-2.5 w-2.5 rounded-full ${option.dotClass}`}
-                                    />
-
-                                    <p className="text-sm font-semibold">
-                                      {option.label}
-                                    </p>
-                                  </div>
-
-                                  <p className="mt-3 text-xs leading-5 opacity-70">
-                                    {option.description}
-                                  </p>
-                                </div>
-
-                                <span
-                                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
-                                    isActive
-                                      ? "border-current"
-                                      : "border-white/15"
-                                  }`}
-                                >
-                                  {isActive && (
-                                    <Check className="h-3.5 w-3.5" />
-                                  )}
-                                </span>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </section>
-
-          <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="06"
               title="Store placement"
               description="Choose optional promotional labels for this product."
             />
@@ -888,11 +564,11 @@ export default function ProductForm({
               <div className="grid grid-cols-3 gap-3">
                 <div className="border border-white/10 bg-black/20 p-4">
                   <p className="text-[10px] uppercase tracking-[0.14em] text-white/30">
-                    Sizes
+                    Configurations
                   </p>
 
                   <p className="mt-2 text-xl font-semibold">
-                    {selectedVariants.length}
+                    {variants.length}
                   </p>
                 </div>
 
@@ -901,7 +577,9 @@ export default function ProductForm({
                     Available
                   </p>
 
-                  <p className="mt-2 text-xl font-semibold">{orderableSizes}</p>
+                  <p className="mt-2 text-xl font-semibold">
+                    {availableConfigurations}
+                  </p>
                 </div>
 
                 <div className="border border-white/10 bg-black/20 p-4">
@@ -914,43 +592,48 @@ export default function ProductForm({
               </div>
             </div>
 
-            {selectedVariants.length > 0 && (
+            {variants.length > 0 && (
               <div className="mt-5 overflow-hidden border border-white/10 bg-black/20">
                 <div className="border-b border-white/10 px-4 py-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/30">
-                    Size overview
+                    Configuration overview
                   </p>
                 </div>
 
                 <div className="divide-y divide-white/10">
-                  {selectedVariants.map((variant) => {
-                    const status = availabilityOptions.find(
-                      (option) => option.value === variant.availability_status,
-                    );
+                  {variants.map((variant, index) => (
+                    <div
+                      key={variant.clientId}
+                      className="flex items-center justify-between gap-4 px-4 py-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">
+                          {variant.variant_name.trim() ||
+                            `Configuration ${index + 1}`}
+                        </p>
 
-                    return (
-                      <button
-                        key={variant.size}
-                        type="button"
-                        onClick={() => setActiveSize(variant.size)}
-                        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-white/[0.035]"
-                      >
-                        <p className="text-sm font-semibold">{variant.size}</p>
-
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`h-2.5 w-2.5 rounded-full ${
-                              status?.dotClass ?? "bg-white/30"
-                            }`}
-                          />
-
-                          <p className="text-xs text-white/45">
-                            {status?.label}
+                        {variant.sku ? (
+                          <p className="mt-1 truncate text-[10px] uppercase tracking-[0.12em] text-white/30">
+                            SKU {variant.sku}
                           </p>
-                        </div>
-                      </button>
-                    );
-                  })}
+                        ) : null}
+                      </div>
+
+                      <div className="shrink-0 text-right">
+                        <p className="text-xs text-white/45">
+                          {variant.availability_status
+                            .replaceAll("_", " ")
+                            .replace(/\b\w/g, (character) =>
+                              character.toUpperCase(),
+                            )}
+                        </p>
+
+                        <p className="mt-1 text-[10px] text-white/25">
+                          Stock {variant.stock_quantity}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

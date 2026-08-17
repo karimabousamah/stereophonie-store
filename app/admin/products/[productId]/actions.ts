@@ -11,7 +11,8 @@ type AvailabilityStatus =
 
 type VariantInput = {
   id: string | null;
-  size: string;
+  variant_name: string;
+  attributes: Record<string, string>;
   sku: string;
   stock_quantity: number;
   low_stock_threshold: number;
@@ -63,13 +64,13 @@ function calculateProductAvailability(
     return "coming_soon";
   }
 
-  const hasAvailableSize = variants.some(
+  const hasAvailableConfiguration = variants.some(
     (variant) =>
       variant.availability_status === "in_stock" ||
       variant.availability_status === "low_stock",
   );
 
-  if (hasAvailableSize) {
+  if (hasAvailableConfiguration) {
     return "in_stock";
   }
 
@@ -78,48 +79,64 @@ function calculateProductAvailability(
 
 function validateVariants(productId: string, variants: VariantInput[]) {
   if (!Array.isArray(variants) || variants.length === 0) {
-    redirectWithError(productId, "Select at least one product size.");
+    redirectWithError(productId, "Create at least one product configuration.");
   }
 
-  const usedSizes = new Set<string>();
+  const usedConfigurationNames = new Set<string>();
 
   for (const variant of variants) {
-    const size = String(variant.size ?? "").trim();
+    const configurationName = String(variant.variant_name ?? "").trim();
 
-    if (!size) {
-      redirectWithError(productId, "Every product variant must have a size.");
+    if (!configurationName) {
+      redirectWithError(
+        productId,
+        "Every product configuration must have a name.",
+      );
     }
 
-    const normalizedSize = size.toLowerCase();
+    const normalizedName = configurationName.toLowerCase();
 
-    if (usedSizes.has(normalizedSize)) {
-      redirectWithError(productId, `Size ${size} was selected more than once.`);
+    if (usedConfigurationNames.has(normalizedName)) {
+      redirectWithError(
+        productId,
+        `Configuration ${configurationName} was added more than once.`,
+      );
     }
 
-    usedSizes.add(normalizedSize);
+    usedConfigurationNames.add(normalizedName);
+
+    if (
+      typeof variant.attributes !== "object" ||
+      variant.attributes === null ||
+      Array.isArray(variant.attributes)
+    ) {
+      redirectWithError(
+        productId,
+        `The technical attributes for ${configurationName} are invalid.`,
+      );
+    }
 
     if (!validAvailabilityStatuses.includes(variant.availability_status)) {
       redirectWithError(
         productId,
-        `Select a valid availability status for size ${size}.`,
+        `Select a valid availability status for ${configurationName}.`,
       );
     }
 
     const stockQuantity = Number(variant.stock_quantity);
-
     const lowStockThreshold = Number(variant.low_stock_threshold);
 
     if (!Number.isFinite(stockQuantity) || stockQuantity < 0) {
       redirectWithError(
         productId,
-        `Enter a valid stock quantity for size ${size}.`,
+        `Enter a valid stock quantity for ${configurationName}.`,
       );
     }
 
     if (!Number.isFinite(lowStockThreshold) || lowStockThreshold < 0) {
       redirectWithError(
         productId,
-        `Enter a valid low-stock warning for size ${size}.`,
+        `Enter a valid low-stock warning for ${configurationName}.`,
       );
     }
   }
@@ -141,6 +158,8 @@ export async function updateProduct(formData: FormData) {
   const categoryId = String(formData.get("category_id") ?? "").trim();
 
   const collectionId = String(formData.get("collection_id") ?? "").trim();
+
+  const brandId = String(formData.get("brand_id") ?? "").trim();
 
   const regularPrice = Number(formData.get("regular_price"));
 
@@ -189,7 +208,10 @@ export async function updateProduct(formData: FormData) {
   try {
     variants = JSON.parse(variantsJson) as VariantInput[];
   } catch {
-    redirectWithError(productId, "The product sizes could not be processed.");
+    redirectWithError(
+      productId,
+      "The product configurations could not be processed.",
+    );
   }
 
   validateVariants(productId, variants);
@@ -205,6 +227,7 @@ export async function updateProduct(formData: FormData) {
       description: description || null,
       category_id: categoryId,
       collection_id: collectionId || null,
+      brand_id: brandId || null,
       status: productStatus,
       availability: productAvailability,
       is_featured: isFeatured,
@@ -242,7 +265,7 @@ export async function updateProduct(formData: FormData) {
   ) {
     redirectWithError(
       productId,
-      "A product size was submitted more than once.",
+      "A product configuration was submitted more than once.",
     );
   }
 
@@ -251,7 +274,10 @@ export async function updateProduct(formData: FormData) {
   );
 
   if (hasInvalidVariantId) {
-    redirectWithError(productId, "One product size could not be verified.");
+    redirectWithError(
+      productId,
+      "One product configuration could not be verified.",
+    );
   }
 
   const submittedVariantIdSet = new Set(submittedExistingVariantIds);
@@ -277,8 +303,14 @@ export async function updateProduct(formData: FormData) {
       variant.availability_status === "out_of_stock" ||
       variant.availability_status === "coming_soon";
 
+    const configurationName = variant.variant_name.trim();
+
     const variantValues = {
-      size: variant.size.trim(),
+      // Legacy compatibility for checkout/order code.
+      size: configurationName,
+
+      variant_name: configurationName,
+      attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
       regular_price: regularPrice,
       sale_price: salePrice,

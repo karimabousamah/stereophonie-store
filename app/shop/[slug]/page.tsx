@@ -1,8 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, RefreshCcw, ShieldCheck, Truck } from "lucide-react";
 
-import StoreFooter from "@/components/storefront/store-footer";
+import V2Footer from "@/components/stereophonie-v2/layout/v2-footer";
 import StoreHeader from "@/components/storefront/store-header";
 import StoreProductCard from "@/components/storefront/store-product-card";
 import RecentlyViewedProducts from "@/components/storefront/recently-viewed-products";
@@ -36,6 +37,8 @@ type AvailabilityStatus =
 type ProductVariant = {
   id: string;
   size: string;
+  variant_name: string | null;
+  attributes: Record<string, string> | null;
   sku: string | null;
   regular_price: number | null;
   sale_price: number | null;
@@ -81,6 +84,90 @@ function lowestPrices(variants: ProductVariant[]) {
   };
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+
+  const supabase = await createClient();
+
+  const { data: product } = await supabase
+    .from("products")
+    .select(
+      `
+        name,
+        description,
+        status,
+        categories (
+          name
+        ),
+        brands (
+          name
+        ),
+        product_images (
+          image_url,
+          position,
+          is_primary
+        )
+      `,
+    )
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (!product) {
+    return {
+      title: "Product | Stereophonie",
+      description:
+        "Explore premium electronics and technology at Stereophonie.",
+    };
+  }
+
+  const category = relationName(product.categories as Relation, "Technology");
+
+  const brand = relationName(product.brands as Relation, "");
+
+  const titleParts = [product.name, brand || null, "Stereophonie"].filter(
+    Boolean,
+  );
+
+  const description =
+    product.description?.trim() ||
+    `Shop ${product.name} in ${category} at Stereophonie.`;
+
+  const images = (
+    (product.product_images as {
+      image_url: string | null;
+      position: number;
+      is_primary: boolean;
+    }[]) ?? []
+  )
+    .filter((image) => Boolean(image.image_url))
+    .sort((first, second) => {
+      if (first.is_primary !== second.is_primary) {
+        return first.is_primary ? -1 : 1;
+      }
+
+      return first.position - second.position;
+    });
+
+  const primaryImage = images[0]?.image_url ?? undefined;
+
+  return {
+    title: titleParts.join(" | "),
+    description: description.slice(0, 160),
+
+    openGraph: {
+      title: titleParts.join(" | "),
+      description: description.slice(0, 200),
+      type: "website",
+      images: primaryImage ? [primaryImage] : undefined,
+    },
+  };
+}
+
 export default async function ProductPage({
   params,
   searchParams,
@@ -104,8 +191,12 @@ export default async function ProductPage({
       is_trending,
       is_new_arrival,
       category_id,
+      brand_id,
       collection_id,
       categories (
+        name
+      ),
+      brands (
         name
       ),
       collections (
@@ -121,6 +212,8 @@ export default async function ProductPage({
       product_variants (
         id,
         size,
+        variant_name,
+        attributes,
         sku,
         regular_price,
         sale_price,
@@ -150,7 +243,12 @@ export default async function ProductPage({
     : images;
 
   const variants = ((product.product_variants as ProductVariant[]) ?? []).sort(
-    (first, second) => first.size.localeCompare(second.size),
+    (first, second) =>
+      (first.variant_name?.trim() || first.size || "").localeCompare(
+        second.variant_name?.trim() || second.size || "",
+        undefined,
+        { numeric: true },
+      ),
   );
 
   const { regularPrice, salePrice } = lowestPrices(variants);
@@ -165,6 +263,8 @@ export default async function ProductPage({
     categoryName,
   );
 
+  const brandName = relationName(product.brands as Relation, "");
+
   const { data: relatedProductData } = await supabase
     .from("products")
     .select(
@@ -175,11 +275,15 @@ export default async function ProductPage({
         description,
         status,
         category_id,
+        brand_id,
         collection_id,
         is_featured,
         is_trending,
         is_new_arrival,
         categories (
+          name
+        ),
+        brands (
           name
         ),
         product_images (
@@ -193,6 +297,8 @@ export default async function ProductPage({
           sale_price,
           stock_quantity,
           size,
+          variant_name,
+          attributes,
           is_active,
           availability_status
         )
@@ -212,8 +318,15 @@ export default async function ProductPage({
         Boolean(product.collection_id) &&
         relatedProduct.collection_id === product.collection_id;
 
+      const sameBrand =
+        Boolean(product.brand_id) &&
+        relatedProduct.brand_id === product.brand_id;
+
       return {
-        score: (sameCategory ? 2 : 0) + (sameCollection ? 1 : 0),
+        score:
+          (sameCategory ? 4 : 0) +
+          (sameBrand ? 3 : 0) +
+          (sameCollection ? 2 : 0),
 
         product: {
           id: relatedProduct.id,
@@ -224,6 +337,7 @@ export default async function ProductPage({
             relatedProduct.categories as Relation,
             "Collection",
           ),
+          brandName: relationName(relatedProduct.brands as Relation, ""),
           is_featured: relatedProduct.is_featured,
           is_trending: relatedProduct.is_trending,
           is_new_arrival: relatedProduct.is_new_arrival,
@@ -243,7 +357,7 @@ export default async function ProductPage({
     .map((item) => item.product);
 
   return (
-    <main className="min-h-screen bg-white text-black">
+    <main className="st-v2 st-v2-product min-h-screen bg-white text-black">
       <StoreHeader />
 
       <div className="border-b border-black/10">
@@ -320,10 +434,32 @@ export default async function ProductPage({
             </div>
           </div>
 
+          <div className="st-pdp-v3-identity">
+            <div>
+              <small>BRAND</small>
+              <strong>{brandName || "STEREOPHONIE SELECT"}</strong>
+            </div>
+
+            <div>
+              <small>CATEGORY</small>
+              <strong>{categoryName}</strong>
+            </div>
+
+            <div>
+              <small>COLLECTION</small>
+              <strong>{collectionName}</strong>
+            </div>
+
+            <div>
+              <small>PRODUCT ID</small>
+              <strong>{product.id.slice(0, 8).toUpperCase()}</strong>
+            </div>
+          </div>
+
           {product.description ? (
             <div className="border-b border-black/10 py-7">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/45">
-                Product details
+                PRODUCT OVERVIEW
               </p>
 
               <p className="mt-4 whitespace-pre-line text-sm leading-7 text-black/60">
@@ -366,11 +502,11 @@ export default async function ProductPage({
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em]">
-                  Delivery confirmation
+                  DELIVERY
                 </p>
 
                 <p className="mt-2 text-xs leading-6 text-black/45">
-                  Delivery availability and fees are confirmed after submission.
+                  Delivery route and fees are confirmed during order processing.
                 </p>
               </div>
             </div>
@@ -380,11 +516,12 @@ export default async function ProductPage({
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em]">
-                  No returns
+                  RETURNS POLICY
                 </p>
 
                 <p className="mt-2 text-xs leading-6 text-black/45">
-                  Please confirm the product and size carefully before ordering.
+                  Please confirm the product and configuration carefully before
+                  ordering.
                 </p>
               </div>
             </div>
@@ -394,7 +531,7 @@ export default async function ProductPage({
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em]">
-                  Secure order
+                  SECURE ORDER
                 </p>
 
                 <p className="mt-2 text-xs leading-6 text-black/45">
@@ -418,11 +555,11 @@ export default async function ProductPage({
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-black/40">
-                  Complete the look
+                  HARDWARE NETWORK
                 </p>
 
                 <h2 className="mt-3 text-3xl font-semibold tracking-[-0.045em] sm:text-4xl lg:text-5xl">
-                  You may also like
+                  RELATED HARDWARE
                 </h2>
               </div>
 
@@ -430,7 +567,7 @@ export default async function ProductPage({
                 href="/shop"
                 className="border-b border-black pb-1 text-[10px] font-semibold uppercase tracking-[0.17em] transition hover:opacity-45"
               >
-                Explore all products
+                OPEN PRODUCT DATABASE
               </Link>
             </div>
 
@@ -459,7 +596,7 @@ export default async function ProductPage({
         }}
       />
 
-      <StoreFooter />
+      <V2Footer />
     </main>
   );
 }

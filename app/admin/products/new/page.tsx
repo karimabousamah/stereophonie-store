@@ -36,10 +36,17 @@ export default async function NewProductPage({
     redirect("/admin/login");
   }
 
-  const [categoriesResult, collectionsResult] = await Promise.all([
+  const [categoriesResult, brandsResult, collectionsResult] = await Promise.all([
     supabase.from("categories").select("id, name").order("name", {
       ascending: true,
     }),
+
+    supabase
+      .from("brands")
+      .select("id, name")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true }),
 
     supabase.from("collections").select("id, name").order("name", {
       ascending: true,
@@ -48,7 +55,8 @@ export default async function NewProductPage({
 
   const resolvedSearchParams = await searchParams;
 
-  const loadingError = categoriesResult.error || collectionsResult.error;
+  const loadingError =
+    categoriesResult.error || brandsResult.error || collectionsResult.error;
 
   const errorMessage =
     resolvedSearchParams.error ??
@@ -112,6 +120,7 @@ export default async function NewProductPage({
 
           <ProductForm
             categories={categoriesResult.data ?? []}
+            brands={brandsResult.data ?? []}
             collections={collectionsResult.data ?? []}
             errorMessage={errorMessage}
           />

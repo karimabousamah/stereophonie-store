@@ -492,7 +492,7 @@ function AddressEditor({
           onClick={onClose}
           disabled={saving}
           aria-label="Close address editor"
-          className="grid h-9 w-9 shrink-0 place-items-center border border-black/10 bg-white text-black/45 transition hover:border-black hover:bg-black hover:text-white disabled:opacity-40"
+          className="st-checkout-module grid h-9 w-9 shrink-0 place-items-center border border-black/10 bg-white text-black/45 transition hover:border-black hover:bg-black hover:text-white disabled:opacity-40"
         >
           <X className="h-4 w-4" />
         </button>
@@ -1726,7 +1726,7 @@ export default function CheckoutPage() {
 
   if (!isCartReady || accountLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white text-black">
+      <main className="st-checkout-v2 flex min-h-screen items-center justify-center bg-white text-black">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-black/15 border-t-black" />
 
@@ -1768,6 +1768,52 @@ export default function CheckoutPage() {
         </div>
       </header>
 
+      <section className="st-checkout-v2__system-head">
+        <div className="st-checkout-v2__system-topline">
+          <div>
+            <span className="st-checkout-v2__system-led" />
+            CHECKOUT SYSTEM / ONLINE
+          </div>
+
+          <span>SECURE ORDER CHANNEL / PLAYER 01</span>
+        </div>
+
+        <div className="st-checkout-v2__hero">
+          <div>
+            <small>CHECKOUT MODULE / STEP 01</small>
+
+            <h1>
+              BUILD YOUR
+              <br />
+              <span>LOADOUT.</span>
+            </h1>
+
+            <p>
+              Verify customer data, delivery coordinates, payment method,
+              product configurations and inventory before routing the order to
+              final review.
+            </p>
+          </div>
+
+          <div className="st-checkout-v2__hero-status">
+            <span>
+              CUSTOMER
+              <strong>READY</strong>
+            </span>
+
+            <span>
+              INVENTORY
+              <strong>LIVE</strong>
+            </span>
+
+            <span>
+              PAYMENT
+              <strong>COD</strong>
+            </span>
+          </div>
+        </div>
+      </section>
+
       <CheckoutProgress currentStep={1} />
 
       <section className="mx-auto max-w-[1500px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12 lg:py-16">
@@ -1799,7 +1845,7 @@ export default function CheckoutPage() {
             <h2 className="mt-6 text-2xl font-semibold">Your cart is empty</h2>
 
             <p className="mt-3 max-w-md text-sm leading-6 text-black/45">
-              Select a product and size before proceeding to checkout.
+              Select a product configuration before proceeding to checkout.
             </p>
 
             <Link
@@ -1861,7 +1907,7 @@ export default function CheckoutPage() {
                   </div>
                 </section>
               ) : (
-                <section className="border border-black/10 bg-white">
+                <section className="st-checkout-module border border-black/10 bg-white">
                   <div className="flex flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                     <div>
                       <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
@@ -1886,7 +1932,7 @@ export default function CheckoutPage() {
 
               {/* CONTACT INFORMATION */}
 
-              <section className="border border-black/10 bg-white">
+              <section className="st-checkout-module border border-black/10 bg-white">
                 <div className="border-b border-black/10 px-4 py-5 sm:px-6">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                     Step 01
@@ -2141,7 +2187,7 @@ export default function CheckoutPage() {
 
               {/* DELIVERY ADDRESS */}
 
-              <section className="border border-black/10 bg-white">
+              <section className="st-checkout-module border border-black/10 bg-white">
                 <div className="flex flex-col gap-5 border-b border-black/10 px-4 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
@@ -2590,10 +2636,10 @@ export default function CheckoutPage() {
             {/* ORDER SUMMARY */}
 
             <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
-              <section className="overflow-hidden border border-black/10 bg-white">
+              <section className="st-checkout-module overflow-hidden border border-black/10 bg-white">
                 <div className="border-b border-black/10 px-4 py-5 sm:px-5">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    Order summary
+                    Order terminal
                   </p>
 
                   <h2 className="mt-2 text-2xl font-semibold">
@@ -2632,7 +2678,7 @@ export default function CheckoutPage() {
                             </p>
 
                             <p className="mt-1 text-xs text-black/45">
-                              Size {item.size}
+                              Configuration {item.size}
                             </p>
                           </div>
 

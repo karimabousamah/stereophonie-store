@@ -300,14 +300,6 @@ export default function PremiumMotionController() {
   return (
     <>
       <div aria-hidden="true" className="nita-premium-ambient" />
-
-      <div aria-hidden="true" className="nita-premium-scroll-progress">
-        <div
-          style={{
-            transform: `scaleX(${scrollProgress})`,
-          }}
-        />
-      </div>
     </>
   );
 }

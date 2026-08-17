@@ -157,7 +157,7 @@ export default function CouponBox({
 
   if (value) {
     return (
-      <section className="border border-emerald-200 bg-emerald-50">
+      <section className="st-checkout-coupon st-checkout-coupon--active">
         <div className="flex items-start gap-3 p-4">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-700 text-white">
             <Check className="h-4 w-4" />
@@ -205,7 +205,7 @@ export default function CouponBox({
   }
 
   return (
-    <section className="border border-black/10 bg-black/[0.02] p-4">
+    <section className="st-checkout-coupon">
       <div className="flex items-center gap-2">
         <TicketPercent className="h-4 w-4 text-black/45" />
 
@@ -214,7 +214,7 @@ export default function CouponBox({
         </p>
       </div>
 
-      <div className="mt-4 flex">
+      <div className="st-checkout-coupon__command mt-4 flex">
         <input
           type="text"
           value={code}

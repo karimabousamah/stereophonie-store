@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import FreeShoppingAssistant from "@/components/assistant/free-shopping-assistant";
+import ArcadeStorefrontShell from "@/components/stereophonie-v2/system/arcade-storefront-shell";
 import CartDrawer from "@/components/cart/cart-drawer";
 import { CartProvider } from "@/components/cart/cart-provider";
 import CollectionsAutoScroll from "@/components/home/collections-auto-scroll";
@@ -47,18 +48,20 @@ export default async function RootLayout({
           <StoreAvailabilityGate>
             <CartProvider>
               <WishlistProvider>
-                <WebsiteIntro />
+                <ArcadeStorefrontShell>
+                  <WebsiteIntro />
 
-                <Suspense fallback={null}>
-                  <PageTransition />
-                </Suspense>
+                  <Suspense fallback={null}>
+                    <PageTransition />
+                  </Suspense>
 
-                {children}
+                  {children}
 
-                <CollectionsAutoScroll />
-                <CartDrawer />
+                  <CollectionsAutoScroll />
+                  <CartDrawer />
 
-                {settings.assistantEnabled ? <FreeShoppingAssistant /> : null}
+                  {settings.assistantEnabled ? <FreeShoppingAssistant /> : null}
+                </ArcadeStorefrontShell>
               </WishlistProvider>
             </CartProvider>
           </StoreAvailabilityGate>

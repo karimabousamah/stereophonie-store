@@ -1,0 +1,1589 @@
+/* =========================================================
+   STEREOPHONIE V2
+   ARCADE OS BOOT / LOADING SYSTEM
+   ========================================================= */
+
+.st-boot-screen {
+  position: absolute;
+  inset: 0;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(237, 28, 36, 0.08),
+      transparent 32%
+    ),
+    #050505;
+
+  color: #fff;
+}
+
+.st-boot-screen__noise {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.07;
+
+  pointer-events: none;
+
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.8) 0.45px,
+    transparent 0.45px
+  );
+
+  background-size: 4px 4px;
+}
+
+.st-boot-screen__scanlines {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.2;
+
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.025) 0,
+    rgba(255, 255, 255, 0.025) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+.st-boot-screen__frame {
+  position: relative;
+
+  width: min(900px, calc(100vw - 40px));
+  min-height: min(640px, calc(100dvh - 60px));
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), #090909;
+
+  background-size: 28px 28px;
+
+  box-shadow:
+    12px 12px 0 #ed1c24,
+    0 40px 120px rgba(0, 0, 0, 0.55);
+}
+
+.st-boot-screen__topbar {
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding: 0 20px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+
+  color: rgba(255, 255, 255, 0.48);
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.st-boot-screen__topbar > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.st-boot-screen__topbar svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st-boot-screen__led {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #8cff98;
+
+  box-shadow:
+    0 0 7px rgba(140, 255, 152, 0.95),
+    0 0 18px rgba(140, 255, 152, 0.4);
+
+  animation: stBootLed 1.2s steps(2, end) infinite;
+}
+
+.st-boot-screen__center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 50px 55px;
+}
+
+.st-boot-screen__logo-box {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  margin-bottom: 34px;
+}
+
+.st-boot-screen__logo-mark {
+  width: 62px;
+  height: 62px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  background: #ed1c24;
+
+  box-shadow: 5px 5px 0 rgba(255, 255, 255, 0.08);
+}
+
+.st-boot-screen__logo-mark svg {
+  width: 28px;
+  height: 28px;
+}
+
+.st-boot-screen__logo-box p {
+  margin: 0;
+
+  font-size: clamp(30px, 5vw, 58px);
+  font-weight: 900;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+}
+
+.st-boot-screen__logo-box span {
+  display: block;
+
+  margin-top: 12px;
+
+  color: rgba(255, 255, 255, 0.36);
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.st-boot-screen__screen {
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  background: #dbe3c4;
+
+  color: #1b2b1b;
+
+  box-shadow:
+    inset 0 0 60px rgba(14, 45, 20, 0.15),
+    6px 6px 0 rgba(255, 255, 255, 0.05);
+}
+
+.st-boot-screen__screen-header {
+  min-height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 14px;
+
+  border-bottom: 1px solid rgba(22, 46, 23, 0.25);
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.st-boot-screen__screen-body {
+  padding: 28px;
+}
+
+.st-boot-screen__cpu {
+  width: 30px;
+  height: 30px;
+
+  opacity: 0.55;
+}
+
+.st-boot-screen__command {
+  margin: 24px 0 0;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.st-boot-screen__cursor {
+  margin-left: 4px;
+
+  animation: stBootCursor 650ms steps(2, end) infinite;
+}
+
+.st-boot-screen__progress {
+  height: 15px;
+
+  margin-top: 24px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(23, 54, 26, 0.4);
+
+  background: rgba(23, 54, 26, 0.08);
+}
+
+.st-boot-screen__progress span {
+  display: block;
+
+  width: 0%;
+  height: 100%;
+
+  background: repeating-linear-gradient(
+    90deg,
+    #1f4624 0,
+    #1f4624 12px,
+    #315d35 12px,
+    #315d35 16px
+  );
+
+  animation: stBootProgress 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.st-boot-screen__diagnostics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 24px;
+
+  border-top: 1px solid rgba(23, 54, 26, 0.22);
+}
+
+.st-boot-screen__diagnostics span {
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  border-right: 1px solid rgba(23, 54, 26, 0.18);
+
+  color: rgba(20, 53, 25, 0.68);
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.st-boot-screen__diagnostics span:last-child {
+  border-right: 0;
+}
+
+.st-boot-screen__diagnostics svg {
+  width: 11px;
+  height: 11px;
+}
+
+.st-boot-screen__diagnostics strong {
+  margin-left: auto;
+
+  color: #173d1d;
+}
+
+.st-boot-screen__hint {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+
+  margin-top: 22px;
+
+  color: rgba(255, 255, 255, 0.3);
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.st-boot-screen__hint span:first-child {
+  color: #ed1c24;
+}
+
+.st-boot-screen__footer {
+  min-height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  color: rgba(255, 255, 255, 0.26);
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+@keyframes stBootProgress {
+  0% {
+    width: 3%;
+  }
+
+  28% {
+    width: 26%;
+  }
+
+  52% {
+    width: 48%;
+  }
+
+  76% {
+    width: 73%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes stBootCursor {
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes stBootLed {
+  0%,
+  72% {
+    opacity: 1;
+  }
+
+  73%,
+  100% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------------------------------------------------------
+   Page transition shell
+   --------------------------------------------------------- */
+
+.stereo-transition {
+  position: fixed;
+  z-index: 2147483000;
+  inset: 0;
+
+  visibility: hidden;
+  pointer-events: none;
+
+  background: #050505;
+
+  opacity: 0;
+
+  transition:
+    opacity 180ms ease,
+    visibility 180ms ease;
+}
+
+.stereo-transition--entering,
+.stereo-transition--holding,
+.stereo-transition--leaving {
+  visibility: visible;
+}
+
+.stereo-transition--entering,
+.stereo-transition--holding {
+  opacity: 1;
+}
+
+.stereo-transition--leaving {
+  opacity: 0;
+  transition-duration: 380ms;
+}
+
+/* Hide old split panels if component still renders them */
+
+.stereo-transition .stereo-transition__panel {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------
+   Intro-specific entrance
+   --------------------------------------------------------- */
+
+.st-boot-screen--intro .st-boot-screen__frame {
+  animation: stBootFrameIntro 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes stBootFrameIntro {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 650px) {
+  .st-boot-screen__frame {
+    width: calc(100vw - 24px);
+    min-height: calc(100dvh - 30px);
+  }
+
+  .st-boot-screen__center {
+    padding: 32px 20px;
+  }
+
+  .st-boot-screen__logo-mark {
+    width: 48px;
+    height: 48px;
+  }
+
+  .st-boot-screen__logo-box {
+    gap: 13px;
+  }
+
+  .st-boot-screen__logo-box p {
+    font-size: clamp(28px, 10vw, 42px);
+  }
+
+  .st-boot-screen__screen-body {
+    padding: 20px;
+  }
+
+  .st-boot-screen__diagnostics {
+    grid-template-columns: 1fr;
+  }
+
+  .st-boot-screen__diagnostics span {
+    border-right: 0;
+    border-bottom: 1px solid rgba(23, 54, 26, 0.18);
+  }
+
+  .st-boot-screen__diagnostics span:last-child {
+    border-bottom: 0;
+  }
+
+  .st-boot-screen__hint span:last-child,
+  .st-boot-screen__footer span:nth-child(2) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-boot-screen *,
+  .st-boot-screen *::before,
+  .st-boot-screen *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .st-boot-screen__progress span {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   PHASE 5 — LIVING BOOT SYSTEM
+   ========================================================= */
+
+.st-boot-screen__identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.st-boot-screen__identity > div:last-child {
+  min-width: 0;
+}
+
+.st-boot-screen__real-logo {
+  width: clamp(220px, 35vw, 410px);
+  max-width: 100%;
+  filter: brightness(0) invert(1);
+}
+
+.st-boot-screen__identity > div:last-child > span {
+  display: block;
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.34);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.st-boot-screen__power {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--st-red);
+  box-shadow:
+    5px 5px 0 rgba(255, 255, 255, 0.14),
+    0 0 32px rgba(237, 28, 36, 0.2);
+}
+
+.st-boot-screen__power span {
+  position: absolute;
+  inset: 17px;
+  border: 3px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+
+.st-boot-screen__power span::before {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 3px;
+  height: 12px;
+  background: white;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.st-boot-screen__active-module {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(28, 49, 27, 0.15);
+  border-bottom: 1px solid rgba(28, 49, 27, 0.15);
+  color: #1b321b;
+}
+
+.st-boot-screen__active-module small {
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+}
+
+.st-boot-screen__active-module strong {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  animation: stBootModuleFlash 320ms ease both;
+}
+
+.st-boot-screen--intro .st-boot-screen__frame {
+  animation:
+    stBootFrameWake 650ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    stBootFrameAlive 4.8s ease-in-out 700ms infinite;
+}
+
+.st-boot-screen--transition .st-boot-screen__frame {
+  transform: scale(0.94);
+  animation: stBootTransitionPulse 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.st-boot-screen__screen {
+  animation: stBootScreenGlow 2.2s ease-in-out infinite;
+}
+
+.st-boot-screen__cpu {
+  animation: stBootCpuSignal 1.2s steps(2, end) infinite;
+}
+
+@keyframes stBootFrameWake {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(24px);
+    filter: blur(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes stBootFrameAlive {
+  0%,
+  100% {
+    box-shadow:
+      10px 10px 0 var(--st-red),
+      0 30px 90px rgba(0, 0, 0, 0.4);
+  }
+
+  50% {
+    box-shadow:
+      13px 13px 0 var(--st-red),
+      0 35px 110px rgba(237, 28, 36, 0.12);
+  }
+}
+
+@keyframes stBootTransitionPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+
+  38% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+}
+
+@keyframes stBootScreenGlow {
+  0%,
+  100% {
+    box-shadow: inset 0 0 0 rgba(40, 70, 40, 0);
+  }
+
+  50% {
+    box-shadow: inset 0 0 35px rgba(56, 100, 48, 0.08);
+  }
+}
+
+@keyframes stBootCpuSignal {
+  0%,
+  70% {
+    opacity: 1;
+  }
+
+  71%,
+  100% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes stBootModuleFlash {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 650px) {
+  .st-boot-screen__identity {
+    align-items: flex-start;
+  }
+
+  .st-boot-screen__power {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+
+  .st-boot-screen__power span {
+    inset: 13px;
+  }
+
+  .st-boot-screen__real-logo {
+    width: min(260px, 64vw);
+  }
+}
+
+/* =========================================================
+   STEREOPHONIE ARCADE OS
+   PAGE TRANSITION V3
+   Authoritative override
+   ========================================================= */
+
+.stereo-transition {
+  position: fixed !important;
+  inset: 0 !important;
+
+  z-index: 2147483000 !important;
+
+  display: block !important;
+
+  visibility: hidden !important;
+  opacity: 0 !important;
+
+  pointer-events: none !important;
+
+  overflow: hidden !important;
+
+  background: #050506 !important;
+
+  transition:
+    opacity 180ms ease,
+    visibility 0s linear 380ms !important;
+}
+
+.stereo-transition--entering,
+.stereo-transition--holding,
+.stereo-transition--leaving {
+  visibility: visible !important;
+
+  transition-delay: 0s !important;
+}
+
+.stereo-transition--entering,
+.stereo-transition--holding {
+  opacity: 1 !important;
+}
+
+.stereo-transition--leaving {
+  opacity: 0 !important;
+
+  transition:
+    opacity 360ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 360ms !important;
+}
+
+.stereo-transition .st-boot-screen {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  opacity: 1;
+
+  transform: scale(1);
+
+  pointer-events: none;
+}
+
+.stereo-transition--entering .st-boot-screen__frame {
+  animation: stTransitionBootEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+.stereo-transition--holding .st-boot-screen__frame {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.stereo-transition--leaving .st-boot-screen__frame {
+  animation: stTransitionBootLeave 360ms cubic-bezier(0.7, 0, 0.84, 0) both !important;
+}
+
+.stereo-transition--entering .st-boot-screen__screen {
+  animation: stTransitionScreenPower 700ms steps(2, end) infinite !important;
+}
+
+.stereo-transition--holding .st-boot-screen__screen {
+  animation: stBootScreenGlow 1.5s ease-in-out infinite !important;
+}
+
+.stereo-transition .st-boot-screen__progress span {
+  animation: stTransitionProgress 780ms cubic-bezier(0.16, 1, 0.3, 1) infinite !important;
+}
+
+.stereo-transition .st-boot-screen__active-module strong {
+  animation: stTransitionModule 260ms ease both !important;
+}
+
+@keyframes stTransitionBootEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.985);
+    filter: brightness(1.7);
+  }
+
+  45% {
+    opacity: 1;
+    filter: brightness(1.15);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes stTransitionBootLeave {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: brightness(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0) scale(1.012);
+    filter: brightness(1.35);
+  }
+}
+
+@keyframes stTransitionScreenPower {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes stTransitionProgress {
+  0% {
+    opacity: 0.72;
+    filter: brightness(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    filter: brightness(1.18);
+  }
+
+  100% {
+    opacity: 0.72;
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes stTransitionModule {
+  from {
+    opacity: 0.35;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .st-boot-screen--transition .st-boot-screen__frame {
+    width: calc(100% - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stereo-transition,
+  .stereo-transition *,
+  .stereo-transition *::before,
+  .stereo-transition *::after {
+    animation: none !important;
+  }
+
+  .stereo-transition {
+    transition-duration: 120ms !important;
+  }
+}
+
+/* =========================================================
+   PHASE 7 — LIVE ROUTE TRANSITION
+   ========================================================= */
+
+.stereo-transition {
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  inset: 0 !important;
+
+  visibility: hidden !important;
+
+  overflow: hidden !important;
+
+  opacity: 0 !important;
+
+  pointer-events: none !important;
+
+  background: #050506 !important;
+}
+
+.stereo-transition--entering,
+.stereo-transition--holding,
+.stereo-transition--leaving {
+  visibility: visible !important;
+}
+
+.stereo-transition--entering,
+.stereo-transition--holding {
+  opacity: 1 !important;
+}
+
+.stereo-transition--entering {
+  animation: stRoutePowerOn 180ms steps(2, end) both !important;
+}
+
+.stereo-transition--leaving {
+  opacity: 0 !important;
+
+  transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.stereo-transition .st-boot-screen--transition {
+  position: absolute !important;
+  inset: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  min-height: 100dvh !important;
+
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(237, 28, 36, 0.075),
+      transparent 35%
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px), #050506 !important;
+
+  background-size:
+    auto,
+    30px 30px,
+    30px 30px,
+    auto !important;
+}
+
+.st-boot-screen--transition .st-boot-screen__frame {
+  width: min(calc(100% - 56px), 900px) !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+
+  animation: stRouteConsoleBoot 440ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+.st-boot-screen--transition .st-boot-screen__center {
+  padding: clamp(21px, 4vw, 42px) !important;
+}
+
+.st-boot-screen--transition .st-boot-screen__screen {
+  animation: stRouteScreenLive 680ms steps(3, end) infinite !important;
+}
+
+.st-boot-screen--transition .st-boot-screen__progress span {
+  animation: stRouteProgress 560ms cubic-bezier(0.16, 1, 0.3, 1) infinite !important;
+}
+
+.st-boot-screen--transition .st-boot-screen__active-module strong {
+  animation: stTransitionModule 150ms ease both !important;
+}
+
+.st-boot-screen--transition::after {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(237, 28, 36, 0.025) 43%,
+    rgba(237, 28, 36, 0.16) 50%,
+    rgba(237, 28, 36, 0.025) 57%,
+    transparent 100%
+  );
+
+  content: "";
+
+  transform: translateX(-120%);
+
+  animation: stRouteScanner 780ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes stRoutePowerOn {
+  0% {
+    opacity: 0;
+    filter: brightness(2.2);
+  }
+
+  35% {
+    opacity: 1;
+    filter: brightness(1.45);
+  }
+
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes stRouteConsoleBoot {
+  from {
+    opacity: 0;
+
+    transform: scaleY(0.015) scaleX(0.72);
+
+    filter: brightness(3);
+  }
+
+  45% {
+    opacity: 1;
+
+    transform: scaleY(1) scaleX(0.96);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: scale(1);
+
+    filter: brightness(1);
+  }
+}
+
+@keyframes stRouteScreenLive {
+  0%,
+  100% {
+    filter: brightness(1) contrast(1);
+  }
+
+  48% {
+    filter: brightness(1.08) contrast(1.04);
+  }
+
+  52% {
+    filter: brightness(0.88) contrast(1.08);
+  }
+}
+
+@keyframes stRouteProgress {
+  0% {
+    width: 7% !important;
+  }
+
+  58% {
+    width: 78% !important;
+  }
+
+  100% {
+    width: 100% !important;
+  }
+}
+
+@keyframes stRouteScanner {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(120%);
+  }
+}
+
+@media (max-width: 700px) {
+  .st-boot-screen--transition .st-boot-screen__frame {
+    width: calc(100% - 22px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stereo-transition,
+  .stereo-transition *,
+  .stereo-transition *::before,
+  .stereo-transition *::after {
+    animation: none !important;
+  }
+}
+
+/* =========================================================
+   PHASE 8 — STEREOPHONIE ROUTE SIGNAL
+   Fixed viewport animation — never scrolls with content
+   ========================================================= */
+
+.stereo-transition {
+  position: fixed !important;
+  inset: 0 !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+
+  overflow: hidden !important;
+
+  background: #050506 !important;
+
+  transform: none !important;
+
+  contain: layout paint;
+
+  overscroll-behavior: none;
+}
+
+/* Kill old transition panels visually. */
+.stereo-transition__panel {
+  display: none !important;
+}
+
+.st-route-signal {
+  position: absolute;
+  inset: 0;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 52%,
+      rgba(237, 28, 36, 0.09) 0,
+      rgba(237, 28, 36, 0.025) 26%,
+      transparent 58%
+    ),
+    #050506;
+
+  color: white;
+
+  pointer-events: none;
+}
+
+.st-route-signal__grid {
+  position: absolute;
+  inset: -30%;
+
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+
+  background-size: 32px 32px;
+
+  transform: perspective(800px) rotateX(64deg) scale(1.4);
+
+  transform-origin: center bottom;
+
+  opacity: 0.55;
+
+  animation: stRouteGridMove 900ms linear infinite;
+}
+
+.st-route-signal__sweep {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+
+  width: 19vw;
+  min-width: 140px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(237, 28, 36, 0.035),
+    rgba(237, 28, 36, 0.26),
+    rgba(255, 80, 86, 0.44),
+    rgba(237, 28, 36, 0.12),
+    transparent
+  );
+
+  filter: blur(10px);
+
+  transform: translateX(-100vw) skewX(-12deg);
+
+  animation: stRouteSweep 780ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.st-route-signal__core {
+  position: relative;
+  z-index: 4;
+
+  width: min(560px, calc(100vw - 48px));
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  padding: 20px;
+
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.017) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.017) 1px, transparent 1px),
+    rgba(7, 7, 8, 0.94);
+
+  background-size: 22px 22px;
+
+  box-shadow:
+    7px 7px 0 var(--st-red),
+    0 34px 80px rgba(0, 0, 0, 0.36);
+
+  animation: stRouteCoreIn 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.st-route-signal__status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  color: rgba(255, 255, 255, 0.42);
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  letter-spacing: 0.15em;
+}
+
+.st-route-signal__status i {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: var(--st-red);
+
+  box-shadow:
+    0 0 8px rgba(237, 28, 36, 0.8),
+    0 0 20px rgba(237, 28, 36, 0.28);
+
+  animation: stRouteLed 450ms steps(2, end) infinite;
+}
+
+.st-route-signal__mark {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+
+  padding-block: 26px 23px;
+}
+
+.st-route-signal__mark > span {
+  width: 52px;
+  height: 52px;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 auto;
+
+  border: 1px solid var(--st-red);
+
+  background: var(--st-red);
+  color: white;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  box-shadow:
+    inset 0 -4px 0 rgba(0, 0, 0, 0.16),
+    4px 4px 0 rgba(255, 255, 255, 0.07);
+}
+
+.st-route-signal__mark div {
+  min-width: 0;
+
+  display: grid;
+  gap: 7px;
+}
+
+.st-route-signal__mark strong {
+  font-size: clamp(22px, 6vw, 37px);
+  line-height: 0.9;
+
+  font-weight: 950;
+
+  letter-spacing: -0.05em;
+}
+
+.st-route-signal__mark small {
+  color: rgba(255, 255, 255, 0.32);
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  font-size: 6px;
+
+  letter-spacing: 0.15em;
+}
+
+.st-route-signal__meter {
+  position: relative;
+
+  height: 7px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.st-route-signal__meter span {
+  position: absolute;
+  inset: 0;
+
+  background: repeating-linear-gradient(
+    90deg,
+    var(--st-red) 0,
+    var(--st-red) 13px,
+    rgba(255, 255, 255, 0.12) 13px,
+    rgba(255, 255, 255, 0.12) 15px
+  );
+
+  transform-origin: left;
+
+  animation: stRouteMeter 650ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.st-route-signal__diagnostics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  padding-top: 14px;
+
+  color: rgba(255, 255, 255, 0.28);
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  font-size: 6px;
+  font-weight: 800;
+
+  letter-spacing: 0.11em;
+}
+
+.st-route-signal__diagnostics span:nth-child(2) {
+  text-align: center;
+}
+
+.st-route-signal__diagnostics span:last-child {
+  text-align: right;
+}
+
+.stereo-transition--leaving .st-route-signal__core {
+  animation: stRouteCoreOut 280ms ease both;
+}
+
+@keyframes stRouteGridMove {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 32px;
+  }
+}
+
+@keyframes stRouteSweep {
+  from {
+    transform: translateX(-120vw) skewX(-12deg);
+  }
+
+  to {
+    transform: translateX(120vw) skewX(-12deg);
+  }
+}
+
+@keyframes stRouteCoreIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(20px) scale(0.975);
+
+    filter: blur(7px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0) scale(1);
+
+    filter: blur(0);
+  }
+}
+
+@keyframes stRouteCoreOut {
+  to {
+    opacity: 0;
+
+    transform: translateY(-12px) scale(1.015);
+
+    filter: blur(5px);
+  }
+}
+
+@keyframes stRouteLed {
+  0%,
+  55% {
+    opacity: 1;
+  }
+
+  56%,
+  100% {
+    opacity: 0.26;
+  }
+}
+
+@keyframes stRouteMeter {
+  0% {
+    transform: scaleX(0.08);
+  }
+
+  65% {
+    transform: scaleX(0.86);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .st-route-signal__core {
+    width: calc(100vw - 30px);
+
+    padding: 16px;
+  }
+
+  .st-route-signal__diagnostics {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .st-route-signal__diagnostics span,
+  .st-route-signal__diagnostics span:nth-child(2),
+  .st-route-signal__diagnostics span:last-child {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-route-signal,
+  .st-route-signal *,
+  .st-route-signal *::before,
+  .st-route-signal *::after {
+    animation: none !important;
+  }
+}
+
+/* =========================================================
+   PHASE 8 VISUAL REPAIR
+   ROUTE TRANSITION — REAL STEREOPHONIE BRAND LOGO
+   ========================================================= */
+
+.st-route-signal__mark {
+  display: grid !important;
+  grid-template-columns: 52px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 15px !important;
+}
+
+.st-route-signal__logo-hardware {
+  width: 52px;
+  height: 52px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+
+  background: var(--st-red);
+
+  color: white;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+
+  box-shadow:
+    4px 4px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.16);
+
+  animation: stRouteHardwarePulse 900ms ease-in-out infinite alternate;
+}
+
+.st-route-signal__identity {
+  min-width: 0;
+}
+
+.st-route-signal__real-logo {
+  width: min(310px, 48vw) !important;
+  height: auto !important;
+
+  display: block;
+
+  filter: brightness(0) invert(1);
+}
+
+.st-route-signal__identity small {
+  display: block;
+
+  margin-top: 5px;
+
+  color: rgba(255, 255, 255, 0.3);
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@keyframes stRouteHardwarePulse {
+  from {
+    box-shadow:
+      4px 4px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 rgba(237, 28, 36, 0),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.16);
+  }
+
+  to {
+    box-shadow:
+      4px 4px 0 rgba(255, 255, 255, 0.12),
+      0 0 26px rgba(237, 28, 36, 0.24),
+      inset 0 -4px 0 rgba(0, 0, 0, 0.16);
+  }
+}
+
+@media (max-width: 640px) {
+  .st-route-signal__mark {
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    gap: 11px !important;
+  }
+
+  .st-route-signal__logo-hardware {
+    width: 42px;
+    height: 42px;
+  }
+
+  .st-route-signal__real-logo {
+    width: min(230px, 62vw) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-route-signal__logo-hardware {
+    animation: none !important;
+  }
+}

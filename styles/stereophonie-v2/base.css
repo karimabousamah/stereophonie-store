@@ -1,0 +1,176 @@
+/* =========================================================
+   STEREOPHONIE V2
+   BASE STOREFRONT SYSTEM
+   ========================================================= */
+
+.st-v2 {
+  min-height: 100vh;
+  background: var(--st-off-white);
+  color: var(--st-text);
+}
+
+.st-v2-container {
+  width: min(calc(100% - (var(--st-gutter) * 2)), var(--st-page-width));
+  margin-inline: auto;
+}
+
+/* Technical micro typography */
+
+.st-v2-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.st-v2-kicker::before {
+  width: 6px;
+  height: 6px;
+  background: var(--st-red);
+  content: "";
+}
+
+/* Hardware panel */
+
+.st-v2-panel {
+  border: 1px solid var(--st-border);
+  background: var(--st-white);
+}
+
+/* Status LED */
+
+.st-v2-led {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--st-signal-green);
+  box-shadow: 0 0 12px rgba(140, 255, 152, 0.55);
+}
+
+/* Primary action */
+
+.st-v2-button {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  border: 1px solid var(--st-black);
+  padding: 0 22px;
+
+  background: var(--st-black);
+  color: var(--st-white);
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  transition:
+    background var(--st-fast) ease,
+    color var(--st-fast) ease,
+    transform var(--st-fast) ease;
+}
+
+.st-v2-button:hover {
+  background: var(--st-red);
+  border-color: var(--st-red);
+}
+
+.st-v2-button:active {
+  transform: translateY(2px);
+}
+
+/* Red arcade action */
+
+.st-v2-button--signal {
+  border-color: var(--st-red);
+  background: var(--st-red);
+}
+
+.st-v2-button--signal:hover {
+  border-color: var(--st-black);
+  background: var(--st-black);
+}
+
+/* Secondary hardware control */
+
+.st-v2-button--secondary {
+  background: transparent;
+  color: var(--st-black);
+}
+
+.st-v2-button--secondary:hover {
+  border-color: var(--st-black);
+  background: var(--st-black);
+  color: var(--st-white);
+}
+
+/* Arcade grid utility */
+
+.st-v2-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+
+  background-size: 32px 32px;
+}
+
+/* Screen scan texture — intentionally extremely subtle */
+
+.st-v2-screen {
+  position: relative;
+}
+
+.st-v2-screen::after {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+
+  pointer-events: none;
+
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.018) 0,
+    rgba(255, 255, 255, 0.018) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+
+  content: "";
+}
+
+/* Selection */
+
+.st-v2 ::selection {
+  background: var(--st-red);
+  color: white;
+}
+
+@media (max-width: 767px) {
+  .st-v2-container {
+    width: calc(100% - 32px);
+  }
+
+  .st-v2-button {
+    min-height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-v2 *,
+  .st-v2 *::before,
+  .st-v2 *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

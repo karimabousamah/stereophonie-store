@@ -771,7 +771,7 @@ export default function ShopFilterBar({
 
             <div>
               <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
-                Refine collection
+                Refine products
               </p>
 
               <h2 className="mt-1 text-base font-semibold">
@@ -793,7 +793,7 @@ export default function ShopFilterBar({
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-6">
           <section>
             <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
-              Collection
+              Highlights
             </p>
 
             <div className="mt-4 grid grid-cols-2 gap-2">
@@ -869,7 +869,7 @@ export default function ShopFilterBar({
           {/* Mobile storefront size filter */}
           <section className="mt-8 border-t border-black/10 pt-7">
             <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/35">
-              Size
+              Configuration
             </p>
 
             {sizes.length > 0 ? (
@@ -893,7 +893,7 @@ export default function ShopFilterBar({
               </div>
             ) : (
               <p className="mt-4 text-sm text-black/40">
-                No sizes are currently available.
+                No configurations are currently available.
               </p>
             )}
           </section>
@@ -1235,7 +1235,7 @@ export default function ShopFilterBar({
           {sizes.length > 0 ? (
             <section className="border-b border-black/10 py-7">
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em]">
-                Size
+                Configuration
               </p>
 
               <div className="mt-4 grid grid-cols-3 gap-2">

@@ -93,6 +93,11 @@ const navigation: NavigationGroup[] = [
         icon: Tags,
       },
       {
+        label: "Brands",
+        href: "/admin/brands",
+        icon: Tags,
+      },
+      {
         label: "Coupons",
         href: "/admin/coupons",
         icon: TicketPercent,

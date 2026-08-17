@@ -9,7 +9,8 @@ type AvailabilityStatus =
   "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
 
 type VariantInput = {
-  size: string;
+  variant_name: string;
+  attributes: Record<string, string>;
   sku: string;
   stock_quantity: number;
   low_stock_threshold: number;
@@ -107,6 +108,7 @@ export async function createProduct(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "").trim();
+  const brandId = String(formData.get("brand_id") ?? "").trim();
   const collectionId = String(formData.get("collection_id") ?? "").trim();
 
   const regularPrice = Number(formData.get("regular_price"));
@@ -157,11 +159,11 @@ export async function createProduct(formData: FormData) {
   try {
     variants = JSON.parse(variantsJson) as VariantInput[];
   } catch {
-    redirectWithError("The selected sizes could not be processed.");
+    redirectWithError("The product configurations could not be processed.");
   }
 
   if (!Array.isArray(variants) || variants.length === 0) {
-    redirectWithError("Select at least one product size.");
+    redirectWithError("Create at least one product configuration.");
   }
 
   const validStatuses: AvailabilityStatus[] = [
@@ -171,36 +173,54 @@ export async function createProduct(formData: FormData) {
     "coming_soon",
   ];
 
-  const usedSizes = new Set<string>();
+  const usedConfigurationNames = new Set<string>();
 
   for (const variant of variants) {
-    const size = String(variant.size ?? "").trim();
+    const configurationName = String(variant.variant_name ?? "").trim();
 
-    if (!size) {
-      redirectWithError("Every variant must have a size.");
+    if (!configurationName) {
+      redirectWithError("Every product configuration must have a name.");
     }
 
-    const normalizedSize = size.toLowerCase();
+    const normalizedConfigurationName = configurationName.toLowerCase();
 
-    if (usedSizes.has(normalizedSize)) {
-      redirectWithError(`Size ${size} was selected more than once.`);
+    if (usedConfigurationNames.has(normalizedConfigurationName)) {
+      redirectWithError(
+        `Configuration ${configurationName} was added more than once.`,
+      );
     }
 
-    usedSizes.add(normalizedSize);
+    usedConfigurationNames.add(normalizedConfigurationName);
 
     if (!validStatuses.includes(variant.availability_status)) {
-      redirectWithError(`Select a valid availability for size ${size}.`);
+      redirectWithError(
+        `Select a valid availability for ${configurationName}.`,
+      );
+    }
+
+    if (
+      typeof variant.attributes !== "object" ||
+      variant.attributes === null ||
+      Array.isArray(variant.attributes)
+    ) {
+      redirectWithError(
+        `The technical attributes for ${configurationName} are invalid.`,
+      );
     }
 
     const stockQuantity = Number(variant.stock_quantity);
     const lowStockThreshold = Number(variant.low_stock_threshold);
 
     if (!Number.isFinite(stockQuantity) || stockQuantity < 0) {
-      redirectWithError(`Enter a valid stock quantity for size ${size}.`);
+      redirectWithError(
+        `Enter a valid stock quantity for ${configurationName}.`,
+      );
     }
 
     if (!Number.isFinite(lowStockThreshold) || lowStockThreshold < 0) {
-      redirectWithError(`Enter a valid low-stock warning for size ${size}.`);
+      redirectWithError(
+        `Enter a valid low-stock warning for ${configurationName}.`,
+      );
     }
   }
 
@@ -337,7 +357,7 @@ export async function createProduct(formData: FormData) {
     (variant) => variant.availability_status === "coming_soon",
   );
 
-  const hasAvailableSize = variants.some(
+  const hasAvailableConfiguration = variants.some(
     (variant) =>
       variant.availability_status === "in_stock" ||
       variant.availability_status === "low_stock",
@@ -347,7 +367,7 @@ export async function createProduct(formData: FormData) {
 
   if (allComingSoon) {
     availability = "coming_soon";
-  } else if (hasAvailableSize) {
+  } else if (hasAvailableConfiguration) {
     availability = "in_stock";
   } else {
     availability = "out_of_stock";
@@ -360,6 +380,7 @@ export async function createProduct(formData: FormData) {
       slug: createSlug(name),
       description: description || null,
       category_id: categoryId,
+      brand_id: brandId || null,
       collection_id: collectionId || null,
       status,
       availability,
@@ -381,9 +402,17 @@ export async function createProduct(formData: FormData) {
       variant.availability_status === "out_of_stock" ||
       variant.availability_status === "coming_soon";
 
+    const configurationName = variant.variant_name.trim();
+
     return {
       product_id: product.id,
-      size: variant.size.trim(),
+
+      // Temporary compatibility field for existing
+      // cart/order code. Storefront terminology uses variant_name.
+      size: configurationName,
+
+      variant_name: configurationName,
+      attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
       regular_price: regularPrice,
       sale_price: salePrice,
