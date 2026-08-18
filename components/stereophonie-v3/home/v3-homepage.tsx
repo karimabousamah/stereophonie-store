@@ -56,6 +56,46 @@ function categoryProduct(
   );
 }
 
+function categoryVisual(
+  category: V3HomeCategory,
+  products: V3Product[],
+) {
+  if (
+    category.homepage_wallpaper_url
+      ?.trim()
+  ) {
+    return (
+      category.homepage_wallpaper_url
+    );
+  }
+
+  return primaryProductImage(
+    categoryProduct(
+      category,
+      products,
+    ),
+  );
+}
+
+function categoryTitle(
+  category: V3HomeCategory,
+) {
+  return (
+    category.homepage_title?.trim() ||
+    category.name
+  );
+}
+
+function categoryDescription(
+  category: V3HomeCategory,
+) {
+  return (
+    category.homepage_description
+      ?.trim() ||
+    `Discover our selection of ${category.name.toLowerCase()}.`
+  );
+}
+
 function ProductSection({
   eyebrow,
   title,
@@ -144,6 +184,12 @@ export default function V3Homepage({
   const heroImage =
     primaryProductImage(heroProduct);
 
+  const primaryCategories =
+    categories.slice(0, 2);
+
+  const secondaryCategories =
+    categories.slice(2);
+
   return (
     <main className="st3-home-live">
       <section className="st3-premium-hero">
@@ -160,9 +206,9 @@ export default function V3Homepage({
             </h1>
 
             <p className="st3-premium-hero__description">
-              Discover phones, computers,
-              entertainment and accessories
-              selected for the way you live.
+              Discover technology selected
+              for the way you live, work
+              and play.
             </p>
 
             <div className="st3-premium-hero__actions">
@@ -209,117 +255,181 @@ export default function V3Homepage({
         </div>
       </section>
 
-      {categories.length ? (
-        <V3Reveal>
-          <section className="st3-category-section st3-category-section--premium">
-            <div className="st3-section-heading">
-              <div>
-                <p className="st3-section-eyebrow">
-                  Explore
-                </p>
 
-                <h2>
-                  Find your technology.
-                </h2>
+      {primaryCategories.length ? (
+        <section className="st3-apple-categories">
+          <V3Reveal>
+            <div className="st3-apple-categories__heading">
+              <p className="st3-section-eyebrow">
+                Explore Stereophonie
+              </p>
 
-                <p className="st3-section-description">
-                  Browse Stereophonie by
-                  category.
-                </p>
-              </div>
-
-              <Link
-                href="/shop"
-                className="st3-section-link"
-              >
-                Shop all
-                <span aria-hidden="true">
-                  ›
-                </span>
-              </Link>
+              <h2>
+                Find what fits your life.
+              </h2>
             </div>
+          </V3Reveal>
 
-            <div className="st3-category-rail">
-              {categories.map(
-                (category, index) => {
-                  const relatedProduct =
-                    categoryProduct(
-                      category,
-                      catalogProducts,
-                    );
+          <div className="st3-apple-category-stack">
+            {primaryCategories.map(
+              (category, index) => {
+                const visual =
+                  categoryVisual(
+                    category,
+                    catalogProducts,
+                  );
 
-                  const productImage =
-                    primaryProductImage(
-                      relatedProduct,
-                    );
-
-                  const visual =
-                    category.homepage_wallpaper_url ||
-                    productImage;
-
-                  const title =
-                    category.homepage_title
-                      ?.trim() ||
-                    category.name;
-
-                  const description =
-                    category.homepage_description
-                      ?.trim() ||
-                    `Explore the latest ${category.name.toLowerCase()} at Stereophonie.`;
-
-                  return (
-                    <Link
-                      key={category.id}
-                      href={`/shop?category=${encodeURIComponent(
-                        category.name,
-                      )}`}
-                      className={`st3-category-card ${
-                        index === 0
-                          ? "st3-category-card--featured"
+                return (
+                  <V3Reveal
+                    key={category.id}
+                  >
+                    <article
+                      className={`st3-apple-category-hero ${
+                        index % 2 === 1
+                          ? "st3-apple-category-hero--dark"
                           : ""
                       }`}
                     >
-                      <div className="st3-category-card__copy">
-                        <p className="st3-category-card__eyebrow">
-                          Shop
+                      <div className="st3-apple-category-hero__copy">
+                        <p className="st3-apple-category-hero__eyebrow">
+                          Stereophonie
                         </p>
 
-                        <h3>{title}</h3>
+                        <h2>
+                          {categoryTitle(
+                            category,
+                          )}
+                        </h2>
 
                         <p>
-                          {description}
+                          {categoryDescription(
+                            category,
+                          )}
                         </p>
+
+                        <div className="st3-apple-category-hero__actions">
+                          <Link
+                            href={`/shop?category=${encodeURIComponent(
+                              category.name,
+                            )}`}
+                            className="st3-button"
+                          >
+                            Shop
+                          </Link>
+
+                          <Link
+                            href={`/shop?category=${encodeURIComponent(
+                              category.name,
+                            )}`}
+                            className="st3-category-learn-link"
+                          >
+                            Explore
+                            <span aria-hidden="true">
+                              ›
+                            </span>
+                          </Link>
+                        </div>
                       </div>
 
-                      <div className="st3-category-card__visual">
+                      <div className="st3-apple-category-hero__media">
                         {visual ? (
                           <img
                             src={visual}
                             alt=""
-                            loading="lazy"
+                            loading={
+                              index === 0
+                                ? "eager"
+                                : "lazy"
+                            }
                           />
                         ) : (
-                          <div className="st3-category-card__fallback">
+                          <div className="st3-category-image-fallback">
                             <span>
-                              {category.name
-                                .slice(0, 1)
-                                .toUpperCase()}
+                              {category.name}
                             </span>
                           </div>
                         )}
                       </div>
+                    </article>
+                  </V3Reveal>
+                );
+              },
+            )}
+          </div>
 
-                      <span className="st3-category-card__arrow">
-                        ›
-                      </span>
-                    </Link>
+
+          {secondaryCategories.length ? (
+            <div className="st3-category-feature-grid">
+              {secondaryCategories.map(
+                (category) => {
+                  const visual =
+                    categoryVisual(
+                      category,
+                      catalogProducts,
+                    );
+
+                  return (
+                    <V3Reveal
+                      key={category.id}
+                    >
+                      <Link
+                        href={`/shop?category=${encodeURIComponent(
+                          category.name,
+                        )}`}
+                        className="st3-category-feature-card"
+                      >
+                        <div className="st3-category-feature-card__copy">
+                          <p>
+                            Category
+                          </p>
+
+                          <h3>
+                            {categoryTitle(
+                              category,
+                            )}
+                          </h3>
+
+                          <span>
+                            {categoryDescription(
+                              category,
+                            )}
+                          </span>
+
+                          <span className="st3-category-feature-card__cta">
+                            Explore
+                            <span aria-hidden="true">
+                              ›
+                            </span>
+                          </span>
+                        </div>
+
+                        <div className="st3-category-feature-card__media">
+                          {visual ? (
+                            <img
+                              src={visual}
+                              alt=""
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="st3-category-image-fallback">
+                              <span>
+                                {
+                                  category.name
+                                }
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </Link>
+                    </V3Reveal>
                   );
                 },
               )}
             </div>
-          </section>
-        </V3Reveal>
+          ) : null}
+        </section>
       ) : null}
+
 
       <ProductSection
         eyebrow="Latest"
@@ -329,6 +439,7 @@ export default function V3Homepage({
         href="/shop?sort=newest"
         linkLabel="View all"
       />
+
 
       {offerProducts.length ? (
         <ProductSection
@@ -342,6 +453,7 @@ export default function V3Homepage({
         />
       ) : null}
 
+
       <V3Reveal>
         <section className="st3-home-banner">
           <div className="st3-home-banner__copy">
@@ -350,15 +462,15 @@ export default function V3Homepage({
             </p>
 
             <h2>
-              Everything you need.
+              Technology for
               <br />
-              One place.
+              every day.
             </h2>
 
             <p>
-              Discover technology for work,
-              entertainment, gaming and
-              everyday life.
+              From your pocket to your
+              desk, discover technology
+              selected for everyday life.
             </p>
 
             <Link
@@ -376,6 +488,7 @@ export default function V3Homepage({
         </section>
       </V3Reveal>
 
+
       <ProductSection
         eyebrow="Selected for you"
         title="Worth discovering."
@@ -384,6 +497,7 @@ export default function V3Homepage({
         href="/shop"
         linkLabel="Explore store"
       />
+
 
       <V3Reveal>
         <section className="st3-service-strip">
@@ -413,7 +527,8 @@ export default function V3Homepage({
 
             <span>
               Products chosen across
-              leading technology categories.
+              leading technology
+              categories.
             </span>
           </div>
 
@@ -428,7 +543,7 @@ export default function V3Homepage({
 
             <span>
               Access your account and
-              track your orders online.
+              track orders online.
             </span>
           </div>
         </section>
