@@ -16,6 +16,7 @@ import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
 import { getPublicStoreSettings } from "@/lib/store-settings";
 
 import "./globals.css";
+import "../styles/stereophonie-v3.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicStoreSettings();
