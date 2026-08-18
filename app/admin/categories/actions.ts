@@ -104,6 +104,7 @@ export async function createCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   redirectWithMessage("success", "Category created successfully.");
 }
@@ -146,6 +147,7 @@ export async function updateCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   redirectWithMessage("success", "Category updated successfully.");
 }
@@ -176,6 +178,7 @@ export async function toggleCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   redirectWithMessage(
     "success",
@@ -223,6 +226,236 @@ export async function deleteCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidatePath("/");
 
   redirectWithMessage("success", "Category deleted successfully.");
+}
+
+
+function safeImageExtension(file: File) {
+  const mimeMap: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/avif": "avif",
+  };
+
+  return mimeMap[file.type] ?? null;
+}
+
+function storagePathFromPublicUrl(value: string | null) {
+  if (!value) {
+    return null;
+  }
+
+  const marker = "/storage/v1/object/public/category-images/";
+
+  const markerIndex = value.indexOf(marker);
+
+  if (markerIndex < 0) {
+    return null;
+  }
+
+  return decodeURIComponent(
+    value.slice(markerIndex + marker.length),
+  );
+}
+
+export async function updateCategoryHomepagePresentation(
+  formData: FormData,
+) {
+  const supabase = await requireAdministrator();
+
+  const categoryId = String(
+    formData.get("category_id") ?? "",
+  ).trim();
+
+  if (!categoryId) {
+    redirectWithMessage(
+      "error",
+      "Category could not be identified.",
+    );
+  }
+
+  const showOnHomepage =
+    formData.get("show_on_homepage") === "on";
+
+  const { data: currentCategory, error: currentError } =
+    await supabase
+      .from("categories")
+      .select("id, slug, image_url")
+      .eq("id", categoryId)
+      .single();
+
+  if (currentError || !currentCategory) {
+    redirectWithMessage(
+      "error",
+      "Category could not be loaded.",
+    );
+  }
+
+  let nextImageUrl = currentCategory.image_url ?? null;
+
+  const image = formData.get("wallpaper");
+
+  if (
+    image instanceof File &&
+    image.size > 0
+  ) {
+    if (image.size > 10 * 1024 * 1024) {
+      redirectWithMessage(
+        "error",
+        "Category wallpaper must be smaller than 10 MB.",
+      );
+    }
+
+    const extension = safeImageExtension(image);
+
+    if (!extension) {
+      redirectWithMessage(
+        "error",
+        "Upload a JPG, PNG, WEBP or AVIF image.",
+      );
+    }
+
+    const safeSlug =
+      String(currentCategory.slug || categoryId)
+        .replace(/[^a-z0-9-]/gi, "-")
+        .toLowerCase();
+
+    const objectPath =
+      `${safeSlug}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+    const bytes = new Uint8Array(
+      await image.arrayBuffer(),
+    );
+
+    const { error: uploadError } =
+      await supabase.storage
+        .from("category-images")
+        .upload(
+          objectPath,
+          bytes,
+          {
+            contentType: image.type,
+            cacheControl: "3600",
+            upsert: false,
+          },
+        );
+
+    if (uploadError) {
+      redirectWithMessage(
+        "error",
+        `Wallpaper upload failed: ${uploadError.message}`,
+      );
+    }
+
+    const { data: publicUrlData } =
+      supabase.storage
+        .from("category-images")
+        .getPublicUrl(objectPath);
+
+    nextImageUrl = publicUrlData.publicUrl;
+
+    const oldStoragePath =
+      storagePathFromPublicUrl(
+        currentCategory.image_url ?? null,
+      );
+
+    if (oldStoragePath) {
+      await supabase.storage
+        .from("category-images")
+        .remove([oldStoragePath]);
+    }
+  }
+
+  const { error } = await supabase
+    .from("categories")
+    .update({
+      show_on_homepage: showOnHomepage,
+      image_url: nextImageUrl,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", categoryId);
+
+  if (error) {
+    redirectWithMessage(
+      "error",
+      friendlyDatabaseError(error.message),
+    );
+  }
+
+  revalidatePath(categoriesPath);
+  revalidatePath("/");
+  revalidatePath("/shop");
+
+  redirectWithMessage(
+    "success",
+    "Homepage category presentation updated.",
+  );
+}
+
+export async function removeCategoryWallpaper(
+  formData: FormData,
+) {
+  const supabase = await requireAdministrator();
+
+  const categoryId = String(
+    formData.get("category_id") ?? "",
+  ).trim();
+
+  if (!categoryId) {
+    redirectWithMessage(
+      "error",
+      "Category could not be identified.",
+    );
+  }
+
+  const { data: category, error: categoryError } =
+    await supabase
+      .from("categories")
+      .select("image_url")
+      .eq("id", categoryId)
+      .single();
+
+  if (categoryError || !category) {
+    redirectWithMessage(
+      "error",
+      "Category could not be loaded.",
+    );
+  }
+
+  const storagePath =
+    storagePathFromPublicUrl(
+      category.image_url ?? null,
+    );
+
+  if (storagePath) {
+    await supabase.storage
+      .from("category-images")
+      .remove([storagePath]);
+  }
+
+  const { error } = await supabase
+    .from("categories")
+    .update({
+      image_url: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", categoryId);
+
+  if (error) {
+    redirectWithMessage(
+      "error",
+      error.message,
+    );
+  }
+
+  revalidatePath(categoriesPath);
+  revalidatePath("/");
+
+  redirectWithMessage(
+    "success",
+    "Category wallpaper removed.",
+  );
 }

@@ -7330,3 +7330,177 @@
 }
 
 /* STEREOPHONIE — V17 SECOND IMAGE HOVER END */
+
+
+/* ===== COMPACT PRODUCT CARDS / SHOP START ===== */
+
+/*
+ * Compact catalog layout.
+ *
+ * IMPORTANT:
+ * - Product-card markup is untouched.
+ * - Product page is untouched.
+ * - Wishlist / Quick View / badges / pricing / links are untouched.
+ * - Only the amount of space allocated to each card changes.
+ */
+
+@media (min-width: 1101px) {
+  .st-v2-product-grid {
+    grid-template-columns:
+      repeat(
+        auto-fill,
+        minmax(255px, 285px)
+      ) !important;
+
+    justify-content: start !important;
+    align-items: start !important;
+
+    gap: 14px !important;
+  }
+
+  .st-v2-product-grid > .st-card17 {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 285px !important;
+  }
+}
+
+/*
+ * Tablet:
+ * Still compact, but allow two cards to use the available room.
+ */
+@media (min-width: 701px) and (max-width: 1100px) {
+  .st-v2-product-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      ) !important;
+
+    gap: 12px !important;
+  }
+
+  .st-v2-product-grid > .st-card17 {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/*
+ * Mobile keeps one readable card per row.
+ */
+@media (max-width: 700px) {
+  .st-v2-product-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .st-v2-product-grid > .st-card17 {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* ===== COMPACT PRODUCT CARDS / SHOP END ===== */
+
+
+/* ===== PRODUCT CARD COMPACT HEIGHT START ===== */
+
+/*
+ * PRODUCT CARD HEIGHT FIX
+ *
+ * Purpose:
+ * Remove the unnecessary empty white area underneath the price.
+ *
+ * This DOES NOT alter:
+ * - card width
+ * - product image
+ * - NEW DROP badge
+ * - wishlist
+ * - typography
+ * - price styling
+ * - hover behaviour
+ * - links
+ * - product page
+ */
+
+
+/* ----------------------------------------------------------
+   1. Never force catalog cards to fill the height of the
+      surrounding product-grid row.
+   ---------------------------------------------------------- */
+
+.st-v2-product-grid,
+.st-v2-home-product-grid,
+.st-v2-home-product-grid--canonical {
+  align-items: start !important;
+}
+
+
+/* ----------------------------------------------------------
+   2. Product card should use its CONTENT height.
+   ---------------------------------------------------------- */
+
+.st-v2-product-grid > .st-card17,
+.st-v2-home-product-grid > .st-card17,
+.st-v2-home-product-grid--canonical > .st-card17 {
+  height: auto !important;
+  min-height: 0 !important;
+  align-self: start !important;
+}
+
+
+/* ----------------------------------------------------------
+   3. Remove forced stretching from the information/footer
+      portion of the card.
+
+   We intentionally do NOT touch the visual/image area.
+   ---------------------------------------------------------- */
+
+.st-card17__info,
+.st-card17__content,
+.st-card17__body,
+.st-card17__details,
+.st-card17__footer {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+
+/* ----------------------------------------------------------
+   4. Prevent flex layouts inside the information area from
+      pushing the price/footer to an artificial card bottom.
+   ---------------------------------------------------------- */
+
+.st-card17__info,
+.st-card17__content,
+.st-card17__body,
+.st-card17__details {
+  flex-grow: 0 !important;
+}
+
+
+/* ----------------------------------------------------------
+   5. Compact bottom breathing room.
+
+   Keep a small professional amount of whitespace underneath
+   the price rather than eliminating spacing completely.
+   ---------------------------------------------------------- */
+
+.st-card17__footer {
+  padding-bottom: 18px !important;
+  margin-bottom: 0 !important;
+}
+
+
+/* ----------------------------------------------------------
+   6. If the price is the final element, don't let it create
+      additional bottom margin.
+   ---------------------------------------------------------- */
+
+.st-card17__price:last-child,
+.st-card17__footer > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+
+/* ===== PRODUCT CARD COMPACT HEIGHT END ===== */

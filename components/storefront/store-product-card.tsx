@@ -30,6 +30,13 @@ export type StoreProductCardProduct = {
   is_featured: boolean | null;
   is_trending: boolean | null;
   is_new_arrival: boolean | null;
+
+  /**
+   * Exact timestamp used for the automatic seven-day
+   * NEW DROP lifecycle.
+   */
+  new_drop_started_at?: string | null;
+
   images: StoreProductImage[];
   variants: StoreProductVariant[];
 };

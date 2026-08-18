@@ -45,6 +45,7 @@ type Product = {
   is_featured: boolean | null;
   is_trending: boolean | null;
   is_new_arrival: boolean | null;
+  new_drop_started_at: string | null;
   categories: CategoryRelation;
   product_images: ProductImage[] | null;
   product_variants: ProductVariant[] | null;
@@ -54,7 +55,9 @@ type Category = {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
   image_url: string | null;
+  sort_order: number;
 };
 
 const productSelection = `
@@ -65,6 +68,7 @@ const productSelection = `
   is_featured,
   is_trending,
   is_new_arrival,
+  new_drop_started_at,
   categories(name),
   product_images(
     image_url,
@@ -96,6 +100,7 @@ function normalizeProduct(product: Product): StoreProductCardProduct {
     is_featured: product.is_featured,
     is_trending: product.is_trending,
     is_new_arrival: product.is_new_arrival,
+    new_drop_started_at: product.new_drop_started_at,
     images: product.product_images ?? [],
     variants: product.product_variants ?? [],
   };
@@ -114,20 +119,33 @@ function primaryImage(product: Product | null) {
 export default async function HomePage() {
   const supabase = await createClient();
 
+  /*
+   * JUST DROPPED contains products for exactly seven days
+   * from the moment their NEW DROP timer began.
+   */
+  const newDropCutoff = new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000,
+  ).toISOString();
+
   const [{ data: productRows }, { data: categoryRows }] = await Promise.all([
     supabase
       .from("products")
       .select(productSelection)
       .eq("status", "published")
-      .order("created_at", { ascending: false })
+      .eq("is_new_arrival", true)
+      .not("new_drop_started_at", "is", null)
+      .gte("new_drop_started_at", newDropCutoff)
+      .order("new_drop_started_at", { ascending: false })
       .limit(12),
 
     supabase
       .from("categories")
-      .select("id,name,slug,image_url")
+      .select("id,name,slug,description,image_url,sort_order")
       .eq("is_active", true)
+      .eq("show_on_homepage", true)
+      .order("sort_order", { ascending: true })
       .order("name", { ascending: true })
-      .limit(8),
+      .limit(30),
   ]);
 
   const products = (productRows ?? []) as Product[];

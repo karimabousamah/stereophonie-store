@@ -14,6 +14,10 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
+import {
+  isNewDropActive,
+  newDropRemainingMs,
+} from "@/lib/storefront/new-drop";
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 type Props = {
@@ -84,8 +88,17 @@ function shortReference(id: string) {
   return id.replace(/-/g, "").slice(0, 8).toUpperCase();
 }
 
-function systemBadge(product: StoreProductCardProduct) {
-  if (product.is_new_arrival) {
+function systemBadge(
+  product: StoreProductCardProduct,
+  now: number,
+) {
+  if (
+    product.is_new_arrival &&
+    isNewDropActive(
+      product.new_drop_started_at,
+      now,
+    )
+  ) {
     return {
       code: "01",
       title: "NEW DROP",
@@ -115,7 +128,55 @@ export default function V2ProductCard({ product, index }: Props) {
   const secondaryImage = images[1] ?? null;
   const price = useMemo(() => getPrice(product), [product]);
   const available = useMemo(() => isAvailable(product), [product]);
-  const badge = systemBadge(product);
+
+  /*
+   * Keep a small local clock only for NEW DROP expiration.
+   * This means the badge can disappear automatically even if
+   * a customer leaves the page open across the seven-day limit.
+   */
+  const [badgeClock, setBadgeClock] = useState(() =>
+    Date.now(),
+  );
+
+  const badge = systemBadge(
+    product,
+    badgeClock,
+  );
+
+  useEffect(() => {
+    if (
+      !product.is_new_arrival ||
+      !product.new_drop_started_at
+    ) {
+      return;
+    }
+
+    const remaining = newDropRemainingMs(
+      product.new_drop_started_at,
+    );
+
+    if (remaining <= 0) {
+      return;
+    }
+
+    /*
+     * setTimeout has a practical maximum around 24.8 days,
+     * so seven days is safely supported.
+     */
+    const timer = window.setTimeout(
+      () => {
+        setBadgeClock(Date.now());
+      },
+      remaining + 250,
+    );
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [
+    product.is_new_arrival,
+    product.new_drop_started_at,
+  ]);
 
   const href = product.slug ? `/shop/${product.slug}` : "/shop";
 

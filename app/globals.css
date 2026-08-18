@@ -6313,3 +6313,522 @@ html
 /* =========================================================
    STEREOPHONIE — CART HOVER AUTHORITATIVE END
    ========================================================= */
+
+
+/* ===== ST-CARD17 BOTTOM SPACE HARD FIX START ===== */
+
+/*
+ * ==========================================================
+ * PRODUCT CARD — REMOVE USELESS SPACE BELOW PRICE
+ * ==========================================================
+ *
+ * IMPORTANT:
+ *
+ * This affects ONLY the reusable catalog/product card.
+ *
+ * It does NOT affect:
+ * - product detail pages
+ * - image design
+ * - wishlist
+ * - NEW DROP badge
+ * - Quick View
+ * - price styling
+ * - product logic
+ * - links
+ * - hover behaviour
+ */
+
+
+/*
+ * 1.
+ * Let the outer card finish when its real content finishes.
+ *
+ * This also neutralizes a possible inherited fixed/min height
+ * or grid row using 1fr.
+ */
+
+.st-v2 .st-card17 {
+  height: auto !important;
+  min-height: 0 !important;
+
+  align-self: start !important;
+
+  grid-auto-rows: auto !important;
+  grid-template-rows: auto auto !important;
+
+  place-self: start stretch !important;
+}
+
+
+/*
+ * 2.
+ * This is the important correction.
+ *
+ * The white section containing:
+ * CATEGORY
+ * PRODUCT NAME
+ * PRICE
+ *
+ * must NOT reserve a fixed amount of vertical space.
+ */
+
+.st-v2 .st-card17__content {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  flex: 0 0 auto !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+
+  align-self: start !important;
+
+  grid-template-rows: auto auto auto auto !important;
+  grid-auto-rows: auto !important;
+
+  align-content: start !important;
+
+  padding-bottom: 16px !important;
+}
+
+
+/*
+ * 3.
+ * If an old rule is pushing the final price row down using
+ * margin-top:auto, remove that behavior.
+ */
+
+.st-v2 .st-card17__price {
+  margin-top: 14px !important;
+  margin-bottom: 0 !important;
+
+  align-self: start !important;
+}
+
+
+/*
+ * 4.
+ * Do not allow the price/reference row itself to stretch.
+ */
+
+.st-v2 .st-card17__price,
+.st-v2 .st-card17__price > div {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+
+/*
+ * 5.
+ * Product name/category metadata should use natural height.
+ */
+
+.st-v2 .st-card17__meta,
+.st-v2 .st-card17__name {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+
+/*
+ * 6.
+ * Some versions of the card contain the VIEW PRODUCT control
+ * but visually reveal it through hover styling.
+ *
+ * Do not let that row reserve an enormous hidden area.
+ */
+
+.st-v2 .st-card17__open {
+  min-height: 0 !important;
+}
+
+
+/*
+ * 7.
+ * Product grids themselves must not stretch cards to the
+ * tallest possible available row.
+ */
+
+.st-v2-product-grid,
+.st-v2-home-product-grid,
+.st-v2-home-product-grid--canonical {
+  align-items: start !important;
+  grid-auto-rows: max-content !important;
+}
+
+
+/*
+ * 8.
+ * Explicitly stop direct card children from inheriting
+ * stretch behavior from the grid.
+ */
+
+.st-v2-product-grid > .st-card17,
+.st-v2-home-product-grid > .st-card17,
+.st-v2-home-product-grid--canonical > .st-card17 {
+  align-self: start !important;
+
+  height: fit-content !important;
+  min-height: 0 !important;
+}
+
+
+/* ===== ST-CARD17 BOTTOM SPACE HARD FIX END ===== */
+
+
+/* ===== HEADER SELECTED MODE START ===== */
+
+/*
+ * Default category appearance.
+ */
+.st-v2-header__departments-inner > a {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+
+/*
+ * ALL PRODUCTS must NOT remain permanently black.
+ */
+.st-v2-header__departments-inner
+> a.is-primary:not(.is-active) {
+  background: #ffffff !important;
+  color: rgba(0, 0, 0, 0.58) !important;
+}
+
+
+/*
+ * Currently selected category.
+ */
+.st-v2-header__departments-inner
+> a.is-active {
+  background: #09090a !important;
+  color: #ffffff !important;
+
+  box-shadow:
+    inset 0 -2px 0 #ed1c24,
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+
+/*
+ * Red signal line.
+ */
+.st-v2-header__departments-inner
+> a.is-active::after {
+  position: absolute;
+  z-index: -1;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 2px;
+
+  background: #ed1c24;
+
+  box-shadow:
+    0 0 6px rgba(237,28,36,0.85),
+    0 0 14px rgba(237,28,36,0.38);
+
+  content: "";
+}
+
+
+/*
+ * Premium arcade shimmer.
+ */
+.st-v2-header__departments-inner
+> a.is-active::before {
+  position: absolute;
+  z-index: -1;
+
+  top: 0;
+  bottom: 0;
+  left: -65%;
+
+  width: 40%;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      110deg,
+      transparent 0%,
+      rgba(237,28,36,0.03) 22%,
+      rgba(237,28,36,0.22) 50%,
+      rgba(255,255,255,0.08) 62%,
+      transparent 100%
+    );
+
+  transform: skewX(-18deg);
+
+  animation:
+    st-header-selected-category-scan
+    3.25s
+    cubic-bezier(.4,0,.2,1)
+    infinite;
+
+  content: "";
+}
+
+
+@keyframes st-header-selected-category-scan {
+  0% {
+    left: -65%;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  72%,
+  100% {
+    left: 125%;
+    opacity: 0;
+  }
+}
+
+
+/*
+ * Normal hover stays consistent.
+ */
+.st-v2-header__departments-inner
+> a:not(.is-active):hover {
+  background: #09090a !important;
+  color: #ffffff !important;
+}
+
+
+/*
+ * Respect reduced-motion preferences.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .st-v2-header__departments-inner
+  > a.is-active::before {
+    display: none;
+    animation: none;
+  }
+}
+
+/* ===== HEADER SELECTED MODE END ===== */
+
+
+/* ===== OFFERS + HEADER AUTO RAIL START ===== */
+
+/*
+ * ==========================================================
+ * HEADER CATEGORY RAIL
+ * ==========================================================
+ */
+
+.st-v2-header__departments {
+  overflow: hidden !important;
+}
+
+.st-v2-header__departments-inner {
+  display: flex !important;
+  align-items: stretch !important;
+
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+
+  scroll-behavior: auto !important;
+
+  white-space: nowrap !important;
+
+  scrollbar-width: none !important;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.st-v2-header__departments-inner::-webkit-scrollbar {
+  display: none !important;
+}
+
+.st-v2-header__departments-inner > a {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+
+/*
+ * OFFERS must remain at its actual position as the first item.
+ * Remove the previous "push to right" behavior completely.
+ */
+.st-v2-header__departments-inner
+> a.is-offer {
+  margin-left: 0 !important;
+}
+
+
+/*
+ * ==========================================================
+ * OFFERS — INACTIVE
+ * ==========================================================
+ *
+ * Keeps the existing promotional red identity without filling
+ * the whole button.
+ */
+
+.st-v2-header__departments-inner
+> a.is-offer:not(.is-active) {
+  background: #ffffff !important;
+  color: #ed1c24 !important;
+
+  box-shadow:
+    inset 0 -2px 0 rgba(237, 28, 36, 0.72);
+}
+
+
+/*
+ * ==========================================================
+ * OFFERS — ACTIVE
+ * ==========================================================
+ */
+
+.st-v2-header__departments-inner
+> a.is-offer.is-active {
+  position: relative;
+
+  isolation: isolate;
+
+  overflow: hidden;
+
+  background: #ed1c24 !important;
+  color: #ffffff !important;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.2),
+    inset 0 -2px 0
+      rgba(113, 0, 5, 0.65),
+    0 0 14px
+      rgba(237, 28, 36, 0.16) !important;
+}
+
+
+/*
+ * Override normal selected-category black background.
+ */
+.st-v2-header__departments-inner
+> a.is-offer.is-active:hover {
+  background: #ed1c24 !important;
+  color: #ffffff !important;
+}
+
+
+/*
+ * White/red arcade shimmer on active offers.
+ */
+.st-v2-header__departments-inner
+> a.is-offer.is-active::before {
+  position: absolute;
+
+  z-index: -1;
+
+  top: 0;
+  bottom: 0;
+  left: -70%;
+
+  width: 45%;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      110deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.34) 50%,
+      rgba(255, 255, 255, 0.08) 67%,
+      transparent 100%
+    );
+
+  transform: skewX(-18deg);
+
+  animation:
+    st-offers-active-shimmer
+    2.7s
+    cubic-bezier(.4, 0, .2, 1)
+    infinite;
+
+  content: "";
+}
+
+
+/*
+ * Bottom hardware signal.
+ */
+.st-v2-header__departments-inner
+> a.is-offer.is-active::after {
+  position: absolute;
+
+  z-index: -1;
+
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  height: 2px;
+
+  background: #ffffff;
+
+  opacity: 0.55;
+
+  box-shadow:
+    0 0 7px rgba(255, 255, 255, 0.38);
+
+  content: "";
+}
+
+
+@keyframes st-offers-active-shimmer {
+  0% {
+    left: -70%;
+    opacity: 0;
+  }
+
+  13% {
+    opacity: 1;
+  }
+
+  58% {
+    opacity: 1;
+  }
+
+  73%,
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+
+/*
+ * Users requesting reduced motion still receive the full
+ * active visual state, just without motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .st-v2-header__departments-inner
+  > a.is-offer.is-active::before {
+    display: none !important;
+    animation: none !important;
+  }
+}
+
+/* ===== OFFERS + HEADER AUTO RAIL END ===== */
+
+
+

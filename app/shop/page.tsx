@@ -30,6 +30,7 @@ type ProductRow = {
   is_featured: boolean | null;
   is_trending: boolean | null;
   is_new_arrival: boolean | null;
+  new_drop_started_at: string | null;
   created_at: string | null;
   categories: NamedRelation;
   brands: NamedRelation;
@@ -46,6 +47,7 @@ type ShopPageProps = {
     search?: string | string[];
     q?: string | string[];
     category?: string | string[];
+    offers?: string | string[];
     brand?: string | string[];
     availability?: string | string[];
     minPrice?: string | string[];
@@ -123,6 +125,31 @@ function variantPrice(variant: StoreProductVariant) {
   const validSale = sale > 0 && regular > 0 && sale < regular;
 
   return validSale ? sale : regular;
+}
+
+
+function productOnOffer(product: ProductRow) {
+  return (product.product_variants ?? []).some(
+    (variant) => {
+      if (variant.is_active === false) {
+        return false;
+      }
+
+      const regular = numberValue(
+        variant.regular_price,
+      );
+
+      const sale = numberValue(
+        variant.sale_price,
+      );
+
+      return (
+        regular > 0 &&
+        sale > 0 &&
+        sale < regular
+      );
+    },
+  );
 }
 
 function productPrices(product: ProductRow) {
@@ -278,6 +305,7 @@ function normalizeProduct(product: ProductRow): StoreProductCardProduct {
     is_featured: product.is_featured,
     is_trending: product.is_trending,
     is_new_arrival: product.is_new_arrival,
+    new_drop_started_at: product.new_drop_started_at,
     images: product.product_images ?? [],
     variants: product.product_variants ?? [],
   };
@@ -291,6 +319,12 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     singleParameter(parameters.q).trim();
 
   const category = singleParameter(parameters.category).trim();
+
+  const offers =
+    singleParameter(parameters.offers)
+      .trim()
+      .toLowerCase() === "true";
+
   const brand = singleParameter(parameters.brand).trim();
 
   const availability = selectedAvailability(
@@ -321,6 +355,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           is_featured,
           is_trending,
           is_new_arrival,
+          new_drop_started_at,
           created_at,
 
           categories (
@@ -415,6 +450,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
    * otherwise the rail would collapse around itself.
    */
   const priceWindowProducts = products.filter((product) => {
+
+    if (
+      offers &&
+      !productOnOffer(product)
+    ) {
+      return false;
+    }
+
     if (
       category &&
       categoryName(product).toLowerCase() !== category.toLowerCase()
@@ -485,6 +528,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   }
 
   const filteredProducts = products.filter((product) => {
+
+    if (
+      offers &&
+      !productOnOffer(product)
+    ) {
+      return false;
+    }
+
     if (
       category &&
       categoryName(product).toLowerCase() !== category.toLowerCase()

@@ -12,6 +12,7 @@ import {
 
 import AdminShell from "@/components/admin/admin-shell";
 import ConfirmSubmitButton from "@/components/admin/confirm-submit-button";
+import CategoryHomepageControls from "@/components/admin/category-homepage-controls";
 import { createClient } from "@/lib/supabase/server";
 
 import {
@@ -33,6 +34,8 @@ type Category = {
   name: string;
   slug: string;
   description: string | null;
+  image_url: string | null;
+  show_on_homepage: boolean;
   sort_order: number;
   is_active: boolean;
   created_at: string;
@@ -76,6 +79,8 @@ export default async function AdminCategoriesPage({
         name,
         slug,
         description,
+        image_url,
+        show_on_homepage,
         sort_order,
         is_active,
         created_at
@@ -120,7 +125,7 @@ export default async function AdminCategoriesPage({
     <AdminShell
       role={administrator.role}
       pageTitle="Categories"
-      pageDescription="Create and organize the product categories displayed throughout the store."
+      pageDescription="Manage product categories and control which departments appear in Choose Your Mode."
     >
       <div className="px-5 py-8 sm:px-8 sm:py-10">
         <div className="mx-auto max-w-[1540px]">
@@ -142,8 +147,8 @@ export default async function AdminCategoriesPage({
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/45">
-              Organize products into clear shopping categories such as dresses,
-              tops, bags, and scarves.
+              Organize the store departments, descriptions, ordering and
+              homepage category wallpapers from one place.
             </p>
           </header>
 
@@ -329,6 +334,18 @@ export default async function AdminCategoriesPage({
                           >
                             {category.is_active ? "Active" : "Inactive"}
                           </span>
+
+                          <span
+                            className={`border px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                              category.show_on_homepage
+                                ? "border-sky-400/25 bg-sky-400/[0.08] text-sky-300"
+                                : "border-white/10 bg-white/[0.04] text-white/30"
+                            }`}
+                          >
+                            {category.show_on_homepage
+                              ? "Homepage"
+                              : "Hidden from homepage"}
+                          </span>
                         </div>
 
                         <p className="mt-2 text-sm text-white/35">
@@ -458,6 +475,13 @@ export default async function AdminCategoriesPage({
                         </label>
                       </div>
                     </form>
+
+                    <CategoryHomepageControls
+                      categoryId={category.id}
+                      categoryName={category.name}
+                      imageUrl={category.image_url}
+                      showOnHomepage={category.show_on_homepage}
+                    />
                   </article>
                 );
               })

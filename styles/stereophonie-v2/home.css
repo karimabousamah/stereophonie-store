@@ -1557,3 +1557,342 @@
 .st-v2-header__signal .st-v2-header__track-order {
   display: none !important;
 }
+
+
+/* STEREOPHONIE HERO START BUTTON */
+.st-v2-home-start-button {
+  position: relative;
+  isolation: isolate;
+
+  width: fit-content;
+  min-width: 4.15em;
+  height: 0.84em;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0.06em 0 0.08em;
+  padding: 0 0.18em;
+
+  border: 0.025em solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.08em;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ff4148 0%,
+      #f5222b 42%,
+      #d90f18 100%
+    );
+
+  color: #fff;
+
+  box-shadow:
+    0 0.09em 0 #79080d,
+    0 0.13em 0 rgba(0, 0, 0, 0.75),
+    inset 0 0.025em 0 rgba(255, 255, 255, 0.32),
+    inset 0 -0.035em 0 rgba(0, 0, 0, 0.18),
+    0 0 0 0.025em rgba(0, 0, 0, 0.32);
+
+  text-decoration: none;
+  vertical-align: middle;
+
+  cursor: pointer;
+
+  transform: translateY(0);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 160ms ease;
+}
+
+.st-v2-home-start-button__label {
+  position: relative;
+  z-index: 2;
+
+  color: #fff !important;
+
+  font: inherit;
+  font-size: 0.72em;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.065em;
+
+  text-shadow: 0 0.025em 0 rgba(0, 0, 0, 0.28);
+}
+
+.st-v2-home-start-button__prompt {
+  position: absolute;
+  right: 0.75em;
+  bottom: 0.48em;
+
+  color: rgba(255, 255, 255, 0.58) !important;
+
+  font-size: 0.065em;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.22em;
+
+  pointer-events: none;
+}
+
+.st-v2-home-start-button__light {
+  position: absolute;
+  top: 0.13em;
+  left: 0.13em;
+
+  width: 0.055em;
+  height: 0.055em;
+
+  border-radius: 50%;
+
+  background: #79ff91;
+
+  box-shadow:
+    0 0 0.06em rgba(121, 255, 145, 0.95),
+    0 0 0.13em rgba(121, 255, 145, 0.45);
+
+  animation: st-v2-start-led 1.6s ease-in-out infinite;
+}
+
+.st-v2-home-start-button:hover {
+  filter: brightness(1.09);
+
+  transform: translateY(-0.015em);
+
+  box-shadow:
+    0 0.105em 0 #79080d,
+    0 0.15em 0 rgba(0, 0, 0, 0.78),
+    inset 0 0.025em 0 rgba(255, 255, 255, 0.4),
+    inset 0 -0.035em 0 rgba(0, 0, 0, 0.18),
+    0 0 0 0.025em rgba(0, 0, 0, 0.35);
+}
+
+.st-v2-home-start-button:active {
+  transform: translateY(0.075em);
+
+  box-shadow:
+    0 0.025em 0 #79080d,
+    0 0.045em 0 rgba(0, 0, 0, 0.8),
+    inset 0 0.04em 0 rgba(0, 0, 0, 0.18);
+}
+
+.st-v2-home-start-button:focus-visible {
+  outline: 0.025em solid #fff;
+  outline-offset: 0.055em;
+}
+
+@keyframes st-v2-start-led {
+  0%, 100% {
+    opacity: 0.48;
+    transform: scale(0.88);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-v2-home-start-button,
+  .st-v2-home-start-button__light {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* =========================================================
+   HERO START BUTTON — SPACING FIX
+   Keeps the arcade button design, adds breathing room
+   between PRESS / START / TO SHOP.
+   ========================================================= */
+
+.st-v2-home-start-button {
+  margin-top: 0.10em !important;
+  margin-bottom: 0.20em !important;
+}
+
+/*
+ * Give the START button's 3D shadow room to exist
+ * without visually covering the TO SHOP line.
+ */
+.st-v2-home-hero__copy h1 {
+  line-height: 0.82 !important;
+}
+
+/*
+ * Small optical correction for desktop hero scale.
+ */
+@media (min-width: 901px) {
+  .st-v2-home-start-button {
+    transform: translateY(-0.01em);
+  }
+
+  .st-v2-home-start-button:hover {
+    transform: translateY(-0.025em);
+  }
+
+  .st-v2-home-start-button:active {
+    transform: translateY(0.06em);
+  }
+}
+
+/*
+ * Keep tighter but safe spacing on smaller screens.
+ */
+@media (max-width: 900px) {
+  .st-v2-home-start-button {
+    margin-bottom: 0.17em !important;
+  }
+}
+
+
+
+/* ===== COMPACT PRODUCT CARDS / HOME START ===== */
+
+/*
+ * JUST DROPPED cards use the exact same V2ProductCard component,
+ * but the homepage grid now gives each one a smaller footprint.
+ */
+
+@media (min-width: 1101px) {
+  .st-v2-home-product-grid,
+  .st-v2-home-product-grid--canonical {
+    grid-template-columns:
+      repeat(
+        auto-fill,
+        minmax(255px, 285px)
+      ) !important;
+
+    justify-content: start !important;
+    align-items: start !important;
+
+    gap: 14px !important;
+  }
+
+  .st-v2-home-product-grid > .st-card17,
+  .st-v2-home-product-grid--canonical > .st-card17 {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 285px !important;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .st-v2-home-product-grid,
+  .st-v2-home-product-grid--canonical {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      ) !important;
+
+    gap: 12px !important;
+  }
+
+  .st-v2-home-product-grid > .st-card17,
+  .st-v2-home-product-grid--canonical > .st-card17 {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .st-v2-home-product-grid,
+  .st-v2-home-product-grid--canonical {
+    grid-template-columns: 1fr !important;
+  }
+
+  .st-v2-home-product-grid > .st-card17,
+  .st-v2-home-product-grid--canonical > .st-card17 {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* ===== COMPACT PRODUCT CARDS / HOME END ===== */
+
+
+/* ===== START BUTTON LED REMOVAL ===== */
+.st-v2-home-start-button__light {
+  display: none !important;
+}
+/* ===== START BUTTON LED REMOVAL END ===== */
+
+
+/* ===== ADMIN SYNC HEADER CATEGORIES START ===== */
+
+/*
+ * Header category strip
+ * ---------------------------------------------------------
+ * Categories come from the same admin-managed category set
+ * used by CHOOSE YOUR MODE.
+ */
+
+.st-v2-header__departments {
+  overflow: hidden;
+}
+
+.st-v2-header__departments-inner {
+  display: flex !important;
+  align-items: stretch !important;
+
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+
+  white-space: nowrap !important;
+
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
+}
+
+.st-v2-header__departments-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.st-v2-header__departments-inner > a {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+/*
+ * Keep ALL PRODUCTS visually identical.
+ */
+.st-v2-header__departments-inner > .is-primary {
+  flex-shrink: 0 !important;
+}
+
+/*
+ * OFFERS should not create a huge invisible gap once the
+ * navigation becomes wider than the viewport.
+ */
+@media (max-width: 1100px) {
+  .st-v2-header__departments-inner > .is-offer {
+    margin-left: 0 !important;
+  }
+}
+
+/*
+ * Desktop with spare room:
+ * keep OFFERS pushed to the right as in the current design.
+ */
+@media (min-width: 1101px) {
+  .st-v2-header__departments-inner > .is-offer {
+    margin-left: auto;
+  }
+}
+
+/*
+ * START button: the LED is intentionally removed.
+ */
+.st-v2-home-start-button__light {
+  display: none !important;
+}
+
+/* ===== ADMIN SYNC HEADER CATEGORIES END ===== */

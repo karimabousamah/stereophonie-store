@@ -20,7 +20,9 @@ type Category = {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
   image_url: string | null;
+  sort_order: number;
 };
 
 type V2HomepageProps = {
@@ -68,12 +70,12 @@ export default function V2Homepage({ products, categories }: V2HomepageProps) {
   const heroPrice = hero ? productPrice(hero) : null;
 
   const departments = categories.length
-    ? categories.slice(0, 6)
+    ? categories
     : [
-        { id: "phones", name: "Phones", slug: "phones", image_url: null },
-        { id: "laptops", name: "Laptops", slug: "laptops", image_url: null },
-        { id: "gaming", name: "Gaming", slug: "gaming", image_url: null },
-        { id: "audio", name: "Audio", slug: "audio", image_url: null },
+        { id: "phones", name: "Phones", slug: "phones", description: null, image_url: null, sort_order: 10 },
+        { id: "laptops", name: "Laptops", slug: "laptops", description: null, image_url: null, sort_order: 20 },
+        { id: "gaming", name: "Gaming", slug: "gaming", description: null, image_url: null, sort_order: 30 },
+        { id: "audio", name: "Audio", slug: "audio", description: null, image_url: null, sort_order: 40 },
       ];
 
   return (
@@ -95,7 +97,14 @@ export default function V2Homepage({ products, categories }: V2HomepageProps) {
             <h1>
               PRESS
               <br />
-              <span>START</span>
+              <Link
+                href="/shop"
+                className="st-v2-home-start-button"
+                aria-label="Start shopping"
+              >
+<span className="st-v2-home-start-button__label">START</span>
+                <span className="st-v2-home-start-button__prompt">PRESS</span>
+              </Link>
               <br />
               TO SHOP.
             </h1>
@@ -165,7 +174,14 @@ export default function V2Homepage({ products, categories }: V2HomepageProps) {
                   </div>
 
                   <div className="st-v2-home-department__bottom">
-                    <strong>{category.name}</strong>
+                    <div className="st-v2-home-department__copy">
+                      <strong>{category.name}</strong>
+
+                      {category.description ? (
+                        <small>{category.description}</small>
+                      ) : null}
+                    </div>
+
                     <ArrowRight />
                   </div>
                 </Link>
