@@ -1977,3 +1977,4301 @@
     animation: none !important;
   }
 }
+
+/* STEREOPHONIE — TRACK ORDER LIVE RADAR V1 START */
+
+/*
+ * HEADER ACTIVE-PAGE SIGNAL
+ *
+ * The normal Track Order indicator stays Stereophonie red.
+ * Only /track-order turns it system green.
+ */
+
+.st-v2-header__track-main::before {
+  background: #ed1c24 !important;
+  box-shadow:
+    0 0 0 3px rgba(237, 28, 36, 0.08),
+    0 0 10px rgba(237, 28, 36, 0.24) !important;
+}
+
+.st-v2-header__track-main.is-track-order-active::before {
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 0 3px rgba(115, 245, 138, 0.1),
+    0 0 7px rgba(115, 245, 138, 0.82),
+    0 0 18px rgba(115, 245, 138, 0.38) !important;
+
+  animation: stTrackHeaderActiveSignal 1.8s ease-in-out infinite;
+}
+
+@keyframes stTrackHeaderActiveSignal {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/*
+ * LIVE DELIVERY RADAR
+ *
+ * The radar is alive even while standing by.
+ * During an actual order scan it accelerates.
+ */
+
+.st-track-z__radar-sweep {
+  opacity: 0.72 !important;
+
+  animation: stTrackSweep 4.2s linear infinite !important;
+
+  will-change: transform;
+}
+
+/*
+ * Actual order search = faster radar acquisition.
+ */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-sweep {
+  opacity: 1 !important;
+
+  animation-duration: 1.45s !important;
+}
+
+/*
+ * Give the radar rings a tiny breathing signal.
+ * Different delays prevent them from looking like one flat pulse.
+ */
+
+.st-track-z__radar-ring {
+  animation: stTrackRadarRing 3.4s ease-in-out infinite;
+}
+
+.st-track-z__radar-ring.is-two {
+  animation-delay: -1.1s;
+}
+
+.st-track-z__radar-ring.is-three {
+  animation-delay: -2.2s;
+}
+
+@keyframes stTrackRadarRing {
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.055);
+    opacity: 0.72;
+  }
+
+  50% {
+    border-color: rgba(237, 28, 36, 0.18);
+    opacity: 1;
+  }
+}
+
+/*
+ * Small live pulse around the radar core.
+ * Keeps the central target feeling powered-on without distracting.
+ */
+
+.st-track-z__radar-core {
+  animation: stTrackRadarStandbyCore 2.6s ease-in-out infinite;
+}
+
+@keyframes stTrackRadarStandbyCore {
+  0%,
+  100% {
+    box-shadow:
+      0 0 22px rgba(237, 28, 36, 0.12),
+      0 0 0 rgba(237, 28, 36, 0);
+  }
+
+  50% {
+    box-shadow:
+      0 0 34px rgba(237, 28, 36, 0.22),
+      0 0 62px rgba(237, 28, 36, 0.07);
+  }
+}
+
+/*
+ * Existing scanning state stays stronger than standby.
+ */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-core {
+  animation: stTrackCore 0.8s ease-in-out infinite alternate !important;
+}
+
+/*
+ * Accessibility:
+ * users asking for reduced motion still see the radar,
+ * just without continuous animation.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__radar-sweep,
+  .st-track-z__radar-ring,
+  .st-track-z__radar-core,
+  .st-v2-header__track-main.is-track-order-active::before {
+    animation: none !important;
+  }
+}
+
+/* STEREOPHONIE — TRACK ORDER LIVE RADAR V1 END */
+
+/* STEREOPHONIE — TRACK ORDER TELEMETRY V2 START */
+
+/* =========================================================
+   01 — HERO NETWORK MODULES
+   Secure Channel / Order Database / Lebanon Network
+   ========================================================= */
+
+.st-track-z__hero-codes > span {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  transition:
+    border-color 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.st-track-z__hero-codes > span::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+
+  border-radius: 999px;
+
+  background: #73f58a;
+
+  box-shadow:
+    0 0 0 3px rgba(115, 245, 138, 0.06),
+    0 0 9px rgba(115, 245, 138, 0.72);
+
+  content: "";
+
+  animation: stTrackTelemetryLed 2.2s ease-in-out infinite;
+}
+
+.st-track-z__hero-codes > span:nth-child(2)::before {
+  animation-delay: 360ms;
+}
+
+.st-track-z__hero-codes > span:nth-child(3)::before {
+  animation-delay: 720ms;
+}
+
+.st-track-z__hero-codes > span::after {
+  position: absolute;
+  z-index: -1;
+
+  top: 0;
+  bottom: 0;
+  left: -35%;
+
+  width: 28%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(237, 28, 36, 0.07),
+    transparent
+  );
+
+  transform: skewX(-20deg);
+
+  content: "";
+
+  animation: stTrackTelemetryScan 5.8s linear infinite;
+}
+
+.st-track-z__hero-codes > span:nth-child(2)::after {
+  animation-delay: 800ms;
+}
+
+.st-track-z__hero-codes > span:nth-child(3)::after {
+  animation-delay: 1600ms;
+}
+
+@media (hover: hover) {
+  .st-track-z__hero-codes > span:hover {
+    border-color: rgba(237, 28, 36, 0.34) !important;
+
+    background: rgba(237, 28, 36, 0.035) !important;
+
+    box-shadow:
+      inset 3px 0 0 rgba(237, 28, 36, 0.8),
+      0 12px 28px rgba(0, 0, 0, 0.08) !important;
+
+    transform: translateY(-2px);
+  }
+}
+
+/* =========================================================
+   02 — RADAR CONSOLE
+   Give the entire hardware module more depth.
+   ========================================================= */
+
+.st-track-z__radar-console {
+  position: relative;
+
+  isolation: isolate;
+
+  overflow: hidden;
+
+  box-shadow:
+    10px 12px 0 rgba(237, 28, 36, 0.07),
+    0 28px 60px rgba(0, 0, 0, 0.24),
+    inset 0 1px rgba(255, 255, 255, 0.035) !important;
+}
+
+.st-track-z__radar-console::before {
+  position: absolute;
+  z-index: 0;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    115deg,
+    transparent 0 38%,
+    rgba(237, 28, 36, 0.025) 48%,
+    transparent 58%
+  );
+
+  content: "";
+
+  animation: stTrackConsoleSurface 8s ease-in-out infinite;
+}
+
+.st-track-z__console-head,
+.st-track-z__radar,
+.st-track-z__radar-readout {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   03 — LIVE RADAR BLIPS
+   Decorative telemetry only — no tracking logic altered.
+   ========================================================= */
+
+.st-track-z__radar {
+  position: relative;
+  overflow: hidden;
+}
+
+.st-track-z__radar::before {
+  position: absolute;
+  z-index: 8;
+
+  top: 31%;
+  left: 44%;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #73f58a;
+
+  box-shadow:
+    0 0 4px #73f58a,
+    0 0 11px rgba(115, 245, 138, 0.9),
+    64px 54px 0 -1px #73f58a,
+    64px 54px 8px 1px rgba(115, 245, 138, 0.65),
+    -57px 70px 0 -1px #ed1c24,
+    -57px 70px 8px 1px rgba(237, 28, 36, 0.62),
+    86px -29px 0 -1px #ed1c24,
+    86px -29px 8px 1px rgba(237, 28, 36, 0.48);
+
+  pointer-events: none;
+
+  content: "";
+
+  animation: stTrackRadarBlipsA 3.1s steps(1, end) infinite;
+}
+
+.st-track-z__radar::after {
+  position: absolute;
+  z-index: 8;
+
+  top: 57%;
+  left: 53%;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #73f58a;
+
+  box-shadow:
+    0 0 8px rgba(115, 245, 138, 0.9),
+    -83px -38px 0 #73f58a,
+    -83px -38px 8px rgba(115, 245, 138, 0.58),
+    48px 79px 0 #ed1c24,
+    48px 79px 8px rgba(237, 28, 36, 0.58);
+
+  pointer-events: none;
+
+  content: "";
+
+  animation: stTrackRadarBlipsB 4.3s steps(1, end) infinite;
+}
+
+/* Radar rings breathe independently. */
+
+.st-track-z__radar-ring.is-one {
+  animation:
+    stTrackRadarRing 3.4s ease-in-out infinite,
+    stTrackTelemetryRingOne 4.8s ease-in-out infinite !important;
+}
+
+.st-track-z__radar-ring.is-two {
+  animation:
+    stTrackRadarRing 3.4s ease-in-out 280ms infinite,
+    stTrackTelemetryRingTwo 5.4s ease-in-out infinite !important;
+}
+
+.st-track-z__radar-ring.is-three {
+  animation:
+    stTrackRadarRing 3.4s ease-in-out 560ms infinite,
+    stTrackTelemetryRingThree 6s ease-in-out infinite !important;
+}
+
+/* Core becomes more hardware-like. */
+
+.st-track-z__radar-core {
+  box-shadow:
+    0 0 0 7px rgba(237, 28, 36, 0.035),
+    0 0 20px rgba(237, 28, 36, 0.14),
+    inset 0 0 15px rgba(237, 28, 36, 0.09) !important;
+}
+
+/* =========================================================
+   04 — RADAR READOUT
+   Mission ID / Network / Channel
+   ========================================================= */
+
+.st-track-z__radar-readout > span {
+  position: relative;
+
+  overflow: hidden;
+
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.st-track-z__radar-readout > span::after {
+  position: absolute;
+
+  right: 10px;
+  bottom: 8px;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.25);
+
+  content: "";
+
+  animation: stTrackReadoutSignal 2.5s ease-in-out infinite;
+}
+
+.st-track-z__radar-readout > span:nth-child(2)::after {
+  background: #73f58a;
+
+  box-shadow: 0 0 8px rgba(115, 245, 138, 0.8);
+
+  animation-delay: 320ms;
+}
+
+.st-track-z__radar-readout > span:nth-child(3)::after {
+  background: #ed1c24;
+
+  box-shadow: 0 0 7px rgba(237, 28, 36, 0.55);
+
+  animation-delay: 640ms;
+}
+
+.st-track-z__radar-readout > span:nth-child(1) strong {
+  animation: stTrackWaitingReadout 2.6s ease-in-out infinite;
+}
+
+.st-track-z__radar-readout > span:nth-child(2) strong {
+  color: #73f58a !important;
+
+  text-shadow: 0 0 10px rgba(115, 245, 138, 0.22);
+
+  animation: stTrackOnlineReadout 2.1s ease-in-out infinite;
+}
+
+.st-track-z__radar-readout > span:nth-child(3) strong {
+  animation: stTrackChannelReadout 3.2s steps(1, end) infinite;
+}
+
+/* During real scanning, intensify telemetry slightly. */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar::before,
+.st-track-z__radar-console.is-scanning .st-track-z__radar::after {
+  animation-duration: 1.35s !important;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-readout > span {
+  background: rgba(237, 28, 36, 0.025) !important;
+}
+
+/* =========================================================
+   05 — AWAITING MISSION ID DIAGNOSTICS
+   Database / Courier Network / Customer Channel
+   ========================================================= */
+
+.st-track-z__idle-diagnostics > span {
+  position: relative;
+
+  overflow: hidden;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease !important;
+}
+
+.st-track-z__idle-diagnostics > span::after {
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+  left: -34%;
+
+  width: 26%;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(115, 245, 138, 0.09),
+    transparent
+  );
+
+  transform: skewX(-20deg);
+
+  content: "";
+
+  animation: stTrackDiagnosticSweep 5.2s linear infinite;
+}
+
+.st-track-z__idle-diagnostics > span:nth-child(2)::after {
+  animation-delay: 700ms;
+}
+
+.st-track-z__idle-diagnostics > span:nth-child(3)::after {
+  animation-delay: 1400ms;
+}
+
+.st-track-z__idle-diagnostics i {
+  position: relative;
+
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 0 3px rgba(115, 245, 138, 0.06),
+    0 0 9px rgba(115, 245, 138, 0.72) !important;
+
+  animation: stTrackDiagnosticLed 2.25s ease-in-out infinite !important;
+}
+
+.st-track-z__idle-diagnostics > span:nth-child(2) i {
+  animation-delay: 380ms !important;
+}
+
+.st-track-z__idle-diagnostics > span:nth-child(3) i {
+  animation-delay: 760ms !important;
+}
+
+/* Idle package/ring display receives subtle standby telemetry. */
+
+.st-track-z__idle-rings span:nth-child(1) {
+  animation: stTrackIdleRing 3.4s ease-out infinite;
+}
+
+.st-track-z__idle-rings span:nth-child(2) {
+  animation: stTrackIdleRing 3.4s ease-out 800ms infinite;
+}
+
+.st-track-z__idle-rings span:nth-child(3) {
+  animation: stTrackIdleRing 3.4s ease-out 1600ms infinite;
+}
+
+/* =========================================================
+   06 — ANIMATION DEFINITIONS
+   ========================================================= */
+
+@keyframes stTrackTelemetryLed {
+  0%,
+  100% {
+    opacity: 0.48;
+    transform: scale(0.88);
+  }
+
+  45% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+
+  60% {
+    opacity: 0.78;
+    transform: scale(1);
+  }
+}
+
+@keyframes stTrackTelemetryScan {
+  0% {
+    left: -35%;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  46% {
+    opacity: 0.7;
+  }
+
+  60%,
+  100% {
+    left: 125%;
+    opacity: 0;
+  }
+}
+
+@keyframes stTrackConsoleSurface {
+  0%,
+  100% {
+    opacity: 0.52;
+    transform: translateX(-8%);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateX(8%);
+  }
+}
+
+@keyframes stTrackRadarBlipsA {
+  0%,
+  15% {
+    opacity: 0.18;
+    transform: scale(0.82);
+  }
+
+  16%,
+  44% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  45%,
+  70% {
+    opacity: 0.36;
+  }
+
+  71%,
+  100% {
+    opacity: 0.82;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes stTrackRadarBlipsB {
+  0%,
+  30% {
+    opacity: 0.15;
+  }
+
+  31%,
+  58% {
+    opacity: 0.92;
+  }
+
+  59%,
+  77% {
+    opacity: 0.28;
+  }
+
+  78%,
+  100% {
+    opacity: 0.72;
+  }
+}
+
+@keyframes stTrackTelemetryRingOne {
+  0%,
+  100% {
+    opacity: 0.48;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes stTrackTelemetryRingTwo {
+  0%,
+  100% {
+    opacity: 0.36;
+  }
+
+  50% {
+    opacity: 0.68;
+  }
+}
+
+@keyframes stTrackTelemetryRingThree {
+  0%,
+  100% {
+    opacity: 0.24;
+  }
+
+  50% {
+    opacity: 0.56;
+  }
+}
+
+@keyframes stTrackReadoutSignal {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes stTrackWaitingReadout {
+  0%,
+  100% {
+    opacity: 0.62;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes stTrackOnlineReadout {
+  0%,
+  100% {
+    opacity: 0.72;
+    text-shadow: 0 0 4px rgba(115, 245, 138, 0.12);
+  }
+
+  50% {
+    opacity: 1;
+    text-shadow:
+      0 0 7px rgba(115, 245, 138, 0.36),
+      0 0 15px rgba(115, 245, 138, 0.13);
+  }
+}
+
+@keyframes stTrackChannelReadout {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+  }
+
+  89% {
+    opacity: 0.48;
+  }
+
+  91% {
+    opacity: 1;
+  }
+
+  93% {
+    opacity: 0.68;
+  }
+}
+
+@keyframes stTrackDiagnosticSweep {
+  0% {
+    left: -34%;
+    opacity: 0;
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  52% {
+    opacity: 0.6;
+  }
+
+  68%,
+  100% {
+    left: 126%;
+    opacity: 0;
+  }
+}
+
+@keyframes stTrackDiagnosticLed {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(0.82);
+  }
+
+  48% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes stTrackIdleRing {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  30% {
+    opacity: 0.48;
+  }
+
+  75% {
+    opacity: 0.12;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+/* =========================================================
+   07 — ACCESSIBILITY
+   Preserve the premium appearance without forced motion.
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__hero-codes > span::before,
+  .st-track-z__hero-codes > span::after,
+  .st-track-z__radar-console::before,
+  .st-track-z__radar::before,
+  .st-track-z__radar::after,
+  .st-track-z__radar-readout > span::after,
+  .st-track-z__radar-readout strong,
+  .st-track-z__idle-diagnostics > span::after,
+  .st-track-z__idle-diagnostics i,
+  .st-track-z__idle-rings span {
+    animation: none !important;
+  }
+
+  .st-track-z__hero-codes > span::before,
+  .st-track-z__idle-diagnostics i {
+    opacity: 1 !important;
+  }
+
+  .st-track-z__radar::before,
+  .st-track-z__radar::after {
+    opacity: 0.6 !important;
+  }
+}
+
+/* STEREOPHONIE — TRACK ORDER TELEMETRY V2 END */
+
+/* STEREOPHONIE — TRACK ORDER TELEMETRY V2.1 START */
+
+/* =========================================================
+   01 — HERO NETWORK MODULES
+   ========================================================= */
+
+.st-track-z__hero-codes {
+  gap: 9px !important;
+}
+
+.st-track-z__hero-codes span {
+  position: relative !important;
+  isolation: isolate !important;
+
+  min-height: 45px !important;
+
+  padding: 0 16px 0 35px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.027),
+      rgba(255, 255, 255, 0.006)
+    ),
+    rgba(9, 9, 9, 0.72) !important;
+
+  color: rgba(255, 255, 255, 0.58) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025),
+    0 8px 28px rgba(0, 0, 0, 0.12) !important;
+
+  backdrop-filter: blur(8px);
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease !important;
+}
+
+/* Hardware status LED */
+.st-track-z__hero-codes span::before {
+  content: "" !important;
+
+  position: absolute !important;
+  left: 14px !important;
+  top: 50% !important;
+
+  width: 5px !important;
+  height: 5px !important;
+
+  border-radius: 50% !important;
+
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 4px rgba(115, 245, 138, 0.92),
+    0 0 11px rgba(115, 245, 138, 0.32) !important;
+
+  transform: translateY(-50%) !important;
+
+  animation: stTrackV21NetworkLed 2.6s ease-in-out infinite !important;
+}
+
+/* Moving diagnostic trace */
+.st-track-z__hero-codes span::after {
+  content: "" !important;
+
+  position: absolute !important;
+  z-index: -1 !important;
+
+  top: 0 !important;
+  bottom: 0 !important;
+  left: -45% !important;
+
+  width: 34% !important;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(115, 245, 138, 0.045),
+    transparent
+  ) !important;
+
+  transform: skewX(-18deg) !important;
+
+  animation: stTrackV21ModuleScan 6.6s linear infinite !important;
+}
+
+.st-track-z__hero-codes span:nth-child(2)::before {
+  animation-delay: -0.8s !important;
+}
+
+.st-track-z__hero-codes span:nth-child(3)::before {
+  animation-delay: -1.6s !important;
+}
+
+.st-track-z__hero-codes span:nth-child(2)::after {
+  animation-delay: -2.2s !important;
+}
+
+.st-track-z__hero-codes span:nth-child(3)::after {
+  animation-delay: -4.4s !important;
+}
+
+.st-track-z__hero-codes svg {
+  width: 13px !important;
+
+  color: #ed1c24 !important;
+
+  opacity: 0.9 !important;
+}
+
+@media (hover: hover) {
+  .st-track-z__hero-codes span:hover {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.045),
+        rgba(255, 255, 255, 0.01)
+      ),
+      rgba(11, 11, 11, 0.86) !important;
+
+    color: rgba(255, 255, 255, 0.82) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+/* =========================================================
+   02 — DELIVERY RADAR HARDWARE
+   ========================================================= */
+
+.st-track-z__radar-console {
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      rgba(237, 28, 36, 0.035),
+      transparent 40%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 15%),
+    #0a0a0a !important;
+
+  box-shadow:
+    10px 13px 0 rgba(237, 28, 36, 0.055),
+    0 30px 75px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025) !important;
+}
+
+.st-track-z__radar {
+  overflow: visible !important;
+
+  border-color: rgba(237, 28, 36, 0.28) !important;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(237, 28, 36, 0.095) 0,
+      rgba(237, 28, 36, 0.025) 30%,
+      transparent 62%
+    ),
+    #070707 !important;
+
+  box-shadow:
+    inset 0 0 45px rgba(237, 28, 36, 0.045),
+    0 0 35px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* =========================================================
+   03 — REALISTIC RADAR CONTACTS
+
+   Replace the "random glowing dot" appearance with small,
+   restrained radar returns that briefly acquire and decay.
+   ========================================================= */
+
+/*
+ * Each pseudo element is only one physical pixel source.
+ * box-shadow creates several independent-looking contacts
+ * while keeping them small enough to resemble telemetry.
+ */
+
+.st-track-z__radar::before,
+.st-track-z__radar::after {
+  content: "" !important;
+
+  position: absolute !important;
+  z-index: 4 !important;
+
+  width: 3px !important;
+  height: 3px !important;
+
+  border-radius: 50% !important;
+
+  pointer-events: none !important;
+
+  transform-origin: center !important;
+}
+
+/* Primary green contacts */
+.st-track-z__radar::before {
+  left: 50% !important;
+  top: 50% !important;
+
+  background: rgba(115, 245, 138, 0.92) !important;
+
+  box-shadow:
+    -66px -35px 0 0 rgba(115, 245, 138, 0.74),
+    49px -21px 0 -0.3px rgba(115, 245, 138, 0.72),
+    67px 47px 0 -0.6px rgba(115, 245, 138, 0.5),
+    -31px 63px 0 -0.5px rgba(115, 245, 138, 0.44) !important;
+
+  filter: drop-shadow(0 0 3px rgba(115, 245, 138, 0.55)) !important;
+
+  opacity: 0 !important;
+
+  animation: stTrackV21ContactAcquireA 5.4s linear infinite !important;
+}
+
+/* Secondary red / amber contacts */
+.st-track-z__radar::after {
+  left: 50% !important;
+  top: 50% !important;
+
+  background: rgba(237, 28, 36, 0.82) !important;
+
+  box-shadow:
+    72px -53px 0 -0.5px rgba(237, 28, 36, 0.52),
+    -55px 23px 0 -0.4px rgba(237, 28, 36, 0.58),
+    31px 71px 0 -0.7px rgba(237, 28, 36, 0.4) !important;
+
+  filter: drop-shadow(0 0 2px rgba(237, 28, 36, 0.48)) !important;
+
+  opacity: 0 !important;
+
+  animation: stTrackV21ContactAcquireB 7.1s linear infinite !important;
+}
+
+/*
+ * Contact acquisition should look like:
+ *
+ * detected → held briefly → signal decays → gone
+ *
+ * rather than continuously blinking decorations.
+ */
+
+@keyframes stTrackV21ContactAcquireA {
+  0%,
+  9% {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+
+  11% {
+    opacity: 0.92;
+    transform: scale(1.18);
+  }
+
+  16% {
+    opacity: 0.66;
+    transform: scale(1);
+  }
+
+  27% {
+    opacity: 0.18;
+  }
+
+  31%,
+  100% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+
+@keyframes stTrackV21ContactAcquireB {
+  0%,
+  42% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  44% {
+    opacity: 0.75;
+    transform: scale(1.12);
+  }
+
+  49% {
+    opacity: 0.52;
+    transform: scale(1);
+  }
+
+  57% {
+    opacity: 0.12;
+  }
+
+  61%,
+  100% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+
+/* Radar rings become instrumentation instead of decoration. */
+
+.st-track-z__radar-ring {
+  border-color: rgba(255, 255, 255, 0.055) !important;
+
+  box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.008) !important;
+}
+
+.st-track-z__radar-cross {
+  background: rgba(255, 255, 255, 0.045) !important;
+}
+
+/* Preserve the sweep, but make it cleaner and less muddy. */
+
+.st-track-z__radar-sweep {
+  z-index: 2 !important;
+
+  opacity: 0.48 !important;
+
+  background: conic-gradient(
+    from 0deg,
+    rgba(237, 28, 36, 0) 0deg,
+    rgba(237, 28, 36, 0.018) 27deg,
+    rgba(237, 28, 36, 0.19) 66deg,
+    rgba(237, 28, 36, 0) 90deg
+  ) !important;
+
+  filter: drop-shadow(0 0 3px rgba(237, 28, 36, 0.1)) !important;
+}
+
+.st-track-z__radar-core {
+  z-index: 6 !important;
+
+  border-color: rgba(237, 28, 36, 0.35) !important;
+
+  background:
+    radial-gradient(circle, rgba(237, 28, 36, 0.055), transparent 65%),
+    rgba(5, 5, 5, 0.96) !important;
+
+  box-shadow:
+    0 0 0 5px rgba(237, 28, 36, 0.025),
+    0 0 25px rgba(237, 28, 36, 0.12) !important;
+}
+
+/* Scanning mode = more frequent contacts, not larger blobs. */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar::before {
+  animation-duration: 2.7s !important;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar::after {
+  animation-duration: 3.4s !important;
+}
+
+/* =========================================================
+   04 — RADAR TELEMETRY READOUT
+   MISSION ID / NETWORK / CHANNEL
+   ========================================================= */
+
+.st-track-z__radar-readout {
+  position: relative !important;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.075) !important;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.018),
+    rgba(255, 255, 255, 0.003)
+  ) !important;
+}
+
+.st-track-z__radar-readout span {
+  position: relative !important;
+
+  min-height: 62px !important;
+
+  padding: 15px 19px 14px !important;
+
+  overflow: hidden !important;
+
+  border-right-color: rgba(255, 255, 255, 0.065) !important;
+}
+
+/* Tiny hardware indicator */
+.st-track-z__radar-readout span::before {
+  content: "" !important;
+
+  position: absolute !important;
+
+  top: 15px !important;
+  right: 16px !important;
+
+  width: 3px !important;
+  height: 3px !important;
+
+  border-radius: 50% !important;
+
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Network channel specifically receives live green status. */
+.st-track-z__radar-readout span:nth-child(2)::before {
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 4px rgba(115, 245, 138, 0.8),
+    0 0 9px rgba(115, 245, 138, 0.25) !important;
+
+  animation: stTrackV21OnlinePulse 2.3s ease-in-out infinite !important;
+}
+
+/* Channel receives a restrained red hardware indicator. */
+.st-track-z__radar-readout span:nth-child(3)::before {
+  background: rgba(237, 28, 36, 0.72) !important;
+
+  box-shadow: 0 0 5px rgba(237, 28, 36, 0.24) !important;
+}
+
+.st-track-z__radar-readout small {
+  margin-bottom: 7px !important;
+
+  color: rgba(255, 255, 255, 0.22) !important;
+
+  font-size: 5px !important;
+  font-weight: 800 !important;
+
+  letter-spacing: 0.17em !important;
+}
+
+.st-track-z__radar-readout strong {
+  color: rgba(255, 255, 255, 0.68) !important;
+
+  font-size: 7px !important;
+  font-weight: 800 !important;
+
+  letter-spacing: 0.11em !important;
+}
+
+/* WAITING looks like standby telemetry, not a blinking ad. */
+.st-track-z__radar-readout span:nth-child(1) strong {
+  color: rgba(255, 255, 255, 0.54) !important;
+
+  animation: stTrackV21WaitingTelemetry 3.8s ease-in-out infinite !important;
+}
+
+/* ONLINE is intentionally the clearest live state. */
+.st-track-z__radar-readout span:nth-child(2) strong {
+  color: #73f58a !important;
+
+  text-shadow: 0 0 9px rgba(115, 245, 138, 0.12) !important;
+
+  animation: none !important;
+}
+
+/* CHANNEL ID remains stable — real hardware doesn't flicker wildly. */
+.st-track-z__radar-readout span:nth-child(3) strong {
+  color: rgba(255, 255, 255, 0.72) !important;
+
+  animation: none !important;
+}
+
+/* =========================================================
+   05 — MOTION
+   ========================================================= */
+
+@keyframes stTrackV21NetworkLed {
+  0%,
+  100% {
+    opacity: 0.58;
+    box-shadow:
+      0 0 3px rgba(115, 245, 138, 0.65),
+      0 0 7px rgba(115, 245, 138, 0.2);
+  }
+
+  48% {
+    opacity: 1;
+    box-shadow:
+      0 0 5px rgba(115, 245, 138, 0.88),
+      0 0 13px rgba(115, 245, 138, 0.31);
+  }
+}
+
+@keyframes stTrackV21ModuleScan {
+  0% {
+    left: -45%;
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  32% {
+    opacity: 0;
+  }
+
+  100% {
+    left: 125%;
+    opacity: 0;
+  }
+}
+
+@keyframes stTrackV21OnlinePulse {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes stTrackV21WaitingTelemetry {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+
+  50% {
+    opacity: 0.82;
+  }
+}
+
+/* =========================================================
+   06 — ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__radar::before,
+  .st-track-z__radar::after,
+  .st-track-z__hero-codes span::before,
+  .st-track-z__hero-codes span::after,
+  .st-track-z__radar-readout span::before,
+  .st-track-z__radar-readout strong {
+    animation: none !important;
+  }
+
+  .st-track-z__radar::before {
+    opacity: 0.38 !important;
+  }
+
+  .st-track-z__radar::after {
+    opacity: 0.22 !important;
+  }
+}
+
+/* STEREOPHONIE — TRACK ORDER TELEMETRY V2.1 END */
+
+/* STEREOPHONIE — DELIVERY RADAR V2.2 START */
+
+/* =========================================================
+   RADAR GEOMETRY REPAIR
+
+   IMPORTANT:
+   The radar must clip EVERYTHING to its circular display.
+   This fixes the giant rotating triangular sweep escaping
+   outside of the radar visible in the screenshot.
+   ========================================================= */
+
+.st-track-z__radar {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  isolation: isolate !important;
+
+  border-radius: 50% !important;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(237, 28, 36, 0.12) 0%,
+      rgba(237, 28, 36, 0.045) 23%,
+      rgba(237, 28, 36, 0.012) 46%,
+      transparent 67%
+    ),
+    #070707 !important;
+
+  box-shadow:
+    inset 0 0 45px rgba(237, 28, 36, 0.045),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.018),
+    0 0 36px rgba(0, 0, 0, 0.34) !important;
+}
+
+/* =========================================================
+   CLEAN SWEEP
+
+   Keep the rotating radar beam entirely inside the radar.
+   ========================================================= */
+
+.st-track-z__radar-sweep {
+  position: absolute !important;
+
+  z-index: 3 !important;
+
+  top: 0 !important;
+  left: 50% !important;
+
+  width: 50% !important;
+  height: 50% !important;
+
+  overflow: hidden !important;
+
+  transform-origin: left bottom !important;
+
+  clip-path: polygon(0 100%, 100% 3%, 100% 100%) !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(237, 28, 36, 0) 7%,
+    rgba(237, 28, 36, 0.018) 40%,
+    rgba(237, 28, 36, 0.17) 100%
+  ) !important;
+
+  opacity: 0.68 !important;
+
+  filter: none !important;
+
+  pointer-events: none !important;
+
+  animation: stTrackSweep 4.2s linear infinite !important;
+
+  will-change: transform;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-sweep {
+  animation-duration: 1.45s !important;
+
+  opacity: 0.9 !important;
+}
+
+/* =========================================================
+   PROFESSIONAL RADAR RETURNS
+
+   Kill the previous box-shadow / random-dot implementation.
+   Each pseudo-layer now stays INSIDE the radar display and
+   uses tiny radial signal returns.
+   ========================================================= */
+
+.st-track-z__radar::before,
+.st-track-z__radar::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: 4 !important;
+
+  inset: 0 !important;
+
+  width: auto !important;
+  height: auto !important;
+
+  left: 0 !important;
+  top: 0 !important;
+
+  border-radius: inherit !important;
+
+  box-shadow: none !important;
+
+  filter: none !important;
+
+  transform: none !important;
+
+  pointer-events: none !important;
+
+  background-repeat: no-repeat !important;
+
+  opacity: 0 !important;
+}
+
+/*
+ * GREEN CONTACT GROUP
+
+ * Very small detections with a faint acquisition halo.
+ */
+
+.st-track-z__radar::before {
+  background:
+    radial-gradient(
+      circle at 37% 34%,
+      rgba(115, 245, 138, 0.95) 0 1.2px,
+      rgba(115, 245, 138, 0.3) 1.5px 3px,
+      transparent 4px
+    ),
+    radial-gradient(
+      circle at 67% 47%,
+      rgba(115, 245, 138, 0.88) 0 1px,
+      rgba(115, 245, 138, 0.22) 1.4px 2.7px,
+      transparent 3.8px
+    ),
+    radial-gradient(
+      circle at 43% 70%,
+      rgba(115, 245, 138, 0.72) 0 0.9px,
+      rgba(115, 245, 138, 0.16) 1.3px 2.4px,
+      transparent 3.5px
+    ) !important;
+
+  animation: stRadarProfessionalGreen 6.2s linear infinite !important;
+}
+
+/*
+ * RED CONTACT GROUP
+
+ * Lower intensity than green so that the radar does not
+ * look like decorative Christmas lights.
+ */
+
+.st-track-z__radar::after {
+  background:
+    radial-gradient(
+      circle at 72% 29%,
+      rgba(237, 28, 36, 0.78) 0 1px,
+      rgba(237, 28, 36, 0.2) 1.4px 2.7px,
+      transparent 3.8px
+    ),
+    radial-gradient(
+      circle at 29% 57%,
+      rgba(237, 28, 36, 0.68) 0 0.9px,
+      rgba(237, 28, 36, 0.15) 1.3px 2.5px,
+      transparent 3.5px
+    ) !important;
+
+  animation: stRadarProfessionalRed 8.1s linear infinite !important;
+}
+
+/*
+ * Detection timing:
+ * brief acquisition → short hold → smooth decay.
+ */
+
+@keyframes stRadarProfessionalGreen {
+  0%,
+  9% {
+    opacity: 0;
+  }
+
+  11% {
+    opacity: 0.9;
+  }
+
+  17% {
+    opacity: 0.68;
+  }
+
+  24% {
+    opacity: 0.24;
+  }
+
+  30%,
+  63% {
+    opacity: 0;
+  }
+
+  65% {
+    opacity: 0.62;
+  }
+
+  70% {
+    opacity: 0.42;
+  }
+
+  77% {
+    opacity: 0.12;
+  }
+
+  82%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes stRadarProfessionalRed {
+  0%,
+  35% {
+    opacity: 0;
+  }
+
+  37% {
+    opacity: 0.62;
+  }
+
+  42% {
+    opacity: 0.43;
+  }
+
+  49% {
+    opacity: 0.13;
+  }
+
+  54%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Faster signal acquisition during a real search. */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar::before {
+  animation-duration: 3.2s !important;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar::after {
+  animation-duration: 4.1s !important;
+}
+
+/* =========================================================
+   RADAR RINGS / CROSSHAIR
+   ========================================================= */
+
+.st-track-z__radar-ring {
+  z-index: 1 !important;
+
+  border-color: rgba(255, 255, 255, 0.052) !important;
+
+  box-shadow: none !important;
+}
+
+.st-track-z__radar-ring.is-two {
+  border-color: rgba(237, 28, 36, 0.095) !important;
+}
+
+.st-track-z__radar-ring.is-three {
+  border-color: rgba(255, 255, 255, 0.045) !important;
+}
+
+.st-track-z__radar-cross {
+  z-index: 1 !important;
+
+  background: rgba(255, 255, 255, 0.047) !important;
+}
+
+/* =========================================================
+   RADAR CORE
+   ========================================================= */
+
+.st-track-z__radar-core {
+  z-index: 8 !important;
+
+  border: 1px solid rgba(237, 28, 36, 0.32) !important;
+
+  background:
+    radial-gradient(circle, rgba(237, 28, 36, 0.07), transparent 63%), #080808 !important;
+
+  box-shadow:
+    0 0 0 5px rgba(237, 28, 36, 0.022),
+    0 0 24px rgba(237, 28, 36, 0.11) !important;
+}
+
+/* =========================================================
+   READOUT CLEANUP
+
+   Remove old extra telemetry dots that are currently
+   appearing at random places around WAITING / ONLINE / 14.
+   Keep exactly ONE tiny hardware indicator per module.
+   ========================================================= */
+
+.st-track-z__radar-readout span::after {
+  content: none !important;
+
+  display: none !important;
+
+  animation: none !important;
+}
+
+.st-track-z__radar-readout span::before {
+  content: "" !important;
+
+  position: absolute !important;
+
+  top: 15px !important;
+  right: 15px !important;
+
+  width: 3px !important;
+  height: 3px !important;
+
+  border-radius: 50% !important;
+
+  background: rgba(255, 255, 255, 0.2) !important;
+
+  box-shadow: none !important;
+
+  opacity: 0.72 !important;
+}
+
+/* Mission ID — neutral standby hardware */
+
+.st-track-z__radar-readout span:nth-child(1)::before {
+  background: rgba(255, 255, 255, 0.27) !important;
+}
+
+/* Network — true live green */
+
+.st-track-z__radar-readout span:nth-child(2)::before {
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 4px rgba(115, 245, 138, 0.75),
+    0 0 8px rgba(115, 245, 138, 0.22) !important;
+
+  animation: stRadarNetworkStatus 2.4s ease-in-out infinite !important;
+}
+
+/* Channel — restrained red system state */
+
+.st-track-z__radar-readout span:nth-child(3)::before {
+  background: rgba(237, 28, 36, 0.68) !important;
+
+  box-shadow: 0 0 5px rgba(237, 28, 36, 0.2) !important;
+}
+
+@keyframes stRadarNetworkStatus {
+  0%,
+  100% {
+    opacity: 0.58;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   READOUT TYPOGRAPHY / HARDWARE PANEL
+   ========================================================= */
+
+.st-track-z__radar-readout {
+  overflow: hidden !important;
+
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent),
+    rgba(5, 5, 5, 0.64) !important;
+}
+
+.st-track-z__radar-readout span {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  min-height: 64px !important;
+
+  padding: 15px 19px 14px !important;
+
+  background: transparent !important;
+}
+
+.st-track-z__radar-readout small {
+  color: rgba(255, 255, 255, 0.2) !important;
+
+  font-size: 5px !important;
+
+  font-weight: 800 !important;
+
+  letter-spacing: 0.18em !important;
+}
+
+.st-track-z__radar-readout strong {
+  margin-top: 7px !important;
+
+  color: rgba(255, 255, 255, 0.72) !important;
+
+  font-size: 7px !important;
+
+  font-weight: 850 !important;
+
+  letter-spacing: 0.11em !important;
+
+  animation: none !important;
+}
+
+.st-track-z__radar-readout span:nth-child(1) strong {
+  color: rgba(255, 255, 255, 0.56) !important;
+}
+
+.st-track-z__radar-readout span:nth-child(2) strong {
+  color: #73f58a !important;
+
+  text-shadow: 0 0 8px rgba(115, 245, 138, 0.14) !important;
+}
+
+.st-track-z__radar-readout span:nth-child(3) strong {
+  color: rgba(255, 255, 255, 0.73) !important;
+}
+
+/* =========================================================
+   HERO STATUS MODULE CLEANUP
+
+   Preserve the upgraded hardware look but prevent
+   old pseudo-effects from producing extra floating lights.
+   ========================================================= */
+
+.st-track-z__hero-codes span {
+  overflow: hidden !important;
+}
+
+/* exactly one green indicator */
+
+.st-track-z__hero-codes span::before {
+  width: 4px !important;
+  height: 4px !important;
+
+  left: 14px !important;
+
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 4px rgba(115, 245, 138, 0.7),
+    0 0 8px rgba(115, 245, 138, 0.18) !important;
+}
+
+/* diagnostic sweep stays INSIDE module */
+
+.st-track-z__hero-codes span::after {
+  top: 0 !important;
+  bottom: 0 !important;
+
+  width: 22% !important;
+
+  opacity: 0.8 !important;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(115, 245, 138, 0.025),
+    transparent
+  ) !important;
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__radar::before,
+  .st-track-z__radar::after,
+  .st-track-z__radar-sweep,
+  .st-track-z__radar-readout span::before {
+    animation: none !important;
+  }
+
+  .st-track-z__radar::before {
+    opacity: 0.25 !important;
+  }
+
+  .st-track-z__radar::after {
+    opacity: 0.14 !important;
+  }
+}
+
+/* STEREOPHONIE — DELIVERY RADAR V2.2 END */
+
+/* STEREOPHONIE — RADAR CONTACT ENGINE V3 START */
+
+/*
+ ============================================================
+ REALISTIC CONTACT PHILOSOPHY
+
+ The radar sweep is ~4.2 seconds.
+
+ Contacts do NOT randomly flash.
+
+ Each target:
+   1. is invisible
+   2. is acquired when the sweep reaches its bearing
+   3. flashes sharply
+   4. leaves a weaker phosphor trace
+   5. decays
+   6. remains invisible until next revolution
+
+ This makes the radar feel like an instrument rather than
+ decorative animation.
+ ============================================================
+*/
+
+/* ---------------------------------------------------------
+   Preserve the circular instrument viewport.
+   Absolutely nothing may escape the radar.
+   --------------------------------------------------------- */
+
+.st-track-z__radar {
+  position: relative !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  border-radius: 50% !important;
+}
+
+/* ---------------------------------------------------------
+   CONTACT LAYER A
+   Three independent green radar returns.
+
+   Each return contains:
+   - sub-pixel bright core
+   - acquisition halo
+   - very weak phosphor bloom
+
+   They intentionally have DIFFERENT strengths.
+   --------------------------------------------------------- */
+
+.st-track-z__radar::before {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+
+  z-index: 5 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  border-radius: 50% !important;
+
+  pointer-events: none !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  background:
+
+    /* CONTACT 01 — medium / north-east */
+    radial-gradient(
+      circle at 68% 31%,
+      rgba(218, 255, 223, 1) 0px,
+      rgba(218, 255, 223, 1) 0.65px,
+      rgba(105, 255, 132, 0.98) 0.8px,
+      rgba(105, 255, 132, 0.68) 1.45px,
+      rgba(105, 255, 132, 0.19) 2.5px,
+      rgba(105, 255, 132, 0.055) 4px,
+      transparent 6px
+    ),
+    /* CONTACT 02 — strong / east-south-east */
+    radial-gradient(
+        circle at 73% 58%,
+        rgba(235, 255, 238, 1) 0px,
+        rgba(235, 255, 238, 1) 0.75px,
+        rgba(105, 255, 132, 1) 0.95px,
+        rgba(105, 255, 132, 0.72) 1.65px,
+        rgba(105, 255, 132, 0.21) 2.9px,
+        rgba(105, 255, 132, 0.06) 4.7px,
+        transparent 7px
+      ),
+    /* CONTACT 03 — weak / south-west */
+    radial-gradient(
+        circle at 39% 69%,
+        rgba(205, 255, 212, 0.92) 0px,
+        rgba(105, 255, 132, 0.86) 0.75px,
+        rgba(105, 255, 132, 0.42) 1.35px,
+        rgba(105, 255, 132, 0.11) 2.4px,
+        rgba(105, 255, 132, 0.025) 4px,
+        transparent 5.5px
+      ) !important;
+
+  opacity: 0 !important;
+
+  animation: stRadarContactPassA 4.2s linear infinite !important;
+
+  will-change: opacity;
+}
+
+/* ---------------------------------------------------------
+   CONTACT LAYER B
+
+   Two secondary returns.
+   Slightly weaker than primary contacts.
+   --------------------------------------------------------- */
+
+.st-track-z__radar::after {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+
+  z-index: 5 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  border-radius: 50% !important;
+
+  pointer-events: none !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  background:
+
+    /* CONTACT 04 — weak north-west */
+    radial-gradient(
+      circle at 34% 38%,
+      rgba(226, 255, 230, 0.95) 0px,
+      rgba(105, 255, 132, 0.88) 0.7px,
+      rgba(105, 255, 132, 0.44) 1.35px,
+      rgba(105, 255, 132, 0.1) 2.5px,
+      transparent 5px
+    ),
+    /* CONTACT 05 — medium west */
+    radial-gradient(
+        circle at 27% 55%,
+        rgba(228, 255, 232, 1) 0px,
+        rgba(105, 255, 132, 0.94) 0.75px,
+        rgba(105, 255, 132, 0.52) 1.45px,
+        rgba(105, 255, 132, 0.14) 2.6px,
+        rgba(105, 255, 132, 0.035) 4px,
+        transparent 6px
+      ) !important;
+
+  opacity: 0 !important;
+
+  animation: stRadarContactPassB 4.2s linear infinite !important;
+
+  will-change: opacity;
+}
+
+/* =========================================================
+   PHOSPHOR DECAY — PRIMARY CONTACT GROUP
+
+   Short attack.
+   Long smooth decay.
+
+   No harsh blinking.
+   ========================================================= */
+
+@keyframes stRadarContactPassA {
+  0%,
+  11% {
+    opacity: 0;
+  }
+
+  /* first acquisition */
+  12% {
+    opacity: 0.16;
+  }
+
+  13% {
+    opacity: 1;
+  }
+
+  14.5% {
+    opacity: 0.82;
+  }
+
+  17% {
+    opacity: 0.54;
+  }
+
+  21% {
+    opacity: 0.27;
+  }
+
+  26% {
+    opacity: 0.11;
+  }
+
+  31% {
+    opacity: 0.035;
+  }
+
+  34%,
+  61% {
+    opacity: 0;
+  }
+
+  /* second sweep-side acquisition */
+  62% {
+    opacity: 0.13;
+  }
+
+  63% {
+    opacity: 0.82;
+  }
+
+  65% {
+    opacity: 0.65;
+  }
+
+  69% {
+    opacity: 0.36;
+  }
+
+  74% {
+    opacity: 0.16;
+  }
+
+  80% {
+    opacity: 0.05;
+  }
+
+  84%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   PHOSPHOR DECAY — SECONDARY CONTACT GROUP
+   ========================================================= */
+
+@keyframes stRadarContactPassB {
+  0%,
+  35% {
+    opacity: 0;
+  }
+
+  36% {
+    opacity: 0.12;
+  }
+
+  37% {
+    opacity: 0.86;
+  }
+
+  39% {
+    opacity: 0.68;
+  }
+
+  43% {
+    opacity: 0.39;
+  }
+
+  48% {
+    opacity: 0.19;
+  }
+
+  54% {
+    opacity: 0.07;
+  }
+
+  59% {
+    opacity: 0.018;
+  }
+
+  62%,
+  87% {
+    opacity: 0;
+  }
+
+  88% {
+    opacity: 0.1;
+  }
+
+  89% {
+    opacity: 0.62;
+  }
+
+  91% {
+    opacity: 0.44;
+  }
+
+  95% {
+    opacity: 0.17;
+  }
+
+  98% {
+    opacity: 0.04;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   SWEEP — SMOOTH HARDWARE MOTION
+
+   Keep it restrained.
+   The leading edge is brighter than the trailing area.
+   ========================================================= */
+
+.st-track-z__radar-sweep {
+  z-index: 3 !important;
+
+  background: linear-gradient(
+    136deg,
+    rgba(237, 28, 36, 0) 7%,
+    rgba(237, 28, 36, 0.012) 38%,
+    rgba(237, 28, 36, 0.055) 71%,
+    rgba(237, 28, 36, 0.15) 97%,
+    rgba(237, 28, 36, 0.21) 100%
+  ) !important;
+
+  opacity: 0.68 !important;
+
+  animation: stTrackSweep 4.2s linear infinite !important;
+
+  will-change: transform !important;
+
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* =========================================================
+   VERY SUBTLE SCREEN AFTERGLOW
+
+   Gives the radar CRT/instrument character without
+   making the whole screen glow red.
+   ========================================================= */
+
+.st-track-z__radar {
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(237, 28, 36, 0.085) 0%,
+      rgba(237, 28, 36, 0.032) 19%,
+      rgba(237, 28, 36, 0.012) 36%,
+      transparent 61%
+    ),
+    #070707 !important;
+
+  box-shadow:
+    inset 0 0 32px rgba(237, 28, 36, 0.028),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.018) !important;
+}
+
+/* =========================================================
+   RINGS
+
+   Different ring intensities prevent the target display
+   from looking like a generic CSS bullseye.
+   ========================================================= */
+
+.st-track-z__radar-ring {
+  z-index: 1 !important;
+
+  border-color: rgba(237, 28, 36, 0.115) !important;
+}
+
+.st-track-z__radar-ring.is-two {
+  border-color: rgba(237, 28, 36, 0.075) !important;
+}
+
+.st-track-z__radar-ring.is-three {
+  border-color: rgba(237, 28, 36, 0.052) !important;
+}
+
+/* =========================================================
+   SCANNING STATE
+
+   When customer actually submits an order lookup:
+   radar becomes faster and contacts are acquired more often.
+   ========================================================= */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-sweep {
+  animation-duration: 1.65s !important;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar::before {
+  animation-duration: 1.65s !important;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar::after {
+  animation-duration: 1.65s !important;
+}
+
+/* =========================================================
+   CONTACTS MUST NEVER ALTER LAYOUT
+   ========================================================= */
+
+.st-track-z__radar::before,
+.st-track-z__radar::after {
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: translateZ(0) !important;
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__radar::before {
+    animation: none !important;
+    opacity: 0.34 !important;
+  }
+
+  .st-track-z__radar::after {
+    animation: none !important;
+    opacity: 0.22 !important;
+  }
+
+  .st-track-z__radar-sweep {
+    animation: none !important;
+    opacity: 0.28 !important;
+  }
+}
+
+/* STEREOPHONIE — RADAR CONTACT ENGINE V3 END */
+
+/* STEREOPHONIE — REAL RADAR ENGINE V4 START */
+
+/* =========================================================
+   RADAR INSTRUMENT
+
+   Keep the existing physical radar size and panel.
+   Everything remains clipped inside the circular instrument.
+   ========================================================= */
+
+.st-track-z__radar {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  isolation: isolate !important;
+
+  border-radius: 50% !important;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(237, 28, 36, 0.095) 0%,
+      rgba(237, 28, 36, 0.038) 20%,
+      rgba(237, 28, 36, 0.014) 39%,
+      rgba(237, 28, 36, 0.004) 55%,
+      transparent 68%
+    ),
+    #050505 !important;
+
+  box-shadow:
+    inset 0 0 38px rgba(237, 28, 36, 0.032),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.018) !important;
+}
+
+/* =========================================================
+   DISABLE OLD GENERATED TARGETS
+
+   V4 uses REAL elements instead of ::before / ::after
+   fake radar dots.
+   ========================================================= */
+
+.st-track-z__radar::before,
+.st-track-z__radar::after {
+  content: none !important;
+
+  display: none !important;
+
+  animation: none !important;
+
+  background: none !important;
+
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   REAL 360-DEGREE RADAR SWEEP
+
+   This deliberately uses a NEW keyframe name so old sweep
+   patches cannot stop or conflict with it.
+   ========================================================= */
+
+.st-track-z__radar-sweep {
+  position: absolute !important;
+
+  z-index: 3 !important;
+
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+
+  border-radius: 50% !important;
+
+  clip-path: none !important;
+
+  transform-origin: 50% 50% !important;
+
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+
+    transparent 0deg,
+    transparent 315deg,
+
+    rgba(237, 28, 36, 0.006) 322deg,
+    rgba(237, 28, 36, 0.018) 332deg,
+    rgba(237, 28, 36, 0.045) 341deg,
+    rgba(237, 28, 36, 0.09) 349deg,
+    rgba(237, 28, 36, 0.16) 356deg,
+
+    rgba(237, 28, 36, 0.3) 359deg,
+    rgba(237, 28, 36, 0.04) 360deg
+  ) !important;
+
+  opacity: 1 !important;
+
+  pointer-events: none !important;
+
+  animation: stRadarSweepV4 4.8s linear infinite !important;
+
+  will-change: transform !important;
+
+  backface-visibility: hidden;
+}
+
+@keyframes stRadarSweepV4 {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+ * When an actual order is being scanned, the physical radar
+ * speeds up without becoming frantic.
+ */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-sweep {
+  animation-duration: 1.75s !important;
+}
+
+/* =========================================================
+   REAL RADAR CONTACT LAYER
+   ========================================================= */
+
+.st-track-z__radar-contacts {
+  position: absolute !important;
+
+  z-index: 6 !important;
+
+  inset: 0 !important;
+
+  overflow: hidden !important;
+
+  border-radius: inherit !important;
+
+  pointer-events: none !important;
+}
+
+/* =========================================================
+   CONTACT HARDWARE
+
+   Each detection has:
+   • a tiny hot center
+   • acquisition halo
+   • soft phosphor persistence
+
+   They are intentionally SMALL.
+   ========================================================= */
+
+.st-track-z__radar-contact {
+  position: absolute !important;
+
+  display: block !important;
+
+  width: 3px !important;
+  height: 3px !important;
+
+  margin: 0 !important;
+
+  border: 0 !important;
+
+  border-radius: 999px !important;
+
+  background: #bcffc6 !important;
+
+  opacity: 0.08;
+
+  transform: translate(-50%, -50%) scale(0.72);
+
+  box-shadow:
+    0 0 2px rgba(208, 255, 216, 1),
+    0 0 5px rgba(105, 255, 132, 0.58),
+    0 0 10px rgba(105, 255, 132, 0.16);
+
+  pointer-events: none !important;
+
+  will-change: opacity, transform, box-shadow;
+
+  animation: stRadarContactAcquireV4 4.8s linear infinite;
+}
+
+/* =========================================================
+   SIX DETECTIONS
+
+   Uneven positions are intentional.
+   A real display should not look symmetrically decorated.
+   ========================================================= */
+
+.st-track-z__radar-contact.is-contact-1 {
+  top: 28% !important;
+  left: 63% !important;
+
+  animation-delay: -0.55s;
+}
+
+.st-track-z__radar-contact.is-contact-2 {
+  top: 43% !important;
+  left: 76% !important;
+
+  width: 2px !important;
+  height: 2px !important;
+
+  animation-delay: -1.18s;
+}
+
+.st-track-z__radar-contact.is-contact-3 {
+  top: 62% !important;
+  left: 68% !important;
+
+  animation-delay: -1.92s;
+}
+
+.st-track-z__radar-contact.is-contact-4 {
+  top: 73% !important;
+  left: 43% !important;
+
+  width: 2px !important;
+  height: 2px !important;
+
+  animation-delay: -2.72s;
+}
+
+.st-track-z__radar-contact.is-contact-5 {
+  top: 53% !important;
+  left: 29% !important;
+
+  animation-delay: -3.52s;
+}
+
+.st-track-z__radar-contact.is-contact-6 {
+  top: 34% !important;
+  left: 38% !important;
+
+  width: 2px !important;
+  height: 2px !important;
+
+  animation-delay: -4.16s;
+}
+
+/* =========================================================
+   CONTACT ACQUISITION
+
+   Unlike the previous version, a contact never completely
+   vanishes for the entire revolution.
+
+   It has:
+     background trace
+     acquisition flash
+     phosphor fade
+     residual trace
+   ========================================================= */
+
+@keyframes stRadarContactAcquireV4 {
+  0%,
+  69% {
+    opacity: 0.055;
+
+    transform: translate(-50%, -50%) scale(0.68);
+
+    box-shadow:
+      0 0 2px rgba(208, 255, 216, 0.22),
+      0 0 5px rgba(105, 255, 132, 0.07);
+  }
+
+  /* sweep reaches target */
+
+  72% {
+    opacity: 0.2;
+
+    transform: translate(-50%, -50%) scale(0.84);
+  }
+
+  73% {
+    opacity: 1;
+
+    transform: translate(-50%, -50%) scale(1.26);
+
+    box-shadow:
+      0 0 2px rgba(235, 255, 239, 1),
+      0 0 5px rgba(105, 255, 132, 0.95),
+      0 0 10px rgba(105, 255, 132, 0.42),
+      0 0 17px rgba(105, 255, 132, 0.13);
+  }
+
+  75% {
+    opacity: 0.88;
+
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+
+  79% {
+    opacity: 0.58;
+
+    transform: translate(-50%, -50%) scale(0.94);
+
+    box-shadow:
+      0 0 2px rgba(220, 255, 226, 0.88),
+      0 0 6px rgba(105, 255, 132, 0.51),
+      0 0 12px rgba(105, 255, 132, 0.14);
+  }
+
+  85% {
+    opacity: 0.31;
+  }
+
+  91% {
+    opacity: 0.16;
+
+    transform: translate(-50%, -50%) scale(0.78);
+  }
+
+  100% {
+    opacity: 0.055;
+
+    transform: translate(-50%, -50%) scale(0.68);
+
+    box-shadow:
+      0 0 2px rgba(208, 255, 216, 0.22),
+      0 0 5px rgba(105, 255, 132, 0.07);
+  }
+}
+
+/* =========================================================
+   DIFFERENT SIGNAL STRENGTHS
+
+   This prevents the six contacts from looking copied.
+   ========================================================= */
+
+.st-track-z__radar-contact.is-contact-2,
+.st-track-z__radar-contact.is-contact-4,
+.st-track-z__radar-contact.is-contact-6 {
+  background: rgba(179, 255, 191, 0.92) !important;
+}
+
+.st-track-z__radar-contact.is-contact-3 {
+  width: 4px !important;
+  height: 4px !important;
+
+  background: #d9ffdf !important;
+}
+
+/* =========================================================
+   SCANNING STATE
+
+   All contacts synchronize to the faster radar revolution.
+   ========================================================= */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-contact {
+  animation-duration: 1.75s !important;
+}
+
+/* =========================================================
+   RADAR RINGS — PROFESSIONAL SIGNAL SCREEN
+   ========================================================= */
+
+.st-track-z__radar-ring {
+  z-index: 1 !important;
+
+  border-color: rgba(237, 28, 36, 0.105) !important;
+
+  box-shadow: none !important;
+}
+
+.st-track-z__radar-ring.is-two {
+  border-color: rgba(237, 28, 36, 0.068) !important;
+}
+
+.st-track-z__radar-ring.is-three {
+  border-color: rgba(237, 28, 36, 0.042) !important;
+}
+
+/* =========================================================
+   CENTER TRANSMITTER
+   ========================================================= */
+
+.st-track-z__radar-core {
+  z-index: 10 !important;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(237, 28, 36, 0.11),
+      rgba(237, 28, 36, 0.025) 53%,
+      transparent 68%
+    ),
+    #080808 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(237, 28, 36, 0.025),
+    0 0 18px rgba(237, 28, 36, 0.13) !important;
+}
+
+/* =========================================================
+   REAL SCREEN GRAIN / SIGNAL DEPTH
+
+   Extremely restrained.
+   ========================================================= */
+
+.st-track-z__radar-contacts::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: -1 !important;
+
+  inset: 0 !important;
+
+  border-radius: 50% !important;
+
+  pointer-events: none !important;
+
+  opacity: 0.13;
+
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.11) 0 0.45px,
+    transparent 0.55px
+  );
+
+  background-size: 13px 13px;
+
+  mask-image: radial-gradient(circle, rgba(0, 0, 0, 0.34), transparent 73%);
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__radar-sweep {
+    animation: none !important;
+
+    transform: rotate(35deg) !important;
+  }
+
+  .st-track-z__radar-contact {
+    animation: none !important;
+
+    opacity: 0.48 !important;
+
+    transform: translate(-50%, -50%) scale(1) !important;
+  }
+}
+
+/* STEREOPHONIE — REAL RADAR ENGINE V4 END */
+
+/* STEREOPHONIE — TRACK TELEMETRY V5 START */
+
+/* =========================================================
+   01 — DUAL-LINE RADAR SWEEP
+
+   IMPORTANT:
+   • V4 detection dots remain untouched.
+   • Radar geometry remains untouched.
+   • Only scanner beam presentation is upgraded.
+
+   Architecture:
+   1. broad fading sweep sector
+   2. sharp primary leading beam
+   3. softer secondary beam behind it
+   ========================================================= */
+
+.st-track-z__radar-sweep {
+  position: absolute !important;
+
+  z-index: 3 !important;
+
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  overflow: visible !important;
+
+  border-radius: 50% !important;
+
+  transform-origin: 50% 50% !important;
+
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+
+    transparent 0deg,
+    transparent 316deg,
+
+    rgba(237, 28, 36, 0.004) 321deg,
+    rgba(237, 28, 36, 0.01) 328deg,
+    rgba(237, 28, 36, 0.021) 335deg,
+    rgba(237, 28, 36, 0.043) 342deg,
+    rgba(237, 28, 36, 0.075) 348deg,
+    rgba(237, 28, 36, 0.115) 353deg,
+    rgba(237, 28, 36, 0.17) 357deg,
+    rgba(237, 28, 36, 0.02) 360deg
+  ) !important;
+
+  opacity: 1 !important;
+
+  pointer-events: none !important;
+
+  animation: stRadarSweepV5 4.8s linear infinite !important;
+
+  will-change: transform !important;
+}
+
+/*
+ * PRIMARY LINE
+ * Brightest edge of the scanner.
+ */
+
+.st-track-z__radar-sweep::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: 2 !important;
+
+  top: calc(50% - 0.75px) !important;
+  left: 50% !important;
+
+  width: 47% !important;
+  height: 1.5px !important;
+
+  transform-origin: 0 50% !important;
+  transform: rotate(-90deg) !important;
+
+  background: linear-gradient(
+    90deg,
+    rgba(237, 28, 36, 0.38) 0%,
+    rgba(237, 28, 36, 0.72) 58%,
+    rgba(255, 63, 68, 0.94) 88%,
+    rgba(255, 92, 96, 1) 100%
+  ) !important;
+
+  box-shadow:
+    0 0 3px rgba(237, 28, 36, 0.3),
+    0 0 9px rgba(237, 28, 36, 0.12) !important;
+
+  pointer-events: none !important;
+}
+
+/*
+ * SECONDARY LINE
+ * Dimmer and slightly behind primary line.
+ */
+
+.st-track-z__radar-sweep::before {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: 1 !important;
+
+  top: calc(50% - 0.5px) !important;
+  left: 50% !important;
+
+  width: 45% !important;
+  height: 1px !important;
+
+  transform-origin: 0 50% !important;
+  transform: rotate(-97deg) !important;
+
+  background: linear-gradient(
+    90deg,
+    rgba(237, 28, 36, 0.1),
+    rgba(237, 28, 36, 0.32) 72%,
+    rgba(237, 28, 36, 0.49)
+  ) !important;
+
+  box-shadow: 0 0 5px rgba(237, 28, 36, 0.08) !important;
+
+  opacity: 0.76 !important;
+
+  pointer-events: none !important;
+}
+
+@keyframes stRadarSweepV5 {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-sweep {
+  animation-duration: 1.75s !important;
+}
+
+/* =========================================================
+   02 — HERO TELEMETRY MODULES
+   ========================================================= */
+
+.st-track-z__hero-codes {
+  align-items: stretch !important;
+}
+
+.st-track-z__hero-codes > span {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  min-height: 46px !important;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+
+  gap: 10px !important;
+
+  padding: 0 17px 0 40px !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.115) !important;
+
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent),
+    rgba(8, 8, 8, 0.72) !important;
+
+  color: rgba(255, 255, 255, 0.6) !important;
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.012),
+    0 8px 24px rgba(0, 0, 0, 0.06) !important;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease !important;
+}
+
+.st-track-z__hero-codes > span:hover {
+  border-color: rgba(255, 255, 255, 0.19) !important;
+
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+    rgba(11, 11, 11, 0.84) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+/* green hardware LED */
+
+.st-track-z__hero-codes > span::before {
+  content: "" !important;
+
+  position: absolute !important;
+
+  left: 14px !important;
+  top: 50% !important;
+
+  width: 4px !important;
+  height: 4px !important;
+
+  border-radius: 999px !important;
+
+  transform: translateY(-50%) !important;
+
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 4px rgba(115, 245, 138, 0.72),
+    0 0 10px rgba(115, 245, 138, 0.16) !important;
+}
+
+/* contained data scan */
+
+.st-track-z__hero-codes > span::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: 0 !important;
+
+  top: 0 !important;
+  bottom: 0 !important;
+
+  left: -35% !important;
+
+  width: 28% !important;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(115, 245, 138, 0.035),
+    transparent
+  ) !important;
+
+  transform: skewX(-18deg);
+
+  animation: stHeroTelemetrySweep 6.8s linear infinite;
+
+  pointer-events: none !important;
+}
+
+.st-track-z__hero-codes > span:nth-child(2)::after {
+  animation-delay: -2.1s;
+}
+
+.st-track-z__hero-codes > span:nth-child(3)::after {
+  animation-delay: -4.3s;
+}
+
+@keyframes stHeroTelemetrySweep {
+  0%,
+  62% {
+    left: -35%;
+  }
+
+  82%,
+  100% {
+    left: 122%;
+  }
+}
+
+/* keep icon / text above diagnostic layer */
+
+.st-track-z__hero-codes svg {
+  position: relative !important;
+
+  z-index: 2 !important;
+
+  width: 15px !important;
+  height: 15px !important;
+
+  color: #ed1c24 !important;
+}
+
+/* =========================================================
+   SECURE CHANNEL — RADIO/WIFI ACTIVITY
+   ========================================================= */
+
+.st-track-z__hero-codes .is-secure-channel svg {
+  animation: stSecureChannelPulse 2.9s ease-in-out infinite !important;
+}
+
+@keyframes stSecureChannelPulse {
+  0%,
+  100% {
+    opacity: 0.52;
+
+    filter: drop-shadow(0 0 0 rgba(237, 28, 36, 0));
+  }
+
+  44% {
+    opacity: 1;
+
+    filter: drop-shadow(0 0 4px rgba(237, 28, 36, 0.35));
+  }
+
+  62% {
+    opacity: 0.72;
+  }
+}
+
+/* =========================================================
+   ORDER DATABASE — READ/WRITE PULSE
+   ========================================================= */
+
+.st-track-z__hero-codes .is-order-database svg {
+  animation: stDatabaseActivity 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+@keyframes stDatabaseActivity {
+  0%,
+  100% {
+    opacity: 0.56;
+
+    transform: translateY(0);
+  }
+
+  36% {
+    opacity: 1;
+
+    transform: translateY(-1px);
+
+    filter: drop-shadow(0 0 4px rgba(237, 28, 36, 0.28));
+  }
+
+  48% {
+    opacity: 0.65;
+
+    transform: translateY(1px);
+  }
+
+  62% {
+    opacity: 0.92;
+
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================
+   LEBANON NETWORK
+
+   Normal:
+   active / live.
+
+   During short telemetry disconnect:
+   LED and icon visibly weaken.
+   ========================================================= */
+
+.st-track-z__hero-codes .is-lebanon-network.is-online svg {
+  animation: stLebanonNetworkLive 2.5s ease-in-out infinite !important;
+}
+
+@keyframes stLebanonNetworkLive {
+  0%,
+  100% {
+    opacity: 0.52;
+
+    transform: scale(0.95);
+  }
+
+  30% {
+    opacity: 1;
+
+    transform: scale(1.04);
+
+    filter: drop-shadow(0 0 4px rgba(237, 28, 36, 0.3));
+  }
+
+  52% {
+    opacity: 0.72;
+
+    transform: scale(0.98);
+  }
+
+  72% {
+    opacity: 0.94;
+
+    transform: scale(1.02);
+  }
+}
+
+.st-track-z__hero-codes .is-lebanon-network.is-offline {
+  color: rgba(255, 255, 255, 0.27) !important;
+}
+
+.st-track-z__hero-codes .is-lebanon-network.is-offline::before {
+  background: #ed1c24 !important;
+
+  box-shadow: 0 0 5px rgba(237, 28, 36, 0.36) !important;
+
+  animation: stNetworkReconnectBlink 350ms steps(1, end) infinite !important;
+}
+
+.st-track-z__hero-codes .is-lebanon-network.is-offline svg {
+  opacity: 0.25 !important;
+
+  animation: stNetworkOfflineGlitch 420ms steps(2, end) infinite !important;
+}
+
+@keyframes stNetworkOfflineGlitch {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  35% {
+    transform: translateX(-1px);
+  }
+
+  70% {
+    transform: translateX(1px);
+  }
+}
+
+@keyframes stNetworkReconnectBlink {
+  0%,
+  48% {
+    opacity: 1;
+  }
+
+  49%,
+  100% {
+    opacity: 0.18;
+  }
+}
+
+/* =========================================================
+   03 — RADAR READOUT HARDWARE
+   ========================================================= */
+
+.st-track-z__radar-readout > span {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  min-height: 64px !important;
+}
+
+/* =========================================================
+   MISSION / WAITING PROCESSOR
+   ========================================================= */
+
+.st-track-z__mission-readout strong {
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 9px !important;
+}
+
+.st-track-z__waiting-dots {
+  display: inline-flex !important;
+
+  align-items: center !important;
+
+  gap: 3px !important;
+
+  height: 8px !important;
+
+  font-style: normal !important;
+}
+
+.st-track-z__waiting-dots b {
+  display: block !important;
+
+  width: 3px !important;
+  height: 3px !important;
+
+  border-radius: 50% !important;
+
+  background: rgba(255, 255, 255, 0.29) !important;
+
+  animation: stWaitingTelemetry 1.35s ease-in-out infinite !important;
+}
+
+.st-track-z__waiting-dots b:nth-child(2) {
+  animation-delay: 150ms !important;
+}
+
+.st-track-z__waiting-dots b:nth-child(3) {
+  animation-delay: 300ms !important;
+}
+
+@keyframes stWaitingTelemetry {
+  0%,
+  65%,
+  100% {
+    opacity: 0.22;
+
+    transform: translateY(0) scale(0.82);
+  }
+
+  32% {
+    opacity: 1;
+
+    transform: translateY(-2px) scale(1);
+
+    background: rgba(255, 255, 255, 0.72);
+  }
+}
+
+/* =========================================================
+   NETWORK ONLINE/OFFLINE
+   ========================================================= */
+
+.st-track-z__network-readout strong {
+  transition:
+    color 120ms ease,
+    opacity 120ms ease !important;
+}
+
+.st-track-z__network-readout.is-online strong {
+  color: #73f58a !important;
+
+  text-shadow: 0 0 8px rgba(115, 245, 138, 0.14) !important;
+
+  animation: stNetworkOnlineHeartbeat 2.6s ease-in-out infinite !important;
+}
+
+@keyframes stNetworkOnlineHeartbeat {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+
+  46% {
+    opacity: 1;
+  }
+
+  52% {
+    opacity: 0.83;
+  }
+}
+
+.st-track-z__network-readout.is-offline strong {
+  color: #ed1c24 !important;
+
+  text-shadow: 0 0 8px rgba(237, 28, 36, 0.17) !important;
+
+  animation: stOfflineReadoutGlitch 220ms steps(2, end) infinite !important;
+}
+
+.st-track-z__network-readout.is-offline::before {
+  background: #ed1c24 !important;
+
+  box-shadow: 0 0 6px rgba(237, 28, 36, 0.38) !important;
+}
+
+@keyframes stOfflineReadoutGlitch {
+  0% {
+    opacity: 0.72;
+
+    transform: translateX(0);
+  }
+
+  33% {
+    opacity: 1;
+
+    transform: translateX(1px);
+  }
+
+  66% {
+    opacity: 0.55;
+
+    transform: translateX(-1px);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: translateX(0);
+  }
+}
+
+/* =========================================================
+   CHANNEL 14 — SIGNAL METER
+   ========================================================= */
+
+.st-track-z__channel-readout strong {
+  display: flex !important;
+
+  align-items: flex-end !important;
+
+  gap: 9px !important;
+}
+
+.st-track-z__channel-meter {
+  display: inline-flex !important;
+
+  align-items: flex-end !important;
+
+  gap: 2px !important;
+
+  height: 10px !important;
+
+  font-style: normal !important;
+}
+
+.st-track-z__channel-meter b {
+  display: block !important;
+
+  width: 2px !important;
+
+  background: rgba(237, 28, 36, 0.7) !important;
+
+  transform-origin: bottom center !important;
+
+  animation: stChannelSignal 2.8s steps(4, end) infinite !important;
+}
+
+.st-track-z__channel-meter b:nth-child(1) {
+  height: 4px !important;
+}
+
+.st-track-z__channel-meter b:nth-child(2) {
+  height: 7px !important;
+
+  animation-delay: -650ms !important;
+}
+
+.st-track-z__channel-meter b:nth-child(3) {
+  height: 10px !important;
+
+  animation-delay: -1.25s !important;
+}
+
+@keyframes stChannelSignal {
+  0% {
+    opacity: 0.2;
+
+    transform: scaleY(0.35);
+  }
+
+  28% {
+    opacity: 0.88;
+
+    transform: scaleY(1);
+  }
+
+  54% {
+    opacity: 0.48;
+
+    transform: scaleY(0.62);
+  }
+
+  77% {
+    opacity: 1;
+
+    transform: scaleY(0.92);
+  }
+
+  100% {
+    opacity: 0.32;
+
+    transform: scaleY(0.48);
+  }
+}
+
+/* =========================================================
+   04 — READOUT TRANSIENT SCAN
+
+   Very subtle horizontal diagnostics pass.
+   ========================================================= */
+
+.st-track-z__radar-readout > span::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: 0 !important;
+
+  left: -45% !important;
+  top: 0 !important;
+
+  width: 30% !important;
+  height: 100% !important;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.022),
+    transparent
+  ) !important;
+
+  animation: stReadoutDiagnosticPass 8.5s linear infinite !important;
+
+  pointer-events: none !important;
+}
+
+.st-track-z__radar-readout > span:nth-child(2)::after {
+  animation-delay: -2.8s !important;
+}
+
+.st-track-z__radar-readout > span:nth-child(3)::after {
+  animation-delay: -5.6s !important;
+}
+
+@keyframes stReadoutDiagnosticPass {
+  0%,
+  66% {
+    left: -45%;
+  }
+
+  88%,
+  100% {
+    left: 125%;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__radar-sweep {
+    animation: none !important;
+
+    transform: rotate(45deg) !important;
+  }
+
+  .st-track-z__hero-codes svg,
+  .st-track-z__hero-codes > span::after,
+  .st-track-z__waiting-dots b,
+  .st-track-z__network-readout strong,
+  .st-track-z__channel-meter b,
+  .st-track-z__radar-readout > span::after {
+    animation: none !important;
+  }
+}
+
+/* STEREOPHONIE — TRACK TELEMETRY V5 END */
+
+/* STEREOPHONIE — TRACK RADAR V6 START */
+
+/* =========================================================
+   RADAR — RESTORE REAL TRIANGULAR SWEEP
+
+   IMPORTANT:
+   • Existing detection dots stay untouched.
+   • Radar circles stay untouched.
+   • Radar crosshair stays untouched.
+   • Center icon stays untouched.
+   ========================================================= */
+
+/*
+ * V5 created two visible straight scanner lines.
+ * Disable those two pseudo-elements completely.
+ */
+
+.st-track-z__radar-sweep::before,
+.st-track-z__radar-sweep::after {
+  content: none !important;
+  display: none !important;
+}
+
+/*
+ * Restore a real radar sector:
+ *
+ * apex = radar center
+ * broad outer edge = perimeter
+ * bright leading edge
+ * fading trailing body
+ */
+
+.st-track-z__radar-sweep {
+  position: absolute !important;
+
+  z-index: 4 !important;
+
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  border-radius: 50% !important;
+
+  overflow: hidden !important;
+
+  opacity: 1 !important;
+
+  pointer-events: none !important;
+
+  transform-origin: 50% 50% !important;
+
+  background: conic-gradient(
+    from -90deg at 50% 50%,
+
+    transparent 0deg,
+    transparent 327deg,
+
+    rgba(237, 28, 36, 0.004) 329deg,
+    rgba(237, 28, 36, 0.009) 332deg,
+    rgba(237, 28, 36, 0.018) 335deg,
+    rgba(237, 28, 36, 0.032) 338deg,
+    rgba(237, 28, 36, 0.052) 341deg,
+    rgba(237, 28, 36, 0.078) 344deg,
+    rgba(237, 28, 36, 0.108) 347deg,
+    rgba(237, 28, 36, 0.145) 350deg,
+    rgba(237, 28, 36, 0.185) 353deg,
+    rgba(237, 28, 36, 0.245) 356deg,
+    rgba(255, 48, 54, 0.46) 358.5deg,
+    rgba(255, 62, 68, 0.74) 359.5deg,
+    transparent 360deg
+  ) !important;
+
+  filter: drop-shadow(0 0 7px rgba(237, 28, 36, 0.08)) !important;
+
+  animation: stTrackRadarTriangleV6 4.55s linear infinite !important;
+
+  will-change: transform !important;
+}
+
+@keyframes stTrackRadarTriangleV6 {
+  from {
+    transform: rotate(0turn);
+  }
+
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/*
+ * Actual order lookup = faster scanner.
+ */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-sweep {
+  animation-duration: 1.6s !important;
+
+  filter: drop-shadow(0 0 10px rgba(237, 28, 36, 0.13)) !important;
+}
+
+/*
+ * FOUND state becomes calmer again.
+ */
+
+.st-track-z__radar-console.is-found .st-track-z__radar-sweep {
+  animation-duration: 6.2s !important;
+}
+
+/* =========================================================
+   RADAR DEPTH
+
+   Refine circles without affecting detection contacts.
+   ========================================================= */
+
+.st-track-z__radar {
+  isolation: isolate !important;
+}
+
+.st-track-z__radar-ring {
+  border-color: rgba(237, 28, 36, 0.15) !important;
+
+  box-shadow: inset 0 0 22px rgba(237, 28, 36, 0.012) !important;
+}
+
+.st-track-z__radar-ring.is-one {
+  border-color: rgba(237, 28, 36, 0.24) !important;
+}
+
+.st-track-z__radar-cross {
+  opacity: 0.42 !important;
+
+  background: rgba(255, 255, 255, 0.095) !important;
+}
+
+/* =========================================================
+   THREE HERO HARDWARE MODULES
+
+   SECURE CHANNEL
+   ORDER DATABASE
+   LEBANON NETWORK
+   ========================================================= */
+
+.st-track-z__hero-codes {
+  gap: 9px !important;
+}
+
+.st-track-z__hero-codes > span {
+  position: relative !important;
+
+  isolation: isolate !important;
+
+  min-height: 49px !important;
+
+  padding: 0 18px 0 42px !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      rgba(255, 255, 255, 0.006)
+    ),
+    rgba(8, 8, 8, 0.82) !important;
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.025),
+    inset 0 -1px rgba(0, 0, 0, 0.35),
+    0 9px 30px rgba(0, 0, 0, 0.08) !important;
+
+  color: rgba(255, 255, 255, 0.64) !important;
+
+  backdrop-filter: blur(8px) !important;
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.st-track-z__hero-codes > span:hover {
+  transform: translateY(-2px) !important;
+
+  border-color: rgba(255, 255, 255, 0.22) !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.052),
+      rgba(255, 255, 255, 0.01)
+    ),
+    rgba(10, 10, 10, 0.92) !important;
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.035),
+    0 13px 34px rgba(0, 0, 0, 0.14) !important;
+}
+
+/*
+ * Hardware status LED.
+ */
+
+.st-track-z__hero-codes > span::before {
+  left: 14px !important;
+
+  width: 5px !important;
+  height: 5px !important;
+
+  background: #73f58a !important;
+
+  box-shadow:
+    0 0 4px rgba(115, 245, 138, 0.95),
+    0 0 11px rgba(115, 245, 138, 0.27) !important;
+
+  animation: stHeroLedV6 2.8s ease-in-out infinite !important;
+}
+
+.st-track-z__hero-codes > span:nth-child(2)::before {
+  animation-delay: -0.8s !important;
+}
+
+.st-track-z__hero-codes > span:nth-child(3)::before {
+  animation-delay: -1.6s !important;
+}
+
+@keyframes stHeroLedV6 {
+  0%,
+  100% {
+    opacity: 0.48;
+  }
+
+  45% {
+    opacity: 1;
+  }
+
+  58% {
+    opacity: 0.72;
+  }
+}
+
+/*
+ * Fine horizontal diagnostic scan rather than a large glow.
+ */
+
+.st-track-z__hero-codes > span::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: 0 !important;
+
+  left: 0 !important;
+  right: 0 !important;
+
+  top: -2px !important;
+
+  height: 1px !important;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(115, 245, 138, 0.26),
+    transparent
+  ) !important;
+
+  opacity: 0 !important;
+
+  animation: stHardwareDiagnosticV6 6.4s ease-in-out infinite !important;
+}
+
+.st-track-z__hero-codes > span:nth-child(2)::after {
+  animation-delay: -2.1s !important;
+}
+
+.st-track-z__hero-codes > span:nth-child(3)::after {
+  animation-delay: -4.2s !important;
+}
+
+@keyframes stHardwareDiagnosticV6 {
+  0%,
+  62% {
+    top: -2px;
+
+    opacity: 0;
+  }
+
+  67% {
+    opacity: 0.7;
+  }
+
+  82% {
+    top: calc(100% + 2px);
+
+    opacity: 0.15;
+  }
+
+  100% {
+    top: calc(100% + 2px);
+
+    opacity: 0;
+  }
+}
+
+/*
+ * SECURE CHANNEL
+ * Smooth radio-link acquisition.
+ */
+
+.st-track-z__hero-codes .is-secure-channel svg {
+  animation: stSecureChannelV6 3.35s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+@keyframes stSecureChannelV6 {
+  0%,
+  100% {
+    opacity: 0.48;
+
+    filter: none;
+  }
+
+  28% {
+    opacity: 0.72;
+  }
+
+  44% {
+    opacity: 1;
+
+    filter: drop-shadow(0 0 4px rgba(237, 28, 36, 0.4));
+  }
+
+  58% {
+    opacity: 0.78;
+  }
+}
+
+/*
+ * DATABASE
+ * Tiny read/write hardware cadence.
+ */
+
+.st-track-z__hero-codes .is-order-database svg {
+  transform-origin: center !important;
+
+  animation: stDatabaseV6 3.9s ease-in-out infinite !important;
+}
+
+@keyframes stDatabaseV6 {
+  0%,
+  100% {
+    opacity: 0.5;
+
+    transform: translateY(0) scale(0.98);
+  }
+
+  31% {
+    opacity: 1;
+
+    transform: translateY(-1px) scale(1.03);
+
+    filter: drop-shadow(0 0 4px rgba(237, 28, 36, 0.35));
+  }
+
+  39% {
+    transform: translateY(1px) scale(0.99);
+  }
+
+  49% {
+    opacity: 0.68;
+
+    transform: translateY(0) scale(1);
+  }
+
+  71% {
+    opacity: 0.88;
+  }
+}
+
+/*
+ * LEBANON NETWORK
+ * Smooth live signal variation while online.
+ */
+
+.st-track-z__hero-codes .is-lebanon-network.is-online svg {
+  animation: stLebanonNetworkV6 4.2s steps(5, end) infinite !important;
+}
+
+@keyframes stLebanonNetworkV6 {
+  0% {
+    opacity: 0.36;
+
+    transform: scale(0.94);
+  }
+
+  18% {
+    opacity: 0.64;
+
+    transform: scale(0.98);
+  }
+
+  36% {
+    opacity: 1;
+
+    transform: scale(1.04);
+
+    filter: drop-shadow(0 0 4px rgba(237, 28, 36, 0.3));
+  }
+
+  55% {
+    opacity: 0.72;
+
+    transform: scale(1);
+  }
+
+  73% {
+    opacity: 0.92;
+
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 0.52;
+
+    transform: scale(0.97);
+  }
+}
+
+/*
+ * During the brief simulated connection drop,
+ * keep the treatment controlled — not aggressive.
+ */
+
+.st-track-z__hero-codes .is-lebanon-network.is-offline {
+  border-color: rgba(237, 28, 36, 0.2) !important;
+
+  color: rgba(255, 255, 255, 0.34) !important;
+}
+
+.st-track-z__hero-codes .is-lebanon-network.is-offline::before {
+  background: #ed1c24 !important;
+
+  box-shadow: 0 0 7px rgba(237, 28, 36, 0.32) !important;
+}
+
+.st-track-z__hero-codes .is-lebanon-network.is-offline svg {
+  opacity: 0.3 !important;
+
+  animation: stNetworkDropV6 520ms steps(2, end) infinite !important;
+}
+
+@keyframes stNetworkDropV6 {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(1px);
+  }
+}
+
+/* =========================================================
+   RADAR BOTTOM TELEMETRY STRIP
+   ========================================================= */
+
+.st-track-z__radar-readout {
+  border-top: 1px solid rgba(255, 255, 255, 0.075) !important;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.009),
+    rgba(0, 0, 0, 0.12)
+  ) !important;
+}
+
+.st-track-z__radar-readout > span {
+  position: relative !important;
+
+  min-height: 68px !important;
+
+  padding: 15px 16px 13px !important;
+
+  overflow: hidden !important;
+}
+
+.st-track-z__radar-readout > span + span {
+  border-left: 1px solid rgba(255, 255, 255, 0.075) !important;
+}
+
+.st-track-z__radar-readout small {
+  color: rgba(255, 255, 255, 0.28) !important;
+
+  font-size: 5px !important;
+
+  font-weight: 900 !important;
+
+  letter-spacing: 0.18em !important;
+}
+
+.st-track-z__radar-readout strong {
+  margin-top: 8px !important;
+
+  font-size: 8px !important;
+
+  font-weight: 950 !important;
+
+  letter-spacing: 0.12em !important;
+}
+
+/* =========================================================
+   MISSION ID — WAITING
+   ========================================================= */
+
+.st-track-z__mission-readout strong {
+  gap: 10px !important;
+}
+
+.st-track-z__waiting-dots {
+  gap: 3px !important;
+
+  transform: translateY(-1px);
+}
+
+.st-track-z__waiting-dots b {
+  width: 3px !important;
+
+  height: 3px !important;
+
+  background: rgba(255, 255, 255, 0.28) !important;
+
+  box-shadow: none !important;
+
+  animation: stMissionWaitingV6 1.55s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.st-track-z__waiting-dots b:nth-child(2) {
+  animation-delay: 170ms !important;
+}
+
+.st-track-z__waiting-dots b:nth-child(3) {
+  animation-delay: 340ms !important;
+}
+
+@keyframes stMissionWaitingV6 {
+  0%,
+  60%,
+  100% {
+    opacity: 0.16;
+
+    transform: scale(0.72);
+  }
+
+  31% {
+    opacity: 0.95;
+
+    transform: scale(1);
+
+    background: rgba(255, 255, 255, 0.72) !important;
+
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* =========================================================
+   NETWORK ONLINE
+   ========================================================= */
+
+.st-track-z__network-readout.is-online strong {
+  color: #73f58a !important;
+
+  text-shadow: 0 0 8px rgba(115, 245, 138, 0.13) !important;
+
+  animation: stNetworkReadoutV6 3.2s ease-in-out infinite !important;
+}
+
+@keyframes stNetworkReadoutV6 {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+
+  41% {
+    opacity: 1;
+  }
+
+  48% {
+    opacity: 0.82;
+  }
+
+  56% {
+    opacity: 0.96;
+  }
+}
+
+/*
+ * OFFLINE event remains short and believable.
+ */
+
+.st-track-z__network-readout.is-offline strong {
+  color: #ed1c24 !important;
+
+  text-shadow: 0 0 7px rgba(237, 28, 36, 0.16) !important;
+
+  animation: stNetworkOfflineV6 320ms steps(2, end) infinite !important;
+}
+
+@keyframes stNetworkOfflineV6 {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   CHANNEL 14 — CLEAN RADIO SIGNAL GRAPH
+   ========================================================= */
+
+.st-track-z__channel-readout strong {
+  gap: 10px !important;
+
+  align-items: center !important;
+}
+
+.st-track-z__channel-meter {
+  width: 19px !important;
+
+  height: 10px !important;
+
+  display: inline-flex !important;
+
+  align-items: flex-end !important;
+
+  gap: 2px !important;
+}
+
+.st-track-z__channel-meter b {
+  width: 2px !important;
+
+  border-radius: 1px 1px 0 0 !important;
+
+  background: #ed1c24 !important;
+
+  box-shadow: 0 0 4px rgba(237, 28, 36, 0.12) !important;
+
+  transform-origin: bottom !important;
+
+  animation: stChannelTelemetryV6 3.6s steps(6, end) infinite !important;
+}
+
+.st-track-z__channel-meter b:nth-child(1) {
+  height: 4px !important;
+
+  animation-delay: -0.35s !important;
+}
+
+.st-track-z__channel-meter b:nth-child(2) {
+  height: 7px !important;
+
+  animation-delay: -1.25s !important;
+}
+
+.st-track-z__channel-meter b:nth-child(3) {
+  height: 10px !important;
+
+  animation-delay: -2.1s !important;
+}
+
+@keyframes stChannelTelemetryV6 {
+  0% {
+    opacity: 0.18;
+
+    transform: scaleY(0.32);
+  }
+
+  17% {
+    opacity: 0.48;
+
+    transform: scaleY(0.58);
+  }
+
+  34% {
+    opacity: 0.94;
+
+    transform: scaleY(1);
+  }
+
+  52% {
+    opacity: 0.66;
+
+    transform: scaleY(0.73);
+  }
+
+  71% {
+    opacity: 1;
+
+    transform: scaleY(0.92);
+  }
+
+  86% {
+    opacity: 0.42;
+
+    transform: scaleY(0.52);
+  }
+
+  100% {
+    opacity: 0.22;
+
+    transform: scaleY(0.38);
+  }
+}
+
+/* =========================================================
+   REMOVE OVERLY VISIBLE V5 READOUT SCANS
+   Replace with much more restrained hardware activity.
+   ========================================================= */
+
+.st-track-z__radar-readout > span::after {
+  opacity: 0.38 !important;
+
+  width: 18% !important;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(115, 245, 138, 0.018),
+    transparent
+  ) !important;
+
+  animation-duration: 11s !important;
+}
+
+/* =========================================================
+   ACTIVE SCAN STATE
+   ========================================================= */
+
+.st-track-z__radar-console.is-scanning .st-track-z__radar-readout {
+  box-shadow: inset 0 1px rgba(237, 28, 36, 0.08) !important;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__network-readout strong {
+  animation-duration: 1.2s !important;
+}
+
+.st-track-z__radar-console.is-scanning .st-track-z__channel-meter b {
+  animation-duration: 1.6s !important;
+}
+
+/* =========================================================
+   MOBILE / TABLET
+   ========================================================= */
+
+@media (max-width: 720px) {
+  .st-track-z__hero-codes > span {
+    min-height: 45px !important;
+
+    padding-left: 38px !important;
+
+    padding-right: 13px !important;
+  }
+
+  .st-track-z__radar-readout > span {
+    min-height: 61px !important;
+
+    padding: 12px 11px !important;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-track-z__radar-sweep {
+    animation: none !important;
+
+    transform: rotate(38deg) !important;
+  }
+
+  .st-track-z__hero-codes > span::before,
+  .st-track-z__hero-codes > span::after,
+  .st-track-z__hero-codes svg,
+  .st-track-z__waiting-dots b,
+  .st-track-z__network-readout strong,
+  .st-track-z__channel-meter b,
+  .st-track-z__radar-readout > span::after {
+    animation: none !important;
+  }
+}
+
+/* STEREOPHONIE — TRACK RADAR V6 END */

@@ -12,6 +12,7 @@ import {
 
 import V2Footer from "@/components/stereophonie-v2/layout/v2-footer";
 import V2Header from "@/components/stereophonie-v2/layout/v2-header";
+import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 
 import StereophonieMiniGame from "@/components/stereophonie-v2/arcade/stereophonie-mini-game";
@@ -188,77 +189,13 @@ export default function V2Homepage({ products, categories }: V2HomepageProps) {
             </Link>
           </div>
 
-          <div className="st-v2-home-product-grid">
-            {products.slice(0, 8).map((product, index) => {
-              const image = productImage(product);
-              const price = productPrice(product);
-
-              return (
-                <article key={product.id} className="st-v2-home-product">
-                  <Link
-                    href={product.slug ? `/shop/${product.slug}` : "/shop"}
-                    className="st-v2-home-product__visual"
-                  >
-                    <span className="st-v2-home-product__index">
-                      SLOT {String(index + 1).padStart(2, "0")}
-                    </span>
-
-                    {image ? <img src={image} alt={product.name} /> : <Cpu />}
-                  </Link>
-
-                  <div className="st-v2-home-product__info">
-                    <div>
-                      <small>{product.categoryName}</small>
-                      <strong>{product.name}</strong>
-                    </div>
-
-                    <span>{price !== null ? `$${price.toFixed(2)}` : "—"}</span>
-                  </div>
-
-                  <Link
-                    href={product.slug ? `/shop/${product.slug}` : "/shop"}
-                    className="st-v2-home-product__action"
-                  >
-                    VIEW PRODUCT
-                    <ArrowRight />
-                  </Link>
-                </article>
-              );
-            })}
+          <div className="st-v2-home-product-grid st-v2-home-product-grid--canonical">
+            {products.slice(0, 8).map((product, index) => (
+              <V2ProductCard key={product.id} product={product} index={index} />
+            ))}
           </div>
         </div>
       </section>
-
-      <section className="st-v2-home-banner st-v2-grid">
-        <div className="st-v2-container st-v2-home-banner__inner">
-          <div>
-            <span>03 / STEREOPHONIE SERVICE</span>
-            <h2>
-              NEED HELP
-              <br />
-              CHOOSING?
-            </h2>
-          </div>
-
-          <div>
-            <p>
-              Tell us what you need. We can help compare devices,
-              specifications, compatibility and availability.
-            </p>
-
-            <a
-              href="https://wa.me/9613161285"
-              target="_blank"
-              rel="noreferrer"
-              className="st-v2-button st-v2-button--signal"
-            >
-              ASK STEREOPHONIE
-              <ArrowRight />
-            </a>
-          </div>
-        </div>
-      </section>
-
       <V2Footer />
     </main>
   );

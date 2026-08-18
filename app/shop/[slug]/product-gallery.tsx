@@ -21,135 +21,124 @@ export default function ProductGallery({
   productName,
   images,
 }: ProductGalleryProps) {
-  const orderedImages = useMemo(() => {
+  const ordered = useMemo(() => {
     const sorted = [...images].sort(
       (first, second) => first.position - second.position,
     );
 
-    const primaryIndex = sorted.findIndex((image) => image.is_primary);
+    const primary = sorted.findIndex((image) => image.is_primary);
 
-    if (primaryIndex <= 0) {
+    if (primary <= 0) {
       return sorted;
     }
 
-    return [
-      sorted[primaryIndex],
-      ...sorted.filter((_, index) => index !== primaryIndex),
-    ];
+    return [sorted[primary], ...sorted.filter((_, index) => index !== primary)];
   }, [images]);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [fullscreen, setFullscreen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const selectedImage = orderedImages[selectedIndex] ?? null;
-  const hasSeveralImages = orderedImages.length > 1;
+  const current = ordered[activeIndex] ?? null;
+  const several = ordered.length > 1;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (selectedIndex >= orderedImages.length) {
-      setSelectedIndex(0);
+    if (!fullscreen) {
+      return;
     }
-  }, [orderedImages.length, selectedIndex]);
 
-  useEffect(() => {
-    if (!lightboxOpen) return;
+    const oldOverflow = document.body.style.overflow;
 
-    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    function handleKeyboard(event: KeyboardEvent) {
-      if (event.key === "Escape") setLightboxOpen(false);
+    const keyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setFullscreen(false);
+      }
 
-      if (event.key === "ArrowLeft" && hasSeveralImages) {
-        setSelectedIndex(
-          (current) =>
-            (current - 1 + orderedImages.length) % orderedImages.length,
+      if (event.key === "ArrowLeft" && several) {
+        setActiveIndex(
+          (value) => (value - 1 + ordered.length) % ordered.length,
         );
       }
 
-      if (event.key === "ArrowRight" && hasSeveralImages) {
-        setSelectedIndex((current) => (current + 1) % orderedImages.length);
+      if (event.key === "ArrowRight" && several) {
+        setActiveIndex((value) => (value + 1) % ordered.length);
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyboard);
+    window.addEventListener("keydown", keyboard);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyboard);
+      document.body.style.overflow = oldOverflow;
+      window.removeEventListener("keydown", keyboard);
     };
-  }, [lightboxOpen, hasSeveralImages, orderedImages.length]);
+  }, [fullscreen, ordered.length, several]);
 
   function previous() {
-    if (!hasSeveralImages) return;
+    if (!several) {
+      return;
+    }
 
-    setSelectedIndex(
-      (current) => (current - 1 + orderedImages.length) % orderedImages.length,
-    );
+    setActiveIndex((value) => (value - 1 + ordered.length) % ordered.length);
   }
 
   function next() {
-    if (!hasSeveralImages) return;
+    if (!several) {
+      return;
+    }
 
-    setSelectedIndex((current) => (current + 1) % orderedImages.length);
+    setActiveIndex((value) => (value + 1) % ordered.length);
   }
 
-  if (orderedImages.length === 0) {
+  if (!ordered.length) {
     return (
-      <div className="stereo-product-gallery-empty">
+      <div className="st-pdp17-gallery-empty">
         <ImageOff />
-
-        <div>
-          <strong>Product photography unavailable</strong>
-          <span>Images will appear here when added by the store.</span>
-        </div>
+        <strong>IMAGE SIGNAL UNAVAILABLE</strong>
+        <span>Product photography has not been uploaded yet.</span>
       </div>
     );
   }
 
   const lightbox =
-    mounted && lightboxOpen && selectedImage
+    mounted && fullscreen && current
       ? createPortal(
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={`${productName} image viewer`}
-            className="stereo-gallery-lightbox"
-          >
-            <div className="stereo-gallery-lightbox__top">
+          <div className="st-pdp17-lightbox" role="dialog" aria-modal="true">
+            <header>
               <div>
-                <span>PRODUCT VIEWER</span>
-                <strong>{productName}</strong>
+                <i />
+                <span>IMAGE VIEWER / {productName}</span>
               </div>
 
               <button
                 type="button"
-                onClick={() => setLightboxOpen(false)}
-                aria-label="Close image viewer"
+                onClick={() => setFullscreen(false)}
+                aria-label="Close fullscreen image"
               >
                 <X />
               </button>
-            </div>
+            </header>
 
-            <div className="stereo-gallery-lightbox__stage">
-              {selectedImage.image_url ? (
+            <div className="st-pdp17-lightbox__stage">
+              {current.image_url ? (
                 <img
-                  src={selectedImage.image_url}
-                  alt={selectedImage.alt_text ?? productName}
+                  src={current.image_url}
+                  alt={current.alt_text ?? productName}
                 />
               ) : (
                 <ImageOff />
               )}
 
-              {hasSeveralImages ? (
+              {several ? (
                 <>
                   <button
                     type="button"
-                    className="stereo-gallery-lightbox__previous"
+                    className="is-prev"
                     onClick={previous}
                     aria-label="Previous image"
                   >
@@ -158,7 +147,7 @@ export default function ProductGallery({
 
                   <button
                     type="button"
-                    className="stereo-gallery-lightbox__next"
+                    className="is-next"
                     onClick={next}
                     aria-label="Next image"
                   >
@@ -168,11 +157,10 @@ export default function ProductGallery({
               ) : null}
             </div>
 
-            <div className="stereo-gallery-lightbox__counter">
-              IMAGE {String(selectedIndex + 1).padStart(2, "0")}
-              {" / "}
-              {String(orderedImages.length).padStart(2, "0")}
-            </div>
+            <footer>
+              VIEW {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {String(ordered.length).padStart(2, "0")}
+            </footer>
           </div>,
           document.body,
         )
@@ -180,41 +168,44 @@ export default function ProductGallery({
 
   return (
     <>
-      <div className="stereo-product-gallery">
-        <div className="stereo-product-gallery__stage">
-          <div className="stereo-product-gallery__grid" />
+      <div className="st-pdp17-gallery">
+        <div className="st-pdp17-gallery__stage">
+          <div className="st-pdp17-gallery__grid" />
 
-          {selectedImage?.image_url ? (
+          <span className="st-pdp17-gallery__label">PRODUCT VISUAL / LIVE</span>
+
+          {current?.image_url ? (
             <img
-              key={selectedImage.id}
-              src={selectedImage.image_url}
-              alt={selectedImage.alt_text ?? productName}
+              key={current.id}
+              src={current.image_url}
+              alt={current.alt_text ?? productName}
+              className="st-pdp17-gallery__image"
               loading="eager"
               fetchPriority="high"
-              className="stereo-product-gallery__main-image"
             />
           ) : (
-            <ImageOff className="stereo-product-gallery__missing" />
+            <ImageOff className="st-pdp17-gallery__missing" />
           )}
 
-          <div className="stereo-product-gallery__counter">
-            VIEW {String(selectedIndex + 1).padStart(2, "0")} /
-            {String(orderedImages.length).padStart(2, "0")}
-          </div>
+          <span className="st-pdp17-gallery__counter">
+            {String(activeIndex + 1).padStart(2, "0")} /{" "}
+            {String(ordered.length).padStart(2, "0")}
+          </span>
 
-          {selectedImage?.image_url ? (
+          {current?.image_url ? (
             <button
               type="button"
-              onClick={() => setLightboxOpen(true)}
-              className="stereo-product-gallery__expand"
+              onClick={() => setFullscreen(true)}
+              className="st-pdp17-gallery__fullscreen"
+              aria-label={`Expand ${productName} product image`}
             >
               <Expand />
-              Fullscreen
+              EXPAND
             </button>
           ) : null}
 
-          {hasSeveralImages ? (
-            <div className="stereo-product-gallery__arrows">
+          {several ? (
+            <div className="st-pdp17-gallery__nav">
               <button
                 type="button"
                 onClick={previous}
@@ -234,21 +225,20 @@ export default function ProductGallery({
           ) : null}
         </div>
 
-        {hasSeveralImages ? (
-          <div className="stereo-product-gallery__thumbnails">
-            {orderedImages.map((image, index) => (
+        {several ? (
+          <div className="st-pdp17-gallery__thumbs">
+            {ordered.map((image, index) => (
               <button
                 key={image.id}
                 type="button"
-                onClick={() => setSelectedIndex(index)}
-                aria-label={`Product image ${index + 1}`}
-                aria-pressed={selectedIndex === index}
-                className={selectedIndex === index ? "is-active" : undefined}
+                onClick={() => setActiveIndex(index)}
+                className={activeIndex === index ? "is-active" : ""}
+                aria-pressed={activeIndex === index}
               >
                 {image.image_url ? (
                   <img
                     src={image.image_url}
-                    alt={image.alt_text ?? `${productName} view ${index + 1}`}
+                    alt={image.alt_text ?? `${productName} ${index + 1}`}
                   />
                 ) : (
                   <ImageOff />

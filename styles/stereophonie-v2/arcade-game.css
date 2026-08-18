@@ -2545,3 +2545,37 @@
 .st-arcade-library__games::-webkit-scrollbar-thumb {
   background: rgba(140, 255, 152, 0.32);
 }
+
+/* STEREOPHONIE — REAL HARDWARE KEY FEEDBACK V2 START */
+
+/*
+ * Physical keyboard commands visually depress their matching
+ * arcade hardware control.
+ *
+ * This is feedback only. Position and component design remain intact.
+ */
+
+.st-arcade-action.is-keyboard-active,
+.st-arcade-system-buttons button.is-keyboard-active,
+.st-arcade-dpad button.is-keyboard-active {
+  transform: translateY(2px) scale(0.96) !important;
+  filter: brightness(1.16) !important;
+}
+
+.st-arcade-action--a.is-keyboard-active,
+.st-arcade-action--b.is-keyboard-active {
+  box-shadow:
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22),
+    0 0 0 2px rgba(237, 28, 36, 0.18),
+    0 5px 13px rgba(237, 28, 36, 0.2) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-arcade-action.is-keyboard-active,
+  .st-arcade-system-buttons button.is-keyboard-active,
+  .st-arcade-dpad button.is-keyboard-active {
+    transition: none !important;
+  }
+}
+
+/* STEREOPHONIE — REAL HARDWARE KEY FEEDBACK V2 END */

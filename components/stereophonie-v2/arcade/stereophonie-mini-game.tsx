@@ -1025,56 +1025,319 @@ export default function StereophonieMiniGame() {
     return () => window.clearInterval(timer);
   }, [selectedGame, running, paused, score, commitScore]);
 
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      const key = event.key.toLowerCase();
+  /*
+   * =========================================================
+   * STEREOPHONIE — REAL GAME BOY HARDWARE ENGINE V2
+   * =========================================================
+   *
+   * LIBRARY:
+   *   D-PAD / Arrow Keys -> Select program
+   *   A                  -> Launch selected program
+   *   START / Enter      -> Launch selected program
+   *
+   * ACTIVE GAME:
+   *   D-PAD / Arrow Keys -> Movement
+   *   A                  -> A action
+   *   B                  -> B / Back action
+   *   START / Enter      -> Start / Pause / game command
+   *   Escape             -> Return to program library
+   *
+   * Keyboard input is ignored inside forms/search/inputs.
+   */
 
-      const mapping: Partial<Record<string, Direction>> = {
+  useEffect(() => {
+    function isTypingTarget(target: EventTarget | null) {
+      if (!(target instanceof HTMLElement)) {
+        return false;
+      }
+
+      return Boolean(
+        target.closest(
+          'input, textarea, select, [contenteditable="true"], [role="textbox"]',
+        ),
+      );
+    }
+
+    function arcadeIsVisible(root: HTMLElement) {
+      const rect = root.getBoundingClientRect();
+
+      return (
+        rect.width > 0 &&
+        rect.height > 0 &&
+        rect.bottom > 0 &&
+        rect.right > 0 &&
+        rect.top < window.innerHeight &&
+        rect.left < window.innerWidth
+      );
+    }
+
+    function pulseControl(selector: string) {
+      const root = document.querySelector<HTMLElement>(".st-arcade-console");
+
+      const control = root?.querySelector<HTMLElement>(selector) ?? null;
+
+      if (!control) {
+        return;
+      }
+
+      control.classList.remove("is-keyboard-active");
+
+      void control.offsetWidth;
+
+      control.classList.add("is-keyboard-active");
+
+      window.setTimeout(() => {
+        control.classList.remove("is-keyboard-active");
+      }, 150);
+    }
+
+    function pulseStartControl() {
+      const root = document.querySelector<HTMLElement>(".st-arcade-console");
+
+      if (!root) {
+        return;
+      }
+
+      const buttons = Array.from(
+        root.querySelectorAll<HTMLButtonElement>(
+          ".st-arcade-system-buttons button",
+        ),
+      );
+
+      const startButton = buttons.find((button) =>
+        button.textContent?.toLowerCase().includes("start"),
+      );
+
+      if (!startButton) {
+        return;
+      }
+
+      startButton.classList.remove("is-keyboard-active");
+
+      void startButton.offsetWidth;
+
+      startButton.classList.add("is-keyboard-active");
+
+      window.setTimeout(() => {
+        startButton.classList.remove("is-keyboard-active");
+      }, 150);
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (
+        event.repeat ||
+        event.defaultPrevented ||
+        isTypingTarget(event.target)
+      ) {
+        return;
+      }
+
+      const root = document.querySelector<HTMLElement>(".st-arcade-console");
+
+      if (!root || !arcadeIsVisible(root)) {
+        return;
+      }
+
+      if (!poweredOn || powerBooting || poweringOff) {
+        return;
+      }
+
+      const rawKey = event.key.toLowerCase();
+
+      /*
+       * Real keyboard → physical console mapping
+       *
+       * ARROWS / WASD = D-PAD
+       * A / SPACE     = A button
+       * B             = B button
+       * ENTER         = START
+       * ESCAPE        = return to library
+       */
+      const directionMap: Partial<Record<string, Direction>> = {
         arrowup: "up",
         w: "up",
+
         arrowdown: "down",
         s: "down",
+
         arrowleft: "left",
         a: "left",
+
         arrowright: "right",
         d: "right",
       };
 
-      const directionToUse = mapping[key];
+      /*
+       * -------------------------------------------------------
+       * PROGRAM LIBRARY
+       * -------------------------------------------------------
+       *
+       * In the library, A must remain an arcade ACTION button,
+       * so WASD navigation deliberately uses W/S here and not
+       * the letter A as "left".
+       */
+      if (!selectedGame) {
+        const forward =
+          rawKey === "arrowdown" ||
+          rawKey === "arrowright" ||
+          rawKey === "s" ||
+          rawKey === "d";
 
-      if (directionToUse) {
-        event.preventDefault();
-        move(directionToUse);
-        return;
-      }
+        const backward =
+          rawKey === "arrowup" || rawKey === "arrowleft" || rawKey === "w";
 
-      if (key === " " || key === "z") {
-        event.preventDefault();
-        pressA();
-        return;
-      }
+        if (forward || backward) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
 
-      if (key === "x" || key === "escape") {
-        event.preventDefault();
+          const direction = forward ? 1 : -1;
 
-        if (key === "escape" && selectedGame) {
-          returnToLibrary();
-        } else {
-          pressB();
+          const nextIndex =
+            (menuIndex + direction + games.length) % games.length;
+
+          setMenuIndex(nextIndex);
+
+          window.requestAnimationFrame(() => {
+            const buttons = root.querySelectorAll<HTMLButtonElement>(
+              ".st-arcade-library__games button",
+            );
+
+            buttons[nextIndex]?.focus({
+              preventScroll: true,
+            });
+
+            buttons[nextIndex]?.scrollIntoView({
+              block: "nearest",
+              behavior: "smooth",
+            });
+          });
+
+          return;
+        }
+
+        /*
+         * Physical A / keyboard A / SPACE
+         * selects the highlighted cartridge.
+         */
+        if (rawKey === "a" || rawKey === " ") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+
+          pulseControl(".st-arcade-action--a");
+          chooseGame(menuIndex);
+
+          return;
+        }
+
+        /*
+         * START launches the highlighted cartridge as well.
+         */
+        if (rawKey === "enter") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+
+          pulseStartControl();
+          chooseGame(menuIndex);
+
+          return;
         }
 
         return;
       }
 
-      if (key === "enter") {
+      /*
+       * -------------------------------------------------------
+       * ACTIVE PROGRAM
+       * -------------------------------------------------------
+       */
+
+      /*
+       * IMPORTANT:
+       * Letter A is reserved for the physical A action button.
+       * Therefore active-game WASD uses W/S/D plus arrow keys;
+       * LEFT remains ArrowLeft so A never becomes ambiguous.
+       */
+      const activeDirectionMap: Partial<Record<string, Direction>> = {
+        arrowup: "up",
+        w: "up",
+
+        arrowdown: "down",
+        s: "down",
+
+        arrowleft: "left",
+
+        arrowright: "right",
+        d: "right",
+      };
+
+      const directionToUse = activeDirectionMap[rawKey];
+
+      if (directionToUse) {
         event.preventDefault();
+        event.stopImmediatePropagation();
+
+        move(directionToUse);
+        return;
+      }
+
+      /*
+       * A ACTION
+       *
+       * Both A and Space activate the exact same pressA()
+       * function used by the physical red A button.
+       */
+      if (rawKey === "a" || rawKey === " ") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        pulseControl(".st-arcade-action--a");
+        pressA();
+
+        return;
+      }
+
+      /*
+       * B ACTION
+       */
+      if (rawKey === "b") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        pulseControl(".st-arcade-action--b");
+        pressB();
+
+        return;
+      }
+
+      /*
+       * START
+       */
+      if (rawKey === "enter") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        pulseStartControl();
         pressStart();
+
+        return;
+      }
+
+      /*
+       * Universal return-to-library command.
+       */
+      if (rawKey === "escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        returnToLibrary();
       }
     }
 
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, true);
 
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true);
+    };
   });
 
   const snakeKeys = useMemo(() => new Set(snake.map(pointKey)), [snake]);
@@ -1551,7 +1814,7 @@ export default function StereophonieMiniGame() {
             HIGH SCORES SAVED LOCALLY
           </span>
 
-          <span>KEYBOARD / ARROWS / WASD / SPACE / ENTER</span>
+          <span>KEYBOARD / D-PAD / A / B / SPACE / ENTER</span>
 
           <button type="button" onClick={() => resetGame()}>
             <RotateCcw />

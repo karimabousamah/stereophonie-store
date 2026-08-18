@@ -8,13 +8,13 @@ import {
   Gamepad2,
   Heart,
   ImageOff,
-  PackageCheck,
   X,
+  Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { useWishlist } from "@/components/wishlist/wishlist-provider";
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
+import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 type Props = {
   product: StoreProductCardProduct;
@@ -24,16 +24,16 @@ type Props = {
 function orderedImages(product: StoreProductCardProduct) {
   return [...product.images]
     .filter((image) => Boolean(image.image_url))
-    .sort((a, b) => {
-      if (a.is_primary !== b.is_primary) {
-        return a.is_primary ? -1 : 1;
+    .sort((first, second) => {
+      if (first.is_primary !== second.is_primary) {
+        return first.is_primary ? -1 : 1;
       }
 
-      return a.position - b.position;
+      return first.position - second.position;
     });
 }
 
-function productPrice(product: StoreProductCardProduct) {
+function getPrice(product: StoreProductCardProduct) {
   const prices = product.variants
     .map((variant) => {
       const regular = Number(variant.regular_price ?? 0);
@@ -66,12 +66,12 @@ function productPrice(product: StoreProductCardProduct) {
         sale: boolean;
       } => Boolean(item),
     )
-    .sort((a, b) => a.current - b.current);
+    .sort((first, second) => first.current - second.current);
 
   return prices[0] ?? null;
 }
 
-function productAvailability(product: StoreProductCardProduct) {
+function isAvailable(product: StoreProductCardProduct) {
   return product.variants.some(
     (variant) =>
       Number(variant.stock_quantity ?? 0) > 0 &&
@@ -84,16 +84,42 @@ function shortReference(id: string) {
   return id.replace(/-/g, "").slice(0, 8).toUpperCase();
 }
 
+function systemBadge(product: StoreProductCardProduct) {
+  if (product.is_new_arrival) {
+    return {
+      code: "01",
+      title: "NEW DROP",
+    };
+  }
+
+  if (product.is_trending) {
+    return {
+      code: "02",
+      title: "HOT ITEM",
+    };
+  }
+
+  if (product.is_featured) {
+    return {
+      code: "03",
+      title: "FEATURED",
+    };
+  }
+
+  return null;
+}
+
 export default function V2ProductCard({ product, index }: Props) {
   const images = useMemo(() => orderedImages(product), [product]);
   const primaryImage = images[0] ?? null;
-
-  const price = useMemo(() => productPrice(product), [product]);
-  const available = useMemo(() => productAvailability(product), [product]);
-
-  const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const secondaryImage = images[1] ?? null;
+  const price = useMemo(() => getPrice(product), [product]);
+  const available = useMemo(() => isAvailable(product), [product]);
+  const badge = systemBadge(product);
 
   const href = product.slug ? `/shop/${product.slug}` : "/shop";
+
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   const { hydrated, isWishlisted, toggleProduct } = useWishlist();
 
@@ -104,121 +130,137 @@ export default function V2ProductCard({ product, index }: Props) {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
+    const oldOverflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
 
-    function onKeyDown(event: KeyboardEvent) {
+    const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setQuickViewOpen(false);
       }
-    }
+    };
 
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", escape);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = oldOverflow;
+      window.removeEventListener("keydown", escape);
     };
   }, [quickViewOpen]);
 
   return (
     <>
-      <article className="st-card-v14">
-        <header className="st-card-v14__system">
-          <div>
-            <span className="st-card-v14__led" />
+      <article
+        className={`st-card17 ${
+          secondaryImage?.image_url ? "has-secondary-image" : ""
+        }`}
+      >
+        <div className="st-card17__topbar">
+          <span>
+            <i />
             SLOT {String(index + 1).padStart(2, "0")}
-          </div>
-
-          <span className={available ? "is-online" : "is-offline"}>
-            {available ? "READY" : "OFFLINE"}
           </span>
-        </header>
 
-        <div className="st-card-v14__screen">
-          <div className="st-card-v14__pixel-grid" />
+          <strong className={available ? "is-ready" : "is-offline"}>
+            {available ? "READY" : "OFFLINE"}
+          </strong>
+        </div>
 
-          <span className="st-card-v14__screen-label">VISUAL / LIVE</span>
+        <div className="st-card17__media">
+          <div className="st-card17__grid" />
+
+          <span className="st-card17__visual-label">PRODUCT VISUAL</span>
 
           <Link
             href={href}
-            className="st-card-v14__image-link"
-            aria-label={`Open ${product.name}`}
+            className="st-card17__image-link"
+            aria-label={`View ${product.name}`}
           >
             {primaryImage?.image_url ? (
-              <img
-                src={primaryImage.image_url}
-                alt={primaryImage.alt_text ?? product.name}
-                className="st-card-v14__image"
-                loading="lazy"
-                decoding="async"
-              />
+              <>
+                <img
+                  src={primaryImage.image_url}
+                  alt={primaryImage.alt_text ?? product.name}
+                  className="st-card17__image st-card17__image--primary"
+                  loading="lazy"
+                  decoding="async"
+                />
+
+                {secondaryImage?.image_url ? (
+                  <img
+                    src={secondaryImage.image_url}
+                    alt=""
+                    aria-hidden="true"
+                    className="st-card17__image st-card17__image--secondary"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : null}
+              </>
             ) : (
-              <div className="st-card-v14__empty">
+              <div className="st-card17__empty">
                 <ImageOff />
-                <span>NO SIGNAL</span>
+                <span>NO VISUAL SIGNAL</span>
               </div>
             )}
           </Link>
 
-          <div className="st-card-v14__badge">
-            <Gamepad2 />
+          {badge ? (
+            <div className="st-card17__badge">
+              <span className="st-card17__badge-icon">
+                <Gamepad2 />
+              </span>
 
-            <span>
-              <small>SYSTEM FLAG</small>
-              <strong>
-                {product.is_new_arrival
-                  ? "NEW DROP"
-                  : product.is_trending
-                    ? "HOT SLOT"
-                    : product.is_featured
-                      ? "STAFF PICK"
-                      : "LIVE"}
-              </strong>
-            </span>
-          </div>
+              <span>
+                <small>SYSTEM FLAG / {badge.code}</small>
+                <strong>{badge.title}</strong>
+              </span>
+            </div>
+          ) : null}
 
           <button
             type="button"
+            className={`st-card17__wishlist ${wishlisted ? "is-active" : ""}`}
             disabled={!hydrated}
+            onClick={() => toggleProduct(product)}
+            aria-pressed={wishlisted}
             aria-label={
               wishlisted
                 ? `Remove ${product.name} from wishlist`
-                : `Add ${product.name} to wishlist`
+                : `Save ${product.name} to wishlist`
             }
-            aria-pressed={wishlisted}
-            onClick={() => toggleProduct(product)}
-            className={`st-card-v14__wishlist ${wishlisted ? "is-active" : ""}`}
           >
             <Heart className={wishlisted ? "fill-current" : ""} />
+
             <span>{wishlisted ? "SAVED" : "SAVE"}</span>
           </button>
 
           <button
             type="button"
-            className="st-card-v14__quick"
+            className="st-card17__quick"
             onClick={() => setQuickViewOpen(true)}
           >
             <Eye />
             <span>QUICK VIEW</span>
+            <small>PRESS A</small>
           </button>
         </div>
 
-        <div className="st-card-v14__body">
-          <div className="st-card-v14__metadata">
+        <div className="st-card17__content">
+          <div className="st-card17__meta">
             <span>{product.categoryName || "TECHNOLOGY"}</span>
 
             <span>
               {product.variants.length}{" "}
-              {product.variants.length === 1 ? "CONFIG" : "CONFIGS"}
+              {product.variants.length === 1 ? "OPTION" : "OPTIONS"}
             </span>
           </div>
 
-          <Link href={href} className="st-card-v14__name">
+          <Link href={href} className="st-card17__name">
             {product.name}
           </Link>
 
-          <div className="st-card-v14__price-line">
+          <div className="st-card17__price">
             <div>
               {price ? (
                 <>
@@ -231,38 +273,34 @@ export default function V2ProductCard({ product, index }: Props) {
               )}
             </div>
 
-            <small>REF/{shortReference(product.id)}</small>
+            <small>REF / {shortReference(product.id)}</small>
           </div>
+
+          <Link href={href} className="st-card17__open">
+            <span>VIEW PRODUCT</span>
+            <ArrowRight />
+          </Link>
         </div>
-
-        <Link href={href} className="st-card-v14__open">
-          <span>
-            <small>PLAYER ACTION</small>
-            OPEN PRODUCT
-          </span>
-
-          <ArrowRight />
-        </Link>
       </article>
 
       {quickViewOpen ? (
         <div
-          className="st-qv-v14"
+          className="st-qv17"
           role="dialog"
           aria-modal="true"
           aria-label={`Quick view ${product.name}`}
         >
           <button
             type="button"
-            className="st-qv-v14__backdrop"
-            aria-label="Close quick view"
+            className="st-qv17__backdrop"
             onClick={() => setQuickViewOpen(false)}
+            aria-label="Close quick view"
           />
 
-          <section className="st-qv-v14__console">
-            <header className="st-qv-v14__topbar">
+          <section className="st-qv17__window">
+            <header className="st-qv17__header">
               <div>
-                <span className="st-qv-v14__online-dot" />
+                <i />
 
                 <span>
                   STEREOPHONIE OS
@@ -270,26 +308,18 @@ export default function V2ProductCard({ product, index }: Props) {
                 </span>
               </div>
 
-              <div>
-                <small>ESC / CLOSE</small>
-
-                <button
-                  type="button"
-                  aria-label="Close quick view"
-                  onClick={() => setQuickViewOpen(false)}
-                >
-                  <X />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setQuickViewOpen(false)}
+                aria-label="Close quick view"
+              >
+                <X />
+              </button>
             </header>
 
-            <div className="st-qv-v14__layout">
-              <div className="st-qv-v14__visual">
-                <div className="st-qv-v14__grid" />
-
-                <span className="st-qv-v14__visual-label">
-                  PRODUCT VISUAL / SLOT {String(index + 1).padStart(2, "0")}
-                </span>
+            <div className="st-qv17__layout">
+              <div className="st-qv17__visual">
+                <div className="st-qv17__grid" />
 
                 {primaryImage?.image_url ? (
                   <img
@@ -297,32 +327,22 @@ export default function V2ProductCard({ product, index }: Props) {
                     alt={primaryImage.alt_text ?? product.name}
                   />
                 ) : (
-                  <div className="st-qv-v14__empty">
-                    <ImageOff />
-                    NO VISUAL DATA
-                  </div>
+                  <ImageOff />
                 )}
-
-                <div className="st-qv-v14__scanline" />
               </div>
 
-              <div className="st-qv-v14__data">
-                <div className="st-qv-v14__status">
-                  <span className={available ? "is-online" : "is-offline"}>
-                    <i />
-                    {available ? "SYSTEM READY" : "SYSTEM OFFLINE"}
-                  </span>
+              <div className="st-qv17__info">
+                <div className="st-qv17__online">
+                  <i />
 
-                  <small>REF/{shortReference(product.id)}</small>
+                  {available ? "AVAILABLE NOW" : "CURRENTLY OFFLINE"}
                 </div>
 
-                <span className="st-qv-v14__category">
-                  {product.categoryName || "TECHNOLOGY"}
-                </span>
+                <p>{product.categoryName || "TECHNOLOGY"}</p>
 
                 <h2>{product.name}</h2>
 
-                <div className="st-qv-v14__price">
+                <div className="st-qv17__price">
                   {price ? (
                     <>
                       <strong>${price.current.toFixed(2)}</strong>
@@ -336,34 +356,25 @@ export default function V2ProductCard({ product, index }: Props) {
                   )}
                 </div>
 
-                <div className="st-qv-v14__stats">
+                <div className="st-qv17__stats">
                   <div>
                     <small>CONFIGURATIONS</small>
                     <strong>{product.variants.length}</strong>
                   </div>
 
                   <div>
-                    <small>INVENTORY</small>
-                    <strong>{available ? "AVAILABLE" : "OFFLINE"}</strong>
+                    <small>STATUS</small>
+                    <strong>{available ? "READY" : "OFFLINE"}</strong>
                   </div>
                 </div>
 
                 {product.description ? (
-                  <p>{product.description}</p>
-                ) : (
-                  <p>
-                    Open the complete product page for technical information,
-                    configurations and ordering options.
-                  </p>
-                )}
+                  <p className="st-qv17__description">{product.description}</p>
+                ) : null}
 
-                <div className="st-qv-v14__actions">
+                <div className="st-qv17__actions">
                   <Link href={href}>
-                    <span>
-                      <small>CONTINUE</small>
-                      VIEW FULL PRODUCT
-                    </span>
-
+                    VIEW FULL PRODUCT
                     <ArrowRight />
                   </Link>
 
@@ -375,13 +386,13 @@ export default function V2ProductCard({ product, index }: Props) {
                   >
                     {wishlisted ? <Check /> : <Heart />}
 
-                    {wishlisted ? "SAVED TO WISHLIST" : "ADD TO WISHLIST"}
+                    {wishlisted ? "SAVED" : "SAVE PRODUCT"}
                   </button>
                 </div>
 
                 <footer>
-                  <PackageCheck />
-                  LIVE PRODUCT DATABASE / SYNCHRONIZED
+                  <Zap />
+                  LIVE CATALOG / REF {shortReference(product.id)}
                 </footer>
               </div>
             </div>

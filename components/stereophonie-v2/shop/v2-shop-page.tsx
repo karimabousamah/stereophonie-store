@@ -171,36 +171,6 @@ export default function V2ShopPage({
         </div>
       </section>
 
-      <section className="st-v2-shop-support">
-        <div className="st-v2-container st-v2-shop-support__inner">
-          <div className="st-v2-shop-support__icon">
-            <Box />
-          </div>
-
-          <div>
-            <span>PRODUCT SUPPORT / HUMAN ASSISTANCE</span>
-
-            <h2>
-              NOT SURE WHICH
-              <br />
-              MODEL TO BUY?
-            </h2>
-          </div>
-
-          <div>
-            <p>
-              Contact Stereophonie and tell us what you need. We can help
-              compare specifications, compatibility, availability and pricing.
-            </p>
-
-            <a href="https://wa.me/9613161285" target="_blank" rel="noreferrer">
-              TALK TO THE STORE
-              <ArrowRight />
-            </a>
-          </div>
-        </div>
-      </section>
-
       <V2Footer />
     </main>
   );

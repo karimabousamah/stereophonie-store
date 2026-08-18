@@ -188,6 +188,7 @@ export default function TrackOrderPage() {
     "idle" | "scanning" | "found" | "error"
   >("idle");
   const [isPending, startTransition] = useTransition();
+  const [telemetryOnline, setTelemetryOnline] = useState(true);
 
   const resultRef = useRef<HTMLDivElement | null>(null);
 
@@ -197,6 +198,39 @@ export default function TrackOrderPage() {
   );
 
   const normalizedOrderNumber = orderNumber.trim().toUpperCase();
+
+  useEffect(() => {
+    let offlineTimer: number | undefined;
+    let reconnectTimer: number | undefined;
+    let cycleTimer: number | undefined;
+
+    function scheduleTelemetryCycle() {
+      cycleTimer = window.setTimeout(() => {
+        setTelemetryOnline(false);
+
+        reconnectTimer = window.setTimeout(() => {
+          setTelemetryOnline(true);
+          scheduleTelemetryCycle();
+        }, 1150);
+      }, 11800);
+    }
+
+    scheduleTelemetryCycle();
+
+    return () => {
+      if (cycleTimer) {
+        window.clearTimeout(cycleTimer);
+      }
+
+      if (offlineTimer) {
+        window.clearTimeout(offlineTimer);
+      }
+
+      if (reconnectTimer) {
+        window.clearTimeout(reconnectTimer);
+      }
+    };
+  }, []);
 
   function submitTracking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -332,17 +366,24 @@ export default function TrackOrderPage() {
               </p>
 
               <div className="st-track-z__hero-codes">
-                <span>
+                <span className="is-secure-channel">
                   <Wifi />
                   SECURE CHANNEL
                 </span>
 
-                <span>
+                <span className="is-order-database">
                   <Database />
                   ORDER DATABASE
                 </span>
 
-                <span>
+                <span
+                  className={[
+                    "is-lebanon-network",
+                    telemetryOnline ? "is-online" : "is-offline",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
                   <MapPin />
                   LEBANON NETWORK
                 </span>
@@ -385,6 +426,15 @@ export default function TrackOrderPage() {
 
                 <div className="st-track-z__radar-sweep" />
 
+                <div className="st-track-z__radar-contacts" aria-hidden="true">
+                  <i className="st-track-z__radar-contact is-contact-1" />
+                  <i className="st-track-z__radar-contact is-contact-2" />
+                  <i className="st-track-z__radar-contact is-contact-3" />
+                  <i className="st-track-z__radar-contact is-contact-4" />
+                  <i className="st-track-z__radar-contact is-contact-5" />
+                  <i className="st-track-z__radar-contact is-contact-6" />
+                </div>
+
                 <div className="st-track-z__radar-core">
                   {isScanning ? (
                     <ScanLine />
@@ -399,19 +449,53 @@ export default function TrackOrderPage() {
               </div>
 
               <div className="st-track-z__radar-readout">
-                <span>
+                <span
+                  className={
+                    normalizedOrderNumber
+                      ? "st-track-z__mission-readout has-mission"
+                      : "st-track-z__mission-readout is-waiting"
+                  }
+                >
                   <small>MISSION ID</small>
-                  <strong>{normalizedOrderNumber || "WAITING"}</strong>
+                  <strong>
+                    {normalizedOrderNumber || (
+                      <>
+                        WAITING
+                        <i
+                          className="st-track-z__waiting-dots"
+                          aria-hidden="true"
+                        >
+                          <b />
+                          <b />
+                          <b />
+                        </i>
+                      </>
+                    )}
+                  </strong>
                 </span>
 
-                <span>
+                <span
+                  className={[
+                    "st-track-z__network-readout",
+                    telemetryOnline ? "is-online" : "is-offline",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
                   <small>NETWORK</small>
-                  <strong>ONLINE</strong>
+                  <strong>{telemetryOnline ? "ONLINE" : "OFFLINE"}</strong>
                 </span>
 
-                <span>
+                <span className="st-track-z__channel-readout">
                   <small>CHANNEL</small>
-                  <strong>14</strong>
+                  <strong>
+                    14
+                    <i className="st-track-z__channel-meter" aria-hidden="true">
+                      <b />
+                      <b />
+                      <b />
+                    </i>
+                  </strong>
                 </span>
               </div>
             </div>

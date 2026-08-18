@@ -1,3334 +1,2732 @@
 /* =========================================================
-   STEREOPHONIE V2 / PRODUCT DETAIL
-   Hardware + arcade inspired commerce interface
+   STEREOPHONIE — PRODUCT EXPERIENCE V17
+   ZERO-BASE PDP / ARCADE COMMERCE SYSTEM
    ========================================================= */
 
-.st-v2-product {
+.st-pdp17 {
+  --pdp-red: #ed1c24;
+  --pdp-black: #0a0a0a;
+  --pdp-paper: #f5f5f1;
+  --pdp-line: rgba(0, 0, 0, 0.11);
+  --pdp-muted: rgba(0, 0, 0, 0.5);
   min-height: 100vh;
-  background: #f2f2ef;
-  color: var(--st-black);
-}
-
-/* =========================================================
-   PRODUCT HERO
-   ========================================================= */
-
-.st-v2-product-shell {
-  position: relative;
-  border-bottom: 1px solid var(--st-border);
   background:
     radial-gradient(
-      circle at 85% 12%,
-      rgba(237, 28, 36, 0.075),
-      transparent 25%
+      circle at 74% 12%,
+      rgba(237, 28, 36, 0.07),
+      transparent 27%
     ),
-    #f2f2ef;
+    #f5f5f1;
+  color: #090909;
 }
 
-.st-v2-product-shell::before {
-  position: absolute;
-  inset: 0;
-
-  pointer-events: none;
-
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
-
-  background-size: 32px 32px;
-
-  content: "";
-}
-
-.st-v2-product-shell > * {
-  position: relative;
-}
-
-.st-v2-product-topbar {
-  min-height: 50px;
-
+.st-pdp17__breadcrumb {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 18px 32px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-
-  border-bottom: 1px solid var(--st-border);
-
-  color: rgba(0, 0, 0, 0.4);
-
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
+  gap: 10px;
+  border-bottom: 1px solid var(--pdp-line);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.st-v2-product-topbar a {
+.st-pdp17__breadcrumb a {
+  color: rgba(0, 0, 0, 0.42);
+  transition: color 160ms ease;
+}
+
+.st-pdp17__breadcrumb a:hover {
+  color: var(--pdp-red);
+}
+
+.st-pdp17__breadcrumb span {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.st-pdp17__breadcrumb strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-pdp17__hero {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 34px 32px 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.72fr);
+  gap: clamp(32px, 4vw, 64px);
+  align-items: start;
+}
+
+.st-pdp17__gallery-column {
+  min-width: 0;
+}
+
+.st-pdp17__panel {
+  min-width: 0;
+  position: sticky;
+  top: 28px;
+}
+
+.st-pdp17__signal {
+  min-height: 42px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--pdp-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.st-pdp17__signal > span {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
-  color: inherit;
-
-  transition: color var(--st-fast) ease;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
 }
 
-.st-v2-product-topbar a:hover {
-  color: var(--st-red);
+.st-pdp17__signal > span i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10c75b;
+  box-shadow: 0 0 12px rgba(16, 199, 91, 0.55);
 }
 
-.st-v2-product-layout {
+.st-pdp17__signal > span.is-offline i {
+  background: var(--pdp-red);
+  box-shadow: 0 0 12px rgba(237, 28, 36, 0.4);
+}
+
+.st-pdp17__signal small {
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.st-pdp17__identity {
+  padding: 27px 0 23px;
+  border-bottom: 1px solid var(--pdp-line);
+}
+
+.st-pdp17__identity > p {
+  margin: 0;
+  color: var(--pdp-red);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.st-pdp17__identity h1 {
+  margin: 13px 0 0;
+  max-width: 680px;
+  font-size: clamp(36px, 4.3vw, 68px);
+  font-weight: 850;
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+}
+
+.st-pdp17__price {
+  margin-top: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.st-pdp17__price strong {
+  font-size: 30px;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.st-pdp17__price del {
+  color: rgba(0, 0, 0, 0.33);
+  font-size: 15px;
+}
+
+.st-pdp17__summary {
+  margin: 0;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--pdp-line);
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.st-pdp17__facts {
   display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(400px, 0.88fr);
-  gap: clamp(34px, 5vw, 88px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid var(--pdp-line);
+}
 
-  align-items: start;
+.st-pdp17__facts > div {
+  min-width: 0;
+  padding: 15px 12px 15px 0;
+}
 
-  padding-block: 38px 72px;
+.st-pdp17__facts > div + div {
+  padding-left: 14px;
+  border-left: 1px solid var(--pdp-line);
+}
+
+.st-pdp17__facts small,
+.st-pdp17__facts strong {
+  display: block;
+}
+
+.st-pdp17__facts small {
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.st-pdp17__facts strong {
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 /* =========================================================
    PRODUCT GALLERY
    ========================================================= */
 
-.st-v2-product .stereo-product-gallery {
-  min-width: 0;
+.st-pdp17-gallery {
+  width: 100%;
 }
 
-.st-v2-product .stereo-product-gallery__stage {
+.st-pdp17-gallery__stage {
   position: relative;
-
-  min-height: clamp(480px, 60vw, 820px);
-
+  height: clamp(460px, 53vw, 650px);
+  max-height: 650px;
+  overflow: hidden;
+  border: 1px solid var(--pdp-line);
+  background:
+    radial-gradient(
+      circle at 72% 70%,
+      rgba(237, 28, 36, 0.08),
+      transparent 30%
+    ),
+    #fbfbf8;
   display: grid;
   place-items: center;
-
-  overflow: hidden;
-
-  border: 1px solid var(--st-border);
-
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.92),
-    rgba(235, 235, 231, 0.92)
-  );
 }
 
-.st-v2-product .stereo-product-gallery__grid {
+.st-pdp17-gallery__grid,
+.st-qv17__grid {
   position: absolute;
   inset: 0;
-
   pointer-events: none;
-
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.028) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.028) 1px, transparent 1px);
-
-  background-size: 28px 28px;
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 34px 34px;
 }
 
-.st-v2-product .stereo-product-gallery__stage::after {
+.st-pdp17-gallery__label {
   position: absolute;
-  inset: 0;
-
-  pointer-events: none;
-
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.013) 0,
-    rgba(0, 0, 0, 0.013) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-
-  content: "";
+  z-index: 3;
+  top: 18px;
+  left: 18px;
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
 }
 
-.st-v2-product .stereo-product-gallery__main-image {
+.st-pdp17-gallery__image {
   position: relative;
   z-index: 2;
-
-  width: 100%;
-  height: 100%;
-
-  max-height: 800px;
-
+  width: min(78%, 680px);
+  height: 78%;
   object-fit: contain;
-
-  padding: clamp(20px, 4vw, 54px);
-
-  transition:
-    transform 500ms var(--st-ease),
-    opacity 250ms ease;
+  filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.08));
 }
 
-.st-v2-product
-  .stereo-product-gallery__stage:hover
-  .stereo-product-gallery__main-image {
-  transform: scale(1.018);
+.st-pdp17-gallery__counter {
+  position: absolute;
+  z-index: 4;
+  left: 18px;
+  bottom: 18px;
+  min-width: 62px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.13);
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
 }
 
-.st-v2-product .stereo-product-gallery__counter {
+.st-pdp17-gallery__fullscreen {
   position: absolute;
   z-index: 4;
   top: 18px;
-  left: 18px;
-
-  border: 1px solid rgba(0, 0, 0, 0.12);
-
-  padding: 8px 10px;
-
-  background: rgba(255, 255, 255, 0.78);
-
-  backdrop-filter: blur(10px);
-
+  right: 18px;
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid #111;
+  background: #111;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-size: 8px;
   font-weight: 900;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--pdp-red);
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
 
-.st-v2-product .stereo-product-gallery__expand {
+.st-pdp17-gallery__fullscreen:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--pdp-red);
+}
+
+.st-pdp17-gallery__fullscreen svg {
+  width: 14px;
+  height: 14px;
+}
+
+.st-pdp17-gallery__nav {
   position: absolute;
   z-index: 4;
   right: 18px;
   bottom: 18px;
-
-  min-height: 42px;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-
-  border: 1px solid var(--st-black);
-
-  padding: 0 15px;
-
-  background: var(--st-black);
-  color: white;
-
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-
-  transition:
-    background var(--st-fast) ease,
-    border-color var(--st-fast) ease;
-}
-
-.st-v2-product .stereo-product-gallery__expand:hover {
-  border-color: var(--st-red);
-  background: var(--st-red);
-}
-
-.st-v2-product .stereo-product-gallery__expand svg {
-  width: 14px;
-}
-
-.st-v2-product .stereo-product-gallery__arrows {
-  position: absolute;
-  z-index: 4;
-  left: 18px;
-  bottom: 18px;
-
   display: flex;
 }
 
-.st-v2-product .stereo-product-gallery__arrows button {
+.st-pdp17-gallery__nav button {
   width: 42px;
   height: 42px;
-
+  border: 1px solid #111;
+  background: white;
   display: grid;
   place-items: center;
-
-  border: 1px solid var(--st-black);
-  border-right: 0;
-
-  background: white;
-  color: var(--st-black);
-
-  transition: 160ms ease;
+  cursor: pointer;
 }
 
-.st-v2-product .stereo-product-gallery__arrows button:last-child {
-  border-right: 1px solid var(--st-black);
+.st-pdp17-gallery__nav button + button {
+  border-left: 0;
 }
 
-.st-v2-product .stereo-product-gallery__arrows button:hover {
-  background: var(--st-black);
+.st-pdp17-gallery__nav button:hover {
+  background: #111;
   color: white;
 }
 
-.st-v2-product .stereo-product-gallery__arrows svg {
-  width: 17px;
+.st-pdp17-gallery__nav svg {
+  width: 15px;
 }
 
-.st-v2-product .stereo-product-gallery__thumbnails {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 7px;
-
-  margin-top: 8px;
+.st-pdp17-gallery__thumbs {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 3px;
 }
 
-.st-v2-product .stereo-product-gallery__thumbnails button {
+.st-pdp17-gallery__thumbs button {
   position: relative;
-
-  aspect-ratio: 1 / 1;
-
-  overflow: hidden;
-
-  border: 1px solid var(--st-border);
-
+  flex: 0 0 88px;
+  width: 88px;
+  height: 88px;
+  border: 1px solid var(--pdp-line);
   background: white;
-
-  transition:
-    border-color 160ms ease,
-    transform 160ms ease;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
 }
 
-.st-v2-product .stereo-product-gallery__thumbnails button:hover {
-  border-color: var(--st-black);
+.st-pdp17-gallery__thumbs button.is-active {
+  border-color: var(--pdp-red);
+  box-shadow: inset 0 -3px 0 var(--pdp-red);
 }
 
-.st-v2-product .stereo-product-gallery__thumbnails button.is-active {
-  border: 2px solid var(--st-red);
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails img {
-  width: 100%;
-  height: 100%;
+.st-pdp17-gallery__thumbs img {
+  width: 74%;
+  height: 74%;
   object-fit: contain;
-  padding: 5px;
 }
 
-.st-v2-product .stereo-product-gallery__thumbnails span {
+.st-pdp17-gallery__thumbs span {
   position: absolute;
   right: 5px;
-  bottom: 5px;
-
-  padding: 3px 4px;
-
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
-
-  font-size: 6px;
+  bottom: 4px;
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 7px;
   font-weight: 900;
+}
+
+.st-pdp17-gallery-empty {
+  min-height: 470px;
+  border: 1px solid var(--pdp-line);
+  background: white;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.st-pdp17-gallery-empty svg {
+  width: 35px;
+  height: 35px;
+  opacity: 0.2;
+}
+
+.st-pdp17-gallery-empty strong {
+  margin-top: 17px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+}
+
+.st-pdp17-gallery-empty span {
+  margin-top: 8px;
+  color: var(--pdp-muted);
+  font-size: 11px;
 }
 
 /* =========================================================
-   PRODUCT INFORMATION PANEL
+   LIGHTBOX
    ========================================================= */
 
-.st-v2-product-info {
-  position: sticky;
-  top: 20px;
-
-  min-width: 0;
+.st-pdp17-lightbox {
+  position: fixed;
+  z-index: 2147483600;
+  inset: 0;
+  background: #080808;
+  color: white;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
-.st-v2-product-info__machine {
-  overflow: hidden;
-
-  border: 1px solid var(--st-border);
-
-  background: white;
-
-  box-shadow: var(--st-shadow-panel);
+.st-pdp17-lightbox > header,
+.st-pdp17-lightbox > footer {
+  min-height: 62px;
+  padding: 0 24px;
+  border-color: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
 }
 
-.st-v2-product-info__signal {
-  min-height: 34px;
+.st-pdp17-lightbox > header {
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
 
+.st-pdp17-lightbox > header div {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+.st-pdp17-lightbox > header i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #37f47c;
+  box-shadow: 0 0 12px rgba(55, 244, 124, 0.55);
+}
+
+.st-pdp17-lightbox > header button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.st-pdp17-lightbox > header svg {
+  width: 17px;
+}
+
+.st-pdp17-lightbox__stage {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.st-pdp17-lightbox__stage img {
+  width: 84vw;
+  height: 76vh;
+  object-fit: contain;
+}
+
+.st-pdp17-lightbox__stage > button {
+  position: absolute;
+  top: 50%;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.st-pdp17-lightbox__stage > button.is-prev {
+  left: 24px;
+}
+
+.st-pdp17-lightbox__stage > button.is-next {
+  right: 24px;
+}
+
+.st-pdp17-lightbox > footer {
+  justify-content: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+/* =========================================================
+   PURCHASE CONSOLE
+   ========================================================= */
+
+.st-buy17 {
+  margin-top: 22px;
+  border: 1px solid #111;
+  background: #111;
+  color: white;
+  box-shadow: 5px 5px 0 rgba(237, 28, 36, 0.85);
+}
+
+.st-buy17__header {
+  min-height: 43px;
+  padding: 0 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-
-  padding: 0 16px;
-
-  background: var(--st-black);
-  color: rgba(255, 255, 255, 0.52);
-
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 900;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.17em;
 }
 
-.st-v2-product-info__signal > div {
+.st-buy17__header > div {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.st-v2-product-info__signal-led {
-  width: 6px;
-  height: 6px;
+.st-buy17__header small {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 7px;
+}
 
+.st-buy17__led {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-
-  background: var(--st-signal-green);
-
-  box-shadow: 0 0 10px rgba(140, 255, 152, 0.6);
+  background: #3ff27f;
+  box-shadow: 0 0 12px rgba(63, 242, 127, 0.65);
 }
 
-.st-v2-product-info__header {
-  padding: clamp(24px, 3vw, 40px);
-
-  border-bottom: 1px solid var(--st-border);
+.st-buy17__body {
+  padding: 17px;
 }
 
-.st-v2-product-info__category {
-  color: var(--st-red);
+.st-buy17__section {
+  padding-bottom: 17px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+}
 
+.st-buy17__section-title {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.st-buy17__section-title > span {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  background: var(--pdp-red);
+  display: grid;
+  place-items: center;
   font-size: 8px;
   font-weight: 900;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
 }
 
-.st-v2-product-info__title {
-  margin: 16px 0 0;
-
-  font-size: clamp(38px, 4vw, 67px);
-  font-weight: 900;
-  line-height: 0.9;
-  letter-spacing: -0.06em;
-
-  text-wrap: balance;
+.st-buy17__section-title strong,
+.st-buy17__section-title small {
+  display: block;
 }
 
-.st-v2-product-info__description {
-  max-width: 590px;
-
-  margin-top: 20px;
-
-  color: rgba(0, 0, 0, 0.5);
-
-  font-size: 13px;
-  line-height: 1.75;
+.st-buy17__section-title strong {
+  font-size: 9px;
+  letter-spacing: 0.14em;
 }
 
-.st-v2-product-info__badges {
+.st-buy17__section-title small {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.st-buy17__variants {
+  margin-top: 14px;
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-
-  margin-top: 22px;
 }
 
-.st-v2-product-info__badge {
-  min-height: 30px;
-
-  display: inline-flex;
+.st-buy17__variants button {
+  position: relative;
+  min-width: 68px;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  background: #171717;
+  color: white;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
 
-  border: 1px solid var(--st-border);
+.st-buy17__variants button:hover {
+  border-color: white;
+}
 
-  padding: 0 10px;
+.st-buy17__variants button.is-active {
+  border-color: var(--pdp-red);
+  background: var(--pdp-red);
+}
 
-  background: #f6f6f3;
+.st-buy17__variants button.is-unavailable:not(.is-active) {
+  opacity: 0.42;
+}
 
+.st-buy17__variants svg {
+  width: 13px;
+}
+
+.st-buy17__selection {
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.st-buy17__selection small,
+.st-buy17__selection strong,
+.st-buy17__selection span {
+  display: block;
+}
+
+.st-buy17__selection small {
+  color: rgba(255, 255, 255, 0.35);
   font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.st-v2-product-info__badge--signal {
-  border-color: rgba(237, 28, 36, 0.25);
-  background: rgba(237, 28, 36, 0.055);
-  color: var(--st-red);
-}
-
-.st-v2-product-info__purchase {
-  padding: 0 clamp(24px, 3vw, 40px) clamp(24px, 3vw, 40px);
-}
-
-/* =========================================================
-   EXISTING PURCHASE CONTROLS → V2
-   ========================================================= */
-
-.st-v2-product #stock-notification-controls {
-  border-bottom: 0;
-  padding-block: 28px 0;
-}
-
-.st-v2-product #stock-notification-controls > div:first-child p:first-child {
-  font-size: 8px;
   font-weight: 900;
   letter-spacing: 0.16em;
 }
 
-/* Configuration buttons */
+.st-buy17__selection > div:first-child > strong {
+  margin-top: 6px;
+  font-size: 13px;
+}
 
-.st-v2-product #stock-notification-controls button[aria-pressed] {
-  min-height: 52px;
+.st-buy17__selection > div:first-child > span {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
 
-  border-radius: 0;
+.st-buy17__selected-price {
+  text-align: right;
+}
 
+.st-buy17__selected-price strong {
+  font-size: 24px;
+  letter-spacing: -0.04em;
+}
+
+.st-buy17__selected-price del {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 10px;
+}
+
+.st-buy17__specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.st-buy17__specs > div {
+  padding: 12px 0;
+}
+
+.st-buy17__specs > div:nth-child(even) {
+  padding-left: 13px;
+  border-left: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.st-buy17__specs small,
+.st-buy17__specs strong {
+  display: block;
+}
+
+.st-buy17__specs small {
+  color: rgba(255, 255, 255, 0.33);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-buy17__specs strong {
+  margin-top: 5px;
   font-size: 11px;
+}
+
+.st-buy17__status {
+  margin-top: 14px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.st-buy17__status > i {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+}
+
+.st-buy17__status strong,
+.st-buy17__status span {
+  display: block;
+}
+
+.st-buy17__status strong {
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.st-buy17__status span {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 9px;
+}
+
+.st-buy17__status.is-ready > i {
+  background: #37ef78;
+  box-shadow: 0 0 10px rgba(55, 239, 120, 0.55);
+}
+
+.st-buy17__status.is-low > i,
+.st-buy17__status.is-waiting > i {
+  background: #ffb323;
+}
+
+.st-buy17__status.is-offline > i {
+  background: var(--pdp-red);
+}
+
+.st-buy17__quantity {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.st-buy17__quantity small {
+  display: block;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.st-buy17__quantity > span {
+  padding-bottom: 7px;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.st-buy17__stepper {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns: 42px 48px 42px;
+  min-height: 42px;
+}
+
+.st-buy17__stepper button,
+.st-buy17__stepper strong {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #181818;
+  color: white;
+  display: grid;
+  place-items: center;
+}
+
+.st-buy17__stepper button {
+  cursor: pointer;
+}
+
+.st-buy17__stepper button:hover:not(:disabled) {
+  background: white;
+  color: #111;
+}
+
+.st-buy17__stepper button:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.st-buy17__stepper button + strong,
+.st-buy17__stepper strong + button {
+  border-left: 0;
+}
+
+.st-buy17__stepper svg {
+  width: 13px;
+}
+
+.st-buy17__message {
+  margin-top: 12px;
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.st-buy17__message svg {
+  width: 14px;
+}
+
+.st-buy17__message.is-success {
+  background: rgba(55, 239, 120, 0.11);
+  color: #72f49d;
+}
+
+.st-buy17__message.is-error {
+  background: rgba(237, 28, 36, 0.13);
+  color: #ff767a;
+}
+
+.st-buy17__actions {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
+  gap: 8px;
+}
+
+.st-buy17__actions > button {
+  min-height: 52px;
+  padding: 0 14px;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.st-buy17__actions > button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.st-buy17__actions > button span small,
+.st-buy17__actions > button span {
+  display: block;
+}
+
+.st-buy17__actions > button span {
+  text-align: left;
+}
+
+.st-buy17__actions > button span small {
+  margin-bottom: 2px;
+  opacity: 0.6;
+  font-size: 6px;
+  letter-spacing: 0.15em;
+}
+
+.st-buy17__cart {
+  background: var(--pdp-red);
+  color: white;
+  box-shadow: 3px 3px 0 white;
+}
+
+.st-buy17__cart:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 white;
+}
+
+.st-buy17__buy {
+  border: 1px solid white !important;
+  background: white;
+  color: #111;
+}
+
+.st-buy17__buy:hover {
+  background: #ecece7;
+}
+
+.st-buy17__wishlist {
+  grid-column: 1 / -1;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: transparent;
+  color: white;
+}
+
+.st-buy17__wishlist:hover,
+.st-buy17__wishlist.is-active {
+  border-color: var(--pdp-red) !important;
+  color: #ff555a;
+}
+
+.st-buy17__notify {
+  grid-column: 1 / -1;
+  border: 1px solid var(--pdp-red) !important;
+  background: var(--pdp-red);
+  color: white;
+}
+
+.st-buy17__disabled {
+  grid-column: 1 / -1;
+  background: #222;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: not-allowed !important;
+}
+
+.is-spin {
+  animation: st-pdp17-spin 0.8s linear infinite;
+}
+
+@keyframes st-pdp17-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   PURCHASE MODAL
+   ========================================================= */
+
+.st-buy17-modal {
+  position: fixed;
+  z-index: 2147483500;
+  inset: 0;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.72);
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(7px);
+}
+
+.st-buy17-modal__window {
+  width: min(100%, 470px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #0d0d0d;
+  color: white;
+  box-shadow: 7px 7px 0 var(--pdp-red);
+}
+
+.st-buy17-modal__window > header {
+  min-height: 48px;
+  padding: 0 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.st-buy17-modal__window > header div {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.st-buy17-modal__window > header i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #37ef78;
+}
+
+.st-buy17-modal__window > header button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.st-buy17-modal__window > header svg {
+  width: 15px;
+}
+
+.st-buy17-modal__body {
+  padding: 27px;
+}
+
+.st-buy17-modal__body > svg {
+  width: 25px;
+  height: 25px;
+  color: var(--pdp-red);
+}
+
+.st-buy17-modal__body > small {
+  display: block;
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.st-buy17-modal__body h2 {
+  margin: 7px 0 0;
+  font-size: 29px;
+  letter-spacing: -0.04em;
+}
+
+.st-buy17-modal__body p {
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.st-buy17-modal__body input {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 20px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #151515;
+  color: white;
+  outline: 0;
+}
+
+.st-buy17-modal__body input:focus {
+  border-color: var(--pdp-red);
+}
+
+.st-buy17-modal__body > button {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 10px;
+  border: 0;
+  background: var(--pdp-red);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+
+.st-buy17-modal__error {
+  display: block;
+  margin-top: 8px;
+  color: #ff6e72;
+  font-size: 10px;
+}
+
+/* =========================================================
+   PRODUCT INFO DECK
+   ========================================================= */
+
+.st-pdp17-info {
+  border-top: 1px solid var(--pdp-line);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px), #fff;
+  background-size: 38px 38px;
+}
+
+.st-pdp17-info__header {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 64px 32px 35px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+}
+
+.st-pdp17-info__header > div:first-child > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--pdp-red);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.st-pdp17-info__header > div:first-child > span svg {
+  width: 14px;
+}
+
+.st-pdp17-info__header h2 {
+  margin: 13px 0 0;
+  font-size: clamp(38px, 5vw, 70px);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+
+.st-pdp17-info__header p {
+  max-width: 520px;
+  margin: 17px 0 0;
+  color: var(--pdp-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.st-pdp17-info__easter {
+  min-width: 230px;
+  padding: 15px;
+  border: 1px solid var(--pdp-line);
+  background: #111;
+  color: white;
+}
+
+.st-pdp17-info__easter small,
+.st-pdp17-info__easter strong {
+  display: block;
+}
+
+.st-pdp17-info__easter small {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+}
+
+.st-pdp17-info__easter strong {
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+
+.st-pdp17-info__grid {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 32px 70px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.st-pdp17-info__grid > article {
+  position: relative;
+  min-height: 300px;
+  padding: 23px;
+  background: #fbfbf8;
+}
+
+.st-pdp17-info__number {
+  position: absolute;
+  top: 17px;
+  right: 18px;
+  color: rgba(0, 0, 0, 0.18);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.st-pdp17-info__icon {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #111;
+  display: grid;
+  place-items: center;
+  box-shadow: 3px 3px 0 var(--pdp-red);
+}
+
+.st-pdp17-info__icon svg {
+  width: 16px;
+}
+
+.st-pdp17-info__grid article > small {
+  display: block;
+  margin-top: 28px;
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+}
+
+.st-pdp17-info__grid h3 {
+  margin: 7px 0 0;
+  font-size: 20px;
+  letter-spacing: -0.035em;
+}
+
+.st-pdp17-info__grid article > p {
+  margin: 13px 0 0;
+  color: var(--pdp-muted);
+  font-size: 11px;
+  line-height: 1.72;
+}
+
+.st-pdp17-info__grid article > a {
+  margin-top: 19px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #111;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  border-bottom: 1px solid #111;
+  padding-bottom: 3px;
+}
+
+.st-pdp17-info__grid article > a:hover {
+  color: var(--pdp-red);
+  border-color: var(--pdp-red);
+}
+
+.st-pdp17-info__grid article > a svg {
+  width: 12px;
+}
+
+.st-pdp17-info__mini-data {
+  margin-top: 18px;
+  border-top: 1px solid var(--pdp-line);
+}
+
+.st-pdp17-info__mini-data span {
+  padding: 9px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--pdp-line);
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.st-pdp17-info__mini-data strong {
+  color: #111;
+  text-align: right;
+}
+
+.st-pdp17-info__grid dl {
+  margin: 15px 0 0;
+}
+
+.st-pdp17-info__grid dl > div {
+  padding: 7px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--pdp-line);
+}
+
+.st-pdp17-info__grid dt {
+  color: rgba(0, 0, 0, 0.37);
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.st-pdp17-info__grid dd {
+  margin: 0;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.st-pdp17-info__verified {
+  margin-top: 18px;
+  padding: 10px;
+  background: #111;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+}
+
+.st-pdp17-info__verified svg {
+  width: 13px;
+  color: #3ff27f;
+}
+
+/* =========================================================
+   RELATED PRODUCTS
+   ========================================================= */
+
+.st-pdp17-related {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 64px 32px 80px;
+}
+
+.st-pdp17-related > header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--pdp-line);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.st-pdp17-related > header span {
+  color: rgba(0, 0, 0, 0.38);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.st-pdp17-related > header h2 {
+  margin: 8px 0 0;
+  font-size: 32px;
+  letter-spacing: -0.045em;
+}
+
+.st-pdp17-related > header > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.st-pdp17-related > header > a svg {
+  width: 13px;
+}
+
+.st-pdp17-related__grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .st-pdp17__hero {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.72fr);
+    gap: 28px;
+  }
+
+  .st-pdp17-info__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .st-pdp17-related__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .st-pdp17__hero {
+    grid-template-columns: 1fr;
+  }
+
+  .st-pdp17__panel {
+    position: static;
+  }
+
+  .st-pdp17-gallery__stage {
+    height: min(72vw, 570px);
+    min-height: 430px;
+  }
+
+  .st-pdp17-info__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .st-pdp17-info__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .st-pdp17__breadcrumb {
+    padding: 14px 16px;
+  }
+
+  .st-pdp17__hero {
+    padding: 18px 16px 46px;
+  }
+
+  .st-pdp17-gallery__stage {
+    min-height: 390px;
+    height: 112vw;
+    max-height: 500px;
+  }
+
+  .st-pdp17-gallery__image {
+    width: 88%;
+    height: 76%;
+  }
+
+  .st-pdp17-gallery__fullscreen {
+    top: 12px;
+    right: 12px;
+  }
+
+  .st-pdp17-gallery__label {
+    top: 14px;
+    left: 14px;
+  }
+
+  .st-pdp17-gallery__counter {
+    left: 12px;
+    bottom: 12px;
+  }
+
+  .st-pdp17__identity h1 {
+    font-size: 41px;
+  }
+
+  .st-pdp17__facts {
+    grid-template-columns: 1fr;
+  }
+
+  .st-pdp17__facts > div {
+    padding: 12px 0;
+  }
+
+  .st-pdp17__facts > div + div {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--pdp-line);
+  }
+
+  .st-buy17__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .st-buy17__wishlist {
+    grid-column: auto;
+  }
+
+  .st-pdp17-info__header {
+    padding: 48px 16px 28px;
+  }
+
+  .st-pdp17-info__easter {
+    width: 100%;
+  }
+
+  .st-pdp17-info__grid {
+    padding: 0 16px 55px;
+    grid-template-columns: 1fr;
+  }
+
+  .st-pdp17-info__grid > article {
+    min-height: 0;
+  }
+
+  .st-pdp17-related {
+    padding: 48px 16px 65px;
+  }
+
+  .st-pdp17-related__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-pdp17 *,
+  .st-pdp17 *::before,
+  .st-pdp17 *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================
+   END PRODUCT EXPERIENCE V17
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — V17.1 PRECISION START
+   PDP PROFESSIONAL POLISH
+   ========================================================= */
+
+/*
+ * Give the right column slightly more breathing room.
+ */
+
+.st-pdp17__hero {
+  grid-template-columns:
+    minmax(0, 1.04fr)
+    minmax(430px, 0.76fr) !important;
+
+  gap: clamp(38px, 4.3vw, 70px) !important;
+}
+
+/*
+ * Identity header.
+ */
+
+.st-pdp17__identity {
+  padding-top: 30px !important;
+  padding-bottom: 26px !important;
+}
+
+.st-pdp17__identity > p {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  color: #ed1c24 !important;
+
+  font-size: 9px !important;
+  font-weight: 950 !important;
+
+  letter-spacing: 0.19em !important;
+}
+
+.st-pdp17__identity > p::before {
+  content: "";
+
+  width: 18px;
+  height: 2px;
+
+  background: #ed1c24;
+}
+
+.st-pdp17__identity h1 {
+  margin-top: 14px !important;
+
+  font-weight: 950 !important;
+
+  letter-spacing: -0.06em !important;
+}
+
+/*
+ * BRAND / CATEGORY / COLLECTION:
+ * turn the plain three-column line into three system modules.
+ */
+
+.st-pdp17__facts {
+  margin-top: 0 !important;
+
+  padding: 13px 0 !important;
+
+  display: grid !important;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+
+  gap: 8px !important;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.11) !important;
+
+  background: transparent !important;
+}
+
+.st-pdp17__facts > div {
+  position: relative !important;
+
+  min-height: 66px !important;
+
+  padding: 13px 12px 12px 17px !important;
+
+  border: 1px solid rgba(0, 0, 0, 0.11) !important;
+
+  background: rgba(255, 255, 255, 0.66) !important;
+
+  overflow: hidden !important;
+}
+
+.st-pdp17__facts > div + div {
+  padding-left: 17px !important;
+
+  border-left: 1px solid rgba(0, 0, 0, 0.11) !important;
+}
+
+.st-pdp17__facts > div::before {
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 3px;
+
+  background: #ed1c24;
+}
+
+.st-pdp17__facts > div:nth-child(1)::before {
+  content: "";
+}
+
+.st-pdp17__facts > div:nth-child(2)::before {
+  content: "";
+  opacity: 0.72;
+}
+
+.st-pdp17__facts > div:nth-child(3)::before {
+  content: "";
+  opacity: 0.42;
+}
+
+.st-pdp17__facts > div::after {
+  position: absolute;
+
+  top: 10px;
+  right: 9px;
+
+  color: rgba(0, 0, 0, 0.17);
+
+  font-size: 6px;
+  font-weight: 950;
+
+  letter-spacing: 0.12em;
+}
+
+.st-pdp17__facts > div:nth-child(1)::after {
+  content: "01";
+}
+
+.st-pdp17__facts > div:nth-child(2)::after {
+  content: "02";
+}
+
+.st-pdp17__facts > div:nth-child(3)::after {
+  content: "03";
+}
+
+.st-pdp17__facts small {
+  font-size: 6px !important;
+  font-weight: 950 !important;
+
+  letter-spacing: 0.19em !important;
+}
+
+.st-pdp17__facts strong {
+  margin-top: 9px !important;
+
+  padding-right: 10px !important;
+
+  font-size: 11px !important;
+  font-weight: 950 !important;
+
+  letter-spacing: -0.015em !important;
+}
+
+/*
+ * ORDER CONSOLE:
+ * already strong in V17.
+ * Polish it instead of replacing it.
+ */
+
+.st-buy17 {
+  margin-top: 17px !important;
+
+  border: 1px solid #171717 !important;
+
+  box-shadow:
+    5px 5px 0 #ed1c24,
+    0 24px 55px rgba(0, 0, 0, 0.07) !important;
+}
+
+.st-buy17__header {
+  min-height: 46px !important;
+
+  background:
+    linear-gradient(90deg, rgba(237, 28, 36, 0.07), transparent 33%), #0c0c0c !important;
+}
+
+.st-buy17__body {
+  padding: 18px !important;
+}
+
+.st-buy17__selection {
+  padding-top: 17px !important;
+  padding-bottom: 17px !important;
+}
+
+.st-buy17__selected-price strong {
+  font-size: 25px !important;
+  font-weight: 950 !important;
+}
+
+.st-buy17__specs {
+  margin-top: 2px !important;
+
+  background: rgba(255, 255, 255, 0.018) !important;
+}
+
+.st-buy17__status {
+  min-height: 57px !important;
+
+  background: rgba(255, 255, 255, 0.015) !important;
+}
+
+.st-buy17__cart,
+.st-buy17__buy {
+  min-height: 55px !important;
+}
+
+.st-buy17__cart {
+  box-shadow: 3px 3px 0 #ffffff !important;
+}
+
+.st-buy17__wishlist {
+  min-height: 48px !important;
+}
+
+/*
+ * Product information / Player Guide typography.
+ *
+ * More aggressive, heavier, tighter — matching the
+ * visual voice used by Stereophonie rather than the
+ * lightweight editorial look visible in the screenshot.
+ */
+
+.st-pdp17-info__header {
+  padding-top: 70px !important;
+  padding-bottom: 38px !important;
+
+  align-items: flex-start !important;
+}
+
+.st-pdp17-info__header > div:first-child {
+  max-width: 850px !important;
+}
+
+.st-pdp17-info__header h2 {
+  margin-top: 14px !important;
+
+  max-width: 900px !important;
+
+  font-size: clamp(46px, 6vw, 88px) !important;
+
+  font-weight: 950 !important;
+
+  line-height: 0.82 !important;
+
+  letter-spacing: -0.075em !important;
+
+  text-transform: uppercase !important;
+}
+
+.st-pdp17-info__header p {
+  max-width: 590px !important;
+
+  margin-top: 23px !important;
+
+  font-size: 12px !important;
+
+  line-height: 1.75 !important;
+}
+
+/*
+ * Player Guide cards become more like actual
+ * Stereophonie system modules.
+ */
+
+.st-pdp17-info__grid {
+  gap: 2px !important;
+
+  background: rgba(0, 0, 0, 0.09) !important;
+}
+
+.st-pdp17-info__grid > article {
+  min-height: 320px !important;
+
+  padding: 25px 22px 24px !important;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(249, 249, 246, 0.98)
+  ) !important;
+
+  transition:
+    transform 170ms ease,
+    box-shadow 170ms ease,
+    background 170ms ease !important;
+}
+
+@media (hover: hover) {
+  .st-pdp17-info__grid > article:hover {
+    z-index: 2;
+
+    transform: translateY(-4px) !important;
+
+    background: #fff !important;
+
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.065) !important;
+  }
+}
+
+.st-pdp17-info__icon {
+  width: 43px !important;
+  height: 43px !important;
+
+  background: #fff !important;
+
+  box-shadow: 3px 3px 0 #ed1c24 !important;
+}
+
+.st-pdp17-info__grid article > small {
+  margin-top: 30px !important;
+
+  color: rgba(0, 0, 0, 0.38) !important;
+
+  font-size: 6px !important;
+  font-weight: 950 !important;
+
+  letter-spacing: 0.19em !important;
+}
+
+.st-pdp17-info__grid h3 {
+  margin-top: 8px !important;
+
+  font-size: 22px !important;
+  font-weight: 950 !important;
+
+  line-height: 0.95 !important;
+
+  letter-spacing: -0.045em !important;
+}
+
+.st-pdp17-info__grid article > p {
+  margin-top: 16px !important;
+
+  font-size: 11px !important;
+
+  line-height: 1.78 !important;
+}
+
+.st-pdp17-info__number {
+  top: 18px !important;
+  right: 18px !important;
+
+  font-size: 7px !important;
+  font-weight: 950 !important;
+
+  color: rgba(0, 0, 0, 0.16) !important;
+}
+
+/*
+ * Overview and tech-data mini rows.
+ */
+
+.st-pdp17-info__mini-data {
+  margin-top: 21px !important;
+}
+
+.st-pdp17-info__mini-data span,
+.st-pdp17-info__grid dl > div {
+  min-height: 32px !important;
+
+  align-items: center !important;
+}
+
+.st-pdp17-info__mini-data strong,
+.st-pdp17-info__grid dd {
+  font-weight: 950 !important;
+}
+
+/*
+ * Buttons / links get stronger hierarchy.
+ */
+
+.st-pdp17-info__grid article > a {
+  margin-top: 22px !important;
+
+  font-size: 7px !important;
+  font-weight: 950 !important;
+
+  letter-spacing: 0.14em !important;
+}
+
+.st-pdp17-info__verified {
+  min-height: 43px !important;
+
+  margin-top: 22px !important;
+
+  padding-inline: 12px !important;
+
+  box-shadow: inset 3px 0 0 #ed1c24 !important;
+}
+
+/*
+ * The fake Player Tip was removed from JSX.
+ * Keep old class inert in case stale chunks briefly exist.
+ */
+
+.st-pdp17-info__easter {
+  display: none !important;
+}
+
+/*
+ * Responsive PDP.
+ */
+
+@media (max-width: 1180px) {
+  .st-pdp17__hero {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(380px, 0.74fr) !important;
+  }
+
+  .st-pdp17-info__header h2 {
+    font-size: clamp(44px, 6vw, 76px) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .st-pdp17__hero {
+    grid-template-columns: 1fr !important;
+  }
+
+  .st-pdp17__panel {
+    position: static !important;
+  }
+
+  .st-pdp17-info__header h2 {
+    max-width: 720px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .st-pdp17__facts {
+    grid-template-columns: 1fr !important;
+
+    gap: 7px !important;
+  }
+
+  .st-pdp17__facts > div + div {
+    padding-left: 17px !important;
+
+    border-left: 1px solid rgba(0, 0, 0, 0.11) !important;
+
+    border-top: 1px solid rgba(0, 0, 0, 0.11) !important;
+  }
+
+  .st-pdp17-info__header h2 {
+    font-size: 50px !important;
+
+    line-height: 0.86 !important;
+  }
+}
+
+/* =========================================================
+   STEREOPHONIE — V17.1 PRECISION END
+   ========================================================= */
+
+/* STEREOPHONIE — V17 EXPAND CONTROL REPAIR START
+   =========================================================
+   CURRENT LIVE GALLERY ONLY:
+   st-pdp17-gallery__fullscreen
+   ========================================================= */
+
+.st-pdp17-gallery__stage {
+  position: relative !important;
+
+  /*
+   * Creates a clean stacking context so gallery controls
+   * cannot disappear behind neighboring PDP elements.
+   */
+  isolation: isolate !important;
+}
+
+/*
+ * The Expand control is deliberately kept INSIDE the
+ * visual stage instead of touching the stage boundary.
+ */
+.st-pdp17-gallery__fullscreen {
+  position: absolute !important;
+
+  z-index: 40 !important;
+
+  right: 20px !important;
+  bottom: 20px !important;
+
+  top: auto !important;
+  left: auto !important;
+
+  width: auto !important;
+
+  min-width: 122px !important;
+  max-width: calc(100% - 40px) !important;
+
+  min-height: 46px !important;
+  height: 46px !important;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 9px !important;
+
+  margin: 0 !important;
+
+  padding: 0 16px !important;
+
+  box-sizing: border-box !important;
+
+  overflow: visible !important;
+
+  border: 1px solid #111 !important;
+
+  background: rgba(12, 12, 12, 0.94) !important;
+  color: #fff !important;
+
+  white-space: nowrap !important;
+
+  font-size: 8px !important;
+  font-weight: 950 !important;
+
+  line-height: 1 !important;
+
+  letter-spacing: 0.15em !important;
+
+  text-transform: uppercase !important;
+
+  box-shadow:
+    4px 4px 0 #ed1c24,
+    0 12px 28px rgba(0, 0, 0, 0.13) !important;
+
+  transform: none !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: auto !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease !important;
+}
+
+.st-pdp17-gallery__fullscreen svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  min-width: 15px !important;
+
+  flex: 0 0 15px !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-pdp17-gallery__fullscreen:hover {
+    border-color: #ed1c24 !important;
+
+    background: #ed1c24 !important;
+
+    box-shadow:
+      4px 4px 0 #111,
+      0 14px 30px rgba(0, 0, 0, 0.15) !important;
+
+    transform: translateY(-2px) !important;
+  }
+}
+
+.st-pdp17-gallery__fullscreen:focus-visible {
+  outline: 3px solid rgba(237, 28, 36, 0.3) !important;
+  outline-offset: 3px !important;
+}
+
+/*
+ * On narrower layouts the button stays completely inside
+ * the visual viewport with a smaller safe margin.
+ */
+@media (max-width: 700px) {
+  .st-pdp17-gallery__fullscreen {
+    right: 13px !important;
+    bottom: 13px !important;
+
+    min-width: 108px !important;
+
+    min-height: 42px !important;
+    height: 42px !important;
+
+    max-width: calc(100% - 26px) !important;
+
+    padding-inline: 13px !important;
+
+    font-size: 7px !important;
+
+    box-shadow: 3px 3px 0 #ed1c24 !important;
+  }
+}
+
+/* STEREOPHONIE — V17 EXPAND CONTROL REPAIR END */
+
+/* =========================================================
+   STEREOPHONIE — V17 GALLERY CONTROL BAR FINAL START
+
+   Desktop:
+      LEFT   = image counter
+      CENTER = Expand
+      RIGHT  = previous / next controls
+
+   ========================================================= */
+
+.st-pdp17-gallery__stage {
+  position: relative !important;
+}
+
+/*
+ * ---------------------------------------------------------
+ * LEFT ZONE — IMAGE COUNTER
+ * ---------------------------------------------------------
+ */
+
+.st-pdp17-gallery__counter {
+  position: absolute !important;
+
+  left: 16px !important;
+  right: auto !important;
+
+  bottom: 16px !important;
+  top: auto !important;
+
+  z-index: 31 !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+}
+
+/*
+ * ---------------------------------------------------------
+ * CENTER ZONE — EXPAND
+ *
+ * The control is centered relative to the actual gallery
+ * stage, not the viewport or page.
+ * ---------------------------------------------------------
+ */
+
+.st-pdp17-gallery button.st-pdp17-gallery__fullscreen {
+  position: absolute !important;
+
+  left: 50% !important;
+  right: auto !important;
+
+  bottom: 16px !important;
+  top: auto !important;
+
+  z-index: 34 !important;
+
+  width: auto !important;
+  min-width: 126px !important;
+  max-width: none !important;
+
+  min-height: 46px !important;
+
+  margin: 0 !important;
+  padding: 0 18px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+
+  overflow: visible !important;
+
+  white-space: nowrap !important;
+
+  transform: translateX(-50%) !important;
+
+  isolation: isolate !important;
+}
+
+.st-pdp17-gallery button.st-pdp17-gallery__fullscreen svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  flex: 0 0 auto !important;
+}
+
+/*
+ * Arcade feedback without moving the button.
+ */
+
+@media (hover: hover) {
+  .st-pdp17-gallery button.st-pdp17-gallery__fullscreen:hover {
+    transform: translateX(-50%) translateY(-2px) !important;
+  }
+}
+
+/*
+ * ---------------------------------------------------------
+ * RIGHT ZONE — PREVIOUS / NEXT
+ *
+ * Restore the gallery navigation to its natural location.
+ * ---------------------------------------------------------
+ */
+
+.st-pdp17-gallery__nav {
+  position: absolute !important;
+
+  right: 16px !important;
+  left: auto !important;
+
+  bottom: 16px !important;
+  top: auto !important;
+
+  z-index: 35 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+
+  gap: 5px !important;
+
+  width: auto !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+
+  pointer-events: auto !important;
+}
+
+.st-pdp17-gallery__nav button {
+  position: relative !important;
+
+  inset: auto !important;
+
+  width: 46px !important;
+  min-width: 46px !important;
+
+  height: 46px !important;
+  min-height: 46px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  transform: none !important;
+
+  pointer-events: auto !important;
+}
+
+.st-pdp17-gallery__nav button svg {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+/*
+ * Give the controls their own clean lower visual zone.
+ * Does not alter product image size or gallery dimensions.
+ */
+
+.st-pdp17-gallery__stage::after {
+  content: "";
+
+  position: absolute;
+
+  z-index: 25;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 78px;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    to top,
+    rgba(247, 247, 243, 0.97) 0%,
+    rgba(247, 247, 243, 0.82) 42%,
+    rgba(247, 247, 243, 0) 100%
+  );
+}
+
+/*
+ * Keep the actual controls above the lower fade.
+ */
+
+.st-pdp17-gallery__counter,
+.st-pdp17-gallery__fullscreen,
+.st-pdp17-gallery__nav {
+  isolation: isolate !important;
+}
+
+/*
+ * ---------------------------------------------------------
+ * TABLET
+ * ---------------------------------------------------------
+ */
+
+@media (max-width: 900px) {
+  .st-pdp17-gallery__counter {
+    left: 13px !important;
+    bottom: 13px !important;
+  }
+
+  .st-pdp17-gallery button.st-pdp17-gallery__fullscreen {
+    bottom: 13px !important;
+
+    min-width: 116px !important;
+    min-height: 43px !important;
+
+    padding-inline: 15px !important;
+  }
+
+  .st-pdp17-gallery__nav {
+    right: 13px !important;
+    bottom: 13px !important;
+  }
+
+  .st-pdp17-gallery__nav button {
+    width: 43px !important;
+    min-width: 43px !important;
+
+    height: 43px !important;
+    min-height: 43px !important;
+  }
+}
+
+/*
+ * ---------------------------------------------------------
+ * MOBILE
+ *
+ * Still maintains:
+ *   counter left
+ *   expand center
+ *   arrows right
+ *
+ * Controls simply become more compact.
+ * ---------------------------------------------------------
+ */
+
+@media (max-width: 560px) {
+  .st-pdp17-gallery__counter {
+    left: 9px !important;
+    bottom: 10px !important;
+  }
+
+  .st-pdp17-gallery button.st-pdp17-gallery__fullscreen {
+    bottom: 10px !important;
+
+    min-width: 96px !important;
+    min-height: 40px !important;
+
+    padding: 0 11px !important;
+
+    gap: 6px !important;
+
+    font-size: 7px !important;
+  }
+
+  .st-pdp17-gallery button.st-pdp17-gallery__fullscreen svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .st-pdp17-gallery__nav {
+    right: 9px !important;
+    bottom: 10px !important;
+
+    gap: 3px !important;
+  }
+
+  .st-pdp17-gallery__nav button {
+    width: 38px !important;
+    min-width: 38px !important;
+
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .st-pdp17-gallery__nav button svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .st-pdp17-gallery__stage::after {
+    height: 70px;
+  }
+}
+
+/*
+ * Reduced motion:
+ * preserve layout and controls, remove unnecessary movement.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-pdp17-gallery button.st-pdp17-gallery__fullscreen {
+    transition: none !important;
+  }
+
+  .st-pdp17-gallery button.st-pdp17-gallery__fullscreen:hover {
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* =========================================================
+   STEREOPHONIE — V17 GALLERY CONTROL BAR FINAL END
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — V17 ARCADE ARROWS START
+
+   VISUAL ONLY.
+   Does NOT alter:
+   - arrow container position
+   - EXPAND
+   - image counter
+   - gallery geometry
+   - navigation logic
+   ========================================================= */
+
+/*
+ * The existing navigation container remains exactly where
+ * the previous gallery-control patch placed it.
+ *
+ * We deliberately DO NOT set:
+ * top / right / bottom / left / position / transform.
+ */
+
+.st-pdp17-gallery__nav {
+  gap: 5px !important;
+}
+
+/*
+ * GAME CONTROL KEY
+ *
+ * Square industrial control inspired by arcade hardware
+ * and handheld console directional buttons.
+ */
+
+.st-pdp17-gallery__nav button {
+  /* Existing dimensions are preserved. */
+
+  border: 1px solid #111 !important;
+  border-radius: 0 !important;
+
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), transparent 38%),
+    #101010 !important;
+
+  color: #fff !important;
+
+  box-shadow:
+    3px 3px 0 #ed1c24,
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.75) !important;
+
+  overflow: hidden !important;
+
+  cursor: pointer !important;
 
   transition:
     background 150ms ease,
     color 150ms ease,
     border-color 150ms ease,
-    transform 150ms ease;
+    box-shadow 150ms ease,
+    filter 150ms ease !important;
 }
 
-.st-v2-product #stock-notification-controls button[aria-pressed]:active {
-  transform: translateY(1px);
-}
-
-/* Specification panel */
-
-.st-v2-product-specs {
-  margin-top: 16px;
-
-  border: 1px solid var(--st-border);
-
-  background: #f5f5f2;
-}
-
-.st-v2-product-specs__header {
-  min-height: 43px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 0 14px;
-
-  border-bottom: 1px solid var(--st-border);
-
-  color: rgba(0, 0, 0, 0.38);
-
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.st-v2-product-specs__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.st-v2-product-specs__item {
-  min-height: 74px;
-
-  padding: 14px;
-
-  border-right: 1px solid var(--st-border);
-  border-bottom: 1px solid var(--st-border);
-}
-
-.st-v2-product-specs__item:nth-child(2n) {
-  border-right: 0;
-}
-
-.st-v2-product-specs__item span {
-  display: block;
-
-  color: rgba(0, 0, 0, 0.34);
-
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-}
-
-.st-v2-product-specs__item strong {
-  display: block;
-
-  margin-top: 9px;
-
-  font-size: 12px;
-  line-height: 1.3;
-}
-
-/* =========================================================
-   TECH INFO SECTION
-   ========================================================= */
-
-.st-v2-product-information {
-  border-bottom: 1px solid var(--st-border);
-  background: white;
-}
-
-.st-v2-product-information__inner {
-  display: grid;
-  grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.3fr);
-  gap: clamp(40px, 7vw, 110px);
-
-  padding-block: 80px;
-}
-
-.st-v2-product-information__intro {
-  position: sticky;
-  top: 30px;
-  align-self: start;
-}
-
-.st-v2-product-information__intro p:first-child {
-  color: var(--st-red);
-
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
-}
-
-.st-v2-product-information__intro h2 {
-  margin: 15px 0 0;
-
-  max-width: 520px;
-
-  font-size: clamp(42px, 5vw, 78px);
-  font-weight: 900;
-  line-height: 0.88;
-  letter-spacing: -0.06em;
-}
-
-.st-v2-product-information__intro p:last-child {
-  max-width: 430px;
-
-  margin-top: 24px;
-
-  color: rgba(0, 0, 0, 0.48);
-
-  font-size: 13px;
-  line-height: 1.75;
-}
-
-/* =========================================================
-   RELATED PRODUCTS
-   ========================================================= */
-
-.st-v2-product-related {
-  padding-block: 78px 96px;
-
-  background: #edede9;
-}
-
-.st-v2-product-related__heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 30px;
-
-  margin-bottom: 34px;
-
-  padding-bottom: 22px;
-
-  border-bottom: 1px solid var(--st-border);
-}
-
-.st-v2-product-related__heading p {
-  color: var(--st-red);
-
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.16em;
-}
-
-.st-v2-product-related__heading h2 {
-  margin: 10px 0 0;
-
-  font-size: clamp(42px, 5vw, 74px);
-  font-weight: 900;
-  line-height: 0.88;
-  letter-spacing: -0.06em;
-}
-
-.st-v2-product-related__heading a {
-  min-height: 42px;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-
-  border-bottom: 1px solid var(--st-black);
-
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 1050px) {
-  .st-v2-product-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .st-v2-product-info {
-    position: static;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage {
-    min-height: 600px;
-  }
-
-  .st-v2-product-information__inner {
-    grid-template-columns: 1fr;
-  }
-
-  .st-v2-product-information__intro {
-    position: static;
-  }
-}
-
-@media (max-width: 767px) {
-  .st-v2-product-topbar {
-    min-height: 44px;
-  }
-
-  .st-v2-product-layout {
-    gap: 22px;
-    padding-block: 20px 48px;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage {
-    min-height: 430px;
-  }
-
-  .st-v2-product .stereo-product-gallery__main-image {
-    padding: 20px;
-  }
-
-  .st-v2-product .stereo-product-gallery__thumbnails {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
-  .st-v2-product-info__header,
-  .st-v2-product-info__purchase {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
-  .st-v2-product-info__title {
-    font-size: 43px;
-  }
-
-  .st-v2-product-specs__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .st-v2-product-specs__item {
-    border-right: 0;
-  }
-
-  .st-v2-product-information__inner {
-    padding-block: 56px;
-  }
-
-  .st-v2-product-related {
-    padding-block: 56px 70px;
-  }
-
-  .st-v2-product-related__heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-
-/* =========================================================
-   STEREOPHONIE — PRODUCT PAGE V3
-   PREMIUM HARDWARE PRODUCT CONSOLE
-   ========================================================= */
-
-.st-v2-product {
-  --st-pdp-black: #090909;
-  --st-pdp-red: #ed1c24;
-  --st-pdp-paper: #f5f5f2;
-  --st-pdp-line: rgba(0, 0, 0, 0.1);
-  --st-pdp-muted: rgba(0, 0, 0, 0.47);
-
-  overflow-x: clip;
-
-  background:
-    radial-gradient(
-      circle at 13% 12%,
-      rgba(237, 28, 36, 0.075),
-      transparent 27%
-    ),
-    linear-gradient(#f7f7f4, #f7f7f4);
-
-  color: var(--st-pdp-black);
-}
-
-/* ---------------------------------------------------------
-   MAIN PRODUCT CONSOLE
-   --------------------------------------------------------- */
-
-.st-v2-product-layout {
-  position: relative;
-
-  display: grid !important;
-  grid-template-columns:
-    minmax(0, 1.32fr)
-    minmax(390px, 0.68fr) !important;
-
-  gap: 1px !important;
-
-  max-width: 1600px;
-
-  margin-inline: auto;
-
-  padding: clamp(26px, 3vw, 48px) clamp(18px, 3.4vw, 54px)
-    clamp(70px, 8vw, 128px) !important;
-
-  background: rgba(0, 0, 0, 0.08);
-}
-
-/* ---------------------------------------------------------
-   PRODUCT GALLERY / HARDWARE VIEWPORT
-   --------------------------------------------------------- */
-
-.st-v2-product .stereo-product-gallery {
-  min-width: 0;
-
-  background: white;
-}
-
-.st-v2-product .stereo-product-gallery__stage {
-  position: relative;
-
-  min-height: clamp(600px, 67vw, 860px) !important;
-
-  overflow: hidden;
-
-  border: 0 !important;
-
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-    radial-gradient(
-      circle at 50% 48%,
-      rgba(237, 28, 36, 0.07),
-      transparent 34%
-    ),
-    #f2f2ef !important;
-
-  background-size:
-    42px 42px,
-    42px 42px,
-    auto,
-    auto !important;
-
-  isolation: isolate;
-}
-
-.st-v2-product .stereo-product-gallery__stage::before {
-  content: "PRODUCT VISUAL / LIVE";
-
-  position: absolute;
-  z-index: 5;
-
-  top: 24px;
-  left: 28px;
-
-  color: rgba(0, 0, 0, 0.32);
-
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.2em;
-
-  pointer-events: none;
-}
-
-.st-v2-product .stereo-product-gallery__stage::after {
+/*
+ * Very subtle arcade scan / hardware texture.
+ */
+
+.st-pdp17-gallery__nav button::before {
   content: "";
 
   position: absolute;
-  z-index: 1;
-
   inset: 0;
 
   pointer-events: none;
 
   background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(237, 28, 36, 0.025) 48%,
-    rgba(237, 28, 36, 0.07) 50%,
-    rgba(237, 28, 36, 0.025) 52%,
-    transparent 100%
+    rgba(255, 255, 255, 0.025) 50%,
+    rgba(0, 0, 0, 0.025) 50%
   );
 
-  transform: translateX(-100%);
+  background-size: 100% 4px;
 
-  animation: st-pdp-v3-scan 8s linear infinite;
+  opacity: 0.55;
 }
 
-@keyframes st-pdp-v3-scan {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  45%,
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.st-v2-product .stereo-product-gallery__main-image {
-  z-index: 3;
-
-  width: min(84%, 760px) !important;
-  height: min(72vw, 700px) !important;
-
-  object-fit: contain;
-
-  filter: drop-shadow(0 34px 38px rgba(0, 0, 0, 0.08))
-    drop-shadow(0 10px 16px rgba(0, 0, 0, 0.04));
-
-  transition:
-    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
-    filter 700ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-@media (hover: hover) {
-  .st-v2-product
-    .stereo-product-gallery__stage:hover
-    .stereo-product-gallery__main-image {
-    transform: scale(1.035) translateY(-4px) !important;
-
-    filter: drop-shadow(0 42px 46px rgba(0, 0, 0, 0.11))
-      drop-shadow(0 10px 18px rgba(0, 0, 0, 0.05));
-  }
-}
-
-/* ---------------------------------------------------------
-   GALLERY CONTROLS
-   --------------------------------------------------------- */
-
-.st-v2-product .stereo-product-gallery__counter {
-  top: auto !important;
-  right: auto !important;
-  bottom: 22px !important;
-  left: 26px !important;
-
-  border: 1px solid rgba(0, 0, 0, 0.11);
-
-  background: rgba(255, 255, 255, 0.86);
-
-  backdrop-filter: blur(16px);
-
-  color: rgba(0, 0, 0, 0.63);
-}
-
-.st-v2-product .stereo-product-gallery__expand {
-  top: 22px !important;
-  right: 22px !important;
-
-  min-height: 43px;
-
-  border-color: rgba(0, 0, 0, 0.12);
-
-  background: rgba(255, 255, 255, 0.88);
-
-  backdrop-filter: blur(15px);
-}
-
-.st-v2-product .stereo-product-gallery__arrows {
-  right: 22px !important;
-  bottom: 22px !important;
-  left: auto !important;
-}
-
-.st-v2-product .stereo-product-gallery__arrows button {
-  width: 46px;
-  height: 46px;
-
-  background: rgba(255, 255, 255, 0.9);
-
-  backdrop-filter: blur(14px);
-}
-
-/* ---------------------------------------------------------
-   THUMBNAIL CARTRIDGE STRIP
-   --------------------------------------------------------- */
-
-.st-v2-product .stereo-product-gallery__thumbnails {
-  display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(94px, 118px)) !important;
-
-  gap: 6px !important;
-
-  margin-top: 6px !important;
-
-  padding: 6px;
-
-  border: 1px solid rgba(0, 0, 0, 0.08);
-
-  background: white;
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails button {
-  height: 105px !important;
-
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.018) 1px, transparent 1px), #f4f4f1;
-
-  background-size: 16px 16px;
-
-  opacity: 0.62 !important;
-
-  transition:
-    opacity 220ms ease,
-    border-color 220ms ease,
-    transform 220ms ease,
-    background 220ms ease !important;
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails button:hover {
-  opacity: 1 !important;
-
-  transform: translateY(-2px);
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails button.is-active {
-  border-color: var(--st-pdp-red) !important;
-
-  background: white;
-
-  opacity: 1 !important;
-}
-
-/* ---------------------------------------------------------
-   PRODUCT CONTROL CONSOLE
-   --------------------------------------------------------- */
-
-.st-v2-product-info {
-  position: sticky !important;
-
-  top: 18px !important;
-
-  align-self: start;
-
-  min-width: 0;
-
-  border: 0 !important;
-
-  background: white !important;
-
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.055),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-}
-
-.st-v2-product-info::before {
-  content: "";
-
-  display: block;
-
-  width: 100%;
-  height: 4px;
-
-  background: linear-gradient(
-    90deg,
-    var(--st-pdp-red) 0 28%,
-    var(--st-pdp-black) 28% 100%
-  );
-}
-
-.st-v2-product-info__header {
-  padding: clamp(28px, 3vw, 44px) clamp(24px, 3vw, 42px) 28px !important;
-
-  border-bottom: 1px solid var(--st-pdp-line);
-}
-
-.st-v2-product-info__header::before {
-  content: "HARDWARE PROFILE / ACTIVE";
-
-  display: block;
-
-  margin-bottom: 18px;
-
-  color: var(--st-pdp-red);
-
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.2em;
-}
-
-.st-v2-product-info__title {
-  max-width: 620px;
-
-  margin: 0;
-
-  font-size: clamp(38px, 4.3vw, 70px) !important;
-
-  font-weight: 900 !important;
-
-  line-height: 0.92 !important;
-
-  letter-spacing: -0.06em !important;
-
-  text-transform: uppercase;
-}
-
-.st-v2-product-info__purchase {
-  padding: 28px clamp(24px, 3vw, 42px) 36px !important;
-}
-
-/* ---------------------------------------------------------
-   PURCHASE CONTROLS
-   DO NOT CHANGE BUSINESS LOGIC — VISUAL ONLY
-   --------------------------------------------------------- */
-
-.st-v2-product-info button,
-.st-v2-product-info select,
-.st-v2-product-info input {
-  border-radius: 0 !important;
-}
-
-.st-v2-product-info button {
-  transition:
-    background 180ms ease,
-    color 180ms ease,
-    border-color 180ms ease,
-    transform 180ms ease !important;
-}
-
-@media (hover: hover) {
-  .st-v2-product-info button:hover {
-    transform: translateY(-1px);
-  }
-}
-
-/* ---------------------------------------------------------
-   TRUST / SERVICE SIGNALS
-   --------------------------------------------------------- */
-
-.st-v2-product-layout aside > div:last-child {
-  background:
-    linear-gradient(90deg, rgba(237, 28, 36, 0.02), transparent 45%), white;
-}
-
-/* ---------------------------------------------------------
-   TECHNICAL SPECIFICATIONS
-   --------------------------------------------------------- */
-
-.st-v2-product-specs {
-  border-top: 1px solid rgba(0, 0, 0, 0.09);
-
-  background: var(--st-pdp-black);
-
-  color: white;
-}
-
-.st-v2-product-specs__grid {
-  max-width: 1600px;
-
-  margin-inline: auto;
-}
-
-.st-v2-product-specs__item {
-  min-height: 138px;
-
-  padding: 28px !important;
-
-  border-color: rgba(255, 255, 255, 0.09) !important;
-
-  background: radial-gradient(
-    circle at 90% 10%,
-    rgba(237, 28, 36, 0.08),
-    transparent 35%
-  );
-}
-
-/* ---------------------------------------------------------
-   PRODUCT INFORMATION DATABASE
-   --------------------------------------------------------- */
-
-.st-v2-product-information {
-  position: relative;
-
-  overflow: clip;
-
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.018) 1px, transparent 1px), #f5f5f2 !important;
-
-  background-size: 36px 36px !important;
-}
-
-.st-v2-product-information__inner {
-  max-width: 1600px;
-
-  margin-inline: auto;
-
-  padding: clamp(70px, 8vw, 126px) clamp(22px, 4vw, 58px) !important;
-}
-
-.st-v2-product-information__intro {
-  top: 34px !important;
-}
-
-.st-v2-product-information__intro h2 {
-  max-width: 560px;
-
-  font-size: clamp(43px, 5.3vw, 82px) !important;
-
-  line-height: 0.87 !important;
-
-  text-transform: uppercase;
-}
-
-/* ---------------------------------------------------------
-   RELATED PRODUCTS
-   --------------------------------------------------------- */
-
-.st-v2-product-related,
-.st-v2-product > section.border-t.border-black\/10.bg-white {
-  position: relative;
-
-  background: white;
-}
-
-.st-v2-product-related::before {
+/*
+ * Small system LED.
+ *
+ * This gives each navigation key a piece of the
+ * Stereophonie hardware language without making
+ * the control look like a toy.
+ */
+
+.st-pdp17-gallery__nav button::after {
   content: "";
 
   position: absolute;
 
-  top: 0;
-  left: 0;
+  top: 6px;
+  right: 6px;
 
-  width: min(240px, 24vw);
-  height: 3px;
+  width: 4px;
+  height: 4px;
 
-  background: var(--st-pdp-red);
+  border-radius: 50%;
+
+  background: #46ef76;
+
+  box-shadow:
+    0 0 4px rgba(70, 239, 118, 0.9),
+    0 0 8px rgba(70, 239, 118, 0.35);
+
+  opacity: 0.8;
+
+  pointer-events: none;
 }
 
-/* ---------------------------------------------------------
-   MICRO HARDWARE DETAILS
-   --------------------------------------------------------- */
+/*
+ * Directional icon.
+ */
 
-.st-v2-product a:focus-visible,
-.st-v2-product button:focus-visible,
-.st-v2-product select:focus-visible,
-.st-v2-product input:focus-visible {
-  outline: 2px solid var(--st-pdp-red) !important;
-  outline-offset: 3px;
+.st-pdp17-gallery__nav button svg {
+  position: relative;
+
+  z-index: 2;
+
+  color: currentColor !important;
+
+  stroke-width: 2.4 !important;
+
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45));
+
+  transition:
+    transform 150ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 150ms ease !important;
 }
 
-/* ---------------------------------------------------------
-   TABLET
-   --------------------------------------------------------- */
+/*
+ * ---------------------------------------------------------
+ * DESKTOP HOVER
+ *
+ * Red active-state = Stereophonie arcade interaction.
+ * Geometry stays completely fixed.
+ * ---------------------------------------------------------
+ */
 
-@media (max-width: 1050px) {
-  .st-v2-product-layout {
-    grid-template-columns: 1fr !important;
+@media (hover: hover) and (pointer: fine) {
+  .st-pdp17-gallery__nav button:hover {
+    border-color: #ed1c24 !important;
 
-    gap: 10px !important;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.12), transparent 42%),
+      #ed1c24 !important;
 
-    padding: 24px 22px 70px !important;
+    color: #fff !important;
 
-    background: transparent;
+    box-shadow:
+      3px 3px 0 #111,
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.16) !important;
   }
 
-  .st-v2-product-info {
-    position: static !important;
-
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.09);
+  .st-pdp17-gallery__nav button:first-child:hover svg {
+    transform: translateX(-2px) !important;
   }
 
-  .st-v2-product .stereo-product-gallery__stage {
-    min-height: 630px !important;
-  }
-}
-
-/* ---------------------------------------------------------
-   MOBILE
-   --------------------------------------------------------- */
-
-@media (max-width: 767px) {
-  .st-v2-product-layout {
-    padding: 12px 12px 52px !important;
+  .st-pdp17-gallery__nav button:last-child:hover svg {
+    transform: translateX(2px) !important;
   }
 
-  .st-v2-product .stereo-product-gallery__stage {
-    min-height: 475px !important;
+  .st-pdp17-gallery__nav button:hover::after {
+    background: #fff;
 
-    background-size:
-      28px 28px,
-      28px 28px,
-      auto,
-      auto !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage::before {
-    top: 16px;
-    left: 17px;
-
-    font-size: 6px;
-  }
-
-  .st-v2-product .stereo-product-gallery__main-image {
-    width: 90% !important;
-    height: 390px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__counter {
-    bottom: 14px !important;
-    left: 14px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__expand {
-    top: 14px !important;
-    right: 14px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__arrows {
-    right: 14px !important;
-    bottom: 14px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__thumbnails {
-    display: flex !important;
-
-    overflow-x: auto;
-
-    scroll-snap-type: x mandatory;
-
-    scrollbar-width: none;
-  }
-
-  .st-v2-product .stereo-product-gallery__thumbnails::-webkit-scrollbar {
-    display: none;
-  }
-
-  .st-v2-product .stereo-product-gallery__thumbnails button {
-    width: 88px !important;
-
-    flex: 0 0 88px;
-
-    scroll-snap-align: start;
-  }
-
-  .st-v2-product-info__header {
-    padding: 28px 20px 24px !important;
-  }
-
-  .st-v2-product-info__purchase {
-    padding: 24px 20px 30px !important;
-  }
-
-  .st-v2-product-info__title {
-    font-size: clamp(38px, 12vw, 52px) !important;
-  }
-
-  .st-v2-product-information__inner {
-    padding: 58px 20px !important;
-  }
-
-  .st-v2-product-information__intro h2 {
-    font-size: clamp(40px, 13vw, 61px) !important;
+    box-shadow:
+      0 0 4px rgba(255, 255, 255, 0.95),
+      0 0 9px rgba(255, 255, 255, 0.45);
   }
 }
 
-/* ---------------------------------------------------------
-   REDUCED MOTION
-   --------------------------------------------------------- */
+/*
+ * ---------------------------------------------------------
+ * PRESS FEEDBACK
+ *
+ * No movement of the actual control.
+ * Only internal visual feedback.
+ * ---------------------------------------------------------
+ */
+
+.st-pdp17-gallery__nav button:active {
+  background: #090909 !important;
+
+  box-shadow:
+    1px 1px 0 #ed1c24,
+    inset 0 2px 5px rgba(0, 0, 0, 0.65) !important;
+
+  filter: brightness(0.94);
+}
+
+.st-pdp17-gallery__nav button:active svg {
+  transform: scale(0.88) !important;
+}
+
+/*
+ * Keyboard accessibility.
+ */
+
+.st-pdp17-gallery__nav button:focus-visible {
+  outline: 2px solid #ed1c24 !important;
+  outline-offset: 3px !important;
+}
+
+/*
+ * Touch devices:
+ * keep the same visual design but remove unnecessary
+ * hover animation.
+ */
+
+@media (hover: none), (pointer: coarse) {
+  .st-pdp17-gallery__nav button {
+    transition: none !important;
+  }
+}
+
+/*
+ * Respect reduced-motion preferences.
+ */
 
 @media (prefers-reduced-motion: reduce) {
-  .st-v2-product .stereo-product-gallery__stage::after {
-    animation: none !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__main-image,
-  .st-v2-product button {
+  .st-pdp17-gallery__nav button,
+  .st-pdp17-gallery__nav button svg {
     transition: none !important;
   }
 }
 
 /* =========================================================
-   END PRODUCT PAGE V3 / PHASE 1
+   STEREOPHONIE — V17 ARCADE ARROWS END
    ========================================================= */
+
+/* STEREOPHONIE — V17 ARROW LED REMOVE START
+   Precision patch:
+   Remove ONLY the decorative green status LEDs from
+   previous / next product-gallery controls.
+   Geometry, arrows, shadows and interactions stay intact.
+   ========================================================= */
+
+.st-pdp17-gallery__nav button::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* STEREOPHONIE — V17 ARROW LED REMOVE END */
 
 /* =========================================================
-   STEREOPHONIE — PRODUCT PAGE V3 / PHASE 2A
-   PRODUCT IDENTITY DATABASE
+   STEREOPHONIE — GALLERY ARROW LED FINAL START
+
+   PURPOSE:
+   Remove ONLY the tiny green decorative LEDs from
+   Previous / Next product-gallery navigation buttons.
+
+   Do NOT alter:
+   - button position
+   - arrow icon
+   - black arcade surface
+   - red hardware shadow
+   - hover state
+   - press state
+   - navigation logic
+   - EXPAND control
    ========================================================= */
 
-.st-pdp-v3-identity {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  margin: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.018) 1px, transparent 1px), #fafaf7;
-
-  background-size: 18px 18px;
-}
-
-.st-pdp-v3-identity > div {
-  position: relative;
-
-  min-width: 0;
-  min-height: 72px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  padding: 14px 16px;
-
-  border-right: 1px solid rgba(0, 0, 0, 0.09);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.09);
-
-  overflow: hidden;
-}
-
-.st-pdp-v3-identity > div:nth-child(2n) {
-  border-right: 0;
-}
-
-.st-pdp-v3-identity > div:nth-last-child(-n + 2) {
-  border-bottom: 0;
-}
-
-.st-pdp-v3-identity > div::before {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  top: 0;
-  bottom: 0;
-
-  width: 2px;
-
-  background: transparent;
-
-  transition: background 180ms ease;
-}
-
-.st-pdp-v3-identity > div:hover::before {
-  background: #ed1c24;
-}
-
-.st-pdp-v3-identity small {
-  display: block;
-
-  color: rgba(0, 0, 0, 0.33);
-
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.17em;
-}
-
-.st-pdp-v3-identity strong {
-  display: block;
-
-  margin-top: 7px;
-
-  overflow: hidden;
-
-  color: #111;
-
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  line-height: 1.35;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-@media (max-width: 520px) {
-  .st-pdp-v3-identity {
-    grid-template-columns: 1fr;
-  }
-
-  .st-pdp-v3-identity > div,
-  .st-pdp-v3-identity > div:nth-child(2n),
-  .st-pdp-v3-identity > div:nth-last-child(-n + 2) {
-    min-height: 64px;
-
-    border-right: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.09);
-  }
-
-  .st-pdp-v3-identity > div:last-child {
-    border-bottom: 0;
-  }
-}
-
-/* END PRODUCT PAGE V3 / PHASE 2A */
-
-/* =========================================================
-   STEREOPHONIE — PRODUCT PAGE V4
-   ARCADE HARDWARE DATABASE
-   AUTHORITATIVE VISUAL LAYER
-   ========================================================= */
-
-.st-v2-product {
-  --st-pdp-red: #ed1c24;
-  --st-pdp-black: #080808;
-  --st-pdp-panel: #101010;
-  --st-pdp-line: rgba(255, 255, 255, 0.11);
-  --st-pdp-green: #68ff8d;
-
-  background:
-    radial-gradient(
-      circle at 70% 24%,
-      rgba(237, 28, 36, 0.075),
-      transparent 26%
-    ),
-    #f4f4f1 !important;
-}
-
-/* ---------------------------------------------------------
-   MAIN PRODUCT DATABASE
-   --------------------------------------------------------- */
-
-.st-v2-product-layout {
-  position: relative;
-
-  gap: 0 !important;
-
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-}
-
-.st-v2-product-layout::before {
-  content: "STEREOPHONIE HARDWARE DATABASE / LIVE PRODUCT CHANNEL";
-
-  position: absolute;
-  z-index: 8;
-
-  top: 14px;
-  left: 18px;
-
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 0.18em;
-
-  color: rgba(0, 0, 0, 0.35);
-
-  pointer-events: none;
-}
-
-/* ---------------------------------------------------------
-   GALLERY = TECHNICAL HARDWARE VIEWPORT
-   --------------------------------------------------------- */
-
-.st-v2-product .stereo-product-gallery {
-  position: relative;
-
-  height: 100%;
-}
-
-.st-v2-product .stereo-product-gallery__stage {
-  min-height: min(76vh, 760px) !important;
-
-  border: 0 !important;
-  border-right: 1px solid rgba(0, 0, 0, 0.13) !important;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(237, 28, 36, 0.055),
-      transparent 38%
-    ),
-    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px), #f2f2ee !important;
-
-  background-size:
-    auto,
-    36px 36px,
-    36px 36px,
-    auto !important;
-}
-
-.st-v2-product .stereo-product-gallery__main-image {
-  width: 82% !important;
-  height: 76% !important;
-
-  object-fit: contain !important;
-
-  filter: drop-shadow(0 28px 42px rgba(0, 0, 0, 0.08)) saturate(1.015);
-}
-
-.st-v2-product .stereo-product-gallery__counter {
-  border: 1px solid rgba(0, 0, 0, 0.13) !important;
-
-  background: rgba(255, 255, 255, 0.88) !important;
-
-  backdrop-filter: blur(12px);
-}
-
-.st-v2-product .stereo-product-gallery__expand {
-  background: var(--st-pdp-red) !important;
-  color: white !important;
-
-  border: 0 !important;
-
-  transition:
-    width 220ms ease,
-    background 180ms ease !important;
-}
-
-.st-v2-product .stereo-product-gallery__expand:hover {
-  background: #090909 !important;
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails {
-  padding: 8px 0 0 !important;
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails button {
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px), #f5f5f2 !important;
-
-  background-size: 16px 16px !important;
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails button.is-active {
-  border-color: var(--st-pdp-red) !important;
-
-  box-shadow: inset 0 -3px 0 var(--st-pdp-red);
-}
-
-/* ---------------------------------------------------------
-   PURCHASE SIDE = DARK HARDWARE TERMINAL
-   --------------------------------------------------------- */
-
-.st-v2-product-info {
-  position: sticky !important;
-  top: 0 !important;
-
-  align-self: start;
-
-  overflow: hidden;
-
-  border-left: 0 !important;
-
-  background:
-    radial-gradient(circle at 20% 18%, rgba(237, 28, 36, 0.1), transparent 27%),
-    #090909 !important;
-
-  color: white !important;
-
-  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.035);
-}
-
-.st-v2-product-info::before {
-  content: "";
-
-  position: absolute;
-  z-index: 0;
-
-  inset: 0;
-
-  opacity: 0.22;
-
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-
-  background-size: 26px 26px;
-
-  pointer-events: none;
-}
-
-.st-v2-product-info::after {
-  content: "";
-
-  position: absolute;
-  z-index: 0;
-
-  top: -10%;
-  left: 0;
-
-  width: 100%;
-  height: 2px;
-
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(237, 28, 36, 0.7),
-    transparent
-  );
-
-  animation: st-product-v4-terminal-scan 7s linear infinite;
-
-  pointer-events: none;
-}
-
-@keyframes st-product-v4-terminal-scan {
-  from {
-    transform: translateY(0);
-  }
-
-  to {
-    transform: translateY(850px);
-  }
-}
-
-.st-v2-product-info > * {
-  position: relative;
-  z-index: 2;
-}
-
-.st-v2-product-info__header {
-  padding: 46px 34px 28px !important;
-
-  border-bottom: 1px solid var(--st-pdp-line) !important;
-
+.st-pdp17-gallery__nav > button::before,
+.st-pdp17-gallery__nav > button::after {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
   background: transparent !important;
-}
-
-.st-v2-product-info__header::before {
-  content: "PRODUCT SYSTEM / ONLINE";
-
-  display: flex;
-  align-items: center;
-
-  min-height: 25px;
-
-  margin-bottom: 18px;
-
-  color: var(--st-pdp-green);
-
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 0.19em;
-}
-
-.st-v2-product-info__title {
-  color: white !important;
-
-  font-size: clamp(40px, 4.4vw, 76px) !important;
-  font-weight: 900 !important;
-  line-height: 0.88 !important;
-  letter-spacing: -0.065em !important;
-}
-
-.st-v2-product-info__header p,
-.st-v2-product-info__header span,
-.st-v2-product-info__header small {
-  color: rgba(255, 255, 255, 0.43) !important;
-}
-
-/* Product identity block from Phase 2A */
-.st-pdp-v3-identity {
-  border-color: var(--st-pdp-line) !important;
-
-  background: rgba(255, 255, 255, 0.035) !important;
-}
-
-.st-pdp-v3-identity > div {
-  border-color: var(--st-pdp-line) !important;
-}
-
-.st-pdp-v3-identity small {
-  color: rgba(255, 255, 255, 0.32) !important;
-}
-
-.st-pdp-v3-identity strong {
-  color: white !important;
-}
-
-/* ---------------------------------------------------------
-   PURCHASE / CONFIGURATION CONSOLE
-   --------------------------------------------------------- */
-
-.st-v2-product-info__purchase {
-  padding: 26px 34px 35px !important;
-
-  background: transparent !important;
-  color: white !important;
-}
-
-.st-v2-product-info__purchase label,
-.st-v2-product-info__purchase small,
-.st-v2-product-info__purchase p {
-  color: rgba(255, 255, 255, 0.45) !important;
-}
-
-.st-v2-product-info__purchase h2,
-.st-v2-product-info__purchase h3,
-.st-v2-product-info__purchase strong {
-  color: white;
-}
-
-.st-v2-product-info__purchase button,
-.st-v2-product-info__purchase select {
-  border-radius: 0 !important;
-}
-
-/*
- * Turn all white outlined configuration buttons into
- * cartridge-like hardware controls.
- */
-.st-v2-product-info__purchase button:not([class*="bg-black"]) {
-  border-color: rgba(255, 255, 255, 0.16) !important;
-
-  background: rgba(255, 255, 255, 0.035);
-  color: white;
-
-  transition:
-    background 180ms ease,
-    color 180ms ease,
-    border-color 180ms ease,
-    transform 180ms ease;
-}
-
-.st-v2-product-info__purchase button:not([class*="bg-black"]):hover {
-  border-color: rgba(255, 255, 255, 0.42) !important;
-
-  background: rgba(255, 255, 255, 0.085);
-
-  transform: translateY(-1px);
-}
-
-/*
- * Primary Add-to-Cart controls become Stereophonie signal red.
- */
-.st-v2-product-info__purchase button[class*="bg-black"] {
-  border: 1px solid var(--st-pdp-red) !important;
-
-  background: var(--st-pdp-red) !important;
-  color: white !important;
-
-  box-shadow: 0 0 0 rgba(237, 28, 36, 0);
-
-  transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease !important;
-}
-
-.st-v2-product-info__purchase button[class*="bg-black"]:hover {
-  border-color: white !important;
-
-  background: white !important;
-  color: #090909 !important;
-
-  box-shadow: 0 0 28px rgba(237, 28, 36, 0.17);
-
-  transform: translateY(-2px);
-}
-
-/*
- * Dark terminal restyling for utility rows.
- */
-.st-v2-product-info__purchase [class*="border-black/10"],
-.st-v2-product-info [class*="border-black/10"] {
-  border-color: rgba(255, 255, 255, 0.11) !important;
-}
-
-.st-v2-product-info [class*="text-black/"],
-.st-v2-product-info__purchase [class*="text-black/"] {
-  color: rgba(255, 255, 255, 0.46) !important;
-}
-
-/*
- * Stock status remains readable and gains hardware LED treatment.
- */
-.st-v2-product-info__purchase [class*="emerald"] {
-  border-color: rgba(104, 255, 141, 0.28) !important;
-
-  background: rgba(104, 255, 141, 0.07) !important;
-  color: var(--st-pdp-green) !important;
-}
-
-/* ---------------------------------------------------------
-   INFORMATION AREA = DATABASE / NOT LUXURY EDITORIAL
-   --------------------------------------------------------- */
-
-.st-v2-product-information {
-  position: relative;
-
-  border-top: 1px solid rgba(0, 0, 0, 0.12) !important;
-
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.018) 1px, transparent 1px), #f3f3ef !important;
-
-  background-size: 32px 32px !important;
-}
-
-.st-v2-product-information__inner {
-  gap: clamp(40px, 6vw, 90px) !important;
-
-  padding-block: 68px !important;
-}
-
-.st-v2-product-information__intro {
-  position: static !important;
-
-  padding: 28px;
-
-  border: 1px solid rgba(0, 0, 0, 0.13);
-
-  background: rgba(255, 255, 255, 0.76);
-
-  backdrop-filter: blur(10px);
-}
-
-.st-v2-product-information__intro::before {
-  content: "KNOWLEDGE BASE / PRODUCT INTELLIGENCE";
-
-  display: block;
-
-  margin-bottom: 18px;
-
-  color: var(--st-pdp-red);
-
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.19em;
-}
-
-.st-v2-product-information__intro h2 {
-  max-width: 390px !important;
-
-  margin-top: 0 !important;
-
-  font-size: clamp(34px, 4vw, 62px) !important;
-  line-height: 0.9 !important;
-}
-
-.st-v2-product-information__intro p:last-child {
-  margin-top: 18px !important;
-
-  color: rgba(0, 0, 0, 0.5) !important;
-}
-
-/*
- * Accordions become hardware database records.
- */
-.st-v2-product-information button {
-  min-height: 72px;
-
-  transition:
-    background 180ms ease,
-    padding 180ms ease !important;
-}
-
-.st-v2-product-information button:hover {
-  background: rgba(237, 28, 36, 0.035);
-
-  padding-left: 9px;
-}
-
-/* ---------------------------------------------------------
-   RELATED PRODUCTS
-   --------------------------------------------------------- */
-
-.st-v2-product-related {
-  border-top: 1px solid rgba(255, 255, 255, 0.09) !important;
-
-  background:
-    radial-gradient(
-      circle at 20% 10%,
-      rgba(237, 28, 36, 0.12),
-      transparent 24%
-    ),
-    #090909 !important;
-
-  color: white;
-}
-
-/* Page's existing related section */
-.st-v2-product > section.border-t.border-black\/10.bg-white {
-  border-color: rgba(255, 255, 255, 0.09) !important;
-
-  background:
-    radial-gradient(circle at 16% 8%, rgba(237, 28, 36, 0.12), transparent 22%),
-    #090909 !important;
-
-  color: white !important;
-}
-
-.st-v2-product > section.border-t.border-black\/10.bg-white p,
-.st-v2-product > section.border-t.border-black\/10.bg-white a {
-  color: rgba(255, 255, 255, 0.55) !important;
-}
-
-.st-v2-product > section.border-t.border-black\/10.bg-white h2 {
-  color: white !important;
-}
-
-/* ---------------------------------------------------------
-   RESPONSIVE
-   --------------------------------------------------------- */
-
-@media (max-width: 1050px) {
-  .st-v2-product-info {
-    position: static !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage {
-    min-height: 570px !important;
-
-    border-right: 0 !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .st-v2-product .stereo-product-gallery__stage {
-    min-height: 430px !important;
-  }
-
-  .st-v2-product-info__header,
-  .st-v2-product-info__purchase {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
-
-  .st-v2-product-info__header {
-    padding-top: 34px !important;
-  }
-
-  .st-v2-product-info__title {
-    font-size: 43px !important;
-  }
-
-  .st-v2-product-information__inner {
-    padding-block: 44px !important;
-  }
-
-  .st-v2-product-information__intro {
-    padding: 22px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .st-v2-product-info::after {
-    animation: none !important;
-  }
-}
-
-/* =========================================================
-   END PRODUCT PAGE V4
-   ========================================================= */
-
-/* =========================================================
-   STEREOPHONIE — PRODUCT EXPERIENCE V5
-   SIMPLE / PROFESSIONAL / CUSTOMER-FIRST
-   ========================================================= */
-
-/*
- * V5 deliberately removes the oversized arcade-console
- * treatment from the commerce page.
- *
- * Arcade identity remains as small accents.
- * Buying clarity becomes the priority.
- */
-
-.st-v2-product {
-  background: #f5f5f2 !important;
-  color: #090909 !important;
-}
-
-.st-v2-product-layout {
-  width: min(1480px, calc(100% - 48px)) !important;
-
-  margin-inline: auto !important;
-
-  display: grid !important;
-  grid-template-columns:
-    minmax(0, 1.2fr)
-    minmax(390px, 0.8fr) !important;
-
-  align-items: start !important;
-
-  gap: clamp(34px, 4vw, 72px) !important;
-
-  padding-block: 42px 70px !important;
-}
-
-/* ---------------------------------------------------------
-   GALLERY
-   --------------------------------------------------------- */
-
-.st-v2-product .stereo-product-gallery {
-  min-width: 0 !important;
-}
-
-.st-v2-product .stereo-product-gallery__stage {
-  min-height: 0 !important;
-  height: clamp(520px, 63vw, 720px) !important;
-  max-height: 720px !important;
-
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.018) 1px, transparent 1px), #f8f8f5 !important;
-
-  background-size: 36px 36px !important;
-}
-
-/*
- * Remove the huge visual gutter created by the previous
- * fullscreen hardware strip.
- */
-.st-v2-product .stereo-product-gallery__main-image {
-  width: 88% !important;
-  height: 88% !important;
-
-  max-width: 760px !important;
-  max-height: 650px !important;
-
-  margin: auto !important;
-
-  object-fit: contain !important;
-  object-position: center !important;
-}
-
-.st-v2-product .stereo-product-gallery__expand {
-  top: 16px !important;
-  right: 16px !important;
-  bottom: auto !important;
-
-  width: auto !important;
-  min-width: 44px !important;
-  height: 44px !important;
-
-  padding: 0 14px !important;
-
-  background: #090909 !important;
-  color: #fff !important;
-
   border: 0 !important;
-
-  writing-mode: horizontal-tb !important;
-
-  font-size: 7px !important;
-  letter-spacing: 0.12em !important;
-}
-
-.st-v2-product .stereo-product-gallery__expand:hover {
-  background: #ed1c24 !important;
-}
-
-.st-v2-product .stereo-product-gallery__counter {
-  top: auto !important;
-  left: 16px !important;
-  bottom: 16px !important;
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails {
-  margin-top: 10px !important;
-
-  grid-template-columns: repeat(auto-fit, minmax(72px, 92px)) !important;
-
-  gap: 8px !important;
-}
-
-.st-v2-product .stereo-product-gallery__thumbnails button {
-  height: 82px !important;
-
-  background: #fff !important;
-}
-
-/* ---------------------------------------------------------
-   PRODUCT INFORMATION / BUYING COLUMN
-   --------------------------------------------------------- */
-
-.st-v2-product-info {
-  position: sticky !important;
-  top: 24px !important;
-
-  align-self: start !important;
-
-  overflow: hidden !important;
-
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-
-  background: #fff !important;
-
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.045) !important;
-}
-
-.st-v2-product-info__header,
-.st-v2-product-info__purchase {
-  padding-inline: 28px !important;
-}
-
-.st-v2-product-info__header {
-  padding-top: 28px !important;
-  padding-bottom: 24px !important;
+  box-shadow: none !important;
 }
 
 /*
- * Previous hardware presentation made these identity values
- * almost disappear. V5 makes the information readable.
+ * Defensive override in case the arcade-arrow block
+ * targets the individual direction classes.
  */
-.st-pdp-v3-identity {
-  margin-top: 22px !important;
 
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-
-  background: #fafaf8 !important;
-}
-
-.st-pdp-v3-identity *,
-.st-pdp-v3-identity strong,
-.st-pdp-v3-identity span,
-.st-pdp-v3-identity small {
-  color: #111 !important;
-}
-
-.st-pdp-v3-identity small {
-  opacity: 0.42 !important;
-}
-
-.st-v2-product-info__eyebrow,
-.st-v2-product-info__category {
-  color: rgba(0, 0, 0, 0.46) !important;
-
-  font-size: 8px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.16em !important;
-}
-
-.st-v2-product-info__title {
-  margin-top: 9px !important;
-
-  max-width: 100% !important;
-
-  color: #090909 !important;
-
-  font-size: clamp(38px, 3.8vw, 58px) !important;
-  font-weight: 800 !important;
-  line-height: 0.95 !important;
-  letter-spacing: -0.055em !important;
-}
-
-.st-v2-product-info__price {
-  margin-top: 22px !important;
-
-  color: #090909 !important;
-}
-
-.st-v2-product-info__purchase {
-  padding-top: 22px !important;
-  padding-bottom: 28px !important;
-
-  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
-
-  background: #fff !important;
-}
-
-/*
- * Remove the enormous blank vertical area produced by
- * earlier product-console sizing.
- */
-.st-v2-product-layout > * {
-  min-height: 0 !important;
-}
-
-.st-v2-product-layout::after {
+.st-pdp17-gallery__nav .is-prev::before,
+.st-pdp17-gallery__nav .is-prev::after,
+.st-pdp17-gallery__nav .is-next::before,
+.st-pdp17-gallery__nav .is-next::after {
+  content: none !important;
   display: none !important;
-}
-
-/* ---------------------------------------------------------
-   PURCHASE CONTROLS
-   --------------------------------------------------------- */
-
-.st-v2-product-info button,
-.st-v2-product-info select,
-.st-v2-product-info input {
-  border-radius: 0 !important;
-}
-
-.st-v2-product-info button {
-  transition:
-    background 160ms ease,
-    color 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease !important;
-}
-
-.st-v2-product-info button:hover {
-  transform: translateY(-1px);
-}
-
-.st-v2-product-info button[class*="bg-black"] {
-  background: #090909 !important;
-}
-
-.st-v2-product-info button[class*="bg-black"]:hover {
-  background: #ed1c24 !important;
-}
-
-/* ---------------------------------------------------------
-   REMOVE EXCESSIVE ARCADE DECORATION FROM PDP
-   --------------------------------------------------------- */
-
-.st-v2-product .st-pdp-v3-scan,
-.st-v2-product .st-pdp-v4-scan,
-.st-v2-product .st-pdp-v4-console-glow {
-  display: none !important;
-}
-
-.st-v2-product-info::before,
-.st-v2-product-info::after {
-  display: none !important;
-}
-
-/* ---------------------------------------------------------
-   PRODUCT INFORMATION
-   --------------------------------------------------------- */
-
-.st-v2-product-information {
-  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
-
-  background: #fff !important;
-}
-
-.st-v2-product-information__inner {
-  width: min(1380px, calc(100% - 48px)) !important;
-
-  margin-inline: auto !important;
-
-  display: grid !important;
-  grid-template-columns: minmax(260px, 0.52fr) minmax(0, 1.48fr) !important;
-
-  gap: clamp(45px, 7vw, 110px) !important;
-
-  padding-block: 72px !important;
-}
-
-.st-v2-product-information__intro {
-  position: static !important;
-}
-
-.st-v2-product-information__intro p:first-child {
-  color: #ed1c24 !important;
-}
-
-.st-v2-product-information__intro h2 {
-  margin-top: 12px !important;
-
-  max-width: 420px !important;
-
-  font-size: clamp(36px, 4vw, 60px) !important;
-  line-height: 0.94 !important;
-}
-
-.st-v2-product-information__intro p:last-child {
-  max-width: 390px !important;
-
-  margin-top: 20px !important;
-
-  font-size: 13px !important;
-  line-height: 1.8 !important;
-}
-
-/* ---------------------------------------------------------
-   RELATED PRODUCTS
-   --------------------------------------------------------- */
-
-.st-v2-product-related,
-.st-v2-product [class*="related"] {
-  background: #f5f5f2;
-}
-
-/* ---------------------------------------------------------
-   RESPONSIVE
-   --------------------------------------------------------- */
-
-@media (max-width: 1100px) {
-  .st-v2-product-layout {
-    grid-template-columns: 1fr !important;
-
-    width: min(920px, calc(100% - 36px)) !important;
-
-    gap: 24px !important;
-  }
-
-  .st-v2-product-info {
-    position: static !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage {
-    height: min(700px, 78vw) !important;
-  }
-
-  .st-v2-product-information__inner {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-@media (max-width: 700px) {
-  .st-v2-product-layout {
-    width: calc(100% - 24px) !important;
-
-    padding-block: 18px 44px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage {
-    height: 440px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__main-image {
-    width: 94% !important;
-    height: 88% !important;
-  }
-
-  .st-v2-product-info__header,
-  .st-v2-product-info__purchase {
-    padding-inline: 18px !important;
-  }
-
-  .st-v2-product-info__title {
-    font-size: 39px !important;
-  }
-
-  .st-v2-product-information__inner {
-    width: calc(100% - 32px) !important;
-
-    padding-block: 50px !important;
-  }
-}
-
-/* =========================================================
-   END PRODUCT EXPERIENCE V5
-   ========================================================= */
-
-/* =========================================================
-   STEREOPHONIE — PDP V14
-   ARCADE / GAME BOY COMMERCE SYSTEM
-   ========================================================= */
-
-.st-v2-product {
-  --st-pdp-black: #090909;
-  --st-pdp-red: #ed1c24;
-  --st-pdp-green: #43e875;
-  --st-pdp-paper: #f3f3ef;
-  --st-pdp-line: rgba(0, 0, 0, 0.13);
-
-  background:
-    radial-gradient(
-      circle at 74% 24%,
-      rgba(237, 28, 36, 0.075),
-      transparent 29%
-    ),
-    var(--st-pdp-paper) !important;
-}
-
-/* ---------------------------------------------------------
-   PRODUCT CORE LAYOUT
-   --------------------------------------------------------- */
-
-.st-v2-product-layout {
-  width: min(1480px, calc(100% - 48px)) !important;
-  max-width: 1480px !important;
-  grid-template-columns: minmax(0, 1.15fr) minmax(430px, 0.85fr) !important;
-  gap: 18px !important;
-  align-items: start !important;
-  padding-top: 42px !important;
-  padding-bottom: 58px !important;
-}
-
-/* ---------------------------------------------------------
-   PRODUCT VISUAL / GAME SCREEN
-   --------------------------------------------------------- */
-
-.st-v2-product .stereo-product-gallery {
-  min-width: 0 !important;
-}
-
-.st-v2-product .stereo-product-gallery__stage {
-  position: relative !important;
-  min-height: 640px !important;
-  height: 640px !important;
-  max-height: 640px !important;
-  border: 1px solid var(--st-pdp-line) !important;
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px), #f7f7f3 !important;
-  background-size: 34px 34px !important;
-  box-shadow: inset 0 -1px rgba(255, 255, 255, 0.7) !important;
-}
-
-.st-v2-product .stereo-product-gallery__stage::after {
-  content: "PLAYER 1 / PRODUCT VISUAL";
-  position: absolute;
-  z-index: 5;
-  left: 20px;
-  top: 18px;
-  color: rgba(0, 0, 0, 0.31);
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 0.16em;
-  pointer-events: none;
-}
-
-.st-v2-product .stereo-product-gallery__main-image {
-  width: 87% !important;
-  height: 86% !important;
-  max-width: 730px !important;
-  max-height: 540px !important;
-  object-fit: contain !important;
-  object-position: center !important;
-  padding: 10px !important;
-}
-
-.st-v2-product .stereo-product-gallery__expand {
-  top: 17px !important;
-  right: 17px !important;
-  min-width: 116px !important;
-  min-height: 44px !important;
-  border: 1px solid var(--st-pdp-black) !important;
-  background: var(--st-pdp-black) !important;
-  color: #fff !important;
-  box-shadow: 4px 4px 0 var(--st-pdp-red) !important;
-  font-size: 7px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.13em !important;
-}
-
-.st-v2-product .stereo-product-gallery__expand:hover {
-  border-color: var(--st-pdp-red) !important;
-  background: var(--st-pdp-red) !important;
-}
-
-.st-v2-product .stereo-product-gallery__counter {
-  left: 17px !important;
-  bottom: 17px !important;
-  top: auto !important;
-  padding: 10px 12px !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  background: rgba(255, 255, 255, 0.9) !important;
-}
-
-/* ---------------------------------------------------------
-   PURCHASE CONSOLE
-   --------------------------------------------------------- */
-
-.st-v2-product-info {
-  position: sticky !important;
-  top: 14px !important;
-  align-self: start !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background: #0a0a0a !important;
-  color: white !important;
-  box-shadow:
-    0 22px 60px rgba(0, 0, 0, 0.13),
-    6px 6px 0 rgba(237, 28, 36, 0.86) !important;
-}
-
-.st-v2-product-info::before {
-  content: "●  STEREOPHONIE PRODUCT SYSTEM    /    READY";
-  display: block;
-  min-height: 34px;
-  padding: 11px 20px 9px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-  color: #4ceb75;
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-}
-
-.st-v2-product-info__header {
-  padding: 26px 27px 24px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    #0d0d0d !important;
-  background-size: 29px 29px !important;
-}
-
-.st-v2-product-info__header,
-.st-v2-product-info__header * {
-  color: white;
-}
-
-.st-v2-product-info__category,
-.st-v2-product-info__eyebrow {
-  color: #ed1c24 !important;
-  font-size: 7px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.16em !important;
-}
-
-.st-v2-product-info__title {
-  margin-top: 8px !important;
-  color: white !important;
-  font-size: clamp(39px, 4vw, 62px) !important;
-  font-weight: 900 !important;
-  line-height: 0.9 !important;
-  letter-spacing: -0.055em !important;
-}
-
-.st-v2-product-info__header p,
-.st-v2-product-info__header del {
-  color: rgba(255, 255, 255, 0.44) !important;
-}
-
-.st-v2-product-info__header p[class*="text-3xl"],
-.st-v2-product-info__header p[class*="text-4xl"],
-.st-v2-product-info__header strong {
-  color: white !important;
-}
-
-/* Hardware identity block */
-
-.st-pdp-v3-identity {
-  margin-top: 20px !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  background: rgba(255, 255, 255, 0.035) !important;
-}
-
-.st-pdp-v3-identity > div {
-  min-height: 67px !important;
-  padding: 13px 15px !important;
-  border-color: rgba(255, 255, 255, 0.09) !important;
-}
-
-.st-pdp-v3-identity small {
-  color: rgba(255, 255, 255, 0.29) !important;
-  font-size: 5px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.15em !important;
-}
-
-.st-pdp-v3-identity strong {
-  margin-top: 6px !important;
-  color: #fff !important;
-  font-size: 11px !important;
-  font-weight: 900 !important;
-}
-
-/* Description / overview */
-
-.st-v2-product-info__header + div,
-.st-v2-product-info__purchase {
-  color: white !important;
-}
-
-.st-v2-product-info__purchase {
-  padding: 22px 27px 28px !important;
-  background: #0a0a0a !important;
-}
-
-/* General text inside purchase system */
-
-.st-v2-product-info__purchase p,
-.st-v2-product-info__purchase span,
-.st-v2-product-info__purchase label,
-.st-v2-product-info__purchase small,
-.st-v2-product-info__purchase em {
-  color: rgba(255, 255, 255, 0.52);
-}
-
-.st-v2-product-info__purchase strong,
-.st-v2-product-info__purchase h2,
-.st-v2-product-info__purchase h3 {
-  color: white;
-}
-
-/* Separators */
-
-.st-v2-product-info__purchase > div,
-.st-v2-product-info__purchase > section {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Configuration selectors */
-
-.st-v2-product-info__purchase button:not([class*="bg-black"]) {
-  border-color: rgba(255, 255, 255, 0.17) !important;
-}
-
-.st-v2-product-info__purchase button[aria-pressed="true"],
-.st-v2-product-info__purchase button[class*="bg-black"] {
-  border-color: #ed1c24 !important;
-  background: #ed1c24 !important;
-  color: white !important;
-}
-
-/* Quantity controller */
-
-.st-v2-product-info__purchase button {
-  border-radius: 0 !important;
-}
-
-.st-v2-product-info__purchase button:disabled {
-  opacity: 0.4 !important;
-}
-
-/*
- * Main commerce buttons:
- * primary = signal red, not generic Nita black.
- */
-
-.st-v2-product-info__purchase button[class*="bg-black"] {
-  min-height: 56px !important;
-  border: 1px solid #ed1c24 !important;
-  background: #ed1c24 !important;
-  color: white !important;
-  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.1) !important;
-  font-size: 8px !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.15em !important;
-}
-
-.st-v2-product-info__purchase button[class*="bg-black"]:hover {
-  border-color: white !important;
-  background: white !important;
-  color: #090909 !important;
-}
-
-/*
- * Wishlist becomes a real secondary game-console action.
- */
-
-.st-v2-product-info__purchase button[class*="border"] {
-  min-height: 52px !important;
-  border-color: rgba(255, 255, 255, 0.17) !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
   background: transparent !important;
-  color: white !important;
+  box-shadow: none !important;
 }
 
-.st-v2-product-info__purchase button[class*="border"]:hover {
-  border-color: white !important;
-  background: white !important;
-  color: #090909 !important;
-}
-
-/* Availability panel */
-
-.st-v2-product-info__purchase [class*="bg-emerald"],
-.st-v2-product-info__purchase [class*="bg-green"] {
-  border-color: rgba(67, 232, 117, 0.35) !important;
-  background: rgba(67, 232, 117, 0.07) !important;
-  color: #5aef80 !important;
-}
-
-/* Delivery / returns / secure order rows */
-
-.st-v2-product-info__purchase svg {
-  color: currentColor;
-}
-
-.st-v2-product-info__purchase > div:last-child {
-  margin-top: 20px !important;
-}
-
-/* ---------------------------------------------------------
-   PRODUCT DATABASE — COMPLETELY NEW VISUAL ARCHITECTURE
-   --------------------------------------------------------- */
-
-.st-pdb-v1 {
-  position: relative;
-  overflow: hidden;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: #070707;
-  color: white;
-}
-
-.st-pdb-v1::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px);
-  background-size: 34px 34px;
-}
-
-.st-pdb-v1::after {
-  content: "";
-  position: absolute;
-  width: 46%;
-  aspect-ratio: 1;
-  right: 4%;
-  bottom: -52%;
-  border-radius: 50%;
-  background: rgba(237, 28, 36, 0.16);
-  filter: blur(95px);
-  pointer-events: none;
-}
-
-.st-pdb-v1__scanline {
-  position: absolute;
-  z-index: 5;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 2px;
-  opacity: 0.35;
-  background: #ed1c24;
-  box-shadow: 0 0 18px rgba(237, 28, 36, 0.6);
-  animation: st-pdb-scan 9s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes st-pdb-scan {
-  from {
-    transform: translateY(0);
-  }
-
-  to {
-    transform: translateY(760px);
-  }
-}
-
-.st-pdb-v1__inner {
-  position: relative;
-  z-index: 2;
-  width: min(1480px, calc(100% - 48px));
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: minmax(300px, 0.68fr) minmax(0, 1.32fr);
-  gap: 28px;
-  padding-block: 74px 82px;
-}
-
-.st-pdb-v1__terminal {
-  align-self: start;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  background: #0b0b0b;
-  box-shadow: 6px 6px 0 rgba(237, 28, 36, 0.8);
-}
-
-.st-pdb-v1__terminal-top {
-  min-height: 46px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding-inline: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.42);
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-}
-
-.st-pdb-v1__terminal-led {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #43e875;
-  box-shadow:
-    0 0 7px rgba(67, 232, 117, 0.8),
-    0 0 18px rgba(67, 232, 117, 0.35);
-}
-
-.st-pdb-v1__terminal-screen {
-  padding: 30px 27px;
-}
-
-.st-pdb-v1__terminal-screen > svg {
-  width: 27px;
-  color: #ed1c24;
-}
-
-.st-pdb-v1__terminal-screen > small {
-  display: block;
-  margin-top: 25px;
-  color: #ed1c24;
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 0.15em;
-}
-
-.st-pdb-v1__terminal-screen h2 {
-  margin: 12px 0 0;
-  color: white;
-  font-size: clamp(39px, 4vw, 61px);
-  font-weight: 900;
-  line-height: 0.88;
-  letter-spacing: -0.055em;
-}
-
-.st-pdb-v1__terminal-screen > p {
-  margin-top: 20px;
-  color: rgba(255, 255, 255, 0.43);
-  font-size: 11px;
-  line-height: 1.8;
-}
-
-.st-pdb-v1__terminal-data {
-  margin-top: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-}
-
-.st-pdb-v1__terminal-data > div {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  padding-inline: 14px;
-}
-
-.st-pdb-v1__terminal-data > div + div {
-  border-top: 1px solid rgba(255, 255, 255, 0.09);
-}
-
-.st-pdb-v1__terminal-data span {
-  color: rgba(255, 255, 255, 0.28);
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.st-pdb-v1__terminal-data strong {
-  color: white;
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-}
-
-.st-pdb-v1__secret {
-  margin-top: 25px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 0;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.24);
-  cursor: pointer;
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.st-pdb-v1__secret > span {
-  color: #43e875;
-  text-shadow: 0 0 8px rgba(67, 232, 117, 0.75);
-}
-
-.st-pdb-v1__secret:hover {
-  color: white;
-}
-
-.st-pdb-v1__easter-egg {
-  margin-top: 17px;
-  padding: 15px;
-  border: 1px dashed rgba(67, 232, 117, 0.45);
-  background: rgba(67, 232, 117, 0.045);
-}
-
-.st-pdb-v1__easter-egg span,
-.st-pdb-v1__easter-egg strong,
-.st-pdb-v1__easter-egg small {
-  display: block;
-}
-
-.st-pdb-v1__easter-egg span {
-  color: #43e875;
-  font-size: 6px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-}
-
-.st-pdb-v1__easter-egg strong {
-  margin-top: 8px;
-  color: white;
-  font-size: 13px;
-}
-
-.st-pdb-v1__easter-egg small {
-  margin-top: 7px;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 6px;
-  letter-spacing: 0.14em;
-}
-
-/* Database module side */
-
-.st-pdb-v1__modules {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(10, 10, 10, 0.88);
-}
-
-.st-pdb-v1__modules-header {
-  min-height: 66px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding-inline: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.st-pdb-v1__modules-header > div {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-
-.st-pdb-v1__online-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #43e875;
-  box-shadow: 0 0 12px rgba(67, 232, 117, 0.65);
-}
-
-.st-pdb-v1__modules-header span:not(.st-pdb-v1__online-dot) {
-  display: grid;
-  gap: 3px;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.st-pdb-v1__modules-header strong {
-  color: white;
-  font-size: 9px;
-}
-
-.st-pdb-v1__modules-header > small {
-  color: rgba(255, 255, 255, 0.23);
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.st-pdb-v1__module {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.st-pdb-v1__module > button {
-  width: 100%;
-  min-height: 82px;
-  display: grid;
-  grid-template-columns: 35px 44px minmax(0, 1fr) auto 18px;
-  align-items: center;
-  gap: 12px;
-  padding: 13px 18px;
-  border: 0;
-  background: transparent;
-  color: white;
-  text-align: left;
-  cursor: pointer;
-  transition: background 150ms ease;
-}
-
-.st-pdb-v1__module > button:hover,
-.st-pdb-v1__module.is-open > button {
-  background: rgba(255, 255, 255, 0.035);
-}
-
-.st-pdb-v1__module.is-open > button {
-  box-shadow: inset 3px 0 #ed1c24;
-}
-
-.st-pdb-v1__number {
-  color: rgba(255, 255, 255, 0.22);
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-}
-
-.st-pdb-v1__module-icon {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.st-pdb-v1__module.is-open .st-pdb-v1__module-icon {
-  border-color: #ed1c24;
-  background: #ed1c24;
-}
-
-.st-pdb-v1__module-icon svg {
-  width: 16px;
-}
-
-.st-pdb-v1__module-copy {
-  display: grid;
-  gap: 5px;
-}
-
-.st-pdb-v1__module-copy small {
-  color: rgba(255, 255, 255, 0.27);
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.st-pdb-v1__module-copy strong {
-  color: white;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.09em;
-}
-
-.st-pdb-v1__state {
-  min-width: 56px;
-  color: rgba(255, 255, 255, 0.25);
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-align: right;
-}
-
-.st-pdb-v1__state.is-active {
-  color: #43e875;
-}
-
-.st-pdb-v1__module > button > svg {
-  width: 15px;
-  transition: transform 160ms ease;
-}
-
-.st-pdb-v1__module.is-open > button > svg {
-  transform: rotate(180deg);
-}
-
-.st-pdb-v1__content {
-  padding: 4px 18px 24px 109px;
-}
-
-.st-pdb-v1__text {
-  padding: 21px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.st-pdb-v1__text > span {
-  color: #ed1c24;
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-}
-
-.st-pdb-v1__text > p {
-  max-width: 720px;
-  margin-top: 11px;
-  color: rgba(255, 255, 255, 0.52);
-  font-size: 11px;
-  line-height: 1.85;
-  white-space: pre-line;
-}
-
-.st-pdb-v1__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.st-pdb-v1__grid > div {
-  min-height: 76px;
-  padding: 16px;
-}
-
-.st-pdb-v1__grid > div:nth-child(even) {
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.st-pdb-v1__grid > div:nth-child(n + 3) {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.st-pdb-v1__grid span,
-.st-pdb-v1__grid strong {
-  display: block;
-}
-
-.st-pdb-v1__grid span {
-  color: rgba(255, 255, 255, 0.27);
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-}
-
-.st-pdb-v1__grid strong {
-  margin-top: 9px;
-  color: white;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.st-pdb-v1__modules-footer {
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding-inline: 18px;
-  color: rgba(255, 255, 255, 0.24);
-  font-size: 5px;
-  font-weight: 900;
-  letter-spacing: 0.13em;
-}
-
-.st-pdb-v1__modules-footer > span:first-child {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #43e875;
-}
-
-.st-pdb-v1__modules-footer i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #43e875;
-  box-shadow: 0 0 9px rgba(67, 232, 117, 0.7);
-}
-
-/* ---------------------------------------------------------
-   REMOVE OLD PRODUCT-INFORMATION VISUAL ARCHITECTURE
-   when historical CSS still exists around the new component.
-   --------------------------------------------------------- */
-
-.st-v2-product-information {
-  display: none !important;
-}
-
-/* ---------------------------------------------------------
-   RELATED PRODUCTS
-   --------------------------------------------------------- */
-
-.st-v2-product-related {
-  border-top: 1px solid rgba(0, 0, 0, 0.11) !important;
-  background: #f3f3ef !important;
-}
-
-/* ---------------------------------------------------------
-   TABLET
-   --------------------------------------------------------- */
-
-@media (max-width: 1100px) {
-  .st-v2-product-layout {
-    grid-template-columns: 1fr !important;
-  }
-
-  .st-v2-product-info {
-    position: static !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage {
-    height: 570px !important;
-    min-height: 570px !important;
-    max-height: 570px !important;
-  }
-
-  .st-pdb-v1__inner {
-    grid-template-columns: 1fr !important;
-  }
-
-  .st-pdb-v1__terminal {
-    max-width: none;
-  }
-}
-
-/* ---------------------------------------------------------
-   MOBILE
-   --------------------------------------------------------- */
-
-@media (max-width: 767px) {
-  .st-v2-product-layout {
-    width: min(100% - 24px, 1480px) !important;
-    padding-top: 18px !important;
-    padding-bottom: 34px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__stage {
-    height: 430px !important;
-    min-height: 430px !important;
-    max-height: 430px !important;
-  }
-
-  .st-v2-product .stereo-product-gallery__main-image {
-    width: 91% !important;
-    height: 82% !important;
-  }
-
-  .st-v2-product-info {
-    box-shadow: 4px 4px 0 rgba(237, 28, 36, 0.86) !important;
-  }
-
-  .st-v2-product-info__header {
-    padding: 23px 20px 21px !important;
-  }
-
-  .st-v2-product-info__purchase {
-    padding: 20px 20px 25px !important;
-  }
-
-  .st-v2-product-info__title {
-    font-size: 42px !important;
-  }
-
-  .st-pdb-v1__inner {
-    width: min(100% - 24px, 1480px);
-    padding-block: 48px 55px;
-  }
-
-  .st-pdb-v1__terminal-screen {
-    padding: 25px 20px;
-  }
-
-  .st-pdb-v1__terminal-screen h2 {
-    font-size: 43px;
-  }
-
-  .st-pdb-v1__module > button {
-    grid-template-columns: 29px 40px minmax(0, 1fr) 16px;
-    gap: 9px;
-    padding-inline: 12px;
-  }
-
-  .st-pdb-v1__state {
-    display: none;
-  }
-
-  .st-pdb-v1__content {
-    padding: 0 12px 18px 12px;
-  }
-
-  .st-pdb-v1__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .st-pdb-v1__grid > div:nth-child(even) {
-    border-left: 0;
-  }
-
-  .st-pdb-v1__grid > div + div {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .st-pdb-v1__scanline {
-    display: none;
-  }
-}
-
-/* =========================================================
-   END PDP V14
-   ========================================================= */
+/* STEREOPHONIE — GALLERY ARROW LED FINAL END */

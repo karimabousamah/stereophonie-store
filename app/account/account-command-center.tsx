@@ -13,8 +13,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import BrandLogo from "@/components/storefront/brand-logo";
-
 import AccountClient, { type CustomerOrder } from "./account-client";
 import AccountSettingsClient, {
   type CustomerAddress,
@@ -46,25 +44,39 @@ export default function AccountCommandCenter({
   hasOrderError,
   hasStockPreferenceError,
 }: Props) {
+  const scrollToAccountModule = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    targetId: string,
+  ) => {
+    event.preventDefault();
+
+    const target = document.getElementById(targetId);
+
+    if (!target) {
+      return;
+    }
+
+    const header =
+      document.querySelector<HTMLElement>(".st-v2-header") ??
+      document.querySelector<HTMLElement>("header");
+
+    const headerHeight = header?.getBoundingClientRect().height ?? 0;
+    const extraClearance = 24;
+
+    const targetTop =
+      target.getBoundingClientRect().top +
+      window.scrollY -
+      headerHeight -
+      extraClearance;
+
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: "smooth",
+    });
+  };
+
   return (
     <main className="st-player-account">
-      <header className="st-player-account__header">
-        <Link href="/" className="st-player-account__return">
-          <span className="st-player-account__led" />
-          STORE
-        </Link>
-
-        <Link href="/" aria-label="Stereophonie home">
-          <BrandLogo
-            variant="dark"
-            priority
-            className="st-player-account__logo"
-          />
-        </Link>
-
-        <span>PLAYER PROFILE / ONLINE</span>
-      </header>
-
       <section className="st-player-account__hero">
         <div className="st-player-account__grid" />
 
@@ -130,25 +142,34 @@ export default function AccountCommandCenter({
           </span>
         </Link>
 
-        <a href="#account-settings">
+        <button
+          type="button"
+          onClick={(event) => scrollToAccountModule(event, "account-settings")}
+          aria-label="Go to profile settings"
+        >
           <Terminal />
           <span>
             <small>03 / SYSTEM</small>
             PROFILE SETTINGS
           </span>
-        </a>
+        </button>
 
-        <a href="#customer-orders">
+        <button
+          type="button"
+          onClick={(event) => scrollToAccountModule(event, "customer-orders")}
+          aria-label="Go to order log"
+        >
           <Gamepad2 />
           <span>
             <small>04 / HISTORY</small>
             ORDER LOG
           </span>
-        </a>
+        </button>
       </section>
 
-      <a
-        href="#account-settings"
+      <button
+        type="button"
+        onClick={(event) => scrollToAccountModule(event, "account-settings")}
         className="st-player-account__scroll-cue"
         aria-label="Scroll to player profile modules"
       >
@@ -162,7 +183,7 @@ export default function AccountCommandCenter({
 
           <span className="st-player-account__scroll-arrow">↓</span>
         </span>
-      </a>
+      </button>
 
       <section className="st-player-account__workspace">
         {(error ||
@@ -247,17 +268,6 @@ export default function AccountCommandCenter({
           <AccountClient orders={orders} />
         </div>
       </section>
-
-      <footer className="st-player-account__footer">
-        <span>
-          <i />
-          CUSTOMER NETWORK / ONLINE
-        </span>
-
-        <span>STEREOPHONIE / PLAYER 01</span>
-
-        <span>SESSION ACTIVE</span>
-      </footer>
     </main>
   );
 }

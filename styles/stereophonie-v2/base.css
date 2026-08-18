@@ -174,3 +174,674 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* =========================================================
+   STEREOPHONIE — GLOBAL SERVICE CTA V1
+   Shared pre-footer support system.
+   Static document-flow geometry: never overlays page content.
+   ========================================================= */
+
+.st-global-support {
+  position: relative;
+  isolation: isolate;
+
+  width: 100%;
+
+  overflow: hidden;
+
+  margin: 0;
+
+  padding: clamp(72px, 8vw, 132px) 0;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 4px solid #ed1c24;
+
+  background:
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(237, 28, 36, 0.12),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 68% 72%,
+      rgba(237, 28, 36, 0.08),
+      transparent 26%
+    ),
+    #080808;
+
+  color: white;
+}
+
+.st-global-support__grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  pointer-events: none;
+
+  opacity: 0.18;
+
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+
+  background-size: 42px 42px;
+
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 14%,
+    black 86%,
+    transparent
+  );
+}
+
+.st-global-support__inner {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.08fr)
+    minmax(360px, 0.92fr);
+
+  align-items: center;
+
+  gap: clamp(60px, 9vw, 150px);
+}
+
+.st-global-support__eyebrow {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  color: #ed1c24;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.st-global-support__led {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 auto;
+
+  border-radius: 999px;
+
+  background: #62ff7b;
+
+  box-shadow:
+    0 0 8px rgba(98, 255, 123, 0.8),
+    0 0 18px rgba(98, 255, 123, 0.28);
+}
+
+.st-global-support__identity h2 {
+  margin: 24px 0 0;
+
+  max-width: 780px;
+
+  font-size: clamp(56px, 7.1vw, 118px);
+  font-weight: 950;
+  line-height: 0.79;
+  letter-spacing: -0.075em;
+  text-transform: uppercase;
+}
+
+.st-global-support__status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 13px;
+
+  margin-top: 34px;
+
+  padding: 13px 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.st-global-support__status svg {
+  width: 18px;
+  height: 18px;
+
+  color: #ed1c24;
+}
+
+.st-global-support__status span {
+  display: grid;
+
+  gap: 4px;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.st-global-support__status small {
+  color: rgba(255, 255, 255, 0.35);
+
+  font-size: 7px;
+  letter-spacing: 0.17em;
+}
+
+.st-global-support__terminal {
+  position: relative;
+
+  padding: clamp(26px, 3vw, 42px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(237, 28, 36, 0.035)
+    ),
+    #0d0d0d;
+
+  box-shadow:
+    8px 8px 0 rgba(237, 28, 36, 0.9),
+    0 28px 80px rgba(0, 0, 0, 0.32);
+}
+
+.st-global-support__terminal > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-bottom: 22px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+
+  color: rgba(255, 255, 255, 0.42);
+
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.st-global-support__terminal > div:first-child strong {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  color: #62ff7b;
+
+  font-size: 8px;
+}
+
+.st-global-support__terminal > div:first-child i {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #62ff7b;
+
+  box-shadow: 0 0 10px rgba(98, 255, 123, 0.8);
+}
+
+.st-global-support__terminal p {
+  margin: 30px 0 0;
+
+  max-width: 560px;
+
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: clamp(14px, 1.2vw, 17px);
+  line-height: 1.85;
+}
+
+.st-global-support__capabilities {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  margin-top: 30px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.st-global-support__capabilities span {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  min-height: 54px;
+
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.st-global-support__capabilities span + span {
+  padding-left: 14px;
+
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.st-global-support__capabilities svg {
+  width: 13px;
+  height: 13px;
+
+  color: #ed1c24;
+}
+
+.st-global-support__button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  width: 100%;
+
+  min-height: 76px;
+
+  margin-top: 30px;
+
+  padding: 15px 22px;
+
+  border: 1px solid #ed1c24;
+
+  background: #ed1c24;
+
+  color: white;
+
+  text-decoration: none;
+
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.st-global-support__button span {
+  display: grid;
+
+  gap: 4px;
+
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.15em;
+}
+
+.st-global-support__button small {
+  font-size: 7px;
+  letter-spacing: 0.17em;
+
+  opacity: 0.58;
+}
+
+.st-global-support__button svg {
+  width: 22px;
+  height: 22px;
+}
+
+@media (hover: hover) {
+  .st-global-support__button:hover {
+    transform: translateY(-2px);
+
+    background: white;
+
+    color: black;
+  }
+}
+
+.st-global-support__rail {
+  position: absolute;
+
+  right: 0;
+  bottom: -4px;
+  left: 0;
+
+  display: grid;
+
+  grid-template-columns: 1fr 0.1fr 0.06fr;
+
+  gap: 4px;
+
+  height: 4px;
+
+  pointer-events: none;
+}
+
+.st-global-support__rail span {
+  background: #ed1c24;
+}
+
+.st-global-support__rail span:nth-child(2) {
+  background: white;
+}
+
+.st-global-support__rail span:nth-child(3) {
+  background: #ed1c24;
+}
+
+/*
+ * Canonical cards used in homepage merchandising.
+ */
+.st-v2-home-product-grid--canonical {
+  align-items: stretch;
+}
+
+.st-v2-home-product-grid--canonical > .st-card-v14 {
+  min-width: 0;
+  height: 100%;
+}
+
+@media (max-width: 980px) {
+  .st-global-support__inner {
+    grid-template-columns: 1fr;
+
+    gap: 52px;
+  }
+
+  .st-global-support__action {
+    max-width: 700px;
+  }
+}
+
+@media (max-width: 640px) {
+  .st-global-support {
+    padding: 64px 0;
+  }
+
+  .st-global-support__inner {
+    gap: 38px;
+  }
+
+  .st-global-support__identity h2 {
+    font-size: clamp(48px, 15vw, 72px);
+  }
+
+  .st-global-support__terminal {
+    padding: 22px;
+
+    box-shadow: 5px 5px 0 rgba(237, 28, 36, 0.9);
+  }
+
+  .st-global-support__capabilities {
+    grid-template-columns: 1fr;
+  }
+
+  .st-global-support__capabilities span {
+    min-height: 46px;
+  }
+
+  .st-global-support__capabilities span + span {
+    padding-left: 0;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-global-support__button {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   END GLOBAL SERVICE CTA V1
+   ========================================================= */
+
+/* =========================================================
+   STEREOPHONIE — HEADER ACTIONS UNIFIED HOVER START
+   ========================================================= */
+
+/*
+ * Header command language:
+ *
+ * IDLE
+ *   light surface
+ *   black icon/text
+ *
+ * HOVER / KEYBOARD FOCUS
+ *   black surface
+ *   white icon/text
+ *   Stereophonie red hardware line underneath
+ *
+ * IMPORTANT:
+ * - dimensions are not changed
+ * - links/actions are not changed
+ * - Track Order route-status LED remains independent
+ * - Cart count remains functional
+ */
+
+/* ---------------------------------------------------------
+   01 — establish the four commands as isolated surfaces
+   --------------------------------------------------------- */
+
+.st-v2-header__actions > .st-v2-header__track-main,
+.st-v2-header__actions > a[aria-label="Account"],
+.st-v2-header__actions > a[aria-label="Wishlist"],
+.st-v2-header__actions > .st-v2-header__cart-trigger {
+  position: relative !important;
+  isolation: isolate !important;
+
+  overflow: hidden !important;
+
+  background-color: transparent !important;
+  color: #0a0a0a !important;
+
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+/*
+ * Explicitly inherit the foreground color into Lucide icons.
+ * This prevents an old icon-specific rule from making an icon
+ * disappear when the parent surface becomes dark.
+ */
+
+.st-v2-header__actions > .st-v2-header__track-main svg,
+.st-v2-header__actions > a[aria-label="Account"] svg,
+.st-v2-header__actions > a[aria-label="Wishlist"] svg,
+.st-v2-header__actions > .st-v2-header__cart-trigger svg {
+  position: relative !important;
+  z-index: 2 !important;
+
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  opacity: 1 !important;
+
+  transition:
+    color 160ms ease,
+    stroke 160ms ease !important;
+}
+
+.st-v2-header__actions > .st-v2-header__track-main > span {
+  position: relative !important;
+  z-index: 2 !important;
+
+  color: currentColor !important;
+}
+
+/* ---------------------------------------------------------
+   02 — one shared Stereophonie red hardware underline
+   --------------------------------------------------------- */
+
+.st-v2-header__actions > .st-v2-header__track-main::after,
+.st-v2-header__actions > a[aria-label="Account"]::after,
+.st-v2-header__actions > a[aria-label="Wishlist"]::after,
+.st-v2-header__actions > .st-v2-header__cart-trigger::after {
+  content: "" !important;
+
+  position: absolute !important;
+  z-index: 5 !important;
+
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  width: 100% !important;
+  height: 3px !important;
+
+  background: #ed1c24 !important;
+
+  opacity: 0 !important;
+
+  transform: scaleX(0.35) !important;
+  transform-origin: center !important;
+
+  pointer-events: none !important;
+
+  transition:
+    opacity 150ms ease,
+    transform 190ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ---------------------------------------------------------
+   03 — authoritative desktop hover
+   --------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+  .st-v2-header__actions > .st-v2-header__track-main:hover,
+  .st-v2-header__actions > a[aria-label="Account"]:hover,
+  .st-v2-header__actions > a[aria-label="Wishlist"]:hover,
+  .st-v2-header__actions > .st-v2-header__cart-trigger:hover {
+    background-color: #0a0a0a !important;
+    color: #ffffff !important;
+
+    border-color: #0a0a0a !important;
+
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      0 7px 18px rgba(0, 0, 0, 0.08) !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .st-v2-header__actions > .st-v2-header__track-main:hover::after,
+  .st-v2-header__actions > a[aria-label="Account"]:hover::after,
+  .st-v2-header__actions > a[aria-label="Wishlist"]:hover::after,
+  .st-v2-header__actions > .st-v2-header__cart-trigger:hover::after {
+    opacity: 1 !important;
+    transform: scaleX(1) !important;
+  }
+
+  /*
+   * Extra protection against older selectors that may set
+   * icon opacity / fill / stroke on hover.
+   */
+  .st-v2-header__actions > .st-v2-header__track-main:hover svg,
+  .st-v2-header__actions > a[aria-label="Account"]:hover svg,
+  .st-v2-header__actions > a[aria-label="Wishlist"]:hover svg,
+  .st-v2-header__actions > .st-v2-header__cart-trigger:hover svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .st-v2-header__actions > .st-v2-header__track-main:hover > span {
+    color: #ffffff !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   04 — keyboard users receive the exact same treatment
+   --------------------------------------------------------- */
+
+.st-v2-header__actions > .st-v2-header__track-main:focus-visible,
+.st-v2-header__actions > a[aria-label="Account"]:focus-visible,
+.st-v2-header__actions > a[aria-label="Wishlist"]:focus-visible,
+.st-v2-header__actions > .st-v2-header__cart-trigger:focus-visible {
+  outline: 2px solid #ed1c24 !important;
+  outline-offset: 2px !important;
+
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+}
+
+.st-v2-header__actions > .st-v2-header__track-main:focus-visible::after,
+.st-v2-header__actions > a[aria-label="Account"]:focus-visible::after,
+.st-v2-header__actions > a[aria-label="Wishlist"]:focus-visible::after,
+.st-v2-header__actions > .st-v2-header__cart-trigger:focus-visible::after {
+  opacity: 1 !important;
+  transform: scaleX(1) !important;
+}
+
+/* ---------------------------------------------------------
+   05 — preserve Cart item counter
+   --------------------------------------------------------- */
+
+.st-v2-header__cart-trigger .st-v2-header__cart-count {
+  z-index: 8 !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-v2-header__cart-trigger:hover .st-v2-header__cart-count {
+    background: #ed1c24 !important;
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   06 — preserve Track Order status LED
+   --------------------------------------------------------- */
+
+/*
+ * Track Order uses ::before as its status indicator.
+ * We deliberately use ::after for the red hover line,
+ * therefore the red/green route-aware LED is untouched.
+ */
+
+.st-v2-header__actions > .st-v2-header__track-main::before {
+  z-index: 6 !important;
+}
+
+/* ---------------------------------------------------------
+   07 — active / pressed tactile feedback
+   --------------------------------------------------------- */
+
+.st-v2-header__actions > .st-v2-header__track-main:active,
+.st-v2-header__actions > a[aria-label="Account"]:active,
+.st-v2-header__actions > a[aria-label="Wishlist"]:active,
+.st-v2-header__actions > .st-v2-header__cart-trigger:active {
+  transform: translateY(1px) !important;
+}
+
+/* ---------------------------------------------------------
+   08 — reduced motion
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-v2-header__actions > .st-v2-header__track-main,
+  .st-v2-header__actions > a[aria-label="Account"],
+  .st-v2-header__actions > a[aria-label="Wishlist"],
+  .st-v2-header__actions > .st-v2-header__cart-trigger,
+  .st-v2-header__actions > .st-v2-header__track-main::after,
+  .st-v2-header__actions > a[aria-label="Account"]::after,
+  .st-v2-header__actions > a[aria-label="Wishlist"]::after,
+  .st-v2-header__actions > .st-v2-header__cart-trigger::after {
+    transition: none !important;
+  }
+}
+
+/* =========================================================
+   STEREOPHONIE — HEADER ACTIONS UNIFIED HOVER END
+   ========================================================= */

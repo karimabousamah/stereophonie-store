@@ -3673,3 +3673,92 @@
 }
 
 /* END REAL AUTH CARTRIDGE SIGNAL METER */
+
+/* ==========================================================
+   STEREOPHONIE — ACCOUNT INTERNAL NAV BUTTON FIX V1
+   Buttons intentionally inherit the exact quickbar link UI.
+   ========================================================== */
+
+.st-player-account__quickbar > button {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 0;
+  padding: inherit;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/*
+ * Existing quickbar CSS was originally written for <a>.
+ * These rules make the new semantic buttons participate
+ * in the exact same grid/layout language.
+ */
+.st-player-account__quickbar > button {
+  display: flex;
+  align-items: center;
+}
+
+/* ==========================================================
+   END ACCOUNT INTERNAL NAV BUTTON FIX V1
+   ========================================================== */
+
+/* STEREOPHONIE — ACCOUNT QUICKBAR CENTER V1 START */
+
+/*
+ * Center the COMPLETE icon + copy assembly inside every quick-action cell.
+ * We preserve the internal typography: the icon remains beside the text,
+ * while the combined assembly is centered within the cell.
+ */
+
+.st-player-account__quickbar > a,
+.st-player-account__quickbar > button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* Remove asymmetric positioning inherited from the original left layout. */
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+
+/*
+ * Keep icon-to-copy spacing controlled and identical across all four cells.
+ */
+.st-player-account__quickbar > a > svg,
+.st-player-account__quickbar > button > svg {
+  flex: 0 0 auto !important;
+  margin: 0 18px 0 0 !important;
+}
+
+/*
+ * The copy remains internally left aligned.
+ * We are centering the icon+copy UNIT, not centering every text line.
+ */
+.st-player-account__quickbar > a > span,
+.st-player-account__quickbar > button > span {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+/*
+ * Prevent button browser defaults from shifting Profile Settings / Order Log.
+ */
+.st-player-account__quickbar > button {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  border-radius: 0 !important;
+  font: inherit;
+}
+
+/* STEREOPHONIE — ACCOUNT QUICKBAR CENTER V1 END */

@@ -1,3 +1,6 @@
+import V2Header from "@/components/stereophonie-v2/layout/v2-header";
+import V2Footer from "@/components/stereophonie-v2/layout/v2-footer";
+
 import { createClient } from "@/lib/supabase/server";
 
 import AccountAuthClient from "./account-auth-client";
@@ -80,11 +83,17 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
   if (!user) {
     return (
-      <AccountAuthClient
-        mode={mode}
-        error={params.error}
-        message={params.message}
-      />
+      <>
+        <V2Header />
+
+        <AccountAuthClient
+          mode={mode}
+          error={params.error}
+          message={params.message}
+        />
+
+        <V2Footer />
+      </>
     );
   }
 
@@ -259,17 +268,23 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     Boolean(profileResponse.error) || Boolean(addressResponse.error);
 
   return (
-    <AccountCommandCenter
-      firstName={firstName}
-      profile={profile}
-      addresses={addresses}
-      orders={customerOrders}
-      stockNotificationsEnabled={stockNotificationsEnabled}
-      error={params.error}
-      message={params.message}
-      hasAccountDataError={hasAccountDataError}
-      hasOrderError={Boolean(orderResponse.error)}
-      hasStockPreferenceError={Boolean(stockPreferenceError)}
-    />
+    <>
+      <V2Header />
+
+      <AccountCommandCenter
+        firstName={firstName}
+        profile={profile}
+        addresses={addresses}
+        orders={customerOrders}
+        stockNotificationsEnabled={stockNotificationsEnabled}
+        error={params.error}
+        message={params.message}
+        hasAccountDataError={hasAccountDataError}
+        hasOrderError={Boolean(orderResponse.error)}
+        hasStockPreferenceError={Boolean(stockPreferenceError)}
+      />
+
+      <V2Footer />
+    </>
   );
 }

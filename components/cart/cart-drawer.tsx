@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -10,6 +11,22 @@ import { useCart } from "./cart-provider";
 function money(value: number) {
   return `$${value.toFixed(2)}`;
 }
+
+/* STEREOPHONIE REAL CART CONTROLS V1 START */
+
+function isInteractiveTypingTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return Boolean(
+    target.closest(
+      'input, textarea, select, [contenteditable="true"], [role="textbox"]',
+    ),
+  );
+}
+
+/* STEREOPHONIE REAL CART CONTROLS V1 END */
 
 export default function CartDrawer() {
   const {
@@ -25,6 +42,7 @@ export default function CartDrawer() {
   } = useCart();
 
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -51,13 +69,14 @@ export default function CartDrawer() {
     body.style.overflow = "hidden";
     html.style.overflow = "hidden";
 
-    function closeWithEscape(event: KeyboardEvent) {
+    function handleCartKeyboard(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        event.preventDefault();
         closeCart();
       }
     }
 
-    window.addEventListener("keydown", closeWithEscape);
+    window.addEventListener("keydown", handleCartKeyboard);
 
     return () => {
       body.style.position = previousBodyPosition;
@@ -66,10 +85,121 @@ export default function CartDrawer() {
       body.style.overflow = previousBodyOverflow;
       html.style.overflow = previousHtmlOverflow;
 
-      window.removeEventListener("keydown", closeWithEscape);
+      window.removeEventListener("keydown", handleCartKeyboard);
       window.scrollTo(0, scrollPosition);
     };
-  }, [isCartOpen, closeCart]);
+  }, [isCartOpen, closeCart, isCartReady, items.length, router]);
+
+  /*
+   * =========================================================
+   * STEREOPHONIE CART — REAL HARDWARE COMMAND ENGINE
+   * =========================================================
+   *
+   * EMPTY LOADOUT
+   *   A / ENTER  → Continue Shopping
+   *
+   * LOADED LOADOUT
+   *   B          → Continue Shopping
+   *   ENTER / S  → START / Checkout
+   *
+   * ESCAPE remains owned by the existing close-cart handler.
+   *
+   * Commands intentionally trigger the same routes/actions as
+   * the visible controls rather than implementing parallel logic.
+   */
+  useEffect(() => {
+    if (!isCartOpen) {
+      return;
+    }
+
+    function pulseCartControl(selector: string) {
+      const control = document.querySelector<HTMLElement>(
+        `.st-cart-terminal ${selector}`,
+      );
+
+      if (!control) {
+        return;
+      }
+
+      control.classList.remove("is-keyboard-active");
+
+      void control.offsetWidth;
+
+      control.classList.add("is-keyboard-active");
+
+      window.setTimeout(() => {
+        control.classList.remove("is-keyboard-active");
+      }, 180);
+    }
+
+    function runCartRoute(selector: string, href: "/shop" | "/checkout") {
+      pulseCartControl(selector);
+
+      window.setTimeout(() => {
+        closeCart();
+        router.push(href);
+      }, 95);
+    }
+
+    function handleArcadeCartCommand(event: KeyboardEvent) {
+      if (
+        event.repeat ||
+        event.defaultPrevented ||
+        isInteractiveTypingTarget(event.target)
+      ) {
+        return;
+      }
+
+      if (!isCartReady) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+
+      /*
+       * EMPTY LOADOUT
+       * Visible command:
+       * [ A ] CONTINUE SHOPPING
+       */
+      if (items.length === 0) {
+        if (key === "a" || key === "enter") {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+
+          runCartRoute(".st-cart-empty .st-cart-command--primary", "/shop");
+        }
+
+        return;
+      }
+
+      /*
+       * LOADED LOADOUT
+       *
+       * [ B ]     CONTINUE SHOPPING
+       * [ START ] CHECKOUT
+       */
+      if (key === "b") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        runCartRoute(".st-cart-command--secondary", "/shop");
+        return;
+      }
+
+      if (key === "enter" || key === "s") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        runCartRoute(".st-cart-command--checkout", "/checkout");
+      }
+    }
+
+    window.addEventListener("keydown", handleArcadeCartCommand, true);
+
+    return () => {
+      window.removeEventListener("keydown", handleArcadeCartCommand, true);
+    };
+  }, [isCartOpen, isCartReady, items.length, closeCart, router]);
 
   if (!mounted) {
     return null;

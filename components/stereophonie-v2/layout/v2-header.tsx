@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronRight,
   Heart,
@@ -29,6 +29,10 @@ const departments = [
 
 export default function V2Header() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isTrackOrderPage =
+    pathname === "/track-order" || pathname.startsWith("/track-order/");
 
   const { totalItems, isCartReady, openCart } = useCart();
 
@@ -98,7 +102,10 @@ export default function V2Header() {
             <div className="st-v2-header__actions">
               <Link
                 href="/track-order"
-                className="st-v2-header__track-main"
+                className={`st-v2-header__track-main ${
+                  isTrackOrderPage ? "is-track-order-active" : ""
+                }`}
+                aria-current={isTrackOrderPage ? "page" : undefined}
                 aria-label="Track your order"
               >
                 <PackageSearch />
