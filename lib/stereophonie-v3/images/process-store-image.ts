@@ -1,127 +1,207 @@
 import sharp from "sharp";
 
-const OUTPUT_SIZE = 1600;
-const PRODUCT_INSET = 150;
-const CATEGORY_INSET = 80;
-
-type StoreImageKind =
+export type StoreImageKind =
   | "product"
   | "category";
 
-function isBackgroundPixel(
+const PRODUCT_CANVAS = 1800;
+const PRODUCT_SUBJECT = 1460;
+
+const CATEGORY_CANVAS = 2000;
+const CATEGORY_SUBJECT = 1840;
+
+type RawImage = {
+  data: Buffer;
+  width: number;
+  height: number;
+};
+
+function pixelOffset(
+  pixel: number,
+) {
+  return pixel * 4;
+}
+
+/*
+ * Determine how strongly a pixel resembles a white /
+ * neutral studio background.
+ *
+ * 0 = definitely subject
+ * 1 = definitely background
+ *
+ * We intentionally require near-neutral RGB values so
+ * bright colored products are not erased.
+ */
+function whiteBackgroundStrength(
   r: number,
   g: number,
   b: number,
-  a: number,
 ) {
-  if (a < 8) {
-    return true;
-  }
+  const min = Math.min(
+    r,
+    g,
+    b,
+  );
 
-  /*
-   * Deliberately conservative.
-   *
-   * We remove white / nearly-white studio backgrounds,
-   * but avoid destroying light-colored products.
-   */
-  const minimum = Math.min(r, g, b);
-  const maximum = Math.max(r, g, b);
+  const max = Math.max(
+    r,
+    g,
+    b,
+  );
+
+  const spread =
+    max - min;
 
   const brightness =
     (r + g + b) / 3;
 
-  const colorSpread =
-    maximum - minimum;
+  if (
+    brightness < 225 ||
+    spread > 28
+  ) {
+    return 0;
+  }
+
+  /*
+   * Soft transition handles JPEG compression and
+   * anti-aliased white/gray edges much better than
+   * a hard threshold.
+   */
+  const brightnessStrength =
+    Math.max(
+      0,
+      Math.min(
+        1,
+        (brightness - 225) / 27,
+      ),
+    );
+
+  const neutralityStrength =
+    Math.max(
+      0,
+      Math.min(
+        1,
+        (28 - spread) / 18,
+      ),
+    );
 
   return (
-    brightness >= 244 &&
-    colorSpread <= 14
+    brightnessStrength *
+    neutralityStrength
   );
 }
 
 /*
- * Removes only white pixels CONNECTED TO THE OUTSIDE
- * of the photograph.
+ * Flood-fill only from the OUTSIDE of the image.
  *
- * This matters because a white phone, white headphone,
- * white logo, etc. can remain white inside the subject.
- * We do not simply make every white pixel transparent.
+ * This is important:
+ * a white iPhone / AirPods / controller inside the
+ * photograph does not disappear simply because it is white.
  */
-async function removeConnectedWhiteBackground(
+async function removeStudioBackground(
   input: Buffer,
-) {
-  const prepared = await sharp(input)
-    .rotate()
-    .ensureAlpha()
-    .raw()
-    .toBuffer({
-      resolveWithObject: true,
-    });
+): Promise<Buffer> {
+  const prepared =
+    await sharp(input)
+      .rotate()
+      .ensureAlpha()
+      .raw()
+      .toBuffer({
+        resolveWithObject:
+          true,
+      });
 
   const {
     data,
     info,
   } = prepared;
 
-  const width = info.width;
-  const height = info.height;
-  const channels = info.channels;
-
-  if (channels !== 4) {
+  if (
+    info.channels !== 4
+  ) {
     throw new Error(
-      "Expected RGBA image data.",
+      "Could not prepare RGBA image.",
     );
   }
 
-  const pixelCount =
+  const width =
+    info.width;
+
+  const height =
+    info.height;
+
+  const pixels =
     width * height;
 
   const visited =
-    new Uint8Array(pixelCount);
+    new Uint8Array(
+      pixels,
+    );
 
   const queue =
-    new Int32Array(pixelCount);
+    new Int32Array(
+      pixels,
+    );
 
-  let queueStart = 0;
-  let queueEnd = 0;
+  let read = 0;
+  let write = 0;
 
-  function pixelBackground(
-    index: number,
+  function canEnter(
+    pixel: number,
   ) {
-    const offset =
-      index * channels;
+    if (
+      pixel < 0 ||
+      pixel >= pixels ||
+      visited[pixel]
+    ) {
+      return false;
+    }
 
-    return isBackgroundPixel(
-      data[offset],
-      data[offset + 1],
-      data[offset + 2],
-      data[offset + 3],
+    const offset =
+      pixelOffset(
+        pixel,
+      );
+
+    const alpha =
+      data[
+        offset + 3
+      ];
+
+    if (alpha <= 4) {
+      return true;
+    }
+
+    return (
+      whiteBackgroundStrength(
+        data[offset],
+        data[offset + 1],
+        data[offset + 2],
+      ) >
+      0.06
     );
   }
 
   function enqueue(
-    index: number,
+    pixel: number,
   ) {
     if (
-      index < 0 ||
-      index >= pixelCount ||
-      visited[index]
+      !canEnter(
+        pixel,
+      )
     ) {
       return;
     }
 
-    if (!pixelBackground(index)) {
-      return;
-    }
+    visited[pixel] = 1;
 
-    visited[index] = 1;
-    queue[queueEnd++] = index;
+    queue[
+      write++
+    ] = pixel;
   }
 
   /*
-   * Seed flood-fill from all four edges.
+   * Seed from every outside edge.
    */
-
   for (
     let x = 0;
     x < width;
@@ -153,34 +233,39 @@ async function removeConnectedWhiteBackground(
   }
 
   while (
-    queueStart <
-    queueEnd
+    read < write
   ) {
-    const index =
-      queue[queueStart++];
+    const pixel =
+      queue[
+        read++
+      ];
 
     const x =
-      index % width;
+      pixel % width;
 
     const y =
       Math.floor(
-        index / width,
+        pixel / width,
       );
 
     if (x > 0) {
-      enqueue(index - 1);
+      enqueue(
+        pixel - 1,
+      );
     }
 
     if (
       x <
       width - 1
     ) {
-      enqueue(index + 1);
+      enqueue(
+        pixel + 1,
+      );
     }
 
     if (y > 0) {
       enqueue(
-        index - width,
+        pixel - width,
       );
     }
 
@@ -189,29 +274,73 @@ async function removeConnectedWhiteBackground(
       height - 1
     ) {
       enqueue(
-        index + width,
+        pixel + width,
       );
     }
   }
 
   /*
-   * Make only connected background pixels transparent.
+   * Turn only OUTSIDE-CONNECTED background pixels
+   * transparent.
+   *
+   * The soft alpha edge avoids ugly white JPEG halos.
    */
-
   for (
-    let index = 0;
-    index < pixelCount;
-    index += 1
+    let pixel = 0;
+    pixel < pixels;
+    pixel += 1
   ) {
-    if (!visited[index]) {
+    if (
+      !visited[
+        pixel
+      ]
+    ) {
       continue;
     }
 
+    const offset =
+      pixelOffset(
+        pixel,
+      );
+
+    const strength =
+      whiteBackgroundStrength(
+        data[offset],
+        data[offset + 1],
+        data[offset + 2],
+      );
+
+    if (
+      strength >=
+      0.88
+    ) {
+      data[
+        offset + 3
+      ] = 0;
+
+      continue;
+    }
+
+    const currentAlpha =
+      data[
+        offset + 3
+      ];
+
     data[
-      index * channels + 3
-    ] = 0;
+      offset + 3
+    ] =
+      Math.round(
+        currentAlpha *
+          (1 -
+            strength),
+      );
   }
 
+  /*
+   * A tiny blur on alpha edge followed by sharpening
+   * removes hard cut-out artifacts without blurring
+   * the product itself.
+   */
   return sharp(
     data,
     {
@@ -226,6 +355,115 @@ async function removeConnectedWhiteBackground(
     .toBuffer();
 }
 
+async function trimmedSubject(
+  input: Buffer,
+) {
+  return sharp(input)
+    .trim({
+      background: {
+        r: 0,
+        g: 0,
+        b: 0,
+        alpha: 0,
+      },
+
+      threshold: 3,
+    })
+    .png()
+    .toBuffer();
+}
+
+async function standardizedCanvas({
+  image,
+  canvas,
+  subject,
+}: {
+  image: Buffer;
+  canvas: number;
+  subject: number;
+}) {
+  /*
+   * Resize subject while preserving aspect ratio.
+   */
+  const contained =
+    await sharp(image)
+      .resize({
+        width:
+          subject,
+        height:
+          subject,
+        fit:
+          "inside",
+        withoutEnlargement:
+          false,
+      })
+      .png()
+      .toBuffer();
+
+  const metadata =
+    await sharp(
+      contained,
+    ).metadata();
+
+  const width =
+    metadata.width ?? subject;
+
+  const height =
+    metadata.height ?? subject;
+
+  const left =
+    Math.max(
+      0,
+      Math.floor(
+        (canvas -
+          width) /
+          2,
+      ),
+    );
+
+  const top =
+    Math.max(
+      0,
+      Math.floor(
+        (canvas -
+          height) /
+          2,
+      ),
+    );
+
+  return sharp({
+    create: {
+      width:
+        canvas,
+      height:
+        canvas,
+      channels:
+        4,
+      background: {
+        r: 0,
+        g: 0,
+        b: 0,
+        alpha: 0,
+      },
+    },
+  })
+    .composite([
+      {
+        input:
+          contained,
+        left,
+        top,
+      },
+    ])
+    .png({
+      compressionLevel:
+        9,
+      adaptiveFiltering:
+        true,
+    })
+    .toBuffer();
+}
+
 export async function processStoreImage({
   input,
   kind,
@@ -233,84 +471,36 @@ export async function processStoreImage({
   input: Buffer;
   kind: StoreImageKind;
 }) {
-  const backgroundRemoved =
-    await removeConnectedWhiteBackground(
+  const transparent =
+    await removeStudioBackground(
       input,
     );
 
-  /*
-   * Transparent-edge trim.
-   */
+  const subject =
+    await trimmedSubject(
+      transparent,
+    );
 
-  const trimmed =
-    await sharp(
-      backgroundRemoved,
-    )
-      .trim({
-        background: {
-          r: 0,
-          g: 0,
-          b: 0,
-          alpha: 0,
-        },
-      })
-      .png()
-      .toBuffer();
+  if (
+    kind ===
+    "category"
+  ) {
+    return standardizedCanvas({
+      image:
+        subject,
+      canvas:
+        CATEGORY_CANVAS,
+      subject:
+        CATEGORY_SUBJECT,
+    });
+  }
 
-  const inset =
-    kind === "product"
-      ? PRODUCT_INSET
-      : CATEGORY_INSET;
-
-  const usableSize =
-    OUTPUT_SIZE -
-    inset * 2;
-
-  /*
-   * Every processed image gets the SAME:
-   *
-   * 1600 × 1600 transparent canvas
-   * centered subject
-   * proportional contain-fit
-   * consistent breathing room
-   */
-
-  return sharp(trimmed)
-    .resize({
-      width: usableSize,
-      height: usableSize,
-      fit: "contain",
-      withoutEnlargement:
-        false,
-      background: {
-        r: 0,
-        g: 0,
-        b: 0,
-        alpha: 0,
-      },
-    })
-    .extend({
-      top: inset,
-      bottom: inset,
-      left: inset,
-      right: inset,
-      background: {
-        r: 0,
-        g: 0,
-        b: 0,
-        alpha: 0,
-      },
-    })
-    .resize(
-      OUTPUT_SIZE,
-      OUTPUT_SIZE,
-      {
-        fit: "fill",
-      },
-    )
-    .png({
-      compressionLevel: 9,
-      adaptiveFiltering: true,
-    })
-    .toBuffer();
+  return standardizedCanvas({
+    image:
+      subject,
+    canvas:
+      PRODUCT_CANVAS,
+    subject:
+      PRODUCT_SUBJECT,
+  });
 }

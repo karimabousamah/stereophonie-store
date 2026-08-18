@@ -4604,3 +4604,476 @@ img {
       none !important;
   }
 }
+
+
+/* ==========================================================
+   V3 CATEGORY CAMPAIGNS
+   TEXT + ARTWORK = ONE SURFACE
+   ========================================================== */
+
+/*
+ * Major principle:
+ *
+ * There is no longer a card inside a card.
+ * Copy and category artwork belong to one unified campaign.
+ */
+
+.st3-cat-world {
+  --st3-campaign-gap:
+    12px;
+}
+
+
+/* ----------------------------------------------------------
+   FULL WIDTH LIGHT CAMPAIGN
+   ---------------------------------------------------------- */
+
+.st3-cat-hero {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  overflow:
+    hidden;
+
+  min-height:
+    820px;
+
+  margin-bottom:
+    var(
+      --st3-campaign-gap
+    );
+
+  border-radius:
+    40px;
+
+  background:
+    #f5f5f7;
+}
+
+.st3-cat-hero__copy {
+  flex:
+    0 0 auto;
+
+  padding:
+    58px 24px 8px;
+}
+
+
+/*
+ * The media is no longer a secondary white card.
+ */
+
+.st3-cat-hero
+.st3-cat-media--hero {
+  flex:
+    1 1 auto;
+
+  width:
+    100%;
+
+  height:
+    auto;
+
+  min-height:
+    520px;
+
+  margin:
+    0;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+.st3-cat-hero
+.st3-cat-media--hero img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  max-height:
+    570px;
+
+  padding:
+    18px 60px 0;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    0;
+}
+
+
+/* ----------------------------------------------------------
+   DARK / FEATURED FULL WIDTH CAMPAIGN
+   ---------------------------------------------------------- */
+
+.st3-cat-split {
+  overflow:
+    hidden;
+
+  margin-bottom:
+    var(
+      --st3-campaign-gap
+    );
+
+  border-radius:
+    40px;
+
+  background:
+    #000;
+}
+
+
+/*
+ * Remove the inner framed media card.
+ */
+
+.st3-cat-split
+.st3-cat-media--split {
+  min-height:
+    650px;
+
+  margin:
+    0;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+.st3-cat-split
+.st3-cat-media--split img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  max-height:
+    650px;
+
+  padding:
+    50px;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    0;
+}
+
+
+/* ----------------------------------------------------------
+   TWO-UP CATEGORY CAMPAIGNS
+   ---------------------------------------------------------- */
+
+.st3-cat-grid {
+  gap:
+    var(
+      --st3-campaign-gap
+    );
+}
+
+.st3-cat-tile {
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  min-height:
+    690px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  border-radius:
+    36px;
+}
+
+
+/*
+ * Text forms the top part of the SAME panel.
+ */
+
+.st3-cat-tile__copy {
+  flex:
+    0 0 auto;
+
+  padding:
+    45px 24px 8px;
+}
+
+
+/*
+ * Image occupies remaining space directly on panel background.
+ */
+
+.st3-cat-tile
+.st3-cat-media--tile,
+.st3-cat-tile--wide
+.st3-cat-media--tile {
+  flex:
+    1 1 auto;
+
+  width:
+    100%;
+
+  height:
+    auto;
+
+  min-height:
+    410px;
+
+  margin:
+    0;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+
+/*
+ * Absolutely no white photo-frame canvas.
+ */
+
+.st3-cat-tile
+.st3-cat-media--tile img,
+.st3-cat-tile--wide
+.st3-cat-media--tile img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  max-height:
+    470px;
+
+  padding:
+    24px 42px 14px;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    0;
+}
+
+
+/*
+ * Dark campaign artwork lives directly on black.
+ */
+
+.st3-cat-tile--dark
+.st3-cat-media--tile {
+  background:
+    transparent;
+}
+
+
+/*
+ * No nested-placeholder card for categories without art.
+ */
+
+.st3-cat-media__empty {
+  min-height:
+    inherit;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+
+/* ----------------------------------------------------------
+   CAMPAIGN VISUAL HOVER
+   ---------------------------------------------------------- */
+
+.st3-cat-hero,
+.st3-cat-split,
+.st3-cat-tile {
+  isolation:
+    isolate;
+}
+
+.st3-cat-hero img,
+.st3-cat-split img,
+.st3-cat-tile img {
+  transform:
+    translateZ(0);
+
+  transition:
+    transform
+    720ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+@media (hover: hover) {
+  .st3-cat-hero:hover img,
+  .st3-cat-split:hover img,
+  .st3-cat-tile:hover img {
+    transform:
+      scale(1.025);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT CARDS
+   TRANSPARENT ARTWORK SHOULD LIVE ON CARD SURFACE
+   ---------------------------------------------------------- */
+
+.st3-product-card__media {
+  overflow:
+    hidden;
+
+  background:
+    #f5f5f7;
+
+  border-radius:
+    28px;
+}
+
+.st3-product-card__image {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  object-fit:
+    contain;
+
+  background:
+    transparent !important;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT PAGE
+   TRANSPARENT IMAGE SURFACE
+   ---------------------------------------------------------- */
+
+.st3-product-gallery,
+.st3-product-gallery__media,
+.st3-product-gallery__stage {
+  background:
+    #f5f5f7;
+}
+
+.st3-product-gallery img,
+.st3-product-page img {
+  background:
+    transparent !important;
+}
+
+
+/* ----------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------- */
+
+@media (
+  max-width:
+  700px
+) {
+  .st3-cat-world {
+    --st3-campaign-gap:
+      8px;
+  }
+
+  .st3-cat-hero {
+    min-height:
+      650px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-hero__copy {
+    padding:
+      42px 18px 8px;
+  }
+
+  .st3-cat-hero
+  .st3-cat-media--hero {
+    min-height:
+      380px;
+  }
+
+  .st3-cat-hero
+  .st3-cat-media--hero img {
+    padding:
+      15px 20px 0;
+  }
+
+  .st3-cat-split {
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-split
+  .st3-cat-media--split {
+    min-height:
+      390px;
+  }
+
+  .st3-cat-split
+  .st3-cat-media--split img {
+    padding:
+      24px;
+  }
+
+  .st3-cat-tile {
+    min-height:
+      570px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-tile__copy {
+    padding:
+      38px 16px 4px;
+  }
+
+  .st3-cat-tile
+  .st3-cat-media--tile,
+  .st3-cat-tile--wide
+  .st3-cat-media--tile {
+    min-height:
+      340px;
+  }
+
+  .st3-cat-tile
+  .st3-cat-media--tile img,
+  .st3-cat-tile--wide
+  .st3-cat-media--tile img {
+    padding:
+      15px 22px 8px;
+  }
+}
