@@ -49,6 +49,7 @@ type CategoryRow = {
   id: string;
   name: string;
   slug: string | null;
+  image_url: string | null;
 };
 
 function relationName(
@@ -156,6 +157,7 @@ export default async function HomePage() {
           id,
           name,
           slug,
+          image_url,
           sort_order
         `,
       )
@@ -195,7 +197,8 @@ export default async function HomePage() {
     slug: category.slug,
     homepage_title: null,
     homepage_description: null,
-    homepage_wallpaper_url: null,
+    homepage_wallpaper_url:
+      category.image_url ?? null,
   }));
 
   const latestProducts = products

@@ -3582,3 +3582,1025 @@ img {
     transition: none;
   }
 }
+
+
+/* ==========================================================
+   STEREOPHONIE V3
+   CATEGORY CAMPAIGN HOMEPAGE — FINAL OVERRIDE
+   ========================================================== */
+
+.st3-cat-world {
+  width:
+    min(
+      calc(100% - 28px),
+      1510px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    105px 0 100px;
+}
+
+
+/* ----------------------------------------------------------
+   INTRO
+   ---------------------------------------------------------- */
+
+.st3-cat-intro {
+  width:
+    min(
+      calc(100% - 40px),
+      900px
+    );
+
+  margin:
+    0 auto 62px;
+
+  text-align:
+    center;
+}
+
+.st3-cat-intro > p {
+  margin:
+    0 0 11px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    17px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.st3-cat-intro h2 {
+  margin: 0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    clamp(
+      56px,
+      6.5vw,
+      96px
+    );
+
+  line-height:
+    0.93;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.07em;
+}
+
+
+/* ----------------------------------------------------------
+   SHARED IMAGE SYSTEM
+   ---------------------------------------------------------- */
+
+.st3-cat-media {
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.82
+    );
+
+  border-radius:
+    36px;
+}
+
+.st3-cat-media img {
+  display:
+    block;
+
+  width:
+    100%;
+
+  height:
+    100%;
+
+  object-fit:
+    contain;
+
+  object-position:
+    center;
+
+  padding:
+    clamp(
+      22px,
+      4vw,
+      60px
+    );
+
+  border-radius:
+    32px;
+
+  transition:
+    transform
+    850ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+.st3-cat-media__empty {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  min-height:
+    320px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  background:
+    #f5f5f7;
+
+  border-radius:
+    inherit;
+}
+
+.st3-cat-media__empty div {
+  width:
+    min(
+      42vw,
+      340px
+    );
+
+  aspect-ratio:
+    1;
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(
+        253,
+        183,
+        62,
+        0.20
+      ),
+      rgba(
+        253,
+        183,
+        62,
+        0.05
+      )
+      46%,
+      transparent
+      70%
+    );
+}
+
+
+/* ----------------------------------------------------------
+   ACTIONS
+   ---------------------------------------------------------- */
+
+.st3-cat-actions {
+  margin-top:
+    25px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    22px;
+}
+
+.st3-cat-text-link {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  color:
+    #966100;
+
+  text-decoration:
+    none;
+
+  font-size:
+    17px;
+
+  font-weight:
+    500;
+
+  transition:
+    opacity
+    160ms ease;
+}
+
+.st3-cat-text-link:hover {
+  opacity:
+    0.68;
+}
+
+.st3-cat-text-link--light {
+  color:
+    #fdb73e;
+}
+
+
+/* ==========================================================
+   FIRST CATEGORY
+   LARGE LIGHT CAMPAIGN
+   ========================================================== */
+
+.st3-cat-hero {
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  min-height:
+    850px;
+
+  margin-bottom:
+    14px;
+
+  border-radius:
+    42px;
+
+  background:
+    #f5f5f7;
+
+  color:
+    #1d1d1f;
+}
+
+.st3-cat-hero__copy {
+  position:
+    relative;
+
+  z-index:
+    2;
+
+  width:
+    min(
+      calc(100% - 40px),
+      820px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    62px 0 24px;
+
+  text-align:
+    center;
+}
+
+.st3-cat-hero__copy h2 {
+  margin:
+    0;
+
+  font-size:
+    clamp(
+      64px,
+      7vw,
+      108px
+    );
+
+  line-height:
+    0.92;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.072em;
+}
+
+.st3-cat-hero__copy > p {
+  width:
+    min(
+      100%,
+      620px
+    );
+
+  margin:
+    20px auto 0;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    clamp(
+      18px,
+      1.65vw,
+      23px
+    );
+
+  line-height:
+    1.42;
+}
+
+.st3-cat-media--hero {
+  width:
+    calc(
+      100% - 60px
+    );
+
+  height:
+    560px;
+
+  margin:
+    8px auto 30px;
+
+  background:
+    #ffffff;
+}
+
+.st3-cat-hero:hover
+.st3-cat-media--hero img {
+  transform:
+    scale(1.025);
+}
+
+
+/* ==========================================================
+   SECOND CATEGORY
+   DARK SPLIT CAMPAIGN
+   ========================================================== */
+
+.st3-cat-split {
+  min-height:
+    690px;
+
+  margin-bottom:
+    14px;
+
+  overflow:
+    hidden;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      0.78fr
+    )
+    minmax(
+      0,
+      1.22fr
+    );
+
+  align-items:
+    stretch;
+
+  border-radius:
+    42px;
+
+  background:
+    #000;
+
+  color:
+    #f5f5f7;
+}
+
+.st3-cat-split__copy {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    center;
+
+  padding:
+    clamp(
+      50px,
+      7vw,
+      105px
+    );
+}
+
+.st3-cat-kicker {
+  margin:
+    0 0 11px;
+
+  color:
+    #86868b;
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -0.01em;
+}
+
+.st3-cat-split h2 {
+  margin: 0;
+
+  max-width:
+    600px;
+
+  font-size:
+    clamp(
+      54px,
+      6vw,
+      90px
+    );
+
+  line-height:
+    0.94;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.065em;
+}
+
+.st3-cat-split__description {
+  max-width:
+    470px;
+
+  margin:
+    20px 0 0;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.66
+    );
+
+  font-size:
+    19px;
+
+  line-height:
+    1.45;
+}
+
+.st3-cat-split
+.st3-cat-actions {
+  justify-content:
+    flex-start;
+}
+
+.st3-cat-media--split {
+  min-height:
+    690px;
+
+  margin:
+    22px 22px 22px 0;
+
+  background:
+    #101010;
+
+  border-radius:
+    32px;
+}
+
+.st3-cat-media--split img {
+  max-height:
+    650px;
+}
+
+.st3-cat-split:hover
+.st3-cat-media--split img {
+  transform:
+    scale(1.03);
+}
+
+
+/* ==========================================================
+   MULTI-CATEGORY CAMPAIGN GRID
+   ========================================================== */
+
+.st3-cat-grid {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap:
+    14px;
+}
+
+.st3-cat-grid
+.st3-reveal {
+  min-width:
+    0;
+}
+
+.st3-cat-tile {
+  position:
+    relative;
+
+  min-height:
+    690px;
+
+  overflow:
+    hidden;
+
+  display:
+    grid;
+
+  grid-template-rows:
+    auto 1fr;
+
+  border-radius:
+    38px;
+
+  background:
+    #f5f5f7;
+
+  color:
+    #1d1d1f;
+
+  transition:
+    transform
+    420ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    ),
+    box-shadow
+    420ms ease;
+}
+
+.st3-cat-tile--dark {
+  background:
+    #000;
+
+  color:
+    #f5f5f7;
+}
+
+.st3-cat-tile--wide {
+  grid-column:
+    1 / -1;
+
+  min-height:
+    750px;
+}
+
+.st3-cat-tile:hover {
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 30px 80px
+    rgba(
+      0,
+      0,
+      0,
+      0.08
+    );
+}
+
+.st3-cat-tile__copy {
+  position:
+    relative;
+
+  z-index:
+    2;
+
+  width:
+    min(
+      calc(100% - 48px),
+      650px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    48px 0 22px;
+
+  text-align:
+    center;
+}
+
+.st3-cat-tile__copy h3 {
+  margin:
+    0;
+
+  font-size:
+    clamp(
+      44px,
+      4.6vw,
+      70px
+    );
+
+  line-height:
+    0.96;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.062em;
+}
+
+.st3-cat-tile__copy
+> p:not(
+  .st3-cat-kicker
+) {
+  max-width:
+    520px;
+
+  margin:
+    14px auto 0;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.43;
+}
+
+.st3-cat-tile--dark
+.st3-cat-tile__copy
+> p:not(
+  .st3-cat-kicker
+) {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.62
+    );
+}
+
+.st3-cat-tile
+.st3-cat-text-link {
+  margin-top:
+    17px;
+}
+
+.st3-cat-media--tile {
+  width:
+    calc(
+      100% - 34px
+    );
+
+  height:
+    430px;
+
+  margin:
+    0 auto 17px;
+
+  border-radius:
+    30px;
+
+  background:
+    #ffffff;
+}
+
+.st3-cat-tile--dark
+.st3-cat-media--tile {
+  background:
+    #101010;
+}
+
+.st3-cat-tile--wide
+.st3-cat-media--tile {
+  height:
+    475px;
+
+  width:
+    calc(
+      100% - 44px
+    );
+}
+
+.st3-cat-tile:hover
+.st3-cat-media--tile img {
+  transform:
+    scale(1.035);
+}
+
+
+/* ==========================================================
+   IMPORTANT:
+   REMOVE OLD CATEGORY PLACEHOLDER VISUAL LANGUAGE
+   ========================================================== */
+
+.st3-category-feature-grid,
+.st3-apple-category-stack,
+.st3-apple-categories {
+  display:
+    none !important;
+}
+
+
+/* ==========================================================
+   ROUNDING CONSISTENCY
+   ========================================================== */
+
+.st3-home-live
+.st3-button,
+.st3-home-live
+button {
+  border-radius:
+    999px !important;
+}
+
+.st3-home-live
+img {
+  border-radius:
+    24px;
+}
+
+.st3-product-card,
+.st3-product-card__media {
+  border-radius:
+    28px;
+}
+
+.st3-home-banner {
+  border-radius:
+    38px;
+}
+
+
+/* ==========================================================
+   TABLET
+   ========================================================== */
+
+@media (
+  max-width:
+  1000px
+) {
+  .st3-cat-split {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st3-cat-split__copy {
+    align-items:
+      center;
+
+    text-align:
+      center;
+
+    padding:
+      65px 35px 30px;
+  }
+
+  .st3-cat-split
+  .st3-cat-actions {
+    justify-content:
+      center;
+  }
+
+  .st3-cat-media--split {
+    min-height:
+      500px;
+
+    margin:
+      0 22px 22px;
+  }
+
+  .st3-cat-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st3-cat-tile--wide {
+    grid-column:
+      auto;
+  }
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (
+  max-width:
+  700px
+) {
+  .st3-cat-world {
+    width:
+      calc(
+        100% - 16px
+      );
+
+    padding:
+      75px 0;
+  }
+
+  .st3-cat-intro {
+    margin-bottom:
+      38px;
+  }
+
+  .st3-cat-intro h2 {
+    font-size:
+      clamp(
+        48px,
+        15vw,
+        68px
+      );
+  }
+
+  .st3-cat-hero {
+    min-height:
+      650px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-hero__copy {
+    padding:
+      45px 18px 18px;
+  }
+
+  .st3-cat-hero__copy h2 {
+    font-size:
+      clamp(
+        52px,
+        15vw,
+        72px
+      );
+  }
+
+  .st3-cat-media--hero {
+    width:
+      calc(
+        100% - 20px
+      );
+
+    height:
+      390px;
+
+    margin-bottom:
+      10px;
+
+    border-radius:
+      22px;
+  }
+
+  .st3-cat-split {
+    min-height:
+      650px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-split__copy {
+    padding:
+      50px 24px 28px;
+  }
+
+  .st3-cat-split h2 {
+    font-size:
+      clamp(
+        50px,
+        14vw,
+        70px
+      );
+  }
+
+  .st3-cat-media--split {
+    min-height:
+      390px;
+
+    margin:
+      0 10px 10px;
+
+    border-radius:
+      22px;
+  }
+
+  .st3-cat-grid {
+    gap:
+      8px;
+  }
+
+  .st3-cat-tile,
+  .st3-cat-tile--wide {
+    min-height:
+      590px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-tile__copy {
+    padding:
+      40px 0 18px;
+  }
+
+  .st3-cat-tile__copy h3 {
+    font-size:
+      clamp(
+        42px,
+        12vw,
+        58px
+      );
+  }
+
+  .st3-cat-media--tile,
+  .st3-cat-tile--wide
+  .st3-cat-media--tile {
+    width:
+      calc(
+        100% - 20px
+      );
+
+    height:
+      355px;
+
+    margin-bottom:
+      10px;
+
+    border-radius:
+      22px;
+  }
+}
+
+
+/* ==========================================================
+   REDUCED MOTION
+   ========================================================== */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .st3-cat-media img,
+  .st3-cat-tile {
+    transition:
+      none !important;
+  }
+}

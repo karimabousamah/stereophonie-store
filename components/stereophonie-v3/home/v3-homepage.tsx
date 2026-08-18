@@ -23,76 +23,165 @@ function primaryProductImage(
   }
 
   const images = [...product.images]
-    .filter((image) => image.image_url)
-    .sort((first, second) => {
+    .filter((image) =>
+      Boolean(image.image_url),
+    )
+    .sort((a, b) => {
       if (
-        first.is_primary !==
-        second.is_primary
+        a.is_primary !==
+        b.is_primary
       ) {
-        return first.is_primary ? -1 : 1;
+        return a.is_primary
+          ? -1
+          : 1;
       }
 
       return (
-        (first.position ?? 0) -
-        (second.position ?? 0)
+        (a.position ?? 0) -
+        (b.position ?? 0)
       );
     });
 
-  return images[0]?.image_url ?? null;
+  return (
+    images[0]?.image_url ??
+    null
+  );
 }
 
-function categoryProduct(
+function productForCategory(
   category: V3HomeCategory,
   products: V3Product[],
 ) {
+  const normalized =
+    category.name
+      .trim()
+      .toLowerCase();
+
   return products.find(
     (product) =>
       product.categoryName
         .trim()
         .toLowerCase() ===
-      category.name
-        .trim()
-        .toLowerCase(),
+      normalized,
   );
 }
 
-function categoryVisual(
+function categoryImage(
   category: V3HomeCategory,
   products: V3Product[],
 ) {
-  if (
+  const uploaded =
     category.homepage_wallpaper_url
-      ?.trim()
-  ) {
-    return (
-      category.homepage_wallpaper_url
-    );
+      ?.trim();
+
+  if (uploaded) {
+    return uploaded;
   }
 
   return primaryProductImage(
-    categoryProduct(
+    productForCategory(
       category,
       products,
     ),
   );
 }
 
-function categoryTitle(
-  category: V3HomeCategory,
-) {
-  return (
-    category.homepage_title?.trim() ||
-    category.name
-  );
-}
-
 function categoryDescription(
   category: V3HomeCategory,
 ) {
-  return (
+  const custom =
     category.homepage_description
-      ?.trim() ||
-    `Discover our selection of ${category.name.toLowerCase()}.`
+      ?.trim();
+
+  if (custom) {
+    return custom;
+  }
+
+  const name =
+    category.name.toLowerCase();
+
+  return `Discover our selection of ${name}.`;
+}
+
+function categoryHref(
+  category: V3HomeCategory,
+) {
+  return `/shop?category=${encodeURIComponent(
+    category.name,
+  )}`;
+}
+
+function CategoryMedia({
+  category,
+  products,
+  className = "",
+}: {
+  category: V3HomeCategory;
+  products: V3Product[];
+  className?: string;
+}) {
+  const image =
+    categoryImage(
+      category,
+      products,
+    );
+
+  return (
+    <div
+      className={`st3-cat-media ${className}`}
+    >
+      {image ? (
+        <img
+          src={image}
+          alt=""
+          loading="lazy"
+        />
+      ) : (
+        <div
+          className="st3-cat-media__empty"
+          aria-hidden="true"
+        >
+          <div />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CategoryActions({
+  category,
+  inverted = false,
+}: {
+  category: V3HomeCategory;
+  inverted?: boolean;
+}) {
+  return (
+    <div className="st3-cat-actions">
+      <Link
+        href={categoryHref(
+          category,
+        )}
+        className="st3-button"
+      >
+        Shop
+      </Link>
+
+      <Link
+        href={categoryHref(
+          category,
+        )}
+        className={
+          inverted
+            ? "st3-cat-text-link st3-cat-text-link--light"
+            : "st3-cat-text-link"
+        }
+      >
+        Explore
+        <span aria-hidden="true">
+          ›
+        </span>
+      </Link>
+    </div>
   );
 }
 
@@ -103,7 +192,7 @@ function ProductSection({
   products,
   href,
   linkLabel,
-  tone = "white",
+  soft = false,
 }: {
   eyebrow: string;
   title: string;
@@ -111,7 +200,7 @@ function ProductSection({
   products: V3Product[];
   href: string;
   linkLabel: string;
-  tone?: "white" | "soft";
+  soft?: boolean;
 }) {
   if (!products.length) {
     return null;
@@ -121,7 +210,7 @@ function ProductSection({
     <V3Reveal>
       <section
         className={`st3-products-section ${
-          tone === "soft"
+          soft
             ? "st3-products-section--soft"
             : ""
         }`}
@@ -151,12 +240,14 @@ function ProductSection({
         </div>
 
         <div className="st3-product-grid">
-          {products.map((product) => (
-            <V3ProductCard
-              key={product.id}
-              product={product}
-            />
-          ))}
+          {products.map(
+            (product) => (
+              <V3ProductCard
+                key={product.id}
+                product={product}
+              />
+            ),
+          )}
         </div>
       </section>
     </V3Reveal>
@@ -182,16 +273,26 @@ export default function V3Homepage({
     catalogProducts[0];
 
   const heroImage =
-    primaryProductImage(heroProduct);
+    primaryProductImage(
+      heroProduct,
+    );
 
-  const primaryCategories =
-    categories.slice(0, 2);
+  const first =
+    categories[0];
 
-  const secondaryCategories =
+  const second =
+    categories[1];
+
+  const gridCategories =
     categories.slice(2);
 
   return (
     <main className="st3-home-live">
+
+      {/* ====================================================
+          MAIN STORE HERO
+          ==================================================== */}
+
       <section className="st3-premium-hero">
         <div className="st3-premium-hero__inner">
           <div className="st3-premium-hero__copy">
@@ -206,9 +307,9 @@ export default function V3Homepage({
             </h1>
 
             <p className="st3-premium-hero__description">
-              Discover technology selected
-              for the way you live, work
-              and play.
+              Phones, computers,
+              entertainment and more,
+              selected for everyday life.
             </p>
 
             <div className="st3-premium-hero__actions">
@@ -216,7 +317,7 @@ export default function V3Homepage({
                 href="/shop"
                 className="st3-button"
               >
-                Shop now
+                Shop
               </Link>
 
               <Link
@@ -242,185 +343,184 @@ export default function V3Homepage({
                 src={heroImage}
                 alt={
                   heroProduct?.name ??
-                  "Stereophonie technology"
+                  ""
                 }
                 className="st3-premium-hero__image"
               />
-            ) : (
-              <div className="st3-premium-hero__visual-fallback">
-                Stereophonie
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       </section>
 
 
-      {primaryCategories.length ? (
-        <section className="st3-apple-categories">
+      {/* ====================================================
+          CATEGORY INTRO
+          ==================================================== */}
+
+      {categories.length ? (
+        <section className="st3-cat-world">
+
           <V3Reveal>
-            <div className="st3-apple-categories__heading">
-              <p className="st3-section-eyebrow">
+            <div className="st3-cat-intro">
+              <p>
                 Explore Stereophonie
               </p>
 
               <h2>
-                Find what fits your life.
+                Find what fits
+                your life.
               </h2>
             </div>
           </V3Reveal>
 
-          <div className="st3-apple-category-stack">
-            {primaryCategories.map(
-              (category, index) => {
-                const visual =
-                  categoryVisual(
-                    category,
-                    catalogProducts,
-                  );
 
-                return (
-                  <V3Reveal
-                    key={category.id}
-                  >
-                    <article
-                      className={`st3-apple-category-hero ${
-                        index % 2 === 1
-                          ? "st3-apple-category-hero--dark"
-                          : ""
-                      }`}
-                    >
-                      <div className="st3-apple-category-hero__copy">
-                        <p className="st3-apple-category-hero__eyebrow">
-                          Stereophonie
-                        </p>
+          {/* ==================================================
+              CATEGORY 01 — LARGE LIGHT CAMPAIGN
+              ================================================== */}
 
-                        <h2>
-                          {categoryTitle(
-                            category,
-                          )}
-                        </h2>
+          {first ? (
+            <V3Reveal>
+              <article className="st3-cat-hero st3-cat-hero--light">
+                <div className="st3-cat-hero__copy">
+                  <h2>
+                    {first.name}
+                  </h2>
 
-                        <p>
-                          {categoryDescription(
-                            category,
-                          )}
-                        </p>
+                  <p>
+                    {categoryDescription(
+                      first,
+                    )}
+                  </p>
 
-                        <div className="st3-apple-category-hero__actions">
-                          <Link
-                            href={`/shop?category=${encodeURIComponent(
-                              category.name,
-                            )}`}
-                            className="st3-button"
-                          >
-                            Shop
-                          </Link>
+                  <CategoryActions
+                    category={first}
+                  />
+                </div>
 
-                          <Link
-                            href={`/shop?category=${encodeURIComponent(
-                              category.name,
-                            )}`}
-                            className="st3-category-learn-link"
-                          >
-                            Explore
-                            <span aria-hidden="true">
-                              ›
-                            </span>
-                          </Link>
-                        </div>
-                      </div>
-
-                      <div className="st3-apple-category-hero__media">
-                        {visual ? (
-                          <img
-                            src={visual}
-                            alt=""
-                            loading={
-                              index === 0
-                                ? "eager"
-                                : "lazy"
-                            }
-                          />
-                        ) : (
-                          <div className="st3-category-image-fallback">
-                            <span>
-                              {category.name}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </article>
-                  </V3Reveal>
-                );
-              },
-            )}
-          </div>
+                <CategoryMedia
+                  category={first}
+                  products={catalogProducts}
+                  className="st3-cat-media--hero"
+                />
+              </article>
+            </V3Reveal>
+          ) : null}
 
 
-          {secondaryCategories.length ? (
-            <div className="st3-category-feature-grid">
-              {secondaryCategories.map(
-                (category) => {
-                  const visual =
-                    categoryVisual(
-                      category,
-                      catalogProducts,
-                    );
+          {/* ==================================================
+              CATEGORY 02 — DIFFERENT / DARK SPLIT CAMPAIGN
+              ================================================== */}
+
+          {second ? (
+            <V3Reveal>
+              <article className="st3-cat-split">
+                <div className="st3-cat-split__copy">
+                  <p className="st3-cat-kicker">
+                    Featured category
+                  </p>
+
+                  <h2>
+                    {second.name}
+                  </h2>
+
+                  <p className="st3-cat-split__description">
+                    {categoryDescription(
+                      second,
+                    )}
+                  </p>
+
+                  <CategoryActions
+                    category={second}
+                    inverted
+                  />
+                </div>
+
+                <CategoryMedia
+                  category={second}
+                  products={catalogProducts}
+                  className="st3-cat-media--split"
+                />
+              </article>
+            </V3Reveal>
+          ) : null}
+
+
+          {/* ==================================================
+              REMAINING CATEGORIES — APPLE-LIKE 2-UP CAMPAIGNS
+              ================================================== */}
+
+          {gridCategories.length ? (
+            <div className="st3-cat-grid">
+              {gridCategories.map(
+                (category, index) => {
+                  const dark =
+                    index % 4 === 3;
+
+                  const wide =
+                    index > 0 &&
+                    index % 5 === 4;
 
                   return (
                     <V3Reveal
-                      key={category.id}
+                      key={
+                        category.id
+                      }
                     >
-                      <Link
-                        href={`/shop?category=${encodeURIComponent(
-                          category.name,
-                        )}`}
-                        className="st3-category-feature-card"
+                      <article
+                        className={`st3-cat-tile ${
+                          dark
+                            ? "st3-cat-tile--dark"
+                            : ""
+                        } ${
+                          wide
+                            ? "st3-cat-tile--wide"
+                            : ""
+                        }`}
                       >
-                        <div className="st3-category-feature-card__copy">
-                          <p>
-                            Category
+                        <div className="st3-cat-tile__copy">
+                          <p className="st3-cat-kicker">
+                            Stereophonie
                           </p>
 
                           <h3>
-                            {categoryTitle(
-                              category,
-                            )}
+                            {
+                              category.name
+                            }
                           </h3>
 
-                          <span>
+                          <p>
                             {categoryDescription(
                               category,
                             )}
-                          </span>
+                          </p>
 
-                          <span className="st3-category-feature-card__cta">
+                          <Link
+                            href={categoryHref(
+                              category,
+                            )}
+                            className={
+                              dark
+                                ? "st3-cat-text-link st3-cat-text-link--light"
+                                : "st3-cat-text-link"
+                            }
+                          >
                             Explore
                             <span aria-hidden="true">
                               ›
                             </span>
-                          </span>
+                          </Link>
                         </div>
 
-                        <div className="st3-category-feature-card__media">
-                          {visual ? (
-                            <img
-                              src={visual}
-                              alt=""
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="st3-category-image-fallback">
-                              <span>
-                                {
-                                  category.name
-                                }
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </Link>
+                        <CategoryMedia
+                          category={
+                            category
+                          }
+                          products={
+                            catalogProducts
+                          }
+                          className="st3-cat-media--tile"
+                        />
+                      </article>
                     </V3Reveal>
                   );
                 },
@@ -431,6 +531,10 @@ export default function V3Homepage({
       ) : null}
 
 
+      {/* ====================================================
+          PRODUCTS
+          ==================================================== */}
+
       <ProductSection
         eyebrow="Latest"
         title="Just arrived."
@@ -440,19 +544,17 @@ export default function V3Homepage({
         linkLabel="View all"
       />
 
-
       {offerProducts.length ? (
         <ProductSection
           eyebrow="Offers"
-          title="More technology. Better value."
-          description="Selected products at special prices."
+          title="More for less."
+          description="Selected technology at special prices."
           products={offerProducts}
           href="/shop?offers=true"
           linkLabel="View offers"
-          tone="soft"
+          soft
         />
       ) : null}
-
 
       <V3Reveal>
         <section className="st3-home-banner">
@@ -463,21 +565,21 @@ export default function V3Homepage({
 
             <h2>
               Technology for
-              <br />
               every day.
             </h2>
 
             <p>
-              From your pocket to your
-              desk, discover technology
-              selected for everyday life.
+              Explore everything from
+              phones and computers to
+              entertainment and
+              accessories.
             </p>
 
             <Link
               href="/shop"
               className="st3-button"
             >
-              Explore the store
+              Explore store
             </Link>
           </div>
 
@@ -488,62 +590,47 @@ export default function V3Homepage({
         </section>
       </V3Reveal>
 
-
       <ProductSection
-        eyebrow="Selected for you"
+        eyebrow="Selected"
         title="Worth discovering."
-        description="A curated selection from across the Stereophonie store."
+        description="A selection from across the Stereophonie store."
         products={featuredProducts}
         href="/shop"
         linkLabel="Explore store"
       />
 
-
       <V3Reveal>
         <section className="st3-service-strip">
           <div className="st3-service-strip__item">
-            <span className="st3-service-strip__number">
-              01
-            </span>
-
             <strong>
               Secure shopping
             </strong>
 
             <span>
-              A simple and streamlined
-              checkout experience.
+              A streamlined checkout
+              experience.
             </span>
           </div>
 
           <div className="st3-service-strip__item">
-            <span className="st3-service-strip__number">
-              02
-            </span>
-
             <strong>
               Selected technology
             </strong>
 
             <span>
-              Products chosen across
-              leading technology
-              categories.
+              Products across leading
+              technology categories.
             </span>
           </div>
 
           <div className="st3-service-strip__item">
-            <span className="st3-service-strip__number">
-              03
-            </span>
-
             <strong>
               Order support
             </strong>
 
             <span>
-              Access your account and
-              track orders online.
+              Track orders and manage
+              your account online.
             </span>
           </div>
         </section>
