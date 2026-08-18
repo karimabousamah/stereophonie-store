@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import V3Reveal from "@/components/stereophonie-v3/shared/v3-reveal";
 import V3ProductCard, {
   type V3Product,
 } from "@/components/stereophonie-v3/shared/v3-product-card";
@@ -33,7 +34,8 @@ function ProductSection({
   }
 
   return (
-    <section className="st3-products-section">
+    <V3Reveal>
+      <section className="st3-products-section">
       <div className="st3-section-heading">
         <div>
           <p className="st3-section-eyebrow">
@@ -63,8 +65,9 @@ function ProductSection({
             product={product}
           />
         ))}
-      </div>
-    </section>
+        </div>
+      </section>
+    </V3Reveal>
   );
 }
 
@@ -124,7 +127,8 @@ export default function V3Homepage({
       </section>
 
       {categories.length ? (
-        <section className="st3-category-section">
+        <V3Reveal>
+          <section className="st3-category-section">
           <div className="st3-section-heading">
             <div>
               <p className="st3-section-eyebrow">
@@ -198,7 +202,8 @@ export default function V3Homepage({
               );
             })}
           </div>
-        </section>
+          </section>
+        </V3Reveal>
       ) : null}
 
       <ProductSection
@@ -228,7 +233,8 @@ export default function V3Homepage({
         linkLabel="Explore store"
       />
 
-      <section className="st3-service-strip">
+      <V3Reveal>
+        <section className="st3-service-strip">
         <div className="st3-service-strip__item">
           <strong>Secure shopping</strong>
           <span>
@@ -252,7 +258,8 @@ export default function V3Homepage({
             orders online.
           </span>
         </div>
-      </section>
+        </section>
+      </V3Reveal>
     </main>
   );
 }

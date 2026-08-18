@@ -1337,3 +1337,220 @@ textarea {
     transition: none;
   }
 }
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — PREMIUM INTERACTION LAYER
+   ========================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.st3-reveal {
+  opacity: 0;
+  transform: translateY(34px);
+  transition:
+    opacity 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.st3-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Header refinement */
+
+.st3-header {
+  position: relative;
+  z-index: 1000;
+}
+
+.st3-header__bar {
+  position: relative;
+  z-index: 1002;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.st3-mega {
+  transform-origin: top center;
+  animation:
+    st3MegaEnter 360ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.st3-header__scrim {
+  animation:
+    st3ScrimEnter 280ms ease both;
+}
+
+@keyframes st3MegaEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes st3ScrimEnter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* CTA refinement */
+
+.st3-button {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.st3-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.st3-button:active {
+  transform: scale(0.98);
+}
+
+/* Category premium motion */
+
+.st3-category-card {
+  transition:
+    transform 420ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 420ms ease;
+}
+
+.st3-category-card:hover {
+  transform:
+    translateY(-7px)
+    scale(1.004);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.1);
+}
+
+.st3-category-card__visual img {
+  transition:
+    transform 650ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-category-card:hover
+.st3-category-card__visual img {
+  transform: scale(1.055);
+}
+
+/* Product card premium motion */
+
+.st3-product-card {
+  transition:
+    transform 360ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-product-card:hover {
+  transform: translateY(-4px);
+}
+
+.st3-product-card__media {
+  transition:
+    background 300ms ease,
+    box-shadow 400ms ease;
+}
+
+.st3-product-card:hover
+.st3-product-card__media {
+  background: #f2f2f4;
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.065);
+}
+
+.st3-product-card__image {
+  transition:
+    transform 600ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-product-card:hover
+.st3-product-card__image {
+  transform: scale(1.025);
+}
+
+/* Better focus states */
+
+.st3-button:focus-visible,
+.st3-link-arrow:focus-visible,
+.st3-section-link:focus-visible,
+.st3-category-card:focus-visible,
+.st3-product-card__media:focus-visible,
+.st3-product-card__name:focus-visible,
+.st3-footer a:focus-visible,
+.st3-header a:focus-visible,
+.st3-header button:focus-visible {
+  outline: 2px solid #fdb73e;
+  outline-offset: 3px;
+}
+
+/* Mobile touch behaviour */
+
+@media (hover: none) {
+  .st3-category-card:hover,
+  .st3-product-card:hover,
+  .st3-button:hover {
+    transform: none;
+  }
+
+  .st3-category-card:hover
+  .st3-category-card__visual img,
+  .st3-product-card:hover
+  .st3-product-card__image {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .st3-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .st3-mega,
+  .st3-header__scrim {
+    animation: none;
+  }
+
+  .st3-category-card,
+  .st3-category-card__visual img,
+  .st3-product-card,
+  .st3-product-card__media,
+  .st3-product-card__image,
+  .st3-button {
+    transition: none;
+  }
+}
