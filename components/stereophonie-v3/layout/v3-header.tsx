@@ -13,6 +13,12 @@ type HeaderCategory = {
   slug?: string | null;
 };
 
+type DesktopMenu =
+  | "store"
+  | "support"
+  | `category:${string}`
+  | null;
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -74,8 +80,8 @@ export function V3Header() {
   const [categories, setCategories] =
     useState<HeaderCategory[]>([]);
 
-  const [megaOpen, setMegaOpen] =
-    useState(false);
+  const [desktopMenu, setDesktopMenu] =
+    useState<DesktopMenu>(null);
 
   const [mobileOpen, setMobileOpen] =
     useState(false);
@@ -114,7 +120,7 @@ export function V3Header() {
           setCategories(nextCategories);
         }
       } catch {
-        // Header stays usable even if category loading fails.
+        // Navigation remains usable if category loading fails.
       }
     }
 
@@ -126,339 +132,679 @@ export function V3Header() {
   }, []);
 
   useEffect(() => {
-    if (!mobileOpen) {
-      document.body.style.overflow = "";
-      return;
-    }
-
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow =
+      mobileOpen ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
 
-  function cancelClose() {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current);
-      closeTimer.current = null;
+  useEffect(() => {
+    function onKeyDown(
+      event: KeyboardEvent,
+    ) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      setDesktopMenu(null);
+      setMobileOpen(false);
     }
+
+    window.addEventListener(
+      "keydown",
+      onKeyDown,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        onKeyDown,
+      );
+    };
+  }, []);
+
+  function cancelClose() {
+    if (!closeTimer.current) {
+      return;
+    }
+
+    clearTimeout(closeTimer.current);
+    closeTimer.current = null;
   }
 
-  function openMega() {
+  function openMenu(
+    menu: DesktopMenu,
+  ) {
     cancelClose();
-    setMegaOpen(true);
+    setDesktopMenu(menu);
+  }
+
+  function closeMenu() {
+    cancelClose();
+    setDesktopMenu(null);
   }
 
   function scheduleClose() {
     cancelClose();
 
-    closeTimer.current = setTimeout(() => {
-      setMegaOpen(false);
-    }, 120);
+    closeTimer.current = setTimeout(
+      () => {
+        setDesktopMenu(null);
+      },
+      190,
+    );
   }
 
   const visibleCategories =
     categories.slice(0, 12);
 
+  const topCategories =
+    visibleCategories.slice(0, 6);
+
+  const activeCategory =
+    desktopMenu?.startsWith(
+      "category:",
+    )
+      ? categories.find(
+          (category) =>
+            `category:${category.id}` ===
+            desktopMenu,
+        ) ?? null
+      : null;
+
+  const menuKey =
+    desktopMenu ?? "closed";
+
   return (
-    <header
-      className="st3-header"
-      onMouseLeave={scheduleClose}
-    >
-      <div className="st3-header__bar">
-        <div className="st3-header__inner">
-          <Link
-            href="/"
-            className="st3-header__logo"
-            onMouseEnter={scheduleClose}
-          >
-            Stereophonie
-          </Link>
-
-          <nav
-            className="st3-header__nav"
-            aria-label="Main navigation"
-          >
-            <button
-              type="button"
-              className="st3-header__nav-item"
-              onMouseEnter={openMega}
-              onFocus={openMega}
-              aria-expanded={megaOpen}
-            >
-              Store
-            </button>
-
-            {visibleCategories
-              .slice(0, 6)
-              .map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/shop?category=${encodeURIComponent(
-                    category.name,
-                  )}`}
-                  className="st3-header__nav-item"
-                  onMouseEnter={openMega}
-                >
-                  {category.name}
-                </Link>
-              ))}
-
+    <>
+      <header
+        className="st3-header"
+        onMouseEnter={cancelClose}
+        onMouseLeave={scheduleClose}
+      >
+        <div className="st3-header__bar">
+          <div className="st3-header__inner">
             <Link
-              href="/about"
-              className="st3-header__nav-item"
-              onMouseEnter={openMega}
+              href="/"
+              className="st3-header__logo"
+              onMouseEnter={closeMenu}
+              onFocus={closeMenu}
             >
-              Support
-            </Link>
-          </nav>
-
-          <div className="st3-header__actions">
-            <Link
-              href="/shop"
-              className="st3-header__icon"
-              aria-label="Search"
-            >
-              <SearchIcon />
+              Stereophonie
             </Link>
 
-            <Link
-              href="/wishlist"
-              className="st3-header__icon st3-header__desktop-only"
-              aria-label="Wishlist"
+            <nav
+              className="st3-header__nav"
+              aria-label="Main navigation"
             >
-              <HeartIcon />
-            </Link>
+              <button
+                type="button"
+                className={`st3-header__nav-item ${
+                  desktopMenu === "store"
+                    ? "st3-header__nav-item--active"
+                    : ""
+                }`}
+                onMouseEnter={() =>
+                  openMenu("store")
+                }
+                onFocus={() =>
+                  openMenu("store")
+                }
+                onClick={() =>
+                  openMenu("store")
+                }
+                aria-expanded={
+                  desktopMenu === "store"
+                }
+              >
+                Store
+              </button>
 
-            <Link
-              href="/account"
-              className="st3-header__icon st3-header__desktop-only"
-              aria-label="Account"
-            >
-              <UserIcon />
-            </Link>
+              {topCategories.map(
+                (category) => {
+                  const menu:
+                    DesktopMenu =
+                    `category:${category.id}`;
 
-            <Link
-              href="/checkout"
-              className="st3-header__icon"
-              aria-label="Shopping bag"
-            >
-              <BagIcon />
-            </Link>
+                  const active =
+                    desktopMenu === menu;
 
-            <button
-              type="button"
-              className="st3-header__icon st3-header__menu-button"
-              aria-label={
-                mobileOpen
-                  ? "Close navigation"
-                  : "Open navigation"
-              }
-              aria-expanded={mobileOpen}
-              onClick={() =>
-                setMobileOpen((value) => !value)
-              }
-            >
-              <MenuIcon open={mobileOpen} />
-            </button>
-          </div>
-        </div>
-      </div>
+                  return (
+                    <Link
+                      key={category.id}
+                      href={`/shop?category=${encodeURIComponent(
+                        category.name,
+                      )}`}
+                      className={`st3-header__nav-item ${
+                        active
+                          ? "st3-header__nav-item--active"
+                          : ""
+                      }`}
+                      onMouseEnter={() =>
+                        openMenu(menu)
+                      }
+                      onFocus={() =>
+                        openMenu(menu)
+                      }
+                      aria-expanded={
+                        active
+                      }
+                    >
+                      {category.name}
+                    </Link>
+                  );
+                },
+              )}
 
-      {megaOpen && (
-        <>
-          <div
-            className="st3-mega"
-            onMouseEnter={cancelClose}
-            onMouseLeave={scheduleClose}
-          >
-            <div className="st3-mega__inner">
-              <div>
-                <p className="st3-mega__eyebrow">
-                  Shop
-                </p>
+              <button
+                type="button"
+                className={`st3-header__nav-item ${
+                  desktopMenu ===
+                  "support"
+                    ? "st3-header__nav-item--active"
+                    : ""
+                }`}
+                onMouseEnter={() =>
+                  openMenu("support")
+                }
+                onFocus={() =>
+                  openMenu("support")
+                }
+                onClick={() =>
+                  openMenu("support")
+                }
+                aria-expanded={
+                  desktopMenu ===
+                  "support"
+                }
+              >
+                Support
+              </button>
+            </nav>
 
-                <div className="st3-mega__links">
-                  <Link
-                    href="/shop"
-                    className="st3-mega__primary-link"
-                    onClick={() =>
-                      setMegaOpen(false)
-                    }
-                  >
-                    Shop All
-                  </Link>
-
-                  <Link
-                    href="/shop?offers=true"
-                    className="st3-mega__primary-link st3-mega__accent"
-                    onClick={() =>
-                      setMegaOpen(false)
-                    }
-                  >
-                    Offers
-                  </Link>
-
-                  {visibleCategories.map(
-                    (category) => (
-                      <Link
-                        key={category.id}
-                        href={`/shop?category=${encodeURIComponent(
-                          category.name,
-                        )}`}
-                        className="st3-mega__primary-link"
-                        onClick={() =>
-                          setMegaOpen(false)
-                        }
-                      >
-                        {category.name}
-                      </Link>
-                    ),
-                  )}
-                </div>
-              </div>
-
-              <div className="st3-mega__secondary">
-                <p className="st3-mega__eyebrow">
-                  Quick Links
-                </p>
-
-                <div className="st3-mega__secondary-links">
-                  <Link
-                    href="/track-order"
-                    className="st3-mega__secondary-link"
-                  >
-                    Track your order
-                  </Link>
-
-                  <Link
-                    href="/account"
-                    className="st3-mega__secondary-link"
-                  >
-                    Your account
-                  </Link>
-
-                  <Link
-                    href="/wishlist"
-                    className="st3-mega__secondary-link"
-                  >
-                    Wishlist
-                  </Link>
-
-                  <Link
-                    href="/delivery"
-                    className="st3-mega__secondary-link"
-                  >
-                    Delivery
-                  </Link>
-
-                  <Link
-                    href="/about"
-                    className="st3-mega__secondary-link"
-                  >
-                    About Stereophonie
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="st3-header__scrim"
-            aria-label="Close menu"
-            onClick={() => setMegaOpen(false)}
-          />
-        </>
-      )}
-
-      {mobileOpen && (
-        <div className="st3-mobile">
-          <div className="st3-mobile__inner">
-            <p className="st3-mobile__label">
-              Shop
-            </p>
-
-            <div className="st3-mobile__links">
+            <div className="st3-header__actions">
               <Link
                 href="/shop"
-                className="st3-mobile__link"
-                onClick={() =>
-                  setMobileOpen(false)
-                }
+                className="st3-header__icon"
+                aria-label="Search products"
+                onMouseEnter={closeMenu}
               >
-                Shop All
-              </Link>
-
-              <Link
-                href="/shop?offers=true"
-                className="st3-mobile__link st3-mega__accent"
-                onClick={() =>
-                  setMobileOpen(false)
-                }
-              >
-                Offers
-              </Link>
-
-              {visibleCategories.map(
-                (category) => (
-                  <Link
-                    key={category.id}
-                    href={`/shop?category=${encodeURIComponent(
-                      category.name,
-                    )}`}
-                    className="st3-mobile__link"
-                    onClick={() =>
-                      setMobileOpen(false)
-                    }
-                  >
-                    {category.name}
-                  </Link>
-                ),
-              )}
-            </div>
-
-            <div className="st3-mobile__utility">
-              <Link
-                href="/account"
-                onClick={() =>
-                  setMobileOpen(false)
-                }
-              >
-                Account
+                <SearchIcon />
               </Link>
 
               <Link
                 href="/wishlist"
-                onClick={() =>
-                  setMobileOpen(false)
-                }
+                className="st3-header__icon st3-header__desktop-only"
+                aria-label="Wishlist"
+                onMouseEnter={closeMenu}
               >
-                Wishlist
+                <HeartIcon />
               </Link>
 
               <Link
-                href="/track-order"
-                onClick={() =>
-                  setMobileOpen(false)
-                }
+                href="/account"
+                className="st3-header__icon st3-header__desktop-only"
+                aria-label="Account"
+                onMouseEnter={closeMenu}
               >
-                Track order
+                <UserIcon />
               </Link>
 
               <Link
-                href="/about"
+                href="/checkout"
+                className="st3-header__icon"
+                aria-label="Shopping bag"
+                onMouseEnter={closeMenu}
+              >
+                <BagIcon />
+              </Link>
+
+              <button
+                type="button"
+                className="st3-header__icon st3-header__menu-button"
+                aria-label={
+                  mobileOpen
+                    ? "Close navigation"
+                    : "Open navigation"
+                }
+                aria-expanded={
+                  mobileOpen
+                }
                 onClick={() =>
-                  setMobileOpen(false)
+                  setMobileOpen(
+                    (current) =>
+                      !current,
+                  )
                 }
               >
-                Support
-              </Link>
+                <MenuIcon
+                  open={mobileOpen}
+                />
+              </button>
             </div>
           </div>
         </div>
+
+        <div
+          className={`st3-mega ${
+            desktopMenu
+              ? "st3-mega--open"
+              : "st3-mega--closed"
+          }`}
+          aria-hidden={
+            desktopMenu === null
+          }
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+        >
+          {desktopMenu && (
+            <div
+              key={menuKey}
+              className="st3-mega__inner st3-mega__inner--switch"
+            >
+              {desktopMenu ===
+              "store" ? (
+                <>
+                  <div>
+                    <p className="st3-mega__eyebrow">
+                      Shop
+                    </p>
+
+                    <div className="st3-mega__links">
+                      <Link
+                        href="/shop"
+                        className="st3-mega__primary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Shop All
+                      </Link>
+
+                      <Link
+                        href="/shop?offers=true"
+                        className="st3-mega__primary-link st3-mega__accent"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Offers
+                      </Link>
+
+                      {visibleCategories.map(
+                        (category) => (
+                          <Link
+                            key={
+                              category.id
+                            }
+                            href={`/shop?category=${encodeURIComponent(
+                              category.name,
+                            )}`}
+                            className="st3-mega__primary-link"
+                            onClick={
+                              closeMenu
+                            }
+                          >
+                            {
+                              category.name
+                            }
+                          </Link>
+                        ),
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="st3-mega__secondary">
+                    <p className="st3-mega__eyebrow">
+                      Quick Links
+                    </p>
+
+                    <div className="st3-mega__secondary-links">
+                      <Link
+                        href="/wishlist"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Wishlist
+                      </Link>
+
+                      <Link
+                        href="/account"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Your account
+                      </Link>
+
+                      <Link
+                        href="/track-order"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Track your order
+                      </Link>
+
+                      <Link
+                        href="/delivery"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Delivery
+                      </Link>
+                    </div>
+                  </div>
+                </>
+              ) : desktopMenu ===
+                "support" ? (
+                <>
+                  <div>
+                    <p className="st3-mega__eyebrow">
+                      Support
+                    </p>
+
+                    <div className="st3-mega__links">
+                      <Link
+                        href="/track-order"
+                        className="st3-mega__primary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Track your order
+                      </Link>
+
+                      <Link
+                        href="/delivery"
+                        className="st3-mega__primary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Delivery
+                      </Link>
+
+                      <Link
+                        href="/returns"
+                        className="st3-mega__primary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Returns
+                      </Link>
+
+                      <Link
+                        href="/about"
+                        className="st3-mega__primary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        About Stereophonie
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="st3-mega__secondary">
+                    <p className="st3-mega__eyebrow">
+                      Information
+                    </p>
+
+                    <div className="st3-mega__secondary-links">
+                      <Link
+                        href="/privacy"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Privacy
+                      </Link>
+
+                      <Link
+                        href="/terms"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Terms
+                      </Link>
+
+                      <Link
+                        href="/account"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Your account
+                      </Link>
+                    </div>
+                  </div>
+                </>
+              ) : activeCategory ? (
+                <>
+                  <div>
+                    <p className="st3-mega__eyebrow">
+                      Explore
+                    </p>
+
+                    <div className="st3-mega__links">
+                      <Link
+                        href={`/shop?category=${encodeURIComponent(
+                          activeCategory.name,
+                        )}`}
+                        className="st3-mega__primary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        {
+                          activeCategory.name
+                        }
+                      </Link>
+
+                      <Link
+                        href={`/shop?category=${encodeURIComponent(
+                          activeCategory.name,
+                        )}&sort=newest`}
+                        className="st3-mega__primary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Newest
+                      </Link>
+
+                      <Link
+                        href={`/shop?category=${encodeURIComponent(
+                          activeCategory.name,
+                        )}&offers=true`}
+                        className="st3-mega__primary-link st3-mega__accent"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Offers
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="st3-mega__secondary">
+                    <p className="st3-mega__eyebrow">
+                      {
+                        activeCategory.name
+                      }
+                    </p>
+
+                    <div className="st3-mega__secondary-links">
+                      <Link
+                        href={`/shop?category=${encodeURIComponent(
+                          activeCategory.name,
+                        )}`}
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        View all products
+                      </Link>
+
+                      <Link
+                        href="/wishlist"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Wishlist
+                      </Link>
+
+                      <Link
+                        href="/track-order"
+                        className="st3-mega__secondary-link"
+                        onClick={
+                          closeMenu
+                        }
+                      >
+                        Track an order
+                      </Link>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          )}
+        </div>
+
+        {mobileOpen && (
+          <div className="st3-mobile">
+            <div className="st3-mobile__inner">
+              <p className="st3-mobile__label">
+                Shop
+              </p>
+
+              <div className="st3-mobile__links">
+                <Link
+                  href="/shop"
+                  className="st3-mobile__link"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  Shop All
+                </Link>
+
+                <Link
+                  href="/shop?offers=true"
+                  className="st3-mobile__link st3-mega__accent"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  Offers
+                </Link>
+
+                {visibleCategories.map(
+                  (category) => (
+                    <Link
+                      key={category.id}
+                      href={`/shop?category=${encodeURIComponent(
+                        category.name,
+                      )}`}
+                      className="st3-mobile__link"
+                      onClick={() =>
+                        setMobileOpen(
+                          false,
+                        )
+                      }
+                    >
+                      {category.name}
+                    </Link>
+                  ),
+                )}
+              </div>
+
+              <div className="st3-mobile__utility">
+                <Link
+                  href="/account"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  Account
+                </Link>
+
+                <Link
+                  href="/wishlist"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  Wishlist
+                </Link>
+
+                <Link
+                  href="/track-order"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  Track order
+                </Link>
+
+                <Link
+                  href="/delivery"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  Delivery
+                </Link>
+
+                <Link
+                  href="/returns"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  Returns
+                </Link>
+
+                <Link
+                  href="/about"
+                  onClick={() =>
+                    setMobileOpen(false)
+                  }
+                >
+                  About Stereophonie
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {desktopMenu !== null && (
+        <button
+          type="button"
+          className="st3-header__scrim st3-header__scrim--v3"
+          aria-label="Close navigation"
+          onMouseEnter={scheduleClose}
+          onClick={closeMenu}
+        />
       )}
-    </header>
+    </>
   );
 }
