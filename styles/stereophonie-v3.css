@@ -1921,3 +1921,60 @@ html {
     animation: none;
   }
 }
+
+
+/* ==========================================================
+   V3 — SMOOTH MEGA MENU EXIT
+   ========================================================== */
+
+.st3-mega--closing {
+  visibility: visible;
+  opacity: 0;
+
+  clip-path: inset(
+    0 0 100% 0
+    round 0 0 18px 18px
+  );
+
+  transform:
+    translate3d(0, -8px, 0);
+
+  pointer-events: none;
+
+  transition:
+    clip-path 340ms
+      cubic-bezier(0.4, 0, 0.6, 1),
+    transform 340ms
+      cubic-bezier(0.4, 0, 0.6, 1),
+    opacity 230ms ease,
+    visibility 0s linear 340ms;
+}
+
+.st3-mega--closing
+.st3-mega__inner {
+  opacity: 0;
+
+  transform:
+    translate3d(0, -7px, 0);
+
+  transition:
+    opacity 150ms ease,
+    transform 230ms ease;
+
+  transition-delay: 0ms;
+}
+
+.st3-header__scrim--v3 {
+  transition:
+    opacity 280ms ease,
+    backdrop-filter 280ms ease,
+    -webkit-backdrop-filter 280ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega--closing,
+  .st3-mega--closing
+  .st3-mega__inner {
+    transition: none !important;
+  }
+}

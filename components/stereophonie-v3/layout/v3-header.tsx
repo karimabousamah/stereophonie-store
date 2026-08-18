@@ -83,6 +83,12 @@ export function V3Header() {
   const [desktopMenu, setDesktopMenu] =
     useState<DesktopMenu>(null);
 
+  const [renderedMenu, setRenderedMenu] =
+    useState<DesktopMenu>(null);
+
+  const [menuClosing, setMenuClosing] =
+    useState(false);
+
   const [mobileOpen, setMobileOpen] =
     useState(false);
 
@@ -178,12 +184,26 @@ export function V3Header() {
     menu: DesktopMenu,
   ) {
     cancelClose();
+
+    setMenuClosing(false);
+    setRenderedMenu(menu);
     setDesktopMenu(menu);
   }
 
   function closeMenu() {
     cancelClose();
+
+    if (!desktopMenu && !renderedMenu) {
+      return;
+    }
+
+    setMenuClosing(true);
     setDesktopMenu(null);
+
+    window.setTimeout(() => {
+      setRenderedMenu(null);
+      setMenuClosing(false);
+    }, 360);
   }
 
   function scheduleClose() {
@@ -191,9 +211,9 @@ export function V3Header() {
 
     closeTimer.current = setTimeout(
       () => {
-        setDesktopMenu(null);
+        closeMenu();
       },
-      190,
+      150,
     );
   }
 
@@ -203,19 +223,22 @@ export function V3Header() {
   const topCategories =
     visibleCategories.slice(0, 6);
 
+  const menuForContent =
+    desktopMenu ?? renderedMenu;
+
   const activeCategory =
-    desktopMenu?.startsWith(
+    menuForContent?.startsWith(
       "category:",
     )
       ? categories.find(
           (category) =>
             `category:${category.id}` ===
-            desktopMenu,
+            menuForContent,
         ) ?? null
       : null;
 
   const menuKey =
-    desktopMenu ?? "closed";
+    menuForContent ?? "closed";
 
   return (
     <>
@@ -391,7 +414,9 @@ export function V3Header() {
           className={`st3-mega ${
             desktopMenu
               ? "st3-mega--open"
-              : "st3-mega--closed"
+              : menuClosing
+                ? "st3-mega--closing"
+                : "st3-mega--closed"
           }`}
           aria-hidden={
             desktopMenu === null
@@ -399,12 +424,12 @@ export function V3Header() {
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
         >
-          {desktopMenu && (
+          {menuForContent && (
             <div
               key={menuKey}
               className="st3-mega__inner st3-mega__inner--switch"
             >
-              {desktopMenu ===
+              {menuForContent ===
               "store" ? (
                 <>
                   <div>
@@ -504,7 +529,7 @@ export function V3Header() {
                     </div>
                   </div>
                 </>
-              ) : desktopMenu ===
+              ) : menuForContent ===
                 "support" ? (
                 <>
                   <div>
@@ -796,7 +821,7 @@ export function V3Header() {
         )}
       </header>
 
-      {desktopMenu !== null && (
+      {(desktopMenu !== null || menuClosing) && (
         <button
           type="button"
           className="st3-header__scrim st3-header__scrim--v3"
