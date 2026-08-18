@@ -1978,3 +1978,340 @@ html {
     transition: none !important;
   }
 }
+
+/* ==========================================================
+   V3 — FAST MENU EXIT + CATEGORY SWITCH
+   ========================================================== */
+
+/*
+ * Opening remains smooth and premium.
+ * Closing is deliberately faster so the interface
+ * never feels stuck behind the gray scrim.
+ */
+
+.st3-mega--open {
+  visibility: visible;
+  opacity: 1;
+
+  clip-path: inset(0 0 0 0);
+
+  transform:
+    translate3d(0, 0, 0);
+
+  pointer-events: auto;
+
+  transition:
+    clip-path 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 175ms ease,
+    visibility 0s;
+}
+
+.st3-mega--closing {
+  visibility: visible;
+  opacity: 0;
+
+  clip-path:
+    inset(0 0 100% 0);
+
+  transform:
+    translate3d(0, -6px, 0);
+
+  pointer-events: none;
+
+  transition:
+    clip-path 210ms cubic-bezier(0.4, 0, 1, 1),
+    transform 210ms cubic-bezier(0.4, 0, 1, 1),
+    opacity 135ms ease,
+    visibility 0s linear 210ms;
+}
+
+.st3-mega--closed {
+  visibility: hidden;
+  opacity: 0;
+
+  clip-path:
+    inset(0 0 100% 0);
+
+  transform:
+    translate3d(0, -6px, 0);
+
+  pointer-events: none;
+}
+
+
+/*
+ * CATEGORY → CATEGORY
+ *
+ * The outer white panel stays open.
+ * Only its content changes.
+ */
+
+.st3-mega__inner--switch {
+  min-height: 255px;
+
+  animation:
+    st3CategoryContentChange
+    190ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+@keyframes st3CategoryContentChange {
+  from {
+    opacity: 0;
+    transform:
+      translate3d(0, 5px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0);
+  }
+}
+
+
+/*
+ * SCRIM
+ */
+
+.st3-header__scrim--v3 {
+  animation: none !important;
+
+  transition:
+    opacity 155ms ease,
+    background-color 155ms ease,
+    -webkit-backdrop-filter 155ms ease,
+    backdrop-filter 155ms ease;
+}
+
+.st3-header__scrim--open {
+  opacity: 1;
+
+  background:
+    rgba(0, 0, 0, 0.15);
+
+  -webkit-backdrop-filter:
+    blur(4px);
+
+  backdrop-filter:
+    blur(4px);
+}
+
+.st3-header__scrim--closing {
+  opacity: 0;
+
+  background:
+    rgba(0, 0, 0, 0);
+
+  -webkit-backdrop-filter:
+    blur(0);
+
+  backdrop-filter:
+    blur(0);
+
+  pointer-events: none;
+}
+
+
+/*
+ * Closing content disappears slightly before
+ * the outer panel finishes retracting.
+ */
+
+.st3-mega--closing
+.st3-mega__inner {
+  opacity: 0;
+
+  transform:
+    translate3d(0, -4px, 0);
+
+  transition:
+    opacity 90ms ease,
+    transform 150ms ease;
+
+  transition-delay: 0ms;
+}
+
+
+/* ==========================================================
+   V3 — HOMEPAGE PREMIUM SHELF POLISH
+   ========================================================== */
+
+/*
+ * Reduce unnecessary vertical space between homepage areas.
+ */
+
+.st3-category-section,
+.st3-products-section {
+  padding-top: 88px;
+  padding-bottom: 8px;
+}
+
+
+/*
+ * Product sections become shelves instead of a rigid
+ * four-column grid. This means one product no longer
+ * creates an enormous empty visual block.
+ */
+
+.st3-product-grid {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding:
+    4px 3px 24px;
+
+  scroll-snap-type:
+    x proximity;
+
+  scrollbar-width: none;
+
+  overscroll-behavior-inline:
+    contain;
+}
+
+.st3-product-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.st3-product-grid
+.st3-product-card {
+  flex:
+    0 0 clamp(
+      245px,
+      22vw,
+      310px
+    );
+
+  scroll-snap-align: start;
+}
+
+
+/*
+ * Slightly more premium image proportions.
+ */
+
+.st3-product-card__media {
+  aspect-ratio: 1 / 1;
+
+  border-radius: 24px;
+
+  background:
+    #f5f5f7;
+}
+
+
+/*
+ * Make the card copy more compact.
+ */
+
+.st3-product-card__content {
+  padding:
+    15px 5px 4px;
+}
+
+.st3-product-card__bottom {
+  margin-top: 10px;
+}
+
+
+/*
+ * Category rail should feel like the same visual family.
+ */
+
+.st3-category-rail {
+  gap: 18px;
+
+  padding-bottom: 22px;
+}
+
+.st3-category-card {
+  border-radius: 26px;
+
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.025);
+}
+
+
+/*
+ * Better visual separation between homepage sections.
+ */
+
+.st3-products-section + .st3-products-section {
+  margin-top: 20px;
+}
+
+.st3-service-strip {
+  margin-top: 95px;
+}
+
+
+/*
+ * Headings remain large but tighter.
+ */
+
+.st3-section-heading {
+  margin-bottom: 30px;
+}
+
+.st3-section-description {
+  margin-top: 11px;
+}
+
+
+/*
+ * Keep horizontal shelves useful on tablets/mobile.
+ */
+
+@media (max-width: 900px) {
+  .st3-product-grid
+  .st3-product-card {
+    flex-basis:
+      clamp(
+        225px,
+        41vw,
+        285px
+      );
+  }
+}
+
+@media (max-width: 720px) {
+  .st3-category-section,
+  .st3-products-section {
+    padding-top: 68px;
+  }
+
+  .st3-product-grid {
+    gap: 12px;
+  }
+
+  .st3-product-grid
+  .st3-product-card {
+    flex-basis:
+      min(
+        72vw,
+        270px
+      );
+  }
+}
+
+
+/*
+ * Accessibility
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega--open,
+  .st3-mega--closing,
+  .st3-mega__inner--switch,
+  .st3-header__scrim--v3 {
+    animation: none !important;
+    transition: none !important;
+  }
+}

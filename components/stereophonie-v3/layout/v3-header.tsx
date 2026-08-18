@@ -203,7 +203,7 @@ export function V3Header() {
     window.setTimeout(() => {
       setRenderedMenu(null);
       setMenuClosing(false);
-    }, 360);
+    }, 220);
   }
 
   function scheduleClose() {
@@ -824,7 +824,11 @@ export function V3Header() {
       {(desktopMenu !== null || menuClosing) && (
         <button
           type="button"
-          className="st3-header__scrim st3-header__scrim--v3"
+          className={`st3-header__scrim st3-header__scrim--v3 ${
+            menuClosing
+              ? "st3-header__scrim--closing"
+              : "st3-header__scrim--open"
+          }`}
           aria-label="Close navigation"
           onMouseEnter={scheduleClose}
           onClick={closeMenu}
