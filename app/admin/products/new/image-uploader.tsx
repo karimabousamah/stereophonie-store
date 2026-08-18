@@ -12,6 +12,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { DirectUploadSelectedImage } from "./direct-upload-client";
 
+import {
+  processImageBeforeUpload,
+} from "@/lib/stereophonie-v3/images/process-upload-client";
+
 type SelectedImage = {
   id: string;
   file: File;
@@ -81,7 +85,7 @@ export default function ImageUploader({
     );
   }, [images, mainImageIndex, onImagesChange]);
 
-  function addFiles(selectedFiles: FileList | null) {
+  async function addFiles(selectedFiles: FileList | null) {
     setErrorMessage("");
 
     if (!selectedFiles?.length) {
@@ -116,12 +120,41 @@ export default function ImageUploader({
       return;
     }
 
-    const newImages: SelectedImage[] = files.map((file) => ({
-      id: crypto.randomUUID(),
-      file,
-      previewUrl: URL.createObjectURL(file),
-      altText: "",
-    }));
+    let processedFiles: File[];
+
+    try {
+      setErrorMessage(
+        "Preparing photographs… removing background and standardizing layout.",
+      );
+
+      processedFiles = await Promise.all(
+        files.map((file) =>
+          processImageBeforeUpload(
+            file,
+            "product",
+          ),
+        ),
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "The photographs could not be prepared.",
+      );
+
+      return;
+    }
+
+    setErrorMessage("");
+
+    const newImages: SelectedImage[] =
+      processedFiles.map((file) => ({
+        id: crypto.randomUUID(),
+        file,
+        previewUrl:
+          URL.createObjectURL(file),
+        altText: "",
+      }));
 
     const updatedImages = [...images, ...newImages];
 
@@ -195,7 +228,13 @@ export default function ImageUploader({
         multiple
         disabled={disabled}
         className="sr-only"
-        onChange={(event) => addFiles(event.target.files)}
+        onChange={(event) => {
+          void addFiles(
+            event.target.files,
+          );
+
+          event.currentTarget.value = "";
+        }}
       />
 
       <input type="hidden" name="main_image_index" value={mainImageIndex} />

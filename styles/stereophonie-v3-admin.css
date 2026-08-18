@@ -1,0 +1,479 @@
+/* ==========================================================
+   STEREOPHONIE V3 — ADMIN DESIGN FOUNDATION
+   ========================================================== */
+
+.st3-admin {
+  min-height: 100vh;
+
+  background:
+    #f5f5f7;
+
+  color:
+    #1d1d1f;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "SF Pro Text",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  -webkit-font-smoothing:
+    antialiased;
+}
+
+.st3-admin *,
+.st3-admin *::before,
+.st3-admin *::after {
+  box-sizing:
+    border-box;
+}
+
+.st3-admin h1,
+.st3-admin h2,
+.st3-admin h3 {
+  color:
+    #1d1d1f;
+
+  letter-spacing:
+    -0.035em;
+}
+
+.st3-admin button,
+.st3-admin
+input[type="submit"],
+.st3-admin
+a[role="button"] {
+  border-radius:
+    999px;
+}
+
+.st3-admin button {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.st3-admin button:hover {
+  transform:
+    translateY(-1px);
+}
+
+.st3-admin input,
+.st3-admin textarea,
+.st3-admin select {
+  border-radius:
+    14px !important;
+
+  border:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      0.12
+    ) !important;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.92
+    ) !important;
+
+  color:
+    #1d1d1f !important;
+
+  outline:
+    none;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.st3-admin input:focus,
+.st3-admin textarea:focus,
+.st3-admin select:focus {
+  border-color:
+    #fdb73e !important;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      253,
+      183,
+      62,
+      0.16
+    ) !important;
+}
+
+.st3-admin table {
+  overflow:
+    hidden;
+
+  border-radius:
+    18px;
+
+  background:
+    #fff;
+
+  border-collapse:
+    separate;
+
+  border-spacing:
+    0;
+
+  box-shadow:
+    0 1px 0
+    rgba(
+      0,
+      0,
+      0,
+      0.04
+    );
+}
+
+.st3-admin th {
+  color:
+    #6e6e73;
+
+  background:
+    #fafafa;
+
+  font-size:
+    12px;
+
+  font-weight:
+    600;
+}
+
+.st3-admin td {
+  background:
+    #fff;
+
+  color:
+    #1d1d1f;
+}
+
+.st3-admin img {
+  border-radius:
+    18px;
+}
+
+.st3-admin
+[data-image-preview],
+.st3-admin
+.image-preview,
+.st3-admin
+.product-image-preview {
+  overflow:
+    hidden;
+
+  border-radius:
+    22px;
+
+  background:
+    #fff;
+}
+
+.st3-admin
+[data-primary-action] {
+  border:
+    0;
+
+  background:
+    #fdb73e;
+
+  color:
+    #000;
+
+  box-shadow:
+    0 7px 22px
+    rgba(
+      253,
+      183,
+      62,
+      0.22
+    );
+}
+
+.st3-admin
+[data-primary-action]:hover {
+  background:
+    #f4a91c;
+}
+
+
+/* ==========================================================
+   V3 ADMIN — IMAGE MANAGEMENT POLISH
+   ========================================================== */
+
+.st3-admin {
+  --admin-bg:
+    #f5f5f7;
+
+  --admin-surface:
+    #ffffff;
+
+  --admin-text:
+    #1d1d1f;
+
+  --admin-muted:
+    #6e6e73;
+
+  --admin-line:
+    rgba(0, 0, 0, 0.09);
+
+  --admin-accent:
+    #fdb73e;
+}
+
+
+/*
+ * Override legacy dark upload UI inside the V3 Admin.
+ */
+
+.st3-admin
+label[for="product-images"] {
+  overflow: hidden;
+
+  border-radius:
+    24px !important;
+
+  border:
+    1px dashed
+    rgba(
+      0,
+      0,
+      0,
+      0.16
+    ) !important;
+
+  background:
+    #ffffff !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    0 1px 2px
+    rgba(
+      0,
+      0,
+      0,
+      0.03
+    );
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.st3-admin
+label[for="product-images"]:hover {
+  border-color:
+    #fdb73e !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow:
+    0 14px 40px
+    rgba(
+      0,
+      0,
+      0,
+      0.06
+    );
+
+  transform:
+    translateY(-1px);
+}
+
+
+/*
+ * Legacy white text utilities.
+ */
+
+.st3-admin
+.text-white,
+.st3-admin
+[class*="text-white"] {
+  color:
+    #1d1d1f !important;
+}
+
+.st3-admin
+[class*="text-white/"] {
+  color:
+    #6e6e73 !important;
+}
+
+
+/*
+ * Legacy black translucent admin surfaces.
+ */
+
+.st3-admin
+[class*="bg-black"] {
+  background:
+    #ffffff !important;
+}
+
+
+/*
+ * Legacy white borders become subtle gray lines.
+ */
+
+.st3-admin
+[class*="border-white"] {
+  border-color:
+    rgba(
+      0,
+      0,
+      0,
+      0.10
+    ) !important;
+}
+
+
+/*
+ * Upload icon/action controls.
+ */
+
+.st3-admin
+label[for="product-images"]
+svg {
+  color:
+    #1d1d1f;
+}
+
+.st3-admin
+label[for="product-images"]
+span {
+  border-radius:
+    999px !important;
+}
+
+
+/*
+ * Product previews are standardized square canvases.
+ */
+
+.st3-admin
+.product-image-preview,
+.st3-admin
+[data-product-image],
+.st3-admin
+[data-image-preview] {
+  aspect-ratio:
+    1 / 1;
+
+  overflow:
+    hidden;
+
+  border-radius:
+    22px;
+
+  background:
+    #f5f5f7;
+}
+
+.st3-admin
+.product-image-preview img,
+.st3-admin
+[data-product-image] img,
+.st3-admin
+[data-image-preview] img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    18px;
+}
+
+
+/*
+ * Generic admin cards become softer.
+ */
+
+.st3-admin
+section,
+.st3-admin
+article {
+  border-radius:
+    22px;
+}
+
+.st3-admin
+form {
+  color:
+    #1d1d1f;
+}
+
+
+/*
+ * Mustard primary action language.
+ */
+
+.st3-admin
+button[type="submit"] {
+  border-radius:
+    999px !important;
+}
+
+.st3-admin
+button[type="submit"]:not(
+  [data-destructive]
+) {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+
+/*
+ * Category wallpaper inputs.
+ */
+
+.st3-admin
+input[type="file"] {
+  border-radius:
+    16px !important;
+
+  background:
+    #fff !important;
+
+  color:
+    #1d1d1f !important;
+}
+
+
+/*
+ * Success / error notices retain semantic color,
+ * but use a clean light UI.
+ */
+
+.st3-admin
+[class*="emerald"] {
+  border-radius:
+    16px;
+}
+
+.st3-admin
+[class*="red-"] {
+  border-radius:
+    16px;
+}

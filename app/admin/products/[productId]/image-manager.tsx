@@ -28,6 +28,10 @@ import {
   validateProductImageFiles,
 } from "@/lib/uploads/product-image-upload";
 
+import {
+  processImageBeforeUpload,
+} from "@/lib/stereophonie-v3/images/process-upload-client";
+
 type ProductImage = {
   id: string;
   image_url: string | null;
@@ -209,7 +213,7 @@ export default function ImageManager({
     }
   }
 
-  function selectFiles(files: FileList | null) {
+  async function selectFiles(files: FileList | null) {
     setUploadError("");
 
     if (!files?.length) {
@@ -246,12 +250,53 @@ export default function ImageManager({
       return;
     }
 
-    previewUrls.forEach((previewUrl) => {
-      URL.revokeObjectURL(previewUrl);
-    });
+    let processedFiles: File[];
 
-    setSelectedFiles(selected);
-    setPreviewUrls(selected.map((file) => URL.createObjectURL(file)));
+    try {
+      setUploadError(
+        "Preparing photographs… removing background and standardizing layout.",
+      );
+
+      processedFiles = await Promise.all(
+        selected.map((file) =>
+          processImageBeforeUpload(
+            file,
+            "product",
+          ),
+        ),
+      );
+    } catch (error) {
+      setUploadError(
+        error instanceof Error
+          ? error.message
+          : "The photographs could not be prepared.",
+      );
+
+      return;
+    }
+
+    previewUrls.forEach(
+      (previewUrl) => {
+        URL.revokeObjectURL(
+          previewUrl,
+        );
+      },
+    );
+
+    setUploadError("");
+
+    setSelectedFiles(
+      processedFiles,
+    );
+
+    setPreviewUrls(
+      processedFiles.map(
+        (file) =>
+          URL.createObjectURL(
+            file,
+          ),
+      ),
+    );
   }
 
   return (
@@ -321,7 +366,13 @@ export default function ImageManager({
               accept="image/jpeg,image/png,image/webp"
               multiple
               className="sr-only"
-              onChange={(event) => selectFiles(event.target.files)}
+              onChange={(event) => {
+                void selectFiles(
+                  event.target.files,
+                );
+
+                event.currentTarget.value = "";
+              }}
             />
 
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">

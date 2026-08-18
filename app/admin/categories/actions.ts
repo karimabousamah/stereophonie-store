@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  processStoreImage,
+} from "@/lib/stereophonie-v3/images/process-store-image";
 
 const categoriesPath = "/admin/categories";
 
@@ -309,7 +312,8 @@ export async function updateCategoryHomepagePresentation(
       );
     }
 
-    const extension = safeImageExtension(image);
+    const extension =
+      safeImageExtension(image);
 
     if (!extension) {
       redirectWithMessage(
@@ -324,11 +328,34 @@ export async function updateCategoryHomepagePresentation(
         .toLowerCase();
 
     const objectPath =
-      `${safeSlug}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+      `${safeSlug}/${Date.now()}-${crypto.randomUUID()}.png`;
 
-    const bytes = new Uint8Array(
-      await image.arrayBuffer(),
-    );
+    let processedImage: Buffer;
+
+    try {
+      processedImage =
+        await processStoreImage({
+          input: Buffer.from(
+            await image.arrayBuffer(),
+          ),
+          kind: "category",
+        });
+    } catch (error) {
+      console.error(
+        "Category image processing failed:",
+        error,
+      );
+
+      redirectWithMessage(
+        "error",
+        "The category image could not be prepared. Please try another photograph.",
+      );
+    }
+
+    const bytes =
+      new Uint8Array(
+        processedImage,
+      );
 
     const { error: uploadError } =
       await supabase.storage
@@ -337,8 +364,10 @@ export async function updateCategoryHomepagePresentation(
           objectPath,
           bytes,
           {
-            contentType: image.type,
-            cacheControl: "3600",
+            contentType:
+              "image/png",
+            cacheControl:
+              "3600",
             upsert: false,
           },
         );
