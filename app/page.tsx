@@ -49,9 +49,6 @@ type CategoryRow = {
   id: string;
   name: string;
   slug: string | null;
-  homepage_title: string | null;
-  homepage_description: string | null;
-  homepage_wallpaper_url: string | null;
 };
 
 function relationName(
@@ -159,9 +156,6 @@ export default async function HomePage() {
           id,
           name,
           slug,
-          homepage_title,
-          homepage_description,
-          homepage_wallpaper_url,
           sort_order
         `,
       )
@@ -193,9 +187,16 @@ export default async function HomePage() {
     (productsResult.data ?? []) as ProductRow[]
   ).map(normalizeProduct);
 
-  const categories = (
+  const categories: V3HomeCategory[] = (
     (categoriesResult.data ?? []) as CategoryRow[]
-  ) satisfies V3HomeCategory[];
+  ).map((category) => ({
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    homepage_title: null,
+    homepage_description: null,
+    homepage_wallpaper_url: null,
+  }));
 
   const latestProducts = products
     .filter(isCurrentNewDrop)
@@ -232,6 +233,7 @@ export default async function HomePage() {
         latestProducts={latestFallback}
         offerProducts={offerProducts}
         featuredProducts={featuredFallback}
+        catalogProducts={products}
       />
 
       <V3Footer />
