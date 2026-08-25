@@ -4,8 +4,12 @@ import {
   ImageIcon,
   ImageOff,
   MonitorUp,
+  Moon,
   Save,
+  Sun,
 } from "lucide-react";
+
+import { useState } from "react";
 
 import ConfirmSubmitButton from "@/components/admin/confirm-submit-button";
 
@@ -19,6 +23,7 @@ type Props = {
   categoryName: string;
   imageUrl: string | null;
   showOnHomepage: boolean;
+  homepageTheme: "light" | "dark";
 };
 
 export default function CategoryHomepageControls({
@@ -26,7 +31,11 @@ export default function CategoryHomepageControls({
   categoryName,
   imageUrl,
   showOnHomepage,
+  homepageTheme,
 }: Props) {
+  const [selectedTheme, setSelectedTheme] =
+    useState<"light" | "dark">(homepageTheme);
+
   return (
     <section className="border-t border-white/10 bg-black/30 p-5 sm:p-6">
       <div className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
@@ -122,6 +131,143 @@ export default function CategoryHomepageControls({
                 className="h-5 w-5 shrink-0 accent-white"
               />
             </label>
+
+            {/* =========================================
+                CATEGORY APPEARANCE
+            ========================================== */}
+
+            <div className="mt-4">
+              <div className="mb-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/55">
+                  Category appearance
+                </p>
+
+                <p className="mt-1 text-xs leading-5 text-white/30">
+                  Choose how this category card appears in “CHOOSE YOUR MODE.”
+                  This setting affects only this category.
+                </p>
+              </div>
+
+              {/*
+               * The selected value is submitted through this
+               * hidden field.
+               *
+               * We deliberately use real clickable buttons below
+               * instead of hidden radio inputs + peer styling.
+               */}
+              <input
+                type="hidden"
+                name="homepage_theme"
+                value={selectedTheme}
+              />
+
+              <div
+                className="grid gap-3 sm:grid-cols-2"
+                role="radiogroup"
+                aria-label="Category homepage appearance"
+              >
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={selectedTheme === "light"}
+                  onClick={() => setSelectedTheme("light")}
+                  className={`group flex min-h-[92px] w-full items-center gap-4 rounded-[18px] border px-4 py-4 text-left transition ${
+                    selectedTheme === "light"
+                      ? "border-amber-400/70 bg-amber-400/[0.10] shadow-[0_0_0_1px_rgba(245,179,53,0.12),0_8px_30px_rgba(245,179,53,0.05)]"
+                      : "border-white/10 bg-white/[0.025] hover:border-white/25 hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <span
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] border bg-white text-black transition ${
+                      selectedTheme === "light"
+                        ? "border-amber-400/55 shadow-[0_0_0_3px_rgba(245,179,53,0.08)]"
+                        : "border-black/10"
+                    }`}
+                  >
+                    <Sun className="h-4 w-4" />
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between gap-3">
+                      <strong className="block text-sm font-semibold text-white">
+                        Light
+                      </strong>
+
+                      <span
+                        aria-hidden="true"
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full border transition ${
+                          selectedTheme === "light"
+                            ? "border-amber-300 bg-amber-400 shadow-[0_0_0_3px_rgba(245,179,53,0.10)]"
+                            : "border-white/20 bg-transparent"
+                        }`}
+                      />
+                    </span>
+
+                    <span className="mt-1 block text-xs leading-5 text-white/35">
+                      Bright Apple-style card with dark typography.
+                    </span>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={selectedTheme === "dark"}
+                  onClick={() => setSelectedTheme("dark")}
+                  className={`group flex min-h-[92px] w-full items-center gap-4 rounded-[18px] border px-4 py-4 text-left transition ${
+                    selectedTheme === "dark"
+                      ? "border-amber-400/70 bg-amber-400/[0.10] shadow-[0_0_0_1px_rgba(245,179,53,0.12),0_8px_30px_rgba(245,179,53,0.05)]"
+                      : "border-white/10 bg-white/[0.025] hover:border-white/25 hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <span
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] border bg-[#050505] transition ${
+                      selectedTheme === "dark"
+                        ? "border-amber-400/70 shadow-[0_0_0_3px_rgba(245,179,53,0.10),0_5px_18px_rgba(0,0,0,0.18)]"
+                        : "border-black/15 shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+                    }`}
+                  >
+                    <Moon
+                      strokeWidth={2.25}
+                      className={`h-[18px] w-[18px] transition ${
+                        selectedTheme === "dark"
+                          ? "st-admin-theme-moon st-admin-theme-moon--selected"
+                          : "st-admin-theme-moon st-admin-theme-moon--idle"
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between gap-3">
+                      <strong className="block text-sm font-semibold text-white">
+                        Dark
+                      </strong>
+
+                      <span
+                        aria-hidden="true"
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full border transition ${
+                          selectedTheme === "dark"
+                            ? "border-amber-300 bg-amber-400 shadow-[0_0_0_3px_rgba(245,179,53,0.10)]"
+                            : "border-white/20 bg-transparent"
+                        }`}
+                      />
+                    </span>
+
+                    <span className="mt-1 block text-xs leading-5 text-white/35">
+                      Premium black card with light typography.
+                    </span>
+                  </span>
+                </button>
+              </div>
+
+              <p className="mt-3 text-[11px] leading-5 text-white/30">
+                Selected:{" "}
+                <span className="font-semibold capitalize text-amber-300">
+                  {selectedTheme}
+                </span>
+              </p>
+            </div>
 
             <div className="mt-4">
               <label

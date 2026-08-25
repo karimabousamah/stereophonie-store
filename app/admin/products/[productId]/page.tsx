@@ -30,6 +30,7 @@ type ProductVariant = {
   id: string;
   size: string;
   variant_name: string;
+  display_position: number | null;
   attributes: Record<string, string> | null;
   sku: string | null;
   regular_price: number | null;
@@ -47,6 +48,10 @@ type ProductImage = {
   alt_text: string | null;
   position: number;
   is_primary: boolean;
+  variant_name: string | null;
+  variant_id: string | null;
+  variant_position: number;
+  is_variant_primary: boolean;
 };
 
 export default async function EditProductPage({
@@ -76,8 +81,7 @@ export default async function EditProductPage({
     redirect("/admin/login");
   }
 
-  const [productResult, categoriesResult, brandsResult, collectionsResult] =
-    await Promise.all([
+  const [productResult, categoriesResult, brandsResult] = await Promise.all([
       supabase
         .from("products")
         .select(
@@ -88,7 +92,6 @@ export default async function EditProductPage({
         description,
         category_id,
         brand_id,
-        collection_id,
         status,
         availability,
         is_featured,
@@ -100,6 +103,7 @@ export default async function EditProductPage({
           id,
           size,
           variant_name,
+          display_position,
           attributes,
           sku,
           regular_price,
@@ -114,7 +118,11 @@ export default async function EditProductPage({
           storage_path,
           alt_text,
           position,
-          is_primary
+          is_primary,
+          variant_name,
+          variant_id,
+          variant_position,
+          is_variant_primary
         )
       `,
         )
@@ -131,9 +139,6 @@ export default async function EditProductPage({
         .order("sort_order", { ascending: true })
         .order("name", { ascending: true }),
 
-      supabase.from("collections").select("id, name").order("name", {
-        ascending: true,
-      }),
     ]);
 
   if (productResult.error || !productResult.data) {
@@ -142,11 +147,44 @@ export default async function EditProductPage({
 
   const product = productResult.data;
 
+  /*
+   * Preserve the administrator-defined configuration order.
+   *
+   * display_position is persisted when the product is saved, so the
+   * edit screen must restore configurations using that value instead
+   * of alphabetically sorting them by name.
+   *
+   * The name comparison is only a deterministic fallback when two
+   * configurations somehow have the same display position.
+   */
   const variants = ((product.product_variants as ProductVariant[]) ?? []).sort(
-    (first, second) =>
-      (first.variant_name || first.size).localeCompare(
-        second.variant_name || second.size,
-      ),
+    (first, second) => {
+      const firstPosition = Number(
+        first.display_position ?? 0,
+      );
+
+      const secondPosition = Number(
+        second.display_position ?? 0,
+      );
+
+      if (firstPosition !== secondPosition) {
+        return firstPosition - secondPosition;
+      }
+
+      return (
+        first.variant_name?.trim() ||
+        first.size ||
+        ""
+      ).localeCompare(
+        second.variant_name?.trim() ||
+        second.size ||
+        "",
+        undefined,
+        {
+          numeric: true,
+        },
+      );
+    },
   );
 
   const images = ((product.product_images as ProductImage[]) ?? []).sort(
@@ -159,13 +197,12 @@ export default async function EditProductPage({
 
   const salePrice = firstVariant?.sale_price ?? null;
 
-  const loadingError =
-    categoriesResult.error || brandsResult.error || collectionsResult.error;
+  const loadingError = categoriesResult.error || brandsResult.error;
 
   const errorMessage =
     resolvedSearchParams.error ??
     (loadingError
-      ? "Categories or collections could not be loaded."
+      ? "Categories or brands could not be loaded."
       : undefined);
 
   const savedStatus = resolvedSearchParams.saved;
@@ -178,7 +215,7 @@ export default async function EditProductPage({
     <AdminShell
       role={admin.role}
       pageTitle="Edit product"
-      pageDescription="Update product information, photographs, inventory, visibility and merchandising."
+      pageDescription="Update product information, images, inventory, visibility and merchandising."
     >
       <div className="px-5 py-8 sm:px-8 sm:py-10">
         <div className="mx-auto max-w-[1540px]">
@@ -201,13 +238,13 @@ export default async function EditProductPage({
                   </p>
                 </div>
 
-                <h1 className="mt-5 max-w-4xl text-4xl font-semibold uppercase tracking-[-0.05em] sm:text-6xl">
+                <h1 className="mt-4 max-w-4xl text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
                   {product.name}
                 </h1>
 
                 <div className="mt-5 flex flex-wrap items-center gap-3">
                   <span
-                    className={`inline-flex items-center gap-2 border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] ${
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] ${
                       isLive
                         ? "border-emerald-400/25 bg-emerald-400/[0.07] text-emerald-300"
                         : product.status === "archived"
@@ -230,7 +267,7 @@ export default async function EditProductPage({
                 </div>
               </div>
 
-              <div className="border border-white/10 bg-white/[0.025] px-5 py-4">
+              <div className="rounded-[18px] border border-white/10 bg-white/[0.025] px-5 py-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/30">
                   Current visibility
                 </p>
@@ -251,7 +288,7 @@ export default async function EditProductPage({
           </header>
 
           {savedStatus && (
-            <div className="mb-7 flex items-start gap-4 border border-emerald-400/25 bg-emerald-400/[0.07] p-5">
+            <div className="mb-7 flex items-start gap-4 rounded-[18px] border border-emerald-400/25 bg-emerald-400/[0.07] p-5">
               <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
 
               <div>
@@ -275,6 +312,10 @@ export default async function EditProductPage({
               productId={product.id}
               productName={product.name}
               images={images}
+              configurations={variants.map((variant) => ({
+                id: variant.id,
+                variant_name: variant.variant_name || variant.size,
+              }))}
               successMessage={imageSuccessMessage}
             />
           </div>
@@ -286,7 +327,6 @@ export default async function EditProductPage({
               description: product.description ?? "",
               categoryId: product.category_id ?? "",
               brandId: product.brand_id ?? "",
-              collectionId: product.collection_id ?? "",
               status: product.status,
               availability: product.availability,
               isFeatured: product.is_featured ?? false,
@@ -298,7 +338,6 @@ export default async function EditProductPage({
             }}
             categories={categoriesResult.data ?? []}
             brands={brandsResult.data ?? []}
-            collections={collectionsResult.data ?? []}
             errorMessage={errorMessage}
           />
         </div>

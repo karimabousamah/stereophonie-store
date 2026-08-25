@@ -137,7 +137,7 @@ function OrderRoadmap({ status }: { status: string }) {
 
   if (normalizedStatus === "cancelled") {
     return (
-      <div className="mt-7 border border-red-200 bg-red-50 px-5 py-5">
+      <div className="mt-7 border border-red-200 bg-red-50 px-5 py-5 st-account-orders-retail-v2">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-red-700">
           Order cancelled
         </p>
@@ -382,33 +382,48 @@ export default function AccountClient({ orders }: AccountClientProps) {
       </div>
 
       <div className="p-6 sm:p-8">
-        <div className="flex overflow-x-auto border-b border-neutral-200">
+        <div
+          className="st-account-order-tabs"
+          role="tablist"
+          aria-label="Order history"
+        >
           <button
             type="button"
+            id="orders-tab-ongoing"
+            role="tab"
+            aria-selected={activeTab === "ongoing"}
+            aria-controls="orders-panel"
             onClick={() => setActiveTab("ongoing")}
-            className={`shrink-0 border-b-2 px-1 pb-4 pr-7 text-xs font-semibold uppercase tracking-[0.14em] transition ${
-              activeTab === "ongoing"
-                ? "border-black text-black"
-                : "border-transparent text-neutral-400 hover:text-black"
+            className={`st-account-order-tab ${
+              activeTab === "ongoing" ? "is-active" : ""
             }`}
           >
-            Ongoing orders ({ongoingOrders.length})
+            <span>Ongoing orders</span>
+            <small>({ongoingOrders.length})</small>
           </button>
 
           <button
             type="button"
+            id="orders-tab-previous"
+            role="tab"
+            aria-selected={activeTab === "previous"}
+            aria-controls="orders-panel"
             onClick={() => setActiveTab("previous")}
-            className={`shrink-0 border-b-2 px-1 pb-4 text-xs font-semibold uppercase tracking-[0.14em] transition ${
-              activeTab === "previous"
-                ? "border-black text-black"
-                : "border-transparent text-neutral-400 hover:text-black"
+            className={`st-account-order-tab ${
+              activeTab === "previous" ? "is-active" : ""
             }`}
           >
-            Previous orders ({previousOrders.length})
+            <span>Previous orders</span>
+            <small>({previousOrders.length})</small>
           </button>
         </div>
 
-        <div className="mt-7 space-y-6">
+        <div
+          id="orders-panel"
+          className="mt-7 space-y-6"
+          role="tabpanel"
+          aria-labelledby={`orders-tab-${activeTab}`}
+        >
           {visibleOrders.length ? (
             visibleOrders.map((order) => (
               <OrderCard key={order.id} order={order} />

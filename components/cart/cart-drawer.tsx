@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import {
+  ArrowRight,
+  Minus,
+  PackageCheck,
+  Plus,
+  ShoppingBag,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
 import { useCart } from "./cart-provider";
@@ -12,21 +20,9 @@ function money(value: number) {
   return `$${value.toFixed(2)}`;
 }
 
-/* STEREOPHONIE REAL CART CONTROLS V1 START */
-
-function isInteractiveTypingTarget(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) {
-    return false;
-  }
-
-  return Boolean(
-    target.closest(
-      'input, textarea, select, [contenteditable="true"], [role="textbox"]',
-    ),
-  );
+function subscribeToClient() {
+  return () => undefined;
 }
-
-/* STEREOPHONIE REAL CART CONTROLS V1 END */
 
 export default function CartDrawer() {
   const {
@@ -41,12 +37,12 @@ export default function CartDrawer() {
     clearCart,
   } = useCart();
 
-  const [mounted, setMounted] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    subscribeToClient,
+    () => true,
+    () => false,
+  );
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!isCartOpen) {
@@ -56,7 +52,6 @@ export default function CartDrawer() {
     const body = document.body;
     const html = document.documentElement;
     const scrollPosition = window.scrollY;
-
     const previousBodyPosition = body.style.position;
     const previousBodyTop = body.style.top;
     const previousBodyWidth = body.style.width;
@@ -69,462 +64,248 @@ export default function CartDrawer() {
     body.style.overflow = "hidden";
     html.style.overflow = "hidden";
 
-    function handleCartKeyboard(event: KeyboardEvent) {
+    const focusTimer = window.setTimeout(() => {
+      closeButtonRef.current?.focus({ preventScroll: true });
+    }, 260);
+
+    function handleKeyboard(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
         closeCart();
       }
     }
 
-    window.addEventListener("keydown", handleCartKeyboard);
+    window.addEventListener("keydown", handleKeyboard);
 
     return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", handleKeyboard);
       body.style.position = previousBodyPosition;
       body.style.top = previousBodyTop;
       body.style.width = previousBodyWidth;
       body.style.overflow = previousBodyOverflow;
       html.style.overflow = previousHtmlOverflow;
-
-      window.removeEventListener("keydown", handleCartKeyboard);
       window.scrollTo(0, scrollPosition);
     };
-  }, [isCartOpen, closeCart, isCartReady, items.length, router]);
-
-  /*
-   * =========================================================
-   * STEREOPHONIE CART — REAL HARDWARE COMMAND ENGINE
-   * =========================================================
-   *
-   * EMPTY LOADOUT
-   *   A / ENTER  → Continue Shopping
-   *
-   * LOADED LOADOUT
-   *   B          → Continue Shopping
-   *   ENTER / S  → START / Checkout
-   *
-   * ESCAPE remains owned by the existing close-cart handler.
-   *
-   * Commands intentionally trigger the same routes/actions as
-   * the visible controls rather than implementing parallel logic.
-   */
-  useEffect(() => {
-    if (!isCartOpen) {
-      return;
-    }
-
-    function pulseCartControl(selector: string) {
-      const control = document.querySelector<HTMLElement>(
-        `.st-cart-terminal ${selector}`,
-      );
-
-      if (!control) {
-        return;
-      }
-
-      control.classList.remove("is-keyboard-active");
-
-      void control.offsetWidth;
-
-      control.classList.add("is-keyboard-active");
-
-      window.setTimeout(() => {
-        control.classList.remove("is-keyboard-active");
-      }, 180);
-    }
-
-    function runCartRoute(selector: string, href: "/shop" | "/checkout") {
-      pulseCartControl(selector);
-
-      window.setTimeout(() => {
-        closeCart();
-        router.push(href);
-      }, 95);
-    }
-
-    function handleArcadeCartCommand(event: KeyboardEvent) {
-      if (
-        event.repeat ||
-        event.defaultPrevented ||
-        isInteractiveTypingTarget(event.target)
-      ) {
-        return;
-      }
-
-      if (!isCartReady) {
-        return;
-      }
-
-      const key = event.key.toLowerCase();
-
-      /*
-       * EMPTY LOADOUT
-       * Visible command:
-       * [ A ] CONTINUE SHOPPING
-       */
-      if (items.length === 0) {
-        if (key === "a" || key === "enter") {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-
-          runCartRoute(".st-cart-empty .st-cart-command--primary", "/shop");
-        }
-
-        return;
-      }
-
-      /*
-       * LOADED LOADOUT
-       *
-       * [ B ]     CONTINUE SHOPPING
-       * [ START ] CHECKOUT
-       */
-      if (key === "b") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-
-        runCartRoute(".st-cart-command--secondary", "/shop");
-        return;
-      }
-
-      if (key === "enter" || key === "s") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-
-        runCartRoute(".st-cart-command--checkout", "/checkout");
-      }
-    }
-
-    window.addEventListener("keydown", handleArcadeCartCommand, true);
-
-    return () => {
-      window.removeEventListener("keydown", handleArcadeCartCommand, true);
-    };
-  }, [isCartOpen, isCartReady, items.length, closeCart, router]);
+  }, [isCartOpen, closeCart]);
 
   if (!mounted) {
     return null;
   }
 
-  const configurationCount = items.length;
-
   return createPortal(
     <div
-      className={`st-cart-os ${isCartOpen ? "st-cart-os--open" : ""}`}
+      className={`st-retail-cart ${isCartOpen ? "st-retail-cart--open" : ""}`}
       aria-hidden={!isCartOpen}
     >
       <button
         type="button"
-        className="st-cart-os__backdrop"
+        className="st-retail-cart__backdrop"
         onClick={closeCart}
-        aria-label="Close cart"
+        aria-label="Close shopping cart"
+        tabIndex={isCartOpen ? 0 : -1}
       />
 
       <section
         role="dialog"
         aria-modal="true"
-        aria-label="Shopping cart"
-        className="st-cart-terminal"
+        aria-labelledby="st-retail-cart-title"
+        className="st-retail-cart__drawer"
       >
-        <div className="st-cart-terminal__top">
-          <div className="st-cart-terminal__identity">
-            <div className="st-cart-terminal__signal">
-              <span />
-            </div>
-
-            <div>
-              <p>CART MODULE / PLAYER 01</p>
-              <h2>LOADOUT TERMINAL</h2>
-            </div>
-          </div>
-
-          <div className="st-cart-terminal__diagnostics">
-            <div>
-              <span>ITEMS</span>
-              <strong>{String(totalItems).padStart(2, "0")}</strong>
-            </div>
-
-            <div>
-              <span>CONFIGS</span>
-              <strong>{String(configurationCount).padStart(2, "0")}</strong>
-            </div>
-
-            <div className="st-cart-terminal__status">
-              <span>STATUS</span>
-              <strong>{items.length ? "LOADED" : "EMPTY"}</strong>
-            </div>
+        <header className="st-retail-cart__header">
+          <div>
+            <p className="st-retail-eyebrow">Your selection</p>
+            <h2 id="st-retail-cart-title">Your cart.</h2>
+            <p>
+              {totalItems} {totalItems === 1 ? "item" : "items"} ready for
+              checkout
+            </p>
           </div>
 
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={closeCart}
-            className="st-cart-terminal__close"
+            className="st-retail-cart__close"
             aria-label="Close cart"
+            tabIndex={isCartOpen ? 0 : -1}
           >
             <X />
-            <span>EXIT</span>
           </button>
-        </div>
+        </header>
 
-        <div className="st-cart-terminal__screen">
-          <div className="st-cart-terminal__screen-bar">
-            <span>STEREOPHONIE INVENTORY SYSTEM</span>
-            <span>MEMORY OK</span>
-          </div>
-
+        <div className="st-retail-cart__content">
           {!isCartReady ? (
-            <div className="st-cart-loading">
-              <div className="st-cart-loading__disc" />
-
-              <p>READING CARTRIDGE MEMORY...</p>
-
-              <div className="st-cart-loading__bar">
-                <span />
-              </div>
+            <div className="st-retail-cart__loading" role="status">
+              <span />
+              <p>Preparing your cart…</p>
             </div>
           ) : items.length === 0 ? (
-            <div className="st-cart-empty">
-              <div className="st-cart-empty__icon">
+            <div className="st-retail-cart__empty">
+              <div className="st-retail-cart__empty-icon">
                 <ShoppingBag />
               </div>
-
-              <p className="st-cart-empty__code">SLOT STATUS / 000</p>
-
-              <h3>NO CARTRIDGES LOADED</h3>
-
-              <p className="st-cart-empty__copy">
-                Your loadout is currently empty. Insert a product configuration
-                to begin checkout.
+              <p className="st-retail-eyebrow">Nothing here yet</p>
+              <h3>Your cart is ready for something new.</h3>
+              <p>
+                Explore the store and add the technology that fits your day.
               </p>
-
               <Link
                 href="/shop"
                 onClick={closeCart}
-                className="st-cart-command st-cart-command--primary"
+                className="st-retail-button st-retail-button--mustard"
+                tabIndex={isCartOpen ? 0 : -1}
               >
-                <span className="st-cart-command__key">A</span>
-
-                <span>
-                  <small>COMMAND</small>
-                  CONTINUE SHOPPING
-                </span>
+                Browse products
+                <ArrowRight />
               </Link>
             </div>
           ) : (
-            <div className="st-cart-inventory">
-              <div className="st-cart-inventory__heading">
-                <span>LOADED CARTRIDGES</span>
-                <span>{configurationCount} ACTIVE</span>
-              </div>
+            <div className="st-retail-cart__items">
+              {items.map((item) => {
+                const atMaximum = item.quantity >= item.maximumQuantity;
+                const isOnSale =
+                  item.regularPrice !== null &&
+                  item.regularPrice > item.unitPrice;
 
-              <div className="st-cart-inventory__list">
-                {items.map((item, index) => {
-                  const atMaximum = item.quantity >= item.maximumQuantity;
-
-                  return (
-                    <article
-                      key={item.cartItemId}
-                      className="st-cart-cartridge"
+                return (
+                  <article key={item.cartItemId} className="st-retail-cart-item">
+                    <Link
+                      href={`/shop/${item.slug}`}
+                      onClick={closeCart}
+                      className="st-retail-cart-item__image"
+                      tabIndex={isCartOpen ? 0 : -1}
                     >
-                      <div className="st-cart-cartridge__index">
-                        {String(index + 1).padStart(2, "0")}
+                      {item.imageUrl ? (
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          width={160}
+                          height={180}
+                          sizes="122px"
+                        />
+                      ) : (
+                        <ShoppingBag />
+                      )}
+                    </Link>
+
+                    <div className="st-retail-cart-item__body">
+                      <div className="st-retail-cart-item__top">
+                        <div>
+                          <p>{item.size}</p>
+                          <Link
+                            href={`/shop/${item.slug}`}
+                            onClick={closeCart}
+                            tabIndex={isCartOpen ? 0 : -1}
+                          >
+                            {item.name}
+                          </Link>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.cartItemId)}
+                          aria-label={`Remove ${item.name}`}
+                          tabIndex={isCartOpen ? 0 : -1}
+                        >
+                          <Trash2 />
+                        </button>
                       </div>
 
-                      <Link
-                        href={`/shop/${item.slug}`}
-                        onClick={closeCart}
-                        className="st-cart-cartridge__image"
-                      >
-                        {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.name} />
-                        ) : (
-                          <div>
-                            <ShoppingBag />
-                          </div>
-                        )}
-
-                        <span>PRODUCT FEED</span>
-                      </Link>
-
-                      <div className="st-cart-cartridge__body">
-                        <div className="st-cart-cartridge__header">
-                          <div>
-                            <p className="st-cart-cartridge__slot">
-                              CARTRIDGE {String(index + 1).padStart(2, "0")}
-                            </p>
-
-                            <Link
-                              href={`/shop/${item.slug}`}
-                              onClick={closeCart}
-                              className="st-cart-cartridge__name"
-                            >
-                              {item.name}
-                            </Link>
-                          </div>
-
+                      <div className="st-retail-cart-item__bottom">
+                        <div className="st-retail-cart-item__quantity">
                           <button
                             type="button"
-                            onClick={() => removeItem(item.cartItemId)}
-                            className="st-cart-cartridge__eject"
-                            aria-label={`Remove ${item.name}`}
+                            onClick={() =>
+                              updateQuantity(item.cartItemId, item.quantity - 1)
+                            }
+                            disabled={item.quantity <= 1}
+                            aria-label={`Decrease ${item.name} quantity`}
+                            tabIndex={isCartOpen ? 0 : -1}
                           >
-                            <Trash2 />
-                            <span>EJECT</span>
+                            <Minus />
+                          </button>
+                          <span aria-label={`Quantity ${item.quantity}`}>
+                            {item.quantity}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateQuantity(item.cartItemId, item.quantity + 1)
+                            }
+                            disabled={atMaximum}
+                            aria-label={`Increase ${item.name} quantity`}
+                            tabIndex={isCartOpen ? 0 : -1}
+                          >
+                            <Plus />
                           </button>
                         </div>
 
-                        <div className="st-cart-cartridge__data">
-                          <div>
-                            <span>CONFIGURATION</span>
-                            <strong>{item.size}</strong>
-                          </div>
-
-                          <div>
-                            <span>UNIT PRICE</span>
-                            <strong>{money(item.unitPrice)}</strong>
-                          </div>
-
-                          <div>
-                            <span>STOCK LIMIT</span>
-                            <strong>
-                              {String(item.maximumQuantity).padStart(2, "0")}
-                            </strong>
-                          </div>
-                        </div>
-
-                        <div className="st-cart-cartridge__controls">
-                          <div className="st-cart-quantity">
-                            <span className="st-cart-quantity__label">
-                              QUANTITY
-                            </span>
-
-                            <div className="st-cart-quantity__hardware">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  updateQuantity(
-                                    item.cartItemId,
-                                    item.quantity - 1,
-                                  )
-                                }
-                                disabled={item.quantity <= 1}
-                                aria-label="Decrease quantity"
-                              >
-                                <Minus />
-                              </button>
-
-                              <strong>{item.quantity}</strong>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  updateQuantity(
-                                    item.cartItemId,
-                                    item.quantity + 1,
-                                  )
-                                }
-                                disabled={atMaximum}
-                                aria-label="Increase quantity"
-                              >
-                                <Plus />
-                              </button>
-                            </div>
-                          </div>
-
-                          <div
-                            className={`st-cart-stock ${
-                              atMaximum ? "is-locked" : ""
-                            }`}
-                          >
-                            <span className="st-cart-stock__led" />
-
-                            <div>
-                              <small>INVENTORY</small>
-                              <strong>
-                                {atMaximum
-                                  ? "MAX LOAD"
-                                  : `${item.maximumQuantity - item.quantity} REMAIN`}
-                              </strong>
-                            </div>
-                          </div>
-
-                          <div className="st-cart-cartridge__total">
-                            <span>LINE TOTAL</span>
-                            <strong>
-                              {money(item.unitPrice * item.quantity)}
-                            </strong>
-                          </div>
+                        <div className="st-retail-cart-item__price">
+                          {isOnSale ? (
+                            <del>{money(item.regularPrice! * item.quantity)}</del>
+                          ) : null}
+                          <strong>{money(item.unitPrice * item.quantity)}</strong>
                         </div>
                       </div>
-                    </article>
-                  );
-                })}
-              </div>
+
+                      {atMaximum ? (
+                        <p className="st-retail-cart-item__limit">
+                          Maximum available quantity selected
+                        </p>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
 
         {isCartReady && items.length > 0 ? (
-          <footer className="st-cart-terminal__footer">
-            <div className="st-cart-terminal__summary">
-              <div className="st-cart-terminal__summary-label">
-                <span>ORDER BUFFER</span>
-                <small>
-                  {totalItems} {totalItems === 1 ? "UNIT" : "UNITS"} /{" "}
-                  {configurationCount}{" "}
-                  {configurationCount === 1 ? "CONFIG" : "CONFIGS"}
-                </small>
-              </div>
-
-              <div className="st-cart-terminal__subtotal">
-                <span>SUBTOTAL</span>
-                <strong>{money(subtotal)}</strong>
-              </div>
+          <footer className="st-retail-cart__footer">
+            <div className="st-retail-cart__assurance">
+              <PackageCheck />
+              <p>
+                <strong>Delivery across Lebanon</strong>
+                <span>Calculated at checkout · Cash on delivery available</span>
+              </p>
             </div>
 
-            <div className="st-cart-terminal__commands">
+            <div className="st-retail-cart__subtotal">
+              <span>Subtotal</span>
+              <strong>{money(subtotal)}</strong>
+            </div>
+
+            <p className="st-retail-cart__note">
+              Delivery fees and discounts are confirmed at checkout.
+            </p>
+
+            <Link
+              href="/checkout"
+              onClick={closeCart}
+              className="st-retail-button st-retail-button--mustard st-retail-cart__checkout"
+              tabIndex={isCartOpen ? 0 : -1}
+            >
+              Continue to checkout
+              <ArrowRight />
+            </Link>
+
+            <div className="st-retail-cart__footer-actions">
               <Link
                 href="/shop"
                 onClick={closeCart}
-                className="st-cart-command st-cart-command--secondary"
+                tabIndex={isCartOpen ? 0 : -1}
               >
-                <span className="st-cart-command__key">B</span>
-
-                <span>
-                  <small>RETURN</small>
-                  CONTINUE SHOPPING
-                </span>
+                Continue shopping
               </Link>
-
               <button
                 type="button"
                 onClick={clearCart}
-                className="st-cart-command st-cart-command--clear"
+                tabIndex={isCartOpen ? 0 : -1}
               >
-                <Trash2 />
-
-                <span>
-                  <small>MEMORY</small>
-                  CLEAR CART
-                </span>
+                Clear cart
               </button>
-
-              <Link
-                href="/checkout"
-                onClick={closeCart}
-                className="st-cart-command st-cart-command--checkout"
-              >
-                <span className="st-cart-command__start">START</span>
-
-                <span>
-                  <small>SECURE ROUTE</small>
-                  CHECKOUT
-                </span>
-              </Link>
-            </div>
-
-            <div className="st-cart-terminal__legal">
-              <span>PAYMENT / CASH ON DELIVERY</span>
-              <span>AVAILABILITY VERIFIED AT CHECKOUT</span>
             </div>
           </footer>
         ) : null}

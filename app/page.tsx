@@ -13,6 +13,7 @@ import {
   type V3ProductVariant,
 } from "@/components/stereophonie-v3/shared/v3-product-card";
 import { createClient } from "@/lib/supabase/server";
+import { normalizeHomepageSettings } from "@/lib/homepage-settings";
 
 export const metadata: Metadata = {
   title: "Stereophonie",
@@ -50,47 +51,33 @@ type CategoryRow = {
   name: string;
   slug: string | null;
   image_url: string | null;
+  homepage_theme: "light" | "dark" | null;
 };
 
-function relationName(
-  relation: NamedRelation,
-  fallback = "",
-) {
+function relationName(relation: NamedRelation, fallback = "") {
   if (!relation) {
     return fallback;
   }
 
   if (Array.isArray(relation)) {
-    return (
-      relation[0]?.name?.trim() ||
-      fallback
-    );
+    return relation[0]?.name?.trim() || fallback;
   }
 
   return relation.name?.trim() || fallback;
 }
 
-function normalizeProduct(
-  product: ProductRow,
-): V3Product {
+function normalizeProduct(product: ProductRow): V3Product {
   return {
     id: product.id,
     name: product.name,
     slug: product.slug,
     description: product.description,
-    categoryName: relationName(
-      product.categories,
-      "Technology",
-    ),
-    brandName: relationName(
-      product.brands,
-      "",
-    ),
+    categoryName: relationName(product.categories, "Technology"),
+    brandName: relationName(product.brands, ""),
     is_featured: product.is_featured,
     is_trending: product.is_trending,
     is_new_arrival: product.is_new_arrival,
-    new_drop_started_at:
-      product.new_drop_started_at,
+    new_drop_started_at: product.new_drop_started_at,
     created_at: product.created_at,
     images: product.product_images ?? [],
     variants: product.product_variants ?? [],
@@ -100,10 +87,7 @@ function normalizeProduct(
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [
-    productsResult,
-    categoriesResult,
-  ] = await Promise.all([
+  const [productsResult, categoriesResult, homepageSettingsResult] = await Promise.all([
     supabase
       .from("products")
       .select(
@@ -158,6 +142,7 @@ export default async function HomePage() {
           name,
           slug,
           image_url,
+          homepage_theme,
           sort_order
         `,
       )
@@ -169,13 +154,16 @@ export default async function HomePage() {
       .order("name", {
         ascending: true,
       }),
+
+    supabase
+      .from("homepage_settings")
+      .select("*")
+      .eq("id", "default")
+      .maybeSingle(),
   ]);
 
   if (productsResult.error) {
-    console.error(
-      "V3 homepage products could not load:",
-      productsResult.error,
-    );
+    console.error("V3 homepage products could not load:", productsResult.error);
   }
 
   if (categoriesResult.error) {
@@ -185,9 +173,14 @@ export default async function HomePage() {
     );
   }
 
-  const products = (
-    (productsResult.data ?? []) as ProductRow[]
-  ).map(normalizeProduct);
+  const products = ((productsResult.data ?? []) as ProductRow[]).map(
+    normalizeProduct,
+  );
+
+  const homepageSettings =
+    normalizeHomepageSettings(
+      homepageSettingsResult.data ?? null,
+    );
 
   const categories: V3HomeCategory[] = (
     (categoriesResult.data ?? []) as CategoryRow[]
@@ -197,35 +190,26 @@ export default async function HomePage() {
     slug: category.slug,
     homepage_title: null,
     homepage_description: null,
-    homepage_wallpaper_url:
-      category.image_url ?? null,
+    homepage_wallpaper_url: category.image_url ?? null,
+    homepage_theme:
+      category.homepage_theme === "dark"
+        ? "dark"
+        : "light",
   }));
 
-  const latestProducts = products
-    .filter(isCurrentNewDrop)
-    .slice(0, 4);
+  const latestProducts = products.filter(isCurrentNewDrop).slice(0, 4);
 
   const latestFallback =
-    latestProducts.length > 0
-      ? latestProducts
-      : products.slice(0, 4);
+    latestProducts.length > 0 ? latestProducts : products.slice(0, 4);
 
-  const offerProducts = products
-    .filter(isProductOnOffer)
-    .slice(0, 4);
+  const offerProducts = products.filter(isProductOnOffer).slice(0, 4);
 
   const featuredProducts = products
-    .filter(
-      (product) =>
-        product.is_featured ||
-        product.is_trending,
-    )
+    .filter((product) => product.is_featured || product.is_trending)
     .slice(0, 4);
 
   const featuredFallback =
-    featuredProducts.length > 0
-      ? featuredProducts
-      : products.slice(4, 8);
+    featuredProducts.length > 0 ? featuredProducts : products.slice(4, 8);
 
   return (
     <>
@@ -237,9 +221,21 @@ export default async function HomePage() {
         offerProducts={offerProducts}
         featuredProducts={featuredFallback}
         catalogProducts={products}
+        heroImageUrl={homepageSettings.hero_image_url}
+        heroProductId={homepageSettings.hero_product_id}
+        heroEyebrow={homepageSettings.hero_eyebrow}
+        heroLineOne={homepageSettings.hero_line_one}
+        heroLineTwo={homepageSettings.hero_line_two}
+        heroLineThree={homepageSettings.hero_line_three}
+        heroDescription={homepageSettings.hero_description}
+        primaryButtonLabel={homepageSettings.primary_button_label}
+        primaryButtonHref={homepageSettings.primary_button_href}
+        secondaryButtonLabel={homepageSettings.secondary_button_label}
+        secondaryButtonHref={homepageSettings.secondary_button_href}
       />
 
       <V3Footer />
+
     </>
   );
 }

@@ -1,6 +1,33 @@
 import { NextResponse } from "next/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+
+import {
+  buildClarification,
+  parseAssistantRequest,
+} from "@/lib/stereophonie-v3/assistant/local-intelligence";
+
+import {
+  applyMemoryToRequest,
+  emptyAssistantMemory,
+  mergeAssistantMemory,
+} from "@/lib/stereophonie-v3/assistant/conversation-memory";
+
+import {
+  topAssistantProducts,
+  type RankedAssistantProduct,
+} from "@/lib/stereophonie-v3/assistant/product-ranking";
+
+import {
+  composeComparisonResponse,
+  composeFallbackResponse,
+  composeGreeting,
+  composeHelpResponse,
+  composeOfferResponse,
+  composeRecommendationResponse,
+  composeStoreInfo,
+} from "@/lib/stereophonie-v3/assistant/response-composer";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -436,7 +463,7 @@ async function searchProducts(argumentsValue: Record<string, unknown>) {
   const requestedLimit = Number(argumentsValue.limit);
 
   const limit = Number.isInteger(requestedLimit)
-    ? Math.min(Math.max(requestedLimit, 1), 8)
+    ? Math.min(Math.max(requestedLimit, 1), 100)
     : 6;
 
   const supabase = createAdminClient();
@@ -1532,28 +1559,459 @@ async function prepareWishlistAction(
   };
 }
 
+function localNormalize(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractRequestedSize(value: string) {
+  const match = value.match(
+    /\b(xxs|xs|s|m|l|xl|xxl|xxxl|one size)\b/i,
+  );
+
+  return match?.[1]?.trim() ?? "";
+}
+
+function extractRequestedQuantity(value: string) {
+  const direct = value.match(
+    /\b(?:qty|quantity|x)\s*(\d{1,2})\b/i,
+  );
+
+  if (direct) {
+    return Math.max(
+      1,
+      Math.min(10, Number(direct[1]) || 1),
+    );
+  }
+
+  const items = value.match(
+    /\b(\d{1,2})\s+(?:items?|pieces?|units?)\b/i,
+  );
+
+  if (items) {
+    return Math.max(
+      1,
+      Math.min(10, Number(items[1]) || 1),
+    );
+  }
+
+  return 1;
+}
+
+function cleanProductReferenceFromAction(value: string) {
+  return value
+    .replace(
+      /\b(please|can you|could you|i want to|i would like to|add|put|place|save|remove|delete|from|into|in|my|the|cart|bag|basket|wishlist|favorites|favourites|favorite|favourite|product|item)\b/gi,
+      " ",
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function detectLocalAction(value: string) {
+  const normalized = localNormalize(value);
+
+  return {
+    addCart:
+      /\b(add|put|place)\b/.test(normalized) &&
+      /\b(cart|bag|basket)\b/.test(normalized),
+
+    removeCart:
+      /\b(remove|delete)\b/.test(normalized) &&
+      /\b(cart|bag|basket)\b/.test(normalized),
+
+    clearCart:
+      /\b(clear|empty)\b/.test(normalized) &&
+      /\b(cart|bag|basket)\b/.test(normalized),
+
+    addWishlist:
+      /\b(add|save|put)\b/.test(normalized) &&
+      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(
+        normalized,
+      ),
+
+    removeWishlist:
+      /\b(remove|delete)\b/.test(normalized) &&
+      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(
+        normalized,
+      ),
+
+    clearWishlist:
+      /\b(clear|empty)\b/.test(normalized) &&
+      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(
+        normalized,
+      ),
+
+    checkout:
+      /\b(checkout|go to checkout|proceed to checkout)\b/.test(
+        normalized,
+      ),
+
+    tracking:
+      /\b(track my order|track order|order tracking|where is my order)\b/.test(
+        normalized,
+      ),
+  };
+}
+
+function toRankedProduct(
+  product: AssistantProduct,
+): RankedAssistantProduct {
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    description: product.description,
+    category: product.category,
+    imageUrl: product.imageUrl,
+    imageAlt: product.imageAlt,
+    price: product.price,
+
+    variants: product.variants.map((variant) => ({
+      id: variant.id,
+      size: variant.size,
+      currentPrice: variant.currentPrice,
+      regularPrice: variant.regularPrice,
+      salePrice: variant.salePrice,
+      stockQuantity: variant.stockQuantity,
+      availabilityStatus: variant.availabilityStatus,
+    })),
+  };
+}
+
+function findComparisonProducts(
+  products: AssistantProduct[],
+  conversationText: string,
+) {
+  const normalizedMessage =
+    normalizeProductReference(conversationText);
+
+  const directMatches = products.filter((product) => {
+    const normalizedName =
+      normalizeProductReference(product.name);
+
+    return (
+      normalizedName.length >= 3 &&
+      normalizedMessage.includes(normalizedName)
+    );
+  });
+
+  if (directMatches.length >= 2) {
+    return directMatches.slice(0, 4);
+  }
+
+  const scored = products
+    .map((product) => {
+      const nameWords =
+        normalizeProductReference(product.name)
+          .split(" ")
+          .filter((word) => word.length >= 3);
+
+      const score = nameWords.filter((word) =>
+        normalizedMessage.includes(word),
+      ).length;
+
+      return {
+        product,
+        score,
+      };
+    })
+    .filter((entry) => entry.score > 0)
+    .sort((first, second) => second.score - first.score);
+
+  return scored
+    .slice(0, 4)
+    .map((entry) => entry.product);
+}
+
+function priceResponse(
+  product: AssistantProduct,
+  language: Language,
+) {
+  if (product.price === null) {
+    if (language === "fr") {
+      return `Le prix de ${product.name} n’est pas disponible actuellement.`;
+    }
+
+    if (language === "ar") {
+      return `سعر ${product.name} غير متوفر حالياً.`;
+    }
+
+    return `The current price for ${product.name} is not available right now.`;
+  }
+
+  if (language === "fr") {
+    return `${product.name} est disponible à partir de $${product.price.toFixed(
+      2,
+    )}.`;
+  }
+
+  if (language === "ar") {
+    return `يبدأ سعر ${product.name} من $${product.price.toFixed(2)}.`;
+  }
+
+  return `${product.name} currently starts at $${product.price.toFixed(2)}.`;
+}
+
+function availabilityResponse(
+  product: AssistantProduct,
+  language: Language,
+) {
+  const available = product.variants.some(
+    (variant) =>
+      variant.purchasable &&
+      variant.stockQuantity > 0,
+  );
+
+  if (language === "fr") {
+    return available
+      ? `${product.name} est actuellement disponible.`
+      : `${product.name} n’est pas disponible actuellement.`;
+  }
+
+  if (language === "ar") {
+    return available
+      ? `${product.name} متوفر حالياً.`
+      : `${product.name} غير متوفر حالياً.`;
+  }
+
+  return available
+    ? `${product.name} is currently in stock.`
+    : `${product.name} is currently unavailable.`;
+}
+
+
+type AssistantLatestOrder = {
+  order_number: string;
+  status:
+    | "pending"
+    | "confirmed"
+    | "preparing"
+    | "out_for_delivery"
+    | "completed"
+    | "cancelled";
+  payment_status:
+    | "unpaid"
+    | "paid"
+    | "refunded";
+  delivery_city: string | null;
+  delivery_area: string | null;
+  total: number | null;
+  created_at: string;
+  status_updated_at: string | null;
+};
+
+async function getLatestSignedInAssistantOrder() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      signedIn: false,
+      order: null as AssistantLatestOrder | null,
+    };
+  }
+
+  const email =
+    user.email?.trim().toLowerCase() ?? "";
+
+  if (!email) {
+    return {
+      signedIn: true,
+      order: null as AssistantLatestOrder | null,
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select(
+      `
+        order_number,
+        status,
+        payment_status,
+        delivery_city,
+        delivery_area,
+        total,
+        created_at,
+        status_updated_at
+      `,
+    )
+    .ilike(
+      "customer_email",
+      email,
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false,
+      },
+    )
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error(
+      "Assistant latest-order lookup failed:",
+      error,
+    );
+
+    return {
+      signedIn: true,
+      order: null as AssistantLatestOrder | null,
+    };
+  }
+
+  return {
+    signedIn: true,
+    order:
+      (data as AssistantLatestOrder | null) ??
+      null,
+  };
+}
+
+function humanOrderStatus(
+  status: AssistantLatestOrder["status"],
+  language: Language,
+) {
+  const english: Record<
+    AssistantLatestOrder["status"],
+    string
+  > = {
+    pending: "pending confirmation",
+    confirmed: "confirmed",
+    preparing: "being prepared",
+    out_for_delivery: "out for delivery",
+    completed: "completed",
+    cancelled: "cancelled",
+  };
+
+  const french: Record<
+    AssistantLatestOrder["status"],
+    string
+  > = {
+    pending: "en attente de confirmation",
+    confirmed: "confirmée",
+    preparing: "en préparation",
+    out_for_delivery: "en cours de livraison",
+    completed: "terminée",
+    cancelled: "annulée",
+  };
+
+  const arabic: Record<
+    AssistantLatestOrder["status"],
+    string
+  > = {
+    pending: "بانتظار التأكيد",
+    confirmed: "مؤكد",
+    preparing: "قيد التحضير",
+    out_for_delivery: "خرج للتوصيل",
+    completed: "مكتمل",
+    cancelled: "ملغى",
+  };
+
+  if (language === "fr") {
+    return french[status];
+  }
+
+  if (language === "ar") {
+    return arabic[status];
+  }
+
+  return english[status];
+}
+
+function latestOrderResponse(
+  order: AssistantLatestOrder,
+  language: Language,
+) {
+  const status =
+    humanOrderStatus(
+      order.status,
+      language,
+    );
+
+  if (language === "fr") {
+    return `Votre dernière commande #${order.order_number} est actuellement ${status}.`;
+  }
+
+  if (language === "ar") {
+    return `طلبك الأخير رقم ${order.order_number} حالته حالياً: ${status}.`;
+  }
+
+  const destination =
+    [order.delivery_area, order.delivery_city]
+      .filter(Boolean)
+      .join(", ");
+
+  const payment =
+    order.payment_status === "paid"
+      ? "Payment is confirmed."
+      : order.payment_status === "refunded"
+        ? "The payment has been refunded."
+        : "Payment is currently marked as unpaid.";
+
+  const delivery =
+    destination
+      ? ` Delivery destination: ${destination}.`
+      : "";
+
+  const total =
+    order.total !== null
+      ? ` Order total: $${Number(order.total).toFixed(2)}.`
+      : "";
+
+  return `Your latest order #${order.order_number} is currently ${status}.${delivery}${total} ${payment}`.trim();
+}
+
+function unavailableCatalogResponse(
+  parsed: ReturnType<typeof parseAssistantRequest>,
+  language: Language,
+) {
+  const requested =
+    parsed.productQuery ||
+    parsed.category ||
+    parsed.brand ||
+    "that product";
+
+  if (language === "fr") {
+    return `Je n’ai trouvé aucun produit publié correspondant à « ${requested} » dans notre boutique pour le moment. Gardez un œil sur le shop — de nouveaux produits peuvent être ajoutés.`;
+  }
+
+  if (language === "ar") {
+    return `لم أجد حالياً أي منتج منشور يطابق «${requested}» في المتجر. تابع المتجر، فقد تتم إضافة منتجات جديدة قريباً.`;
+  }
+
+  return `I couldn’t find a currently published product matching “${requested}” in the store. Keep an eye on the shop — new products may be added soon.`;
+}
+
 export async function POST(request: Request) {
   let language: Language = "en";
 
   try {
     const body = (await request.json()) as {
+      message?: unknown;
       messages?: unknown;
       language?: unknown;
       cart?: unknown;
       wishlist?: unknown;
     };
 
-    language = normalizeLanguage(body.language);
+    const incomingMessages =
+      normalizeMessages(body.messages);
 
-    const incomingMessages = normalizeMessages(body.messages);
-
-    const cart = normalizeCart(body.cart);
-
-    const wishlist = normalizeWishlist(body.wishlist);
+    const latest =
+      incomingMessages.at(-1);
 
     if (
-      incomingMessages.length === 0 ||
-      incomingMessages.at(-1)?.role !== "user"
+      !latest ||
+      latest.role !== "user"
     ) {
       return NextResponse.json(
         {
@@ -1566,339 +2024,677 @@ export async function POST(request: Request) {
       );
     }
 
-    const conversation: OllamaMessage[] = [
-      {
-        role: "system",
-        content: getSystemInstruction(language),
-      },
-      {
-        role: "system",
-        content: getCartContext(cart),
-      },
-      {
-        role: "system",
-        content: getStoreSupportContext(),
-      },
-      {
-        role: "system",
-        content: getWishlistContext(wishlist),
-      },
-      ...incomingMessages,
-    ];
+    const rawMessage =
+      latest.content;
 
-    const displayedProducts = new Map<string, AssistantProduct>();
+    /*
+     * Detect language from our local parser.
+     * Explicit browser language remains supported.
+     */
+    const firstParse =
+      parseAssistantRequest(rawMessage);
 
-    const cartActions: AssistantCartAction[] = [];
+    language =
+      normalizeLanguage(body.language) !== "en"
+        ? normalizeLanguage(body.language)
+        : firstParse.language;
 
-    const wishlistActions: AssistantWishlistAction[] = [];
+    const cart =
+      normalizeCart(body.cart);
 
-    const navigationActions: AssistantNavigationAction[] = [];
+    const wishlist =
+      normalizeWishlist(body.wishlist);
 
-    let result = await callOllama(conversation);
+    /*
+     * Reconstruct lightweight conversational memory
+     * from recent USER turns.
+     */
+    let memory = {
+      ...emptyAssistantMemory,
+    };
 
-    for (let round = 0; round < 3; round += 1) {
-      const assistantMessage = result.message;
-
-      const toolCalls = assistantMessage?.tool_calls ?? [];
-
-      if (toolCalls.length === 0) {
-        break;
+    for (const message of incomingMessages) {
+      if (message.role !== "user") {
+        continue;
       }
 
-      conversation.push({
-        role: "assistant",
-        content: assistantMessage?.content ?? "",
-        tool_calls: toolCalls,
-      });
+      const historicalRequest =
+        parseAssistantRequest(message.content);
 
-      for (const toolCall of toolCalls) {
-        const toolName = toolCall.function?.name ?? "";
+      memory =
+        mergeAssistantMemory(
+          memory,
+          historicalRequest,
+        );
+    }
 
-        const argumentsValue = toolCall.function?.arguments ?? {};
+    let parsed =
+      parseAssistantRequest(rawMessage);
 
-        if (toolName === "search_products") {
-          try {
-            const products = await searchProducts(argumentsValue);
+    /*
+     * Explicit high-priority intents must NEVER inherit an old
+     * shopping category from conversational memory.
+     *
+     * Example:
+     *   "show me phones"
+     *   "track my latest order"
+     *
+     * The second message must leave the phone context entirely.
+     */
+    const explicitIntentBeforeMemory =
+      parsed.intent;
 
-            for (const product of products) {
-              displayedProducts.set(product.id, product);
-            }
+    if (
+      explicitIntentBeforeMemory !== "order_tracking" &&
+      explicitIntentBeforeMemory !== "store_info" &&
+      explicitIntentBeforeMemory !== "greeting" &&
+      explicitIntentBeforeMemory !== "help"
+    ) {
+      parsed =
+        applyMemoryToRequest(
+          parsed,
+          memory,
+        );
+    }
 
-            conversation.push({
-              role: "tool",
-              tool_name: "search_products",
-              content: JSON.stringify({
-                success: true,
-                products: products.map((product, index) => ({
-                  displayPosition: index + 1,
-                  name: product.name,
-                  category: product.category,
-                  description: product.description,
-                  price: product.price,
-                  variants: product.variants.map((variant) => ({
-                    size: variant.size,
-                    price: variant.currentPrice,
-                    stock: variant.stockQuantity,
-                    status: variant.availabilityStatus,
-                  })),
-                })),
-              }),
-            });
-          } catch (error) {
-            console.error("Assistant catalog search failed:", error);
+    const actions =
+      detectLocalAction(rawMessage);
 
-            conversation.push({
-              role: "tool",
-              tool_name: "search_products",
-              content: JSON.stringify({
-                success: false,
-                error: "The catalog search failed.",
-              }),
-            });
-          }
+    const cartActions: AssistantCartAction[] = [];
+    const wishlistActions: AssistantWishlistAction[] = [];
+    const navigationActions: AssistantNavigationAction[] = [];
 
-          continue;
-        }
+    /*
+     * --------------------------------------------------------
+     * DIRECT NAVIGATION
+     * --------------------------------------------------------
+     */
 
-        if (toolName === "prepare_add_to_cart") {
-          try {
-            const preparation = await prepareAddToCart(argumentsValue);
+    if (
+      actions.tracking ||
+      parsed.intent === "order_tracking"
+    ) {
+      const latestOrder =
+        await getLatestSignedInAssistantOrder();
 
-            for (const product of preparation.products) {
-              displayedProducts.set(product.id, product);
-            }
-
-            if (preparation.success && preparation.action) {
-              cartActions.push(preparation.action);
-            }
-
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_add_to_cart",
-              content: JSON.stringify({
-                ...preparation,
-                products: preparation.products.map((product, index) => ({
-                  displayPosition: index + 1,
-                  name: product.name,
-                  category: product.category,
-                  price: product.price,
-                  availableSizes: product.variants.map(
-                    (variant) => variant.size,
-                  ),
-                })),
-                action:
-                  preparation.action?.type === "add_to_cart"
-                    ? {
-                        prepared: true,
-                        productName: preparation.action.name,
-                        size: preparation.action.size,
-                        quantity: preparation.action.quantity,
-                      }
-                    : null,
-              }),
-            });
-          } catch (error) {
-            console.error("Assistant cart preparation failed:", error);
-
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_add_to_cart",
-              content: JSON.stringify({
-                success: false,
-                error: "The cart action could not be prepared.",
-              }),
-            });
-          }
-
-          continue;
-        }
-
-        if (toolName === "prepare_cart_action") {
-          try {
-            const preparation = prepareCartManagementAction(
-              argumentsValue,
-              cart,
-            );
-
-            if (preparation.success && preparation.action) {
-              cartActions.push(preparation.action);
-            }
-
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_cart_action",
-              content: JSON.stringify({
-                success: preparation.success,
-                reason: preparation.reason,
-                message: preparation.message,
-                matchingItems:
-                  "matchingItems" in preparation
-                    ? preparation.matchingItems
-                    : undefined,
-                action: preparation.action
-                  ? {
-                      prepared: true,
-                      type: preparation.action.type,
-                    }
-                  : null,
-              }),
-            });
-          } catch (error) {
-            console.error("Assistant cart management failed:", error);
-
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_cart_action",
-              content: JSON.stringify({
-                success: false,
-                error: "The cart action could not be prepared.",
-              }),
-            });
-          }
-
-          continue;
-        }
-
-        if (toolName === "prepare_wishlist_action") {
-          try {
-            const preparation = await prepareWishlistAction(
-              argumentsValue,
-              wishlist,
-            );
-
-            for (const product of preparation.products) {
-              displayedProducts.set(product.id, product);
-            }
-
-            if (preparation.success && preparation.action) {
-              wishlistActions.push(preparation.action);
-            }
-
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_wishlist_action",
-              content: JSON.stringify({
-                success: preparation.success,
-                reason: preparation.reason,
-                message: preparation.message,
-                products: preparation.products.map((product, index) => ({
-                  displayPosition: index + 1,
-                  name: product.name,
-                  category: product.category,
-                  price: product.price,
-                })),
-                action: preparation.action
-                  ? {
-                      prepared: true,
-                      type: preparation.action.type,
-                    }
-                  : null,
-              }),
-            });
-          } catch (error) {
-            console.error("Assistant wishlist preparation failed:", error);
-
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_wishlist_action",
-              content: JSON.stringify({
-                success: false,
-                error: "The wishlist action could not be prepared.",
-              }),
-            });
-          }
-
-          continue;
-        }
-
-        if (toolName === "prepare_navigation") {
-          const destination = cleanText(
-            argumentsValue.destination,
-          ).toLowerCase();
-
-          const action =
-            destination === "checkout"
-              ? ({
-                  type: "navigate",
-                  destination: "checkout",
-                  path: "/checkout",
-                } satisfies AssistantNavigationAction)
-              : destination === "track_order"
-                ? ({
-                    type: "navigate",
-                    destination: "track_order",
-                    path: "/track-order",
-                  } satisfies AssistantNavigationAction)
-                : destination === "wishlist"
-                  ? ({
-                      type: "navigate",
-                      destination: "wishlist",
-                      path: "/wishlist",
-                    } satisfies AssistantNavigationAction)
-                  : null;
-
-          if (action) {
-            navigationActions.splice(0, navigationActions.length, action);
-
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_navigation",
-              content: JSON.stringify({
-                success: true,
-                prepared: true,
-                destination: action.destination,
-                path: action.path,
-              }),
-            });
-          } else {
-            conversation.push({
-              role: "tool",
-              tool_name: "prepare_navigation",
-              content: JSON.stringify({
-                success: false,
-                error: "Unsupported navigation destination.",
-              }),
-            });
-          }
-
-          continue;
-        }
-
-        conversation.push({
-          role: "tool",
-          tool_name: toolName,
-          content: JSON.stringify({
-            success: false,
-            error: "Unknown tool.",
-          }),
+      if (
+        latestOrder.signedIn &&
+        latestOrder.order
+      ) {
+        return NextResponse.json({
+          message:
+            latestOrderResponse(
+              latestOrder.order,
+              language,
+            ),
+          products: [],
+          cartActions,
+          wishlistActions,
+          navigationActions,
+          language,
+          engine:
+            "stereophonie-local-v2",
         });
       }
 
-      result = await callOllama(conversation);
+      if (
+        latestOrder.signedIn &&
+        !latestOrder.order
+      ) {
+        return NextResponse.json({
+          message:
+            language === "fr"
+              ? "Je ne trouve actuellement aucune commande liée à votre compte."
+              : language === "ar"
+                ? "لا أجد حالياً أي طلب مرتبط بحسابك."
+                : "I can’t find any orders linked to your account right now.",
+          products: [],
+          cartActions,
+          wishlistActions,
+          navigationActions,
+          language,
+          engine:
+            "stereophonie-local-v2",
+        });
+      }
+
+      navigationActions.push({
+        type: "navigate",
+        destination: "track_order",
+        path: "/track-order",
+      });
+
+      return NextResponse.json({
+        message:
+          language === "fr"
+            ? "Connectez-vous pour que je puisse consulter automatiquement votre dernière commande, ou utilisez le suivi sécurisé avec votre numéro de commande et votre email."
+            : language === "ar"
+              ? "سجّل الدخول كي أتمكن من التحقق من آخر طلب تلقائياً، أو استخدم صفحة التتبع الآمنة برقم الطلب والبريد الإلكتروني."
+              : "Sign in and I can check your latest order automatically, or use secure order tracking with your order number and email.",
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine:
+          "stereophonie-local-v2",
+      });
     }
 
-    const reply =
-      cleanText(result.message?.content) || getUnavailableMessage(language);
+    if (actions.checkout) {
+      navigationActions.push({
+        type: "navigate",
+        destination: "checkout",
+        path: "/checkout",
+      });
 
+      return NextResponse.json({
+        message:
+          language === "fr"
+            ? "Votre passage au checkout est prêt."
+            : language === "ar"
+              ? "صفحة إتمام الطلب جاهزة."
+              : "Your checkout navigation is ready.",
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    /*
+     * --------------------------------------------------------
+     * CART MANAGEMENT
+     * --------------------------------------------------------
+     */
+
+    if (actions.clearCart) {
+      const result =
+        prepareCartManagementAction(
+          {
+            operation: "clear",
+            product_reference: "",
+            size: "",
+            position: 0,
+            quantity: 0,
+          },
+          cart,
+        );
+
+      if (result.action) {
+        cartActions.push(result.action);
+      }
+
+      return NextResponse.json({
+        message: result.message,
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (actions.removeCart) {
+      const reference =
+        cleanProductReferenceFromAction(
+          localNormalize(rawMessage),
+        );
+
+      const result =
+        prepareCartManagementAction(
+          {
+            operation: "remove",
+            product_reference: reference,
+            size: extractRequestedSize(rawMessage),
+            position: parsed.ordinal ?? 0,
+            quantity: 0,
+          },
+          cart,
+        );
+
+      if (result.action) {
+        cartActions.push(result.action);
+      }
+
+      return NextResponse.json({
+        message: result.message,
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (actions.addCart) {
+      const reference =
+        cleanProductReferenceFromAction(
+          localNormalize(rawMessage),
+        ) ||
+        parsed.productQuery ||
+        "";
+
+      const result =
+        await prepareAddToCart({
+          product_reference: reference,
+          size: extractRequestedSize(rawMessage),
+          quantity: extractRequestedQuantity(rawMessage),
+        });
+
+      if (result.action) {
+        cartActions.push(result.action);
+      }
+
+      return NextResponse.json({
+        message: result.message,
+        products: result.products ?? [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    /*
+     * --------------------------------------------------------
+     * WISHLIST MANAGEMENT
+     * --------------------------------------------------------
+     */
+
+    if (actions.clearWishlist) {
+      const result =
+        await prepareWishlistAction(
+          {
+            operation: "clear",
+            product_reference: "",
+            position: 0,
+          },
+          wishlist,
+        );
+
+      if (result.action) {
+        wishlistActions.push(result.action);
+      }
+
+      return NextResponse.json({
+        message: result.message,
+        products: result.products ?? [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (actions.removeWishlist) {
+      const result =
+        await prepareWishlistAction(
+          {
+            operation: "remove",
+            product_reference:
+              cleanProductReferenceFromAction(
+                localNormalize(rawMessage),
+              ),
+            position: parsed.ordinal ?? 0,
+          },
+          wishlist,
+        );
+
+      if (result.action) {
+        wishlistActions.push(result.action);
+      }
+
+      return NextResponse.json({
+        message: result.message,
+        products: result.products ?? [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (actions.addWishlist) {
+      const result =
+        await prepareWishlistAction(
+          {
+            operation: "add",
+            product_reference:
+              cleanProductReferenceFromAction(
+                localNormalize(rawMessage),
+              ) ||
+              parsed.productQuery ||
+              "",
+            position: parsed.ordinal ?? 0,
+          },
+          wishlist,
+        );
+
+      if (result.action) {
+        wishlistActions.push(result.action);
+      }
+
+      return NextResponse.json({
+        message: result.message,
+        products: result.products ?? [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    /*
+     * --------------------------------------------------------
+     * SIMPLE NON-CATALOG INTENTS
+     * --------------------------------------------------------
+     */
+
+    if (parsed.intent === "greeting") {
+      return NextResponse.json({
+        message: composeGreeting(parsed),
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (parsed.intent === "help") {
+      return NextResponse.json({
+        message: composeHelpResponse(parsed),
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (parsed.intent === "store_info") {
+      return NextResponse.json({
+        message: composeStoreInfo(parsed),
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    /*
+     * --------------------------------------------------------
+     * LOAD THE REAL PUBLISHED CATALOG
+     * --------------------------------------------------------
+     */
+
+    const catalog =
+      await searchProducts({
+        query: "",
+        category: "",
+        size: "",
+        maximum_price: 0,
+        limit: 100,
+      });
+
+    const rankedCatalog =
+      catalog.map(toRankedProduct);
+
+    /*
+     * --------------------------------------------------------
+     * COMPARISON
+     * --------------------------------------------------------
+     */
+
+    if (parsed.intent === "comparison") {
+      const conversationText =
+        incomingMessages
+          .slice(-6)
+          .map((message) => message.content)
+          .join(" ");
+
+      const comparisonProducts =
+        findComparisonProducts(
+          catalog,
+          conversationText,
+        );
+
+      return NextResponse.json({
+        message:
+          composeComparisonResponse(
+            comparisonProducts.map(toRankedProduct),
+            parsed,
+          ),
+
+        products:
+          comparisonProducts.slice(0, 4),
+
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    /*
+     * --------------------------------------------------------
+     * RANK PRODUCTS USING OUR OWN ENGINE
+     * --------------------------------------------------------
+     */
+
+    const ranked =
+      topAssistantProducts(
+        rankedCatalog,
+        parsed,
+        4,
+      );
+
+    const selectedProducts =
+      ranked.map((entry) => {
+        const match =
+          catalog.find(
+            (product) =>
+              product.id === entry.product.id,
+          );
+
+        return match;
+      }).filter(
+        (product): product is AssistantProduct =>
+          Boolean(product),
+      );
+
+    const explicitCatalogRequest =
+      Boolean(
+        parsed.category ||
+        parsed.productQuery ||
+        parsed.brand,
+      );
+
+    const productSensitiveIntent =
+      [
+        "product_search",
+        "recommendation",
+        "gift",
+        "price_question",
+        "availability",
+      ].includes(parsed.intent);
+
+    if (
+      explicitCatalogRequest &&
+      productSensitiveIntent &&
+      selectedProducts.length === 0
+    ) {
+      return NextResponse.json({
+        message:
+          unavailableCatalogResponse(
+            parsed,
+            language,
+          ),
+        products: [],
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine:
+          "stereophonie-local-v2",
+      });
+    }
+
+
+    /*
+     * Price / stock questions become precise
+     * when we have an obvious top match.
+     */
+
+    if (
+      parsed.intent === "price_question" &&
+      selectedProducts.length > 0
+    ) {
+      return NextResponse.json({
+        message:
+          priceResponse(
+            selectedProducts[0],
+            language,
+          ),
+        products:
+          selectedProducts.slice(0, 4),
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (
+      parsed.intent === "availability" &&
+      selectedProducts.length > 0
+    ) {
+      return NextResponse.json({
+        message:
+          availabilityResponse(
+            selectedProducts[0],
+            language,
+          ),
+        products:
+          selectedProducts.slice(0, 4),
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (parsed.intent === "offers") {
+      return NextResponse.json({
+        message:
+          composeOfferResponse(
+            ranked,
+            parsed,
+          ),
+        products:
+          selectedProducts.slice(0, 4),
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (
+      parsed.intent === "product_search" ||
+      parsed.intent === "recommendation" ||
+      parsed.intent === "gift"
+    ) {
+      if (
+        parsed.needsClarification &&
+        selectedProducts.length === 0
+      ) {
+        return NextResponse.json({
+          message:
+            buildClarification(parsed),
+          products: [],
+          cartActions,
+          wishlistActions,
+          navigationActions,
+          language,
+          engine: "stereophonie-local-v2",
+        });
+      }
+
+      return NextResponse.json({
+        message:
+          composeRecommendationResponse(
+            parsed,
+            ranked,
+          ),
+
+        products:
+          selectedProducts.slice(0, 4),
+
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    /*
+     * Unknown question:
+     * stay useful instead of hallucinating.
+     */
     return NextResponse.json({
-      message: reply,
-      products: Array.from(displayedProducts.values()).slice(0, 8),
+      message:
+        composeFallbackResponse(
+          parsed,
+          memory,
+        ),
+
+      products: [],
       cartActions,
       wishlistActions,
       navigationActions,
       language,
+      engine: "stereophonie-local-v2",
     });
   } catch (error) {
-    console.error("Ollama assistant failed:", error);
+    console.error(
+      "Stereophonie local assistant failed:",
+      error,
+    );
 
     return NextResponse.json(
       {
-        message: getUnavailableMessage(language),
+        message:
+          language === "fr"
+            ? "Je n’ai pas pu traiter cette demande pour le moment. Réessayez dans un instant."
+            : language === "ar"
+              ? "تعذر معالجة طلبك حالياً. حاول مرة أخرى بعد قليل."
+              : "I couldn’t process that request right now. Please try again in a moment.",
+
         products: [],
         language,
+        engine: "stereophonie-local-v2",
       },
       {
-        status: 503,
+        status: 500,
       },
     );
   }

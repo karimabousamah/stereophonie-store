@@ -10,6 +10,8 @@ export type HomepageSettings = {
   secondary_button_label: string;
   secondary_button_href: string;
   hero_product_id: string | null;
+  hero_image_url: string | null;
+  hero_image_storage_path: string | null;
   products_eyebrow: string;
   products_heading: string;
   products_button_label: string;
@@ -41,6 +43,9 @@ export type HomepageSettings = {
 
 export const defaultHomepageSettings: HomepageSettings = {
   id: "default",
+
+  hero_image_url: null,
+  hero_image_storage_path: null,
   hero_eyebrow: "Selected electronics and technology",
   hero_line_one: "Modern",
   hero_line_two: "Italian",
@@ -222,6 +227,17 @@ export function normalizeHomepageSettings(
       input?.products_sort_mode === "manual"
         ? input.products_sort_mode
         : defaultHomepageSettings.products_sort_mode,
+
+    hero_image_url:
+      typeof input?.hero_image_url === "string" && input.hero_image_url.trim()
+        ? input.hero_image_url.trim()
+        : null,
+
+    hero_image_storage_path:
+      typeof input?.hero_image_storage_path === "string" &&
+      input.hero_image_storage_path.trim()
+        ? input.hero_image_storage_path.trim()
+        : null,
 
     manual_product_ids: Array.isArray(input?.manual_product_ids)
       ? Array.from(

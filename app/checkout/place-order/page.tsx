@@ -17,6 +17,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { useCart } from "@/components/cart/cart-provider";
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 import { submitOrder } from "./actions";
@@ -372,103 +373,71 @@ export default function PlaceOrderPage() {
 
   if (!isCartReady || isSubmitting) {
     return (
-      <main className="st-order-transmission">
-        <div className="st-order-transmission__terminal">
-          <div className="st-order-transmission__top">
-            <span>ORDER TRANSMISSION / ACTIVE</span>
-            <span>SECURE BUS / CHANNEL 03</span>
-          </div>
-
-          <div className="st-order-transmission__screen">
+      <>
+        <V3Header />
+        <main className="st-order-transmission">
+          <div className="st-order-transmission__card">
             <div className="st-order-transmission__spinner">
               <Loader2 className="animate-spin" />
             </div>
 
-            <small>CHECKOUT MODULE / STEP 03</small>
-
-            <h1>
-              TRANSMITTING
-              <br />
-              ORDER.
-            </h1>
-
+            <small>Secure checkout</small>
+            <h1>Placing your order</h1>
             <p>
-              Verifying inventory, customer data, delivery coordinates, coupon
-              state and Cash on Delivery configuration. Do not close this
-              window.
+              We are securely confirming your products, delivery information,
+              discount and payment choice. This should only take a moment.
             </p>
-
             <div className="st-order-transmission__bar">
               <span />
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </>
     );
   }
 
   if (errorMessage) {
     return (
-      <main className="min-h-screen bg-[#f6f5f2] text-black">
-        <header className="border-b border-black/10 bg-white">
-          <div className="mx-auto flex min-h-[78px] max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
-            <Link
-              href="/"
-              className="text-lg font-semibold uppercase tracking-[0.22em]"
-            >
-              Stereophonie
-            </Link>
+      <>
+        <V3Header />
+        <main className="st-checkout-error-v2 min-h-screen bg-[#f6f5f2] text-black">
+          <CheckoutProgress currentStep={3} />
 
-            <Link
-              href="/shop"
-              className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/45 transition hover:text-black"
-            >
-              Return to shop
-            </Link>
-          </div>
-        </header>
+          <section className="mx-auto flex max-w-[760px] items-center justify-center px-5 py-10 sm:px-8">
+            <div className="w-full rounded-[24px] border border-red-200 bg-white p-7 text-center shadow-[0_18px_55px_rgba(29,29,31,0.06)] sm:p-10">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-red-200 bg-red-50">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
 
-        <CheckoutProgress currentStep={3} />
+              <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.18em] text-red-600">
+                Order not submitted
+              </p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em]">
+                We need one more look
+              </h1>
+              <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-black/55">
+                {errorMessage}
+              </p>
 
-        <section className="mx-auto flex min-h-[calc(100vh-79px)] max-w-[1000px] items-center justify-center px-5 py-14 sm:px-8">
-          <div className="w-full border border-red-200 bg-white p-7 text-center shadow-[0_30px_90px_rgba(0,0,0,0.06)] sm:p-12">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center border border-red-200 bg-red-50">
-              <AlertCircle className="h-7 w-7 text-red-600" />
+              <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={returnToCheckout}
+                  className="min-h-12 rounded-full bg-[#f5b335] px-7 py-3 text-sm font-semibold text-black transition hover:bg-[#eaaa2b]"
+                >
+                  Return to checkout
+                </button>
+                <Link
+                  href="/shop"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-black/15 px-7 py-3 text-sm font-semibold text-black transition hover:border-black"
+                >
+                  Continue shopping
+                </Link>
+              </div>
             </div>
-
-            <p className="mt-7 text-[10px] font-semibold uppercase tracking-[0.22em] text-red-600">
-              Order not submitted
-            </p>
-
-            <h1 className="mt-4 text-3xl font-semibold uppercase tracking-[-0.04em] sm:text-5xl">
-              Something needs
-              <br />
-              your attention
-            </h1>
-
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-black/55">
-              {errorMessage}
-            </p>
-
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={returnToCheckout}
-                className="min-h-14 bg-black px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-white transition hover:bg-[#242424]"
-              >
-                Return to checkout
-              </button>
-
-              <Link
-                href="/shop"
-                className="inline-flex min-h-14 items-center justify-center border border-black/15 px-7 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-black transition hover:border-black"
-              >
-                RETURN TO STORE
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
+      </>
     );
   }
 
@@ -503,120 +472,69 @@ export default function PlaceOrderPage() {
   );
 
   return (
-    <main className="st-order-success-v2 min-h-screen bg-[#f6f5f2] text-black">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto flex min-h-[78px] max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-12">
-          <Link
-            href="/"
-            className="text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
-          >
-            Stereophonie
-          </Link>
+    <>
+      <V3Header />
+      <main className="st-order-success-v2 min-h-screen bg-[#f6f5f2] text-black">
+        <CheckoutProgress currentStep={3} />
 
-          <Link
-            href="/shop"
-            className="group inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-black/45 transition hover:text-black"
-          >
-            RETURN TO STORE
-            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-          </Link>
-        </div>
-      </header>
-
-      <section className="border-b border-black/10 bg-[#0a0a0a] text-white">
-        <div className="mx-auto max-w-[1500px] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end">
-            <div>
-              <div className="flex h-16 w-16 items-center justify-center border border-emerald-400/25 bg-emerald-400/[0.08]">
-                <CheckCircle2 className="h-8 w-8 text-emerald-300" />
-              </div>
-
-              <p className="mt-8 text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-300">
-                Order received
-              </p>
-
-              <h1 className="mt-4 text-5xl font-semibold uppercase leading-[0.9] tracking-[-0.06em] sm:text-7xl lg:text-8xl">
-                Thank
-                <br />
-                you
-              </h1>
-
-              <p className="mt-7 max-w-2xl text-sm leading-7 text-white/50 sm:text-base">
-                Your order was submitted successfully. Stereophonie will review
-                the details and contact you to confirm delivery and payment.
-              </p>
-
-              {accountLinked ? (
-                <div className="mt-7 flex max-w-2xl items-start gap-4 border border-emerald-300/20 bg-emerald-300/[0.06] p-5">
-                  <UserRound className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
-
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                      Customer account connected
-                    </p>
-
-                    <p className="mt-2 text-sm leading-6 text-white/50">
-                      This order was saved using your signed-in customer email
-                      and is available in your account order history.
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-
-              {emailFailed ? (
-                <div className="mt-4 flex max-w-2xl items-start gap-4 border border-amber-300/25 bg-amber-300/[0.07] p-5">
-                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />
-
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-300">
-                      Confirmation email delayed
-                    </p>
-
-                    <p className="mt-2 text-sm leading-6 text-white/50">
-                      Your order was saved, but the confirmation email could not
-                      be sent.
-                      {result.confirmation_email_message
-                        ? ` ${result.confirmation_email_message}`
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-              ) : null}
+        <section className="st-checkout-success-head">
+          <div className="st-checkout-success-head__message">
+            <div className="st-checkout-success-head__icon">
+              <CheckCircle2 />
             </div>
-
-            <div className="border border-white/15 bg-white/[0.045] p-6 backdrop-blur-md sm:p-7">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                TRANSACTION ID
+            <div>
+              <p className="st-checkout-success-head__eyebrow">Order confirmed</p>
+              <h1>Thank you, {customer.firstName}.</h1>
+              <p>
+                Your order is safely recorded. The Stereophonie team will
+                contact you to confirm delivery.
               </p>
-
-              <p className="st-order-success-number mt-3 break-all text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">
-                {result.order_number}
-              </p>
-
-              <div className="mt-6 flex items-start gap-3 border-t border-white/10 pt-5">
-                <PackageCheck className="mt-0.5 h-5 w-5 shrink-0 text-white/40" />
-
-                <p className="text-xs leading-6 text-white/45">
-                  Keep this order number for any communication about your
-                  purchase.
-                </p>
-              </div>
-
-              {accountLinked ? (
-                <Link
-                  href="/account"
-                  className="st-order-success-command mt-6 flex min-h-13 w-full items-center justify-center gap-3 border border-white bg-white px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-white"
-                >
-                  View my account orders
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              ) : null}
             </div>
           </div>
-        </div>
-      </section>
 
-      <section className="mx-auto max-w-[1500px] px-5 py-10 sm:px-8 sm:py-14 lg:px-12 lg:py-16">
+          <div className="st-checkout-success-head__number">
+            <span>Order number</span>
+            <strong>{result.order_number}</strong>
+            <p>
+              <PackageCheck />
+              Keep this number for questions about your purchase.
+            </p>
+            {accountLinked ? (
+              <Link href="/account">
+                View my account orders
+                <ArrowRight />
+              </Link>
+            ) : null}
+          </div>
+
+          {accountLinked || emailFailed ? (
+            <div className="st-checkout-success-head__notices">
+              {accountLinked ? (
+                <div className="is-success">
+                  <UserRound />
+                  <p>
+                    <strong>Account connected</strong>
+                    This order is available in your account history.
+                  </p>
+                </div>
+              ) : null}
+              {emailFailed ? (
+                <div className="is-warning">
+                  <AlertCircle />
+                  <p>
+                    <strong>Confirmation email delayed</strong>
+                    Your order is saved, but the email could not be sent.
+                    {result.confirmation_email_message
+                      ? ` ${result.confirmation_email_message}`
+                      : ""}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </section>
+
+        <section className="st-checkout-content mx-auto max-w-[1180px] px-5 py-8 sm:px-6 sm:py-10">
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
           <div className="min-w-0 space-y-8">
             <section className="border border-black/10 bg-white">
@@ -666,7 +584,7 @@ export default function PlaceOrderPage() {
                       </Link>
 
                       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/45">
-                        <span>CONFIGURATION {item.size}</span>
+                        <span>Configuration {item.size}</span>
 
                         <span>Quantity {item.quantity}</span>
                       </div>
@@ -760,7 +678,7 @@ export default function PlaceOrderPage() {
                 </p>
 
                 <h2 className="mt-2 text-2xl font-semibold">
-                  FINAL SYSTEM TOTAL
+                  Order total
                 </h2>
               </div>
 
@@ -840,7 +758,7 @@ export default function PlaceOrderPage() {
                   href="/shop"
                   className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424]"
                 >
-                  RETURN TO STORE
+                  Continue shopping
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -848,6 +766,7 @@ export default function PlaceOrderPage() {
           </aside>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

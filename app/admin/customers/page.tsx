@@ -39,6 +39,8 @@ type PreferenceRow = {
 
 type AdminRow = {
   user_id: string;
+  role: string;
+  is_active: boolean;
 };
 
 function normalizeEmail(value: string | null | undefined) {
@@ -92,7 +94,9 @@ export default async function AdminCustomersPage() {
         perPage: 1000,
       }),
 
-      adminClient.from("admin_users").select("user_id"),
+      adminClient
+        .from("admin_users")
+        .select("user_id, role, is_active"),
 
       adminClient.from("customer_profiles").select(`
           user_id,
@@ -156,8 +160,13 @@ export default async function AdminCustomersPage() {
       dataError = "Some customer information could not be loaded completely.";
     }
 
-    const adminIds = new Set(
-      ((adminUsersResponse.data ?? []) as AdminRow[]).map((row) => row.user_id),
+    const adminByUserId = new Map(
+      ((adminUsersResponse.data ?? []) as AdminRow[]).map(
+        (row) => [
+          row.user_id,
+          row,
+        ],
+      ),
     );
 
     const profiles = (profilesResponse.data ?? []) as ProfileRow[];
@@ -193,10 +202,28 @@ export default async function AdminCustomersPage() {
 
     customers = authUsers
       .filter(
-        (user) => !adminIds.has(user.id) && Boolean(normalizeEmail(user.email)),
+        (user) =>
+          Boolean(
+            normalizeEmail(
+              user.email,
+            ),
+          ),
       )
       .map((user) => {
-        const email = normalizeEmail(user.email);
+        const email =
+          normalizeEmail(
+            user.email,
+          );
+
+        const adminRecord =
+          adminByUserId.get(
+            user.id,
+          );
+
+        const isAdmin =
+          Boolean(
+            adminRecord?.is_active,
+          );
 
         const profile = profileByUserId.get(user.id);
 
@@ -254,6 +281,19 @@ export default async function AdminCustomersPage() {
         return {
           id: user.id,
           email,
+
+          /*
+           * Administrative access information.
+           *
+           * The customer remains visible even when promoted.
+           */
+          isAdmin,
+          adminRole:
+            isAdmin
+              ? adminRecord?.role ?? "admin"
+              : null,
+          isCurrentUser:
+            user.id === userId,
           firstName,
           lastName,
           phone,

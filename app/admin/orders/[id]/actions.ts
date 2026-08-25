@@ -80,6 +80,7 @@ function refreshOrderPages(orderId: string) {
   revalidatePath(`/admin/orders/${orderId}`);
 
   revalidatePath("/admin/orders");
+  revalidatePath("/admin/best-selling");
   revalidatePath("/admin");
   revalidatePath("/account");
   revalidatePath("/track-order");

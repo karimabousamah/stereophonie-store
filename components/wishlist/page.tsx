@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Gamepad2, Heart, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Gamepad2,
+  Bookmark,
+  Trash2,
+} from "lucide-react";
 
 import StoreFooter from "@/components/storefront/store-footer";
 import StoreHeader from "@/components/storefront/store-header";
@@ -158,7 +163,7 @@ export default function WishlistPage() {
                 <div className="st-wishlist-empty__scanlines" />
 
                 <div className="st-wishlist-empty__icon">
-                  <Heart />
+                  <Bookmark />
                 </div>
 
                 <p>MEMORY SLOT 00</p>

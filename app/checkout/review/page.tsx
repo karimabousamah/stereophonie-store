@@ -19,8 +19,8 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import CheckoutProgress from "@/components/checkout/checkout-progress";
-import CartButton from "@/components/cart/cart-button";
 import { type CartItem, useCart } from "@/components/cart/cart-provider";
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 
 type CustomerDetails = {
   firstName: string;
@@ -242,7 +242,7 @@ export default function CheckoutReviewPage() {
     }
 
     if (!selectedPaymentMethod) {
-      setErrorMessage("Please select CASH ON DELIVERY before continuing.");
+      setErrorMessage("Please select cash on delivery before continuing.");
 
       document
         .getElementById("payment-methods")
@@ -282,15 +282,15 @@ export default function CheckoutReviewPage() {
 
   if (isLoading || !isCartReady) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white text-black">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-black/15 border-t-black" />
-
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-black/45">
-            Loading order review
-          </p>
-        </div>
-      </main>
+      <>
+        <V3Header />
+        <main className="st-checkout-loading">
+          <div className="st-checkout-loading__card">
+            <div className="st-checkout-loading__spinner" />
+            <p>Preparing your order review</p>
+          </div>
+        </main>
+      </>
     );
   }
 
@@ -303,102 +303,28 @@ export default function CheckoutReviewPage() {
   );
 
   return (
-    <main className="st-checkout-review-v2 min-h-screen bg-[#f7f7f5] text-black">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto grid min-h-[76px] max-w-[1500px] grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-8 lg:px-12">
+    <>
+      <V3Header />
+      <main className="st-checkout-review-v2 min-h-screen bg-[#f7f7f5] text-black">
+        <section className="st-checkout-compact-head">
+          <div>
+            <p className="st-checkout-compact-head__eyebrow">Checkout</p>
+            <h1>Review your order</h1>
+            <p>Confirm your details, products and payment method.</p>
+          </div>
+
           <Link
             href="/checkout"
-            className="inline-flex w-fit items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-black/50 transition hover:text-black"
+            className="st-checkout-compact-head__action"
           >
             <ArrowLeft className="h-4 w-4" />
-
-            <span className="hidden sm:inline">EDIT INPUT</span>
+            <span>Edit details</span>
           </Link>
+        </section>
 
-          <Link
-            href="/"
-            className="text-center text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
-          >
-            Stereophonie
-          </Link>
+        <CheckoutProgress currentStep={2} />
 
-          <div className="justify-self-end">
-            <CartButton />
-          </div>
-        </div>
-      </header>
-
-      <section className="st-review-system-head">
-        <div className="st-review-system-head__top">
-          <span>
-            <i />
-            ORDER VERIFICATION SYSTEM / ONLINE
-          </span>
-
-          <span>PLAYER 01 / SECURE CHANNEL</span>
-        </div>
-
-        <div className="st-review-system-head__body">
-          <div>
-            <small>CHECKOUT MODULE / STEP 02</small>
-
-            <h1>
-              VERIFY
-              <br />
-              <span>LOADOUT.</span>
-            </h1>
-
-            <p>
-              Confirm customer identity, delivery coordinates, payment channel,
-              product configurations and final totals before order transmission.
-            </p>
-          </div>
-
-          <div className="st-review-system-head__hud">
-            <span>
-              CUSTOMER
-              <strong>LINKED</strong>
-            </span>
-
-            <span>
-              DELIVERY
-              <strong>READY</strong>
-            </span>
-
-            <span>
-              PAYMENT
-              <strong>SELECT</strong>
-            </span>
-
-            <span>
-              INVENTORY
-              <strong>LIVE</strong>
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <CheckoutProgress currentStep={2} />
-
-      <section className="mx-auto max-w-[1500px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12 lg:py-16">
-        <div className="mb-8 border-b border-black/10 pb-8 sm:mb-12">
-          <div className="flex items-center gap-2 text-emerald-700">
-            <LockKeyhole className="h-4 w-4" />
-
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em]">
-              Secure order review
-            </p>
-          </div>
-
-          <h1 className="mt-4 text-4xl font-semibold uppercase leading-none tracking-[-0.05em] sm:text-6xl lg:text-7xl">
-            VERIFY ORDER
-          </h1>
-
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-black/50 sm:text-base">
-            Confirm your products, contact information, and delivery address
-            before submitting the order.
-          </p>
-        </div>
+        <section className="st-checkout-content mx-auto max-w-[1180px] px-4 py-6 sm:px-6 sm:py-8">
 
         {errorMessage ? (
           <div
@@ -542,7 +468,7 @@ export default function CheckoutReviewPage() {
                     </p>
 
                     <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                      DELIVERY COORDINATES
+                      Delivery address
                     </h2>
                   </div>
 
@@ -609,7 +535,7 @@ export default function CheckoutReviewPage() {
                     className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-black/45 transition hover:text-black"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    EDIT DELIVERY DATA
+                    Edit delivery details
                   </Link>
                 </div>
               </section>
@@ -620,11 +546,11 @@ export default function CheckoutReviewPage() {
               >
                 <div className="border-b border-black/10 px-5 py-5 sm:px-6">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    PAYMENT CHANNEL
+                    Payment
                   </p>
 
                   <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                    SELECT PAYMENT CHANNEL
+                    Choose a payment method
                   </h2>
 
                   <p className="mt-2 text-sm leading-6 text-black/45">
@@ -664,7 +590,7 @@ export default function CheckoutReviewPage() {
 
                     <span className="min-w-0 flex-1">
                       <span className="block text-sm font-semibold">
-                        CASH ON DELIVERY
+                        Cash on delivery
                       </span>
 
                       <span className="mt-1 block text-xs leading-5 text-black/45">
@@ -729,7 +655,7 @@ export default function CheckoutReviewPage() {
 
                   {!selectedPaymentMethod ? (
                     <p className="text-xs font-medium text-amber-700">
-                      Select CASH ON DELIVERY to continue.
+                      Select cash on delivery to continue.
                     </p>
                   ) : null}
                 </div>
@@ -738,7 +664,7 @@ export default function CheckoutReviewPage() {
               <section className="border border-black/10 bg-white">
                 <div className="border-b border-black/10 px-5 py-5 sm:px-6">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    CONFIGURATIONS
+                    Products
                   </p>
 
                   <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
@@ -807,17 +733,17 @@ export default function CheckoutReviewPage() {
               <section className="overflow-hidden border border-black/10 bg-white">
                 <div className="border-b border-black/10 px-5 py-5">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    Final system review
+                    Order summary
                   </p>
 
                   <h2 className="mt-2 text-2xl font-semibold">
-                    Order terminal
+                    Your total
                   </h2>
                 </div>
 
                 <div className="space-y-4 p-5">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-black/50">CONFIGURATIONS</span>
+                    <span className="text-black/50">Items</span>
 
                     <span className="font-semibold">{reviewItemCount}</span>
                   </div>
@@ -855,17 +781,17 @@ export default function CheckoutReviewPage() {
                   </div>
 
                   <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-black/50">PAYMENT CHANNEL</span>
+                    <span className="text-black/50">Payment method</span>
 
                     <span className="text-right font-medium">
                       {selectedPaymentMethod === "cash_on_delivery"
-                        ? "CASH ON DELIVERY"
+                        ? "Cash on delivery"
                         : "Not selected"}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between border-t border-black/10 pt-4">
-                    <span className="font-semibold">SYSTEM TOTAL</span>
+                    <span className="font-semibold">Order total</span>
 
                     <span className="text-xl font-semibold">
                       ${reviewTotal.toFixed(2)}
@@ -904,6 +830,7 @@ export default function CheckoutReviewPage() {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </>
   );
 }

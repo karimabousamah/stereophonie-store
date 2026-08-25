@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import {
+  Bookmark,
+} from "lucide-react";
 
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
@@ -25,7 +27,7 @@ export default function WishlistButton({
       className="group inline-flex shrink-0 items-center gap-2 bg-transparent text-[11px] font-semibold uppercase tracking-[0.15em] text-black/50 shadow-none transition duration-300 hover:text-black"
     >
       <span className="flex h-8 w-8 shrink-0 items-center justify-center">
-        <Heart
+        <Bookmark
           className={`h-[18px] w-[18px] transition duration-300 group-hover:-translate-y-0.5 ${
             visibleCount > 0 ? "fill-current text-black" : ""
           }`}

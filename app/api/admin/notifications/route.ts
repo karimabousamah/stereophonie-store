@@ -4,6 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+type IdRow = {
+  id: string;
+};
+
+function ids(rows: IdRow[] | null) {
+  return (rows ?? []).map((row) => String(row.id));
+}
+
 export async function GET() {
   const supabase = await createClient();
 
@@ -49,34 +57,25 @@ export async function GET() {
   ] = await Promise.all([
     supabase
       .from("orders")
-      .select("id", {
-        count: "exact",
-        head: true,
-      })
+      .select("id")
       .eq("status", "pending"),
 
     supabase
       .from("products")
-      .select("id", {
-        count: "exact",
-        head: true,
-      })
+      .select("id")
       .eq("status", "draft"),
 
     supabase
       .from("product_variants")
-      .select("id", {
-        count: "exact",
-        head: true,
-      })
-      .in("availability_status", ["low_stock", "out_of_stock"]),
+      .select("id")
+      .in(
+        "availability_status",
+        ["low_stock", "out_of_stock"],
+      ),
 
     supabase
       .from("stock_alerts")
-      .select("id", {
-        count: "exact",
-        head: true,
-      })
+      .select("id")
       .eq("status", "pending"),
   ]);
 
@@ -87,7 +86,10 @@ export async function GET() {
     pendingStockAlertsResult.error;
 
   if (databaseError) {
-    console.error("Admin notification query failed:", databaseError);
+    console.error(
+      "Admin notification query failed:",
+      databaseError,
+    );
 
     return NextResponse.json(
       {
@@ -100,14 +102,30 @@ export async function GET() {
     );
   }
 
+  const itemIds = {
+    pendingOrders: ids(
+      pendingOrdersResult.data as IdRow[] | null,
+    ),
+
+    draftProducts: ids(
+      draftProductsResult.data as IdRow[] | null,
+    ),
+
+    lowStockVariants: ids(
+      lowStockVariantsResult.data as IdRow[] | null,
+    ),
+
+    pendingStockAlerts: ids(
+      pendingStockAlertsResult.data as IdRow[] | null,
+    ),
+  };
+
   const counts = {
-    pendingOrders: pendingOrdersResult.count ?? 0,
-
-    draftProducts: draftProductsResult.count ?? 0,
-
-    lowStockVariants: lowStockVariantsResult.count ?? 0,
-
-    pendingStockAlerts: pendingStockAlertsResult.count ?? 0,
+    pendingOrders: itemIds.pendingOrders.length,
+    draftProducts: itemIds.draftProducts.length,
+    lowStockVariants: itemIds.lowStockVariants.length,
+    pendingStockAlerts:
+      itemIds.pendingStockAlerts.length,
   };
 
   return NextResponse.json(
@@ -115,6 +133,8 @@ export async function GET() {
       success: true,
 
       counts,
+
+      itemIds,
 
       total:
         counts.pendingOrders +

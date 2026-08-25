@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import AdminShell from "@/components/admin/admin-shell";
+import CategorySearch from "@/components/admin/category-search";
 import ConfirmSubmitButton from "@/components/admin/confirm-submit-button";
 import CategoryHomepageControls from "@/components/admin/category-homepage-controls";
 import { createClient } from "@/lib/supabase/server";
@@ -36,6 +37,7 @@ type Category = {
   description: string | null;
   image_url: string | null;
   show_on_homepage: boolean;
+  homepage_theme: "light" | "dark";
   sort_order: number;
   is_active: boolean;
   created_at: string;
@@ -81,6 +83,7 @@ export default async function AdminCategoriesPage({
         description,
         image_url,
         show_on_homepage,
+        homepage_theme,
         sort_order,
         is_active,
         created_at
@@ -125,7 +128,7 @@ export default async function AdminCategoriesPage({
     <AdminShell
       role={administrator.role}
       pageTitle="Categories"
-      pageDescription="Manage product categories and control which departments appear in Choose Your Mode."
+      pageDescription="Organize the electronics catalog and choose which departments appear on the homepage."
     >
       <div className="px-5 py-8 sm:px-8 sm:py-10">
         <div className="mx-auto max-w-[1540px]">
@@ -139,21 +142,21 @@ export default async function AdminCategoriesPage({
             </Link>
 
             <p className="mt-8 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
-              Merchandising
+              Catalog
             </p>
 
-            <h1 className="mt-3 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">
+            <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
               Categories
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/45">
-              Organize the store departments, descriptions, ordering and
-              homepage category wallpapers from one place.
+              Create clear departments such as Phones, Laptops, Audio and
+              Accessories, then choose their storefront order and imagery.
             </p>
           </header>
 
           <section className="mt-7 grid gap-4 sm:grid-cols-3">
-            <div className="border border-white/10 bg-[#0d0d0d] p-5">
+            <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
               <Tags className="h-5 w-5 text-white/30" />
 
               <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
@@ -163,7 +166,7 @@ export default async function AdminCategoriesPage({
               <p className="mt-3 text-3xl font-semibold">{categories.length}</p>
             </div>
 
-            <div className="border border-white/10 bg-[#0d0d0d] p-5">
+            <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
               <CheckCircle2 className="h-5 w-5 text-white/30" />
 
               <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
@@ -173,7 +176,7 @@ export default async function AdminCategoriesPage({
               <p className="mt-3 text-3xl font-semibold">{activeCount}</p>
             </div>
 
-            <div className="border border-white/10 bg-[#0d0d0d] p-5">
+            <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
               <Package className="h-5 w-5 text-white/30" />
 
               <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
@@ -187,26 +190,26 @@ export default async function AdminCategoriesPage({
           </section>
 
           {query.success ? (
-            <div className="mt-7 border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-4 text-sm text-emerald-200">
+            <div className="mt-7 rounded-[16px] border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-4 text-sm text-emerald-200">
               {query.success}
             </div>
           ) : null}
 
           {query.error ? (
-            <div className="mt-7 border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
+            <div className="mt-7 rounded-[16px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
               {query.error}
             </div>
           ) : null}
 
           {categoriesResult.error || productLinksResult.error ? (
-            <div className="mt-7 border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
+            <div className="mt-7 rounded-[16px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
               Category information could not be loaded completely.
             </div>
           ) : null}
 
-          <section className="mt-7 border border-white/10 bg-[#0d0d0d]">
+          <section className="mt-7 overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
             <div className="flex items-center gap-4 border-b border-white/10 px-5 py-5 sm:px-6">
-              <div className="flex h-11 w-11 items-center justify-center border border-white/10 bg-white/[0.04]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
                 <Plus className="h-5 w-5 text-white/50" />
               </div>
 
@@ -235,7 +238,7 @@ export default async function AdminCategoriesPage({
                   id="new-category-name"
                   name="name"
                   required
-                  placeholder="Example: Dresses"
+                  placeholder="Example: Phones"
                   className="mt-3 min-h-12 w-full border border-white/10 bg-black px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/45"
                 />
               </div>
@@ -296,6 +299,8 @@ export default async function AdminCategoriesPage({
             </form>
           </section>
 
+          <CategorySearch total={categories.length} />
+
           <section className="mt-7 space-y-4">
             {categories.length === 0 ? (
               <div className="flex min-h-[360px] flex-col items-center justify-center border border-white/10 bg-[#0d0d0d] px-6 text-center">
@@ -316,6 +321,8 @@ export default async function AdminCategoriesPage({
                 return (
                   <article
                     key={category.id}
+                    data-admin-category-card="true"
+                    data-admin-category-search={`${category.name} ${category.slug} ${category.description ?? ""}`}
                     className="border border-white/10 bg-[#0d0d0d]"
                   >
                     <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
@@ -326,7 +333,7 @@ export default async function AdminCategoriesPage({
                           </h2>
 
                           <span
-                            className={`border px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                            className={`rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
                               category.is_active
                                 ? "border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300"
                                 : "border-white/10 bg-white/[0.04] text-white/35"
@@ -336,7 +343,7 @@ export default async function AdminCategoriesPage({
                           </span>
 
                           <span
-                            className={`border px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                            className={`rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] ${
                               category.show_on_homepage
                                 ? "border-sky-400/25 bg-sky-400/[0.08] text-sky-300"
                                 : "border-white/10 bg-white/[0.04] text-white/30"
@@ -481,6 +488,7 @@ export default async function AdminCategoriesPage({
                       categoryName={category.name}
                       imageUrl={category.image_url}
                       showOnHomepage={category.show_on_homepage}
+                      homepageTheme={category.homepage_theme ?? "light"}
                     />
                   </article>
                 );

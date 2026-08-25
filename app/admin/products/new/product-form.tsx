@@ -4,10 +4,8 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   ArrowRight,
-  Check,
   Eye,
   EyeOff,
-  Package,
   Save,
   Send,
   Diamond,
@@ -36,15 +34,9 @@ type Brand = {
   name: string;
 };
 
-type Collection = {
-  id: string;
-  name: string;
-};
-
 type ProductFormProps = {
   categories: Category[];
   brands: Brand[];
-  collections: Collection[];
   errorMessage?: string;
 };
 
@@ -53,11 +45,14 @@ function createInitialVariants(): AdminElectronicsVariant[] {
     {
       clientId: crypto.randomUUID(),
       variant_name: "",
+      display_position: 0,
       attributes: {},
       sku: "",
+      regular_price: "",
+      sale_price: "",
       stock_quantity: 0,
       low_stock_threshold: 2,
-      availability_status: "in_stock",
+      availability_status: "",
     },
   ];
 }
@@ -73,7 +68,7 @@ function SectionHeader({
 }) {
   return (
     <div className="flex gap-4 border-b border-white/10 px-6 py-5">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-white/10 bg-white/[0.035] text-[10px] font-semibold text-white/40">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] text-[10px] font-semibold text-white/40">
         {number}
       </span>
 
@@ -91,13 +86,26 @@ function SectionHeader({
 export default function ProductForm({
   categories,
   brands,
-  collections,
   errorMessage,
 }: ProductFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const allowServerSubmissionRef = useRef(false);
+  
 
-  const [productName, setProductName] = useState("");
+  /*
+   * Preserve exactly which publishing action the administrator
+   * selected while photographs are prepared before the final
+   * server submission.
+   */
+  const pendingIntentRef =
+    useRef<"draft" | "publish">("draft");
+
+  /*
+   * Hidden form field is updated imperatively because changing
+   * a React ref does not itself trigger a re-render.
+   */
+  const resolvedIntentInputRef =
+    useRef<HTMLInputElement>(null);
+const [productName, setProductName] = useState("");
   const [selectedImages, setSelectedImages] = useState<
     DirectUploadSelectedImage[]
   >([]);
@@ -111,6 +119,17 @@ export default function ProductForm({
   const [variants, setVariants] = useState<AdminElectronicsVariant[]>(
     createInitialVariants,
   );
+
+  const [placementSelection, setPlacementSelection] = useState({
+    featured: false,
+    trending: false,
+    newArrival: false,
+  });
+
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+
+  const [selectedBrandName, setSelectedBrandName] = useState("");
+
 
   const totalStock = useMemo(() => {
     return variants.reduce((total, variant) => {
@@ -135,32 +154,83 @@ export default function ProductForm({
 
   const handleImagesChange = useCallback(
     (images: DirectUploadSelectedImage[]) => {
-      setSelectedImages(images);
+      /*
+       * ImageUploader creates a derived array for the parent.
+       *
+       * Never commit a React state update when that derived payload is
+       * identical to what ProductForm already has. Without this guard,
+       * an ImageUploader effect can cause:
+       *
+       * effect -> setSelectedImages -> parent render -> effect -> ...
+       *
+       * resulting in "Maximum update depth exceeded".
+       */
+      setSelectedImages((current) => {
+        if (current.length !== images.length) {
+          return images;
+        }
+
+        const unchanged = current.every((existing, index) => {
+          const incoming = images[index];
+
+          if (!incoming) {
+            return false;
+          }
+
+          return (
+            existing.file === incoming.file &&
+            existing.altText === incoming.altText &&
+            existing.isPrimary === incoming.isPrimary &&
+            existing.position === incoming.position &&
+            existing.variantName === incoming.variantName
+          );
+        });
+
+        return unchanged
+          ? current
+          : images;
+      });
     },
     [],
   );
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    if (allowServerSubmissionRef.current) {
-      allowServerSubmissionRef.current = false;
-      return;
-    }
-
-    event.preventDefault();
-
-    if (isSubmitting) {
-      return;
-    }
-
     const form = event.currentTarget;
-    const nativeEvent = event.nativeEvent as SubmitEvent;
+
+    const nativeEvent =
+      event.nativeEvent as SubmitEvent;
+
     const submitter =
       nativeEvent.submitter instanceof HTMLButtonElement
         ? nativeEvent.submitter
         : null;
 
-    const submissionIntent =
-      submitter?.value === "publish" ? "publish" : "draft";
+    const submissionIntent: "draft" | "publish" =
+      submitter?.value === "publish"
+        ? "publish"
+        : pendingIntentRef.current === "publish"
+          ? "publish"
+          : "draft";
+
+    pendingIntentRef.current =
+      submissionIntent;
+
+    if (resolvedIntentInputRef.current) {
+      resolvedIntentInputRef.current.value =
+        submissionIntent;
+    }
+
+    /*
+     * IMPORTANT:
+     *
+     * We always take ownership of this submission.
+     * There is NO recursive requestSubmit().
+     */
+    event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
 
     setSubmissionError("");
     setUploadPercentage(0);
@@ -168,45 +238,106 @@ export default function ProductForm({
     setIsSubmitting(true);
 
     try {
-      const uploadedImages = await uploadImagesBeforeProductSubmission(form, {
-        images: selectedImages,
-        onProgress(progress) {
-          setUploadPercentage(progress.percentage);
-          setUploadFileName(progress.currentFileName);
-        },
-      });
+      let uploadedImages: Awaited<
+        ReturnType<typeof uploadImagesBeforeProductSubmission>
+      > = [];
 
-      setDirectUploadedImagesJson(JSON.stringify(uploadedImages));
+      /*
+       * Only enter the upload pipeline when the administrator
+       * has actually selected photographs.
+       *
+       * A photo-less draft therefore saves immediately instead
+       * of sitting forever on "{pendingIntentRef.current === "draft"
+                        ? "Saving safely to Draft products"
+                        : "Preparing product submission"} 0%".
+       */
+      if (selectedImages.length > 0) {
+        uploadedImages =
+          await uploadImagesBeforeProductSubmission(
+            form,
+            {
+              images: selectedImages,
+              validateForm:
+                submissionIntent === "publish",
 
-      const directUploadInput = form.elements.namedItem(
+              onProgress(progress) {
+                setUploadPercentage(
+                  progress.percentage,
+                );
+
+                setUploadFileName(
+                  progress.currentFileName,
+                );
+              },
+            },
+          );
+      }
+
+      const uploadedImagesJson =
+        JSON.stringify(uploadedImages);
+
+      setDirectUploadedImagesJson(
+        uploadedImagesJson,
+      );
+
+      /*
+       * Build the exact FormData ourselves.
+       *
+       * This avoids requestSubmit(), browser revalidation,
+       * duplicate submit events and submitter-loss entirely.
+       */
+      const formData =
+        new FormData(form);
+
+      formData.set(
+        "resolved_intent",
+        submissionIntent,
+      );
+
+      formData.set(
+        "intent",
+        submissionIntent,
+      );
+
+      formData.set(
         "direct_uploaded_images",
+        uploadedImagesJson,
       );
 
-      if (directUploadInput instanceof HTMLInputElement) {
-        directUploadInput.value = JSON.stringify(uploadedImages);
-      }
-
-      let intentInput = form.querySelector<HTMLInputElement>(
-        'input[data-direct-upload-intent="true"]',
-      );
-
-      if (!intentInput) {
-        intentInput = document.createElement("input");
-        intentInput.type = "hidden";
-        intentInput.name = "intent";
-        intentInput.dataset.directUploadIntent = "true";
-        form.appendChild(intentInput);
-      }
-
-      intentInput.value = submissionIntent;
-
-      allowServerSubmissionRef.current = true;
-      form.requestSubmit();
+      /*
+       * Call the Server Action directly.
+       *
+       * createProduct performs the database insert and redirects
+       * after success.
+       */
+      await createProduct(formData);
     } catch (error) {
+      /*
+       * Next.js Server Actions implement redirect() by throwing
+       * a special NEXT_REDIRECT control-flow error.
+       *
+       * That is SUCCESSFUL navigation, not a product failure.
+       * It must be re-thrown so Next.js can complete the redirect.
+       */
+      if (
+        error &&
+        typeof error === "object" &&
+        "digest" in error &&
+        typeof (error as { digest?: unknown }).digest === "string" &&
+        (error as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+      ) {
+        throw error;
+      }
+
+      console.error(
+        "Product submission failed:",
+        error,
+      );
+
       setSubmissionError(
         error instanceof Error
           ? error.message
-          : "The product could not be submitted.",
+          : "The product could not be saved.",
       );
 
       setIsSubmitting(false);
@@ -217,6 +348,13 @@ export default function ProductForm({
 
   return (
     <form ref={formRef} action={createProduct} onSubmit={handleSubmit}>
+      <input
+        ref={resolvedIntentInputRef}
+        type="hidden"
+        name="resolved_intent"
+        defaultValue="draft"
+      />
+
       <input
         type="hidden"
         name="direct_uploaded_images"
@@ -229,9 +367,17 @@ export default function ProductForm({
         name="variants_json"
         value={JSON.stringify(
           variants.map((variant) => ({
+            client_id: variant.clientId,
             variant_name: variant.variant_name,
+            display_position:
+              Number(
+                variant.display_position ??
+                0,
+              ),
             attributes: variant.attributes,
             sku: variant.sku,
+            regular_price: variant.regular_price,
+            sale_price: variant.sale_price,
             stock_quantity: variant.stock_quantity,
             low_stock_threshold: variant.low_stock_threshold,
             availability_status: variant.availability_status,
@@ -241,7 +387,7 @@ export default function ProductForm({
       />
 
       {(errorMessage || submissionError) && (
-        <div className="mb-7 flex items-start gap-4 border border-red-400/30 bg-red-400/[0.07] p-5">
+        <div className="mb-7 flex items-start gap-4 rounded-2xl border border-red-400/30 bg-red-400/[0.07] p-5">
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
 
           <div>
@@ -258,11 +404,11 @@ export default function ProductForm({
 
       <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-7">
-          <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
+          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
               number="01"
               title="Product information"
-              description="Enter the product name, description, category and collection."
+              description="Add the essential product details, category and manufacturer."
             />
 
             <div className="space-y-7 p-6">
@@ -281,7 +427,7 @@ export default function ProductForm({
                   required
                   value={productName}
                   onChange={(event) => setProductName(event.target.value)}
-                  placeholder="Milano Linen Dress"
+                  placeholder="Galaxy S26 Ultra"
                   className="mt-3 w-full border border-white/10 bg-black/30 px-4 py-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/55"
                 />
               </div>
@@ -298,12 +444,12 @@ export default function ProductForm({
                   id="description"
                   name="description"
                   rows={7}
-                  placeholder="Describe the fabric, design, fit, styling and care details."
+                  placeholder="Describe the key specifications, compatibility, warranty and what is included."
                   className="mt-3 w-full resize-y border border-white/10 bg-black/30 px-4 py-4 leading-7 text-white outline-none transition placeholder:text-white/20 focus:border-white/55"
                 />
               </div>
 
-              <div className="grid gap-5 lg:grid-cols-3">
+              <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <label
                     htmlFor="category"
@@ -317,6 +463,10 @@ export default function ProductForm({
                     name="category_id"
                     required
                     defaultValue=""
+                    onChange={(event) => {
+                      const option = event.currentTarget.selectedOptions[0];
+                      setSelectedCategoryName(option?.textContent?.trim() ?? "");
+                    }}
                     className="mt-3 w-full border border-white/10 bg-[#111111] px-4 py-4 text-white outline-none focus:border-white/55"
                   >
                     <option value="" disabled>
@@ -343,6 +493,16 @@ export default function ProductForm({
                     id="brand"
                     name="brand_id"
                     defaultValue=""
+                    onChange={(event) => {
+                      const option =
+                        event.currentTarget.selectedOptions[0];
+
+                      setSelectedBrandName(
+                        option?.value
+                          ? option.textContent?.trim() ?? ""
+                          : "",
+                      );
+                    }}
                     className="mt-3 w-full border border-white/10 bg-[#111111] px-4 py-4 text-white outline-none focus:border-white/55"
                   >
                     <option value="">No brand</option>
@@ -355,116 +515,34 @@ export default function ProductForm({
                   </select>
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="collection"
-                    className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                  >
-                    Collection
-                  </label>
-
-                  <select
-                    id="collection"
-                    name="collection_id"
-                    defaultValue=""
-                    className="mt-3 w-full border border-white/10 bg-[#111111] px-4 py-4 text-white outline-none focus:border-white/55"
-                  >
-                    <option value="">No collection</option>
-
-                    {collections.map((collection) => (
-                      <option key={collection.id} value={collection.id}>
-                        {collection.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
             </div>
           </section>
 
-          <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
+          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
               number="02"
-              title="Product photographs"
-              description="Upload photographs, select the main image and control their order."
+              title="Product images"
+              description="Upload clear product images, choose the main image and arrange their order."
             />
 
             <div className="p-6">
               <ImageUploader
                 disabled={isSubmitting}
+                configurations={variants.map((variant, index) => ({
+                  clientId: variant.clientId,
+                  variant_name: variant.variant_name,
+                  attributes: variant.attributes,
+                  fallbackLabel: `Configuration ${index + 1}`,
+                }))}
                 onImagesChange={handleImagesChange}
               />
             </div>
           </section>
 
-          <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
+          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
               number="03"
-              title="Product pricing"
-              description="Set the normal selling price and an optional discounted price."
-            />
-
-            <div className="grid gap-6 p-6 md:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="regular-price"
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                >
-                  Regular price
-                </label>
-
-                <div className="mt-3 flex border border-white/10 bg-black/30 focus-within:border-white/55">
-                  <span className="flex items-center border-r border-white/10 px-4 text-white/40">
-                    $
-                  </span>
-
-                  <input
-                    id="regular-price"
-                    name="regular_price"
-                    type="number"
-                    required
-                    min="0.01"
-                    step="0.01"
-                    placeholder="0.00"
-                    className="w-full bg-transparent px-4 py-4 text-white outline-none placeholder:text-white/20"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="sale-price"
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                >
-                  Sale price
-                </label>
-
-                <div className="mt-3 flex border border-white/10 bg-black/30 focus-within:border-white/55">
-                  <span className="flex items-center border-r border-white/10 px-4 text-white/40">
-                    $
-                  </span>
-
-                  <input
-                    id="sale-price"
-                    name="sale_price"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="Optional"
-                    className="w-full bg-transparent px-4 py-4 text-white outline-none placeholder:text-white/20"
-                  />
-                </div>
-
-                <p className="mt-2 text-xs text-white/30">
-                  The sale price must be lower than the regular price.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="04"
               title="Product configurations"
               description="Create every sellable version of this product and define its technical specifications, SKU, stock and availability."
             />
@@ -473,77 +551,109 @@ export default function ProductForm({
               <ElectronicsVariantEditor
                 variants={variants}
                 onChange={setVariants}
+                categoryName={selectedCategoryName}
+                brandName={selectedBrandName}
               />
             </div>
           </section>
 
-          <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="05"
-              title="Store placement"
-              description="Choose optional promotional labels for this product."
-            />
+          <section className="st-admin-store-placement overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
+              <SectionHeader
+                number="04"
+                title="Store placement"
+                description="Choose where this product should receive extra visibility in the storefront."
+              />
 
-            <div className="grid gap-4 p-6 md:grid-cols-3">
-              <label className="group cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="is_featured"
-                  className="peer sr-only"
-                />
+              <div className="st-admin-placement-grid">
+                <label className="st-admin-placement-card">
+                  <input
+                    type="checkbox"
+                    name="is_featured"
+                    checked={placementSelection.featured}
+                    onChange={(event) =>
+                      setPlacementSelection((current) => ({
+                        ...current,
+                        featured: event.target.checked,
+                      }))
+                    }
+                    className="sr-only"
+                  />
 
-                <div className="min-h-[145px] border border-white/10 bg-black/20 p-5 transition peer-checked:border-violet-400/50 peer-checked:bg-violet-400/[0.08]">
-                  <Star className="h-5 w-5 text-violet-300" />
+                  <span className={`st-admin-placement-card__surface ${placementSelection.featured ? "is-selected" : ""}`}>
+                    <span className="st-admin-placement-card__icon">
+                      <Star className="h-5 w-5" />
+                    </span>
 
-                  <p className="mt-6 font-semibold">Featured</p>
+                    <span className="st-admin-placement-card__copy">
+                      <strong>Featured</strong>
+                      <small>
+                        Give this product priority in featured storefront areas.
+                      </small>
+                    </span>
+                  </span>
+                </label>
 
-                  <p className="mt-2 text-xs leading-5 text-white/35">
-                    Highlight in featured product sections.
-                  </p>
-                </div>
-              </label>
+                <label className="st-admin-placement-card">
+                  <input
+                    type="checkbox"
+                    name="is_trending"
+                    checked={placementSelection.trending}
+                    onChange={(event) =>
+                      setPlacementSelection((current) => ({
+                        ...current,
+                        trending: event.target.checked,
+                      }))
+                    }
+                    className="sr-only"
+                  />
 
-              <label className="group cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="is_trending"
-                  className="peer sr-only"
-                />
+                  <span className={`st-admin-placement-card__surface ${placementSelection.trending ? "is-selected" : ""}`}>
+                    <span className="st-admin-placement-card__icon">
+                      <TrendingUp className="h-5 w-5" />
+                    </span>
 
-                <div className="min-h-[145px] border border-white/10 bg-black/20 p-5 transition peer-checked:border-amber-400/50 peer-checked:bg-amber-400/[0.08]">
-                  <TrendingUp className="h-5 w-5 text-amber-300" />
+                    <span className="st-admin-placement-card__copy">
+                      <strong>Trending</strong>
+                      <small>
+                        Include this product in highlighted and trending selections.
+                      </small>
+                    </span>
+                  </span>
+                </label>
 
-                  <p className="mt-6 font-semibold">Trending</p>
+                <label className="st-admin-placement-card">
+                  <input
+                    type="checkbox"
+                    name="is_new_arrival"
+                    checked={placementSelection.newArrival}
+                    onChange={(event) =>
+                      setPlacementSelection((current) => ({
+                        ...current,
+                        newArrival: event.target.checked,
+                      }))
+                    }
+                    className="sr-only"
+                  />
 
-                  <p className="mt-2 text-xs leading-5 text-white/35">
-                    Display in trending product selections.
-                  </p>
-                </div>
-              </label>
+                  <span className={`st-admin-placement-card__surface ${placementSelection.newArrival ? "is-selected" : ""}`}>
+                    <span className="st-admin-placement-card__icon">
+                      <Diamond className="h-5 w-5" />
+                    </span>
 
-              <label className="group cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="is_new_arrival"
-                  className="peer sr-only"
-                />
-
-                <div className="min-h-[145px] border border-white/10 bg-black/20 p-5 transition peer-checked:border-sky-400/50 peer-checked:bg-sky-400/[0.08]">
-                  <Diamond className="h-5 w-5 text-sky-300" />
-
-                  <p className="mt-6 font-semibold">New arrival</p>
-
-                  <p className="mt-2 text-xs leading-5 text-white/35">
-                    Mark as newly added to the catalogue.
-                  </p>
-                </div>
-              </label>
-            </div>
-          </section>
+                    <span className="st-admin-placement-card__copy">
+                      <strong>New arrival</strong>
+                      <small>
+                        Present this item as recently added to the catalogue.
+                      </small>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </section>
         </div>
 
         <aside>
-          <section className="border border-white/10 bg-[#101010] p-6 xl:sticky xl:top-[120px]">
+          <section className="rounded-[24px] border border-white/10 bg-[#101010] p-6 xl:sticky xl:top-[120px]">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
               Product summary
             </p>
@@ -551,7 +661,7 @@ export default function ProductForm({
             <h2 className="mt-2 text-2xl font-semibold">Save product</h2>
 
             <div className="mt-6 space-y-3">
-              <div className="border border-white/10 bg-black/20 p-4">
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/30">
                   Product
                 </p>
@@ -562,7 +672,7 @@ export default function ProductForm({
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="border border-white/10 bg-black/20 p-4">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                   <p className="text-[10px] uppercase tracking-[0.14em] text-white/30">
                     Configurations
                   </p>
@@ -572,7 +682,7 @@ export default function ProductForm({
                   </p>
                 </div>
 
-                <div className="border border-white/10 bg-black/20 p-4">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                   <p className="text-[10px] uppercase tracking-[0.14em] text-white/30">
                     Available
                   </p>
@@ -582,7 +692,7 @@ export default function ProductForm({
                   </p>
                 </div>
 
-                <div className="border border-white/10 bg-black/20 p-4">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                   <p className="text-[10px] uppercase tracking-[0.14em] text-white/30">
                     Stock
                   </p>
@@ -593,7 +703,7 @@ export default function ProductForm({
             </div>
 
             {variants.length > 0 && (
-              <div className="mt-5 overflow-hidden border border-white/10 bg-black/20">
+              <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
                 <div className="border-b border-white/10 px-4 py-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/30">
                     Configuration overview
@@ -639,15 +749,24 @@ export default function ProductForm({
             )}
 
             {isSubmitting && (
-              <div className="mt-6 border border-sky-400/25 bg-sky-400/[0.06] p-4">
+              <div className="mt-6 rounded-2xl border border-sky-400/25 bg-sky-400/[0.06] p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-300">
-                      Uploading photographs
+                      {pendingIntentRef.current === "draft"
+                        ? "Saving draft"
+                        : selectedImages.length > 0
+                          ? "Preparing photographs"
+                          : "Publishing product"}
                     </p>
 
                     <p className="mt-2 truncate text-xs text-white/45">
-                      {uploadFileName || "Preparing product submission"}
+                      {uploadFileName ||
+                        (pendingIntentRef.current === "draft"
+                          ? "Saving safely to Draft products"
+                          : selectedImages.length > 0
+                            ? "Preparing product photographs"
+                            : "Preparing product submission")}
                     </p>
                   </div>
 
@@ -656,7 +775,7 @@ export default function ProductForm({
                   </p>
                 </div>
 
-                <div className="mt-4 h-1.5 overflow-hidden bg-white/10">
+                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10">
                   <div
                     className="h-full bg-sky-300 transition-[width] duration-200"
                     style={{
@@ -677,8 +796,16 @@ export default function ProductForm({
                   type="submit"
                   name="intent"
                   value="draft"
+                  formNoValidate
+                  onClick={() => {
+                    pendingIntentRef.current = "draft";
+
+                    if (resolvedIntentInputRef.current) {
+                      resolvedIntentInputRef.current.value = "draft";
+                    }
+                  }}
                   disabled={isSubmitting}
-                  className="group flex w-full items-center justify-between border border-white/15 bg-white/[0.025] px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-white transition hover:border-white hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
+                  className="group flex w-full items-center justify-between rounded-full border border-white/15 bg-white/[0.025] px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-white transition hover:border-white hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <span className="flex items-center gap-3">
                     <EyeOff className="h-4 w-4" />
@@ -692,8 +819,15 @@ export default function ProductForm({
                   type="submit"
                   name="intent"
                   value="publish"
+                  onClick={() => {
+                    pendingIntentRef.current = "publish";
+
+                    if (resolvedIntentInputRef.current) {
+                      resolvedIntentInputRef.current.value = "publish";
+                    }
+                  }}
                   disabled={isSubmitting}
-                  className="group flex w-full items-center justify-between border border-emerald-300 bg-emerald-300 px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="group flex w-full items-center justify-between rounded-full border border-emerald-300 bg-emerald-300 px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <span className="flex items-center gap-3">
                     <Eye className="h-4 w-4" />

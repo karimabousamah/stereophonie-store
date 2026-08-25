@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
-  ArrowLeft,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -29,11 +28,11 @@ import {
 } from "react";
 
 import CheckoutProgress from "@/components/checkout/checkout-progress";
-import CartButton from "@/components/cart/cart-button";
 import CouponBox, {
   type AppliedCoupon,
 } from "@/components/checkout/coupon-box";
 import { useCart } from "@/components/cart/cart-provider";
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import { createClient } from "@/lib/supabase/client";
 
 /* =========================================================
@@ -1726,15 +1725,18 @@ export default function CheckoutPage() {
 
   if (!isCartReady || accountLoading) {
     return (
-      <main className="st-checkout-v2 flex min-h-screen items-center justify-center bg-white text-black">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-black/15 border-t-black" />
+      <>
+        <V3Header />
+        <main className="st-checkout-v2 st-checkout-loading flex min-h-[60vh] items-center justify-center bg-white text-black">
+          <div className="rounded-[24px] border border-black/[0.08] bg-white px-10 py-9 text-center shadow-[0_18px_55px_rgba(29,29,31,0.06)]">
+            <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-black/15 border-t-[#b77700]" />
 
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-black/45">
-            Loading checkout
-          </p>
-        </div>
-      </main>
+            <p className="mt-4 text-sm font-medium text-black/50">
+              Preparing your checkout…
+            </p>
+          </div>
+        </main>
+      </>
     );
   }
 
@@ -1743,98 +1745,28 @@ export default function CheckoutPage() {
   ======================================================= */
 
   return (
-    <main className="min-h-screen bg-[#f7f7f5] text-black">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto grid min-h-[76px] max-w-[1500px] grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-8 lg:px-12">
-          <Link
-            href="/shop"
-            className="inline-flex w-fit items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-black/50 transition hover:text-black"
-          >
-            <ArrowLeft className="h-4 w-4" />
-
-            <span className="hidden sm:inline">Continue shopping</span>
-          </Link>
-
-          <Link
-            href="/"
-            className="text-center text-lg font-semibold uppercase tracking-[0.22em] sm:text-xl"
-          >
-            Stereophonie
-          </Link>
-
-          <div className="justify-self-end">
-            <CartButton />
-          </div>
-        </div>
-      </header>
-
-      <section className="st-checkout-v2__system-head">
-        <div className="st-checkout-v2__system-topline">
+    <>
+      <V3Header />
+      <main className="st-checkout-v2 min-h-screen bg-[#f7f7f5] text-black">
+        <section className="st-checkout-compact-head">
           <div>
-            <span className="st-checkout-v2__system-led" />
-            CHECKOUT SYSTEM / ONLINE
+            <p className="st-checkout-compact-head__eyebrow">Checkout</p>
+            <h1>Delivery details</h1>
+            <p>Enter the information needed to deliver your order.</p>
           </div>
 
-          <span>SECURE ORDER CHANNEL / PLAYER 01</span>
-        </div>
-
-        <div className="st-checkout-v2__hero">
-          <div>
-            <small>CHECKOUT MODULE / STEP 01</small>
-
-            <h1>
-              BUILD YOUR
-              <br />
-              <span>LOADOUT.</span>
-            </h1>
-
-            <p>
-              Verify customer data, delivery coordinates, payment method,
-              product configurations and inventory before routing the order to
-              final review.
-            </p>
-          </div>
-
-          <div className="st-checkout-v2__hero-status">
+          <div className="st-checkout-compact-head__trust">
+            <LockKeyhole />
             <span>
-              CUSTOMER
-              <strong>READY</strong>
-            </span>
-
-            <span>
-              INVENTORY
-              <strong>LIVE</strong>
-            </span>
-
-            <span>
-              PAYMENT
-              <strong>COD</strong>
+              <strong>Secure checkout</strong>
+              <small>Review everything before confirming</small>
             </span>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <CheckoutProgress currentStep={1} />
+        <CheckoutProgress currentStep={1} />
 
-      <section className="mx-auto max-w-[1500px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12 lg:py-16">
-        <div className="mb-8 max-w-3xl sm:mb-12">
-          <div className="flex items-center gap-2 text-emerald-700">
-            <LockKeyhole className="h-4 w-4" />
-
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em]">
-              Secure checkout
-            </p>
-          </div>
-
-          <h1 className="mt-4 text-4xl font-semibold uppercase leading-none tracking-[-0.05em] sm:text-6xl lg:text-7xl">
-            Complete your order
-          </h1>
-
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-black/50 sm:text-base">
-            Enter your contact and delivery details. Required information must
-            be completed before reviewing the order.
-          </p>
-        </div>
+        <section className="st-checkout-content mx-auto max-w-[1180px] px-4 py-6 sm:px-6 sm:py-8">
 
         {items.length === 0 ? (
           <div className="flex min-h-[440px] flex-col items-center justify-center border border-dashed border-black/15 bg-white px-6 text-center">
@@ -2799,7 +2731,8 @@ export default function CheckoutPage() {
             </aside>
           </form>
         )}
-      </section>
-    </main>
+        </section>
+      </main>
+    </>
   );
 }

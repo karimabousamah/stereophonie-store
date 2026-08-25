@@ -4,7 +4,7 @@ export const brand = {
   tagline: "Technology. Sound. Lifestyle.",
 
   phoneDisplay: "+961 3 161 285",
-  phoneHref: "tel:+9613161285",
+  phoneHref: "tel:+961 3 161 285",
   whatsappHref: "https://wa.me/9613161285",
 
   locationUrl: "https://maps.app.goo.gl/kCsBPgCRFXaK298i6?g_st=ic",

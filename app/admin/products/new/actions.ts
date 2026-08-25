@@ -9,9 +9,18 @@ type AvailabilityStatus =
   "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
 
 type VariantInput = {
+  /*
+   * Temporary browser identity used while creating the product.
+   * This is never stored in product_variants.
+   */
+  client_id?: string;
+
   variant_name: string;
+  display_position?: number;
   attributes: Record<string, string>;
   sku: string;
+  regular_price: number | "";
+  sale_price: number | "" | null;
   stock_quantity: number;
   low_stock_threshold: number;
   availability_status: AvailabilityStatus;
@@ -25,12 +34,20 @@ type ImageMetadata = {
 
 type DirectUploadedImage = {
   storage_path: string;
+
+  /*
+   * Stable browser-side configuration identity.
+   */
+  configuration_id?: string;
   original_name: string;
   content_type: string;
   size: number;
   position: number;
   alt_text: string;
   is_primary: boolean;
+  variant_name?: string;
+  variant_position?: number;
+  is_variant_primary?: boolean;
 };
 
 const validImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -111,10 +128,14 @@ export async function createProduct(formData: FormData) {
   const brandId = String(formData.get("brand_id") ?? "").trim();
   const collectionId = String(formData.get("collection_id") ?? "").trim();
 
-  const regularPrice = Number(formData.get("regular_price"));
-  const salePriceText = String(formData.get("sale_price") ?? "").trim();
+  const resolvedIntent = String(
+    formData.get("resolved_intent") ??
+      formData.get("intent") ??
+      "draft",
+  );
 
-  const publishingIntent = String(formData.get("intent") ?? "draft");
+  const publishingIntent =
+    resolvedIntent === "publish" ? "publish" : "draft";
 
   const variantsJson = String(formData.get("variants_json") ?? "[]");
 
@@ -132,26 +153,24 @@ export async function createProduct(formData: FormData) {
   const isTrending = formData.get("is_trending") === "on";
   const isNewArrival = formData.get("is_new_arrival") === "on";
 
+
+  if (
+    publishingIntent === "publish" &&
+    !isFeatured &&
+    !isTrending &&
+    !isNewArrival
+  ) {
+    redirectWithError(
+      "Select at least one store placement before publishing: Featured, Trending or New arrival.",
+    );
+  }
+
   if (!name) {
     redirectWithError("Product name is required.");
   }
 
   if (!categoryId) {
     redirectWithError("Please select a category.");
-  }
-
-  if (!Number.isFinite(regularPrice) || regularPrice <= 0) {
-    redirectWithError("Enter a valid regular price greater than zero.");
-  }
-
-  const salePrice = salePriceText === "" ? null : Number(salePriceText);
-
-  if (salePrice !== null && (!Number.isFinite(salePrice) || salePrice < 0)) {
-    redirectWithError("Enter a valid sale price.");
-  }
-
-  if (salePrice !== null && salePrice >= regularPrice) {
-    redirectWithError("The sale price must be lower than the regular price.");
   }
 
   let variants: VariantInput[];
@@ -172,6 +191,54 @@ export async function createProduct(formData: FormData) {
     "out_of_stock",
     "coming_soon",
   ];
+
+
+  if (
+    publishingIntent === "publish" &&
+    variants.some(
+      (variant) =>
+        !validStatuses.includes(
+          variant.availability_status as AvailabilityStatus,
+        ),
+    )
+  ) {
+    redirectWithError(
+      "Choose customer availability for every configuration before publishing.",
+    );
+  }
+
+  /*
+   * Drafts are work in progress.
+   *
+   * Give unfinished draft configurations safe internal values so
+   * the database can store them without pretending they are ready
+   * for customers.
+   *
+   * Publishing remains strict.
+   */
+  if (publishingIntent === "draft") {
+    variants = variants.map((variant, index) => ({
+      ...variant,
+      variant_name:
+        String(variant.variant_name ?? "").trim() ||
+        `Configuration ${index + 1}`,
+      availability_status: validStatuses.includes(
+        variant.availability_status as AvailabilityStatus,
+      )
+        ? variant.availability_status
+        : "out_of_stock",
+      stock_quantity:
+        Number.isFinite(Number(variant.stock_quantity)) &&
+        Number(variant.stock_quantity) >= 0
+          ? Number(variant.stock_quantity)
+          : 0,
+      low_stock_threshold:
+        Number.isFinite(Number(variant.low_stock_threshold)) &&
+        Number(variant.low_stock_threshold) >= 0
+          ? Number(variant.low_stock_threshold)
+          : 0,
+    }));
+  }
 
   const usedConfigurationNames = new Set<string>();
 
@@ -208,6 +275,62 @@ export async function createProduct(formData: FormData) {
       );
     }
 
+    const configurationRegularPrice =
+      Number(variant.regular_price);
+
+    const configurationSalePriceText =
+      variant.sale_price === "" ||
+      variant.sale_price === null ||
+      variant.sale_price === undefined
+        ? ""
+        : String(variant.sale_price).trim();
+
+    const configurationSalePrice =
+      configurationSalePriceText === ""
+        ? null
+        : Number(configurationSalePriceText);
+
+    /*
+     * Live products must have real pricing for every exact
+     * customer-purchasable configuration.
+     *
+     * Drafts may remain unfinished.
+     */
+    if (
+      publishingIntent === "publish" &&
+      (
+        !Number.isFinite(configurationRegularPrice) ||
+        configurationRegularPrice <= 0
+      )
+    ) {
+      redirectWithError(
+        `Enter a valid regular price for ${configurationName}.`,
+      );
+    }
+
+    if (
+      configurationSalePrice !== null &&
+      (
+        !Number.isFinite(configurationSalePrice) ||
+        configurationSalePrice < 0
+      )
+    ) {
+      redirectWithError(
+        `Enter a valid sale price for ${configurationName}.`,
+      );
+    }
+
+    if (
+      configurationSalePrice !== null &&
+      Number.isFinite(configurationRegularPrice) &&
+      configurationRegularPrice > 0 &&
+      configurationSalePrice >= configurationRegularPrice
+    ) {
+      redirectWithError(
+        `The sale price for ${configurationName} must be lower than its regular price.`,
+      );
+    }
+
     const stockQuantity = Number(variant.stock_quantity);
     const lowStockThreshold = Number(variant.low_stock_threshold);
 
@@ -239,6 +362,75 @@ export async function createProduct(formData: FormData) {
   if (!Array.isArray(directUploadedImages)) {
     directUploadedImages = [];
   }
+
+  /*
+   * ==========================================================
+   * CONFIGURATION-SAFE IMAGE ASSIGNMENT
+   * ==========================================================
+   *
+   * The browser assigns photographs using the configuration's
+   * stable client_id.
+   *
+   * Configuration names may be generated or edited AFTER a photo
+   * has been assigned. Resolving the ID here, at final submission,
+   * prevents photographs from silently losing their configuration.
+   */
+  const configurationNameByClientId =
+    new Map(
+      variants
+        .map((variant) => [
+          String(
+            variant.client_id ?? "",
+          ).trim(),
+          String(
+            variant.variant_name ?? "",
+          ).trim(),
+        ] as const)
+        .filter(
+          ([clientId, configurationName]) =>
+            Boolean(
+              clientId &&
+              configurationName,
+            ),
+        ),
+    );
+
+  directUploadedImages =
+    directUploadedImages.map(
+      (image) => {
+        const configurationId =
+          String(
+            image.configuration_id ?? "",
+          ).trim();
+
+        if (!configurationId) {
+          return {
+            ...image,
+            variant_name:
+              String(
+                image.variant_name ?? "",
+              ).trim(),
+          };
+        }
+
+        const resolvedConfigurationName =
+          configurationNameByClientId.get(
+            configurationId,
+          );
+
+        if (!resolvedConfigurationName) {
+          redirectWithError(
+            "A photograph is assigned to a configuration that could not be resolved. Reassign the photograph and try again.",
+          );
+        }
+
+        return {
+          ...image,
+          variant_name:
+            resolvedConfigurationName,
+        };
+      },
+    );
 
   if (uploadedFiles.length > 0 && directUploadedImages.length > 0) {
     redirectWithError(
@@ -351,6 +543,35 @@ export async function createProduct(formData: FormData) {
     (first, second) => first.position - second.position,
   );
 
+  const submittedConfigurationNames =
+    new Set(
+      variants
+        .map((variant) =>
+          String(
+            variant.variant_name ?? "",
+          ).trim(),
+        )
+        .filter(Boolean),
+    );
+
+  for (const image of directUploadedImages) {
+    const imageVariantName =
+      String(
+        image.variant_name ?? "",
+      ).trim();
+
+    if (
+      imageVariantName &&
+      !submittedConfigurationNames.has(
+        imageVariantName,
+      )
+    ) {
+      redirectWithError(
+        `The photograph assigned to "${imageVariantName}" no longer matches a product configuration. Reassign that photograph and try again.`,
+      );
+    }
+  }
+
   const status = publishingIntent === "publish" ? "published" : "draft";
 
   const allComingSoon = variants.every(
@@ -412,10 +633,35 @@ export async function createProduct(formData: FormData) {
       size: configurationName,
 
       variant_name: configurationName,
+      display_position:
+        Number.isFinite(
+          Number(
+            variant.display_position,
+          ),
+        )
+          ? Math.max(
+              0,
+              Math.trunc(
+                Number(
+                  variant.display_position,
+                ),
+              ),
+            )
+          : 0,
       attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
-      regular_price: regularPrice,
-      sale_price: salePrice,
+      regular_price:
+        Number.isFinite(Number(variant.regular_price)) &&
+        Number(variant.regular_price) > 0
+          ? Number(variant.regular_price)
+          : 0,
+
+      sale_price:
+        variant.sale_price === "" ||
+        variant.sale_price === null ||
+        variant.sale_price === undefined
+          ? null
+          : Number(variant.sale_price),
       stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
       low_stock_threshold: Number(variant.low_stock_threshold),
       availability_status: variant.availability_status,
@@ -438,7 +684,47 @@ export async function createProduct(formData: FormData) {
   );
 
   try {
-    const imageRows = [];
+    
+  /*
+   * Resolve the administrator-facing configuration name
+   * to the newly-created stable product_variant UUID.
+   *
+   * variant_name remains stored temporarily for backwards
+   * compatibility, but variant_id is now authoritative.
+   */
+  const {
+    data: persistedVariantRows,
+    error: persistedVariantRowsError,
+  } = await supabase
+    .from("product_variants")
+    .select("id, variant_name")
+    .eq("product_id", product.id);
+
+  if (persistedVariantRowsError) {
+    redirectWithError(
+      persistedVariantRowsError.message,
+    );
+  }
+
+  const persistedVariantIdByName =
+    new Map(
+      (persistedVariantRows ?? [])
+        .map(
+          (variant): [string, string] => [
+            String(
+              variant.variant_name ?? "",
+            ).trim().toLowerCase(),
+            String(variant.id),
+          ],
+        )
+        .filter(
+          ([name]) =>
+            Boolean(name),
+        ),
+    );
+
+
+const imageRows = [];
 
     if (directUploadedImages.length > 0) {
       for (let index = 0; index < directUploadedImages.length; index += 1) {
@@ -486,6 +772,34 @@ export async function createProduct(formData: FormData) {
             `${name} photograph ${index + 1}`,
           position: index,
           is_primary: image.is_primary,
+          variant_name:
+            String(
+              image.variant_name ?? "",
+            ).trim() || null,
+
+          variant_id:
+            persistedVariantIdByName.get(
+              String(
+                image.variant_name ?? "",
+              )
+                .trim()
+                .toLowerCase(),
+            ) ?? null,
+
+          variant_position:
+            Math.max(
+              0,
+              Number(
+                image.variant_position ??
+                  image.position ??
+                  0,
+              ) || 0,
+            ),
+
+          is_variant_primary:
+            Boolean(
+              image.is_variant_primary,
+            ),
         });
       }
     } else {
@@ -559,5 +873,9 @@ export async function createProduct(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/");
 
-  redirect(`/admin/products?created=${encodeURIComponent(status)}`);
+  redirect(
+    publishingIntent === "draft"
+      ? "/admin/products?filter=draft&saved=draft"
+      : "/admin/products?filter=live&saved=published",
+  );
 }

@@ -7,6 +7,8 @@ import type {
 } from "@/components/storefront/store-product-card";
 import { createClient } from "@/lib/supabase/server";
 
+import GamingDesktopBuilder from "@/components/storefront/gaming-desktop-builder";
+
 export const metadata: Metadata = {
   title: "Shop",
   description:
@@ -320,7 +322,31 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   const category = singleParameter(parameters.category).trim();
 
-  const offers =
+  
+
+  /*
+   * STEREOPHONIE_GAMING_DESKTOP_BUILDER_ROUTE
+   *
+   * Gaming Desktop is a custom consultation experience rather than
+   * a normal product-grid category.
+   */
+  const normalizedGamingDesktopCategory =
+    category
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ");
+
+  const isGamingDesktopExperience =
+    normalizedGamingDesktopCategory.includes("gaming") &&
+    (
+      normalizedGamingDesktopCategory.includes("desktop") ||
+      normalizedGamingDesktopCategory.includes("pc")
+    );
+
+  if (isGamingDesktopExperience) {
+    return <GamingDesktopBuilder />;
+  }
+const offers =
     singleParameter(parameters.offers)
       .trim()
       .toLowerCase() === "true";
@@ -370,10 +396,15 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             image_url,
             alt_text,
             position,
-            is_primary
+            is_primary,
+            variant_id,
+            variant_position,
+            is_variant_primary
           ),
 
           product_variants (
+            id,
+            display_position,
             regular_price,
             sale_price,
             stock_quantity,

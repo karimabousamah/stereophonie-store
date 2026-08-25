@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import AdminAccessControl from "./admin-access-control";
+
 export type AdminCustomer = {
   id: string;
   email: string;
@@ -30,6 +32,13 @@ export type AdminCustomer = {
   addressCount: number;
   defaultAddress: string | null;
   stockNotificationsEnabled: boolean;
+
+  /*
+   * Administrative access.
+   */
+  isAdmin: boolean;
+  adminRole: string | null;
+  isCurrentUser: boolean;
 };
 
 type CustomersClientProps = {
@@ -178,7 +187,7 @@ export default function CustomersClient({
         </header>
 
         <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="border border-white/10 bg-[#0d0d0d] p-5">
+          <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
@@ -196,7 +205,7 @@ export default function CustomersClient({
             </div>
           </div>
 
-          <div className="border border-white/10 bg-[#0d0d0d] p-5">
+          <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
@@ -214,7 +223,7 @@ export default function CustomersClient({
             </div>
           </div>
 
-          <div className="border border-white/10 bg-[#0d0d0d] p-5">
+          <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
@@ -234,7 +243,7 @@ export default function CustomersClient({
             </div>
           </div>
 
-          <div className="border border-white/10 bg-[#0d0d0d] p-5">
+          <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
@@ -255,7 +264,7 @@ export default function CustomersClient({
           </div>
         </section>
 
-        <section className="mt-7 border border-white/10 bg-[#0d0d0d]">
+        <section className="mt-7 overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
           <div className="grid gap-4 border-b border-white/10 p-5 lg:grid-cols-[minmax(0,1fr)_240px_auto] lg:items-center">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25" />
@@ -265,7 +274,7 @@ export default function CustomersClient({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search name, email, phone or address"
-                className="min-h-12 w-full border border-white/10 bg-black pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-white/35"
+                className="min-h-12 w-full rounded-xl border border-white/10 bg-black pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-white/35"
               />
             </div>
 
@@ -274,7 +283,7 @@ export default function CustomersClient({
               onChange={(event) =>
                 setFilter(event.target.value as CustomerFilter)
               }
-              className="min-h-12 w-full border border-white/10 bg-black px-4 text-sm text-white outline-none transition focus:border-white/35"
+              className="min-h-12 w-full rounded-xl border border-white/10 bg-black px-4 text-sm text-white outline-none transition focus:border-white/35"
             >
               <option value="all">All customers</option>
 
@@ -314,7 +323,7 @@ export default function CustomersClient({
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-[1220px] w-full border-collapse">
+              <table className="min-w-[1430px] w-full border-collapse">
                 <thead>
                   <tr className="border-b border-white/10 text-left">
                     {[
@@ -324,6 +333,7 @@ export default function CustomersClient({
                       "Orders",
                       "Delivery",
                       "Stock emails",
+                      "Access",
                     ].map((heading) => (
                       <th
                         key={heading}
@@ -465,7 +475,7 @@ export default function CustomersClient({
 
                         <td className="px-5 py-5">
                           <div
-                            className={`inline-flex items-center gap-2 border px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] ${
+                            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] ${
                               customer.stockNotificationsEnabled
                                 ? "border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300"
                                 : "border-white/10 bg-white/[0.04] text-white/35"
@@ -481,6 +491,15 @@ export default function CustomersClient({
                               ? "Enabled"
                               : "Disabled"}
                           </div>
+                        </td>
+
+                        <td className="px-5 py-5">
+                          <AdminAccessControl
+                            userId={customer.id}
+                            initialIsAdmin={customer.isAdmin}
+                            adminRole={customer.adminRole}
+                            isCurrentUser={customer.isCurrentUser}
+                          />
                         </td>
                       </tr>
                     );

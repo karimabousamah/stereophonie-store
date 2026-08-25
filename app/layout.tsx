@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { CartProvider } from "@/components/cart/cart-provider";
+import GlobalStorefrontAssistant from "@/components/storefront/global-storefront-assistant";
 import StoreAvailabilityGate from "@/components/storefront/store-availability-gate";
 import { StoreSettingsProvider } from "@/components/storefront/store-settings-provider";
 import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
@@ -8,6 +9,8 @@ import { getPublicStoreSettings } from "@/lib/store-settings";
 
 import "./globals.css";
 import "../styles/stereophonie-v3.css";
+import "../styles/stereophonie-retail-utility.css";
+import "../styles/stereophonie-v3-admin.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicStoreSettings();
@@ -38,6 +41,7 @@ export default async function RootLayout({
             <CartProvider>
               <WishlistProvider>
                 {children}
+                <GlobalStorefrontAssistant />
               </WishlistProvider>
             </CartProvider>
           </StoreAvailabilityGate>

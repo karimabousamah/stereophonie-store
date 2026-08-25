@@ -9,9 +9,27 @@ import {
 
 export type DirectUploadSelectedImage = {
   file: File;
+
+  /**
+   * Stable client-side configuration identity.
+   *
+   * This is deliberately NOT the configuration name because the
+   * name may still change while the administrator edits the product.
+   */
+  configurationId: string;
   altText: string;
   isPrimary: boolean;
   position: number;
+
+  /**
+   * Empty string means the photograph is shared by every
+   * configuration.
+   *
+   * Otherwise it stores the exact configuration name.
+   */
+  variantName: string;
+  variantPosition: number;
+  isVariantPrimary: boolean;
 };
 
 export type DirectUploadProgress = {
@@ -21,17 +39,35 @@ export type DirectUploadProgress = {
 
 export type DirectUploadedImagePayload = {
   storage_path: string;
+
+  /**
+   * Stable configuration identity used only while creating
+   * the product. The server resolves this to the final
+   * product_variants.variant_name before database insertion.
+   */
+  configuration_id: string;
   original_name: string;
   content_type: string;
   size: number;
   position: number;
   alt_text: string;
   is_primary: boolean;
+  variant_name: string;
+  variant_position: number;
+  is_variant_primary: boolean;
 };
 
 type UploadOptions = {
   images: DirectUploadSelectedImage[];
   onProgress?: (progress: DirectUploadProgress) => void;
+
+  /**
+   * Publishing requires the complete product form.
+   *
+   * Drafts deliberately skip this validation because an
+   * administrator must be able to save work in progress.
+   */
+  validateForm?: boolean;
 };
 
 function validateProductForm(form: HTMLFormElement) {
@@ -47,10 +83,6 @@ function validateProductForm(form: HTMLFormElement) {
 
   const categoryId = String(formData.get("category_id") ?? "").trim();
 
-  const regularPrice = Number(formData.get("regular_price"));
-
-  const salePriceText = String(formData.get("sale_price") ?? "").trim();
-
   const variantsJson = String(formData.get("variants_json") ?? "[]");
 
   if (!productName) {
@@ -59,24 +91,6 @@ function validateProductForm(form: HTMLFormElement) {
 
   if (!categoryId) {
     throw new Error("Select a product category before uploading photographs.");
-  }
-
-  if (!Number.isFinite(regularPrice) || regularPrice <= 0) {
-    throw new Error(
-      "Enter a valid regular price before uploading photographs.",
-    );
-  }
-
-  if (salePriceText) {
-    const salePrice = Number(salePriceText);
-
-    if (
-      !Number.isFinite(salePrice) ||
-      salePrice < 0 ||
-      salePrice >= regularPrice
-    ) {
-      throw new Error("The sale price must be lower than the regular price.");
-    }
   }
 
   let variants: unknown[];
@@ -89,8 +103,46 @@ function validateProductForm(form: HTMLFormElement) {
 
   if (!Array.isArray(variants) || variants.length === 0) {
     throw new Error(
-      "Select at least one product size before uploading photographs.",
+      "Create at least one product configuration before uploading photographs.",
     );
+  }
+
+  for (const item of variants) {
+    if (!item || typeof item !== "object") {
+      throw new Error(
+        "A product configuration could not be processed.",
+      );
+    }
+
+    const variant = item as Record<string, unknown>;
+
+    const regularPrice = Number(variant.regular_price);
+
+    const salePriceText =
+      variant.sale_price === null ||
+      variant.sale_price === undefined
+        ? ""
+        : String(variant.sale_price).trim();
+
+    if (!Number.isFinite(regularPrice) || regularPrice <= 0) {
+      throw new Error(
+        "Every configuration must have a valid regular price.",
+      );
+    }
+
+    if (salePriceText) {
+      const salePrice = Number(salePriceText);
+
+      if (
+        !Number.isFinite(salePrice) ||
+        salePrice < 0 ||
+        salePrice >= regularPrice
+      ) {
+        throw new Error(
+          "A configuration sale price must be lower than its regular price.",
+        );
+      }
+    }
   }
 }
 
@@ -98,7 +150,9 @@ export async function uploadImagesBeforeProductSubmission(
   form: HTMLFormElement,
   options: UploadOptions,
 ): Promise<DirectUploadedImagePayload[]> {
-  validateProductForm(form);
+  if (options.validateForm !== false) {
+    validateProductForm(form);
+  }
 
   const orderedImages = [...options.images].sort(
     (first, second) => first.position - second.position,
@@ -153,12 +207,26 @@ export async function uploadImagesBeforeProductSubmission(
 
       payload.push({
         storage_path: storagePath,
+        configuration_id: image.configurationId.trim(),
         original_name: image.file.name,
         content_type: image.file.type,
         size: image.file.size,
         position: index,
         alt_text: image.altText.trim(),
         is_primary: image.isPrimary,
+        variant_name: image.variantName.trim(),
+        variant_position:
+          Math.max(
+            0,
+            Number(
+              image.variantPosition ??
+                index,
+            ) || 0,
+          ),
+        is_variant_primary:
+          Boolean(
+            image.isVariantPrimary,
+          ),
       });
     }
 

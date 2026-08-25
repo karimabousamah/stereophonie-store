@@ -1,13 +1,21 @@
 import Link from "next/link";
-import { ArrowRight, Box, ChevronRight, PackageSearch } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronRight,
+  PackageSearch,
+} from "lucide-react";
 
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
-import V2Footer from "@/components/stereophonie-v2/layout/v2-footer";
-import V2Header from "@/components/stereophonie-v2/layout/v2-header";
+
 import V2CatalogControls from "@/components/stereophonie-v2/shop/v2-catalog-controls";
 import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 
-type SortOption = "newest" | "price-asc" | "price-desc";
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
+import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
+type SortOption =
+  | "newest"
+  | "price-asc"
+  | "price-desc";
 
 type Props = {
   products: StoreProductCardProduct[];
@@ -24,6 +32,14 @@ type Props = {
   selectedSearch?: string;
 };
 
+function resultCopy(count: number) {
+  if (count === 1) {
+    return "1 product";
+  }
+
+  return `${count} products`;
+}
+
 export default function V2ShopPage({
   products,
   categories,
@@ -38,140 +54,131 @@ export default function V2ShopPage({
   maximumAvailablePrice,
   selectedSearch = "",
 }: Props) {
+  const hasFilters =
+    Boolean(selectedCategory) ||
+    Boolean(selectedBrand) ||
+    selectedAvailability === "in-stock" ||
+    selectedMinPrice !== null ||
+    selectedMaxPrice !== null ||
+    Boolean(selectedSearch.trim());
+
   return (
-    <main className="st-v2 st-v2-shop">
-      <V2Header />
+    <>
+      <V3Header />
 
-      <section className="st-v2-shop-hero st-v2-grid">
-        <div className="st-v2-container">
-          <div className="st-v2-shop-hero__crumb">
-            <span>STEREOPHONIE</span>
-            <ChevronRight />
-            <span>CATALOG</span>
-          </div>
+      <main className="st3-shop-v4 st-retail-shop st-retail-shop-v4">
 
-          <div className="st-v2-shop-hero__main">
-            <div>
-              <p className="st-v2-kicker">CATALOG / HARDWARE DATABASE</p>
+        
 
-              <h1>
-                FIND YOUR
-                <br />
-                <span>TECH.</span>
-              </h1>
+
+
+        <section className="st3-shop-v4__catalog">
+          <div className="st3-shop-v4__catalog-inner">
+
+            <div className="st3-shop-v4__catalog-heading">
+              <div>
+                <p>
+                  Shop
+                </p>
+
+                <h2>
+                  Shop all products
+                </h2>
+              </div>
+
+              <span>
+                {resultCopy(products.length)}
+              </span>
             </div>
 
-            <div className="st-v2-shop-hero__status">
-              <div>
-                <span>RESULTS</span>
-                <strong>{String(products.length).padStart(2, "0")}</strong>
-              </div>
 
-              <div>
-                <span>REGION</span>
-                <strong>LB</strong>
-              </div>
-
-              <div>
-                <span>SYSTEM</span>
-                <strong>ONLINE</strong>
-              </div>
+            <div className="st3-shop-v4__controls">
+              <V2CatalogControls
+                categories={categories}
+                brands={brands}
+                selectedCategory={selectedCategory}
+                selectedBrand={selectedBrand}
+                selectedAvailability={selectedAvailability}
+                selectedSort={selectedSort}
+                selectedMinPrice={selectedMinPrice}
+                selectedMaxPrice={selectedMaxPrice}
+                minimumAvailablePrice={minimumAvailablePrice}
+                maximumAvailablePrice={maximumAvailablePrice}
+                searchValue={selectedSearch}
+              />
             </div>
-          </div>
 
-          <div className="st-v2-shop-hero__ticker">
-            <span className="st-v2-led" />
-            LIVE CATALOG
-            <span>•</span>
-            PHONES
-            <span>•</span>
-            COMPUTING
-            <span>•</span>
-            GAMING
-            <span>•</span>
-            AUDIO
-            <span>•</span>
-            ACCESSORIES
-          </div>
-        </div>
-      </section>
 
-      <section className="st-v2-shop-body">
-        <div className="st-v2-container">
-          <V2CatalogControls
-            categories={categories}
-            brands={brands}
-            selectedCategory={selectedCategory}
-            selectedBrand={selectedBrand}
-            selectedAvailability={selectedAvailability}
-            selectedSort={selectedSort}
-            selectedMinPrice={selectedMinPrice}
-            selectedMaxPrice={selectedMaxPrice}
-            minimumAvailablePrice={minimumAvailablePrice}
-            maximumAvailablePrice={maximumAvailablePrice}
-            searchValue={selectedSearch}
-          />
+            {hasFilters ? (
+              <div className="st3-shop-v4__active-state">
+                <span>
+                  Showing filtered results
+                </span>
 
-          <div className="st-v2-shop-layout">
-            <div className="st-v2-shop-layout__sidebar-space" />
-
-            <section className="st-v2-shop-results">
-              <div className="st-v2-shop-results__head">
-                <div>
-                  <span>PRODUCT DATABASE</span>
-
-                  <strong>
-                    {products.length}{" "}
-                    {products.length === 1 ? "RESULT" : "RESULTS"}
-                  </strong>
-                </div>
-
-                <div>
-                  <i className="st-v2-led" />
-                  DATABASE READY
-                </div>
+                <Link href="/shop">
+                  Clear all
+                </Link>
               </div>
+            ) : null}
+
+
+            <section
+              className="st3-shop-v4__results"
+              aria-label="Products"
+            >
 
               {products.length > 0 ? (
-                <div className="st-v2-product-grid">
-                  {products.map((product, index) => (
-                    <V2ProductCard
-                      key={product.id}
-                      product={product}
-                      index={index}
-                    />
-                  ))}
+                <div className="st3-shop-v4__grid">
+                  {products.map(
+                    (product, index) => (
+                      <V2ProductCard
+                        key={product.id}
+                        product={product}
+                        index={index}
+                      />
+                    ),
+                  )}
                 </div>
               ) : (
-                <div className="st-v2-shop-empty">
-                  <div className="st-v2-shop-empty__icon">
+                <div className="st3-shop-v4__empty">
+
+                  <div className="st3-shop-v4__empty-icon">
                     <PackageSearch />
                   </div>
 
-                  <span>SEARCH RESULT / 000</span>
-
-                  <h2>NO HARDWARE FOUND.</h2>
-
                   <p>
-                    No products match the current catalog settings. Reset the
-                    filters or try another search.
+                    No results
                   </p>
+
+                  <h2>
+                    We couldn’t find
+                    a match.
+                  </h2>
+
+                  <span>
+                    Try changing your search
+                    or removing one of the
+                    selected filters.
+                  </span>
 
                   <Link
                     href="/shop"
-                    className="st-v2-button st-v2-button--signal"
+                    className="st3-shop-v4__reset"
                   >
-                    RESET CATALOG
+                    View all products
                     <ArrowRight />
                   </Link>
                 </div>
               )}
-            </section>
-          </div>
-        </div>
-      </section>
 
-      <V2Footer />
-    </main>
+            </section>
+
+          </div>
+        </section>
+
+      </main>
+
+      <V3Footer />
+    </>
   );
 }

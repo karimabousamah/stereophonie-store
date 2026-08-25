@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { processStoreImage } from "@/lib/stereophonie-v3/images/process-store-image";
 
 const homepageAdminPath = "/admin/homepage";
 
@@ -39,6 +40,23 @@ function readInternalHref(formData: FormData, name: string, label: string) {
   return value;
 }
 
+
+function safeHeroImageExtension(file: File) {
+  const type = file.type.toLowerCase();
+
+  if (
+    type === "image/jpeg" ||
+    type === "image/jpg" ||
+    type === "image/png" ||
+    type === "image/webp" ||
+    type === "image/avif"
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 async function requireAdministrator() {
   const supabase = await createClient();
 
@@ -70,6 +88,123 @@ export async function updateHomepageSettings(formData: FormData) {
   const { supabase, userId } = await requireAdministrator();
 
   const heroProductId = String(formData.get("hero_product_id") ?? "").trim();
+
+  const removeHeroImage =
+    String(formData.get("remove_hero_image") ?? "") === "1";
+
+  const heroImageInput =
+    formData.get("hero_image");
+
+  const { data: existingHomepage } =
+    await supabase
+      .from("homepage_settings")
+      .select("hero_image_url, hero_image_storage_path")
+      .eq("id", "default")
+      .maybeSingle();
+
+  let heroImageUrl =
+    existingHomepage?.hero_image_url ?? null;
+
+  let heroImageStoragePath =
+    existingHomepage?.hero_image_storage_path ?? null;
+
+  if (removeHeroImage) {
+    if (heroImageStoragePath) {
+      await supabase.storage
+        .from("homepage-images")
+        .remove([heroImageStoragePath]);
+    }
+
+    heroImageUrl = null;
+    heroImageStoragePath = null;
+  }
+
+  if (
+    heroImageInput instanceof File &&
+    heroImageInput.size > 0
+  ) {
+    if (heroImageInput.size > 10 * 1024 * 1024) {
+      redirectWithMessage(
+        "error",
+        "Hero image must be smaller than 10 MB.",
+      );
+    }
+
+    if (!safeHeroImageExtension(heroImageInput)) {
+      redirectWithMessage(
+        "error",
+        "Upload a JPG, PNG, WEBP or AVIF hero image.",
+      );
+    }
+
+    let processedImage: Buffer;
+
+    try {
+      processedImage =
+        await processStoreImage({
+          input: Buffer.from(
+            await heroImageInput.arrayBuffer(),
+          ),
+          kind: "category",
+        });
+    } catch (error) {
+      console.error(
+        "Homepage hero image processing failed:",
+        error,
+      );
+
+      redirectWithMessage(
+        "error",
+        "The hero image could not be processed.",
+      );
+    }
+
+    const objectPath =
+      `hero/${Date.now()}-${crypto.randomUUID()}.webp`;
+
+    const { error: uploadError } =
+      await supabase.storage
+        .from("homepage-images")
+        .upload(
+          objectPath,
+          new Uint8Array(processedImage),
+          {
+            contentType: "image/webp",
+            cacheControl: "31536000",
+            upsert: false,
+          },
+        );
+
+    if (uploadError) {
+      redirectWithMessage(
+        "error",
+        `Hero image upload failed: ${uploadError.message}`,
+      );
+    }
+
+    const { data: publicUrlData } =
+      supabase.storage
+        .from("homepage-images")
+        .getPublicUrl(objectPath);
+
+    const previousPath =
+      heroImageStoragePath;
+
+    heroImageStoragePath =
+      objectPath;
+
+    heroImageUrl =
+      publicUrlData.publicUrl;
+
+    if (
+      previousPath &&
+      previousPath !== objectPath
+    ) {
+      await supabase.storage
+        .from("homepage-images")
+        .remove([previousPath]);
+    }
+  }
 
   const { error } = await supabase.from("homepage_settings").upsert(
     {
@@ -137,6 +272,9 @@ export async function updateHomepageSettings(formData: FormData) {
       ),
 
       hero_product_id: heroProductId || null,
+
+      hero_image_url: heroImageUrl,
+      hero_image_storage_path: heroImageStoragePath,
 
       products_eyebrow: readRequiredText(
         formData,

@@ -139,7 +139,7 @@ export default async function AdminHomepagePage({
       pageTitle="Homepage"
       pageDescription="Control the storefront hero, featured product, headings, announcements and calls to action."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
+      <div className="st3-admin-homepage-v3 px-5 py-8 sm:px-8 sm:py-10">
         <div className="mx-auto max-w-[1540px]">
           <header className="flex flex-col gap-6 border-b border-white/10 pb-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -155,7 +155,7 @@ export default async function AdminHomepagePage({
                 Storefront management
               </p>
 
-              <h1 className="mt-3 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">
+              <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
                 Homepage
               </h1>
 
@@ -167,7 +167,7 @@ export default async function AdminHomepagePage({
             <Link
               href="/"
               target="_blank"
-              className="group inline-flex min-h-12 shrink-0 items-center justify-center gap-3 border border-white/30 !bg-transparent px-6 text-[11px] font-semibold uppercase tracking-[0.18em] !text-white transition-all duration-200 hover:border-white/70 hover:!bg-white/10 hover:!text-white hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              className="group inline-flex min-h-12 shrink-0 items-center justify-center gap-3 rounded-full border border-white/30 !bg-transparent px-6 text-[11px] font-semibold uppercase tracking-[0.18em] !text-white transition-all duration-200 hover:border-white/70 hover:!bg-white/10 hover:!text-white hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             >
               View homepage
               <ExternalLink className="h-4 w-4 shrink-0 !text-current transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -175,27 +175,27 @@ export default async function AdminHomepagePage({
           </header>
 
           {query.success ? (
-            <div className="mt-7 border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-4 text-sm text-emerald-200">
+            <div className="mt-7 rounded-[18px] border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-4 text-sm text-emerald-200">
               {query.success}
             </div>
           ) : null}
 
           {query.error ? (
-            <div className="mt-7 border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
+            <div className="mt-7 rounded-[18px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
               {query.error}
             </div>
           ) : null}
 
           {settingsResult.error ? (
-            <div className="mt-7 border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
+            <div className="mt-7 rounded-[18px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
               Homepage settings could not be loaded:{" "}
               {settingsResult.error.message}
             </div>
           ) : null}
 
           <div className="mt-7 grid gap-7 xl:grid-cols-[minmax(0,1fr)_420px]">
-            <form action={updateHomepageSettings} className="space-y-7">
-              <section className="border border-white/10 bg-[#0d0d0d]">
+            <form action={updateHomepageSettings} className="space-y-7" encType="multipart/form-data">
+              <section className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
                 <div className="flex items-center gap-4 border-b border-white/10 px-6 py-5">
                   <LayoutTemplate className="h-5 w-5 text-white/40" />
 
@@ -252,6 +252,49 @@ export default async function AdminHomepagePage({
                       className="mt-3 min-h-12 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
                     />
                   </label>
+
+                  <div className="md:col-span-2">
+                    <FieldLabel>Custom hero image</FieldLabel>
+
+                    <div className="mt-3 rounded-[18px] border border-white/10 bg-black/40 p-4">
+                      {settings.hero_image_url ? (
+                        <div className="mb-4 overflow-hidden rounded-[14px] border border-white/10 bg-white">
+                          <div className="relative aspect-[16/7] w-full">
+                            <Image
+                              src={settings.hero_image_url}
+                              alt="Current homepage hero image"
+                              fill
+                              sizes="700px"
+                              className="object-contain"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <input
+                        type="file"
+                        name="hero_image"
+                        accept="image/jpeg,image/png,image/webp,image/avif"
+                        className="block w-full text-sm text-white/55 file:mr-4 file:rounded-full file:border-0 file:bg-white file:px-5 file:py-3 file:text-xs file:font-semibold file:text-black hover:file:bg-white/85"
+                      />
+
+                      <p className="mt-3 text-xs leading-5 text-white/30">
+                        Upload a dedicated homepage hero visual. If none is uploaded,
+                        the selected hero product image is used automatically.
+                      </p>
+
+                      {settings.hero_image_url ? (
+                        <label className="mt-4 flex items-center gap-3 text-xs text-red-300">
+                          <input
+                            type="checkbox"
+                            name="remove_hero_image"
+                            value="1"
+                          />
+                          Remove custom hero image
+                        </label>
+                      ) : null}
+                    </div>
+                  </div>
 
                   <label>
                     <FieldLabel>Hero product</FieldLabel>
@@ -329,7 +372,7 @@ export default async function AdminHomepagePage({
                 </div>
               </section>
 
-              <section className="border border-white/10 bg-[#0d0d0d]">
+              <section className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
                 <div className="border-b border-white/10 px-6 py-5">
                   <h2 className="text-xl font-semibold">
                     Homepage section order
@@ -352,7 +395,7 @@ export default async function AdminHomepagePage({
                     >
                       <option value="products">Products</option>
 
-                      <option value="collections">Collections</option>
+                      <option value="collections">Featured groups</option>
 
                       <option value="categories">Categories</option>
                     </select>
@@ -368,7 +411,7 @@ export default async function AdminHomepagePage({
                     >
                       <option value="products">Products</option>
 
-                      <option value="collections">Collections</option>
+                      <option value="collections">Featured groups</option>
 
                       <option value="categories">Categories</option>
                     </select>
@@ -384,7 +427,7 @@ export default async function AdminHomepagePage({
                     >
                       <option value="products">Products</option>
 
-                      <option value="collections">Collections</option>
+                      <option value="collections">Featured groups</option>
 
                       <option value="categories">Categories</option>
                     </select>
@@ -392,13 +435,13 @@ export default async function AdminHomepagePage({
                 </div>
               </section>
 
-              <section className="border border-white/10 bg-[#0d0d0d]">
+              <section className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
                 <div className="border-b border-white/10 px-6 py-5">
                   <h2 className="text-xl font-semibold">Product section</h2>
                 </div>
 
                 <div className="grid gap-5 p-6 md:grid-cols-2">
-                  <label className="flex min-h-14 items-center justify-between gap-5 border border-white/10 bg-black px-4 md:col-span-2">
+                  <label className="flex min-h-14 items-center justify-between gap-5 rounded-[16px] border border-white/10 bg-black px-4 md:col-span-2">
                     <div>
                       <FieldLabel>Show product section</FieldLabel>
 
@@ -497,22 +540,22 @@ export default async function AdminHomepagePage({
                 </div>
               </section>
 
-              <section className="border border-white/10 bg-[#0d0d0d]">
+              <section className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
                 <div className="border-b border-white/10 px-6 py-5">
-                  <h2 className="text-xl font-semibold">Collections section</h2>
+                  <h2 className="text-xl font-semibold">Featured groups</h2>
 
                   <p className="mt-1 text-sm text-white/35">
-                    Control the featured collection cards shown on the homepage.
+                    Control the curated product groups shown on the homepage.
                   </p>
                 </div>
 
                 <div className="grid gap-5 p-6 md:grid-cols-2">
-                  <label className="flex min-h-14 items-center justify-between gap-5 border border-white/10 bg-black px-4 md:col-span-2">
+                  <label className="flex min-h-14 items-center justify-between gap-5 rounded-[16px] border border-white/10 bg-black px-4 md:col-span-2">
                     <div>
-                      <FieldLabel>Show collections section</FieldLabel>
+                      <FieldLabel>Show featured groups</FieldLabel>
 
                       <p className="mt-1 text-xs text-white/35">
-                        Featured and active collections with images will appear.
+                        Active product groups with images will appear here.
                       </p>
                     </div>
 
@@ -568,15 +611,15 @@ export default async function AdminHomepagePage({
                     />
                   </label>
 
-                  <div className="mb-6 border border-white/10 bg-black/30 p-5">
+                  <div className="mb-6 rounded-[16px] border border-white/10 bg-black/30 p-5">
                     <label className="flex cursor-pointer items-start justify-between gap-5">
                       <div>
                         <span className="block text-sm font-semibold text-white">
-                          Automatic collection scrolling
+                          Automatic group scrolling
                         </span>
 
                         <span className="mt-2 block max-w-xl text-sm leading-6 text-white/40">
-                          Automatically move the Shop Collections row. Customers
+                          Automatically move the featured products row. Customers
                           can still scroll it manually whether this option is
                           enabled or disabled.
                         </span>
@@ -607,31 +650,31 @@ export default async function AdminHomepagePage({
                     </select>
 
                     <span className="mt-2 block text-sm leading-6 text-white/40">
-                      Controls how quickly the collection cards move when
+                      Controls how quickly the group cards move when
                       automatic scrolling is enabled.
                     </span>
                   </label>
 
                   <label className="md:col-span-2">
-                    <FieldLabel>Maximum collection cards</FieldLabel>
+                    <FieldLabel>Maximum featured cards</FieldLabel>
 
                     <select
                       name="collections_limit"
                       defaultValue={String(settings.collections_limit)}
                       className="mt-3 min-h-12 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
                     >
-                      <option value="1">1 collection</option>
-                      <option value="2">2 collections</option>
-                      <option value="3">3 collections</option>
-                      <option value="4">4 collections</option>
-                      <option value="5">5 collections</option>
-                      <option value="6">6 collections</option>
+                      <option value="1">1 group</option>
+                      <option value="2">2 groups</option>
+                      <option value="3">3 groups</option>
+                      <option value="4">4 groups</option>
+                      <option value="5">5 groups</option>
+                      <option value="6">6 groups</option>
                     </select>
                   </label>
                 </div>
               </section>
 
-              <section className="border border-white/10 bg-[#0d0d0d]">
+              <section className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
                 <div className="border-b border-white/10 px-6 py-5">
                   <h2 className="text-xl font-semibold">Category section</h2>
                 </div>
@@ -661,7 +704,7 @@ export default async function AdminHomepagePage({
                 </div>
               </section>
 
-              <section className="border border-white/10 bg-[#0d0d0d]">
+              <section className="overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
                 <div className="border-b border-white/10 px-6 py-5">
                   <h2 className="text-xl font-semibold">
                     Final call to action
@@ -728,64 +771,113 @@ export default async function AdminHomepagePage({
 
               <button
                 type="submit"
-                className="flex min-h-14 w-full items-center justify-center gap-3 bg-white px-6 text-xs font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-white/85"
+                className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full bg-white px-6 text-xs font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-white/85"
               >
                 <Save className="h-4 w-4" />
                 Save homepage
               </button>
             </form>
 
-            <aside className="xl:sticky xl:top-[120px] xl:self-start">
-              <div className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-                <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
-                  <Diamond className="h-4 w-4 text-white/40" />
+            <aside className="st-admin-home-preview xl:sticky xl:top-[110px] xl:self-start">
+              <div className="st-admin-home-preview__shell">
+                <header className="st-admin-home-preview__heading">
+                  <div>
+                    <Diamond className="h-4 w-4" />
 
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
-                    Current preview
-                  </p>
-                </div>
+                    <span>Current homepage</span>
+                  </div>
 
-                <div className="relative aspect-[4/5] bg-black">
-                  {previewImage ? (
-                    <Image
-                      src={previewImage}
-                      alt={selectedHeroProduct?.name ?? "Homepage hero"}
-                      fill
-                      sizes="(min-width: 1280px) 25vw, 100vw"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <ImageOff className="h-10 w-10 text-white/25" />
+                  <small>Live configuration preview</small>
+                </header>
+
+                <div className="st-admin-home-preview__browser">
+                  <div className="st-admin-home-preview__chrome">
+                    <span />
+                    <span />
+                    <span />
+
+                    <div>stereophonie.store</div>
+                  </div>
+
+                  <div className="st-admin-home-preview__site-header">
+                    <strong>STEREOPHONIE</strong>
+
+                    <nav>
+                      <span>Shop</span>
+                      <span>Phones</span>
+                      <span>Gaming</span>
+                      <span>Audio</span>
+                    </nav>
+
+                    <span>Bag</span>
+                  </div>
+
+                  <div className="st-admin-home-preview__hero">
+                    <div className="st-admin-home-preview__copy">
+                      <small>
+                        {settings.hero_eyebrow}
+                      </small>
+
+                      <h2>
+                        {settings.hero_line_one}
+                        <br />
+                        {settings.hero_line_two}
+                        <br />
+                        {settings.hero_line_three}
+                      </h2>
+
+                      <p>
+                        {settings.hero_description}
+                      </p>
+
+                      <div>
+                        <span>
+                          {settings.primary_button_label}
+                        </span>
+
+                        <span>
+                          {settings.secondary_button_label}
+                        </span>
+                      </div>
                     </div>
-                  )}
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    <div className="st-admin-home-preview__visual">
+                      {(settings.hero_image_url || previewImage) ? (
+                        <Image
+                          src={settings.hero_image_url || previewImage!}
+                          alt={
+                            settings.hero_image_url
+                              ? "Homepage hero image"
+                              : selectedHeroProduct?.name ??
+                                "Homepage hero product"
+                          }
+                          fill
+                          sizes="430px"
+                          className="object-contain"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <ImageOff className="h-10 w-10 text-black/20" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
-                  <div className="absolute inset-x-0 bottom-0 p-6">
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-white/55">
-                      {settings.hero_eyebrow}
-                    </p>
+                  <div className="st-admin-home-preview__next">
+                    <small>Selected for you</small>
+                    <strong>New arrivals</strong>
 
-                    <h2 className="mt-4 text-4xl font-semibold uppercase leading-[0.88] tracking-[-0.06em]">
-                      {settings.hero_line_one}
-                      <br />
-                      {settings.hero_line_two}
-                      <br />
-                      {settings.hero_line_three}
-                    </h2>
-
-                    <p className="mt-4 text-xs leading-5 text-white/60">
-                      {selectedHeroProduct?.name ??
-                        "Automatic featured product"}
-                    </p>
+                    <div>
+                      <span />
+                      <span />
+                      <span />
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-5 text-xs leading-6 text-white/35">
-                  Save the form, then use “View homepage” to review the final
-                  storefront layout.
-                </div>
+                <p className="st-admin-home-preview__help">
+                  This scaled storefront preview helps you understand how the hero copy, buttons and selected product work together before you open the public homepage.
+                </p>
               </div>
             </aside>
           </div>

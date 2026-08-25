@@ -249,7 +249,7 @@ export default function V3ProductCard({
               product.name
             }
             className="st3-product-card__image"
-            loading="lazy"
+            loading="eager"
           />
         ) : (
           <div className="st3-product-card__placeholder">

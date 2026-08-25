@@ -21,26 +21,27 @@ const sections = [
 
         <p>
           Customers are responsible for reviewing the product description,
-          photographs, price, available size, and selected options carefully
+          photographs, price, compatibility, specifications, and selected options carefully
           before confirming an order.
         </p>
       </>
     ),
   },
   {
-    title: "Sizing and colour",
+    title: "Compatibility and product details",
     content: (
       <>
         <p>
-          A product cannot normally be returned because the selected size does
-          not fit. Please review all available sizing information or contact us
-          before ordering when assistance is needed.
+          A product cannot normally be returned because it is incompatible with
+          another device or does not match a customer&apos;s preferred configuration.
+          Please review the available specifications or contact us before
+          ordering when assistance is needed.
         </p>
 
         <p>
-          Colours may appear slightly different depending on lighting,
-          photography, screen settings, and device display. Minor colour
-          variation alone does not normally qualify an item for return.
+          Product colours and finishes may appear slightly different depending
+          on lighting, photography, and screen settings. Minor visual variation
+          alone does not normally qualify an item for return.
         </p>
       </>
     ),
@@ -70,13 +71,13 @@ const sections = [
       <>
         <p>
           Order issues should be reported as soon as reasonably possible after
-          delivery. The item should remain unused, unworn, unwashed, and in its
-          original condition with its original packaging and tags whenever
-          possible.
+          delivery. The product should remain unused and in its original
+          condition with all packaging, accessories, manuals, seals, and labels
+          whenever possible.
         </p>
 
         <p>
-          Contact us through WhatsApp at +961 76 99 22 06 or email
+          Contact us through WhatsApp at +961 3 161 285 or email
           thenitastyle@gmail.com. Please do not send an item back before
           receiving instructions from our team.
         </p>
@@ -88,9 +89,9 @@ const sections = [
     content: (
       <>
         <p>
-          We may refuse a request when an item has been worn, washed, altered,
-          damaged after delivery, used improperly, or returned without its
-          original tags or packaging.
+          We may refuse a request when a product has been opened where a seal is
+          required, activated, altered, damaged after delivery, used improperly,
+          or returned without its original packaging or included accessories.
         </p>
 
         <p>

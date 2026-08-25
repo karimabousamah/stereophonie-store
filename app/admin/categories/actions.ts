@@ -283,6 +283,17 @@ export async function updateCategoryHomepagePresentation(
   const showOnHomepage =
     formData.get("show_on_homepage") === "on";
 
+  const requestedHomepageTheme = String(
+    formData.get("homepage_theme") ?? "light",
+  )
+    .trim()
+    .toLowerCase();
+
+  const homepageTheme =
+    requestedHomepageTheme === "dark"
+      ? "dark"
+      : "light";
+
   const { data: currentCategory, error: currentError } =
     await supabase
       .from("categories")
@@ -328,7 +339,7 @@ export async function updateCategoryHomepagePresentation(
         .toLowerCase();
 
     const objectPath =
-      `${safeSlug}/${Date.now()}-${crypto.randomUUID()}.png`;
+      `${safeSlug}/${Date.now()}-${crypto.randomUUID()}.webp`;
 
     let processedImage: Buffer;
 
@@ -365,9 +376,9 @@ export async function updateCategoryHomepagePresentation(
           bytes,
           {
             contentType:
-              "image/png",
+              "image/webp",
             cacheControl:
-              "3600",
+              "31536000",
             upsert: false,
           },
         );
@@ -402,6 +413,7 @@ export async function updateCategoryHomepagePresentation(
     .from("categories")
     .update({
       show_on_homepage: showOnHomepage,
+      homepage_theme: homepageTheme,
       image_url: nextImageUrl,
       updated_at: new Date().toISOString(),
     })

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import AdminShell from "@/components/admin/admin-shell";
+import OrderSearch from "@/components/admin/order-search";
 import { createClient } from "@/lib/supabase/server";
 
 type OrderItem = {
@@ -242,6 +243,8 @@ export default async function AdminOrdersPage() {
             </div>
           )}
 
+          <OrderSearch total={orderList.length} />
+
           <section className="mt-7 overflow-hidden border border-white/10 bg-[#0d0d0d]">
             {orderList.length === 0 ? (
               <div className="flex min-h-[480px] flex-col items-center justify-center px-6 text-center">
@@ -271,6 +274,22 @@ export default async function AdminOrdersPage() {
                   return (
                     <article
                       key={order.id}
+                      data-admin-order-search-card="true"
+                      data-admin-order-search={[
+                        order.order_number,
+                        order.status,
+                        order.payment_status,
+                        order.customer_first_name,
+                        order.customer_last_name,
+                        order.customer_email,
+                        order.customer_phone,
+                        order.delivery_city,
+                        order.delivery_area,
+                        ...(order.order_items ?? []).flatMap((item) => [
+                          item.product_name,
+                          item.size,
+                        ]),
+                      ].join(" ")}
                       className="grid gap-5 p-5 transition hover:bg-white/[0.025] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] lg:items-center"
                     >
                       <div className="min-w-0">

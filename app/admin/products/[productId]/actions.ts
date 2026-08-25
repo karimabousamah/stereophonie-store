@@ -12,8 +12,11 @@ type AvailabilityStatus =
 type VariantInput = {
   id: string | null;
   variant_name: string;
+  display_position?: number;
   attributes: Record<string, string>;
   sku: string;
+  regular_price: number | "";
+  sale_price: number | "";
   stock_quantity: number;
   low_stock_threshold: number;
   availability_status: AvailabilityStatus;
@@ -123,6 +126,42 @@ function validateVariants(productId: string, variants: VariantInput[]) {
       );
     }
 
+    const regularPrice =
+      Number(variant.regular_price);
+
+    const salePriceText =
+      variant.sale_price === null ||
+      variant.sale_price === undefined ||
+      variant.sale_price === ""
+        ? ""
+        : String(variant.sale_price).trim();
+
+    if (
+      !Number.isFinite(regularPrice) ||
+      regularPrice <= 0
+    ) {
+      redirectWithError(
+        productId,
+        `Enter a valid regular price for ${configurationName}.`,
+      );
+    }
+
+    if (salePriceText) {
+      const salePrice =
+        Number(salePriceText);
+
+      if (
+        !Number.isFinite(salePrice) ||
+        salePrice < 0 ||
+        salePrice >= regularPrice
+      ) {
+        redirectWithError(
+          productId,
+          `The sale price for ${configurationName} must be lower than its regular price.`,
+        );
+      }
+    }
+
     const stockQuantity = Number(variant.stock_quantity);
     const lowStockThreshold = Number(variant.low_stock_threshold);
 
@@ -161,10 +200,6 @@ export async function updateProduct(formData: FormData) {
 
   const brandId = String(formData.get("brand_id") ?? "").trim();
 
-  const regularPrice = Number(formData.get("regular_price"));
-
-  const salePriceText = String(formData.get("sale_price") ?? "").trim();
-
   const publishingIntent = String(formData.get("intent") ?? "draft");
 
   const variantsJson = String(formData.get("variants_json") ?? "[]");
@@ -181,26 +216,6 @@ export async function updateProduct(formData: FormData) {
 
   if (!categoryId) {
     redirectWithError(productId, "Please select a category.");
-  }
-
-  if (!Number.isFinite(regularPrice) || regularPrice <= 0) {
-    redirectWithError(
-      productId,
-      "Enter a valid regular price greater than zero.",
-    );
-  }
-
-  const salePrice = salePriceText === "" ? null : Number(salePriceText);
-
-  if (salePrice !== null && (!Number.isFinite(salePrice) || salePrice < 0)) {
-    redirectWithError(productId, "Enter a valid sale price.");
-  }
-
-  if (salePrice !== null && salePrice >= regularPrice) {
-    redirectWithError(
-      productId,
-      "The sale price must be lower than the regular price.",
-    );
   }
 
   let variants: VariantInput[];
@@ -305,18 +320,55 @@ export async function updateProduct(formData: FormData) {
 
     const configurationName = variant.variant_name.trim();
 
+    const configurationRegularPrice =
+      Number(variant.regular_price);
+
+    const configurationSalePrice =
+      variant.sale_price === "" ||
+      variant.sale_price === null ||
+      variant.sale_price === undefined
+        ? null
+        : Number(variant.sale_price);
+
     const variantValues = {
       // Legacy compatibility for checkout/order code.
       size: configurationName,
 
       variant_name: configurationName,
+      display_position:
+        Number.isFinite(
+          Number(
+            variant.display_position,
+          ),
+        )
+          ? Math.max(
+              0,
+              Math.trunc(
+                Number(
+                  variant.display_position,
+                ),
+              ),
+            )
+          : 0,
       attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
-      regular_price: regularPrice,
-      sale_price: salePrice,
-      stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
-      low_stock_threshold: Number(variant.low_stock_threshold),
-      availability_status: variant.availability_status,
+
+      regular_price:
+        configurationRegularPrice,
+
+      sale_price:
+        configurationSalePrice,
+
+      stock_quantity:
+        unavailable
+          ? 0
+          : Number(variant.stock_quantity),
+
+      low_stock_threshold:
+        Number(variant.low_stock_threshold),
+
+      availability_status:
+        variant.availability_status,
     };
 
     if (variant.id) {

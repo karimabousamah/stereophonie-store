@@ -9,7 +9,6 @@ import AdminNotificationsButton from "@/components/admin/admin-notifications-but
 import {
   Bell,
   BellRing,
-  Boxes,
   ChevronRight,
   CircleUserRound,
   ExternalLink,
@@ -22,6 +21,7 @@ import {
   Store,
   Tags,
   TicketPercent,
+  TrendingUp,
   Users,
 } from "lucide-react";
 
@@ -55,37 +55,12 @@ const navigation: NavigationGroup[] = [
     ],
   },
   {
-    title: "Commerce",
+    title: "Catalog",
     items: [
       {
         label: "Products",
         href: "/admin/products",
         icon: ShoppingBag,
-      },
-      {
-        label: "Orders",
-        href: "/admin/orders",
-        icon: PackageCheck,
-      },
-      {
-        label: "Stock alerts",
-        href: "/admin/stock-alerts",
-        icon: BellRing,
-      },
-      {
-        label: "Customers",
-        href: "/admin/customers",
-        icon: Users,
-      },
-    ],
-  },
-  {
-    title: "Merchandising",
-    items: [
-      {
-        label: "Collections",
-        href: "/admin/collections",
-        icon: Boxes,
       },
       {
         label: "Categories",
@@ -98,14 +73,39 @@ const navigation: NavigationGroup[] = [
         icon: Tags,
       },
       {
-        label: "Coupons",
-        href: "/admin/coupons",
-        icon: TicketPercent,
-      },
-      {
         label: "Homepage",
         href: "/admin/homepage",
         icon: PanelsTopLeft,
+      },
+    ],
+  },
+  {
+    title: "Sales",
+    items: [
+      {
+        label: "Orders",
+        href: "/admin/orders",
+        icon: PackageCheck,
+      },
+      {
+        label: "Best Selling",
+        href: "/admin/best-selling",
+        icon: TrendingUp,
+      },
+      {
+        label: "Stock alerts",
+        href: "/admin/stock-alerts",
+        icon: BellRing,
+      },
+      {
+        label: "Customers",
+        href: "/admin/customers",
+        icon: Users,
+      },
+      {
+        label: "Coupons",
+        href: "/admin/coupons",
+        icon: TicketPercent,
       },
     ],
   },
@@ -132,7 +132,7 @@ function AdminNavigation({ pathname }: { pathname: string }) {
       <div className="space-y-8">
         {navigation.map((group) => (
           <section key={group.title}>
-            <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/30">
+            <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-black/35">
               {group.title}
             </p>
 
@@ -149,16 +149,17 @@ function AdminNavigation({ pathname }: { pathname: string }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`group relative flex items-center justify-between overflow-hidden px-3 py-3 text-sm transition duration-300 ${
+                    aria-current={isActive ? "page" : undefined}
+                    className={`st3-admin-nav-link group relative flex items-center justify-between overflow-hidden rounded-2xl px-3 py-3 text-sm transition duration-300 ${
                       isActive
-                        ? "bg-white text-black"
-                        : "text-white/55 hover:bg-white/[0.06] hover:text-white"
+                        ? "is-active bg-[#fff3da] text-[#7c4d00]"
+                        : "text-black/55 hover:bg-[#f5f5f7] hover:text-black"
                     }`}
                   >
                     {isActive ? (
                       <motion.div
                         layoutId="active-admin-navigation"
-                        className="absolute inset-0 bg-white"
+                        className="absolute inset-0 rounded-2xl border border-[#f5b335]/35 bg-[#fff3da] shadow-[0_8px_24px_rgba(168,103,0,0.08)]"
                         transition={{
                           type: "spring",
                           stiffness: 420,
@@ -200,35 +201,34 @@ export default function AdminShell({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <div
-        className="relative grid min-h-screen"
-        style={{
-          gridTemplateColumns: "280px minmax(0, 1fr)",
-        }}
-      >
-        <aside className="sticky top-0 flex h-screen flex-col border-r border-white/10 bg-[#0b0b0b]">
-          <div className="border-b border-white/10 px-7 py-7">
-            <Link href="/admin" className="inline-flex">
-              <div className="min-w-0">
-                <p className="truncate text-xs font-semibold uppercase tracking-[0.26em]">
-                  Stereophonie
-                </p>
+    <div className="st3-admin-shell min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
+      <div className="st3-admin-shell-grid relative min-h-screen">
+        <aside className="st3-admin-sidebar fixed inset-y-0 left-0 z-40 flex h-screen w-[280px] flex-col border-r border-black/[0.08] bg-white">
+          <div className="border-b border-black/[0.08] px-7 py-7">
+            <Link
+              href="/admin"
+              className="st-admin-sidebar-brand"
+              aria-label="Stereophonie administration"
+            >
+              <img
+                src="/brand/stereophonie-store-logo.png"
+                alt="Stereophonie"
+                className="st-admin-sidebar-brand__logo"
+              />
 
-                <p className="mt-1 text-xs text-white/35">
-                  Commerce administration
-                </p>
-              </div>
+              <span className="st-admin-sidebar-brand__subtitle">
+                Commerce administration
+              </span>
             </Link>
           </div>
 
           <AdminNavigation pathname={pathname} />
 
-          <div className="border-t border-white/10 p-4">
+          <div className="border-t border-black/[0.08] p-4">
             <Link
               href="/"
               target="_blank"
-              className="group mb-3 flex items-center justify-between border border-white/10 px-4 py-3 text-sm text-white/55 transition hover:border-white/25 hover:bg-white/[0.04] hover:text-white"
+              className="group mb-3 flex items-center justify-between rounded-2xl border border-black/[0.09] bg-[#f7f7f8] px-4 py-3 text-sm text-black/55 transition hover:border-[#f5b335]/45 hover:bg-[#fff8e9] hover:text-black"
             >
               <span className="flex items-center gap-3">
                 <Store className="h-[18px] w-[18px]" />
@@ -239,14 +239,14 @@ export default function AdminShell({
             </Link>
 
             <div className="flex items-center gap-3 px-2 py-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-white/10 bg-white/[0.05]">
-                <CircleUserRound className="h-5 w-5 text-white/60" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#f5b335]/35 bg-[#fff3da]">
+                <CircleUserRound className="h-5 w-5 text-[#8a5800]" />
               </div>
 
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">Administrator</p>
 
-                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-black/35">
                   {role}
                 </p>
               </div>
@@ -254,18 +254,18 @@ export default function AdminShell({
           </div>
         </aside>
 
-        <div className="min-w-0">
-          <header className="sticky top-0 z-30 border-b border-white/10 bg-[#080808]/95 backdrop-blur-xl">
+        <div className="st3-admin-content min-w-0">
+          <header className="st3-admin-toolbar sticky top-0 z-30 border-b border-black/[0.08] bg-white/90 backdrop-blur-xl">
             <div className="flex min-h-[82px] items-center justify-between gap-5 px-8">
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">
+                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/35">
                   <Home className="h-3 w-3" />
 
                   <span>Admin</span>
 
                   <ChevronRight className="h-3 w-3" />
 
-                  <span className="truncate text-white/55">{pageTitle}</span>
+                  <span className="truncate text-black/55">{pageTitle}</span>
                 </div>
 
                 <h1 className="mt-1 truncate text-2xl font-semibold tracking-[-0.025em]">
@@ -274,10 +274,10 @@ export default function AdminShell({
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 border border-emerald-400/20 bg-emerald-400/[0.06] px-3 py-2">
+                <div className="flex items-center gap-2 rounded-full border border-emerald-600/15 bg-emerald-50 px-3 py-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
 
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-300">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
                     Store operational
                   </span>
                 </div>
@@ -287,13 +287,13 @@ export default function AdminShell({
             </div>
 
             {pageDescription ? (
-              <div className="border-t border-white/[0.06] px-8 py-3 text-sm text-white/40">
+              <div className="border-t border-black/[0.06] px-8 py-3 text-sm text-black/45">
                 {pageDescription}
               </div>
             ) : null}
           </header>
 
-          <main className="min-w-0">{children}</main>
+          <main className="st3-admin-main min-w-0">{children}</main>
         </div>
       </div>
     </div>

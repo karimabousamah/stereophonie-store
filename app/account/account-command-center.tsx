@@ -1,19 +1,20 @@
 "use client";
 
 import {
-  Gamepad2,
-  Heart,
+  Bookmark,
+  ChevronRight,
   MapPin,
   Package,
-  Radio,
+  Settings2,
   ShieldCheck,
-  Terminal,
   UserRound,
-  Wifi,
 } from "lucide-react";
 import Link from "next/link";
+import type { MouseEvent } from "react";
 
-import AccountClient, { type CustomerOrder } from "./account-client";
+import AccountClient, {
+  type CustomerOrder,
+} from "./account-client";
 import AccountSettingsClient, {
   type CustomerAddress,
   type CustomerProfile,
@@ -44,230 +45,278 @@ export default function AccountCommandCenter({
   hasOrderError,
   hasStockPreferenceError,
 }: Props) {
-  const scrollToAccountModule = (
-    event: React.MouseEvent<HTMLButtonElement>,
+  function scrollToSection(
+    event: MouseEvent<HTMLButtonElement>,
     targetId: string,
-  ) => {
+  ) {
     event.preventDefault();
 
-    const target = document.getElementById(targetId);
+    document
+      .getElementById(targetId)
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }
 
-    if (!target) {
-      return;
-    }
+  const addressLabel =
+    addresses.length === 1
+      ? "1 saved address"
+      : `${addresses.length} saved addresses`;
 
-    const header =
-      document.querySelector<HTMLElement>(".st-v2-header") ??
-      document.querySelector<HTMLElement>("header");
-
-    const headerHeight = header?.getBoundingClientRect().height ?? 0;
-    const extraClearance = 24;
-
-    const targetTop =
-      target.getBoundingClientRect().top +
-      window.scrollY -
-      headerHeight -
-      extraClearance;
-
-    window.scrollTo({
-      top: Math.max(0, targetTop),
-      behavior: "smooth",
-    });
-  };
+  const orderLabel =
+    orders.length === 1
+      ? "1 order"
+      : `${orders.length} orders`;
 
   return (
-    <main className="st-player-account">
-      <section className="st-player-account__hero">
-        <div className="st-player-account__grid" />
+    <main className="st-account-retail">
+      <div className="st-account-retail__shell">
 
-        <div className="st-player-account__hero-copy">
-          <small>
-            <span className="st-player-account__led" />
-            CUSTOMER SYSTEM / AUTHENTICATED
-          </small>
+        <section className="st-account-retail__intro">
+          <div className="st-account-retail__identity">
+            <div className="st-account-retail__avatar">
+              <UserRound aria-hidden="true" />
+            </div>
 
-          <h1>
-            WELCOME,
-            <br />
-            <span>{firstName.toUpperCase()}.</span>
-          </h1>
+            <div>
+              <span className="st-account-retail__eyebrow">
+                My account
+              </span>
 
-          <p>
-            Your Stereophonie player profile is loaded. Manage account data,
-            delivery coordinates, saved equipment and active orders below.
-          </p>
-        </div>
+              <h1>
+                Hello, {firstName}.
+              </h1>
 
-        <div className="st-player-account__hud">
-          <div>
-            <UserRound />
-            <span>IDENTITY</span>
-            <strong>VERIFIED</strong>
+              <p>
+                Everything related to your Stereophonie account,
+                saved products, deliveries and purchases.
+              </p>
+            </div>
           </div>
 
-          <div>
-            <Package />
-            <span>ORDERS</span>
-            <strong>{String(orders.length).padStart(2, "0")}</strong>
+          <div className="st-account-retail__summary">
+            <div>
+              <span>
+                <Package aria-hidden="true" />
+                Orders
+              </span>
+
+              <strong>{orders.length}</strong>
+              <small>{orderLabel}</small>
+            </div>
+
+            <div>
+              <span>
+                <MapPin aria-hidden="true" />
+                Addresses
+              </span>
+
+              <strong>{addresses.length}</strong>
+              <small>{addressLabel}</small>
+            </div>
+
+            <div>
+              <span>
+                <ShieldCheck aria-hidden="true" />
+                Account
+              </span>
+
+              <strong>Secure</strong>
+              <small>Protected profile</small>
+            </div>
           </div>
+        </section>
 
-          <div>
-            <MapPin />
-            <span>ADDRESSES</span>
-            <strong>{String(addresses.length).padStart(2, "0")}</strong>
-          </div>
 
-          <div>
-            <Wifi />
-            <span>CHANNEL</span>
-            <strong>ONLINE</strong>
-          </div>
-        </div>
-      </section>
-
-      <section className="st-player-account__quickbar">
-        <Link href="/wishlist">
-          <Heart />
-          <span>
-            <small>01 / LIBRARY</small>
-            WISHLIST
-          </span>
-        </Link>
-
-        <Link href="/track-order">
-          <Radio />
-          <span>
-            <small>02 / SIGNAL</small>
-            TRACK ORDER
-          </span>
-        </Link>
-
-        <button
-          type="button"
-          onClick={(event) => scrollToAccountModule(event, "account-settings")}
-          aria-label="Go to profile settings"
-        >
-          <Terminal />
-          <span>
-            <small>03 / SYSTEM</small>
-            PROFILE SETTINGS
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={(event) => scrollToAccountModule(event, "customer-orders")}
-          aria-label="Go to order log"
-        >
-          <Gamepad2 />
-          <span>
-            <small>04 / HISTORY</small>
-            ORDER LOG
-          </span>
-        </button>
-      </section>
-
-      <button
-        type="button"
-        onClick={(event) => scrollToAccountModule(event, "account-settings")}
-        className="st-player-account__scroll-cue"
-        aria-label="Scroll to player profile modules"
-      >
-        <span className="st-player-account__scroll-cue-inner">
-          <span className="st-player-account__scroll-cue-led" />
-
-          <span className="st-player-account__scroll-cue-copy">
-            <small>PLAYER SYSTEM / MODULES BELOW</small>
-            <strong>SCROLL TO ACCESS PROFILE + ORDER MEMORY</strong>
-          </span>
-
-          <span className="st-player-account__scroll-arrow">↓</span>
-        </span>
-      </button>
-
-      <section className="st-player-account__workspace">
         {(error ||
           message ||
           hasAccountDataError ||
           hasOrderError ||
-          hasStockPreferenceError) && (
-          <div className="st-player-account__messages">
+          hasStockPreferenceError) ? (
+          <section
+            className="st-account-retail__messages"
+            aria-live="polite"
+          >
             {error ? (
               <div className="is-error">
-                <span>ERR</span>
-                {error}
+                <strong>Something needs attention</strong>
+                <span>{error}</span>
               </div>
             ) : null}
 
             {message ? (
               <div className="is-success">
-                <span>OK</span>
-                {message}
+                <strong>Updated successfully</strong>
+                <span>{message}</span>
               </div>
             ) : null}
 
             {hasAccountDataError ? (
               <div className="is-warning">
-                <span>SYS</span>
-                Some profile or saved-address data could not be synchronized.
+                <strong>Profile synchronization</strong>
+                <span>
+                  Some profile or saved-address information
+                  could not be synchronized.
+                </span>
               </div>
             ) : null}
 
             {hasOrderError ? (
               <div className="is-warning">
-                <span>ORD</span>
-                Your profile loaded, but order history could not be retrieved.
+                <strong>Orders unavailable</strong>
+                <span>
+                  Your profile loaded, but your order history
+                  could not be retrieved.
+                </span>
               </div>
             ) : null}
 
             {hasStockPreferenceError ? (
               <div className="is-warning">
-                <span>NTF</span>
-                Stock-notification preferences could not be loaded.
+                <strong>Notification preference</strong>
+                <span>
+                  Stock-notification preferences could not
+                  be loaded.
+                </span>
               </div>
             ) : null}
-          </div>
-        )}
+          </section>
+        ) : null}
 
-        <div className="st-player-account__module-head" id="account-settings">
-          <div>
-            <small>MODULE 01 / PLAYER CONFIGURATION</small>
-            <h2>PROFILE SYSTEM.</h2>
-          </div>
 
-          <span>
-            <ShieldCheck />
-            SECURE CHANNEL
-          </span>
-        </div>
-
-        <div className="st-player-account__legacy-reset">
-          <AccountSettingsClient
-            profile={profile}
-            addresses={addresses}
-            stockNotificationsEnabled={stockNotificationsEnabled}
-          />
-        </div>
-
-        <div
-          className="st-player-account__module-head st-player-account__module-head--orders"
-          id="customer-orders"
+        <section
+          className="st-account-retail__quick"
+          aria-label="Account shortcuts"
         >
-          <div>
-            <small>MODULE 02 / PURCHASE MEMORY</small>
-            <h2>ORDER LOG.</h2>
+          <Link
+            href="/wishlist"
+            className="st-account-retail__quick-card"
+          >
+            <span className="st-account-retail__quick-icon">
+              <Bookmark aria-hidden="true" />
+            </span>
+
+            <span>
+              <small>Saved products</small>
+              <strong>Wishlist</strong>
+            </span>
+
+            <ChevronRight aria-hidden="true" />
+          </Link>
+
+          <Link
+            href="/track-order"
+            className="st-account-retail__quick-card"
+          >
+            <span className="st-account-retail__quick-icon">
+              <Package aria-hidden="true" />
+            </span>
+
+            <span>
+              <small>Delivery status</small>
+              <strong>Track an order</strong>
+            </span>
+
+            <ChevronRight aria-hidden="true" />
+          </Link>
+
+          <button
+            type="button"
+            className="st-account-retail__quick-card"
+            onClick={(event) =>
+              scrollToSection(event, "account-settings")
+            }
+          >
+            <span className="st-account-retail__quick-icon">
+              <Settings2 aria-hidden="true" />
+            </span>
+
+            <span>
+              <small>Personal information</small>
+              <strong>Profile settings</strong>
+            </span>
+
+            <ChevronRight aria-hidden="true" />
+          </button>
+
+          <button
+            type="button"
+            className="st-account-retail__quick-card"
+            onClick={(event) =>
+              scrollToSection(event, "customer-orders")
+            }
+          >
+            <span className="st-account-retail__quick-icon">
+              <Package aria-hidden="true" />
+            </span>
+
+            <span>
+              <small>Purchase history</small>
+              <strong>My orders</strong>
+            </span>
+
+            <ChevronRight aria-hidden="true" />
+          </button>
+        </section>
+
+
+        <section
+          id="account-settings"
+          className="st-account-retail__module"
+        >
+          <header className="st-account-retail__module-head">
+            <div>
+              <span>Account details</span>
+              <h2>Profile & delivery.</h2>
+              <p>
+                Keep your personal details, saved addresses
+                and notification preferences up to date.
+              </p>
+            </div>
+
+            <div className="st-account-retail__module-mark">
+              <UserRound aria-hidden="true" />
+            </div>
+          </header>
+
+          <div className="st-account-retail__module-content">
+            <AccountSettingsClient
+              profile={profile}
+              addresses={addresses}
+              stockNotificationsEnabled={
+                stockNotificationsEnabled
+              }
+            />
           </div>
+        </section>
 
-          <span>
-            <Package />
-            {orders.length} RECORD{orders.length === 1 ? "" : "S"}
-          </span>
-        </div>
 
-        <div className="st-player-account__legacy-reset">
-          <AccountClient orders={orders} />
-        </div>
-      </section>
+        <section
+          id="customer-orders"
+          className="st-account-retail__module"
+        >
+          <header className="st-account-retail__module-head">
+            <div>
+              <span>Purchase history</span>
+              <h2>Your orders.</h2>
+              <p>
+                Review your current and previous purchases
+                from Stereophonie.
+              </p>
+            </div>
+
+            <div className="st-account-retail__module-mark">
+              <Package aria-hidden="true" />
+            </div>
+          </header>
+
+          <div className="st-account-retail__module-content">
+            <AccountClient orders={orders} />
+          </div>
+        </section>
+
+      </div>
     </main>
   );
 }

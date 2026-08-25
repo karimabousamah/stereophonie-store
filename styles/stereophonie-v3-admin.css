@@ -12,13 +12,14 @@
     #1d1d1f;
 
   font-family:
+    var(--st3-font,
     -apple-system,
     BlinkMacSystemFont,
     "SF Pro Display",
     "SF Pro Text",
     "Helvetica Neue",
     Arial,
-    sans-serif;
+    sans-serif);
 
   -webkit-font-smoothing:
     antialiased;
@@ -321,7 +322,7 @@ label[for="product-images"]:hover {
  */
 
 .st3-admin
-[class*="bg-black"] {
+[class~="bg-black"] {
   background:
     #ffffff !important;
 }
@@ -477,3 +478,3204 @@ input[type="file"] {
   border-radius:
     16px;
 }
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — COMPLETE LIGHT ADMIN EXPERIENCE
+   ========================================================== */
+
+.st3-admin {
+  background: #f5f5f7;
+  color: #1d1d1f;
+}
+
+.st3-admin [class*="bg-[#080808]"],
+.st3-admin [class*="bg-[#0b0b0b]"],
+.st3-admin [class*="bg-[#0d0d0d]"],
+.st3-admin [class*="bg-[#101010]"],
+.st3-admin [class*="bg-[#111111]"],
+.st3-admin [class*="bg-neutral-950"] {
+  background: #ffffff !important;
+}
+
+.st3-admin [class*="bg-black/"] {
+  background: #f7f7f8 !important;
+}
+
+.st3-admin [class*="bg-white/[0."] {
+  background: #f7f7f8 !important;
+}
+
+.st3-admin [class*="text-white/"] {
+  color: #6e6e73 !important;
+}
+
+.st3-admin [class*="placeholder:text-white"]::placeholder {
+  color: rgba(29, 29, 31, 0.34) !important;
+}
+
+.st3-admin [class*="divide-white"] > :not([hidden]) ~ :not([hidden]),
+.st3-admin [class*="border-white"] {
+  border-color: rgba(29, 29, 31, 0.1) !important;
+}
+
+.st3-admin section[class*="border"],
+.st3-admin article[class*="border"],
+.st3-admin div[class*="bg-[#0d0d0d]"],
+.st3-admin div[class*="bg-[#101010]"] {
+  box-shadow: 0 18px 55px rgba(29, 29, 31, 0.055);
+}
+
+.st3-admin a[class~="bg-black"],
+.st3-admin button[class~="bg-black"],
+.st3-admin button[type="submit"] {
+  border-color: #f5b335 !important;
+  background: #f5b335 !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 10px 26px rgba(245, 179, 53, 0.2);
+}
+
+.st3-admin a[class~="bg-black"]:hover,
+.st3-admin button[class~="bg-black"]:hover,
+.st3-admin button[type="submit"]:hover {
+  background: #eaaa2b !important;
+  color: #1d1d1f !important;
+}
+
+.st3-admin button:not([type="submit"]),
+.st3-admin a[class*="border"] {
+  border-radius: 999px;
+}
+
+.st3-admin [role="dialog"] {
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 28px 80px rgba(29, 29, 31, 0.16) !important;
+  backdrop-filter: blur(24px);
+}
+
+.st3-admin [role="dialog"] [class~="bg-black"] {
+  background: #f7f7f8 !important;
+}
+
+.st3-admin [role="dialog"] [class*="bg-white"] {
+  background: #f7f7f8 !important;
+}
+
+.st3-admin [role="dialog"] a:hover {
+  background: #fff8e9 !important;
+}
+
+.st3-admin [role="dialog"] svg[class*="text-emerald"] {
+  color: #178647 !important;
+}
+
+.st3-admin main {
+  background: #f5f5f7;
+}
+
+.st3-admin main > div,
+.st3-admin main > section {
+  color: #1d1d1f;
+}
+
+.st3-admin input[type="checkbox"],
+.st3-admin input[type="radio"] {
+  accent-color: #f5b335;
+}
+
+.st3-admin code,
+.st3-admin pre {
+  border-radius: 16px;
+}
+
+@media (max-width: 1100px) {
+  .st3-admin .st3-admin-shell-grid {
+    grid-template-columns: 236px minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .st3-admin .st3-admin-shell-grid {
+    grid-template-columns: 82px minmax(0, 1fr) !important;
+  }
+
+  .st3-admin .st3-admin-shell-grid > aside nav {
+    padding-inline: 12px;
+  }
+
+  .st3-admin .st3-admin-shell-grid > aside nav section > p,
+  .st3-admin .st3-admin-shell-grid > aside nav a span span,
+  .st3-admin .st3-admin-shell-grid > aside > div:first-child p,
+  .st3-admin .st3-admin-shell-grid > aside > div:last-child a span,
+  .st3-admin .st3-admin-shell-grid > aside > div:last-child a svg:last-child,
+  .st3-admin .st3-admin-shell-grid > aside > div:last-child > div > div:last-child {
+    display: none;
+  }
+
+  .st3-admin .st3-admin-shell-grid > aside nav section {
+    margin-top: 14px;
+  }
+
+  .st3-admin .st3-admin-shell-grid > aside nav a,
+  .st3-admin .st3-admin-shell-grid > aside > div:last-child a {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .st3-admin .st3-admin-shell-grid > aside > div:first-child,
+  .st3-admin .st3-admin-shell-grid > aside > div:last-child {
+    padding-inline: 14px;
+  }
+
+  .st3-admin .st3-admin-shell-grid > div > header > div {
+    min-height: 72px;
+    padding-inline: 18px;
+  }
+
+  .st3-admin .st3-admin-shell-grid > div > header > div > div:last-child > div:first-child {
+    display: none;
+  }
+}
+
+/* ==========================================================
+   STEREOPHONIE ADMIN — PREMIUM ROUND + FIXED NAVIGATION
+   ========================================================== */
+
+.st3-admin .st3-admin-shell-grid {
+  display: block;
+  min-height: 100vh;
+}
+
+.st3-admin .st3-admin-sidebar {
+  position: fixed !important;
+  inset: 0 auto 0 0;
+  width: 280px;
+  height: 100dvh;
+  border-right: 1px solid rgba(29, 29, 31, 0.07);
+  box-shadow: 10px 0 36px rgba(29, 29, 31, 0.035);
+}
+
+.st3-admin .st3-admin-sidebar nav {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(29, 29, 31, 0.14) transparent;
+}
+
+.st3-admin .st3-admin-sidebar nav a {
+  min-height: 46px;
+  border-radius: 16px !important;
+}
+
+.st3-admin .st3-admin-content {
+  min-height: 100vh;
+  margin-left: 280px;
+}
+
+.st3-admin .st3-admin-toolbar {
+  box-shadow: 0 8px 32px rgba(29, 29, 31, 0.035);
+}
+
+.st3-admin .st3-admin-main {
+  min-height: calc(100vh - 82px);
+  background:
+    radial-gradient(circle at 92% 0%, rgba(245, 179, 53, 0.07), transparent 24rem),
+    #f5f5f7;
+}
+
+.st3-admin .st3-admin-main :where(section, article) {
+  border-radius: 22px;
+}
+
+.st3-admin .st3-admin-main :where(
+  div[class*="border"][class*="bg-white"],
+  div[class*="border"][class*="bg-[#f"],
+  div[class*="border"][class~="bg-black"],
+  form[class*="border"]
+) {
+  border-radius: 18px;
+}
+
+.st3-admin :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  textarea,
+  select
+) {
+  border-radius: 14px !important;
+  border-color: rgba(29, 29, 31, 0.11) !important;
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.st3-admin :where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  textarea,
+  select
+):focus {
+  border-color: rgba(245, 179, 53, 0.8) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.14) !important;
+  outline: none;
+}
+
+.st3-admin button,
+.st3-admin main a[class*="px-"] {
+  border-radius: 14px;
+}
+
+.st3-admin main button[class*="rounded-none"],
+.st3-admin main a[class*="rounded-none"] {
+  border-radius: 14px !important;
+}
+
+.st3-admin main :where([role="alert"], [data-status], [data-notice]) {
+  border-radius: 16px;
+}
+
+.st3-admin main .overflow-x-auto {
+  border-radius: 18px;
+}
+
+.st3-admin-dashboard {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1100px) {
+  .st3-admin .st3-admin-sidebar {
+    width: 236px;
+  }
+
+  .st3-admin .st3-admin-content {
+    margin-left: 236px;
+  }
+}
+
+@media (max-width: 760px) {
+  .st3-admin .st3-admin-sidebar {
+    width: 82px;
+  }
+
+  .st3-admin .st3-admin-content {
+    margin-left: 82px;
+  }
+
+  .st3-admin .st3-admin-main {
+    min-height: calc(100vh - 72px);
+  }
+
+  .st3-admin-dashboard__welcome {
+    border-radius: 22px;
+  }
+}
+
+/* ==========================================================
+   ELECTRONICS ADMIN — COMPACT, CONSISTENT INTERFACE
+   ========================================================== */
+
+.st3-admin .st3-admin-nav-link {
+  background: transparent !important;
+  color: rgba(29, 29, 31, 0.68) !important;
+  box-shadow: none !important;
+}
+
+.st3-admin .st3-admin-nav-link:hover {
+  background: #f5f5f7 !important;
+  color: #1d1d1f !important;
+}
+
+.st3-admin .st3-admin-nav-link.is-active {
+  background: #fff3da !important;
+  color: #7c4d00 !important;
+}
+
+.st3-admin .st3-admin-main h1 {
+  max-width: 22ch;
+  font-size: clamp(2.25rem, 3.4vw, 3.5rem) !important;
+  line-height: 0.98 !important;
+  text-transform: none !important;
+  letter-spacing: -0.055em !important;
+}
+
+.st3-admin .st3-admin-main h2 {
+  font-size: clamp(1.55rem, 2.1vw, 2.15rem) !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.04em !important;
+}
+
+.st3-admin .st3-admin-main h3 {
+  line-height: 1.15;
+}
+
+.st3-admin .st3-admin-main :where(p, h1, h2, h3, span, a, button, label) {
+  overflow-wrap: anywhere;
+}
+
+.st3-admin .st3-admin-main :where(section, article, form, div)[class*="border"][class*="bg-"] {
+  border-radius: 20px !important;
+}
+
+.st3-admin .st3-admin-main :where(
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select
+) {
+  border-radius: 16px !important;
+}
+
+.st3-admin .st3-admin-main :where(button, a[role="button"], a[class*="rounded-"]) {
+  border-radius: 999px !important;
+}
+
+.st3-admin .st3-admin-main :where(table, .overflow-x-auto) {
+  border-radius: 20px !important;
+}
+
+@media (max-width: 760px) {
+  .st3-admin .st3-admin-main h1 {
+    font-size: clamp(2rem, 10vw, 2.75rem) !important;
+  }
+}
+
+/* === ST ADMIN PREMIUM V3 START === */
+
+/* =========================================================
+   STEREOPHONIE ADMIN — PREMIUM RETAIL CONTROL SYSTEM
+   Clean, direct, compact, Apple-inspired.
+   Storefront rules are NOT affected.
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   1. GLOBAL ADMIN RHYTHM
+   --------------------------------------------------------- */
+
+.st3-admin {
+  --st-admin-accent: #f5b335;
+  --st-admin-accent-hover: #eaaa2b;
+  --st-admin-ink: #1d1d1f;
+  --st-admin-muted: #6e6e73;
+  --st-admin-soft: #f5f5f7;
+  --st-admin-panel: #ffffff;
+  --st-admin-line: rgba(29,29,31,.085);
+  --st-admin-radius: 18px;
+  --st-admin-control-radius: 12px;
+}
+
+.st3-admin .st3-admin-main {
+  background:
+    radial-gradient(
+      circle at 96% -10%,
+      rgba(245,179,53,.055),
+      transparent 29rem
+    ),
+    #f5f5f7 !important;
+}
+
+
+/* ---------------------------------------------------------
+   2. CONTENT WIDTH + PAGE SPACING
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main > div {
+  max-width: 1540px;
+  margin-inline: auto;
+}
+
+
+/* ---------------------------------------------------------
+   3. CARDS
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main
+:is(
+  section,
+  article
+)[class*="border"] {
+  border-color:
+    var(--st-admin-line) !important;
+
+  border-radius:
+    18px !important;
+
+  box-shadow:
+    0 8px 28px rgba(29,29,31,.035) !important;
+}
+
+
+/* ---------------------------------------------------------
+   4. BUTTON SYSTEM
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main
+:is(
+  button[type="submit"],
+  a[class*="bg-black"],
+  button[class*="bg-black"],
+  a[class*="bg-white"],
+  button[class*="bg-white"]
+) {
+  min-height:
+    42px;
+
+  padding-inline:
+    18px !important;
+
+  border-radius:
+    999px !important;
+
+  font-size:
+    11px !important;
+
+  font-weight:
+    650 !important;
+
+  letter-spacing:
+    .08em !important;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease !important;
+}
+
+
+.st3-admin .st3-admin-main
+button[type="submit"] {
+  background:
+    var(--st-admin-accent) !important;
+
+  border-color:
+    var(--st-admin-accent) !important;
+
+  color:
+    #171719 !important;
+
+  box-shadow:
+    0 5px 16px rgba(245,179,53,.14) !important;
+}
+
+
+.st3-admin .st3-admin-main
+button[type="submit"]:hover {
+  background:
+    var(--st-admin-accent-hover) !important;
+
+  border-color:
+    var(--st-admin-accent-hover) !important;
+
+  box-shadow:
+    0 7px 20px rgba(245,179,53,.20) !important;
+
+  transform:
+    none !important;
+}
+
+
+/*
+ * Do not inflate small utility / icon buttons.
+ */
+.st3-admin .st3-admin-main
+:is(
+  button[aria-label],
+  button[class*="h-8"],
+  button[class*="h-9"],
+  button[class*="w-8"],
+  button[class*="w-9"]
+) {
+  min-height:
+    unset;
+
+  padding-inline:
+    unset;
+}
+
+
+/* ---------------------------------------------------------
+   5. FORM CONTROLS
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main
+:is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  textarea,
+  select
+) {
+  border:
+    1px solid var(--st-admin-line) !important;
+
+  border-radius:
+    12px !important;
+
+  background:
+    #fff !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(29,29,31,.018);
+
+  color:
+    var(--st-admin-ink) !important;
+}
+
+
+.st3-admin .st3-admin-main
+:is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  textarea,
+  select
+):focus {
+  border-color:
+    rgba(245,179,53,.78) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245,179,53,.105) !important;
+}
+
+
+.st3-admin .st3-admin-main
+textarea {
+  line-height:
+    1.55;
+}
+
+
+/* ---------------------------------------------------------
+   6. LABELS
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main label {
+  color:
+    var(--st-admin-muted);
+}
+
+
+.st3-admin .st3-admin-main
+label[class*="uppercase"] {
+  letter-spacing:
+    .13em !important;
+}
+
+
+/* ---------------------------------------------------------
+   7. STATUS PILLS
+   Fix rectangular HOME PAGE / ACTIVE badges.
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main
+span[class*="uppercase"][class*="border"][class*="px-2"] {
+  border-radius:
+    999px !important;
+
+  padding:
+    5px 10px !important;
+
+  line-height:
+    1 !important;
+}
+
+
+/*
+ * Homepage state becomes Stereophonie mustard instead of
+ * looking like a random blue rectangular developer badge.
+ */
+.st3-admin .st3-admin-main
+span[class*="border-sky"] {
+  border-color:
+    rgba(245,179,53,.30) !important;
+
+  background:
+    rgba(245,179,53,.09) !important;
+
+  color:
+    #8b5900 !important;
+}
+
+
+/* ---------------------------------------------------------
+   8. SIDE NAV
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-nav-link {
+  border-radius:
+    12px !important;
+}
+
+
+.st3-admin .st3-admin-nav-link.is-active {
+  background:
+    #fff4df !important;
+
+  color:
+    #7a4d00 !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(245,179,53,.26) !important;
+}
+
+
+/* =========================================================
+   HOMEPAGE EDITOR
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   9. HOME PAGE EDITOR — CALMER CONTAINER
+   --------------------------------------------------------- */
+
+.st3-admin-homepage-v3 {
+  --homepage-gap:
+    18px;
+}
+
+
+.st3-admin-homepage-v3
+:is(
+  section,
+  article
+)[class*="border"] {
+  border-radius:
+    18px !important;
+
+  box-shadow:
+    0 6px 24px rgba(29,29,31,.03) !important;
+}
+
+
+/* ---------------------------------------------------------
+   10. HOME PAGE EDITOR — COMPACT SECTION HEADERS
+   --------------------------------------------------------- */
+
+.st3-admin-homepage-v3
+:is(
+  section,
+  article
+)
+> div:first-child[class*="border-b"] {
+  padding-top:
+    20px !important;
+
+  padding-bottom:
+    20px !important;
+}
+
+
+.st3-admin-homepage-v3
+h2 {
+  font-size:
+    clamp(1.45rem, 2vw, 1.9rem) !important;
+
+  letter-spacing:
+    -.035em !important;
+}
+
+
+/* ---------------------------------------------------------
+   11. HOME PAGE EDITOR — LESS DEAD SPACE
+   --------------------------------------------------------- */
+
+.st3-admin-homepage-v3
+:is(
+  form,
+  section,
+  article
+)
+[class*="p-8"] {
+  padding:
+    24px !important;
+}
+
+
+.st3-admin-homepage-v3
+:is(
+  form,
+  section,
+  article
+)
+[class*="gap-8"] {
+  gap:
+    20px !important;
+}
+
+
+/* ---------------------------------------------------------
+   12. CURRENT PREVIEW
+   Gives editor a clearer edit → preview relationship.
+   --------------------------------------------------------- */
+
+.st3-admin-homepage-v3
+:is(
+  [class*="sticky"],
+  aside
+) {
+  border-radius:
+    18px !important;
+}
+
+
+.st3-admin-homepage-v3 img {
+  border-radius:
+    14px;
+}
+
+
+/* ---------------------------------------------------------
+   13. HOMEPAGE SAVE ACTION
+   --------------------------------------------------------- */
+
+.st3-admin-homepage-v3
+button[type="submit"] {
+  min-width:
+    132px;
+
+  justify-content:
+    center;
+}
+
+
+/* =========================================================
+   BRAND SEARCH
+   ========================================================= */
+
+.st-admin-brand-search {
+  margin-top:
+    22px;
+
+  padding:
+    18px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(190px, .65fr)
+    minmax(280px, 1.35fr);
+
+  align-items:
+    center;
+
+  gap:
+    18px;
+
+  border:
+    1px solid
+    var(--st-admin-line);
+
+  border-radius:
+    18px;
+
+  background:
+    rgba(255,255,255,.88);
+
+  box-shadow:
+    0 8px 28px rgba(29,29,31,.03);
+
+  backdrop-filter:
+    blur(14px);
+}
+
+
+.st-admin-brand-search__copy {
+  min-width:
+    0;
+}
+
+
+.st-admin-brand-search__copy span,
+.st-admin-brand-search__copy strong {
+  display:
+    block;
+}
+
+
+.st-admin-brand-search__copy span {
+  color:
+    #86868b;
+
+  font-size:
+    10px;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    .13em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.st-admin-brand-search__copy strong {
+  margin-top:
+    5px;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    15px;
+
+  font-weight:
+    620;
+}
+
+
+.st-admin-brand-search__field {
+  position:
+    relative;
+
+  min-height:
+    48px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  border:
+    1px solid
+    rgba(29,29,31,.10);
+
+  border-radius:
+    999px;
+
+  background:
+    #f5f5f7;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+
+.st-admin-brand-search__field:focus-within {
+  border-color:
+    rgba(245,179,53,.80);
+
+  background:
+    #fff;
+
+  box-shadow:
+    0 0 0 4px rgba(245,179,53,.11);
+}
+
+
+.st-admin-brand-search__field > svg {
+  width:
+    17px;
+
+  height:
+    17px;
+
+  margin-left:
+    17px;
+
+  flex:
+    0 0 auto;
+
+  color:
+    #86868b;
+}
+
+
+.st-admin-brand-search__field input {
+  min-width:
+    0;
+
+  width:
+    100%;
+
+  height:
+    46px !important;
+
+  padding:
+    0 !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  outline:
+    0 !important;
+
+  font-size:
+    14px;
+}
+
+
+.st-admin-brand-search__field
+button {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  min-height:
+    34px !important;
+
+  margin-right:
+    7px;
+
+  padding:
+    0 !important;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border:
+    0;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #fff;
+
+  color:
+    #6e6e73;
+
+  cursor:
+    pointer;
+}
+
+
+.st-admin-brand-search__field
+button svg {
+  width:
+    14px;
+
+  height:
+    14px;
+}
+
+
+.st-admin-brand-search__empty {
+  grid-column:
+    1 / -1;
+
+  margin:
+    -3px 0 0;
+
+  color:
+    #86868b;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.5;
+}
+
+
+/*
+ * Browser `hidden` must win over broad admin display classes.
+ */
+[data-admin-brand-card="true"][hidden] {
+  display:
+    none !important;
+}
+
+
+/* ---------------------------------------------------------
+   14. BRAND / CATEGORY MANAGEMENT CARDS
+   --------------------------------------------------------- */
+
+[data-admin-brand-card="true"] {
+  overflow:
+    hidden;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+
+@media (hover:hover) {
+
+  [data-admin-brand-card="true"]:hover {
+    border-color:
+      rgba(29,29,31,.13) !important;
+
+    box-shadow:
+      0 10px 30px rgba(29,29,31,.045) !important;
+  }
+
+}
+
+
+/* ---------------------------------------------------------
+   15. NO ARCADE MOVEMENT
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main
+:is(
+  button,
+  a
+):hover {
+  translate:
+    none !important;
+}
+
+
+/* ---------------------------------------------------------
+   16. MOBILE ADMIN
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+
+  .st-admin-brand-search {
+    grid-template-columns:
+      1fr;
+
+    padding:
+      14px;
+  }
+
+
+  .st-admin-brand-search__field {
+    min-width:
+      0;
+  }
+
+
+  .st3-admin-homepage-v3
+  :is(
+    form,
+    section,
+    article
+  )
+  [class*="p-8"] {
+    padding:
+      18px !important;
+  }
+
+}
+
+
+/* ---------------------------------------------------------
+   17. REDUCED MOTION
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .st3-admin *,
+  .st-admin-brand-search * {
+    transition:
+      none !important;
+
+    animation:
+      none !important;
+  }
+
+}
+
+/* === ST ADMIN PREMIUM V3 END === */
+
+/* === ST ADMIN PRODUCT HOMEPAGE V41 START === */
+
+
+/* =========================================================
+   ADMIN BUTTON CONTRAST
+   ========================================================= */
+
+.st3-admin .st3-admin-main
+a[class*="border"][class*="text-white"] {
+  border-color:
+    rgba(29,29,31,.12) !important;
+
+  background:
+    #fff !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    none !important;
+}
+
+.st3-admin .st3-admin-main
+a[class*="border"][class*="text-white"]:hover {
+  border-color:
+    rgba(245,179,53,.55) !important;
+
+  background:
+    #fff8e8 !important;
+
+  color:
+    #1d1d1f !important;
+}
+
+
+/* =========================================================
+   SELLING STATUS
+   ========================================================= */
+
+.st-admin-selling-status {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:
+    10px;
+}
+
+.st-admin-selling-status__option {
+  position:
+    relative;
+
+  min-height:
+    108px;
+
+  padding:
+    17px 48px 17px 17px !important;
+
+  display:
+    grid !important;
+
+  grid-template-columns:
+    10px minmax(0,1fr);
+
+  gap:
+    12px;
+
+  align-items:
+    start;
+
+  border:
+    1px solid rgba(29,29,31,.09) !important;
+
+  border-radius:
+    17px !important;
+
+  background:
+    #f7f7f8 !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    none !important;
+
+  text-align:
+    left;
+}
+
+.st-admin-selling-status__option:hover {
+  border-color:
+    rgba(29,29,31,.17) !important;
+
+  background:
+    #fff !important;
+}
+
+.st-admin-selling-status__option.is-selected {
+  border-color:
+    rgba(245,179,53,.76) !important;
+
+  background:
+    #fff8e9 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245,179,53,.10) !important;
+}
+
+.st-admin-selling-status__indicator {
+  width:
+    9px;
+
+  height:
+    9px;
+
+  margin-top:
+    5px;
+
+  border-radius:
+    999px;
+
+  background:
+    #86868b;
+}
+
+.st-admin-selling-status__indicator.is-in-stock {
+  background:
+    #34c759;
+}
+
+.st-admin-selling-status__indicator.is-low-stock {
+  background:
+    #ff9f0a;
+}
+
+.st-admin-selling-status__indicator.is-out-of-stock {
+  background:
+    #ff453a;
+}
+
+.st-admin-selling-status__indicator.is-coming-soon {
+  background:
+    #0a84ff;
+}
+
+.st-admin-selling-status__copy strong,
+.st-admin-selling-status__copy small {
+  display:
+    block;
+}
+
+.st-admin-selling-status__copy strong {
+  font-size:
+    14px;
+
+  font-weight:
+    650;
+}
+
+.st-admin-selling-status__copy small {
+  margin-top:
+    7px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.45;
+}
+
+.st-admin-selling-status__check {
+  position:
+    absolute;
+
+  top:
+    15px;
+
+  right:
+    15px;
+
+  width:
+    24px;
+
+  height:
+    24px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border:
+    1px solid rgba(29,29,31,.12);
+
+  border-radius:
+    999px;
+
+  background:
+    #fff;
+}
+
+.st-admin-selling-status__option.is-selected
+.st-admin-selling-status__check {
+  border-color:
+    #f5b335;
+
+  background:
+    #f5b335;
+}
+
+
+/* =========================================================
+   COLOR PICKER
+   ========================================================= */
+
+.st-admin-color-trigger {
+  min-width:
+    190px;
+
+  min-height:
+    46px;
+
+  padding:
+    0 14px !important;
+
+  display:
+    inline-flex !important;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  border:
+    1px solid rgba(29,29,31,.11) !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #f5f5f7 !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    none !important;
+
+  font-size:
+    13px !important;
+
+  letter-spacing:
+    0 !important;
+
+  text-transform:
+    none !important;
+}
+
+.st-admin-color-trigger__swatch {
+  width:
+    22px;
+
+  height:
+    22px;
+
+  flex:
+    0 0 auto;
+
+  border:
+    1px solid rgba(29,29,31,.14);
+
+  border-radius:
+    999px;
+}
+
+.st-admin-color-panel {
+  margin-top:
+    15px;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid rgba(29,29,31,.09);
+
+  border-radius:
+    18px;
+
+  background:
+    #f7f7f8;
+}
+
+.st-admin-color-grid {
+  max-height:
+    288px;
+
+  overflow-y:
+    auto;
+
+  padding:
+    12px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap:
+    7px;
+}
+
+.st-admin-color-option {
+  min-height:
+    44px !important;
+
+  padding:
+    0 10px !important;
+
+  display:
+    grid !important;
+
+  grid-template-columns:
+    21px minmax(0,1fr) 17px;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
+  border:
+    1px solid transparent !important;
+
+  border-radius:
+    11px !important;
+
+  background:
+    transparent !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    none !important;
+
+  font-size:
+    12px !important;
+
+  font-weight:
+    550 !important;
+
+  letter-spacing:
+    0 !important;
+
+  text-transform:
+    none !important;
+}
+
+.st-admin-color-option:hover {
+  background:
+    #fff !important;
+}
+
+.st-admin-color-option.is-selected {
+  border-color:
+    rgba(245,179,53,.55) !important;
+
+  background:
+    #fff7e6 !important;
+}
+
+.st-admin-color-option__swatch {
+  width:
+    20px;
+
+  height:
+    20px;
+
+  border:
+    1px solid rgba(29,29,31,.13);
+
+  border-radius:
+    999px;
+}
+
+.st-admin-color-custom {
+  padding:
+    12px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(0,1fr) auto;
+
+  align-items:
+    end;
+
+  gap:
+    10px;
+
+  border-top:
+    1px solid rgba(29,29,31,.08);
+
+  background:
+    #fff;
+}
+
+.st-admin-color-custom label > span {
+  display:
+    block;
+
+  margin-bottom:
+    6px;
+
+  color:
+    #86868b;
+
+  font-size:
+    10px;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    .08em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-admin-color-custom input {
+  min-height:
+    42px !important;
+
+  width:
+    100%;
+}
+
+.st-admin-color-custom button {
+  min-height:
+    42px !important;
+
+  padding:
+    0 18px !important;
+
+  border:
+    1px solid #f5b335 !important;
+
+  background:
+    #f5b335 !important;
+
+  color:
+    #1d1d1f !important;
+}
+
+
+/* =========================================================
+   STORE PLACEMENT
+   ========================================================= */
+
+.st-admin-placement-grid {
+  padding:
+    20px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap:
+    10px;
+}
+
+.st-admin-placement-card {
+  cursor:
+    pointer;
+}
+
+.st-admin-placement-card__surface {
+  position:
+    relative;
+
+  min-height:
+    145px;
+
+  padding:
+    17px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  border:
+    1px solid rgba(29,29,31,.09);
+
+  border-radius:
+    17px;
+
+  background:
+    #f7f7f8;
+
+  color:
+    #1d1d1f;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-admin-placement-card:hover
+.st-admin-placement-card__surface {
+  border-color:
+    rgba(29,29,31,.17);
+
+  background:
+    #fff;
+}
+
+.st-admin-placement-card
+input:checked
++ .st-admin-placement-card__surface {
+  border-color:
+    rgba(245,179,53,.76);
+
+  background:
+    #fff8e9;
+
+  box-shadow:
+    0 0 0 3px rgba(245,179,53,.10);
+}
+
+.st-admin-placement-card__icon {
+  width:
+    38px;
+
+  height:
+    38px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border:
+    1px solid rgba(29,29,31,.08);
+
+  border-radius:
+    11px;
+
+  background:
+    #fff;
+
+  color:
+    #1d1d1f;
+}
+
+.st-admin-placement-card__copy {
+  margin-top:
+    16px;
+}
+
+.st-admin-placement-card__copy strong,
+.st-admin-placement-card__copy small {
+  display:
+    block;
+}
+
+.st-admin-placement-card__copy strong {
+  font-size:
+    14px;
+
+  font-weight:
+    650;
+}
+
+.st-admin-placement-card__copy small {
+  margin-top:
+    6px;
+
+  padding-right:
+    28px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.45;
+}
+
+.st-admin-placement-card__switch {
+  position:
+    absolute;
+
+  top:
+    17px;
+
+  right:
+    17px;
+
+  width:
+    34px;
+
+  height:
+    20px;
+
+  border-radius:
+    999px;
+
+  background:
+    #d7d7dc;
+
+  transition:
+    background 160ms ease;
+}
+
+.st-admin-placement-card__switch::after {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  top:
+    2px;
+
+  left:
+    2px;
+
+  width:
+    16px;
+
+  height:
+    16px;
+
+  border-radius:
+    999px;
+
+  background:
+    #fff;
+
+  box-shadow:
+    0 1px 4px rgba(0,0,0,.17);
+
+  transition:
+    transform 160ms ease;
+}
+
+.st-admin-placement-card
+input:checked
++ .st-admin-placement-card__surface
+.st-admin-placement-card__switch {
+  background:
+    #f5b335;
+}
+
+.st-admin-placement-card
+input:checked
++ .st-admin-placement-card__surface
+.st-admin-placement-card__switch::after {
+  transform:
+    translateX(14px);
+}
+
+
+/* =========================================================
+   BRAND DIRECTORY SEARCH
+   ========================================================= */
+
+.st-admin-brand-search {
+  display:
+    none !important;
+}
+
+.st-admin-brand-search-v41 {
+  margin-top:
+    22px;
+
+  padding:
+    20px;
+
+  border:
+    1px solid rgba(29,29,31,.08);
+
+  border-radius:
+    20px;
+
+  background:
+    #fff;
+
+  box-shadow:
+    0 8px 30px rgba(29,29,31,.035);
+}
+
+.st-admin-brand-search-v41__top {
+  display:
+    flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  gap:
+    16px;
+}
+
+.st-admin-brand-search-v41__top p {
+  margin:
+    0;
+
+  color:
+    #86868b;
+
+  font-size:
+    10px;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    .13em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-admin-brand-search-v41__top strong {
+  display:
+    block;
+
+  margin-top:
+    5px;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    17px;
+}
+
+.st-admin-brand-search-v41__top button {
+  min-height:
+    34px !important;
+
+  padding:
+    0 13px !important;
+
+  border:
+    0 !important;
+
+  background:
+    #f5f5f7 !important;
+
+  color:
+    #6e6e73 !important;
+
+  box-shadow:
+    none !important;
+}
+
+.st-admin-brand-search-v41__search {
+  min-height:
+    54px;
+
+  margin-top:
+    15px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  border:
+    1px solid rgba(29,29,31,.11);
+
+  border-radius:
+    15px;
+
+  background:
+    #f5f5f7;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-admin-brand-search-v41__search:focus-within {
+  border-color:
+    rgba(245,179,53,.72);
+
+  background:
+    #fff;
+
+  box-shadow:
+    0 0 0 4px rgba(245,179,53,.10);
+}
+
+.st-admin-brand-search-v41__search > svg {
+  width:
+    18px;
+
+  height:
+    18px;
+
+  margin-left:
+    17px;
+
+  color:
+    #86868b;
+}
+
+.st-admin-brand-search-v41__search input {
+  min-width:
+    0;
+
+  width:
+    100%;
+
+  height:
+    52px !important;
+
+  padding:
+    0 13px !important;
+
+  border:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+.st-admin-brand-search-v41__search button {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  min-height:
+    34px !important;
+
+  margin-right:
+    9px;
+
+  padding:
+    0 !important;
+
+  display:
+    grid !important;
+
+  place-items:
+    center;
+
+  border:
+    0 !important;
+
+  background:
+    #fff !important;
+
+  color:
+    #6e6e73 !important;
+
+  box-shadow:
+    none !important;
+}
+
+.st-admin-brand-search-v41 > small {
+  display:
+    block;
+
+  margin:
+    9px 2px 0;
+
+  color:
+    #86868b;
+
+  font-size:
+    11px;
+}
+
+.st-admin-brand-search-v41__empty {
+  margin-top:
+    13px;
+
+  padding:
+    13px 15px;
+
+  border-radius:
+    13px;
+
+  background:
+    #f5f5f7;
+}
+
+.st-admin-brand-search-v41__empty strong,
+.st-admin-brand-search-v41__empty span {
+  display:
+    block;
+}
+
+.st-admin-brand-search-v41__empty strong {
+  font-size:
+    13px;
+}
+
+.st-admin-brand-search-v41__empty span {
+  margin-top:
+    4px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    12px;
+}
+
+
+/* =========================================================
+   HOMEPAGE ADMIN PREVIEW
+   ========================================================= */
+
+.st-admin-home-preview__shell {
+  overflow:
+    hidden;
+
+  border:
+    1px solid rgba(29,29,31,.08);
+
+  border-radius:
+    21px;
+
+  background:
+    #fff;
+
+  box-shadow:
+    0 14px 42px rgba(29,29,31,.055);
+}
+
+.st-admin-home-preview__heading {
+  min-height:
+    54px;
+
+  padding:
+    0 17px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    14px;
+
+  border-bottom:
+    1px solid rgba(29,29,31,.07);
+}
+
+.st-admin-home-preview__heading > div {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+}
+
+.st-admin-home-preview__heading span,
+.st-admin-home-preview__heading small {
+  color:
+    #86868b;
+
+  font-size:
+    9px;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    .10em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-admin-home-preview__browser {
+  margin:
+    14px;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid rgba(29,29,31,.09);
+
+  border-radius:
+    14px;
+
+  background:
+    #f5f5f7;
+}
+
+.st-admin-home-preview__chrome {
+  height:
+    29px;
+
+  padding:
+    0 9px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  background:
+    #e9e9ec;
+}
+
+.st-admin-home-preview__chrome > span {
+  width:
+    6px;
+
+  height:
+    6px;
+
+  border-radius:
+    999px;
+
+  background:
+    #bfc0c5;
+}
+
+.st-admin-home-preview__chrome > div {
+  margin:
+    0 auto;
+
+  color:
+    #86868b;
+
+  font-size:
+    6px;
+}
+
+.st-admin-home-preview__site-header {
+  height:
+    36px;
+
+  padding:
+    0 11px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  border-bottom:
+    1px solid rgba(29,29,31,.06);
+
+  background:
+    #fff;
+}
+
+.st-admin-home-preview__site-header strong {
+  margin-right:
+    auto;
+
+  font-size:
+    7px;
+
+  letter-spacing:
+    .08em;
+}
+
+.st-admin-home-preview__site-header nav {
+  display:
+    flex;
+
+  gap:
+    8px;
+}
+
+.st-admin-home-preview__site-header nav span,
+.st-admin-home-preview__site-header > span {
+  color:
+    #6e6e73;
+
+  font-size:
+    5.5px;
+}
+
+.st-admin-home-preview__hero {
+  min-height:
+    285px;
+
+  padding:
+    23px 17px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(0,.95fr)
+    minmax(0,1.05fr);
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
+  background:
+    #f5f5f7;
+}
+
+.st-admin-home-preview__copy small {
+  color:
+    #6e6e73;
+
+  font-size:
+    6px;
+}
+
+.st-admin-home-preview__copy h2 {
+  margin:
+    8px 0 0;
+
+  font-size:
+    clamp(22px,2.3vw,34px) !important;
+
+  line-height:
+    .89 !important;
+
+  letter-spacing:
+    -.065em !important;
+}
+
+.st-admin-home-preview__copy p {
+  margin-top:
+    10px;
+
+  max-width:
+    26ch;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    6.5px;
+
+  line-height:
+    1.45;
+}
+
+.st-admin-home-preview__copy > div {
+  margin-top:
+    12px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+}
+
+.st-admin-home-preview__copy > div span:first-child {
+  padding:
+    6px 9px;
+
+  border-radius:
+    999px;
+
+  background:
+    #f5b335;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    6px;
+
+  font-weight:
+    650;
+}
+
+.st-admin-home-preview__copy > div span:last-child {
+  color:
+    #805000;
+
+  font-size:
+    6px;
+}
+
+.st-admin-home-preview__visual {
+  position:
+    relative;
+
+  min-height:
+    220px;
+}
+
+.st-admin-home-preview__visual img {
+  border-radius:
+    0 !important;
+}
+
+.st-admin-home-preview__next {
+  padding:
+    15px;
+
+  background:
+    #fff;
+}
+
+.st-admin-home-preview__next > small,
+.st-admin-home-preview__next > strong {
+  display:
+    block;
+}
+
+.st-admin-home-preview__next > small {
+  color:
+    #86868b;
+
+  font-size:
+    6px;
+}
+
+.st-admin-home-preview__next > strong {
+  margin-top:
+    3px;
+
+  font-size:
+    15px;
+}
+
+.st-admin-home-preview__next > div {
+  margin-top:
+    10px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:
+    5px;
+}
+
+.st-admin-home-preview__next > div span {
+  height:
+    35px;
+
+  border-radius:
+    6px;
+
+  background:
+    #f1f1f3;
+}
+
+.st-admin-home-preview__help {
+  margin:
+    0;
+
+  padding:
+    0 17px 17px;
+
+  color:
+    #86868b;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.55;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .st-admin-placement-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st-admin-color-grid {
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .st-admin-selling-status {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st-admin-color-trigger {
+    width:
+      100%;
+  }
+
+  .st-admin-color-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st-admin-color-custom {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st-admin-home-preview__site-header nav {
+    display:
+      none;
+  }
+
+  .st-admin-home-preview__hero {
+    min-height:
+      250px;
+
+    padding:
+      17px 11px;
+
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+}
+
+/* === ST ADMIN PRODUCT HOMEPAGE V41 END === */
+
+
+/* =========================================================
+   ST PRODUCT V5
+   ========================================================= */
+
+/* Availability: selected card itself is enough. */
+.st-admin-selling-status__option {
+  padding-right: 17px !important;
+}
+
+.st-admin-selling-status__check {
+  display: none !important;
+}
+
+/* Store placement: no fake toggle control. */
+.st-admin-placement-card__switch {
+  display: none !important;
+}
+
+.st-admin-placement-card__surface {
+  min-height: 132px;
+  border: 1px solid rgba(29,29,31,.09) !important;
+  border-radius: 18px !important;
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+  box-shadow: none !important;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-admin-placement-card:hover .st-admin-placement-card__surface {
+  background: #fff !important;
+  border-color: rgba(29,29,31,.17) !important;
+}
+
+.st-admin-placement-card input:checked + .st-admin-placement-card__surface,
+.st-admin-placement-card__surface.is-selected {
+  border-color: rgba(245,179,53,.8) !important;
+  background: #fff8e9 !important;
+  box-shadow: 0 0 0 3px rgba(245,179,53,.10) !important;
+}
+
+/* V5 Colour Picker */
+.st-admin-v5-color {
+  max-width: 760px;
+}
+
+.st-admin-v5-color__trigger {
+  width: 100%;
+  min-height: 68px !important;
+  padding: 10px 14px !important;
+  display: grid !important;
+  grid-template-columns: 38px minmax(0,1fr) 24px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(29,29,31,.11) !important;
+  border-radius: 16px !important;
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+  text-align: left;
+  box-shadow: none !important;
+}
+
+.st-admin-v5-color__selected-swatch {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(29,29,31,.14);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+}
+
+.st-admin-v5-color__trigger small,
+.st-admin-v5-color__trigger strong {
+  display: block;
+}
+
+.st-admin-v5-color__trigger small {
+  color: #86868b;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.st-admin-v5-color__trigger strong {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.st-admin-v5-color__trigger > svg {
+  width: 17px;
+  color: #86868b;
+  transition: transform 160ms ease;
+}
+
+.st-admin-v5-color__trigger > svg.is-open {
+  transform: rotate(180deg);
+}
+
+.st-admin-v5-color__panel {
+  margin-top: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(29,29,31,.10) !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+  color: #1d1d1f;
+  box-shadow: 0 18px 55px rgba(29,29,31,.08) !important;
+}
+
+.st-admin-v5-color__panel > header {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(29,29,31,.07);
+}
+
+.st-admin-v5-color__panel > header > div {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.st-admin-v5-color__panel > header svg {
+  width: 18px;
+}
+
+.st-admin-v5-color__panel > header small,
+.st-admin-v5-color__panel > header strong {
+  display: block;
+}
+
+.st-admin-v5-color__panel > header small {
+  color: #86868b;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.st-admin-v5-color__panel > header strong {
+  margin-top: 3px;
+  font-size: 14px;
+}
+
+.st-admin-v5-color__panel > header button {
+  width: 34px;
+  height: 34px;
+  min-height: 34px !important;
+  padding: 0 !important;
+  display: grid;
+  place-items: center;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #f5f5f7 !important;
+  color: #6e6e73 !important;
+}
+
+.st-admin-v5-color__search {
+  margin: 14px;
+  min-height: 46px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(29,29,31,.09);
+  border-radius: 999px;
+  background: #f5f5f7;
+}
+
+.st-admin-v5-color__search svg {
+  width: 16px;
+  color: #86868b;
+}
+
+.st-admin-v5-color__search input {
+  width: 100%;
+  height: 44px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.st-admin-v5-color__grid {
+  max-height: 330px;
+  overflow-y: auto;
+  padding: 0 14px 14px;
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 8px;
+}
+
+.st-admin-v5-color__grid button {
+  min-height: 48px !important;
+  padding: 0 10px !important;
+  display: grid !important;
+  grid-template-columns: 23px minmax(0,1fr) 16px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+  text-align: left;
+  box-shadow: none !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.st-admin-v5-color__grid button:hover {
+  background: #efeff1 !important;
+}
+
+.st-admin-v5-color__grid button.is-selected {
+  border-color: rgba(245,179,53,.7) !important;
+  background: #fff8e8 !important;
+}
+
+.st-admin-v5-color__grid button i {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(29,29,31,.12);
+  border-radius: 50%;
+}
+
+.st-admin-v5-color__grid button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.st-admin-v5-color__grid button svg {
+  width: 14px;
+  color: #9a6200;
+}
+
+.st-admin-v5-color__custom {
+  padding: 16px;
+  border-top: 1px solid rgba(29,29,31,.08);
+  background: #f7f7f8;
+}
+
+.st-admin-v5-color__custom-title small,
+.st-admin-v5-color__custom-title strong {
+  display: block;
+}
+
+.st-admin-v5-color__custom-title small {
+  color: #9a6200;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.st-admin-v5-color__custom-title strong {
+  margin-top: 3px;
+  font-size: 14px;
+}
+
+.st-admin-v5-color__custom-editor {
+  margin-top: 13px;
+  display: grid;
+  grid-template-columns: 52px minmax(180px,1fr) 125px auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.st-admin-v5-color__wheel {
+  position: relative;
+  width: 50px;
+  height: 46px;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.st-admin-v5-color__wheel input {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.st-admin-v5-color__wheel span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(29,29,31,.12);
+  border-radius: 12px;
+}
+
+.st-admin-v5-color__custom-editor label small {
+  display: block;
+  margin-bottom: 5px;
+  color: #86868b;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.st-admin-v5-color__custom-editor input {
+  min-height: 46px !important;
+  background: #fff !important;
+}
+
+.st-admin-v5-color__custom-editor > button {
+  min-height: 46px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #f5b335 !important;
+  border-radius: 12px !important;
+  background: #f5b335 !important;
+  color: #1d1d1f !important;
+  box-shadow: none !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.st-admin-v5-color__custom-editor > button svg {
+  width: 15px;
+}
+
+.st-admin-v5-color__custom > p {
+  margin: 10px 0 0;
+  color: #86868b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .st-admin-v5-color__grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .st-admin-v5-color__custom-editor {
+    grid-template-columns: 50px 1fr;
+  }
+
+  .st-admin-v5-color__custom-editor > button {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Storefront card colour preview */
+.st-retail-card__colors {
+  margin-top: 11px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.st-retail-card__colors > span {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(0,0,0,.14);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+}
+
+.st-retail-card__colors > small {
+  color: #86868b;
+  font-size: 10px;
+}
+
+/* === ST PRODUCT V5 END === */
+
+
+
+/* === ST ADMIN LOGIN PREMIUM CTA START === */
+
+/*
+ * Match the administrator Sign In CTA to the
+ * customer Sign In / Create Account button system.
+ */
+
+.st3-admin-login button[type="submit"],
+.st-admin-login button[type="submit"],
+form[action*="login"] button[type="submit"] {
+  position: relative;
+  overflow: hidden;
+
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+
+  border:
+    1px solid rgba(185, 132, 37, 0.34) !important;
+
+  border-radius:
+    13px !important;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.025),
+    0 5px 16px rgba(0, 0, 0, 0.025) !important;
+
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    color 220ms ease !important;
+}
+
+
+/*
+ * Soft mustard sheen.
+ */
+.st3-admin-login button[type="submit"]::before,
+.st-admin-login button[type="submit"]::before,
+form[action*="login"] button[type="submit"]::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      100deg,
+      rgba(244, 181, 62, 0),
+      rgba(244, 181, 62, 0.10),
+      rgba(244, 181, 62, 0)
+    );
+
+  opacity: 0;
+  transform: translateX(-18%);
+
+  transition:
+    opacity 240ms ease,
+    transform 420ms cubic-bezier(.16, 1, .3, 1);
+}
+
+
+@media (hover: hover) {
+  .st3-admin-login button[type="submit"]:not(:disabled):hover,
+  .st-admin-login button[type="submit"]:not(:disabled):hover,
+  form[action*="login"] button[type="submit"]:not(:disabled):hover {
+    background:
+      #fffaf0 !important;
+
+    border-color:
+      rgba(190, 132, 24, 0.62) !important;
+
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      0 8px 24px rgba(184, 127, 23, 0.10) !important;
+
+    transform:
+      translateY(-1px);
+  }
+
+  .st3-admin-login button[type="submit"]:not(:disabled):hover::before,
+  .st-admin-login button[type="submit"]:not(:disabled):hover::before,
+  form[action*="login"] button[type="submit"]:not(:disabled):hover::before {
+    opacity: 1;
+    transform: translateX(18%);
+  }
+}
+
+
+.st3-admin-login button[type="submit"] > *,
+.st-admin-login button[type="submit"] > *,
+form[action*="login"] button[type="submit"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+.st3-admin-login button[type="submit"]:focus-visible,
+.st-admin-login button[type="submit"]:focus-visible,
+form[action*="login"] button[type="submit"]:focus-visible {
+  outline: none !important;
+
+  border-color:
+    rgba(183, 125, 20, 0.75) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(217, 164, 63, 0.13),
+    0 6px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+
+.st3-admin-login button[type="submit"]:not(:disabled):active,
+.st-admin-login button[type="submit"]:not(:disabled):active,
+form[action*="login"] button[type="submit"]:not(:disabled):active {
+  transform:
+    scale(0.995);
+
+  background:
+    #fff7e8 !important;
+}
+
+
+.st3-admin-login button[type="submit"]:disabled,
+.st-admin-login button[type="submit"]:disabled,
+form[action*="login"] button[type="submit"]:disabled {
+  background:
+    #f7f7f8 !important;
+
+  color:
+    #aaa9ad !important;
+
+  border-color:
+    #ececef !important;
+
+  box-shadow:
+    none !important;
+
+  cursor:
+    not-allowed;
+}
+
+/* === ST ADMIN LOGIN PREMIUM CTA END === */
+
+/* === ADMIN LOGIN PREMIUM CTA START === */
+
+/*
+ * Admin Login CTA
+ * Matches the customer Sign In / Create Account treatment:
+ * white at rest, restrained mustard interaction.
+ *
+ * Specificity intentionally beats the global
+ * .st3-admin button[type="submit"] mustard rule.
+ */
+
+.st3-admin button[type="submit"].st3-admin-login-submit {
+  position: relative;
+  overflow: hidden;
+
+  border: 1px solid rgba(185, 132, 37, 0.34) !important;
+  border-radius: 13px !important;
+
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.025),
+    0 5px 16px rgba(0, 0, 0, 0.025) !important;
+
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease,
+    color 220ms ease !important;
+}
+
+
+/* Soft mustard light sweep */
+.st3-admin button[type="submit"].st3-admin-login-submit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      100deg,
+      rgba(244, 181, 62, 0),
+      rgba(244, 181, 62, 0.10),
+      rgba(244, 181, 62, 0)
+    );
+
+  opacity: 0;
+  transform: translateX(-18%);
+
+  transition:
+    opacity 240ms ease,
+    transform 420ms cubic-bezier(.16, 1, .3, 1);
+}
+
+
+@media (hover: hover) {
+
+  .st3-admin button[type="submit"].st3-admin-login-submit:hover {
+    background: #fffaf0 !important;
+
+    border-color:
+      rgba(190, 132, 24, 0.62) !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.02),
+      0 8px 24px rgba(184, 127, 23, 0.10) !important;
+
+    transform: translateY(-1px);
+  }
+
+  .st3-admin button[type="submit"].st3-admin-login-submit:hover::before {
+    opacity: 1;
+    transform: translateX(18%);
+  }
+}
+
+
+/* Keyboard focus */
+.st3-admin button[type="submit"].st3-admin-login-submit:focus-visible {
+  outline: none !important;
+
+  border-color:
+    rgba(183, 125, 20, 0.75) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(217, 164, 63, 0.13),
+    0 6px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+
+/* Press feedback */
+.st3-admin button[type="submit"].st3-admin-login-submit:active {
+  background: #fff7e8 !important;
+  transform: scale(0.995);
+}
+
+/* === ADMIN LOGIN PREMIUM CTA END === */
+
+
+
+/* === CUSTOMER DIRECTORY COUNT PILL START === */
+
+/*
+ * Customer directory result counter.
+ * Turns the old square "1 SHOWN" box into a polished pill.
+ */
+
+.st3-admin [data-customer-count],
+.st3-admin .st-customer-count,
+.st3-admin .st-customer-directory-count,
+.st3-admin span[class*="shown"],
+.st3-admin div[class*="shown"] {
+  min-height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 16px !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.10) !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #ffffff !important;
+
+  color:
+    #6e6e73 !important;
+
+  font-size:
+    10px !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    0.16em !important;
+
+  text-transform:
+    uppercase;
+
+  white-space:
+    nowrap;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    0 4px 14px rgba(0, 0, 0, 0.025) !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+
+/* Slight premium hover treatment */
+@media (hover: hover) {
+  .st3-admin [data-customer-count]:hover,
+  .st3-admin .st-customer-count:hover,
+  .st3-admin .st-customer-directory-count:hover,
+  .st3-admin span[class*="shown"]:hover,
+  .st3-admin div[class*="shown"]:hover {
+    border-color:
+      rgba(245, 179, 53, 0.34) !important;
+
+    background:
+      #fffaf0 !important;
+
+    box-shadow:
+      0 5px 16px rgba(184, 127, 23, 0.07) !important;
+  }
+}
+
+/* === CUSTOMER DIRECTORY COUNT PILL END === */
+

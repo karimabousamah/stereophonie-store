@@ -87,7 +87,7 @@ export default function StoreFooter() {
             <div className="stereo-footer__statement">
               <span>TECHNOLOGY</span>
               <strong>STEREOPHONIE</strong>
-              <span>LEBANON</span>
+              
             </div>
 
             <div className="stereo-footer__bottom">

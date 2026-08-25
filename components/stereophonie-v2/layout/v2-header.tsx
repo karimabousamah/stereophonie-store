@@ -8,16 +8,13 @@ import {
   } from "next/navigation";
 import {
   ChevronRight,
-  Heart,
   LoaderCircle,
-  MapPin,
-  Menu,
   PackageSearch,
   Search,
   ShoppingCart,
   UserRound,
   X,
-  } from "lucide-react";
+} from "lucide-react";
 import { FormEvent,
   KeyboardEvent,
   useEffect,
@@ -27,6 +24,36 @@ import { FormEvent,
 
 import BrandLogo from "@/components/storefront/brand-logo";
 import { useCart } from "@/components/cart/cart-provider";
+
+
+function HeaderSaveIcon({
+  className,
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      data-st-header-save
+      className={className}
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M7.25 4.75C7.25 3.7835 8.0335 3 9 3H15C15.9665 3 16.75 3.7835 16.75 4.75V20L12 16.55L7.25 20V4.75Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 const SEARCH_HISTORY_STORAGE_KEY =
   "stereophonie-v2-search-history";
@@ -169,9 +196,6 @@ export default function V2Header() {
     useRef<HTMLDivElement>(null);
 
   const [query, setQuery] = useState("");
-
-  const [menuOpen, setMenuOpen] =
-    useState(false);
 
   const [headerCategories, setHeaderCategories] =
     useState<HeaderCategory[]>([]);
@@ -1401,26 +1425,6 @@ function submitSearch(
 
             <div className="st-v2-header__actions">
               <Link
-                href="/track-order"
-                className={`st-v2-header__track-main ${
-                  isTrackOrderPage
-                    ? "is-track-order-active"
-                    : ""
-                }`}
-                aria-current={
-                  isTrackOrderPage
-                    ? "page"
-                    : undefined
-                }
-                aria-label="Track your order"
-              >
-                <PackageSearch />
-                <span>
-                  TRACK ORDER
-                </span>
-              </Link>
-
-              <Link
                 href="/account"
                 aria-label="Account"
               >
@@ -1431,7 +1435,7 @@ function submitSearch(
                 href="/wishlist"
                 aria-label="Wishlist"
               >
-                <Heart />
+                <HeaderSaveIcon />
               </Link>
 
               <button
@@ -1457,16 +1461,23 @@ function submitSearch(
                 ) : null}
               </button>
 
-              <button
-                type="button"
-                className="st-v2-header__menu-button"
-                onClick={() =>
-                  setMenuOpen(true)
+              <Link
+                href="/track-order"
+                className={`st-v2-header__track-main ${
+                  isTrackOrderPage
+                    ? "is-track-order-active"
+                    : ""
+                }`}
+                aria-current={
+                  isTrackOrderPage
+                    ? "page"
+                    : undefined
                 }
-                aria-label="Open menu"
+                aria-label="Track your order"
               >
-                <Menu />
-              </button>
+                <PackageSearch />
+                <span>TRACK ORDER</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -1524,112 +1535,6 @@ function submitSearch(
             </div>
         </div>
       </header>
-
-      <div
-        className={`st-v2-menu ${
-          menuOpen
-            ? "st-v2-menu--open"
-            : ""
-        }`}
-      >
-        <button
-          type="button"
-          className="st-v2-menu__backdrop"
-          onClick={() =>
-            setMenuOpen(false)
-          }
-          aria-label="Close menu"
-        />
-
-        <aside className="st-v2-menu__panel">
-          <div className="st-v2-menu__top">
-            <div>
-              <span className="st-v2-led" />
-              <span>
-                MENU / PLAYER 01
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() =>
-                setMenuOpen(false)
-              }
-            >
-              <X />
-            </button>
-          </div>
-
-          <BrandLogo className="mt-8 w-[210px]" />
-
-          <nav className="st-v2-menu__nav">
-            <Link
-              href="/shop"
-              onClick={() =>
-                setMenuOpen(false)
-              }
-            >
-              <span>01</span>
-              SHOP
-              <ChevronRight />
-            </Link>
-
-            <Link
-              href="/account"
-              onClick={() =>
-                setMenuOpen(false)
-              }
-            >
-              <span>02</span>
-              ACCOUNT
-              <ChevronRight />
-            </Link>
-
-            <Link
-              href="/wishlist"
-              onClick={() =>
-                setMenuOpen(false)
-              }
-            >
-              <span>03</span>
-              WISHLIST
-              <ChevronRight />
-            </Link>
-
-            <Link
-              href="/track-order"
-              onClick={() =>
-                setMenuOpen(false)
-              }
-            >
-              <span>04</span>
-              TRACK ORDER
-              <ChevronRight />
-            </Link>
-
-            <Link
-              href="/about"
-              onClick={() =>
-                setMenuOpen(false)
-              }
-            >
-              <span>05</span>
-              ABOUT
-              <ChevronRight />
-            </Link>
-          </nav>
-
-          <a
-            href="https://maps.app.goo.gl/kCsBPgCRFXaK298i6?g_st=ic"
-            target="_blank"
-            rel="noreferrer"
-            className="st-v2-menu__location"
-          >
-            <MapPin />
-            VISIT STEREOPHONIE
-          </a>
-        </aside>
-      </div>
 
       <style jsx>{`
         .st-v2-live-search {

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
-  Heart,
+  useRouter } from "next/navigation";
+import {
   MapPin,
   Menu,
   Search,
@@ -15,6 +15,36 @@ import {
 import { FormEvent, useState } from "react";
 
 import BrandLogo from "@/components/storefront/brand-logo";
+
+
+function HeaderSaveIcon({
+  className,
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      data-st-header-save
+      className={className}
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M7.25 4.75C7.25 3.7835 8.0335 3 9 3H15C15.9665 3 16.75 3.7835 16.75 4.75V20L12 16.55L7.25 20V4.75Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 const categories = [
   "Phones",
@@ -105,7 +135,7 @@ export default function StoreHeader() {
               </Link>
 
               <Link href="/wishlist" aria-label="Wishlist">
-                <Heart />
+                <HeaderSaveIcon />
                 <span>Wishlist</span>
               </Link>
 

@@ -2,227 +2,225 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeDollarSign,
   Banknote,
-  Clock3,
+  Box,
+  CalendarClock,
+  Check,
+  CreditCard,
   MapPin,
+  MessageCircle,
   PackageCheck,
   Truck,
+  WalletCards,
 } from "lucide-react";
 
-import StoreFooter from "@/components/storefront/store-footer";
-import StoreHeader from "@/components/storefront/store-header";
+import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 
 export const metadata: Metadata = {
-  title: "Delivery Information",
+  title: "Delivery",
   description:
-    "Learn about Stereophonie delivery coverage, fees, estimated delivery times, and available payment methods in Lebanon.",
+    "Learn about Stereophonie delivery coverage, timing, fees, and payment options across Lebanon.",
 };
 
-const deliveryDetails = [
+const deliveryFacts = [
   {
-    title: "Delivery coverage",
-    description: "We deliver orders to customers across Lebanon.",
     icon: MapPin,
+    label: "Coverage",
+    value: "All Lebanon",
+    description: "We deliver to cities, towns, and accessible areas nationwide.",
   },
   {
-    title: "Delivery fee",
-    description: "A flat delivery fee of $5 applies to orders below $150.",
-    icon: Truck,
+    icon: BadgeDollarSign,
+    label: "Orders below $150",
+    value: "$4 delivery",
+    description: "A simple flat delivery fee is added at checkout.",
   },
   {
-    title: "Free delivery",
-    description: "Delivery is free when the total order value is $150 or more.",
     icon: PackageCheck,
+    label: "Orders from $150",
+    value: "Free delivery",
+    description: "Qualifying orders are delivered without a shipping fee.",
   },
   {
-    title: "Estimated timing",
-    description: "Orders are normally delivered within 3–4 working days.",
-    icon: Clock3,
+    icon: CalendarClock,
+    label: "Estimated timing",
+    value: "3–4 working days",
+    description: "Timing may vary by location, weekend, and courier availability.",
+  },
+];
+
+const deliverySteps = [
+  {
+    title: "Place your order",
+    description: "Confirm your products, address, and active Lebanese number.",
+    icon: Box,
+  },
+  {
+    title: "We prepare it",
+    description: "Our team confirms availability and prepares the package.",
+    icon: Check,
+  },
+  {
+    title: "The courier delivers",
+    description: "Your order travels to the address provided at checkout.",
+    icon: Truck,
   },
 ];
 
 export default function DeliveryPage() {
   return (
-    <main className="min-h-screen bg-white text-black">
-      <StoreHeader />
+    <div className="st-retail-shell">
+      <V3Header />
 
-      <section className="border-b border-black/10 bg-black text-white">
-        <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-white/40">
-            Customer care
-          </p>
-
-          <h1 className="mt-6 max-w-5xl text-[clamp(3.5rem,9vw,8rem)] font-semibold uppercase leading-[0.85] tracking-[-0.07em]">
-            Delivery
-            <br />
-            Information
-          </h1>
-
-          <p className="mt-9 max-w-2xl text-sm leading-7 text-white/55 sm:text-base">
-            Everything you need to know about receiving your Stereophonie order
-            in Lebanon.
-          </p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
-        <div className="grid border-y border-black/10 md:grid-cols-2 xl:grid-cols-4">
-          {deliveryDetails.map((item, index) => {
-            const Icon = item.icon;
-
-            return (
-              <article
-                key={item.title}
-                className={`py-9 md:px-7 ${
-                  index < deliveryDetails.length - 1
-                    ? "border-b border-black/10 xl:border-b-0 xl:border-r"
-                    : ""
-                } ${index % 2 === 0 ? "md:border-r md:border-black/10" : ""}`}
-              >
-                <Icon className="h-5 w-5" />
-
-                <h2 className="mt-8 text-sm font-semibold uppercase tracking-[0.16em]">
-                  {item.title}
-                </h2>
-
-                <p className="mt-4 text-sm leading-7 text-black/50">
-                  {item.description}
-                </p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="border-y border-black/10 bg-[#f3f1ed]">
-        <div className="mx-auto grid max-w-[1600px] lg:grid-cols-2">
-          <div className="border-b border-black/10 px-5 py-16 sm:px-8 lg:border-b-0 lg:border-r lg:px-12 lg:py-24">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-              Payment methods
-            </p>
-
-            <h2 className="mt-5 text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.05em] sm:text-6xl">
-              Pay when
-              <br />
-              delivered
-            </h2>
-
-            <div className="mt-10 border border-black bg-black p-6 text-white">
-              <div className="flex items-start gap-4">
-                <Banknote className="mt-0.5 h-5 w-5 shrink-0" />
-
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.15em]">
-                    Cash on Delivery
-                  </p>
-
-                  <p className="mt-3 text-sm leading-7 text-white/55">
-                    Cash on Delivery is currently the only active payment
-                    method. Payment is made when your order arrives.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-              Coming soon
-            </p>
-
-            <div className="mt-8 space-y-4">
-              <div className="border border-black/10 bg-white p-6">
-                <div className="flex items-center justify-between gap-5">
-                  <p className="text-sm font-semibold uppercase tracking-[0.15em]">
-                    Whish Money
-                  </p>
-
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-black/35">
-                    Coming soon
-                  </span>
-                </div>
-
-                <p className="mt-4 text-sm leading-7 text-black/45">
-                  This payment option is not yet enabled.
-                </p>
-              </div>
-
-              <div className="border border-black/10 bg-white p-6">
-                <div className="flex items-center justify-between gap-5">
-                  <p className="text-sm font-semibold uppercase tracking-[0.15em]">
-                    Card payment
-                  </p>
-
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-black/35">
-                    Coming soon
-                  </span>
-                </div>
-
-                <p className="mt-4 text-sm leading-7 text-black/45">
-                  Online debit and credit card payments are not yet enabled.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:px-12 lg:py-24">
-        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-              Important information
-            </p>
-
-            <h2 className="mt-5 text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.05em] sm:text-6xl">
-              Before your
-              <br />
-              order arrives
-            </h2>
-          </div>
-
-          <div className="space-y-6 border-t border-black/10 pt-8 text-sm leading-7 text-black/55">
+      <main className="st-retail-page st-support-page st-delivery-page">
+        <section className="st-retail-hero st-delivery-page__hero">
+          <div className="st-retail-hero__copy">
+            <p className="st-retail-eyebrow">Shipping across Lebanon</p>
+            <h1>Delivery, made clear.</h1>
             <p>
-              Delivery times are estimates and may occasionally be affected by
-              weekends, public holidays, severe weather, address accessibility,
-              or exceptional courier delays.
+              Straightforward fees, realistic timing, and a simple way to
+              follow your order from confirmation to arrival.
             </p>
-
-            <p>
-              Please provide a complete address and an active Lebanese phone
-              number during checkout so the delivery team can contact you.
-            </p>
-
-            <p>
-              Customers should inspect the order upon delivery and contact Nita
-              Style promptly if there is an issue with the package received.
-            </p>
-
-            <a
-              href="https://wa.me/96176992206"
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex min-h-14 items-center justify-between gap-10 border border-black bg-black px-7 py-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-white hover:text-black"
-            >
-              Contact us on WhatsApp
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-
-            <p className="text-xs text-black/35">
-              By placing an order, you also agree to our{" "}
+            <div className="st-retail-hero__actions">
               <Link
-                href="/returns"
-                className="underline underline-offset-4 hover:text-black"
+                href="/track-order"
+                className="st-retail-button st-retail-button--mustard"
               >
-                No Returns Policy
+                Track your order
+                <ArrowRight />
               </Link>
-              .
-            </p>
+              <Link
+                href="/shop"
+                className="st-retail-button st-retail-button--quiet"
+              >
+                Shop products
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
 
-      <StoreFooter />
-    </main>
+          <div className="st-delivery-page__hero-mark" aria-hidden="true">
+            <Truck />
+          </div>
+        </section>
+
+        <section className="st-retail-section st-delivery-page__facts">
+          <div className="st-retail-section__heading">
+            <div>
+              <p className="st-retail-eyebrow">At a glance</p>
+              <h2>What to expect.</h2>
+            </div>
+          </div>
+
+          <div className="st-delivery-page__fact-grid">
+            {deliveryFacts.map((fact) => {
+              const Icon = fact.icon;
+              return (
+                <article key={fact.label}>
+                  <Icon />
+                  <p>{fact.label}</p>
+                  <h3>{fact.value}</h3>
+                  <span>{fact.description}</span>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="st-delivery-page__process">
+          <div className="st-delivery-page__process-copy">
+            <p className="st-retail-eyebrow">From cart to your door</p>
+            <h2>How delivery works.</h2>
+            <p>
+              We keep the journey simple and give you a dedicated tracking page
+              whenever you want the latest update.
+            </p>
+            <Link href="/track-order" className="st-retail-text-link">
+              Open order tracking
+              <ArrowRight />
+            </Link>
+          </div>
+
+          <div className="st-delivery-page__steps">
+            {deliverySteps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <article key={step.title}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Icon />
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="st-retail-section st-delivery-page__payment">
+          <div className="st-retail-section__heading">
+            <div>
+              <p className="st-retail-eyebrow">Payment methods</p>
+              <h2>Pay your way.</h2>
+              <p>Available methods are always confirmed before you order.</p>
+            </div>
+          </div>
+
+          <div className="st-delivery-page__payment-grid">
+            <article className="is-active">
+              <Banknote />
+              <div>
+                <span>Available now</span>
+                <h3>Cash on delivery</h3>
+                <p>Pay the courier when your order arrives.</p>
+              </div>
+              <Check />
+            </article>
+            <article>
+              <WalletCards />
+              <div>
+                <span>Coming soon</span>
+                <h3>Whish Money</h3>
+                <p>Digital payment will be added when fully enabled.</p>
+              </div>
+            </article>
+            <article>
+              <CreditCard />
+              <div>
+                <span>Coming soon</span>
+                <h3>Card payment</h3>
+                <p>Online debit and credit card payment is not active yet.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="st-delivery-page__notice">
+          <div>
+            <MessageCircle />
+            <div>
+              <p className="st-retail-eyebrow">Before your order arrives</p>
+              <h2>Keep your phone nearby.</h2>
+              <p>
+                Provide a complete address and active number so the delivery
+                team can reach you. Inspect the package when it arrives and
+                contact Stereophonie promptly if anything is wrong.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://wa.me/9613161285"
+            target="_blank"
+            rel="noreferrer"
+            className="st-retail-button st-retail-button--quiet"
+          >
+            WhatsApp support
+            <ArrowRight />
+          </a>
+        </section>
+      </main>
+
+      <V3Footer />
+    </div>
   );
 }

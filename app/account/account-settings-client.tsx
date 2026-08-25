@@ -5,6 +5,7 @@ import {
   useActionState,
   useEffect,
   useId,
+  useOptimistic,
   useState,
 } from "react";
 import { createPortal, useFormStatus } from "react-dom";
@@ -295,7 +296,7 @@ function FieldLabel({
   return (
     <label
       htmlFor={htmlFor}
-      className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500"
+      className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500 st-account-settings-retail-v2"
     >
       {children}
     </label>
@@ -658,6 +659,9 @@ export default function AccountSettingsClient({
   const [activeSection, setActiveSection] =
     useState<SettingsSection>("profile");
 
+  const [optimisticStockNotificationsEnabled, setOptimisticStockNotificationsEnabled] =
+    useOptimistic(stockNotificationsEnabled);
+
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
 
   const [deleteAccountStep, setDeleteAccountStep] =
@@ -672,6 +676,14 @@ export default function AccountSettingsClient({
 
   function closeAccountDeletion() {
     setDeleteAccountStep("closed");
+  }
+
+  async function saveStockNotificationPreference(formData: FormData) {
+    setOptimisticStockNotificationsEnabled(
+      formData.get("enabled") === "true",
+    );
+
+    await updateStockNotificationPreference(formData);
   }
 
   return (
@@ -693,29 +705,35 @@ export default function AccountSettingsClient({
         </div>
 
         <div className="grid lg:grid-cols-[230px_minmax(0,1fr)]">
-          <nav className="border-b border-neutral-200 p-4 lg:border-b-0 lg:border-r">
-            {[
-              ["profile", "Personal details", "01"],
-              ["security", "Security", "02"],
-              ["notifications", "Stock emails", "03"],
-              ["addresses", "Addresses", String(addresses.length)],
-            ].map(([value, label, number]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setActiveSection(value as SettingsSection)}
-                className={`mt-1 flex w-full items-center justify-between px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.13em] ${
-                  activeSection === value
-                    ? "bg-black text-white"
-                    : "bg-white text-neutral-500 hover:bg-neutral-50 hover:text-black"
-                }`}
-              >
-                {label}
-                <span>{number}</span>
-              </button>
-            ))}
+          <nav
+            className="st-account-settings-nav border-b border-neutral-200 p-4 lg:border-b-0 lg:border-r"
+            aria-label="Profile and delivery settings"
+          >
+            <div className="st-account-settings-tabs" role="tablist">
+              {[
+                ["profile", "Personal details", "01"],
+                ["security", "Security", "02"],
+                ["notifications", "Stock emails", "03"],
+                ["addresses", "Addresses", "04"],
+              ].map(([value, label, number]) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeSection === value}
+                  aria-controls={`account-panel-${value}`}
+                  onClick={() => setActiveSection(value as SettingsSection)}
+                  className={`st-account-settings-tab ${
+                    activeSection === value ? "is-active" : ""
+                  }`}
+                >
+                  <span>{label}</span>
+                  <small>{number}</small>
+                </button>
+              ))}
+            </div>
 
-            <div className="mt-5 border-t border-neutral-200 pt-5">
+            <div className="st-account-settings-signout mt-5 border-t border-neutral-200 pt-5">
               <button
                 type="button"
                 onClick={() => setShowLogoutConfirmation(true)}
@@ -726,7 +744,11 @@ export default function AccountSettingsClient({
             </div>
           </nav>
 
-          <div className="p-6 sm:p-8 lg:p-10">
+          <div
+            id={`account-panel-${activeSection}`}
+            className="p-6 sm:p-8 lg:p-10"
+            role="tabpanel"
+          >
             {activeSection === "profile" ? (
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">
@@ -768,7 +790,7 @@ export default function AccountSettingsClient({
                         Verified email address
                       </FieldLabel>
 
-                      <div className="mt-2 flex border border-neutral-200 bg-neutral-50">
+                      <div className="st-account-field-shell st-account-field-shell--email mt-2 flex border border-neutral-200 bg-neutral-50">
                         <input
                           id="email"
                           value={profile.email}
@@ -787,7 +809,7 @@ export default function AccountSettingsClient({
                         Telephone number
                       </FieldLabel>
 
-                      <div className="mt-2 grid grid-cols-[160px_minmax(0,1fr)] border border-neutral-300 focus-within:border-black">
+                      <div className="st-account-field-shell st-account-field-shell--phone mt-2 grid grid-cols-[160px_minmax(0,1fr)] border border-neutral-300 focus-within:border-black">
                         <select
                           name="phoneCountryCode"
                           defaultValue={profile.phoneCountryCode}
@@ -928,72 +950,49 @@ export default function AccountSettingsClient({
                   again.
                 </p>
 
-                <section className="mt-8 border border-neutral-200">
-                  <div className="flex items-center justify-between gap-6 border-b border-neutral-200 px-5 py-5 sm:px-6">
+                <section className="st-account-stock-card mt-8 border border-neutral-200">
+                  <div className="st-account-stock-card__status flex items-center justify-between gap-6 border-b border-neutral-200 px-5 py-5 sm:px-6">
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
                         Current status
                       </p>
 
                       <p className="mt-3 text-sm font-semibold uppercase tracking-[0.1em]">
-                        {stockNotificationsEnabled
+                        {optimisticStockNotificationsEnabled
                           ? "Stock emails enabled"
                           : "Stock emails disabled"}
                       </p>
                     </div>
 
-                    <form action={updateStockNotificationPreference}>
+                    <form
+                      action={saveStockNotificationPreference}
+                      className="st-account-stock-switch-form"
+                    >
                       <input
                         type="hidden"
                         name="enabled"
-                        value={stockNotificationsEnabled ? "false" : "true"}
+                        value={optimisticStockNotificationsEnabled ? "false" : "true"}
                       />
 
                       <button
                         type="submit"
                         role="switch"
-                        aria-checked={stockNotificationsEnabled}
+                        aria-checked={optimisticStockNotificationsEnabled}
                         aria-label={
-                          stockNotificationsEnabled
+                          optimisticStockNotificationsEnabled
                             ? "Disable stock emails"
                             : "Enable stock emails"
                         }
                         title={
-                          stockNotificationsEnabled
+                          optimisticStockNotificationsEnabled
                             ? "Disable stock emails"
                             : "Enable stock emails"
                         }
-                        className="relative block shrink-0 rounded-full border transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
-                        style={{
-                          width: "56px",
-                          minWidth: "56px",
-                          height: "32px",
-                          padding: 0,
-                          overflow: "hidden",
-                          appearance: "none",
-                          backgroundColor: stockNotificationsEnabled
-                            ? "#000000"
-                            : "#e5e5e5",
-                          borderColor: stockNotificationsEnabled
-                            ? "#000000"
-                            : "#cccccc",
-                        }}
+                        className="st-account-stock-switch"
                       >
                         <span
                           aria-hidden="true"
-                          style={{
-                            position: "absolute",
-                            top: "3px",
-                            left: stockNotificationsEnabled ? "27px" : "3px",
-                            right: "auto",
-                            width: "24px",
-                            height: "24px",
-                            borderRadius: "9999px",
-                            backgroundColor: "#ffffff",
-                            boxShadow: "0 1px 4px rgba(0, 0, 0, 0.18)",
-                            transform: "none",
-                            transition: "left 200ms ease",
-                          }}
+                          className="st-account-stock-switch__thumb"
                         />
                       </button>
                     </form>
@@ -1001,7 +1000,7 @@ export default function AccountSettingsClient({
 
                   <div className="px-5 py-6 sm:px-6">
                     <p className="max-w-2xl text-sm leading-7 text-neutral-600">
-                      {stockNotificationsEnabled
+                      {optimisticStockNotificationsEnabled
                         ? "You may receive relevant stock updates for products connected to this email address."
                         : "Stereophonie will not send stock notification emails to this email address."}
                     </p>
@@ -1040,7 +1039,7 @@ export default function AccountSettingsClient({
 
                       setEditingAddressId(null);
                     }}
-                    className="border border-black bg-black px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white hover:text-black"
+                    className="st-account-address-add border border-black bg-black px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white hover:text-black"
                   >
                     + Add address
                   </button>
@@ -1049,7 +1048,7 @@ export default function AccountSettingsClient({
                 {showNewAddress ? (
                   <form
                     action={addCustomerAddress}
-                    className="mt-7 border border-black p-5 sm:p-7"
+                    className="st-account-address-form mt-7 border border-black p-5 sm:p-7"
                   >
                     <AddressFields />
 
@@ -1077,7 +1076,7 @@ export default function AccountSettingsClient({
                     addresses.map((address) => (
                       <article
                         key={address.id}
-                        className={`border p-5 sm:p-6 ${
+                        className={`st-account-address-card border p-5 sm:p-6 ${
                           address.is_default
                             ? "border-black"
                             : "border-neutral-200"
@@ -1091,7 +1090,7 @@ export default function AccountSettingsClient({
                               </h4>
 
                               {address.is_default ? (
-                                <span className="bg-black px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] text-white">
+                                <span className="st-account-address-badge bg-black px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] text-white">
                                   Default
                                 </span>
                               ) : null}
@@ -1111,7 +1110,7 @@ export default function AccountSettingsClient({
                                   value={address.id}
                                 />
 
-                                <button className="border border-neutral-300 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em]">
+                                <button className="st-account-address-action border border-neutral-300 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em]">
                                   Make default
                                 </button>
                               </form>
@@ -1126,7 +1125,7 @@ export default function AccountSettingsClient({
                                     : address.id,
                                 )
                               }
-                              className="border border-neutral-300 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em]"
+                              className="st-account-address-action border border-neutral-300 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em]"
                             >
                               Edit
                             </button>
@@ -1134,7 +1133,7 @@ export default function AccountSettingsClient({
                             <button
                               type="button"
                               onClick={() => setAddressToDelete(address)}
-                              className="border border-red-200 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em] text-red-700"
+                              className="st-account-address-action border border-red-200 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em] text-red-700"
                             >
                               Delete
                             </button>
@@ -1144,7 +1143,7 @@ export default function AccountSettingsClient({
                         {editingAddressId === address.id ? (
                           <form
                             action={updateCustomerAddress}
-                            className="mt-7 border-t border-neutral-200 pt-7"
+                            className="st-account-address-edit-form mt-7 border-t border-neutral-200 pt-7"
                           >
                             <input
                               type="hidden"
@@ -1165,7 +1164,7 @@ export default function AccountSettingsClient({
                       </article>
                     ))
                   ) : (
-                    <div className="border border-dashed border-neutral-300 px-6 py-14 text-center">
+                    <div className="st-account-address-empty border border-dashed border-neutral-300 px-6 py-14 text-center">
                       <p className="text-sm font-semibold uppercase tracking-[0.13em]">
                         No saved addresses
                       </p>
@@ -1188,33 +1187,44 @@ export default function AccountSettingsClient({
 
       <StableModal
         open={showLogoutConfirmation}
-        eyebrow="Security confirmation"
-        title="Sign out of your account?"
-        icon="!"
+        eyebrow="Account security"
+        title="Sign out?"
+        icon="↗"
         onClose={() => setShowLogoutConfirmation(false)}
       >
-        <p className="mt-5 text-sm leading-7 text-neutral-500">
-          You will need to enter your email address and password again to access
-          your orders, saved addresses, and personal information.
-        </p>
+        <div className="st-retail-signout">
+          <div className="st-retail-signout__icon">
+            <span>↗</span>
+          </div>
 
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={() => setShowLogoutConfirmation(false)}
-            className="border border-neutral-300 bg-white px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-600 hover:border-black hover:text-black"
-          >
-            Stay signed in
-          </button>
+          <p>
+            You are about to leave your Stereophonie account. Your saved
+            information, addresses and order history will remain safely stored.
+          </p>
 
-          <form action={logoutCustomer}>
+          <div className="st-retail-signout__note">
+            You can sign back in at any time using your email address and
+            password.
+          </div>
+
+          <div className="st-retail-signout__actions">
             <button
-              type="submit"
-              className="w-full border border-red-700 bg-red-700 px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white hover:bg-white hover:text-red-700"
+              type="button"
+              onClick={() => setShowLogoutConfirmation(false)}
+              className="st-retail-signout__cancel"
             >
-              Yes, sign me out
+              Stay signed in
             </button>
-          </form>
+
+            <form action={logoutCustomer}>
+              <button
+                type="submit"
+                className="st-retail-signout__confirm"
+              >
+                Sign out
+              </button>
+            </form>
+          </div>
         </div>
       </StableModal>
 

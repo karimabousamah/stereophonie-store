@@ -1,0 +1,11930 @@
+:root {
+  --st3-white: #ffffff;
+  --st3-gray-50: #fbfbfd;
+  --st3-gray-100: #f5f5f7;
+  --st3-gray-200: #e8e8ed;
+  --st3-gray-300: #d2d2d7;
+  --st3-gray-500: #86868b;
+  --st3-gray-600: #6e6e73;
+  --st3-black: #1d1d1f;
+  --st3-black-pure: #000000;
+  --st3-accent: #fdb73e;
+  --st3-accent-hover: #f4a91c;
+
+  --st3-header-height: 48px;
+  --st3-content-width: 1200px;
+
+  --st3-radius-sm: 12px;
+  --st3-radius-md: 18px;
+  --st3-radius-lg: 28px;
+  --st3-radius-pill: 999px;
+
+  --st3-font:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "SF Pro Text",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+html {
+  background: var(--st3-white);
+}
+
+body {
+  margin: 0;
+  background: var(--st3-white);
+  color: var(--st3-black);
+  font-family: var(--st3-font);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.st3-header,
+.st3-header * {
+  box-sizing: border-box;
+}
+
+.st3-header {
+  position: sticky;
+  z-index: 1000;
+  top: 0;
+  width: 100%;
+  color: var(--st3-black);
+}
+
+.st3-header__bar {
+  position: relative;
+  z-index: 20;
+  height: var(--st3-header-height);
+  background: rgba(250, 250, 252, 0.88);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.045);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.st3-header__inner {
+  width: min(calc(100% - 36px), var(--st3-content-width));
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.st3-header__logo {
+  flex: 0 0 auto;
+  color: var(--st3-black);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.st3-header__nav {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 100%;
+}
+
+.st3-header__nav-item {
+  appearance: none;
+  height: 100%;
+  padding: 0 15px;
+  border: 0;
+  background: transparent;
+  color: var(--st3-black);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.st3-header__nav-item:hover {
+  color: #000;
+}
+
+.st3-header__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.st3-header__icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--st3-black);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.st3-header__icon:hover {
+  background: rgba(0, 0, 0, 0.055);
+}
+
+.st3-header__icon:active {
+  transform: scale(0.94);
+}
+
+.st3-header__icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.st3-header__menu-button {
+  display: none;
+}
+
+.st3-mega {
+  position: absolute;
+  z-index: 10;
+  top: var(--st3-header-height);
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  background: rgba(250, 250, 252, 0.985);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.08);
+  transform-origin: top center;
+  animation: st3MegaReveal 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-mega__inner {
+  width: min(calc(100% - 48px), 1024px);
+  min-height: 310px;
+  margin: 0 auto;
+  padding: 42px 0 52px;
+  display: grid;
+  grid-template-columns: minmax(300px, 1.25fr) minmax(180px, 0.75fr);
+  gap: 80px;
+}
+
+.st3-mega__eyebrow {
+  margin: 0 0 17px;
+  color: var(--st3-gray-500);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.st3-mega__links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.st3-mega__primary-link {
+  color: var(--st3-black);
+  text-decoration: none;
+  font-size: clamp(22px, 2.15vw, 28px);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  transition:
+    color 140ms ease,
+    transform 140ms ease;
+}
+
+.st3-mega__primary-link:hover {
+  color: #000;
+  transform: translateX(3px);
+}
+
+.st3-mega__secondary {
+  padding-top: 2px;
+}
+
+.st3-mega__secondary-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.st3-mega__secondary-link {
+  width: fit-content;
+  color: var(--st3-black);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.st3-mega__secondary-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.st3-mega__accent {
+  color: #8a5b00;
+}
+
+.st3-header__scrim {
+  position: fixed;
+  z-index: 5;
+  top: var(--st3-header-height);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: st3Scrim 180ms ease both;
+}
+
+.st3-mobile {
+  display: none;
+}
+
+.st3-button {
+  min-height: 44px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--st3-radius-pill);
+  background: var(--st3-accent);
+  color: var(--st3-black-pure);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st3-button:hover {
+  background: var(--st3-accent-hover);
+  box-shadow: 0 7px 20px rgba(253, 183, 62, 0.24);
+  transform: translateY(-1px);
+}
+
+.st3-button--dark {
+  background: var(--st3-black);
+  color: white;
+}
+
+.st3-button--dark:hover {
+  background: #000;
+  box-shadow: none;
+}
+
+@keyframes st3MegaReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scaleY(0.975);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes st3Scrim {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega,
+  .st3-header__scrim {
+    animation: none;
+  }
+
+  .st3-button,
+  .st3-header__icon,
+  .st3-mega__primary-link {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .st3-header__inner {
+    width: min(calc(100% - 24px), var(--st3-content-width));
+  }
+
+  .st3-header__nav {
+    display: none;
+  }
+
+  .st3-header__actions {
+    margin-left: auto;
+  }
+
+  .st3-header__desktop-only {
+    display: none;
+  }
+
+  .st3-header__menu-button {
+    display: inline-flex;
+  }
+
+  .st3-mega,
+  .st3-header__scrim {
+    display: none;
+  }
+
+  .st3-mobile {
+    position: fixed;
+    z-index: 999;
+    top: var(--st3-header-height);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    overflow-y: auto;
+    background: var(--st3-gray-50);
+    animation: st3MegaReveal 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .st3-mobile__inner {
+    padding: 28px 28px 60px;
+  }
+
+  .st3-mobile__label {
+    margin: 0 0 14px;
+    color: var(--st3-gray-500);
+    font-size: 12px;
+  }
+
+  .st3-mobile__links {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .st3-mobile__link {
+    padding: 11px 0;
+    color: var(--st3-black);
+    text-decoration: none;
+    font-size: 26px;
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+  }
+
+  .st3-mobile__utility {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--st3-gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .st3-mobile__utility a {
+    color: var(--st3-black);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 550;
+  }
+}
+
+/* ==========================================================
+   STEREOPHONIE V3 — HOMEPAGE FOUNDATION
+   ========================================================== */
+
+.st3-home {
+  overflow: hidden;
+  background: #fff;
+  color: var(--st3-black);
+}
+
+.st3-home__hero {
+  min-height: min(760px, calc(100svh - var(--st3-header-height)));
+  padding: 90px 24px 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(
+      circle at 50% 80%,
+      rgba(0, 0, 0, 0.035),
+      transparent 42%
+    ),
+    #f5f5f7;
+  text-align: center;
+}
+
+.st3-home__hero-content {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  animation: st3HomeIntro 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.st3-home__eyebrow {
+  margin: 0 0 16px;
+  color: var(--st3-gray-600);
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.st3-home__title {
+  margin: 0;
+  color: #1d1d1f;
+  font-size: clamp(54px, 7.3vw, 96px);
+  line-height: 0.95;
+  font-weight: 650;
+  letter-spacing: -0.065em;
+}
+
+.st3-home__subtitle {
+  width: min(100%, 620px);
+  margin: 28px auto 0;
+  color: var(--st3-gray-600);
+  font-size: clamp(18px, 2vw, 23px);
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+
+.st3-home__actions {
+  margin-top: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.st3-home__text-link,
+.st3-home__preview a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #8a5b00;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.st3-home__text-link span,
+.st3-home__preview a span {
+  font-size: 22px;
+  line-height: 0;
+  transition: transform 150ms ease;
+}
+
+.st3-home__text-link:hover span,
+.st3-home__preview a:hover span {
+  transform: translateX(3px);
+}
+
+.st3-home__statement {
+  padding: 125px 24px;
+  background: #fff;
+}
+
+.st3-home__statement-inner {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+}
+
+.st3-home__section-label {
+  margin: 0 0 19px;
+  color: var(--st3-gray-500);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.st3-home__statement h2 {
+  width: min(100%, 900px);
+  margin: 0;
+  color: var(--st3-black);
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1.04;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+}
+
+.st3-home__statement h2 span {
+  color: var(--st3-gray-500);
+}
+
+.st3-home__preview-grid {
+  padding: 0 12px 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  background: #fff;
+}
+
+.st3-home__preview {
+  min-height: 590px;
+  padding: 65px 40px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.st3-home__preview > div {
+  width: min(100%, 520px);
+}
+
+.st3-home__preview--light {
+  background: #f5f5f7;
+  color: var(--st3-black);
+}
+
+.st3-home__preview--dark {
+  background: #000;
+  color: #f5f5f7;
+}
+
+.st3-home__preview-eyebrow {
+  margin: 0 0 9px;
+  color: var(--st3-gray-500);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.st3-home__preview--dark .st3-home__preview-eyebrow {
+  color: #a1a1a6;
+}
+
+.st3-home__preview h2 {
+  margin: 0;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.05em;
+}
+
+.st3-home__preview p:not(.st3-home__preview-eyebrow) {
+  margin: 16px auto 21px;
+  color: var(--st3-gray-600);
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.st3-home__preview--dark p:not(.st3-home__preview-eyebrow) {
+  color: #a1a1a6;
+}
+
+.st3-home__preview--dark a {
+  color: var(--st3-accent);
+}
+
+.st3-home__coming {
+  padding: 110px 24px 125px;
+  background: #fff;
+  text-align: center;
+}
+
+.st3-home__coming > * {
+  width: min(100%, 720px);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.st3-home__coming p {
+  margin-bottom: 14px;
+  color: var(--st3-gray-500);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.st3-home__coming h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: clamp(32px, 4vw, 50px);
+  line-height: 1.06;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+
+.st3-home__coming span {
+  display: block;
+  color: var(--st3-gray-600);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+@keyframes st3HomeIntro {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 760px) {
+  .st3-home__hero {
+    min-height: 620px;
+    padding: 75px 22px 90px;
+  }
+
+  .st3-home__title {
+    font-size: clamp(48px, 15vw, 68px);
+  }
+
+  .st3-home__subtitle {
+    font-size: 18px;
+  }
+
+  .st3-home__actions {
+    gap: 18px;
+  }
+
+  .st3-home__statement {
+    padding: 85px 24px;
+  }
+
+  .st3-home__preview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .st3-home__preview {
+    min-height: 500px;
+    padding: 55px 24px;
+  }
+
+  .st3-home__coming {
+    padding: 85px 24px 95px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-home__hero-content {
+    animation: none;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — LIVE STOREFRONT HOMEPAGE
+   ========================================================== */
+
+.st3-home-live {
+  background: #fff;
+  color: #1d1d1f;
+}
+
+.st3-live-hero {
+  position: relative;
+  min-height: 690px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 24px 120px;
+  background: #f5f5f7;
+  isolation: isolate;
+}
+
+.st3-live-hero__content {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 900px);
+  text-align: center;
+  animation: st3LiveHeroIn 800ms
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.st3-live-hero__eyebrow {
+  margin: 0 0 16px;
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.st3-live-hero h1 {
+  margin: 0;
+  font-size: clamp(58px, 8vw, 108px);
+  line-height: 0.92;
+  font-weight: 650;
+  letter-spacing: -0.07em;
+}
+
+.st3-live-hero__copy {
+  width: min(100%, 610px);
+  margin: 30px auto 0;
+  color: #6e6e73;
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.45;
+  letter-spacing: -0.025em;
+}
+
+.st3-live-hero__actions {
+  margin-top: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.st3-link-arrow,
+.st3-section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8a5b00;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.st3-link-arrow span,
+.st3-section-link span {
+  font-size: 23px;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.st3-link-arrow:hover span,
+.st3-section-link:hover span {
+  transform: translateX(3px);
+}
+
+.st3-live-hero__orb {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: -360px;
+  width: 780px;
+  height: 780px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(253, 183, 62, 0.22),
+      rgba(253, 183, 62, 0.06) 38%,
+      transparent 69%
+    );
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.st3-category-section,
+.st3-products-section {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: 110px 42px 20px;
+}
+
+.st3-section-heading {
+  margin-bottom: 38px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.st3-section-eyebrow {
+  margin: 0 0 10px;
+  color: #86868b;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.st3-section-heading h2 {
+  margin: 0;
+  font-size: clamp(38px, 4.4vw, 62px);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+}
+
+.st3-section-description {
+  margin: 14px 0 0;
+  color: #6e6e73;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.st3-section-link {
+  flex: 0 0 auto;
+  margin-bottom: 4px;
+}
+
+.st3-category-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns:
+    minmax(310px, min(31vw, 420px));
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 2px 18px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.st3-category-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.st3-category-card {
+  position: relative;
+  min-height: 470px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  text-decoration: none;
+  scroll-snap-align: start;
+  transform: translateZ(0);
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 300ms ease;
+}
+
+.st3-category-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.08);
+}
+
+.st3-category-card__copy {
+  position: relative;
+  z-index: 2;
+  padding: 30px 30px 10px;
+}
+
+.st3-category-card__copy h3 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.st3-category-card__copy p {
+  margin: 10px 0 0;
+  color: #6e6e73;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.st3-category-card__visual {
+  min-height: 300px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px 26px;
+}
+
+.st3-category-card__visual img {
+  width: 100%;
+  height: 100%;
+  max-height: 310px;
+  object-fit: contain;
+  transition:
+    transform 450ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-category-card:hover
+.st3-category-card__visual img {
+  transform: scale(1.035);
+}
+
+.st3-category-card__fallback {
+  width: 190px;
+  height: 190px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.st3-category-card__fallback span {
+  font-size: 70px;
+  font-weight: 600;
+  letter-spacing: -0.06em;
+}
+
+.st3-category-card__arrow {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #1d1d1f;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  transition:
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.st3-category-card:hover
+.st3-category-card__arrow {
+  background: #fdb73e;
+  color: #1d1d1f;
+  transform: translateX(2px);
+}
+
+.st3-product-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.st3-product-card {
+  min-width: 0;
+}
+
+.st3-product-card__media {
+  position: relative;
+  aspect-ratio: 1 / 1.04;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  border-radius: 24px;
+  background: #f5f5f7;
+  text-decoration: none;
+}
+
+.st3-product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(0.96);
+  transition:
+    transform 420ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-product-card:hover
+.st3-product-card__image {
+  transform: scale(1);
+}
+
+.st3-product-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #86868b;
+}
+
+.st3-product-card__placeholder span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.st3-product-card__badges {
+  position: absolute;
+  z-index: 2;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.st3-product-card__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: #1d1d1f;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 650;
+}
+
+.st3-product-card__badge--offer {
+  background: #fdb73e;
+}
+
+.st3-product-card__content {
+  padding: 18px 4px 8px;
+}
+
+.st3-product-card__meta {
+  margin-bottom: 6px;
+  color: #86868b;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.st3-product-card__name {
+  display: inline-block;
+  color: #1d1d1f;
+  text-decoration: none;
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.st3-product-card__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.st3-product-card__bottom {
+  margin-top: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.st3-product-card__pricing {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.st3-product-card__price {
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.st3-product-card__old-price {
+  color: #86868b;
+  font-size: 12px;
+  text-decoration: line-through;
+}
+
+.st3-product-card__availability {
+  flex: 0 0 auto;
+  color: #86868b;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.st3-service-strip {
+  width: min(100%, 1356px);
+  margin: 120px auto 0;
+  padding: 60px 42px;
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 50px;
+  border-top: 1px solid #d2d2d7;
+}
+
+.st3-service-strip__item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.st3-service-strip__item strong {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.st3-service-strip__item span {
+  color: #6e6e73;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.st3-footer {
+  margin-top: 70px;
+  background: #f5f5f7;
+  color: #1d1d1f;
+}
+
+.st3-footer__inner {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  padding: 58px 30px 28px;
+}
+
+.st3-footer__top {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 80px;
+}
+
+.st3-footer__brand {
+  color: #1d1d1f;
+  text-decoration: none;
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.04em;
+}
+
+.st3-footer__tagline {
+  margin: 12px 0 0;
+  color: #6e6e73;
+  font-size: 14px;
+}
+
+.st3-footer__columns {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 35px;
+}
+
+.st3-footer__columns > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.st3-footer__title {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.st3-footer__columns a {
+  color: #424245;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.st3-footer__columns a:hover {
+  text-decoration: underline;
+}
+
+.st3-footer__bottom {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid #d2d2d7;
+  color: #6e6e73;
+  font-size: 11px;
+}
+
+@keyframes st3LiveHeroIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1020px) {
+  .st3-product-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .st3-footer__top {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+}
+
+@media (max-width: 720px) {
+  .st3-live-hero {
+    min-height: 610px;
+    padding: 80px 22px 100px;
+  }
+
+  .st3-live-hero h1 {
+    font-size: clamp(50px, 15vw, 72px);
+  }
+
+  .st3-live-hero__copy {
+    font-size: 18px;
+  }
+
+  .st3-live-hero__actions {
+    gap: 18px;
+  }
+
+  .st3-category-section,
+  .st3-products-section {
+    padding:
+      78px 20px 10px;
+  }
+
+  .st3-section-heading {
+    align-items: flex-start;
+  }
+
+  .st3-section-heading h2 {
+    font-size: 40px;
+  }
+
+  .st3-section-description {
+    font-size: 16px;
+  }
+
+  .st3-section-link {
+    display: none;
+  }
+
+  .st3-category-rail {
+    grid-auto-columns: 84vw;
+  }
+
+  .st3-category-card {
+    min-height: 430px;
+    border-radius: 24px;
+  }
+
+  .st3-product-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 24px 10px;
+  }
+
+  .st3-product-card__media {
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .st3-product-card__content {
+    padding-top: 13px;
+  }
+
+  .st3-product-card__name {
+    font-size: 14px;
+  }
+
+  .st3-product-card__bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .st3-product-card__availability {
+    display: none;
+  }
+
+  .st3-service-strip {
+    margin-top: 80px;
+    padding: 45px 22px;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .st3-footer__inner {
+    padding:
+      48px 22px 25px;
+  }
+
+  .st3-footer__columns {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 35px 25px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-live-hero__content {
+    animation: none;
+  }
+
+  .st3-product-card__image,
+  .st3-category-card,
+  .st3-category-card__visual img {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — PREMIUM INTERACTION LAYER
+   ========================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.st3-reveal {
+  opacity: 0;
+  transform: translateY(34px);
+  transition:
+    opacity 800ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.st3-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Header refinement */
+
+.st3-header {
+  position: relative;
+  z-index: 1000;
+}
+
+.st3-header__bar {
+  position: relative;
+  z-index: 1002;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.st3-mega {
+  transform-origin: top center;
+  animation:
+    st3MegaEnter 360ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.st3-header__scrim {
+  animation:
+    st3ScrimEnter 280ms ease both;
+}
+
+@keyframes st3MegaEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes st3ScrimEnter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* CTA refinement */
+
+.st3-button {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.st3-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.st3-button:active {
+  transform: scale(0.98);
+}
+
+/* Category premium motion */
+
+.st3-category-card {
+  transition:
+    transform 420ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 420ms ease;
+}
+
+.st3-category-card:hover {
+  transform:
+    translateY(-7px)
+    scale(1.004);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.1);
+}
+
+.st3-category-card__visual img {
+  transition:
+    transform 650ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-category-card:hover
+.st3-category-card__visual img {
+  transform: scale(1.055);
+}
+
+/* Product card premium motion */
+
+.st3-product-card {
+  transition:
+    transform 360ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-product-card:hover {
+  transform: translateY(-4px);
+}
+
+.st3-product-card__media {
+  transition:
+    background 300ms ease,
+    box-shadow 400ms ease;
+}
+
+.st3-product-card:hover
+.st3-product-card__media {
+  background: #f2f2f4;
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.065);
+}
+
+.st3-product-card__image {
+  transition:
+    transform 600ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.st3-product-card:hover
+.st3-product-card__image {
+  transform: scale(1.025);
+}
+
+/* Better focus states */
+
+.st3-button:focus-visible,
+.st3-link-arrow:focus-visible,
+.st3-section-link:focus-visible,
+.st3-category-card:focus-visible,
+.st3-product-card__media:focus-visible,
+.st3-product-card__name:focus-visible,
+.st3-footer a:focus-visible,
+.st3-header a:focus-visible,
+.st3-header button:focus-visible {
+  outline: 2px solid #fdb73e;
+  outline-offset: 3px;
+}
+
+/* Mobile touch behaviour */
+
+@media (hover: none) {
+  .st3-category-card:hover,
+  .st3-product-card:hover,
+  .st3-button:hover {
+    transform: none;
+  }
+
+  .st3-category-card:hover
+  .st3-category-card__visual img,
+  .st3-product-card:hover
+  .st3-product-card__image {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .st3-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .st3-mega,
+  .st3-header__scrim {
+    animation: none;
+  }
+
+  .st3-category-card,
+  .st3-category-card__visual img,
+  .st3-product-card,
+  .st3-product-card__media,
+  .st3-product-card__image,
+  .st3-button {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — FINAL HEADER INTERACTION LAYER
+   ========================================================== */
+
+.st3-header {
+  position: sticky;
+  top: 0;
+  z-index: 5000;
+  width: 100%;
+  isolation: isolate;
+}
+
+.st3-header__bar {
+  position: relative;
+  z-index: 30;
+  height: var(--st3-header-height);
+  background: rgba(250, 250, 252, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.st3-header__logo,
+.st3-header__nav-item,
+.st3-header__icon {
+  position: relative;
+  z-index: 1;
+}
+
+.st3-header__nav-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition:
+    color 150ms ease,
+    opacity 150ms ease;
+}
+
+.st3-header__nav-item:hover,
+.st3-header__nav-item--active {
+  color: #000;
+}
+
+.st3-header__nav-item--active::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  bottom: 5px;
+  left: 14px;
+  height: 1px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.st3-mega {
+  position: absolute;
+  z-index: 20;
+  top: var(--st3-header-height);
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  background: rgba(250, 250, 252, 0.985);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 30px 65px rgba(0, 0, 0, 0.1);
+  transform-origin: top center;
+  animation:
+    st3HeaderPanelIn 240ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.st3-mega__inner {
+  min-height: 0;
+}
+
+.st3-mega__inner--support {
+  padding-bottom: 48px;
+}
+
+.st3-header__scrim--v3 {
+  position: fixed;
+  z-index: 4990;
+  top: var(--st3-header-height);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100dvh - var(--st3-header-height));
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.16);
+  cursor: default;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: st3HeaderScrimIn 180ms ease both;
+}
+
+@keyframes st3HeaderPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes st3HeaderScrimIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .st3-header {
+    position: sticky;
+    top: 0;
+  }
+
+  .st3-header__scrim--v3 {
+    display: none;
+  }
+
+  .st3-mobile {
+    z-index: 25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega,
+  .st3-header__scrim--v3 {
+    animation: none;
+  }
+}
+
+/* ==========================================================
+   V3 — FINAL MEGA MENU MOTION
+   One authoritative motion layer.
+   ========================================================== */
+
+.st3-mega {
+  display: block;
+
+  visibility: hidden;
+  opacity: 0;
+
+  clip-path: inset(0 0 100% 0 round 0 0 18px 18px);
+
+  transform:
+    translate3d(0, -10px, 0);
+
+  transform-origin: top center;
+
+  pointer-events: none;
+
+  /*
+   * Disable all older keyframe animation declarations.
+   * The open/closed state now owns the animation.
+   */
+  animation: none !important;
+
+  transition:
+    clip-path 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 210ms ease,
+    visibility 0s linear 380ms;
+
+  will-change:
+    clip-path,
+    transform,
+    opacity;
+}
+
+.st3-mega--open {
+  visibility: visible;
+  opacity: 1;
+
+  clip-path: inset(0 0 0 0 round 0);
+
+  transform:
+    translate3d(0, 0, 0);
+
+  pointer-events: auto;
+
+  transition:
+    clip-path 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease,
+    visibility 0s;
+}
+
+.st3-mega--closed {
+  visibility: hidden;
+  opacity: 0;
+
+  clip-path: inset(0 0 100% 0 round 0 0 18px 18px);
+
+  transform:
+    translate3d(0, -10px, 0);
+
+  pointer-events: none;
+}
+
+
+/*
+ * MENU CONTENT
+ *
+ * The panel starts moving first.
+ * Text follows slightly afterward.
+ */
+
+.st3-mega__inner {
+  opacity: 0;
+
+  transform:
+    translate3d(0, -10px, 0);
+
+  transition:
+    opacity 180ms ease,
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  transition-delay: 0ms;
+}
+
+.st3-mega--open .st3-mega__inner {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  transition-delay: 65ms;
+}
+
+
+/*
+ * NAV ACTIVE STATE
+ */
+
+.st3-header__nav-item {
+  transition:
+    color 160ms ease,
+    opacity 160ms ease,
+    background-color 160ms ease;
+}
+
+.st3-header__nav-item--active {
+  color: #000;
+}
+
+
+/*
+ * BACKGROUND SCRIM
+ *
+ * The React component mounts this only while a desktop
+ * menu is active, so entrance animation is appropriate.
+ */
+
+.st3-header__scrim--v3 {
+  animation:
+    st3FinalScrimIn 300ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+@keyframes st3FinalScrimIn {
+  from {
+    opacity: 0;
+
+    -webkit-backdrop-filter:
+      blur(0px);
+
+    backdrop-filter:
+      blur(0px);
+  }
+
+  to {
+    opacity: 1;
+
+    -webkit-backdrop-filter:
+      blur(4px);
+
+    backdrop-filter:
+      blur(4px);
+  }
+}
+
+
+/*
+ * GPU-friendly rendering during motion.
+ */
+
+.st3-mega,
+.st3-mega__inner {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+
+/*
+ * MOBILE
+ *
+ * Desktop mega-menu motion must never interfere with
+ * the mobile navigation.
+ */
+
+@media (max-width: 900px) {
+  .st3-mega {
+    display: none !important;
+  }
+}
+
+
+/*
+ * ACCESSIBILITY
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega,
+  .st3-mega__inner,
+  .st3-header__nav-item {
+    transition: none !important;
+  }
+
+  .st3-header__scrim--v3 {
+    animation: none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   V3 — UNIFIED HEADER MENU CONTENT TRANSITION
+   ========================================================== */
+
+.st3-mega__inner--switch {
+  animation:
+    st3MegaContentSwitch 260ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+@keyframes st3MegaContentSwitch {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -7px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega__inner--switch {
+    animation: none;
+  }
+}
+
+
+/* ==========================================================
+   V3 — SMOOTH MEGA MENU EXIT
+   ========================================================== */
+
+.st3-mega--closing {
+  visibility: visible;
+  opacity: 0;
+
+  clip-path: inset(
+    0 0 100% 0
+    round 0 0 18px 18px
+  );
+
+  transform:
+    translate3d(0, -8px, 0);
+
+  pointer-events: none;
+
+  transition:
+    clip-path 340ms
+      cubic-bezier(0.4, 0, 0.6, 1),
+    transform 340ms
+      cubic-bezier(0.4, 0, 0.6, 1),
+    opacity 230ms ease,
+    visibility 0s linear 340ms;
+}
+
+.st3-mega--closing
+.st3-mega__inner {
+  opacity: 0;
+
+  transform:
+    translate3d(0, -7px, 0);
+
+  transition:
+    opacity 150ms ease,
+    transform 230ms ease;
+
+  transition-delay: 0ms;
+}
+
+.st3-header__scrim--v3 {
+  transition:
+    opacity 280ms ease,
+    backdrop-filter 280ms ease,
+    -webkit-backdrop-filter 280ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega--closing,
+  .st3-mega--closing
+  .st3-mega__inner {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================
+   V3 — FAST MENU EXIT + CATEGORY SWITCH
+   ========================================================== */
+
+/*
+ * Opening remains smooth and premium.
+ * Closing is deliberately faster so the interface
+ * never feels stuck behind the gray scrim.
+ */
+
+.st3-mega--open {
+  visibility: visible;
+  opacity: 1;
+
+  clip-path: inset(0 0 0 0);
+
+  transform:
+    translate3d(0, 0, 0);
+
+  pointer-events: auto;
+
+  transition:
+    clip-path 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 175ms ease,
+    visibility 0s;
+}
+
+.st3-mega--closing {
+  visibility: visible;
+  opacity: 0;
+
+  clip-path:
+    inset(0 0 100% 0);
+
+  transform:
+    translate3d(0, -6px, 0);
+
+  pointer-events: none;
+
+  transition:
+    clip-path 210ms cubic-bezier(0.4, 0, 1, 1),
+    transform 210ms cubic-bezier(0.4, 0, 1, 1),
+    opacity 135ms ease,
+    visibility 0s linear 210ms;
+}
+
+.st3-mega--closed {
+  visibility: hidden;
+  opacity: 0;
+
+  clip-path:
+    inset(0 0 100% 0);
+
+  transform:
+    translate3d(0, -6px, 0);
+
+  pointer-events: none;
+}
+
+
+/*
+ * CATEGORY → CATEGORY
+ *
+ * The outer white panel stays open.
+ * Only its content changes.
+ */
+
+.st3-mega__inner--switch {
+  min-height: 255px;
+
+  animation:
+    st3CategoryContentChange
+    190ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+@keyframes st3CategoryContentChange {
+  from {
+    opacity: 0;
+    transform:
+      translate3d(0, 5px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0);
+  }
+}
+
+
+/*
+ * SCRIM
+ */
+
+.st3-header__scrim--v3 {
+  animation: none !important;
+
+  transition:
+    opacity 155ms ease,
+    background-color 155ms ease,
+    -webkit-backdrop-filter 155ms ease,
+    backdrop-filter 155ms ease;
+}
+
+.st3-header__scrim--open {
+  opacity: 1;
+
+  background:
+    rgba(0, 0, 0, 0.15);
+
+  -webkit-backdrop-filter:
+    blur(4px);
+
+  backdrop-filter:
+    blur(4px);
+}
+
+.st3-header__scrim--closing {
+  opacity: 0;
+
+  background:
+    rgba(0, 0, 0, 0);
+
+  -webkit-backdrop-filter:
+    blur(0);
+
+  backdrop-filter:
+    blur(0);
+
+  pointer-events: none;
+}
+
+
+/*
+ * Closing content disappears slightly before
+ * the outer panel finishes retracting.
+ */
+
+.st3-mega--closing
+.st3-mega__inner {
+  opacity: 0;
+
+  transform:
+    translate3d(0, -4px, 0);
+
+  transition:
+    opacity 90ms ease,
+    transform 150ms ease;
+
+  transition-delay: 0ms;
+}
+
+
+/* ==========================================================
+   V3 — HOMEPAGE PREMIUM SHELF POLISH
+   ========================================================== */
+
+/*
+ * Reduce unnecessary vertical space between homepage areas.
+ */
+
+.st3-category-section,
+.st3-products-section {
+  padding-top: 88px;
+  padding-bottom: 8px;
+}
+
+
+/*
+ * Product sections become shelves instead of a rigid
+ * four-column grid. This means one product no longer
+ * creates an enormous empty visual block.
+ */
+
+.st3-product-grid {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding:
+    4px 3px 24px;
+
+  scroll-snap-type:
+    x proximity;
+
+  scrollbar-width: none;
+
+  overscroll-behavior-inline:
+    contain;
+}
+
+.st3-product-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.st3-product-grid
+.st3-product-card {
+  flex:
+    0 0 clamp(
+      245px,
+      22vw,
+      310px
+    );
+
+  scroll-snap-align: start;
+}
+
+
+/*
+ * Slightly more premium image proportions.
+ */
+
+.st3-product-card__media {
+  aspect-ratio: 1 / 1;
+
+  border-radius: 24px;
+
+  background:
+    #f5f5f7;
+}
+
+
+/*
+ * Make the card copy more compact.
+ */
+
+.st3-product-card__content {
+  padding:
+    15px 5px 4px;
+}
+
+.st3-product-card__bottom {
+  margin-top: 10px;
+}
+
+
+/*
+ * Category rail should feel like the same visual family.
+ */
+
+.st3-category-rail {
+  gap: 18px;
+
+  padding-bottom: 22px;
+}
+
+.st3-category-card {
+  border-radius: 26px;
+
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.025);
+}
+
+
+/*
+ * Better visual separation between homepage sections.
+ */
+
+.st3-products-section + .st3-products-section {
+  margin-top: 20px;
+}
+
+.st3-service-strip {
+  margin-top: 95px;
+}
+
+
+/*
+ * Headings remain large but tighter.
+ */
+
+.st3-section-heading {
+  margin-bottom: 30px;
+}
+
+.st3-section-description {
+  margin-top: 11px;
+}
+
+
+/*
+ * Keep horizontal shelves useful on tablets/mobile.
+ */
+
+@media (max-width: 900px) {
+  .st3-product-grid
+  .st3-product-card {
+    flex-basis:
+      clamp(
+        225px,
+        41vw,
+        285px
+      );
+  }
+}
+
+@media (max-width: 720px) {
+  .st3-category-section,
+  .st3-products-section {
+    padding-top: 68px;
+  }
+
+  .st3-product-grid {
+    gap: 12px;
+  }
+
+  .st3-product-grid
+  .st3-product-card {
+    flex-basis:
+      min(
+        72vw,
+        270px
+      );
+  }
+}
+
+
+/*
+ * Accessibility
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-mega--open,
+  .st3-mega--closing,
+  .st3-mega__inner--switch,
+  .st3-header__scrim--v3 {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — PREMIUM HOMEPAGE PHASE
+   ========================================================== */
+
+.st3-premium-hero {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    #f5f5f7;
+
+  min-height:
+    calc(
+      min(820px, 88svh)
+      - var(--st3-header-height)
+    );
+}
+
+.st3-premium-hero__inner {
+  width:
+    min(
+      calc(100% - 48px),
+      1360px
+    );
+
+  min-height: 720px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 0.94fr)
+    minmax(420px, 1.06fr);
+
+  align-items: center;
+
+  gap: 40px;
+
+  padding:
+    70px 0 80px;
+}
+
+.st3-premium-hero__copy {
+  position: relative;
+  z-index: 3;
+
+  padding-left:
+    clamp(0px, 3vw, 40px);
+
+  animation:
+    st3PremiumHeroCopyIn
+    700ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.st3-premium-hero__eyebrow {
+  margin:
+    0 0 16px;
+
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 600;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.st3-premium-hero h1 {
+  margin: 0;
+
+  max-width: 720px;
+
+  font-size:
+    clamp(
+      62px,
+      7vw,
+      104px
+    );
+
+  line-height: 0.91;
+
+  font-weight: 650;
+
+  letter-spacing:
+    -0.072em;
+}
+
+.st3-premium-hero__description {
+  width:
+    min(100%, 540px);
+
+  margin:
+    30px 0 0;
+
+  color: #6e6e73;
+
+  font-size:
+    clamp(
+      18px,
+      1.7vw,
+      22px
+    );
+
+  line-height: 1.45;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.st3-premium-hero__actions {
+  margin-top: 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 24px;
+}
+
+.st3-premium-hero__visual {
+  position: relative;
+
+  min-height: 610px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  isolation: isolate;
+}
+
+.st3-premium-hero__halo {
+  position: absolute;
+
+  z-index: -1;
+
+  width:
+    min(52vw, 660px);
+
+  height:
+    min(52vw, 660px);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(253, 183, 62, 0.31)
+      0%,
+      rgba(253, 183, 62, 0.13)
+      31%,
+      rgba(253, 183, 62, 0.04)
+      50%,
+      transparent
+      72%
+    );
+
+  transform:
+    translate3d(
+      0,
+      30px,
+      0
+    );
+}
+
+.st3-premium-hero__image {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  height: 560px;
+
+  object-fit: contain;
+
+  animation:
+    st3PremiumHeroProductIn
+    900ms
+    100ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+
+  filter:
+    drop-shadow(
+      0 35px 40px
+      rgba(0, 0, 0, 0.09)
+    );
+}
+
+.st3-premium-hero__visual-fallback {
+  display: grid;
+  place-items: center;
+
+  width: 360px;
+  height: 360px;
+
+  border-radius: 50%;
+
+  background: #fff;
+
+  font-size: 20px;
+  font-weight: 600;
+}
+
+
+/* Category section */
+
+.st3-category-section--premium {
+  padding-top: 105px;
+}
+
+.st3-category-section--premium
+.st3-category-rail {
+  grid-auto-columns:
+    minmax(
+      320px,
+      min(29vw, 430px)
+    );
+}
+
+.st3-category-card {
+  min-height: 490px;
+
+  background:
+    #f5f5f7;
+}
+
+.st3-category-card--featured {
+  grid-row: span 1;
+}
+
+.st3-category-card__eyebrow {
+  margin:
+    0 0 8px;
+
+  color: #86868b;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+.st3-category-card__visual {
+  padding:
+    5px 22px 30px;
+}
+
+.st3-category-card__visual img {
+  max-height: 330px;
+}
+
+
+/* Product section background variation */
+
+.st3-products-section--soft {
+  width: 100%;
+
+  max-width: none;
+
+  margin-top: 80px;
+
+  padding:
+    90px
+    max(
+      42px,
+      calc(
+        (100vw - 1356px)
+        / 2
+      )
+    )
+    70px;
+
+  background:
+    #f5f5f7;
+}
+
+.st3-products-section--soft
+.st3-product-card__media {
+  background: #fff;
+}
+
+
+/* Promotional band */
+
+.st3-home-banner {
+  position: relative;
+
+  width:
+    min(
+      calc(100% - 84px),
+      1356px
+    );
+
+  min-height: 470px;
+
+  overflow: hidden;
+
+  margin:
+    110px auto 15px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding:
+    60px
+    clamp(
+      45px,
+      7vw,
+      100px
+    );
+
+  border-radius: 32px;
+
+  background:
+    #1d1d1f;
+
+  color: #fff;
+
+  isolation: isolate;
+}
+
+.st3-home-banner__copy {
+  position: relative;
+
+  z-index: 2;
+
+  width:
+    min(100%, 670px);
+}
+
+.st3-home-banner
+.st3-section-eyebrow {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.6
+    );
+}
+
+.st3-home-banner h2 {
+  margin: 0;
+
+  font-size:
+    clamp(
+      46px,
+      5vw,
+      76px
+    );
+
+  line-height: 0.98;
+
+  font-weight: 600;
+
+  letter-spacing:
+    -0.06em;
+}
+
+.st3-home-banner p:not(
+  .st3-section-eyebrow
+) {
+  width:
+    min(100%, 500px);
+
+  margin:
+    22px 0 28px;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.68
+    );
+
+  font-size: 18px;
+
+  line-height: 1.45;
+}
+
+.st3-home-banner__shape {
+  position: absolute;
+
+  z-index: 1;
+
+  right: -90px;
+  top: 50%;
+
+  width: 570px;
+  height: 570px;
+
+  transform:
+    translateY(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 40% 40%,
+      #fdb73e,
+      rgba(253, 183, 62, 0.38)
+      42%,
+      rgba(253, 183, 62, 0.06)
+      66%,
+      transparent
+      69%
+    );
+
+  filter:
+    blur(1px);
+}
+
+
+/* Services */
+
+.st3-service-strip__number {
+  margin-bottom: 9px;
+
+  color: #86868b;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.05em;
+}
+
+
+/* Hero entrance */
+
+@keyframes st3PremiumHeroCopyIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translate3d(
+        0,
+        20px,
+        0
+      );
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translate3d(
+        0,
+        0,
+        0
+      );
+  }
+}
+
+@keyframes st3PremiumHeroProductIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translate3d(
+        0,
+        30px,
+        0
+      )
+      scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translate3d(
+        0,
+        0,
+        0
+      )
+      scale(1);
+  }
+}
+
+
+@media (max-width: 1000px) {
+  .st3-premium-hero__inner {
+    grid-template-columns: 1fr;
+
+    text-align: center;
+
+    padding-top: 85px;
+
+    gap: 0;
+  }
+
+  .st3-premium-hero__copy {
+    padding-left: 0;
+  }
+
+  .st3-premium-hero__description {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .st3-premium-hero__actions {
+    justify-content: center;
+  }
+
+  .st3-premium-hero__visual {
+    min-height: 460px;
+  }
+
+  .st3-premium-hero__image {
+    height: 430px;
+  }
+
+  .st3-home-banner {
+    min-height: 420px;
+  }
+}
+
+
+@media (max-width: 720px) {
+  .st3-premium-hero__inner {
+    width:
+      min(
+        calc(100% - 36px),
+        1360px
+      );
+
+    min-height: 0;
+
+    padding:
+      72px 0 48px;
+  }
+
+  .st3-premium-hero h1 {
+    font-size:
+      clamp(
+        50px,
+        15vw,
+        70px
+      );
+  }
+
+  .st3-premium-hero__visual {
+    min-height: 350px;
+  }
+
+  .st3-premium-hero__image {
+    height: 330px;
+  }
+
+  .st3-category-section--premium
+  .st3-category-rail {
+    grid-auto-columns:
+      84vw;
+  }
+
+  .st3-home-banner {
+    width:
+      calc(100% - 40px);
+
+    min-height: 430px;
+
+    margin-top: 80px;
+
+    padding:
+      45px 30px;
+
+    border-radius: 26px;
+  }
+
+  .st3-home-banner__shape {
+    right: -250px;
+
+    opacity: 0.7;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-premium-hero__copy,
+  .st3-premium-hero__image {
+    animation: none;
+  }
+}
+
+
+/* ==========================================================
+   V3 — LARGE CATEGORY HOMEPAGE
+   ========================================================== */
+
+.st3-apple-categories {
+  width:
+    min(
+      calc(100% - 48px),
+      1460px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    118px 0 35px;
+}
+
+.st3-apple-categories__heading {
+  width:
+    min(100%, 900px);
+
+  margin:
+    0 auto 55px;
+
+  text-align: center;
+}
+
+.st3-apple-categories__heading h2 {
+  margin: 0;
+
+  font-size:
+    clamp(
+      48px,
+      5.7vw,
+      82px
+    );
+
+  line-height: 0.98;
+
+  font-weight: 650;
+
+  letter-spacing:
+    -0.062em;
+}
+
+
+.st3-apple-category-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+
+/* LARGE FEATURED CATEGORY */
+
+.st3-apple-category-hero {
+  position: relative;
+
+  min-height:
+    clamp(
+      650px,
+      73vw,
+      850px
+    );
+
+  overflow: hidden;
+
+  display: grid;
+
+  grid-template-rows:
+    auto 1fr;
+
+  border-radius: 38px;
+
+  background: #f5f5f7;
+
+  color: #1d1d1f;
+
+  isolation: isolate;
+}
+
+.st3-apple-category-hero--dark {
+  background: #000;
+
+  color: #f5f5f7;
+}
+
+.st3-apple-category-hero__copy {
+  position: relative;
+  z-index: 4;
+
+  width:
+    min(100%, 820px);
+
+  margin:
+    0 auto;
+
+  padding:
+    62px 30px 20px;
+
+  text-align: center;
+}
+
+.st3-apple-category-hero__eyebrow {
+  margin:
+    0 0 10px;
+
+  color: #6e6e73;
+
+  font-size: 16px;
+
+  font-weight: 600;
+}
+
+.st3-apple-category-hero--dark
+.st3-apple-category-hero__eyebrow {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.58
+    );
+}
+
+.st3-apple-category-hero h2 {
+  margin: 0;
+
+  font-size:
+    clamp(
+      58px,
+      7vw,
+      104px
+    );
+
+  line-height: 0.93;
+
+  font-weight: 650;
+
+  letter-spacing:
+    -0.07em;
+}
+
+.st3-apple-category-hero__copy
+> p:not(
+  .st3-apple-category-hero__eyebrow
+) {
+  width:
+    min(100%, 620px);
+
+  margin:
+    19px auto 0;
+
+  color: #6e6e73;
+
+  font-size:
+    clamp(
+      18px,
+      1.8vw,
+      23px
+    );
+
+  line-height: 1.42;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.st3-apple-category-hero--dark
+.st3-apple-category-hero__copy
+> p:not(
+  .st3-apple-category-hero__eyebrow
+) {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.67
+    );
+}
+
+.st3-apple-category-hero__actions {
+  margin-top: 25px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 22px;
+}
+
+.st3-category-learn-link {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #8a5b00;
+
+  text-decoration: none;
+
+  font-size: 17px;
+
+  font-weight: 500;
+}
+
+.st3-apple-category-hero--dark
+.st3-category-learn-link {
+  color: #fdb73e;
+}
+
+
+.st3-apple-category-hero__media {
+  position: relative;
+
+  width:
+    calc(100% - 70px);
+
+  height: 100%;
+
+  min-height: 430px;
+
+  margin:
+    10px auto 35px;
+
+  overflow: hidden;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 32px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.66
+    );
+}
+
+.st3-apple-category-hero--dark
+.st3-apple-category-hero__media {
+  background: #101010;
+}
+
+.st3-apple-category-hero__media img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  max-height: 530px;
+
+  object-fit: contain;
+
+  padding: 28px;
+
+  border-radius: 30px;
+
+  transition:
+    transform 800ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+.st3-apple-category-hero:hover
+.st3-apple-category-hero__media img {
+  transform: scale(1.025);
+}
+
+
+/* SECONDARY LARGE CATEGORIES */
+
+.st3-category-feature-grid {
+  margin-top: 24px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 24px;
+}
+
+.st3-category-feature-grid
+.st3-reveal {
+  min-width: 0;
+}
+
+.st3-category-feature-card {
+  position: relative;
+
+  min-height: 650px;
+
+  overflow: hidden;
+
+  display: grid;
+
+  grid-template-rows:
+    auto 1fr;
+
+  border-radius: 34px;
+
+  background: #f5f5f7;
+
+  color: #1d1d1f;
+
+  text-decoration: none;
+
+  transition:
+    transform 420ms
+      cubic-bezier(
+        0.22,
+        1,
+        0.36,
+        1
+      ),
+    box-shadow 420ms ease;
+}
+
+.st3-category-feature-card:hover {
+  transform:
+    translateY(-5px);
+
+  box-shadow:
+    0 28px 65px
+    rgba(
+      0,
+      0,
+      0,
+      0.08
+    );
+}
+
+.st3-category-feature-card__copy {
+  position: relative;
+  z-index: 3;
+
+  padding:
+    45px 42px 18px;
+
+  text-align: center;
+}
+
+.st3-category-feature-card__copy
+> p {
+  margin:
+    0 0 8px;
+
+  color: #86868b;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.st3-category-feature-card__copy
+h3 {
+  margin: 0;
+
+  font-size:
+    clamp(
+      42px,
+      4.2vw,
+      64px
+    );
+
+  line-height: 0.98;
+
+  letter-spacing:
+    -0.06em;
+
+  font-weight: 650;
+}
+
+.st3-category-feature-card__copy
+> span:not(
+  .st3-category-feature-card__cta
+) {
+  display: block;
+
+  width:
+    min(100%, 480px);
+
+  margin:
+    14px auto 0;
+
+  color: #6e6e73;
+
+  font-size: 17px;
+
+  line-height: 1.42;
+}
+
+.st3-category-feature-card__cta {
+  margin-top: 19px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #8a5b00;
+
+  font-size: 16px;
+
+  font-weight: 500;
+}
+
+.st3-category-feature-card__media {
+  width:
+    calc(100% - 48px);
+
+  height: 100%;
+
+  min-height: 350px;
+
+  margin:
+    5px auto 24px;
+
+  overflow: hidden;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 28px;
+
+  background: #fff;
+}
+
+.st3-category-feature-card__media
+img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  max-height: 410px;
+
+  object-fit: contain;
+
+  padding: 24px;
+
+  border-radius: 26px;
+
+  transition:
+    transform 650ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+.st3-category-feature-card:hover
+.st3-category-feature-card__media
+img {
+  transform: scale(1.035);
+}
+
+
+/* FALLBACK MEDIA */
+
+.st3-category-image-fallback {
+  width: 100%;
+  height: 100%;
+
+  min-height: 330px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 28px;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(
+        253,
+        183,
+        62,
+        0.19
+      ),
+      transparent 60%
+    ),
+    #fff;
+}
+
+.st3-category-image-fallback
+span {
+  color: #1d1d1f;
+
+  font-size:
+    clamp(
+      28px,
+      4vw,
+      54px
+    );
+
+  font-weight: 600;
+
+  letter-spacing:
+    -0.05em;
+}
+
+
+/* ==========================================================
+   ROUND EVERYTHING THAT IS VISUAL / ACTIONABLE
+   ========================================================== */
+
+.st3-home-live
+img {
+  border-radius: 24px;
+}
+
+.st3-home-live
+.st3-button {
+  border-radius: 999px;
+}
+
+.st3-home-live
+button {
+  border-radius: 999px;
+}
+
+.st3-product-card__media {
+  border-radius: 28px;
+}
+
+.st3-product-card__media
+img {
+  border-radius: 22px;
+}
+
+.st3-home-banner {
+  border-radius: 36px;
+}
+
+.st3-category-card,
+.st3-category-card__visual,
+.st3-category-card__visual img {
+  border-radius: 28px;
+}
+
+
+/* HERO IMAGE NOW ALSO HAS A SOFTER CONTAINER */
+
+.st3-premium-hero__visual {
+  border-radius: 36px;
+}
+
+.st3-premium-hero__image {
+  border-radius: 30px;
+}
+
+
+/* ==========================================================
+   RESPONSIVE CATEGORY FEATURES
+   ========================================================== */
+
+@media (max-width: 950px) {
+  .st3-category-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .st3-category-feature-card {
+    min-height: 600px;
+  }
+
+  .st3-apple-category-hero {
+    min-height: 720px;
+  }
+}
+
+
+@media (max-width: 720px) {
+  .st3-apple-categories {
+    width:
+      calc(100% - 28px);
+
+    padding-top: 85px;
+  }
+
+  .st3-apple-categories__heading {
+    margin-bottom: 35px;
+  }
+
+  .st3-apple-category-stack,
+  .st3-category-feature-grid {
+    gap: 14px;
+  }
+
+  .st3-apple-category-hero {
+    min-height: 610px;
+
+    border-radius: 28px;
+  }
+
+  .st3-apple-category-hero__copy {
+    padding:
+      42px 22px 15px;
+  }
+
+  .st3-apple-category-hero h2 {
+    font-size:
+      clamp(
+        50px,
+        15vw,
+        72px
+      );
+  }
+
+  .st3-apple-category-hero__media {
+    width:
+      calc(100% - 28px);
+
+    min-height: 340px;
+
+    margin-bottom: 14px;
+
+    border-radius: 22px;
+  }
+
+  .st3-category-feature-card {
+    min-height: 560px;
+
+    border-radius: 28px;
+  }
+
+  .st3-category-feature-card__copy {
+    padding:
+      38px 24px 14px;
+  }
+
+  .st3-category-feature-card__media {
+    width:
+      calc(100% - 28px);
+
+    min-height: 310px;
+
+    margin-bottom: 14px;
+
+    border-radius: 22px;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-apple-category-hero__media
+  img,
+  .st3-category-feature-card,
+  .st3-category-feature-card__media
+  img {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3
+   CATEGORY CAMPAIGN HOMEPAGE — FINAL OVERRIDE
+   ========================================================== */
+
+.st3-cat-world {
+  width:
+    min(
+      calc(100% - 28px),
+      1510px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    105px 0 100px;
+}
+
+
+/* ----------------------------------------------------------
+   INTRO
+   ---------------------------------------------------------- */
+
+.st3-cat-intro {
+  width:
+    min(
+      calc(100% - 40px),
+      900px
+    );
+
+  margin:
+    0 auto 62px;
+
+  text-align:
+    center;
+}
+
+.st3-cat-intro > p {
+  margin:
+    0 0 11px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    17px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -0.025em;
+}
+
+.st3-cat-intro h2 {
+  margin: 0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    clamp(
+      56px,
+      6.5vw,
+      96px
+    );
+
+  line-height:
+    0.93;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.07em;
+}
+
+
+/* ----------------------------------------------------------
+   SHARED IMAGE SYSTEM
+   ---------------------------------------------------------- */
+
+.st3-cat-media {
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.82
+    );
+
+  border-radius:
+    36px;
+}
+
+.st3-cat-media img {
+  display:
+    block;
+
+  width:
+    100%;
+
+  height:
+    100%;
+
+  object-fit:
+    contain;
+
+  object-position:
+    center;
+
+  padding:
+    clamp(
+      22px,
+      4vw,
+      60px
+    );
+
+  border-radius:
+    32px;
+
+  transition:
+    transform
+    850ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+.st3-cat-media__empty {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  min-height:
+    320px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  background:
+    #f5f5f7;
+
+  border-radius:
+    inherit;
+}
+
+.st3-cat-media__empty div {
+  width:
+    min(
+      42vw,
+      340px
+    );
+
+  aspect-ratio:
+    1;
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(
+        253,
+        183,
+        62,
+        0.20
+      ),
+      rgba(
+        253,
+        183,
+        62,
+        0.05
+      )
+      46%,
+      transparent
+      70%
+    );
+}
+
+
+/* ----------------------------------------------------------
+   ACTIONS
+   ---------------------------------------------------------- */
+
+.st3-cat-actions {
+  margin-top:
+    25px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    22px;
+}
+
+.st3-cat-text-link {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  color:
+    #966100;
+
+  text-decoration:
+    none;
+
+  font-size:
+    17px;
+
+  font-weight:
+    500;
+
+  transition:
+    opacity
+    160ms ease;
+}
+
+.st3-cat-text-link:hover {
+  opacity:
+    0.68;
+}
+
+.st3-cat-text-link--light {
+  color:
+    #fdb73e;
+}
+
+
+/* ==========================================================
+   FIRST CATEGORY
+   LARGE LIGHT CAMPAIGN
+   ========================================================== */
+
+.st3-cat-hero {
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  min-height:
+    850px;
+
+  margin-bottom:
+    14px;
+
+  border-radius:
+    42px;
+
+  background:
+    #f5f5f7;
+
+  color:
+    #1d1d1f;
+}
+
+.st3-cat-hero__copy {
+  position:
+    relative;
+
+  z-index:
+    2;
+
+  width:
+    min(
+      calc(100% - 40px),
+      820px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    62px 0 24px;
+
+  text-align:
+    center;
+}
+
+.st3-cat-hero__copy h2 {
+  margin:
+    0;
+
+  font-size:
+    clamp(
+      64px,
+      7vw,
+      108px
+    );
+
+  line-height:
+    0.92;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.072em;
+}
+
+.st3-cat-hero__copy > p {
+  width:
+    min(
+      100%,
+      620px
+    );
+
+  margin:
+    20px auto 0;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    clamp(
+      18px,
+      1.65vw,
+      23px
+    );
+
+  line-height:
+    1.42;
+}
+
+.st3-cat-media--hero {
+  width:
+    calc(
+      100% - 60px
+    );
+
+  height:
+    560px;
+
+  margin:
+    8px auto 30px;
+
+  background:
+    #ffffff;
+}
+
+.st3-cat-hero:hover
+.st3-cat-media--hero img {
+  transform:
+    scale(1.025);
+}
+
+
+/* ==========================================================
+   SECOND CATEGORY
+   DARK SPLIT CAMPAIGN
+   ========================================================== */
+
+.st3-cat-split {
+  min-height:
+    690px;
+
+  margin-bottom:
+    14px;
+
+  overflow:
+    hidden;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      0.78fr
+    )
+    minmax(
+      0,
+      1.22fr
+    );
+
+  align-items:
+    stretch;
+
+  border-radius:
+    42px;
+
+  background:
+    #000;
+
+  color:
+    #f5f5f7;
+}
+
+.st3-cat-split__copy {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    center;
+
+  padding:
+    clamp(
+      50px,
+      7vw,
+      105px
+    );
+}
+
+.st3-cat-kicker {
+  margin:
+    0 0 11px;
+
+  color:
+    #86868b;
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -0.01em;
+}
+
+.st3-cat-split h2 {
+  margin: 0;
+
+  max-width:
+    600px;
+
+  font-size:
+    clamp(
+      54px,
+      6vw,
+      90px
+    );
+
+  line-height:
+    0.94;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.065em;
+}
+
+.st3-cat-split__description {
+  max-width:
+    470px;
+
+  margin:
+    20px 0 0;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.66
+    );
+
+  font-size:
+    19px;
+
+  line-height:
+    1.45;
+}
+
+.st3-cat-split
+.st3-cat-actions {
+  justify-content:
+    flex-start;
+}
+
+.st3-cat-media--split {
+  min-height:
+    690px;
+
+  margin:
+    22px 22px 22px 0;
+
+  background:
+    #101010;
+
+  border-radius:
+    32px;
+}
+
+.st3-cat-media--split img {
+  max-height:
+    650px;
+}
+
+.st3-cat-split:hover
+.st3-cat-media--split img {
+  transform:
+    scale(1.03);
+}
+
+
+/* ==========================================================
+   MULTI-CATEGORY CAMPAIGN GRID
+   ========================================================== */
+
+.st3-cat-grid {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap:
+    14px;
+}
+
+.st3-cat-grid
+.st3-reveal {
+  min-width:
+    0;
+}
+
+.st3-cat-tile {
+  position:
+    relative;
+
+  min-height:
+    690px;
+
+  overflow:
+    hidden;
+
+  display:
+    grid;
+
+  grid-template-rows:
+    auto 1fr;
+
+  border-radius:
+    38px;
+
+  background:
+    #f5f5f7;
+
+  color:
+    #1d1d1f;
+
+  transition:
+    transform
+    420ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    ),
+    box-shadow
+    420ms ease;
+}
+
+.st3-cat-tile--dark {
+  background:
+    #000;
+
+  color:
+    #f5f5f7;
+}
+
+.st3-cat-tile--wide {
+  grid-column:
+    1 / -1;
+
+  min-height:
+    750px;
+}
+
+.st3-cat-tile:hover {
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 30px 80px
+    rgba(
+      0,
+      0,
+      0,
+      0.08
+    );
+}
+
+.st3-cat-tile__copy {
+  position:
+    relative;
+
+  z-index:
+    2;
+
+  width:
+    min(
+      calc(100% - 48px),
+      650px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    48px 0 22px;
+
+  text-align:
+    center;
+}
+
+.st3-cat-tile__copy h3 {
+  margin:
+    0;
+
+  font-size:
+    clamp(
+      44px,
+      4.6vw,
+      70px
+    );
+
+  line-height:
+    0.96;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -0.062em;
+}
+
+.st3-cat-tile__copy
+> p:not(
+  .st3-cat-kicker
+) {
+  max-width:
+    520px;
+
+  margin:
+    14px auto 0;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.43;
+}
+
+.st3-cat-tile--dark
+.st3-cat-tile__copy
+> p:not(
+  .st3-cat-kicker
+) {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.62
+    );
+}
+
+.st3-cat-tile
+.st3-cat-text-link {
+  margin-top:
+    17px;
+}
+
+.st3-cat-media--tile {
+  width:
+    calc(
+      100% - 34px
+    );
+
+  height:
+    430px;
+
+  margin:
+    0 auto 17px;
+
+  border-radius:
+    30px;
+
+  background:
+    #ffffff;
+}
+
+.st3-cat-tile--dark
+.st3-cat-media--tile {
+  background:
+    #101010;
+}
+
+.st3-cat-tile--wide
+.st3-cat-media--tile {
+  height:
+    475px;
+
+  width:
+    calc(
+      100% - 44px
+    );
+}
+
+.st3-cat-tile:hover
+.st3-cat-media--tile img {
+  transform:
+    scale(1.035);
+}
+
+
+/* ==========================================================
+   IMPORTANT:
+   REMOVE OLD CATEGORY PLACEHOLDER VISUAL LANGUAGE
+   ========================================================== */
+
+.st3-category-feature-grid,
+.st3-apple-category-stack,
+.st3-apple-categories {
+  display:
+    none !important;
+}
+
+
+/* ==========================================================
+   ROUNDING CONSISTENCY
+   ========================================================== */
+
+.st3-home-live
+.st3-button,
+.st3-home-live
+button {
+  border-radius:
+    999px !important;
+}
+
+.st3-home-live
+img {
+  border-radius:
+    24px;
+}
+
+.st3-product-card,
+.st3-product-card__media {
+  border-radius:
+    28px;
+}
+
+.st3-home-banner {
+  border-radius:
+    38px;
+}
+
+
+/* ==========================================================
+   TABLET
+   ========================================================== */
+
+@media (
+  max-width:
+  1000px
+) {
+  .st3-cat-split {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st3-cat-split__copy {
+    align-items:
+      center;
+
+    text-align:
+      center;
+
+    padding:
+      65px 35px 30px;
+  }
+
+  .st3-cat-split
+  .st3-cat-actions {
+    justify-content:
+      center;
+  }
+
+  .st3-cat-media--split {
+    min-height:
+      500px;
+
+    margin:
+      0 22px 22px;
+  }
+
+  .st3-cat-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st3-cat-tile--wide {
+    grid-column:
+      auto;
+  }
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (
+  max-width:
+  700px
+) {
+  .st3-cat-world {
+    width:
+      calc(
+        100% - 16px
+      );
+
+    padding:
+      75px 0;
+  }
+
+  .st3-cat-intro {
+    margin-bottom:
+      38px;
+  }
+
+  .st3-cat-intro h2 {
+    font-size:
+      clamp(
+        48px,
+        15vw,
+        68px
+      );
+  }
+
+  .st3-cat-hero {
+    min-height:
+      650px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-hero__copy {
+    padding:
+      45px 18px 18px;
+  }
+
+  .st3-cat-hero__copy h2 {
+    font-size:
+      clamp(
+        52px,
+        15vw,
+        72px
+      );
+  }
+
+  .st3-cat-media--hero {
+    width:
+      calc(
+        100% - 20px
+      );
+
+    height:
+      390px;
+
+    margin-bottom:
+      10px;
+
+    border-radius:
+      22px;
+  }
+
+  .st3-cat-split {
+    min-height:
+      650px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-split__copy {
+    padding:
+      50px 24px 28px;
+  }
+
+  .st3-cat-split h2 {
+    font-size:
+      clamp(
+        50px,
+        14vw,
+        70px
+      );
+  }
+
+  .st3-cat-media--split {
+    min-height:
+      390px;
+
+    margin:
+      0 10px 10px;
+
+    border-radius:
+      22px;
+  }
+
+  .st3-cat-grid {
+    gap:
+      8px;
+  }
+
+  .st3-cat-tile,
+  .st3-cat-tile--wide {
+    min-height:
+      590px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-tile__copy {
+    padding:
+      40px 0 18px;
+  }
+
+  .st3-cat-tile__copy h3 {
+    font-size:
+      clamp(
+        42px,
+        12vw,
+        58px
+      );
+  }
+
+  .st3-cat-media--tile,
+  .st3-cat-tile--wide
+  .st3-cat-media--tile {
+    width:
+      calc(
+        100% - 20px
+      );
+
+    height:
+      355px;
+
+    margin-bottom:
+      10px;
+
+    border-radius:
+      22px;
+  }
+}
+
+
+/* ==========================================================
+   REDUCED MOTION
+   ========================================================== */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .st3-cat-media img,
+  .st3-cat-tile {
+    transition:
+      none !important;
+  }
+}
+
+
+/* ==========================================================
+   V3 CATEGORY CAMPAIGNS
+   TEXT + ARTWORK = ONE SURFACE
+   ========================================================== */
+
+/*
+ * Major principle:
+ *
+ * There is no longer a card inside a card.
+ * Copy and category artwork belong to one unified campaign.
+ */
+
+.st3-cat-world {
+  --st3-campaign-gap:
+    12px;
+}
+
+
+/* ----------------------------------------------------------
+   FULL WIDTH LIGHT CAMPAIGN
+   ---------------------------------------------------------- */
+
+.st3-cat-hero {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  overflow:
+    hidden;
+
+  min-height:
+    820px;
+
+  margin-bottom:
+    var(
+      --st3-campaign-gap
+    );
+
+  border-radius:
+    40px;
+
+  background:
+    #f5f5f7;
+}
+
+.st3-cat-hero__copy {
+  flex:
+    0 0 auto;
+
+  padding:
+    58px 24px 8px;
+}
+
+
+/*
+ * The media is no longer a secondary white card.
+ */
+
+.st3-cat-hero
+.st3-cat-media--hero {
+  flex:
+    1 1 auto;
+
+  width:
+    100%;
+
+  height:
+    auto;
+
+  min-height:
+    520px;
+
+  margin:
+    0;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+.st3-cat-hero
+.st3-cat-media--hero img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  max-height:
+    570px;
+
+  padding:
+    18px 60px 0;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    0;
+}
+
+
+/* ----------------------------------------------------------
+   DARK / FEATURED FULL WIDTH CAMPAIGN
+   ---------------------------------------------------------- */
+
+.st3-cat-split {
+  overflow:
+    hidden;
+
+  margin-bottom:
+    var(
+      --st3-campaign-gap
+    );
+
+  border-radius:
+    40px;
+
+  background:
+    #000;
+}
+
+
+/*
+ * Remove the inner framed media card.
+ */
+
+.st3-cat-split
+.st3-cat-media--split {
+  min-height:
+    650px;
+
+  margin:
+    0;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+.st3-cat-split
+.st3-cat-media--split img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  max-height:
+    650px;
+
+  padding:
+    50px;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    0;
+}
+
+
+/* ----------------------------------------------------------
+   TWO-UP CATEGORY CAMPAIGNS
+   ---------------------------------------------------------- */
+
+.st3-cat-grid {
+  gap:
+    var(
+      --st3-campaign-gap
+    );
+}
+
+.st3-cat-tile {
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  min-height:
+    690px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  border-radius:
+    36px;
+}
+
+
+/*
+ * Text forms the top part of the SAME panel.
+ */
+
+.st3-cat-tile__copy {
+  flex:
+    0 0 auto;
+
+  padding:
+    45px 24px 8px;
+}
+
+
+/*
+ * Image occupies remaining space directly on panel background.
+ */
+
+.st3-cat-tile
+.st3-cat-media--tile,
+.st3-cat-tile--wide
+.st3-cat-media--tile {
+  flex:
+    1 1 auto;
+
+  width:
+    100%;
+
+  height:
+    auto;
+
+  min-height:
+    410px;
+
+  margin:
+    0;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+
+/*
+ * Absolutely no white photo-frame canvas.
+ */
+
+.st3-cat-tile
+.st3-cat-media--tile img,
+.st3-cat-tile--wide
+.st3-cat-media--tile img {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  max-height:
+    470px;
+
+  padding:
+    24px 42px 14px;
+
+  object-fit:
+    contain;
+
+  border-radius:
+    0;
+}
+
+
+/*
+ * Dark campaign artwork lives directly on black.
+ */
+
+.st3-cat-tile--dark
+.st3-cat-media--tile {
+  background:
+    transparent;
+}
+
+
+/*
+ * No nested-placeholder card for categories without art.
+ */
+
+.st3-cat-media__empty {
+  min-height:
+    inherit;
+
+  border-radius:
+    0;
+
+  background:
+    transparent;
+}
+
+
+/* ----------------------------------------------------------
+   CAMPAIGN VISUAL HOVER
+   ---------------------------------------------------------- */
+
+.st3-cat-hero,
+.st3-cat-split,
+.st3-cat-tile {
+  isolation:
+    isolate;
+}
+
+.st3-cat-hero img,
+.st3-cat-split img,
+.st3-cat-tile img {
+  transform:
+    translateZ(0);
+
+  transition:
+    transform
+    720ms
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    );
+}
+
+@media (hover: hover) {
+  .st3-cat-hero:hover img,
+  .st3-cat-split:hover img,
+  .st3-cat-tile:hover img {
+    transform:
+      scale(1.025);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT CARDS
+   TRANSPARENT ARTWORK SHOULD LIVE ON CARD SURFACE
+   ---------------------------------------------------------- */
+
+.st3-product-card__media {
+  overflow:
+    hidden;
+
+  background:
+    #f5f5f7;
+
+  border-radius:
+    28px;
+}
+
+.st3-product-card__image {
+  width:
+    100%;
+
+  height:
+    100%;
+
+  object-fit:
+    contain;
+
+  background:
+    transparent !important;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT PAGE
+   TRANSPARENT IMAGE SURFACE
+   ---------------------------------------------------------- */
+
+.st3-product-gallery,
+.st3-product-gallery__media,
+.st3-product-gallery__stage {
+  background:
+    #f5f5f7;
+}
+
+.st3-product-gallery img,
+.st3-product-page img {
+  background:
+    transparent !important;
+}
+
+
+/* ----------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------- */
+
+@media (
+  max-width:
+  700px
+) {
+  .st3-cat-world {
+    --st3-campaign-gap:
+      8px;
+  }
+
+  .st3-cat-hero {
+    min-height:
+      650px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-hero__copy {
+    padding:
+      42px 18px 8px;
+  }
+
+  .st3-cat-hero
+  .st3-cat-media--hero {
+    min-height:
+      380px;
+  }
+
+  .st3-cat-hero
+  .st3-cat-media--hero img {
+    padding:
+      15px 20px 0;
+  }
+
+  .st3-cat-split {
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-split
+  .st3-cat-media--split {
+    min-height:
+      390px;
+  }
+
+  .st3-cat-split
+  .st3-cat-media--split img {
+    padding:
+      24px;
+  }
+
+  .st3-cat-tile {
+    min-height:
+      570px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-cat-tile__copy {
+    padding:
+      38px 16px 4px;
+  }
+
+  .st3-cat-tile
+  .st3-cat-media--tile,
+  .st3-cat-tile--wide
+  .st3-cat-media--tile {
+    min-height:
+      340px;
+  }
+
+  .st3-cat-tile
+  .st3-cat-media--tile img,
+  .st3-cat-tile--wide
+  .st3-cat-media--tile img {
+    padding:
+      15px 22px 8px;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — OFFICIAL BRAND LOCKUP
+   ========================================================== */
+
+.st3-header__logo {
+  width: 132px;
+  min-width: 132px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: visible;
+}
+
+.st3-brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  line-height: 0;
+}
+
+.st3-brand-logo__image {
+  width: auto;
+  height: 30px;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.st3-footer .st3-brand-logo__image {
+  height: 42px;
+  max-width: min(250px, 100%);
+}
+
+@media (max-width: 900px) {
+  .st3-header__logo {
+    width: 116px;
+    min-width: 116px;
+  }
+
+  .st3-brand-logo__image {
+    height: 27px;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — HERO ARTWORK REFINEMENT
+   Removes previous yellow sphere.
+   Replaces it with restrained Apple-inspired dimensional art.
+   ========================================================== */
+
+.st3-live-hero__orb {
+  position: absolute;
+  right: clamp(28px, 7vw, 120px);
+  top: 50%;
+  width: clamp(330px, 36vw, 540px);
+  aspect-ratio: 1.08;
+  border-radius: 48px;
+  transform:
+    translateY(-50%)
+    rotate(-5deg);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 1;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.96) 0%,
+      rgba(242, 242, 244, 0.92) 40%,
+      rgba(224, 224, 228, 0.72) 100%
+    );
+
+  box-shadow:
+    0 38px 90px rgba(0, 0, 0, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+
+  filter: none;
+}
+
+.st3-live-hero__orb::before {
+  content: "";
+  position: absolute;
+  width: 72%;
+  height: 72%;
+  left: -11%;
+  top: -5%;
+  border-radius: 42px;
+  transform: rotate(18deg);
+
+  background:
+    linear-gradient(
+      145deg,
+      #202023 0%,
+      #3c3c3f 48%,
+      #111113 100%
+    );
+
+  box-shadow:
+    0 35px 70px rgba(0, 0, 0, 0.22);
+}
+
+.st3-live-hero__orb::after {
+  content: "";
+  position: absolute;
+  width: 63%;
+  height: 54%;
+  right: -5%;
+  bottom: 6%;
+  border-radius: 38px;
+  transform: rotate(-12deg);
+
+  background:
+    radial-gradient(
+      circle at 38% 35%,
+      rgba(253, 183, 62, 0.52),
+      rgba(253, 183, 62, 0.14) 35%,
+      transparent 68%
+    ),
+    linear-gradient(
+      150deg,
+      rgba(52, 52, 55, 0.98),
+      rgba(20, 20, 22, 0.98)
+    );
+
+  box-shadow:
+    0 30px 75px rgba(0, 0, 0, 0.22);
+}
+
+/*
+ * Add a subtle glass highlight instead of a giant mustard sphere.
+ */
+.st3-live-hero {
+  isolation: isolate;
+}
+
+.st3-live-hero__content {
+  position: relative;
+  z-index: 3;
+}
+
+@media (max-width: 900px) {
+  .st3-live-hero__orb {
+    width: min(68vw, 390px);
+    right: -110px;
+    top: 61%;
+    opacity: 0.48;
+    border-radius: 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .st3-live-hero__orb {
+    width: 330px;
+    right: -180px;
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .st3-live-hero__orb {
+    animation:
+      st3HeroArtworkFloat
+      9s
+      ease-in-out
+      infinite;
+  }
+}
+
+@keyframes st3HeroArtworkFloat {
+  0%,
+  100% {
+    transform:
+      translateY(-50%)
+      rotate(-5deg)
+      translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform:
+      translateY(calc(-50% - 8px))
+      rotate(-3deg)
+      translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-live-hero__orb {
+    animation: none;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — EDITORIAL ART REFINEMENT
+   Removes the previous large mustard/yellow sphere treatment.
+   ========================================================== */
+
+.st3-live-hero__orb {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+
+/*
+ * Any editorial / promotional dark card that previously
+ * depended on the oversized yellow glow keeps the premium
+ * dark surface but receives a much quieter depth treatment.
+ */
+
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+)::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -8%;
+  top: 15%;
+  width: min(36vw, 430px);
+  aspect-ratio: 1;
+  border-radius: 36%;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.055),
+      rgba(255,255,255,0.008)
+    );
+  border:
+    1px solid
+    rgba(255,255,255,0.06);
+  box-shadow:
+    0 50px 100px
+    rgba(0,0,0,0.22);
+  transform:
+    rotate(-14deg);
+  pointer-events: none;
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — SHOPPING ASSISTANT
+   ========================================================== */
+
+.st3-ai-launcher,
+.st3-ai-panel,
+.st3-ai-panel * {
+  box-sizing: border-box;
+}
+
+.st3-ai-launcher {
+  position: fixed;
+  z-index: 6000;
+  right: 24px;
+  bottom: 24px;
+
+  height: 48px;
+  padding: 0 18px 0 10px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid
+    rgba(0,0,0,0.09);
+  border-radius: 999px;
+
+  background:
+    rgba(255,255,255,0.9);
+
+  color: #1d1d1f;
+
+  box-shadow:
+    0 12px 34px
+      rgba(0,0,0,0.11),
+    0 2px 7px
+      rgba(0,0,0,0.05);
+
+  -webkit-backdrop-filter:
+    saturate(180%) blur(24px);
+  backdrop-filter:
+    saturate(180%) blur(24px);
+
+  cursor: pointer;
+
+  transition:
+    transform 200ms
+      cubic-bezier(.22,1,.36,1),
+    box-shadow 200ms ease,
+    background 200ms ease;
+}
+
+.st3-ai-launcher:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 17px 40px
+      rgba(0,0,0,0.14),
+    0 3px 8px
+      rgba(0,0,0,0.05);
+}
+
+.st3-ai-launcher:active {
+  transform:
+    scale(.97);
+}
+
+.st3-ai-launcher__icon {
+  width: 30px;
+  height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #1d1d1f;
+  color: #fff;
+}
+
+.st3-ai-launcher__icon svg {
+  width: 16px;
+  height: 16px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.st3-ai-launcher__label {
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -.015em;
+}
+
+
+.st3-ai-panel {
+  position: fixed;
+  z-index: 5999;
+
+  right: 24px;
+  bottom: 84px;
+
+  width:
+    min(
+      calc(100vw - 32px),
+      420px
+    );
+
+  max-height:
+    min(
+      720px,
+      calc(100dvh - 120px)
+    );
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(0,0,0,.08);
+
+  border-radius: 30px;
+
+  background:
+    rgba(
+      250,
+      250,
+      252,
+      .97
+    );
+
+  color: #1d1d1f;
+
+  box-shadow:
+    0 30px 90px
+      rgba(0,0,0,.18),
+    0 8px 26px
+      rgba(0,0,0,.08);
+
+  -webkit-backdrop-filter:
+    saturate(180%) blur(30px);
+
+  backdrop-filter:
+    saturate(180%) blur(30px);
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform:
+    translateY(14px)
+    scale(.975);
+
+  transform-origin:
+    bottom right;
+
+  pointer-events: none;
+
+  transition:
+    opacity 180ms ease,
+    transform 300ms
+      cubic-bezier(.22,1,.36,1),
+    visibility 0s
+      linear 300ms;
+}
+
+.st3-ai-panel--open {
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translateY(0)
+    scale(1);
+
+  pointer-events: auto;
+
+  transition:
+    opacity 190ms ease,
+    transform 330ms
+      cubic-bezier(.22,1,.36,1),
+    visibility 0s;
+}
+
+
+.st3-ai-panel__top {
+  padding:
+    24px 24px 20px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  border-bottom:
+    1px solid
+    rgba(0,0,0,.065);
+}
+
+.st3-ai-panel__eyebrow {
+  margin: 0 0 6px;
+
+  color: #86868b;
+
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.st3-ai-panel__top h2 {
+  margin: 0;
+
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -.045em;
+}
+
+.st3-ai-panel__close {
+  width: 34px;
+  height: 34px;
+
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background:
+    rgba(0,0,0,.055);
+
+  color: #1d1d1f;
+
+  cursor: pointer;
+}
+
+.st3-ai-panel__close svg {
+  width: 15px;
+  height: 15px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+}
+
+
+.st3-ai-panel__messages {
+  min-height: 220px;
+
+  flex: 1;
+
+  overflow-y: auto;
+
+  padding: 22px 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+
+  scrollbar-width: thin;
+}
+
+.st3-ai-message {
+  width: fit-content;
+  max-width: 86%;
+
+  padding: 12px 14px;
+
+  border-radius: 18px;
+
+  font-size: 14px;
+  line-height: 1.45;
+  letter-spacing: -.01em;
+}
+
+.st3-ai-message p {
+  margin: 0;
+}
+
+.st3-ai-message--assistant {
+  align-self: flex-start;
+
+  border-bottom-left-radius:
+    6px;
+
+  background: #fff;
+
+  border:
+    1px solid
+    rgba(0,0,0,.065);
+}
+
+.st3-ai-message--user {
+  align-self: flex-end;
+
+  border-bottom-right-radius:
+    6px;
+
+  background: #1d1d1f;
+
+  color: #fff;
+}
+
+
+.st3-ai-thinking {
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.st3-ai-thinking span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #86868b;
+
+  animation:
+    st3AiDot
+    900ms ease-in-out
+    infinite;
+}
+
+.st3-ai-thinking span:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.st3-ai-thinking span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes st3AiDot {
+  0%,
+  100% {
+    opacity: .3;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+
+.st3-ai-suggestions {
+  padding:
+    0 20px 18px;
+
+  display: grid;
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap: 8px;
+}
+
+.st3-ai-suggestion {
+  min-height: 46px;
+
+  padding: 10px 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+
+  border:
+    1px solid
+    rgba(0,0,0,.07);
+
+  border-radius: 16px;
+
+  background: #fff;
+
+  color: #1d1d1f;
+
+  text-decoration: none;
+
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 550;
+
+  cursor: pointer;
+
+  transition:
+    transform 170ms ease,
+    background 170ms ease;
+}
+
+.st3-ai-suggestion:hover {
+  transform:
+    translateY(-1px);
+
+  background:
+    #f5f5f7;
+}
+
+.st3-ai-suggestion span {
+  color: #9a6500;
+
+  font-size: 18px;
+  line-height: 1;
+}
+
+
+.st3-ai-composer {
+  margin: 0 16px;
+
+  min-height: 54px;
+
+  padding: 5px 5px 5px 17px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  border:
+    1px solid
+    rgba(0,0,0,.09);
+
+  border-radius: 999px;
+
+  background: #fff;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255,255,255,.9);
+}
+
+.st3-ai-composer input {
+  min-width: 0;
+  flex: 1;
+
+  border: 0;
+  outline: 0;
+
+  background:
+    transparent;
+
+  color: #1d1d1f;
+
+  font-size: 13px;
+}
+
+.st3-ai-composer input::placeholder {
+  color: #86868b;
+}
+
+.st3-ai-composer button {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #fdb73e;
+  color: #000;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.st3-ai-composer button:hover:not(:disabled) {
+  transform:
+    scale(1.04);
+}
+
+.st3-ai-composer button:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.st3-ai-composer button svg {
+  width: 18px;
+  height: 18px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.st3-ai-disclaimer {
+  margin:
+    11px 20px 16px;
+
+  color: #86868b;
+
+  text-align: center;
+
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+
+.st3-ai-panel__error {
+  margin: 0;
+
+  color: #b42318;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+
+@media (max-width: 640px) {
+  .st3-ai-launcher {
+    right: 14px;
+    bottom: 14px;
+
+    height: 46px;
+
+    padding-right: 14px;
+  }
+
+  .st3-ai-launcher__label {
+    display: none;
+  }
+
+  .st3-ai-panel {
+    right: 10px;
+    bottom: 70px;
+
+    width:
+      calc(100vw - 20px);
+
+    max-height:
+      calc(100dvh - 88px);
+
+    border-radius: 26px;
+  }
+
+  .st3-ai-panel__top {
+    padding:
+      21px 20px 18px;
+  }
+
+  .st3-ai-panel__top h2 {
+    font-size: 25px;
+  }
+
+  .st3-ai-suggestions {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .st3-ai-launcher,
+  .st3-ai-panel,
+  .st3-ai-suggestion,
+  .st3-ai-composer button {
+    transition: none !important;
+  }
+
+  .st3-ai-thinking span {
+    animation: none !important;
+  }
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — FINAL CIRCULAR AI LAUNCHER
+   ========================================================== */
+
+/*
+ * Remove oversized decorative homepage orbs / glow artwork.
+ * Product and category photography is unaffected.
+ */
+.st3-home-live .st3-live-hero__orb,
+.st3-home-live [class*="promo"] [class*="orb"],
+.st3-home-live [class*="promo"] [class*="glow"],
+.st3-home-live [class*="editorial"] [class*="orb"],
+.st3-home-live [class*="editorial"] [class*="glow"],
+.st3-home-live [class*="banner"] [class*="orb"],
+.st3-home-live [class*="banner"] [class*="glow"],
+.st3-home-live [class*="feature"] [class*="orb"],
+.st3-home-live [class*="feature"] [class*="glow"] {
+  display: none !important;
+}
+
+/*
+ * Remove previous giant radial decoration from promotional
+ * pseudo-elements while preserving the dark card itself.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+)::before,
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+)::after {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+
+/* ----------------------------------------------------------
+   Floating assistant launcher
+   ---------------------------------------------------------- */
+
+.st3-ai-launcher {
+  position: fixed;
+  z-index: 6000;
+
+  right: 26px;
+  bottom: 26px;
+
+  width: 60px;
+  height: 60px;
+
+  min-width: 60px;
+  min-height: 60px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.09);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.97);
+
+  color: #1d1d1f;
+
+  box-shadow:
+    0 10px 30px
+      rgba(0, 0, 0, 0.13),
+    0 2px 8px
+      rgba(0, 0, 0, 0.05);
+
+  cursor: pointer;
+
+  isolation: isolate;
+
+  -webkit-backdrop-filter:
+    saturate(180%)
+    blur(22px);
+
+  backdrop-filter:
+    saturate(180%)
+    blur(22px);
+
+  transition:
+    transform 220ms
+      cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms ease,
+    background 220ms ease;
+}
+
+
+/*
+ * Mustard breathing halo.
+ */
+.st3-ai-launcher::before {
+  content: "";
+
+  position: absolute;
+  z-index: -2;
+
+  inset: -7px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(253, 183, 62, 0.24);
+
+  filter: blur(5px);
+
+  opacity: 0.72;
+
+  animation:
+    st3AiMustardPulse
+    2.6s
+    cubic-bezier(0.4, 0, 0.2, 1)
+    infinite;
+}
+
+
+/*
+ * Secondary halo ring gives a refined ripple rather
+ * than a harsh neon glow.
+ */
+.st3-ai-launcher::after {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+
+  inset: -3px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(253, 183, 62, 0.42);
+
+  opacity: 0;
+
+  animation:
+    st3AiRingPulse
+    2.6s
+    cubic-bezier(0.22, 1, 0.36, 1)
+    infinite;
+}
+
+
+.st3-ai-launcher:hover {
+  transform:
+    translateY(-4px)
+    scale(1.045);
+
+  background: #fff;
+
+  box-shadow:
+    0 16px 38px
+      rgba(0, 0, 0, 0.16),
+    0 3px 10px
+      rgba(0, 0, 0, 0.06);
+}
+
+
+.st3-ai-launcher:active {
+  transform:
+    translateY(-1px)
+    scale(0.96);
+}
+
+
+/*
+ * The opened state remains circular.
+ */
+.st3-ai-launcher--open {
+  transform: none;
+}
+
+
+.st3-ai-launcher__label {
+  display: none !important;
+}
+
+
+/*
+ * White launcher + clean dark robot.
+ */
+.st3-ai-launcher__icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    #f5f5f7;
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(0, 0, 0, 0.035);
+
+  transition:
+    background 200ms ease,
+    transform 220ms
+      cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+.st3-ai-launcher:hover
+.st3-ai-launcher__icon {
+  background: #f0f0f2;
+
+  transform:
+    scale(1.04);
+}
+
+
+.st3-ai-launcher__icon svg {
+  width: 23px;
+  height: 23px;
+
+  fill: none;
+  stroke: currentColor;
+
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/*
+ * Tiny idle movement, deliberately much more restrained
+ * than a bouncing chatbot.
+ */
+.st3-ai-launcher:not(.st3-ai-launcher--open) {
+  animation:
+    st3AiLauncherFloat
+    4.4s
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes st3AiMustardPulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.28;
+  }
+
+  50% {
+    transform: scale(1.16);
+    opacity: 0.76;
+  }
+}
+
+
+@keyframes st3AiRingPulse {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 0.45;
+  }
+
+  75%,
+  100% {
+    transform: scale(1.34);
+    opacity: 0;
+  }
+}
+
+
+@keyframes st3AiLauncherFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -4px;
+  }
+}
+
+
+/* ----------------------------------------------------------
+   Assistant panel positioning with circular launcher
+   ---------------------------------------------------------- */
+
+.st3-ai-panel {
+  right: 26px;
+  bottom: 100px;
+}
+
+
+/* ----------------------------------------------------------
+   Mobile
+   ---------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .st3-ai-launcher {
+    right: 16px;
+    bottom: 16px;
+
+    width: 56px;
+    height: 56px;
+
+    min-width: 56px;
+    min-height: 56px;
+
+    padding: 0;
+  }
+
+  .st3-ai-launcher__icon {
+    width: 39px;
+    height: 39px;
+  }
+
+  .st3-ai-launcher__icon svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .st3-ai-panel {
+    right: 10px;
+    bottom: 82px;
+
+    width:
+      calc(100vw - 20px);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   Accessibility
+   ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-ai-launcher,
+  .st3-ai-launcher::before,
+  .st3-ai-launcher::after {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================
+   STEREOPHONIE V3 — AI LAUNCHER FINAL POLISH
+   ========================================================== */
+
+.st3-ai-launcher {
+  width: 64px !important;
+  height: 64px !important;
+
+  right: 24px;
+  bottom: 24px;
+
+  padding: 0 !important;
+  gap: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border-radius: 50% !important;
+
+  background:
+    rgba(255, 255, 255, 0.98) !important;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.075) !important;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.11),
+    0 2px 8px rgba(0, 0, 0, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+
+  -webkit-backdrop-filter:
+    saturate(180%) blur(24px);
+  backdrop-filter:
+    saturate(180%) blur(24px);
+
+  overflow: visible !important;
+
+  transform-origin: center center;
+
+  animation:
+    st3AiLauncherFloat
+    4.6s
+    ease-in-out
+    infinite;
+}
+
+
+/* Remove old horizontal label completely */
+
+.st3-ai-launcher__label {
+  display: none !important;
+}
+
+
+/* Perfect centered inner circle */
+
+.st3-ai-launcher__icon {
+  position: relative;
+  z-index: 3;
+
+  width: 46px !important;
+  height: 46px !important;
+
+  margin: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border-radius: 50% !important;
+
+  background:
+    #f5f5f7 !important;
+
+  color:
+    #1d1d1f !important;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.07);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 2px 6px rgba(0, 0, 0, 0.045);
+}
+
+
+/* Exact icon centering */
+
+.st3-ai-launcher__icon svg {
+  width: 22px !important;
+  height: 22px !important;
+
+  display: block;
+
+  margin: 0 !important;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  fill: none;
+  stroke: currentColor;
+
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* Main mustard breathing ring */
+
+.st3-ai-launcher::before {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+
+  inset: -9px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(253, 183, 62, 0.42);
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(253, 183, 62, 0.11) 0%,
+      rgba(253, 183, 62, 0.055) 42%,
+      rgba(253, 183, 62, 0) 72%
+    );
+
+  box-shadow:
+    0 0 26px rgba(253, 183, 62, 0.14);
+
+  transform:
+    scale(0.94);
+
+  opacity:
+    0.65;
+
+  animation:
+    st3AiLauncherPulse
+    2.5s
+    cubic-bezier(.22,1,.36,1)
+    infinite;
+
+  pointer-events:
+    none;
+}
+
+
+/* Very subtle secondary halo */
+
+.st3-ai-launcher::after {
+  content: "";
+
+  position: absolute;
+  z-index: -2;
+
+  inset: -17px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(253, 183, 62, 0.16);
+
+  opacity:
+    0.48;
+
+  transform:
+    scale(0.92);
+
+  animation:
+    st3AiLauncherOuterPulse
+    2.5s
+    cubic-bezier(.22,1,.36,1)
+    infinite;
+
+  pointer-events:
+    none;
+}
+
+
+/* Premium hover */
+
+.st3-ai-launcher:hover {
+  transform:
+    translateY(-2px)
+    scale(1.035) !important;
+
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.14),
+    0 3px 10px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+}
+
+
+.st3-ai-launcher:active {
+  transform:
+    scale(0.965) !important;
+}
+
+
+/* When chatbot is open */
+
+.st3-ai-launcher--open {
+  animation:
+    none !important;
+}
+
+.st3-ai-launcher--open::before,
+.st3-ai-launcher--open::after {
+  opacity:
+    0.22;
+}
+
+
+/* Floating motion — whole launcher only */
+
+@keyframes st3AiLauncherFloat {
+  0%,
+  100% {
+    transform:
+      translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform:
+      translate3d(0, -3px, 0);
+  }
+}
+
+
+/* Inner glow pulse */
+
+@keyframes st3AiLauncherPulse {
+  0%,
+  100% {
+    transform:
+      scale(0.94);
+
+    opacity:
+      0.48;
+  }
+
+  50% {
+    transform:
+      scale(1.08);
+
+    opacity:
+      0.86;
+  }
+}
+
+
+/* Outer pulse */
+
+@keyframes st3AiLauncherOuterPulse {
+  0%,
+  100% {
+    transform:
+      scale(0.92);
+
+    opacity:
+      0.18;
+  }
+
+  50% {
+    transform:
+      scale(1.08);
+
+    opacity:
+      0.46;
+  }
+}
+
+
+/* Mobile */
+
+@media (max-width: 640px) {
+  .st3-ai-launcher {
+    width: 58px !important;
+    height: 58px !important;
+
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .st3-ai-launcher__icon {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .st3-ai-launcher__icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}
+
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-ai-launcher,
+  .st3-ai-launcher::before,
+  .st3-ai-launcher::after {
+    animation:
+      none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — AI LAUNCHER FINAL PRECISION POLISH
+   Perfect concentric spacing + stronger mustard pulse
+   ========================================================== */
+
+.st3-ai-launcher {
+  /*
+   * Force a perfectly circular launcher.
+   * This overrides the older horizontal-pill dimensions.
+   */
+  width: 64px !important;
+  height: 64px !important;
+  min-width: 64px !important;
+  min-height: 64px !important;
+
+  padding: 0 !important;
+  gap: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 50% !important;
+
+  right: 24px;
+  bottom: 24px;
+
+  overflow: visible;
+
+  /*
+   * Clean white exterior shell.
+   */
+  background: rgba(255, 255, 255, 0.98) !important;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, 0.10) !important;
+
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.10),
+    0 2px 7px rgba(0, 0, 0, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+
+  /*
+   * Remove inherited pill backdrop behaviour.
+   */
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+  transform: translateZ(0);
+
+  isolation: isolate;
+}
+
+
+/*
+ * Outer mustard attention halo.
+ *
+ * IMPORTANT:
+ * It uses inset: -12px, which makes the spacing
+ * mathematically equal on all four sides.
+ */
+.st3-ai-launcher::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -12px;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  z-index: -2;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(253, 183, 62, 0.24) 0%,
+      rgba(253, 183, 62, 0.16) 35%,
+      rgba(253, 183, 62, 0.08) 56%,
+      rgba(253, 183, 62, 0.025) 72%,
+      transparent 82%
+    );
+
+  box-shadow:
+    0 0 0 1px rgba(253, 183, 62, 0.22),
+    0 0 24px rgba(253, 183, 62, 0.19),
+    0 0 46px rgba(253, 183, 62, 0.12);
+
+  opacity: 0.92;
+
+  transform:
+    scale(1)
+    translateZ(0);
+
+  animation:
+    st3AiMustardPulse
+    2.8s
+    cubic-bezier(0.4, 0, 0.2, 1)
+    infinite;
+}
+
+
+/*
+ * Secondary neutral ring.
+ *
+ * Equal 5px gap around the main white launcher.
+ */
+.st3-ai-launcher::after {
+  content: "";
+
+  position: absolute;
+
+  inset: -6px;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, 0.075);
+
+  background:
+    rgba(255, 255, 255, 0.64);
+
+  box-shadow:
+    0 6px 17px rgba(0, 0, 0, 0.045);
+}
+
+
+/*
+ * Inner robot disc.
+ *
+ * Width and height are identical,
+ * and margin/padding are removed,
+ * so the disc is exactly centered.
+ */
+.st3-ai-launcher__icon {
+  position: relative;
+
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 50% !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f8f8fa 0%,
+      #f1f1f3 100%
+    ) !important;
+
+  color: #1d1d1f !important;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, 0.11);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.96),
+    0 1px 3px rgba(0, 0, 0, 0.035);
+
+  transform: translateZ(0);
+}
+
+
+/*
+ * Keep the robot icon visually centered.
+ */
+.st3-ai-launcher__icon svg {
+  width: 20px !important;
+  height: 20px !important;
+
+  margin: 0 !important;
+
+  display: block;
+
+  fill: none;
+  stroke: currentColor;
+
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transform:
+    translate3d(0, 0, 0);
+}
+
+
+/*
+ * The horizontal text is intentionally hidden.
+ */
+.st3-ai-launcher__label {
+  display: none !important;
+}
+
+
+/*
+ * Slight premium hover response.
+ */
+.st3-ai-launcher:hover {
+  transform:
+    translateY(-2px)
+    scale(1.025);
+
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.12),
+    0 3px 8px rgba(0, 0, 0, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+
+/*
+ * Increase mustard visibility on hover.
+ */
+.st3-ai-launcher:hover::before {
+  opacity: 1;
+
+  box-shadow:
+    0 0 0 1px rgba(253, 183, 62, 0.30),
+    0 0 28px rgba(253, 183, 62, 0.25),
+    0 0 54px rgba(253, 183, 62, 0.16);
+}
+
+
+.st3-ai-launcher:active {
+  transform:
+    translateY(0)
+    scale(0.965);
+}
+
+
+/*
+ * When assistant is open,
+ * reduce the promotional pulse slightly.
+ */
+.st3-ai-launcher--open::before {
+  opacity: 0.58;
+
+  animation-duration: 4s;
+}
+
+
+/*
+ * Mustard breathing pulse.
+ *
+ * The launcher itself remains stable;
+ * only the glow subtly expands.
+ */
+@keyframes st3AiMustardPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+
+    transform:
+      scale(0.96)
+      translateZ(0);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform:
+      scale(1.09)
+      translateZ(0);
+  }
+}
+
+
+/*
+ * Very subtle whole-button movement.
+ * Enough to feel alive without being distracting.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .st3-ai-launcher:not(.st3-ai-launcher--open) {
+    animation:
+      st3AiLauncherFloat
+      5.2s
+      ease-in-out
+      infinite;
+  }
+}
+
+
+@keyframes st3AiLauncherFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+
+/*
+ * Mobile keeps the exact same concentric geometry.
+ */
+@media (max-width: 640px) {
+  .st3-ai-launcher {
+    width: 58px !important;
+    height: 58px !important;
+    min-width: 58px !important;
+    min-height: 58px !important;
+
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .st3-ai-launcher__icon {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+  }
+
+  .st3-ai-launcher__icon svg {
+    width: 19px !important;
+    height: 19px !important;
+  }
+
+  .st3-ai-launcher::after {
+    inset: -5px;
+  }
+
+  .st3-ai-launcher::before {
+    inset: -10px;
+  }
+
+  .st3-ai-panel {
+    bottom: 86px;
+  }
+}
+
+
+/*
+ * Accessibility:
+ * no pulsing/floating for reduced-motion users.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .st3-ai-launcher,
+  .st3-ai-launcher::before {
+    animation: none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — DARK EDITORIAL CARD FINAL REDESIGN
+   Removes the oversized mustard/orange artwork permanently.
+   Keeps a restrained, premium Apple-inspired dark treatment.
+   ========================================================== */
+
+
+/*
+ * The homepage contains a dark editorial/promo section such as
+ * "Technology for every day."
+ *
+ * Previous experiments added oversized mustard radial artwork.
+ * This final override intentionally removes ALL large decorative
+ * mustard shapes from that family of cards.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+) {
+  position: relative !important;
+  isolation: isolate !important;
+  overflow: hidden !important;
+
+  /*
+   * IMPORTANT:
+   * Remove inherited radial / mustard background artwork.
+   */
+  background-image: none !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1d1d1f 0%,
+      #1b1b1d 52%,
+      #202023 100%
+    ) !important;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.045);
+
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+
+/*
+ * REMOVE OLD ARTWORK.
+ *
+ * This deliberately kills both pseudo-elements because
+ * earlier homepage iterations used either ::before or ::after
+ * for the large mustard orb / panel.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+)::before,
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+)::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+
+/*
+ * Extra protection against the older global decorative orb.
+ */
+.st3-home-live .st3-live-hero__orb {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+
+/* ==========================================================
+   NEW MINIMAL EDITORIAL DEPTH
+   ========================================================== */
+
+/*
+ * Instead of another large object, the card now gets only a
+ * restrained edge highlight. This is intentionally subtle.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+) > * {
+  position: relative;
+  z-index: 2;
+}
+
+
+/*
+ * Give the typography a little more breathing room now that
+ * there is no giant artwork competing with it.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+) h2 {
+  max-width: 760px;
+  text-wrap: balance;
+}
+
+
+/*
+ * Slightly quieter secondary copy.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+) p {
+  text-wrap: pretty;
+}
+
+
+/*
+ * Keep mustard only where it belongs:
+ * small interaction accents / CTA.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+) .st3-button {
+  background: #fdb73e;
+  color: #000;
+
+  box-shadow: none;
+}
+
+
+/*
+ * Premium hover — restrained, not flashy.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+) .st3-button:hover {
+  background: #f4a91c;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 8px 22px
+    rgba(253, 183, 62, 0.12);
+}
+
+
+/* ==========================================================
+   FALLBACK CLEANUP
+   Covers older promo implementations that may use a dedicated
+   decorative element rather than pseudo-elements.
+   ========================================================== */
+
+.st3-home-live
+:is(
+  [class*="promo"]
+)
+:is(
+  [class*="orb"],
+  [class*="halo"],
+  [class*="glow"],
+  [class*="sphere"],
+  [class*="artwork"]
+) {
+  display: none !important;
+}
+
+
+/*
+ * Also remove any known artwork children when nested within
+ * the dark promotional card.
+ */
+.st3-home-live
+:is(
+  .st3-editorial,
+  .st3-promo,
+  .st3-promo-card,
+  .st3-editorial-card,
+  .st3-store-promo,
+  .st3-feature-banner
+)
+:is(
+  .st3-editorial__orb,
+  .st3-editorial__halo,
+  .st3-editorial__art,
+  .st3-promo__orb,
+  .st3-promo__halo,
+  .st3-promo__art,
+  .st3-store-promo__orb,
+  .st3-store-promo__art,
+  .st3-feature-banner__orb,
+  .st3-feature-banner__art
+) {
+  display: none !important;
+}
+
+
+/* ==========================================================
+   RESPONSIVE POLISH
+   ========================================================== */
+
+@media (max-width: 900px) {
+  .st3-home-live
+  :is(
+    .st3-editorial,
+    .st3-promo,
+    .st3-promo-card,
+    .st3-editorial-card,
+    .st3-store-promo,
+    .st3-feature-banner
+  ) {
+    background:
+      linear-gradient(
+        145deg,
+        #1d1d1f,
+        #202023
+      ) !important;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-home-live
+  :is(
+    .st3-editorial,
+    .st3-promo,
+    .st3-promo-card,
+    .st3-editorial-card,
+    .st3-store-promo,
+    .st3-feature-banner
+  ),
+  .st3-home-live
+  :is(
+    .st3-editorial,
+    .st3-promo,
+    .st3-promo-card,
+    .st3-editorial-card,
+    .st3-store-promo,
+    .st3-feature-banner
+  ) * {
+    animation: none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — CLEAN TECHNOLOGY EDITORIAL BANNER
+   Final override.
+   No giant mustard sphere / halo / orb.
+   ========================================================== */
+
+.st3-home-banner {
+  position: relative;
+  isolation: isolate;
+
+  width: min(calc(100% - 48px), 1220px);
+  min-height: 430px;
+
+  margin: 96px auto;
+
+  padding:
+    clamp(56px, 7vw, 90px)
+    clamp(36px, 7vw, 88px);
+
+  display: flex;
+  align-items: center;
+
+  overflow: hidden;
+
+  border-radius: 32px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #1d1d1f 0%,
+      #202023 58%,
+      #18181a 100%
+    );
+
+  color: #f5f5f7;
+
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.08);
+
+  transform: translateZ(0);
+}
+
+
+/*
+ * Very restrained surface depth.
+ * This is intentionally monochrome — no mustard artwork.
+ */
+
+.st3-home-banner::before {
+  content: "";
+
+  position: absolute;
+  z-index: 0;
+
+  top: -34%;
+  right: -8%;
+
+  width: min(52vw, 660px);
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.045) 0%,
+      rgba(255, 255, 255, 0.018) 36%,
+      transparent 69%
+    );
+
+  pointer-events: none;
+}
+
+
+/*
+ * Subtle architectural line instead of a giant colored object.
+ */
+
+.st3-home-banner::after {
+  content: "";
+
+  position: absolute;
+  z-index: 0;
+
+  right: clamp(34px, 7vw, 92px);
+  top: 50%;
+
+  width: clamp(120px, 18vw, 240px);
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.13),
+      transparent
+    );
+
+  transform: translateY(-50%);
+
+  pointer-events: none;
+}
+
+
+.st3-home-banner__copy {
+  position: relative;
+  z-index: 2;
+
+  width: min(100%, 720px);
+
+  margin: 0;
+}
+
+
+.st3-home-banner .st3-section-eyebrow {
+  margin: 0 0 18px;
+
+  color: #a1a1a6;
+
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 600;
+
+  letter-spacing: -0.015em;
+}
+
+
+.st3-home-banner h2 {
+  width: min(100%, 700px);
+
+  margin: 0;
+
+  color: #f5f5f7;
+
+  font-size:
+    clamp(
+      50px,
+      6vw,
+      82px
+    );
+
+  line-height: 0.94;
+
+  font-weight: 620;
+
+  letter-spacing: -0.065em;
+
+  text-wrap: balance;
+}
+
+
+.st3-home-banner__copy > p:not(.st3-section-eyebrow) {
+  width: min(100%, 520px);
+
+  margin:
+    28px
+    0
+    0;
+
+  color: #a1a1a6;
+
+  font-size:
+    clamp(
+      17px,
+      1.6vw,
+      20px
+    );
+
+  line-height: 1.45;
+
+  letter-spacing: -0.02em;
+
+  text-wrap: pretty;
+}
+
+
+.st3-home-banner .st3-button {
+  margin-top: 32px;
+
+  min-height: 48px;
+
+  padding:
+    0
+    24px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #fdb73e;
+
+  color: #111;
+
+  box-shadow: none;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition:
+    transform 180ms cubic-bezier(.22, 1, .36, 1),
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+
+.st3-home-banner .st3-button:hover {
+  background: #f4ad2b;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 8px 24px
+    rgba(253, 183, 62, 0.12);
+}
+
+
+.st3-home-banner .st3-button:active {
+  transform:
+    translateY(0)
+    scale(0.98);
+}
+
+
+/*
+ * Absolute safeguard:
+ * should an old cached build or future JSX revision restore this
+ * decorative object, it still cannot appear.
+ */
+
+.st3-home-banner__shape {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+
+  width: 0 !important;
+  height: 0 !important;
+
+  background: none !important;
+  box-shadow: none !important;
+}
+
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  .st3-home-banner {
+    width:
+      min(
+        calc(100% - 32px),
+        1220px
+      );
+
+    min-height: 390px;
+
+    margin:
+      72px
+      auto;
+
+    padding:
+      58px
+      42px;
+
+    border-radius:
+      28px;
+  }
+
+  .st3-home-banner::after {
+    display: none;
+  }
+
+  .st3-home-banner::before {
+    right: -30%;
+    opacity: 0.7;
+  }
+}
+
+
+/* Mobile */
+
+@media (max-width: 640px) {
+  .st3-home-banner {
+    width:
+      calc(100% - 24px);
+
+    min-height:
+      auto;
+
+    margin:
+      54px
+      auto;
+
+    padding:
+      46px
+      26px
+      50px;
+
+    border-radius:
+      26px;
+  }
+
+  .st3-home-banner h2 {
+    font-size:
+      clamp(
+        44px,
+        13vw,
+        62px
+      );
+
+    line-height:
+      0.96;
+  }
+
+  .st3-home-banner__copy
+  > p:not(.st3-section-eyebrow) {
+    margin-top:
+      22px;
+
+    font-size:
+      17px;
+  }
+
+  .st3-home-banner
+  .st3-button {
+    margin-top:
+      27px;
+  }
+
+  .st3-home-banner::before {
+    top: auto;
+    right: -55%;
+    bottom: -40%;
+
+    width: 430px;
+
+    opacity: 0.45;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-home-banner,
+  .st3-home-banner *,
+  .st3-home-banner::before,
+  .st3-home-banner::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — STOREFRONT POLISH 2026
+   Product presentation + homepage rhythm + premium footer
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   HOMEPAGE PRODUCT SECTIONS
+   ---------------------------------------------------------- */
+
+.st3-products-section {
+  width:
+    min(
+      calc(100% - 48px),
+      1360px
+    );
+
+  margin:
+    0 auto;
+
+  padding:
+    116px 0 28px;
+}
+
+
+.st3-products-section--soft {
+  width: 100%;
+
+  max-width: none;
+
+  margin:
+    78px 0 0;
+
+  padding:
+    108px
+    max(
+      24px,
+      calc((100vw - 1360px) / 2)
+    )
+    116px;
+
+  background:
+    #f5f5f7;
+}
+
+
+.st3-products-section .st3-section-heading {
+  margin-bottom:
+    42px;
+}
+
+
+.st3-products-section .st3-section-heading h2 {
+  font-size:
+    clamp(
+      44px,
+      4.6vw,
+      68px
+    );
+
+  line-height:
+    .98;
+
+  letter-spacing:
+    -.055em;
+}
+
+
+.st3-products-section .st3-section-description {
+  max-width:
+    520px;
+
+  margin-top:
+    13px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.45;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT GRID
+   ---------------------------------------------------------- */
+
+.st3-product-grid {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    18px;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT CARD
+   ---------------------------------------------------------- */
+
+.st3-product-card {
+  position:
+    relative;
+
+  min-width:
+    0;
+
+  overflow:
+    hidden;
+
+  border:
+    0 !important;
+
+  border-radius:
+    30px !important;
+
+  background:
+    #f5f5f7 !important;
+
+  box-shadow:
+    none !important;
+
+  transform:
+    translateZ(0);
+
+  transition:
+    transform
+      420ms
+      cubic-bezier(.22, 1, .36, 1),
+    box-shadow
+      420ms
+      cubic-bezier(.22, 1, .36, 1),
+    background
+      250ms ease;
+}
+
+
+@media (hover: hover) {
+  .st3-product-card:hover {
+    transform:
+      translateY(-5px);
+
+    box-shadow:
+      0 20px 50px
+      rgba(
+        0,
+        0,
+        0,
+        .075
+      ) !important;
+  }
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT ARTWORK
+   ---------------------------------------------------------- */
+
+.st3-product-card__media {
+  position:
+    relative;
+
+  width:
+    calc(100% - 16px);
+
+  aspect-ratio:
+    1 / 1;
+
+  margin:
+    8px
+    8px
+    0;
+
+  overflow:
+    hidden;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    24px !important;
+
+  background:
+    #fff !important;
+
+  isolation:
+    isolate;
+}
+
+
+.st3-product-card__media::before {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  z-index:
+    -1;
+
+  left:
+    50%;
+
+  bottom:
+    10%;
+
+  width:
+    62%;
+
+  height:
+    22%;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(0,0,0,.055),
+      rgba(0,0,0,.018) 42%,
+      transparent 72%
+    );
+
+  filter:
+    blur(16px);
+
+  opacity:
+    .46;
+}
+
+
+.st3-product-card__image {
+  width:
+    100% !important;
+
+  height:
+    100% !important;
+
+  object-fit:
+    contain !important;
+
+  object-position:
+    center center;
+
+  padding:
+    clamp(
+      22px,
+      8%,
+      42px
+    );
+
+  background:
+    transparent !important;
+
+  transform:
+    scale(1);
+
+  transition:
+    transform
+      600ms
+      cubic-bezier(.22, 1, .36, 1);
+}
+
+
+@media (hover: hover) {
+  .st3-product-card:hover
+  .st3-product-card__image {
+    transform:
+      scale(1.035);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT CARD COPY
+   ---------------------------------------------------------- */
+
+.st3-product-card__content,
+.st3-product-card__body,
+.st3-product-card__info {
+  padding:
+    20px
+    20px
+    23px;
+}
+
+
+.st3-product-card h3,
+.st3-product-card__title {
+  margin:
+    0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.2;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -.022em;
+}
+
+
+.st3-product-card a {
+  text-decoration:
+    none;
+}
+
+
+.st3-product-card__category,
+.st3-product-card__brand {
+  color:
+    #86868b;
+
+  font-size:
+    11px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    .015em;
+}
+
+
+.st3-product-card__price,
+.st3-product-card__pricing {
+  color:
+    #1d1d1f;
+
+  font-size:
+    14px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -.01em;
+}
+
+
+.st3-product-card__old-price,
+.st3-product-card__compare-price {
+  color:
+    #86868b;
+}
+
+
+/* ----------------------------------------------------------
+   CARD BADGES
+   ---------------------------------------------------------- */
+
+.st3-product-card
+:is(
+  .st3-product-card__badge,
+  .st3-product-badge,
+  [class*="badge"]
+) {
+  border:
+    0;
+
+  border-radius:
+    999px;
+
+  padding:
+    6px 10px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .9
+    );
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    0 3px 12px
+    rgba(
+      0,
+      0,
+      0,
+      .055
+    );
+
+  -webkit-backdrop-filter:
+    blur(14px);
+
+  backdrop-filter:
+    blur(14px);
+}
+
+
+/* ----------------------------------------------------------
+   HOMEPAGE SECTION LINK
+   ---------------------------------------------------------- */
+
+.st3-section-link {
+  color:
+    #9a6500;
+
+  font-weight:
+    500;
+
+  text-decoration:
+    none;
+
+  transition:
+    color
+      180ms ease;
+}
+
+
+.st3-section-link:hover {
+  color:
+    #6f4900;
+}
+
+
+/* ----------------------------------------------------------
+   SERVICE STRIP
+   ---------------------------------------------------------- */
+
+.st3-service-strip {
+  width:
+    min(
+      calc(100% - 48px),
+      1360px
+    );
+
+  margin:
+    92px auto
+    108px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0,1fr)
+    );
+
+  gap:
+    1px;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      .06
+    );
+
+  border-radius:
+    28px;
+
+  background:
+    rgba(
+      0,
+      0,
+      0,
+      .06
+    );
+}
+
+
+.st3-service-strip__item {
+  min-height:
+    150px;
+
+  padding:
+    34px
+    34px
+    32px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  justify-content:
+    center;
+
+  background:
+    #f5f5f7;
+}
+
+
+.st3-service-strip__item strong {
+  margin-bottom:
+    8px;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    17px;
+
+  line-height:
+    1.25;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -.025em;
+}
+
+
+.st3-service-strip__item span {
+  max-width:
+    290px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    14px;
+
+  line-height:
+    1.45;
+}
+
+
+/* ==========================================================
+   PREMIUM FOOTER
+   ========================================================== */
+
+.st3-footer {
+  margin:
+    0;
+
+  padding:
+    0 24px 24px;
+
+  background:
+    #fff;
+
+  color:
+    #1d1d1f;
+}
+
+
+.st3-footer__inner {
+  width:
+    min(
+      100%,
+      1360px
+    );
+
+  margin:
+    0 auto;
+
+  overflow:
+    hidden;
+
+  border-radius:
+    34px;
+
+  background:
+    #f5f5f7;
+}
+
+
+.st3-footer__support {
+  min-height:
+    250px;
+
+  padding:
+    52px
+    clamp(
+      32px,
+      5vw,
+      72px
+    );
+
+  display:
+    flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  gap:
+    50px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      .06
+    );
+}
+
+
+.st3-footer__support > div:first-child {
+  max-width:
+    680px;
+}
+
+
+.st3-footer__support-eyebrow {
+  margin:
+    0 0 13px;
+
+  color:
+    #86868b;
+
+  font-size:
+    13px;
+
+  line-height:
+    1;
+
+  font-weight:
+    600;
+}
+
+
+.st3-footer__support h2 {
+  margin:
+    0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    clamp(
+      38px,
+      4vw,
+      58px
+    );
+
+  line-height:
+    .98;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -.055em;
+}
+
+
+.st3-footer__support
+> div:first-child
+> p:last-child {
+  max-width:
+    510px;
+
+  margin:
+    20px 0 0;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    16px;
+
+  line-height:
+    1.5;
+}
+
+
+.st3-footer__support-actions {
+  flex:
+    0 0 auto;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    18px;
+}
+
+
+.st3-footer__primary-action {
+  min-height:
+    46px;
+
+  padding:
+    0 22px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    999px;
+
+  background:
+    #1d1d1f;
+
+  color:
+    #fff !important;
+
+  text-decoration:
+    none;
+
+  font-size:
+    14px;
+
+  font-weight:
+    600;
+
+  transition:
+    transform
+      180ms ease,
+    background
+      180ms ease;
+}
+
+
+.st3-footer__primary-action:hover {
+  background:
+    #000;
+
+  transform:
+    translateY(-1px);
+}
+
+
+.st3-footer__secondary-action {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  color:
+    #9a6500 !important;
+
+  text-decoration:
+    none;
+
+  font-size:
+    14px;
+
+  font-weight:
+    500;
+}
+
+
+.st3-footer__secondary-action span {
+  font-size:
+    21px;
+
+  transition:
+    transform
+      170ms ease;
+}
+
+
+.st3-footer__secondary-action:hover span {
+  transform:
+    translateX(3px);
+}
+
+
+/* ----------------------------------------------------------
+   FOOTER NAV
+   ---------------------------------------------------------- */
+
+.st3-footer__top {
+  padding:
+    56px
+    clamp(
+      32px,
+      5vw,
+      72px
+    )
+    52px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(
+      220px,
+      .85fr
+    )
+    minmax(
+      0,
+      1.6fr
+    );
+
+  gap:
+    80px;
+}
+
+
+.st3-footer__identity {
+  align-self:
+    start;
+}
+
+
+.st3-footer__brand {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+}
+
+
+.st3-footer
+.st3-brand-logo__image {
+  height:
+    38px;
+
+  max-width:
+    min(
+      240px,
+      100%
+    );
+}
+
+
+.st3-footer__tagline {
+  margin:
+    19px 0 0;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    14px;
+
+  line-height:
+    1.45;
+}
+
+
+.st3-footer__columns {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(
+        110px,
+        1fr
+      )
+    );
+
+  gap:
+    34px;
+}
+
+
+.st3-footer__column {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    flex-start;
+
+  gap:
+    11px;
+}
+
+
+.st3-footer__title {
+  margin:
+    0 0 5px;
+
+  color:
+    #86868b;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.2;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    .02em;
+}
+
+
+.st3-footer__column a {
+  color:
+    #1d1d1f;
+
+  text-decoration:
+    none;
+
+  font-size:
+    13px;
+
+  line-height:
+    1.4;
+
+  transition:
+    opacity
+      160ms ease;
+}
+
+
+.st3-footer__column a:hover {
+  opacity:
+    .58;
+}
+
+
+.st3-footer__bottom {
+  margin:
+    0
+    clamp(
+      32px,
+      5vw,
+      72px
+    );
+
+  padding:
+    21px 0
+    24px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    20px;
+
+  border-top:
+    1px solid
+    rgba(
+      0,
+      0,
+      0,
+      .06
+    );
+
+  color:
+    #86868b;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.4;
+}
+
+
+.st3-footer__location {
+  flex:
+    0 0 auto;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (
+  max-width:
+  1100px
+) {
+  .st3-product-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0,1fr)
+      );
+  }
+
+  .st3-footer__top {
+    grid-template-columns:
+      1fr;
+
+    gap:
+      48px;
+  }
+}
+
+
+@media (
+  max-width:
+  760px
+) {
+  .st3-products-section {
+    width:
+      calc(
+        100% - 28px
+      );
+
+    padding-top:
+      82px;
+  }
+
+
+  .st3-products-section--soft {
+    width:
+      100%;
+
+    padding:
+      82px 14px;
+  }
+
+
+  .st3-product-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0,1fr)
+      );
+
+    gap:
+      10px;
+  }
+
+
+  .st3-product-card {
+    border-radius:
+      22px !important;
+  }
+
+
+  .st3-product-card__media {
+    width:
+      calc(100% - 10px);
+
+    margin:
+      5px 5px 0;
+
+    border-radius:
+      18px !important;
+  }
+
+
+  .st3-product-card__image {
+    padding:
+      16px;
+  }
+
+
+  .st3-service-strip {
+    width:
+      calc(
+        100% - 28px
+      );
+
+    margin:
+      72px auto
+      82px;
+
+    grid-template-columns:
+      1fr;
+
+    border-radius:
+      24px;
+  }
+
+
+  .st3-service-strip__item {
+    min-height:
+      125px;
+
+    padding:
+      27px 25px;
+  }
+
+
+  .st3-footer {
+    padding:
+      0 10px 10px;
+  }
+
+
+  .st3-footer__inner {
+    border-radius:
+      26px;
+  }
+
+
+  .st3-footer__support {
+    min-height:
+      0;
+
+    padding:
+      42px 24px;
+
+    flex-direction:
+      column;
+
+    align-items:
+      flex-start;
+
+    gap:
+      30px;
+  }
+
+
+  .st3-footer__support-actions {
+    flex-wrap:
+      wrap;
+  }
+
+
+  .st3-footer__top {
+    padding:
+      42px 24px;
+
+    gap:
+      42px;
+  }
+
+
+  .st3-footer__columns {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0,1fr)
+      );
+
+    row-gap:
+      38px;
+  }
+
+
+  .st3-footer__bottom {
+    margin:
+      0 24px;
+
+    flex-direction:
+      column;
+
+    align-items:
+      flex-start;
+
+    gap:
+      7px;
+  }
+}
+
+
+@media (
+  max-width:
+  430px
+) {
+  .st3-product-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .st3-product-card__media {
+    aspect-ratio:
+      1.12 / 1;
+  }
+
+
+  .st3-footer__columns {
+    grid-template-columns:
+      1fr 1fr;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .st3-product-card,
+  .st3-product-card__image,
+  .st3-footer__primary-action,
+  .st3-footer__secondary-action span {
+    transition:
+      none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — FINAL PRODUCT CARD MEDIA POLISH
+   Removes rectangular white image surfaces.
+   Everything visible receives rounded geometry.
+   ========================================================== */
+
+.st3-product-card {
+  overflow: hidden;
+  border-radius: 32px;
+}
+
+
+/*
+ * Product image stage
+ *
+ * Important:
+ * No sharp white rectangle should be visible around
+ * transparent product photography.
+ */
+.st3-product-card__media {
+  position: relative;
+
+  overflow: hidden !important;
+
+  border-radius: 28px !important;
+
+  background:
+    #f5f5f7 !important;
+
+  isolation: isolate;
+}
+
+
+/*
+ * Remove any white rectangular layer that may be produced
+ * by nested wrappers around the actual product image.
+ */
+.st3-product-card__media > div,
+.st3-product-card__media > span,
+.st3-product-card__media picture {
+  border-radius: inherit !important;
+
+  background:
+    transparent !important;
+}
+
+
+/*
+ * Product artwork itself.
+ *
+ * Transparent PNGs now visually merge into the card surface.
+ */
+.st3-product-card__image,
+.st3-product-card__media img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  border-radius:
+    22px !important;
+
+  background:
+    transparent !important;
+
+  clip-path:
+    inset(
+      0
+      round 22px
+    );
+
+  transform:
+    translateZ(0);
+}
+
+
+/*
+ * Give product artwork a little breathing space instead
+ * of placing it inside a visible rectangular wallpaper.
+ */
+.st3-product-card__media img {
+  padding:
+    clamp(
+      18px,
+      2.2vw,
+      32px
+    );
+
+  box-sizing:
+    border-box;
+}
+
+
+/*
+ * Remove any accidental square pseudo-element backgrounds.
+ */
+.st3-product-card__media::before,
+.st3-product-card__media::after {
+  border-radius:
+    inherit !important;
+}
+
+
+/* ==========================================================
+   NEW BADGE — SUBTLE PREMIUM MOTION
+   ========================================================== */
+
+.st3-product-card :is(
+  .st3-product-card__badge,
+  .st3-product-card__new,
+  [class*="badge"]
+) {
+  border-radius:
+    999px !important;
+}
+
+
+/*
+ * Animate only elements displaying the New treatment.
+ * This is intentionally restrained:
+ * slight float + soft shadow breathing.
+ */
+.st3-product-card :is(
+  .st3-product-card__badge,
+  .st3-product-card__new
+) {
+  transform-origin:
+    center;
+
+  animation:
+    st3NewBadgeFloat
+    3.2s
+    cubic-bezier(
+      0.22,
+      1,
+      0.36,
+      1
+    )
+    infinite;
+}
+
+
+@keyframes st3NewBadgeFloat {
+  0%,
+  100% {
+    transform:
+      translate3d(
+        0,
+        0,
+        0
+      )
+      scale(1);
+
+    box-shadow:
+      0 7px 18px
+      rgba(
+        0,
+        0,
+        0,
+        0.055
+      );
+  }
+
+  50% {
+    transform:
+      translate3d(
+        0,
+        -3px,
+        0
+      )
+      scale(1.025);
+
+    box-shadow:
+      0 11px 25px
+      rgba(
+        0,
+        0,
+        0,
+        0.085
+      );
+  }
+}
+
+
+/*
+ * Small mustard halo on hover only.
+ * It remains subtle and does not turn the badge yellow.
+ */
+.st3-product-card:hover :is(
+  .st3-product-card__badge,
+  .st3-product-card__new
+) {
+  box-shadow:
+    0 9px 26px
+    rgba(
+      253,
+      183,
+      62,
+      0.16
+    );
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY
+   ========================================================== */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .st3-product-card :is(
+    .st3-product-card__badge,
+    .st3-product-card__new
+  ) {
+    animation:
+      none !important;
+  }
+}
+
+
+/* ==========================================================
+   MOBILE POLISH
+   ========================================================== */
+
+@media (
+  max-width:
+  700px
+) {
+  .st3-product-card {
+    border-radius:
+      28px;
+  }
+
+  .st3-product-card__media {
+    border-radius:
+      24px !important;
+  }
+
+  .st3-product-card__image,
+  .st3-product-card__media img {
+    border-radius:
+      19px !important;
+
+    clip-path:
+      inset(
+        0
+        round 19px
+      );
+
+    padding:
+      16px;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3
+   SERVICE STRIP — FINAL CLEAN SURFACE
+   ========================================================== */
+
+/*
+ * The rounded outer container is the ONLY visible surface.
+ */
+.st3-service-strip {
+  overflow: hidden !important;
+
+  border-radius:
+    30px !important;
+
+  background:
+    #f5f5f7 !important;
+}
+
+
+/*
+ * CRITICAL FIX:
+ * remove the white rectangular backgrounds from the
+ * three service cells.
+ */
+.st3-service-strip__item {
+  background:
+    transparent !important;
+
+  background-color:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  border-radius:
+    0 !important;
+}
+
+
+/*
+ * Remove any nested/pseudo-element wallpaper that may
+ * be creating the white rectangles.
+ */
+.st3-service-strip__item::before,
+.st3-service-strip__item::after {
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/*
+ * Keep only subtle separators between information groups.
+ */
+.st3-service-strip__item:not(:last-child) {
+  border-right:
+    1px solid
+    rgba(0, 0, 0, 0.055);
+}
+
+
+/* ==========================================================
+   STEREOPHONIE V3
+   GLOBAL PRIMARY CTA — MUSTARD BRAND COLOR
+   ========================================================== */
+
+/*
+ * All primary .st3-button actions now share the same
+ * Stereophonie mustard treatment.
+ *
+ * This includes the footer Explore store CTA.
+ */
+.st3-button {
+  background:
+    #fdb73e !important;
+
+  color:
+    #111111 !important;
+
+  border-color:
+    transparent !important;
+
+  box-shadow:
+    none;
+
+  transition:
+    background-color 180ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms ease;
+}
+
+
+.st3-button:hover {
+  background:
+    #f4aa24 !important;
+
+  color:
+    #111111 !important;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 9px 24px
+    rgba(253, 183, 62, 0.18);
+}
+
+
+.st3-button:active {
+  transform:
+    translateY(0)
+    scale(0.985);
+
+  box-shadow:
+    0 4px 12px
+    rgba(253, 183, 62, 0.12);
+}
+
+
+/* ==========================================================
+   FOOTER CTA — FORCE BRAND CONSISTENCY
+   ========================================================== */
+
+.st3-footer .st3-button {
+  background:
+    #fdb73e !important;
+
+  color:
+    #111111 !important;
+
+  border:
+    0 !important;
+}
+
+
+.st3-footer .st3-button:hover {
+  background:
+    #f4aa24 !important;
+
+  color:
+    #111111 !important;
+}
+
+
+/* ==========================================================
+   MOBILE SERVICE STRIP
+   ========================================================== */
+
+@media (max-width: 760px) {
+
+  .st3-service-strip {
+    border-radius:
+      26px !important;
+  }
+
+  .st3-service-strip__item {
+    background:
+      transparent !important;
+
+    border-right:
+      0 !important;
+  }
+
+  .st3-service-strip__item:not(:last-child) {
+    border-bottom:
+      1px solid
+      rgba(0, 0, 0, 0.055);
+  }
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .st3-button {
+    transition:
+      none !important;
+  }
+
+  .st3-button:hover,
+  .st3-button:active {
+    transform:
+      none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3
+   FOOTER PRIMARY CTA — AUTHORITATIVE MUSTARD STYLE
+   ========================================================== */
+
+/*
+ * Make the footer Explore store CTA visually identical
+ * to the primary Shop button used across the storefront.
+ */
+.st3-footer a.st3-button,
+.st3-footer .st3-button,
+.st3-footer__cta .st3-button,
+.st3-footer__hero .st3-button,
+.st3-footer__actions .st3-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 48px !important;
+
+  padding:
+    0 24px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #fdb73e !important;
+
+  background-color:
+    #fdb73e !important;
+
+  color:
+    #111111 !important;
+
+  font-weight:
+    600 !important;
+
+  text-decoration:
+    none !important;
+
+  box-shadow:
+    none !important;
+
+  transition:
+    background-color 180ms ease,
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms ease !important;
+}
+
+
+.st3-footer a.st3-button:hover,
+.st3-footer .st3-button:hover,
+.st3-footer__cta .st3-button:hover,
+.st3-footer__hero .st3-button:hover,
+.st3-footer__actions .st3-button:hover {
+  background:
+    #f4aa24 !important;
+
+  background-color:
+    #f4aa24 !important;
+
+  color:
+    #111111 !important;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 8px 20px
+    rgba(253, 183, 62, 0.18) !important;
+}
+
+
+.st3-footer a.st3-button:active,
+.st3-footer .st3-button:active {
+  transform:
+    scale(0.985);
+}
+
+
+/*
+ * Prevent any inherited black footer button styling
+ * from overriding the primary CTA.
+ */
+.st3-footer
+a[href="/shop"].st3-button {
+  background:
+    #fdb73e !important;
+
+  color:
+    #111111 !important;
+}
+
+
+/* Keep the secondary Track an order link as text */
+.st3-footer
+a[href="/track-order"]:not(.st3-button) {
+  background:
+    transparent !important;
+}
+
+
+/* Mobile polish */
+@media (max-width: 700px) {
+  .st3-footer .st3-button {
+    min-height:
+      46px !important;
+
+    padding:
+      0 21px !important;
+  }
+}
+
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .st3-footer .st3-button {
+    transition:
+      none !important;
+  }
+
+  .st3-footer .st3-button:hover,
+  .st3-footer .st3-button:active {
+    transform:
+      none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — FOOTER EXPLORE STORE CTA
+   Exact primary mustard button treatment.
+   ========================================================== */
+
+.st3-footer .st3-footer__primary-cta {
+  appearance: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+
+  padding: 0 24px !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  outline: 0;
+
+  border-radius: 999px !important;
+
+  background: #fdb73e !important;
+  background-color: #fdb73e !important;
+  background-image: none !important;
+
+  color: #111111 !important;
+
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 600;
+
+  text-decoration: none !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+
+.st3-footer .st3-footer__primary-cta:link,
+.st3-footer .st3-footer__primary-cta:visited {
+  background: #fdb73e !important;
+  background-color: #fdb73e !important;
+
+  color: #111111 !important;
+}
+
+
+@media (hover: hover) {
+  .st3-footer .st3-footer__primary-cta:hover {
+    background: #f4aa24 !important;
+    background-color: #f4aa24 !important;
+
+    color: #111111 !important;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+      0 8px 22px
+      rgba(253, 183, 62, 0.20) !important;
+  }
+}
+
+
+.st3-footer .st3-footer__primary-cta:active {
+  background: #eda019 !important;
+  background-color: #eda019 !important;
+
+  transform: scale(0.985);
+}
+
+
+.st3-footer .st3-footer__primary-cta:focus-visible {
+  outline:
+    3px solid
+    rgba(253, 183, 62, 0.28);
+
+  outline-offset: 3px;
+}
+
+
+@media (max-width: 700px) {
+  .st3-footer .st3-footer__primary-cta {
+    min-height: 46px !important;
+    padding: 0 21px !important;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-footer .st3-footer__primary-cta {
+    transition: none !important;
+  }
+
+  .st3-footer .st3-footer__primary-cta:hover,
+  .st3-footer .st3-footer__primary-cta:active {
+    transform: none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — PREMIUM AI ASSISTANT FINAL POLISH
+   Authoritative visual layer.
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   LAUNCHER
+   ---------------------------------------------------------- */
+
+.st3-ai-launcher {
+  width: 64px !important;
+  height: 64px !important;
+  min-width: 64px !important;
+  min-height: 64px !important;
+
+  right: 24px;
+  bottom: 24px;
+
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, 0.10) !important;
+
+  border-radius: 50% !important;
+
+  background:
+    rgba(255, 255, 255, 0.94) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.10),
+    0 3px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+
+  -webkit-backdrop-filter:
+    saturate(180%) blur(24px);
+
+  backdrop-filter:
+    saturate(180%) blur(24px);
+
+  overflow: visible !important;
+
+  isolation: isolate;
+
+  cursor: pointer;
+
+  transition:
+    transform 220ms cubic-bezier(.22, 1, .36, 1),
+    box-shadow 220ms ease,
+    border-color 220ms ease !important;
+}
+
+
+/*
+ * Equal concentric geometry.
+ */
+.st3-ai-launcher::after {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+
+  inset: -6px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, 0.08);
+
+  background:
+    rgba(255, 255, 255, 0.48);
+
+  pointer-events: none;
+}
+
+
+/*
+ * Mustard breathing halo.
+ */
+.st3-ai-launcher::before {
+  content: "";
+
+  position: absolute;
+  z-index: -2;
+
+  inset: -13px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(253, 183, 62, 0.28);
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(253, 183, 62, 0.18) 0%,
+      rgba(253, 183, 62, 0.09) 48%,
+      rgba(253, 183, 62, 0.025) 68%,
+      transparent 76%
+    );
+
+  box-shadow:
+    0 0 26px rgba(253, 183, 62, 0.20),
+    0 0 54px rgba(253, 183, 62, 0.11);
+
+  pointer-events: none;
+
+  animation:
+    st3AiPremiumGlow
+    3.2s
+    ease-in-out
+    infinite;
+}
+
+
+.st3-ai-launcher__icon {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, 0.08);
+
+  border-radius: 50% !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fafafa,
+      #f3f3f5
+    ) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95);
+
+  overflow: hidden;
+}
+
+
+.st3-ai-launcher__icon svg {
+  width: 20px !important;
+  height: 20px !important;
+
+  margin: 0 !important;
+
+  display: block;
+
+  fill: none;
+  stroke: currentColor;
+
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transform: none !important;
+}
+
+
+.st3-ai-launcher__label {
+  display: none !important;
+}
+
+
+.st3-ai-launcher:hover {
+  transform:
+    translateY(-3px)
+    scale(1.035) !important;
+
+  border-color:
+    rgba(29, 29, 31, 0.14) !important;
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.13),
+    0 4px 10px rgba(0, 0, 0, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+}
+
+
+.st3-ai-launcher:hover::before {
+  box-shadow:
+    0 0 34px rgba(253, 183, 62, 0.27),
+    0 0 68px rgba(253, 183, 62, 0.16);
+}
+
+
+.st3-ai-launcher:active {
+  transform:
+    translateY(0)
+    scale(.965) !important;
+}
+
+
+.st3-ai-launcher--open::before {
+  opacity: .52;
+
+  animation-duration:
+    4.6s;
+}
+
+
+@keyframes st3AiPremiumGlow {
+  0%,
+  100% {
+    opacity: .68;
+
+    transform:
+      scale(.96);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform:
+      scale(1.10);
+  }
+}
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .st3-ai-launcher:not(.st3-ai-launcher--open) {
+    animation:
+      st3AiPremiumFloat
+      5.4s
+      ease-in-out
+      infinite;
+  }
+}
+
+
+@keyframes st3AiPremiumFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+
+
+/* ----------------------------------------------------------
+   PANEL
+   ---------------------------------------------------------- */
+
+.st3-ai-panel {
+  right: 24px !important;
+  bottom: 102px !important;
+
+  width:
+    min(
+      calc(100vw - 32px),
+      424px
+    ) !important;
+
+  max-height:
+    min(
+      720px,
+      calc(100dvh - 126px)
+    ) !important;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.075) !important;
+
+  border-radius:
+    30px !important;
+
+  background:
+    rgba(
+      249,
+      249,
+      251,
+      0.975
+    ) !important;
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    0 32px 90px rgba(0, 0, 0, 0.17),
+    0 8px 26px rgba(0, 0, 0, 0.065),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+
+  -webkit-backdrop-filter:
+    saturate(180%)
+    blur(34px);
+
+  backdrop-filter:
+    saturate(180%)
+    blur(34px);
+
+  transform-origin:
+    bottom right;
+}
+
+
+/*
+ * Cleaner entrance.
+ */
+.st3-ai-panel:not(.st3-ai-panel--open) {
+  transform:
+    translateY(12px)
+    scale(.97);
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+
+.st3-ai-panel--open {
+  transform:
+    translateY(0)
+    scale(1);
+
+  opacity: 1;
+
+  pointer-events: auto;
+
+  transition:
+    opacity 230ms ease,
+    transform 320ms
+      cubic-bezier(.22, 1, .36, 1);
+}
+
+
+
+/* ----------------------------------------------------------
+   HEADER
+   ---------------------------------------------------------- */
+
+.st3-ai-panel__top {
+  padding:
+    24px 24px 20px !important;
+
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    space-between;
+
+  gap:
+    18px;
+
+  border-bottom:
+    1px solid
+    rgba(0, 0, 0, 0.06);
+}
+
+
+.st3-ai-panel__eyebrow {
+  margin:
+    0 0 7px !important;
+
+  color:
+    #9a6500 !important;
+
+  font-size:
+    11px !important;
+
+  line-height:
+    1.2;
+
+  font-weight:
+    650 !important;
+
+  letter-spacing:
+    .04em !important;
+
+  text-transform:
+    uppercase;
+}
+
+
+.st3-ai-panel__top h2 {
+  margin: 0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    29px !important;
+
+  line-height:
+    1.03;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -.045em;
+}
+
+
+.st3-ai-panel__close {
+  width:
+    36px !important;
+
+  height:
+    36px !important;
+
+  min-width:
+    36px;
+
+  padding:
+    0 !important;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.07) !important;
+
+  border-radius:
+    50% !important;
+
+  background:
+    #fff !important;
+
+  color:
+    #1d1d1f !important;
+
+  cursor:
+    pointer;
+
+  transition:
+    transform 160ms ease,
+    background 160ms ease;
+}
+
+
+.st3-ai-panel__close:hover {
+  transform:
+    scale(1.04);
+
+  background:
+    #f2f2f4 !important;
+}
+
+
+.st3-ai-panel__close svg {
+  width:
+    16px;
+
+  height:
+    16px;
+
+  fill:
+    none;
+
+  stroke:
+    currentColor;
+
+  stroke-width:
+    1.7;
+
+  stroke-linecap:
+    round;
+}
+
+
+
+/* ----------------------------------------------------------
+   MESSAGE AREA
+   ---------------------------------------------------------- */
+
+.st3-ai-panel__messages {
+  min-height:
+    220px;
+
+  padding:
+    20px 20px 15px !important;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    11px;
+
+  overflow-y:
+    auto;
+
+  scrollbar-width:
+    thin;
+}
+
+
+.st3-ai-message {
+  width:
+    fit-content;
+
+  max-width:
+    86%;
+
+  padding:
+    12px 14px !important;
+
+  border-radius:
+    18px !important;
+
+  font-size:
+    14px !important;
+
+  line-height:
+    1.46;
+
+  letter-spacing:
+    -.012em;
+}
+
+
+.st3-ai-message p {
+  margin:
+    0;
+}
+
+
+.st3-ai-message--assistant {
+  align-self:
+    flex-start;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.06);
+
+  border-bottom-left-radius:
+    7px !important;
+
+  background:
+    #fff !important;
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    0 5px 16px
+    rgba(0, 0, 0, 0.035);
+}
+
+
+.st3-ai-message--user {
+  align-self:
+    flex-end;
+
+  border-bottom-right-radius:
+    7px !important;
+
+  background:
+    #1d1d1f !important;
+
+  color:
+    #fff !important;
+
+  box-shadow:
+    0 6px 17px
+    rgba(0, 0, 0, .08);
+}
+
+
+
+/* ----------------------------------------------------------
+   THINKING DOTS
+   ---------------------------------------------------------- */
+
+.st3-ai-thinking {
+  min-width:
+    34px;
+
+  height:
+    18px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    4px;
+}
+
+
+.st3-ai-thinking span {
+  width:
+    5px;
+
+  height:
+    5px;
+
+  border-radius:
+    50%;
+
+  background:
+    #9a6500 !important;
+
+  animation:
+    st3AiPremiumDot
+    900ms
+    ease-in-out
+    infinite;
+}
+
+
+.st3-ai-thinking span:nth-child(2) {
+  animation-delay:
+    120ms;
+}
+
+
+.st3-ai-thinking span:nth-child(3) {
+  animation-delay:
+    240ms;
+}
+
+
+@keyframes st3AiPremiumDot {
+  0%,
+  100% {
+    opacity:
+      .3;
+
+    transform:
+      translateY(0);
+  }
+
+  50% {
+    opacity:
+      1;
+
+    transform:
+      translateY(-2px);
+  }
+}
+
+
+
+/* ----------------------------------------------------------
+   QUICK SUGGESTIONS
+   ---------------------------------------------------------- */
+
+.st3-ai-suggestions {
+  padding:
+    2px 18px 18px !important;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    ) !important;
+
+  gap:
+    8px !important;
+}
+
+
+.st3-ai-suggestion {
+  min-height:
+    48px;
+
+  padding:
+    11px 13px !important;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    9px;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, 0.065) !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    rgba(255, 255, 255, .90) !important;
+
+  color:
+    #1d1d1f !important;
+
+  text-decoration:
+    none;
+
+  font-size:
+    12px !important;
+
+  line-height:
+    1.25;
+
+  font-weight:
+    560;
+
+  cursor:
+    pointer;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255,255,255,.9);
+
+  transition:
+    transform 180ms
+      cubic-bezier(.22,1,.36,1),
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+
+.st3-ai-suggestion:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(0, 0, 0, 0.10) !important;
+
+  background:
+    #fff !important;
+
+  box-shadow:
+    0 8px 22px
+    rgba(0, 0, 0, 0.055);
+}
+
+
+.st3-ai-suggestion span {
+  color:
+    #9a6500 !important;
+
+  font-size:
+    18px;
+
+  line-height:
+    1;
+}
+
+
+
+/* ----------------------------------------------------------
+   COMPOSER
+   ---------------------------------------------------------- */
+
+.st3-ai-composer {
+  margin:
+    0 16px !important;
+
+  min-height:
+    56px;
+
+  padding:
+    5px 5px 5px 18px !important;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
+  border:
+    1px solid
+    rgba(0, 0, 0, .085) !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #fff !important;
+
+  box-shadow:
+    0 4px 18px
+    rgba(0,0,0,.04),
+    inset 0 1px 0
+    rgba(255,255,255,.95);
+}
+
+
+.st3-ai-composer:focus-within {
+  border-color:
+    rgba(154, 101, 0, .34) !important;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(253, 183, 62, .10),
+    0 5px 18px
+    rgba(0, 0, 0, .045);
+}
+
+
+.st3-ai-composer input {
+  min-width:
+    0;
+
+  flex:
+    1;
+
+  border:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  color:
+    #1d1d1f !important;
+
+  font-size:
+    13px !important;
+}
+
+
+.st3-ai-composer input::placeholder {
+  color:
+    #86868b !important;
+}
+
+
+.st3-ai-composer button {
+  width:
+    44px !important;
+
+  height:
+    44px !important;
+
+  min-width:
+    44px;
+
+  padding:
+    0 !important;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    0 !important;
+
+  border-radius:
+    50% !important;
+
+  background:
+    #fdb73e !important;
+
+  color:
+    #111 !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, .30);
+
+  cursor:
+    pointer;
+
+  transition:
+    transform 170ms
+      cubic-bezier(.22, 1, .36, 1),
+    background 170ms ease,
+    opacity 170ms ease;
+}
+
+
+.st3-ai-composer button:hover:not(:disabled) {
+  transform:
+    scale(1.045);
+
+  background:
+    #f5aa20 !important;
+}
+
+
+.st3-ai-composer button:disabled {
+  opacity:
+    .35;
+
+  cursor:
+    default;
+}
+
+
+.st3-ai-composer button svg {
+  width:
+    18px;
+
+  height:
+    18px;
+
+  fill:
+    none;
+
+  stroke:
+    currentColor;
+
+  stroke-width:
+    1.8;
+
+  stroke-linecap:
+    round;
+
+  stroke-linejoin:
+    round;
+}
+
+
+
+/* ----------------------------------------------------------
+   DISCLAIMER / ERRORS
+   ---------------------------------------------------------- */
+
+.st3-ai-disclaimer {
+  margin:
+    11px 22px 16px !important;
+
+  color:
+    #86868b !important;
+
+  text-align:
+    center;
+
+  font-size:
+    10px !important;
+
+  line-height:
+    1.35;
+}
+
+
+.st3-ai-panel__error {
+  margin:
+    0;
+
+  color:
+    #b42318 !important;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.4;
+}
+
+
+
+/* ----------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------- */
+
+@media (max-width: 640px) {
+
+  .st3-ai-launcher {
+    width:
+      58px !important;
+
+    height:
+      58px !important;
+
+    min-width:
+      58px !important;
+
+    min-height:
+      58px !important;
+
+    right:
+      16px !important;
+
+    bottom:
+      16px !important;
+  }
+
+
+  .st3-ai-launcher__icon {
+    width:
+      38px !important;
+
+    height:
+      38px !important;
+
+    min-width:
+      38px !important;
+
+    min-height:
+      38px !important;
+  }
+
+
+  .st3-ai-launcher__icon svg {
+    width:
+      19px !important;
+
+    height:
+      19px !important;
+  }
+
+
+  .st3-ai-launcher::after {
+    inset:
+      -5px;
+  }
+
+
+  .st3-ai-launcher::before {
+    inset:
+      -10px;
+  }
+
+
+  .st3-ai-panel {
+    right:
+      10px !important;
+
+    bottom:
+      84px !important;
+
+    width:
+      calc(100vw - 20px) !important;
+
+    max-height:
+      calc(100dvh - 102px) !important;
+
+    border-radius:
+      26px !important;
+  }
+
+
+  .st3-ai-panel__top {
+    padding:
+      21px 20px
+      18px !important;
+  }
+
+
+  .st3-ai-panel__top h2 {
+    font-size:
+      26px !important;
+  }
+
+
+  .st3-ai-suggestions {
+    grid-template-columns:
+      1fr !important;
+  }
+}
+
+
+
+/* ----------------------------------------------------------
+   REDUCED MOTION
+   ---------------------------------------------------------- */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .st3-ai-launcher,
+  .st3-ai-launcher::before,
+  .st3-ai-panel,
+  .st3-ai-suggestion,
+  .st3-ai-composer button,
+  .st3-ai-thinking span {
+    animation:
+      none !important;
+
+    transition:
+      none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — AUTHORITATIVE STICKY HEADER
+   Keeps storefront navigation visible while scrolling.
+   ========================================================== */
+
+.st3-header {
+  position: sticky !important;
+  position: -webkit-sticky !important;
+
+  top: 0 !important;
+
+  z-index: 5000 !important;
+
+  width: 100%;
+
+  background:
+    rgba(
+      250,
+      250,
+      252,
+      0.90
+    ) !important;
+
+  border-bottom:
+    1px solid
+    rgba(0, 0, 0, 0.045);
+
+  -webkit-backdrop-filter:
+    saturate(180%)
+    blur(22px);
+
+  backdrop-filter:
+    saturate(180%)
+    blur(22px);
+
+  transform:
+    translateZ(0);
+
+  isolation:
+    isolate;
+}
+
+
+/*
+ * Slight premium surface depth.
+ * Very subtle so it still feels clean.
+ */
+.st3-header::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: -1px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 0, 0, 0.055),
+      transparent
+    );
+
+  pointer-events:
+    none;
+}
+
+
+/*
+ * Make sure header inner content stays above its surface.
+ */
+.st3-header > * {
+  position: relative;
+
+  z-index: 2;
+}
+
+
+/*
+ * Mega menu must remain directly attached to sticky header.
+ */
+.st3-mega {
+  z-index: 5010 !important;
+}
+
+
+/*
+ * Scrim remains underneath the menu/header.
+ */
+.st3-header__scrim--v3 {
+  z-index: 4990 !important;
+}
+
+
+/*
+ * Prevent any parent animation or transform from breaking
+ * sticky positioning.
+ */
+body,
+html {
+  overflow-x: clip;
+}
+
+
+/*
+ * Desktop/tablet/mobile all use the same sticky behavior.
+ */
+@media (max-width: 900px) {
+  .st3-header {
+    position: sticky !important;
+    position: -webkit-sticky !important;
+
+    top: 0 !important;
+
+    z-index: 5000 !important;
+  }
+}
+
+
+/*
+ * Keep header transitions smooth without making the
+ * navigation itself move while scrolling.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .st3-header {
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-header {
+    transition: none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — FINAL LOCKED STOREFRONT HEADER
+   AUTHORITATIVE OVERRIDE
+   ========================================================== */
+
+/*
+ * IMPORTANT:
+ * We intentionally use position: FIXED instead of sticky.
+ *
+ * Sticky can stop working when an ancestor uses:
+ * overflow, transform, contain, filtering, etc.
+ *
+ * Fixed attaches the navigation directly to the viewport,
+ * so it remains visible regardless of page scroll position.
+ */
+
+.st3-header {
+  position: fixed !important;
+
+  top: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
+
+  width: 100% !important;
+
+  margin: 0 !important;
+
+  z-index: 10000 !important;
+
+  background:
+    rgba(
+      250,
+      250,
+      252,
+      0.92
+    ) !important;
+
+  border-bottom:
+    1px solid
+    rgba(0, 0, 0, 0.05) !important;
+
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65),
+    0 8px 28px rgba(0, 0, 0, 0.035);
+
+  -webkit-backdrop-filter:
+    saturate(180%)
+    blur(22px);
+
+  backdrop-filter:
+    saturate(180%)
+    blur(22px);
+
+  transform:
+    translate3d(0, 0, 0) !important;
+
+  isolation:
+    isolate;
+
+  visibility:
+    visible !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* ----------------------------------------------------------
+   RESERVE SPACE FOR THE FIXED HEADER
+
+   Otherwise the first section of each storefront page would
+   slide underneath the fixed navigation.
+   ---------------------------------------------------------- */
+
+html {
+  scroll-padding-top:
+    var(--st3-header-height, 58px);
+}
+
+
+/*
+ * Only pages that actually contain the Stereophonie header
+ * receive this spacing.
+ */
+body:has(.st3-header) {
+  padding-top:
+    var(--st3-header-height, 58px) !important;
+}
+
+
+/* ----------------------------------------------------------
+   HEADER CONTENT
+   ---------------------------------------------------------- */
+
+.st3-header__inner {
+  position: relative;
+
+  z-index: 3;
+}
+
+
+/* ----------------------------------------------------------
+   MEGA MENUS
+
+   Because the header is now fixed, the dropdown must remain
+   visually connected to it and above the storefront.
+   ---------------------------------------------------------- */
+
+.st3-mega {
+  position: fixed !important;
+
+  top:
+    var(--st3-header-height, 58px) !important;
+
+  right: 0 !important;
+  left: 0 !important;
+
+  z-index: 9999 !important;
+}
+
+
+/* ----------------------------------------------------------
+   BACKGROUND SCRIM FOR OPEN MENUS
+   ---------------------------------------------------------- */
+
+.st3-header__scrim--v3 {
+  position: fixed !important;
+
+  top:
+    var(--st3-header-height, 58px) !important;
+
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+
+  width: 100% !important;
+
+  height:
+    calc(
+      100dvh -
+      var(--st3-header-height, 58px)
+    ) !important;
+
+  z-index: 9990 !important;
+}
+
+
+/* ----------------------------------------------------------
+   SAFARI / MOBILE SAFETY
+   ---------------------------------------------------------- */
+
+@supports (
+  -webkit-backdrop-filter:
+  blur(1px)
+) {
+  .st3-header {
+    -webkit-backdrop-filter:
+      saturate(180%)
+      blur(22px);
+  }
+}
+
+
+@media (max-width: 900px) {
+  .st3-header {
+    position:
+      fixed !important;
+
+    top:
+      0 !important;
+
+    right:
+      0 !important;
+
+    left:
+      0 !important;
+
+    z-index:
+      10000 !important;
+  }
+
+  body:has(.st3-header) {
+    padding-top:
+      var(
+        --st3-header-height,
+        58px
+      ) !important;
+  }
+}
+
+
+/* ----------------------------------------------------------
+   PREVENT CONTENT FROM PAINTING ABOVE NAVIGATION
+   ---------------------------------------------------------- */
+
+.st3-home-live,
+.st3-footer {
+  position: relative;
+
+  z-index: 1;
+}
+
+
+/* ----------------------------------------------------------
+   SMOOTH PREMIUM APPEARANCE
+   ---------------------------------------------------------- */
+
+@media (
+  prefers-reduced-motion:
+  no-preference
+) {
+  .st3-header {
+    transition:
+      background-color 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .st3-header {
+    transition:
+      none !important;
+  }
+}
+
+
+
+/* ==========================================================
+   STEREOPHONIE V3 — PREMIUM SHOP / PRODUCT EXPERIENCE
+   2026 storefront refinement
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   GLOBAL STOREFRONT RHYTHM
+   ---------------------------------------------------------- */
+
+:is(
+  .st3-shop,
+  .st3-shop-page,
+  .st3-shop-shell,
+  .st3-product-page
+) {
+  color: #1d1d1f;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT GRID
+
+   Wide, calm spacing similar to premium electronics stores.
+   ---------------------------------------------------------- */
+
+.st3-product-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    clamp(
+      18px,
+      2vw,
+      30px
+    );
+
+  align-items: stretch;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT CARD
+   One continuous rounded surface.
+   No square white rectangles.
+   ---------------------------------------------------------- */
+
+.st3-product-card {
+  position: relative;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 0 !important;
+
+  border-radius:
+    30px !important;
+
+  background:
+    #f5f5f7 !important;
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    0 1px 0
+      rgba(0, 0, 0, 0.025);
+
+  transform:
+    translate3d(0, 0, 0);
+
+  transition:
+    transform
+      360ms
+      cubic-bezier(
+        0.22,
+        1,
+        0.36,
+        1
+      ),
+    box-shadow
+      360ms
+      ease,
+    background
+      250ms
+      ease;
+}
+
+
+/*
+ * Remove accidental rectangular layers inside cards.
+ */
+
+.st3-product-card > * {
+  position: relative;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT MEDIA
+   ---------------------------------------------------------- */
+
+.st3-product-card__media {
+  position: relative;
+
+  width:
+    calc(100% - 20px);
+
+  margin:
+    10px
+    10px
+    0;
+
+  aspect-ratio:
+    1 / 1.08;
+
+  overflow: hidden;
+
+  border-radius:
+    24px !important;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.72
+    ) !important;
+
+  isolation: isolate;
+}
+
+
+/*
+ * Soft premium light behind transparent artwork.
+ * This is NOT another rectangular image background.
+ */
+
+.st3-product-card__media::before {
+  content: "";
+
+  position: absolute;
+
+  z-index: 0;
+
+  left: 50%;
+  top: 52%;
+
+  width: 76%;
+  height: 76%;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(
+        255,
+        255,
+        255,
+        0.98
+      )
+        0%,
+      rgba(
+        255,
+        255,
+        255,
+        0.46
+      )
+        47%,
+      transparent
+        74%
+    );
+
+  pointer-events: none;
+}
+
+
+/*
+ * Product artwork standardization.
+ */
+
+.st3-product-card__image,
+.st3-product-card__media img {
+  position: relative;
+
+  z-index: 1;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  padding:
+    clamp(
+      24px,
+      3vw,
+      42px
+    ) !important;
+
+  display: block;
+
+  object-fit:
+    contain !important;
+
+  object-position:
+    center !important;
+
+  background:
+    transparent !important;
+
+  border-radius:
+    0 !important;
+
+  transform:
+    scale(1);
+
+  transition:
+    transform
+      500ms
+      cubic-bezier(
+        0.22,
+        1,
+        0.36,
+        1
+      );
+
+  box-sizing:
+    border-box;
+}
+
+
+/* ----------------------------------------------------------
+   CARD CONTENT
+   ---------------------------------------------------------- */
+
+:is(
+  .st3-product-card__content,
+  .st3-product-card__body,
+  .st3-product-card__details,
+  .st3-product-card__info
+) {
+  padding:
+    22px
+    20px
+    24px;
+
+  background:
+    transparent !important;
+}
+
+
+/*
+ * Brand / secondary information.
+ */
+
+:is(
+  .st3-product-card__brand,
+  .st3-product-card__category,
+  .st3-product-card__eyebrow
+) {
+  margin-bottom:
+    7px;
+
+  color:
+    #86868b;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.25;
+
+  font-weight:
+    500;
+
+  letter-spacing:
+    -0.01em;
+}
+
+
+/*
+ * Product name.
+ */
+
+:is(
+  .st3-product-card__name,
+  .st3-product-card__title
+) {
+  margin:
+    0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    clamp(
+      15px,
+      1.25vw,
+      18px
+    );
+
+  line-height:
+    1.18;
+
+  font-weight:
+    620;
+
+  letter-spacing:
+    -0.025em;
+}
+
+
+/*
+ * Price treatment.
+ */
+
+:is(
+  .st3-product-card__price,
+  .st3-product-card__pricing
+) {
+  margin-top:
+    13px;
+
+  color:
+    #1d1d1f;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    -0.02em;
+}
+
+
+/*
+ * Availability remains quiet.
+ */
+
+:is(
+  .st3-product-card__availability,
+  .st3-product-card__stock
+) {
+  color:
+    #86868b;
+
+  font-size:
+    12px;
+
+  font-weight:
+    450;
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT CARD HOVER
+   ---------------------------------------------------------- */
+
+@media (hover: hover) {
+
+  .st3-product-card:hover {
+    transform:
+      translate3d(
+        0,
+        -6px,
+        0
+      );
+
+    box-shadow:
+      0 26px 64px
+        rgba(
+          0,
+          0,
+          0,
+          0.09
+        );
+  }
+
+  .st3-product-card:hover
+  .st3-product-card__image,
+
+  .st3-product-card:hover
+  .st3-product-card__media
+  img {
+    transform:
+      scale(1.035);
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   NEW BADGE
+
+   Alive, premium, subtle.
+   ---------------------------------------------------------- */
+
+:is(
+  .st3-product-card__badge,
+  .st3-product-card__new,
+  .st3-product-card [data-badge="new"]
+) {
+  border:
+    1px solid
+      rgba(
+        0,
+        0,
+        0,
+        0.045
+      );
+
+  border-radius:
+    999px !important;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.94
+    ) !important;
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    0 7px 22px
+      rgba(
+        0,
+        0,
+        0,
+        0.08
+      );
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  backdrop-filter:
+    blur(18px);
+}
+
+
+@media (
+  prefers-reduced-motion:
+  no-preference
+) {
+
+  :is(
+    .st3-product-card__badge,
+    .st3-product-card__new,
+    .st3-product-card [data-badge="new"]
+  ) {
+    animation:
+      st3PremiumNewBadge
+      3.4s
+      ease-in-out
+      infinite;
+  }
+
+}
+
+
+@keyframes st3PremiumNewBadge {
+
+  0%,
+  100% {
+    transform:
+      translateY(0)
+      scale(1);
+
+    box-shadow:
+      0 7px 22px
+        rgba(
+          0,
+          0,
+          0,
+          0.075
+        );
+  }
+
+  50% {
+    transform:
+      translateY(-2px)
+      scale(1.025);
+
+    box-shadow:
+      0 10px 28px
+        rgba(
+          0,
+          0,
+          0,
+          0.11
+        );
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   SHOP PAGE PRODUCT AREA
+   ---------------------------------------------------------- */
+
+:is(
+  .st3-shop,
+  .st3-shop-page,
+  .st3-shop-shell
+)
+.st3-product-grid {
+  margin-top:
+    clamp(
+      30px,
+      4vw,
+      52px
+    );
+}
+
+
+/* ----------------------------------------------------------
+   PRODUCT DETAIL PAGE
+   ---------------------------------------------------------- */
+
+.st3-product-page {
+  background:
+    #fff;
+}
+
+
+/*
+ * Main gallery family.
+ */
+
+:is(
+  .st3-product-gallery,
+  .st3-product-gallery__media,
+  .st3-product-gallery__stage
+) {
+  overflow: hidden;
+
+  border-radius:
+    30px !important;
+
+  background:
+    #f5f5f7 !important;
+}
+
+
+/*
+ * Product detail photography.
+ */
+
+.st3-product-gallery img,
+.st3-product-page img {
+  object-fit:
+    contain;
+
+  background:
+    transparent !important;
+}
+
+
+/*
+ * Primary gallery stage.
+ */
+
+.st3-product-gallery__stage {
+  position: relative;
+
+  min-height:
+    clamp(
+      480px,
+      64vw,
+      760px
+    );
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  isolation: isolate;
+}
+
+
+/*
+ * Gentle gallery illumination.
+ */
+
+.st3-product-gallery__stage::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width:
+    min(
+      72%,
+      620px
+    );
+
+  aspect-ratio:
+    1;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(
+        255,
+        255,
+        255,
+        0.92
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        0.28
+      )
+        48%,
+      transparent
+        72%
+    );
+
+  pointer-events:
+    none;
+}
+
+
+/*
+ * Keep gallery image in front.
+ */
+
+.st3-product-gallery__stage img {
+  position:
+    relative;
+
+  z-index:
+    1;
+
+  max-width:
+    88%;
+
+  max-height:
+    88%;
+
+  object-fit:
+    contain;
+
+  transform:
+    translateZ(0);
+
+  transition:
+    transform
+      500ms
+      cubic-bezier(
+        0.22,
+        1,
+        0.36,
+        1
+      );
+}
+
+
+@media (hover: hover) {
+
+  .st3-product-gallery__stage:hover img {
+    transform:
+      scale(1.018);
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   CTA BUTTON SYSTEM
+   MUSTARD = PRIMARY ACTION
+   ---------------------------------------------------------- */
+
+.st3-button {
+  border:
+    0 !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #fdb73e !important;
+
+  color:
+    #111 !important;
+
+  box-shadow:
+    none;
+
+  transition:
+    background
+      180ms
+      ease,
+    transform
+      180ms
+      ease,
+    box-shadow
+      180ms
+      ease;
+}
+
+
+@media (hover: hover) {
+
+  .st3-button:hover {
+    background:
+      #f4aa21 !important;
+
+    color:
+      #111 !important;
+
+    transform:
+      translateY(-1px);
+
+    box-shadow:
+      0 10px 24px
+        rgba(
+          253,
+          183,
+          62,
+          0.18
+        );
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   TABLET
+   ---------------------------------------------------------- */
+
+@media (
+  max-width:
+  1100px
+) {
+
+  .st3-product-grid {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(
+          0,
+          1fr
+        )
+      );
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   SMALL TABLET
+   ---------------------------------------------------------- */
+
+@media (
+  max-width:
+  820px
+) {
+
+  .st3-product-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      );
+
+    gap:
+      16px;
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------- */
+
+@media (
+  max-width:
+  540px
+) {
+
+  .st3-product-grid {
+    grid-template-columns:
+      1fr;
+
+    gap:
+      18px;
+  }
+
+
+  .st3-product-card {
+    border-radius:
+      26px !important;
+  }
+
+
+  .st3-product-card__media {
+    border-radius:
+      21px !important;
+
+    aspect-ratio:
+      1 / 1.02;
+  }
+
+
+  .st3-product-card__image,
+  .st3-product-card__media img {
+    padding:
+      25px !important;
+  }
+
+
+  .st3-product-gallery__stage {
+    min-height:
+      420px;
+
+    border-radius:
+      24px !important;
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   REDUCED MOTION
+   ---------------------------------------------------------- */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .st3-product-card,
+  .st3-product-card *,
+  .st3-product-gallery *,
+  .st3-button {
+    animation:
+      none !important;
+
+    transition:
+      none !important;
+  }
+
+}
+

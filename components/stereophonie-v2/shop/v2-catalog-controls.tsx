@@ -1,23 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import {
-  Check,
   ChevronDown,
-  ChevronRight,
   Filter,
-  RotateCcw,
+  LoaderCircle,
   Search,
   SlidersHorizontal,
-  Tag,
-  Tags,
   X,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  FormEvent,
-  PointerEvent as ReactPointerEvent,
+  type FormEvent,
   useEffect,
-  useMemo,
   useRef,
   useState,
   useTransition,
@@ -25,9 +20,22 @@ import {
 
 type SortOption = "newest" | "price-asc" | "price-desc";
 
-type FilterModal = "category" | "brand" | "price" | null;
+type SearchResult = {
+  id: string;
+  name: string;
+  slug: string;
+  brand: string;
+  category: string;
+  imageUrl: string | null;
+  imageAlt: string;
+  price: number | null;
+  availability: string;
+};
 
-type PriceHandle = "minimum" | "maximum" | null;
+type SearchResponse = {
+  results?: SearchResult[];
+  error?: string;
+};
 
 type Props = {
   categories: string[];
@@ -43,14 +51,12 @@ type Props = {
   searchValue?: string;
 };
 
-const PRICE_GAP = 5;
-
-function clamp(value: number, minimum: number, maximum: number) {
-  return Math.min(Math.max(value, minimum), maximum);
-}
-
 function money(value: number) {
   return `$${Math.round(value)}`;
+}
+
+function preciseMoney(value: number) {
+  return `$${value.toFixed(2)}`;
 }
 
 export default function V2CatalogControls({
@@ -68,132 +74,218 @@ export default function V2CatalogControls({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchShellRef = useRef<HTMLDivElement>(null);
 
   const [, startTransition] = useTransition();
 
   const [query, setQuery] = useState(searchValue);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const cleanQuery = query.trim();
 
-  const [stockOnly, setStockOnly] = useState(
-    selectedAvailability === "in-stock",
+  const [priceOpen, setPriceOpen] = useState(false);
+  const [priceMounted, setPriceMounted] = useState(false);
+  const [priceVisible, setPriceVisible] = useState(false);
+
+  /*
+   * Keep the Price panel mounted briefly while it closes,
+   * allowing the CSS exit animation to complete.
+   */
+
+  useEffect(() => {
+    let closeTimer: number | undefined;
+    let frameOne: number | undefined;
+    let frameTwo: number | undefined;
+
+    if (priceOpen) {
+      /*
+       * Phase 1:
+       * mount the panel but keep it in its ENTERING state.
+       */
+      setPriceMounted(true);
+      setPriceVisible(false);
+
+      /*
+       * Phase 2:
+       * wait for the browser to actually paint the entering state,
+       * then promote it to OPEN.
+       *
+       * Two RAFs are intentional. A single RAF may be collapsed by
+       * React/browser batching and cause the panel to appear instantly.
+       */
+      frameOne = window.requestAnimationFrame(() => {
+        frameTwo = window.requestAnimationFrame(() => {
+          setPriceVisible(true);
+        });
+      });
+
+      return () => {
+        if (frameOne !== undefined) {
+          window.cancelAnimationFrame(frameOne);
+        }
+
+        if (frameTwo !== undefined) {
+          window.cancelAnimationFrame(frameTwo);
+        }
+      };
+    }
+
+    /*
+     * CLOSE:
+     * first transition OPEN -> CLOSING,
+     * then physically remove it after the animation completes.
+     */
+    setPriceVisible(false);
+
+    if (priceMounted) {
+      closeTimer = window.setTimeout(() => {
+        setPriceMounted(false);
+      }, 290);
+    }
+
+    return () => {
+      if (closeTimer !== undefined) {
+        window.clearTimeout(closeTimer);
+      }
+
+      if (frameOne !== undefined) {
+        window.cancelAnimationFrame(frameOne);
+      }
+
+      if (frameTwo !== undefined) {
+        window.cancelAnimationFrame(frameTwo);
+      }
+    };
+  }, [priceOpen, priceMounted]);
+
+
+  useEffect(() => {
+    if (!priceOpen) {
+      return;
+    }
+
+    function closePriceOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setPriceOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", closePriceOnEscape);
+
+    return () => {
+      window.removeEventListener("keydown", closePriceOnEscape);
+    };
+  }, [priceOpen]);
+
+  const [minimum, setMinimum] = useState(
+    selectedMinPrice ?? minimumAvailablePrice,
   );
 
-  const [sort, setSort] = useState<SortOption>(selectedSort);
-
-  const [modal, setModal] = useState<FilterModal>(null);
-
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-
-  const databaseMinimum = useMemo(
-    () => Math.max(0, Math.floor(Number(minimumAvailablePrice) || 0)),
-    [minimumAvailablePrice],
+  const [maximum, setMaximum] = useState(
+    selectedMaxPrice ?? maximumAvailablePrice,
   );
-
-  const databaseMaximum = useMemo(() => {
-    const realMaximum = Math.ceil(Number(maximumAvailablePrice) || 0);
-
-    return Math.max(realMaximum, databaseMinimum + PRICE_GAP);
-  }, [maximumAvailablePrice, databaseMinimum]);
-
-  const initialMinimum = clamp(
-    selectedMinPrice ?? databaseMinimum,
-    databaseMinimum,
-    databaseMaximum - PRICE_GAP,
-  );
-
-  const initialMaximum = clamp(
-    selectedMaxPrice ?? databaseMaximum,
-    initialMinimum + PRICE_GAP,
-    databaseMaximum,
-  );
-
-  const [minimum, setMinimum] = useState(initialMinimum);
-  const [maximum, setMaximum] = useState(initialMaximum);
-
-  const minimumRef = useRef(initialMinimum);
-  const maximumRef = useRef(initialMaximum);
-
-  const priceRailRef = useRef<HTMLDivElement | null>(null);
-
-  const [activePriceHandle, setActivePriceHandle] = useState<PriceHandle>(null);
 
   useEffect(() => {
     setQuery(searchValue);
   }, [searchValue]);
 
   useEffect(() => {
-    setStockOnly(selectedAvailability === "in-stock");
-  }, [selectedAvailability]);
-
-  useEffect(() => {
-    setSort(selectedSort);
-  }, [selectedSort]);
-
-  useEffect(() => {
-    const nextMinimum = clamp(
-      selectedMinPrice ?? databaseMinimum,
-      databaseMinimum,
-      databaseMaximum - PRICE_GAP,
-    );
-
-    const nextMaximum = clamp(
-      selectedMaxPrice ?? databaseMaximum,
-      nextMinimum + PRICE_GAP,
-      databaseMaximum,
-    );
-
-    minimumRef.current = nextMinimum;
-    maximumRef.current = nextMaximum;
-
-    setMinimum(nextMinimum);
-    setMaximum(nextMaximum);
-  }, [selectedMinPrice, selectedMaxPrice, databaseMinimum, databaseMaximum]);
-
-  useEffect(() => {
-    if (!modal && !mobileFiltersOpen) {
+    if (!cleanQuery) {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchError("");
 
-    document.body.style.overflow = "hidden";
+      try {
+        const response = await fetch(
+          `/api/products/search?q=${encodeURIComponent(cleanQuery)}`,
+          {
+            signal: controller.signal,
+            headers: { Accept: "application/json" },
+          },
+        );
+        const data = (await response.json()) as SearchResponse;
 
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key !== "Escape") {
-        return;
+        if (!response.ok) {
+          throw new Error(data.error ?? "Search is temporarily unavailable.");
+        }
+
+        setSearchResults(data.results ?? []);
+        setActiveSuggestion(-1);
+      } catch (searchRequestError) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setSearchResults([]);
+        setSearchError(
+          searchRequestError instanceof Error
+            ? searchRequestError.message
+            : "Search is temporarily unavailable.",
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setSearchLoading(false);
+        }
       }
+    }, 220);
 
-      if (modal) {
-        setModal(null);
-      } else {
-        setMobileFiltersOpen(false);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [cleanQuery]);
+
+  useEffect(() => {
+    function closeSuggestions(event: PointerEvent) {
+      if (!searchShellRef.current?.contains(event.target as Node)) {
+        setSuggestionsOpen(false);
+        setActiveSuggestion(-1);
       }
     }
 
-    window.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", closeSuggestions);
 
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [modal, mobileFiltersOpen]);
+    return () => document.removeEventListener("pointerdown", closeSuggestions);
+  }, []);
 
-  function navigate(updates: Record<string, string | null | undefined>) {
+  useEffect(() => {
+    setMinimum(selectedMinPrice ?? minimumAvailablePrice);
+    setMaximum(selectedMaxPrice ?? maximumAvailablePrice);
+  }, [
+    selectedMinPrice,
+    selectedMaxPrice,
+    minimumAvailablePrice,
+    maximumAvailablePrice,
+  ]);
+
+  function navigate(
+    updates: Record<string, string | number | null | undefined>,
+  ) {
     const params = new URLSearchParams(window.location.search);
 
     Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === "") {
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
         params.delete(key);
       } else {
-        params.set(key, value);
+        params.set(key, String(value));
       }
     });
 
-    params.delete("page");
-
-    const nextSearch = params.toString();
+    const next = params.toString();
 
     startTransition(() => {
-      router.push(nextSearch ? `${pathname}?${nextSearch}` : pathname, {
+      router.push(next ? `${pathname}?${next}` : pathname, {
         scroll: false,
       });
     });
@@ -202,663 +294,497 @@ export default function V2CatalogControls({
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    navigate({
-      search: query.trim() || null,
-    });
-  }
+    if (!cleanQuery) {
+      return;
+    }
 
-  function chooseCategory(category: string) {
-    navigate({
-      category: category || null,
-    });
-
-    setModal(null);
-  }
-
-  function chooseBrand(brand: string) {
-    navigate({
-      brand: brand || null,
-    });
-
-    setModal(null);
-  }
-
-  function toggleStock() {
-    const next = !stockOnly;
-
-    setStockOnly(next);
+    setSuggestionsOpen(false);
+    setActiveSuggestion(-1);
 
     navigate({
-      availability: next ? "in-stock" : null,
+      search: cleanQuery,
     });
   }
 
-  function changeSort(nextSort: SortOption) {
-    setSort(nextSort);
-
-    navigate({
-      sort: nextSort === "newest" ? null : nextSort,
-    });
+  function openProduct(result: SearchResult) {
+    setSuggestionsOpen(false);
+    setActiveSuggestion(-1);
+    router.push(`/shop/${result.slug}`);
   }
 
-  function clearAll() {
-    setQuery("");
-    setStockOnly(false);
-    setSort("newest");
+  function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Escape") {
+      setSuggestionsOpen(false);
+      setActiveSuggestion(-1);
+      return;
+    }
 
-    minimumRef.current = databaseMinimum;
-    maximumRef.current = databaseMaximum;
+    if (!suggestionsOpen || searchResults.length === 0) {
+      if (event.key === "ArrowDown" && cleanQuery) {
+        setSuggestionsOpen(true);
+      }
+      return;
+    }
 
-    setMinimum(databaseMinimum);
-    setMaximum(databaseMaximum);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveSuggestion((current) =>
+        current >= searchResults.length - 1 ? 0 : current + 1,
+      );
+      return;
+    }
 
-    setModal(null);
-    setMobileFiltersOpen(false);
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveSuggestion((current) =>
+        current <= 0 ? searchResults.length - 1 : current - 1,
+      );
+      return;
+    }
 
-    startTransition(() => {
-      router.push(pathname, {
-        scroll: false,
-      });
-    });
+    if (event.key === "Enter" && activeSuggestion >= 0) {
+      event.preventDefault();
+      openProduct(searchResults[activeSuggestion]);
+    }
   }
 
-  function commitPrice() {
-    const correctedMinimum = clamp(
-      Math.round(minimumRef.current),
-      databaseMinimum,
-      databaseMaximum - PRICE_GAP,
+  function applyPrice() {
+    const realMinimum = Math.max(
+      minimumAvailablePrice,
+      Math.min(minimum, maximumAvailablePrice),
     );
 
-    const correctedMaximum = clamp(
-      Math.round(maximumRef.current),
-      correctedMinimum + PRICE_GAP,
-      databaseMaximum,
+    const realMaximum = Math.max(
+      realMinimum,
+      Math.min(maximum, maximumAvailablePrice),
     );
 
-    minimumRef.current = correctedMinimum;
-    maximumRef.current = correctedMaximum;
-
-    setMinimum(correctedMinimum);
-    setMaximum(correctedMaximum);
+    setMinimum(realMinimum);
+    setMaximum(realMaximum);
 
     navigate({
       minPrice:
-        correctedMinimum > databaseMinimum ? String(correctedMinimum) : null,
+        realMinimum <= minimumAvailablePrice
+          ? null
+          : realMinimum,
 
       maxPrice:
-        correctedMaximum < databaseMaximum ? String(correctedMaximum) : null,
-    });
-  }
-
-  function setPriceFromPointer(
-    handle: Exclude<PriceHandle, null>,
-    clientX: number,
-  ) {
-    const rail = priceRailRef.current;
-
-    if (!rail) {
-      return;
-    }
-
-    const rect = rail.getBoundingClientRect();
-
-    if (rect.width <= 0) {
-      return;
-    }
-
-    const ratio = clamp((clientX - rect.left) / rect.width, 0, 1);
-
-    const requested = Math.round(
-      databaseMinimum + ratio * (databaseMaximum - databaseMinimum),
-    );
-
-    if (handle === "minimum") {
-      const nextMinimum = clamp(
-        requested,
-        databaseMinimum,
-        maximumRef.current - PRICE_GAP,
-      );
-
-      minimumRef.current = nextMinimum;
-      setMinimum(nextMinimum);
-
-      return;
-    }
-
-    const nextMaximum = clamp(
-      requested,
-      minimumRef.current + PRICE_GAP,
-      databaseMaximum,
-    );
-
-    maximumRef.current = nextMaximum;
-    setMaximum(nextMaximum);
-  }
-
-  function beginPriceDrag(
-    handle: Exclude<PriceHandle, null>,
-    event: ReactPointerEvent<HTMLButtonElement>,
-  ) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-
-    setActivePriceHandle(handle);
-
-    setPriceFromPointer(handle, event.clientX);
-  }
-
-  useEffect(() => {
-    if (!activePriceHandle) {
-      return;
-    }
-
-    const handle: Exclude<PriceHandle, null> = activePriceHandle;
-
-    function move(event: PointerEvent) {
-      event.preventDefault();
-      setPriceFromPointer(handle, event.clientX);
-    }
-
-    function finish() {
-      setActivePriceHandle(null);
-      commitPrice();
-    }
-
-    window.addEventListener("pointermove", move, {
-      passive: false,
+        realMaximum >= maximumAvailablePrice
+          ? null
+          : realMaximum,
     });
 
-    window.addEventListener("pointerup", finish, {
-      once: true,
+    setPriceOpen(false);
+  }
+
+  function resetPrice() {
+    setMinimum(minimumAvailablePrice);
+    setMaximum(maximumAvailablePrice);
+
+    navigate({
+      minPrice: null,
+      maxPrice: null,
     });
 
-    window.addEventListener("pointercancel", finish, {
-      once: true,
-    });
-
-    return () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", finish);
-      window.removeEventListener("pointercancel", finish);
-    };
-  }, [activePriceHandle, databaseMinimum, databaseMaximum]);
-
-  const totalRange = Math.max(PRICE_GAP, databaseMaximum - databaseMinimum);
-
-  const minimumPercentage = ((minimum - databaseMinimum) / totalRange) * 100;
-
-  const maximumPercentage = ((maximum - databaseMinimum) / totalRange) * 100;
-
-  const priceIsActive = minimum > databaseMinimum || maximum < databaseMaximum;
-
-  const activeFilterCount = [
-    Boolean(selectedCategory),
-    Boolean(selectedBrand),
-    stockOnly,
-    priceIsActive,
-    sort !== "newest",
-  ].filter(Boolean).length;
-
-  function selectorRow({
-    icon,
-    label,
-    value,
-    onClick,
-    active,
-  }: {
-    icon: React.ReactNode;
-    label: string;
-    value: string;
-    onClick: () => void;
-    active: boolean;
-  }) {
-    return (
-      <button
-        type="button"
-        className={`st-filter-v10-selector ${active ? "is-active" : ""}`}
-        onClick={onClick}
-      >
-        <span className="st-filter-v10-selector__icon">{icon}</span>
-
-        <span className="st-filter-v10-selector__copy">
-          <small>{label}</small>
-          <strong>{value}</strong>
-        </span>
-
-        <ChevronRight />
-      </button>
-    );
+    setPriceOpen(false);
   }
 
-  function renderCompactFilterPanel() {
-    return (
-      <div className="st-filter-v10-panel">
-        <div className="st-filter-v10-diagnostics">
-          <div>
-            <small>ACTIVE FILTERS</small>
-            <strong>{String(activeFilterCount).padStart(2, "0")}</strong>
-          </div>
-
-          <span>
-            <i />
-            FILTER BUS ONLINE
-          </span>
-        </div>
-
-        <section className="st-filter-v10-section">
-          <span className="st-filter-v10-label">DISCOVER</span>
-
-          <div className="st-filter-v10-selector-stack">
-            {selectorRow({
-              icon: <Tags />,
-              label: "CATEGORY",
-              value: selectedCategory || "ALL CATEGORIES",
-              onClick: () => setModal("category"),
-              active: Boolean(selectedCategory),
-            })}
-
-            {selectorRow({
-              icon: <Tag />,
-              label: "BRAND",
-              value: selectedBrand || "ALL BRANDS",
-              onClick: () => setModal("brand"),
-              active: Boolean(selectedBrand),
-            })}
-
-            {selectorRow({
-              icon: <SlidersHorizontal />,
-              label: "PRICE RANGE",
-              value: `${money(minimum)} — ${money(maximum)}`,
-              onClick: () => setModal("price"),
-              active: priceIsActive,
-            })}
-          </div>
-        </section>
-
-        <section className="st-filter-v10-section">
-          <span className="st-filter-v10-label">AVAILABILITY</span>
-
-          <button
-            type="button"
-            className={`st-filter-v10-stock ${stockOnly ? "is-active" : ""}`}
-            aria-pressed={stockOnly}
-            onClick={toggleStock}
-          >
-            <span className="st-filter-v10-stock__switch">
-              <i />
-            </span>
-
-            <span>
-              <small>INVENTORY FILTER</small>
-              <strong>IN STOCK ONLY</strong>
-            </span>
-
-            <em>{stockOnly ? "ON" : "OFF"}</em>
-          </button>
-        </section>
-
-        <section className="st-filter-v10-section">
-          <span className="st-filter-v10-label">SORT PRODUCTS</span>
-
-          <div className="st-filter-v10-sort">
-            <select
-              value={sort}
-              onChange={(event) => changeSort(event.target.value as SortOption)}
-            >
-              <option value="newest">NEWEST FIRST</option>
-              <option value="price-asc">PRICE / LOW TO HIGH</option>
-              <option value="price-desc">PRICE / HIGH TO LOW</option>
-            </select>
-
-            <ChevronDown />
-          </div>
-        </section>
-
-        <section className="st-filter-v10-reset-section">
-          <button
-            type="button"
-            className="st-filter-v10-reset"
-            onClick={clearAll}
-          >
-            <RotateCcw />
-
-            <span>
-              <small>SYSTEM COMMAND</small>
-              <strong>RESET FILTERS</strong>
-            </span>
-          </button>
-        </section>
-      </div>
-    );
-  }
-
-  function renderChoiceModal(
-    title: string,
-    eyebrow: string,
-    options: string[],
-    selected: string,
-    allLabel: string,
-    onSelect: (value: string) => void,
-  ) {
-    return (
-      <div className="st-filter-v10-modal__body">
-        <header className="st-filter-v10-modal__heading">
-          <div>
-            <small>{eyebrow}</small>
-            <h2>{title}</h2>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setModal(null)}
-            aria-label={`Close ${title}`}
-          >
-            <X />
-          </button>
-        </header>
-
-        <div className="st-filter-v10-choice-list">
-          <button
-            type="button"
-            className={!selected ? "is-active" : ""}
-            onClick={() => onSelect("")}
-          >
-            <span>
-              <small>00</small>
-              <strong>{allLabel}</strong>
-            </span>
-
-            {!selected ? <Check /> : <ChevronRight />}
-          </button>
-
-          {options.map((option, index) => {
-            const active = selected === option;
-
-            return (
-              <button
-                key={option}
-                type="button"
-                className={active ? "is-active" : ""}
-                onClick={() => onSelect(option)}
-              >
-                <span>
-                  <small>{String(index + 1).padStart(2, "0")}</small>
-                  <strong>{option.toUpperCase()}</strong>
-                </span>
-
-                {active ? <Check /> : <ChevronRight />}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  function renderPriceModal() {
-    return (
-      <div className="st-filter-v10-modal__body">
-        <header className="st-filter-v10-modal__heading">
-          <div>
-            <small>CATALOG / PRICE WINDOW</small>
-            <h2>SELECT PRICE RANGE</h2>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setModal(null)}
-            aria-label="Close price range"
-          >
-            <X />
-          </button>
-        </header>
-
-        <div className="st-filter-v10-price">
-          <div className="st-filter-v10-price__readout">
-            <div>
-              <small>MINIMUM</small>
-              <strong>{money(minimum)}</strong>
-            </div>
-
-            <div>
-              <small>CATALOG WINDOW</small>
-              <span>
-                {money(databaseMinimum)} — {money(databaseMaximum)}
-              </span>
-            </div>
-
-            <div>
-              <small>MAXIMUM</small>
-              <strong>{money(maximum)}</strong>
-            </div>
-          </div>
-
-          <div className="st-filter-v10-price__hardware">
-            <div
-              ref={priceRailRef}
-              className="st-filter-v10-price__track"
-              onPointerDown={(event) => {
-                const rect = event.currentTarget.getBoundingClientRect();
-
-                const ratio = clamp(
-                  (event.clientX - rect.left) / rect.width,
-                  0,
-                  1,
-                );
-
-                const requested =
-                  databaseMinimum + ratio * (databaseMaximum - databaseMinimum);
-
-                const minDistance = Math.abs(requested - minimum);
-                const maxDistance = Math.abs(requested - maximum);
-
-                const nextHandle =
-                  minDistance <= maxDistance ? "minimum" : "maximum";
-
-                setActivePriceHandle(nextHandle);
-
-                setPriceFromPointer(nextHandle, event.clientX);
-              }}
-            >
-              <div className="st-filter-v10-price__rail" />
-
-              <div
-                className="st-filter-v10-price__active"
-                style={{
-                  left: `${minimumPercentage}%`,
-                  right: `${100 - maximumPercentage}%`,
-                }}
-              />
-
-              <button
-                type="button"
-                className={`st-filter-v10-price__node st-filter-v10-price__node--minimum ${
-                  activePriceHandle === "minimum" ? "is-active" : ""
-                }`}
-                aria-label="Minimum price"
-                aria-valuemin={databaseMinimum}
-                aria-valuemax={maximum - PRICE_GAP}
-                aria-valuenow={minimum}
-                style={{
-                  left: `${minimumPercentage}%`,
-                }}
-                onPointerDown={(event) => beginPriceDrag("minimum", event)}
-              >
-                <span>MIN</span>
-              </button>
-
-              <button
-                type="button"
-                className={`st-filter-v10-price__node st-filter-v10-price__node--maximum ${
-                  activePriceHandle === "maximum" ? "is-active" : ""
-                }`}
-                aria-label="Maximum price"
-                aria-valuemin={minimum + PRICE_GAP}
-                aria-valuemax={databaseMaximum}
-                aria-valuenow={maximum}
-                style={{
-                  left: `${maximumPercentage}%`,
-                }}
-                onPointerDown={(event) => beginPriceDrag("maximum", event)}
-              >
-                <span>MAX</span>
-              </button>
-            </div>
-
-            <div className="st-filter-v10-price__scale">
-              <span>{money(databaseMinimum)}</span>
-
-              <strong>MINIMUM SEPARATION / ${PRICE_GAP}</strong>
-
-              <span>{money(databaseMaximum)}</span>
-            </div>
-          </div>
-
-          <div className="st-filter-v10-price__actions">
-            <button
-              type="button"
-              onClick={() => {
-                minimumRef.current = databaseMinimum;
-                maximumRef.current = databaseMaximum;
-
-                setMinimum(databaseMinimum);
-                setMaximum(databaseMaximum);
-
-                navigate({
-                  minPrice: null,
-                  maxPrice: null,
-                });
-              }}
-            >
-              RESET RANGE
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                commitPrice();
-                setModal(null);
-              }}
-            >
-              APPLY RANGE
-              <ChevronRight />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const hasPriceFilter =
+    selectedMinPrice !== null ||
+    selectedMaxPrice !== null;
 
   return (
-    <>
-      <div className="st-v2-catalog-tools st-filter-v10-tools">
-        <form className="st-v2-catalog-search" onSubmit={submitSearch}>
-          <Search />
+    <div className="st-filter-v4">
+      <div
+        ref={searchShellRef}
+        className="st-filter-v4__search-shell"
+      >
+        <form
+          className="st-filter-v4__search"
+          onSubmit={submitSearch}
+        >
+          <Search aria-hidden="true" />
 
           <input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="SEARCH PRODUCTS, BRANDS, MODELS..."
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setSuggestionsOpen(Boolean(event.target.value.trim()));
+              setActiveSuggestion(-1);
+            }}
+            onFocus={() => setSuggestionsOpen(Boolean(cleanQuery))}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="Search products, brands or models"
+            aria-label="Search products"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={suggestionsOpen && Boolean(cleanQuery)}
+            aria-controls="shop-product-suggestions"
+            aria-activedescendant={
+              activeSuggestion >= 0
+                ? `shop-product-suggestion-${searchResults[activeSuggestion]?.id}`
+                : undefined
+            }
+            autoComplete="off"
           />
 
-          <button type="submit">SEARCH</button>
+          {searchLoading ? (
+            <LoaderCircle
+              className="st-filter-v4__search-loader"
+              aria-label="Searching products"
+            />
+          ) : query ? (
+            <button
+              type="button"
+              className="st-filter-v4__clear-search"
+              onClick={() => {
+                setQuery("");
+                setSearchResults([]);
+                setSearchError("");
+                setSuggestionsOpen(false);
+                navigate({ search: null });
+              }}
+              aria-label="Clear search"
+            >
+              <X />
+            </button>
+          ) : null}
+
+          <button
+            type="submit"
+            className="st-filter-v4__search-button"
+          >
+            Search
+          </button>
         </form>
 
-        <button
-          type="button"
-          className="st-filter-v10-mobile-trigger"
-          onClick={() => setMobileFiltersOpen(true)}
-        >
-          <SlidersHorizontal />
-          FILTERS
-          <span>{String(activeFilterCount).padStart(2, "0")}</span>
-        </button>
+        {suggestionsOpen && cleanQuery ? (
+          <div
+            id="shop-product-suggestions"
+            className="st-filter-v4__suggestions"
+            role="listbox"
+            aria-label="Suggested products"
+          >
+            {searchError ? (
+              <div className="st-filter-v4__suggestion-message" role="alert">
+                <strong>Search is unavailable.</strong>
+                <span>{searchError}</span>
+              </div>
+            ) : searchLoading && searchResults.length === 0 ? (
+              <div className="st-filter-v4__suggestion-message" role="status">
+                <LoaderCircle className="st-filter-v4__suggestion-spinner" />
+                <span>Finding matching products…</span>
+              </div>
+            ) : !searchLoading && searchResults.length === 0 ? (
+              <div className="st-filter-v4__suggestion-message" role="status">
+                <strong>No products found for “{cleanQuery}”.</strong>
+                <span>Try another product, brand, or model.</span>
+              </div>
+            ) : (
+              <>
+                <div className="st-filter-v4__suggestion-heading">
+                  <span>Suggested products</span>
+                  <small>{searchResults.length} matches</small>
+                </div>
+
+                <div className="st-filter-v4__suggestion-list">
+                  {searchResults.slice(0, 6).map((result, index) => (
+                    <button
+                      key={result.id}
+                      id={`shop-product-suggestion-${result.id}`}
+                      type="button"
+                      className={`st-filter-v4__suggestion ${
+                        activeSuggestion === index ? "is-active" : ""
+                      }`}
+                      role="option"
+                      aria-selected={activeSuggestion === index}
+                      onMouseEnter={() => setActiveSuggestion(index)}
+                      onClick={() => openProduct(result)}
+                    >
+                      <span className="st-filter-v4__suggestion-image">
+                        {result.imageUrl ? (
+                          <Image
+                            src={result.imageUrl}
+                            alt={result.imageAlt}
+                            width={58}
+                            height={58}
+                            sizes="58px"
+                          />
+                        ) : (
+                          <Search aria-hidden="true" />
+                        )}
+                      </span>
+
+                      <span className="st-filter-v4__suggestion-copy">
+                        <small>{result.brand || result.category}</small>
+                        <strong>{result.name}</strong>
+                        <em>{result.availability}</em>
+                      </span>
+
+                      <span className="st-filter-v4__suggestion-price">
+                        {result.price !== null
+                          ? preciseMoney(result.price)
+                          : "View"}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="st-filter-v4__view-results"
+                  onClick={() => {
+                    setSuggestionsOpen(false);
+                    navigate({ search: cleanQuery });
+                  }}
+                >
+                  View all results for “{cleanQuery}”
+                </button>
+              </>
+            )}
+          </div>
+        ) : null}
       </div>
 
-      <aside className="st-v2-catalog-sidebar st-filter-v10-sidebar">
-        <div className="st-filter-v10-title">
-          <div>
-            <Filter />
-            <strong>FILTER SYSTEM</strong>
+      <div className="st-filter-v4__bar">
+        <div className="st-filter-v4__filters">
+          <label className="st-filter-v4__select">
+            <span>Category</span>
+
+            <select
+              value={selectedCategory}
+              onChange={(event) =>
+                navigate({
+                  category: event.target.value || null,
+                })
+              }
+            >
+              <option value="">All categories</option>
+
+              {categories.map((category) => (
+                <option
+                  key={category}
+                  value={category}
+                >
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            <ChevronDown />
+          </label>
+
+          <label className="st-filter-v4__select">
+            <span>Brand</span>
+
+            <select
+              value={selectedBrand}
+              onChange={(event) =>
+                navigate({
+                  brand: event.target.value || null,
+                })
+              }
+            >
+              <option value="">All brands</option>
+
+              {brands.map((brand) => (
+                <option
+                  key={brand}
+                  value={brand}
+                >
+                  {brand}
+                </option>
+              ))}
+            </select>
+
+            <ChevronDown />
+          </label>
+
+          <div className="st-filter-v4__price-wrap">
+            <button
+              type="button"
+              className={`st-filter-v4__pill ${
+                hasPriceFilter ? "is-active" : ""
+              }`}
+              onClick={() => setPriceOpen((value) => !value)}
+              aria-expanded={priceOpen}
+            >
+              <SlidersHorizontal />
+
+              <span>
+                {hasPriceFilter
+                  ? `${money(
+                      selectedMinPrice ??
+                        minimumAvailablePrice,
+                    )} – ${money(
+                      selectedMaxPrice ??
+                        maximumAvailablePrice,
+                    )}`
+                  : "Price"}
+              </span>
+
+              <ChevronDown />
+            </button>
+
+            {priceMounted ? (
+              <>
+                <button
+                  type="button"
+                  className={`st-filter-v4__price-backdrop ${
+                    priceOpen
+                      ? priceVisible
+                        ? "is-open"
+                        : "is-entering"
+                      : "is-closing"
+                  }`}
+                  onClick={() => setPriceOpen(false)}
+                  aria-label="Close price filter"
+                />
+
+                <div
+                  className={`st-filter-v4__price-popover ${
+                    priceOpen
+                      ? priceVisible
+                        ? "is-open"
+                        : "is-entering"
+                      : "is-closing"
+                  }`}
+                  role="dialog"
+                  aria-modal="false"
+                  aria-label="Price range"
+                >
+                  <div className="st-filter-v4__price-title">
+                    <div>
+                      <small>Price</small>
+                      <strong>Choose a range</strong>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setPriceOpen(false)}
+                      aria-label="Close"
+                    >
+                      <X />
+                    </button>
+                  </div>
+
+                  <div className="st-filter-v4__price-fields">
+                    <label>
+                      <span>Minimum</span>
+
+                      <div>
+                        <span>$</span>
+
+                        <input
+                          type="number"
+                          min={minimumAvailablePrice}
+                          max={maximum}
+                          value={minimum}
+                          onChange={(event) =>
+                            setMinimum(
+                              Number(event.target.value),
+                            )
+                          }
+                        />
+                      </div>
+                    </label>
+
+                    <label>
+                      <span>Maximum</span>
+
+                      <div>
+                        <span>$</span>
+
+                        <input
+                          type="number"
+                          min={minimum}
+                          max={maximumAvailablePrice}
+                          value={maximum}
+                          onChange={(event) =>
+                            setMaximum(
+                              Number(event.target.value),
+                            )
+                          }
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="st-filter-v4__price-range">
+                    Available range:{" "}
+                    {money(minimumAvailablePrice)} –{" "}
+                    {money(maximumAvailablePrice)}
+                  </div>
+
+                  <div className="st-filter-v4__price-actions">
+                    <button
+                      type="button"
+                      onClick={resetPrice}
+                    >
+                      Reset
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={applyPrice}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </div>
 
-          <span>V10.0</span>
-        </div>
-
-        {renderCompactFilterPanel()}
-      </aside>
-
-      {mobileFiltersOpen ? (
-        <div className="st-filter-v10-mobile">
           <button
             type="button"
-            className="st-filter-v10-mobile__backdrop"
-            onClick={() => setMobileFiltersOpen(false)}
-            aria-label="Close filters"
-          />
-
-          <div className="st-filter-v10-mobile__sheet">
-            <header>
-              <div>
-                <SlidersHorizontal />
-                <strong>FILTER SYSTEM / V10</strong>
-              </div>
-
-              <button type="button" onClick={() => setMobileFiltersOpen(false)}>
-                <X />
-              </button>
-            </header>
-
-            <div className="st-filter-v10-mobile__content">
-              {renderCompactFilterPanel()}
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {modal ? (
-        <div className="st-filter-v10-modal">
-          <button
-            type="button"
-            className="st-filter-v10-modal__backdrop"
-            onClick={() => setModal(null)}
-            aria-label="Close filter selector"
-          />
-
-          <section
-            className="st-filter-v10-modal__dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Catalog filter selector"
+            className={`st-filter-v4__pill ${
+              selectedAvailability === "in-stock"
+                ? "is-active"
+                : ""
+            }`}
+            onClick={() =>
+              navigate({
+                availability:
+                  selectedAvailability === "in-stock"
+                    ? null
+                    : "in-stock",
+              })
+            }
           >
-            {modal === "category"
-              ? renderChoiceModal(
-                  "CHOOSE CATEGORY",
-                  "CATALOG / CATEGORY",
-                  categories,
-                  selectedCategory,
-                  "ALL CATEGORIES",
-                  chooseCategory,
-                )
-              : null}
-
-            {modal === "brand"
-              ? renderChoiceModal(
-                  "CHOOSE BRAND",
-                  "CATALOG / BRAND",
-                  brands,
-                  selectedBrand,
-                  "ALL BRANDS",
-                  chooseBrand,
-                )
-              : null}
-
-            {modal === "price" ? renderPriceModal() : null}
-          </section>
+            <span className="st-filter-v4__stock-dot" />
+            In stock
+          </button>
         </div>
-      ) : null}
-    </>
+
+        <label className="st-filter-v4__sort">
+          <span>Sort</span>
+
+          <select
+            value={selectedSort}
+            onChange={(event) =>
+              navigate({
+                sort: event.target.value,
+              })
+            }
+          >
+            <option value="newest">Newest</option>
+            <option value="price-asc">
+              Price: low to high
+            </option>
+            <option value="price-desc">
+              Price: high to low
+            </option>
+          </select>
+
+          <ChevronDown />
+        </label>
+      </div>
+
+      <div className="st-filter-v4__mobile-label">
+        <Filter />
+        Shop filters
+      </div>
+    </div>
   );
 }

@@ -27,7 +27,7 @@ export const defaultPublicStoreSettings: PublicStoreSettings = {
   whatsappNumber: "+961 76 99 22 06",
   instagramHandle: "@thenitastyle",
 
-  deliveryFee: 5,
+  deliveryFee: 4,
   freeDeliveryThreshold: 150,
   deliveryEstimate: "3–4 working days",
   deliveryCountry: "Lebanon",

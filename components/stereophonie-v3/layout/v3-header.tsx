@@ -1,23 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-type HeaderCategory = {
-  id: string;
-  name: string;
-  slug?: string | null;
-};
+import { useCart } from "@/components/cart/cart-provider";
+import V3HeaderCartPanel from "@/components/stereophonie-v3/layout/v3-header-cart-panel";
+import V3HeaderSearchPanel from "@/components/stereophonie-v3/layout/v3-header-search-panel";
+import { V3BrandLogo } from "@/components/stereophonie-v3/shared/v3-brand-logo";
 
-type DesktopMenu =
-  | "store"
-  | "support"
-  | `category:${string}`
-  | null;
+function WishlistIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      data-st3-wishlist-icon
+    >
+      <path d="M8.25 4.75h7.5c.83 0 1.5.67 1.5 1.5v13.1c0 .35-.4.55-.68.34L12 16.45l-4.57 3.24c-.28.21-.68.01-.68-.34V6.25c0-.83.67-1.5 1.5-1.5Z" />
+    </svg>
+  );
+}
 
 function SearchIcon() {
   return (
@@ -46,87 +49,66 @@ function BagIcon() {
   );
 }
 
-function HeartIcon() {
+function TrackOrderIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M20 8.8c0 5-8 10-8 10s-8-5-8-10A4.3 4.3 0 0 1 12 6.5a4.3 4.3 0 0 1 8 2.3Z" />
+      <path d="M4.5 7.5 12 3.5l7.5 4v8.8L12 20.5l-7.5-4.2V7.5Z" />
+      <path d="m4.8 7.7 7.2 4.1 7.2-4.1M12 11.8v8.4" />
+      <path d="M15.5 14.8h4m-1.7-1.7 1.7 1.7-1.7 1.7" />
     </svg>
   );
 }
 
-function MenuIcon({
-  open,
-}: {
-  open: boolean;
-}) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      {open ? (
-        <>
-          <path d="M6 6l12 12" />
-          <path d="M18 6 6 18" />
-        </>
-      ) : (
-        <>
-          <path d="M5 8h14" />
-          <path d="M5 16h14" />
-        </>
-      )}
-    </svg>
-  );
-}
+type HeaderCategory = {
+  id: string;
+  name: string;
+  slug?: string | null;
+};
+
+type HeaderPanel =
+  | "store"
+  | "support"
+  | "search"
+  | "cart"
+  | `category:${string}`
+  | null;
+
+type OpenHeaderPanel = Exclude<HeaderPanel, null>;
 
 export function V3Header() {
-  const [categories, setCategories] =
-    useState<HeaderCategory[]>([]);
-
-  const [desktopMenu, setDesktopMenu] =
-    useState<DesktopMenu>(null);
-
-  const [renderedMenu, setRenderedMenu] =
-    useState<DesktopMenu>(null);
-
-  const [menuClosing, setMenuClosing] =
-    useState(false);
-
-  const [mobileOpen, setMobileOpen] =
-    useState(false);
-
-  const closeTimer =
-    useRef<ReturnType<typeof setTimeout> | null>(
-      null,
-    );
+  const pathname = usePathname();
+  const [categories, setCategories] = useState<HeaderCategory[]>([]);
+  const [activePanel, setActivePanel] = useState<HeaderPanel>(null);
+  const [renderedPanel, setRenderedPanel] = useState<HeaderPanel>(null);
+  const [panelClosing, setPanelClosing] = useState(false);
+  const closeTimer = useRef<number | null>(null);
+  const { totalItems, isCartReady, isCartOpen, openCart, closeCart } = useCart();
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadCategories() {
       try {
-        const response = await fetch(
-          "/api/storefront/header-categories",
-          {
-            cache: "no-store",
-          },
-        );
+        const response = await fetch("/api/storefront/header-categories", {
+          cache: "no-store",
+        });
 
         if (!response.ok) {
           return;
         }
 
         const data = await response.json();
-
-        const nextCategories =
-          Array.isArray(data)
-            ? data
-            : Array.isArray(data.categories)
-              ? data.categories
-              : [];
+        const nextCategories = Array.isArray(data)
+          ? data
+          : Array.isArray(data.categories)
+            ? data.categories
+            : [];
 
         if (!cancelled) {
           setCategories(nextCategories);
         }
       } catch {
-        // Navigation remains usable if category loading fails.
+        // The fixed navigation remains usable if categories cannot load.
       }
     }
 
@@ -137,108 +119,102 @@ export function V3Header() {
     };
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow =
-      mobileOpen ? "hidden" : "";
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [mobileOpen]);
-
-  useEffect(() => {
-    function onKeyDown(
-      event: KeyboardEvent,
-    ) {
-      if (event.key !== "Escape") {
-        return;
-      }
-
-      setDesktopMenu(null);
-      setMobileOpen(false);
+  const cancelClose = useCallback(() => {
+    if (closeTimer.current) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
     }
-
-    window.addEventListener(
-      "keydown",
-      onKeyDown,
-    );
-
-    return () => {
-      window.removeEventListener(
-        "keydown",
-        onKeyDown,
-      );
-    };
   }, []);
 
-  function cancelClose() {
-    if (!closeTimer.current) {
+  const openPanel = useCallback(
+    (panel: OpenHeaderPanel) => {
+      cancelClose();
+      closeCart();
+      setPanelClosing(false);
+      setRenderedPanel(panel);
+      setActivePanel(panel);
+    },
+    [cancelClose, closeCart],
+  );
+
+  const closePanel = useCallback(() => {
+    cancelClose();
+
+    const currentPanel = isCartOpen
+      ? "cart"
+      : activePanel ?? renderedPanel;
+
+    if (!currentPanel) {
       return;
     }
 
-    clearTimeout(closeTimer.current);
-    closeTimer.current = null;
-  }
+    setRenderedPanel(currentPanel);
+    setPanelClosing(true);
+    setActivePanel(null);
+    closeCart();
 
-  function openMenu(
-    menu: DesktopMenu,
-  ) {
+    closeTimer.current = window.setTimeout(() => {
+      setRenderedPanel(null);
+      setPanelClosing(false);
+      closeTimer.current = null;
+    }, 430);
+  }, [activePanel, cancelClose, closeCart, isCartOpen, renderedPanel]);
+
+  const scheduleClose = useCallback(() => {
     cancelClose();
+    closeTimer.current = window.setTimeout(closePanel, 180);
+  }, [cancelClose, closePanel]);
 
-    setMenuClosing(false);
-    setRenderedMenu(menu);
-    setDesktopMenu(menu);
-  }
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        closePanel();
+      }
+    }
 
-  function closeMenu() {
-    cancelClose();
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [closePanel]);
 
-    if (!desktopMenu && !renderedMenu) {
+  useEffect(() => {
+    return () => cancelClose();
+  }, [cancelClose]);
+
+  const visibleCategories = categories.slice(0, 12);
+  const topCategories = visibleCategories.slice(0, 6);
+  const panelForContent: HeaderPanel = isCartOpen
+    ? "cart"
+    : activePanel ?? renderedPanel;
+  const panelIsOpen = isCartOpen || activePanel !== null;
+  const utilityPanel = panelForContent === "search" || panelForContent === "cart";
+  const activeCategory = panelForContent?.startsWith("category:")
+    ? categories.find(
+        (category) => `category:${category.id}` === panelForContent,
+      ) ?? null
+    : null;
+
+  function toggleSearch() {
+    if (panelIsOpen && panelForContent === "search") {
+      closePanel();
       return;
     }
 
-    setMenuClosing(true);
-    setDesktopMenu(null);
-
-    window.setTimeout(() => {
-      setRenderedMenu(null);
-      setMenuClosing(false);
-    }, 220);
+    openPanel("search");
   }
 
-  function scheduleClose() {
+  function toggleCart() {
     cancelClose();
 
-    closeTimer.current = setTimeout(
-      () => {
-        closeMenu();
-      },
-      150,
-    );
+    if (isCartOpen) {
+      closePanel();
+      return;
+    }
+
+    setActivePanel(null);
+    setRenderedPanel("cart");
+    setPanelClosing(false);
+    openCart();
   }
-
-  const visibleCategories =
-    categories.slice(0, 12);
-
-  const topCategories =
-    visibleCategories.slice(0, 6);
-
-  const menuForContent =
-    desktopMenu ?? renderedMenu;
-
-  const activeCategory =
-    menuForContent?.startsWith(
-      "category:",
-    )
-      ? categories.find(
-          (category) =>
-            `category:${category.id}` ===
-            menuForContent,
-        ) ?? null
-      : null;
-
-  const menuKey =
-    menuForContent ?? "closed";
 
   return (
     <>
@@ -252,367 +228,241 @@ export function V3Header() {
             <Link
               href="/"
               className="st3-header__logo"
-              onMouseEnter={closeMenu}
-              onFocus={closeMenu}
+              onMouseEnter={closePanel}
+              onFocus={closePanel}
             >
-              Stereophonie
+              <V3BrandLogo priority />
             </Link>
 
-            <nav
-              className="st3-header__nav"
-              aria-label="Main navigation"
-            >
+            <nav className="st3-header__nav" aria-label="Main navigation">
               <button
                 type="button"
                 className={`st3-header__nav-item ${
-                  desktopMenu === "store"
-                    ? "st3-header__nav-item--active"
-                    : ""
+                  activePanel === "store" ? "st3-header__nav-item--active" : ""
                 }`}
-                onMouseEnter={() =>
-                  openMenu("store")
-                }
-                onFocus={() =>
-                  openMenu("store")
-                }
-                onClick={() =>
-                  openMenu("store")
-                }
-                aria-expanded={
-                  desktopMenu === "store"
-                }
+                onMouseEnter={() => openPanel("store")}
+                onFocus={() => openPanel("store")}
+                onClick={() => openPanel("store")}
+                aria-expanded={activePanel === "store"}
               >
                 Store
               </button>
 
-              {topCategories.map(
-                (category) => {
-                  const menu:
-                    DesktopMenu =
-                    `category:${category.id}`;
+              {topCategories.map((category) => {
+                const panel: OpenHeaderPanel = `category:${category.id}`;
+                const active = activePanel === panel;
 
-                  const active =
-                    desktopMenu === menu;
-
-                  return (
-                    <Link
-                      key={category.id}
-                      href={`/shop?category=${encodeURIComponent(
-                        category.name,
-                      )}`}
-                      className={`st3-header__nav-item ${
-                        active
-                          ? "st3-header__nav-item--active"
-                          : ""
-                      }`}
-                      onMouseEnter={() =>
-                        openMenu(menu)
-                      }
-                      onFocus={() =>
-                        openMenu(menu)
-                      }
-                      aria-expanded={
-                        active
-                      }
-                    >
-                      {category.name}
-                    </Link>
-                  );
-                },
-              )}
+                return (
+                  <Link
+                    key={category.id}
+                    href={`/shop?category=${encodeURIComponent(category.name)}`}
+                    className={`st3-header__nav-item ${
+                      active ? "st3-header__nav-item--active" : ""
+                    }`}
+                    onMouseEnter={() => openPanel(panel)}
+                    onFocus={() => openPanel(panel)}
+                    aria-expanded={active}
+                  >
+                    {category.name}
+                  </Link>
+                );
+              })}
 
               <button
                 type="button"
                 className={`st3-header__nav-item ${
-                  desktopMenu ===
-                  "support"
-                    ? "st3-header__nav-item--active"
-                    : ""
+                  activePanel === "support" ? "st3-header__nav-item--active" : ""
                 }`}
-                onMouseEnter={() =>
-                  openMenu("support")
-                }
-                onFocus={() =>
-                  openMenu("support")
-                }
-                onClick={() =>
-                  openMenu("support")
-                }
-                aria-expanded={
-                  desktopMenu ===
-                  "support"
-                }
+                onMouseEnter={() => openPanel("support")}
+                onFocus={() => openPanel("support")}
+                onClick={() => openPanel("support")}
+                aria-expanded={activePanel === "support"}
               >
                 Support
               </button>
             </nav>
 
             <div className="st3-header__actions">
-              <Link
-                href="/shop"
-                className="st3-header__icon"
+              <button
+                type="button"
+                className={`st3-header__icon ${
+                  panelIsOpen && panelForContent === "search" ? "is-active" : ""
+                }`}
                 aria-label="Search products"
-                onMouseEnter={closeMenu}
+                aria-expanded={panelIsOpen && panelForContent === "search"}
+                aria-controls="st3-header-panel"
+                onMouseEnter={cancelClose}
+                onClick={toggleSearch}
               >
                 <SearchIcon />
-              </Link>
+              </button>
 
               <Link
                 href="/wishlist"
-                className="st3-header__icon st3-header__desktop-only"
+                className={`st3-header__icon st3-header__desktop-only ${
+                  pathname.startsWith("/wishlist") ? "is-active" : ""
+                }`}
                 aria-label="Wishlist"
-                onMouseEnter={closeMenu}
+                aria-current={
+                  pathname.startsWith("/wishlist") ? "page" : undefined
+                }
+                onMouseEnter={closePanel}
               >
-                <HeartIcon />
+                <WishlistIcon />
               </Link>
 
               <Link
                 href="/account"
-                className="st3-header__icon st3-header__desktop-only"
+                className={`st3-header__icon st3-header__desktop-only ${
+                  pathname.startsWith("/account") ? "is-active" : ""
+                }`}
                 aria-label="Account"
-                onMouseEnter={closeMenu}
+                aria-current={
+                  pathname.startsWith("/account") ? "page" : undefined
+                }
+                onMouseEnter={closePanel}
               >
                 <UserIcon />
               </Link>
 
-              <Link
-                href="/checkout"
-                className="st3-header__icon"
-                aria-label="Shopping bag"
-                onMouseEnter={closeMenu}
-              >
-                <BagIcon />
-              </Link>
-
               <button
                 type="button"
-                className="st3-header__icon st3-header__menu-button"
-                aria-label={
-                  mobileOpen
-                    ? "Close navigation"
-                    : "Open navigation"
-                }
-                aria-expanded={
-                  mobileOpen
-                }
-                onClick={() =>
-                  setMobileOpen(
-                    (current) =>
-                      !current,
-                  )
-                }
+                className={`st3-header__icon st3-header__cart-icon ${
+                  isCartOpen ? "is-active" : ""
+                }`}
+                aria-label={`Shopping bag with ${totalItems} ${
+                  totalItems === 1 ? "item" : "items"
+                }`}
+                aria-expanded={isCartOpen}
+                aria-controls="st3-header-panel"
+                onMouseEnter={cancelClose}
+                onClick={toggleCart}
               >
-                <MenuIcon
-                  open={mobileOpen}
-                />
+                <BagIcon />
+                {isCartReady && totalItems > 0 ? (
+                  <span className="st3-header__cart-count">
+                    {totalItems > 99 ? "99+" : totalItems}
+                  </span>
+                ) : null}
               </button>
+
+              <Link
+                href="/track-order"
+                className={`st3-header__icon st3-header__track-icon ${
+                  pathname.startsWith("/track-order") ? "is-active" : ""
+                }`}
+                aria-label="Track your order"
+                aria-current={
+                  pathname.startsWith("/track-order") ? "page" : undefined
+                }
+                onMouseEnter={closePanel}
+              >
+                <TrackOrderIcon />
+              </Link>
             </div>
           </div>
         </div>
 
         <div
+          id="st3-header-panel"
           className={`st3-mega ${
-            desktopMenu
+            panelIsOpen
               ? "st3-mega--open"
-              : menuClosing
+              : panelClosing
                 ? "st3-mega--closing"
                 : "st3-mega--closed"
-          }`}
-          aria-hidden={
-            desktopMenu === null
-          }
+          } ${utilityPanel ? "st3-mega--utility" : ""} ${
+            panelForContent === "search" ? "st3-mega--search" : ""
+          } ${panelForContent === "cart" ? "st3-mega--cart" : ""}`}
+          aria-hidden={!panelIsOpen}
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
         >
-          {menuForContent && (
+          {panelForContent ? (
             <div
-              key={menuKey}
-              className="st3-mega__inner st3-mega__inner--switch"
+              key={panelForContent}
+              className={`st3-mega__inner st3-mega__inner--switch ${
+                utilityPanel ? "st3-mega__inner--utility" : ""
+              }`}
             >
-              {menuForContent ===
-              "store" ? (
+              {panelForContent === "search" ? (
+                <V3HeaderSearchPanel onClose={closePanel} />
+              ) : panelForContent === "cart" ? (
+                <V3HeaderCartPanel onClose={closePanel} />
+              ) : panelForContent === "store" ? (
                 <>
                   <div>
-                    <p className="st3-mega__eyebrow">
-                      Shop
-                    </p>
-
+                    <p className="st3-mega__eyebrow">Shop</p>
                     <div className="st3-mega__links">
-                      <Link
-                        href="/shop"
-                        className="st3-mega__primary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/shop" className="st3-mega__primary-link" onClick={closePanel}>
                         Shop All
                       </Link>
-
                       <Link
                         href="/shop?offers=true"
                         className="st3-mega__primary-link st3-mega__accent"
-                        onClick={
-                          closeMenu
-                        }
+                        onClick={closePanel}
                       >
                         Offers
                       </Link>
-
-                      {visibleCategories.map(
-                        (category) => (
-                          <Link
-                            key={
-                              category.id
-                            }
-                            href={`/shop?category=${encodeURIComponent(
-                              category.name,
-                            )}`}
-                            className="st3-mega__primary-link"
-                            onClick={
-                              closeMenu
-                            }
-                          >
-                            {
-                              category.name
-                            }
-                          </Link>
-                        ),
-                      )}
+                      {visibleCategories.map((category) => (
+                        <Link
+                          key={category.id}
+                          href={`/shop?category=${encodeURIComponent(category.name)}`}
+                          className="st3-mega__primary-link"
+                          onClick={closePanel}
+                        >
+                          {category.name}
+                        </Link>
+                      ))}
                     </div>
                   </div>
-
                   <div className="st3-mega__secondary">
-                    <p className="st3-mega__eyebrow">
-                      Quick Links
-                    </p>
-
+                    <p className="st3-mega__eyebrow">Quick Links</p>
                     <div className="st3-mega__secondary-links">
-                      <Link
-                        href="/wishlist"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/wishlist" className="st3-mega__secondary-link" onClick={closePanel}>
                         Wishlist
                       </Link>
-
-                      <Link
-                        href="/account"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/account" className="st3-mega__secondary-link" onClick={closePanel}>
                         Your account
                       </Link>
-
-                      <Link
-                        href="/track-order"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/track-order" className="st3-mega__secondary-link" onClick={closePanel}>
                         Track your order
                       </Link>
-
-                      <Link
-                        href="/delivery"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/delivery" className="st3-mega__secondary-link" onClick={closePanel}>
                         Delivery
                       </Link>
                     </div>
                   </div>
                 </>
-              ) : menuForContent ===
-                "support" ? (
+              ) : panelForContent === "support" ? (
                 <>
                   <div>
-                    <p className="st3-mega__eyebrow">
-                      Support
-                    </p>
-
+                    <p className="st3-mega__eyebrow">Support</p>
                     <div className="st3-mega__links">
-                      <Link
-                        href="/track-order"
-                        className="st3-mega__primary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/track-order" className="st3-mega__primary-link" onClick={closePanel}>
                         Track your order
                       </Link>
-
-                      <Link
-                        href="/delivery"
-                        className="st3-mega__primary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/delivery" className="st3-mega__primary-link" onClick={closePanel}>
                         Delivery
                       </Link>
-
-                      <Link
-                        href="/returns"
-                        className="st3-mega__primary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/returns" className="st3-mega__primary-link" onClick={closePanel}>
                         Returns
                       </Link>
-
-                      <Link
-                        href="/about"
-                        className="st3-mega__primary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/about" className="st3-mega__primary-link" onClick={closePanel}>
                         About Stereophonie
                       </Link>
                     </div>
                   </div>
-
                   <div className="st3-mega__secondary">
-                    <p className="st3-mega__eyebrow">
-                      Information
-                    </p>
-
+                    <p className="st3-mega__eyebrow">Information</p>
                     <div className="st3-mega__secondary-links">
-                      <Link
-                        href="/privacy"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/privacy" className="st3-mega__secondary-link" onClick={closePanel}>
                         Privacy
                       </Link>
-
-                      <Link
-                        href="/terms"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/terms" className="st3-mega__secondary-link" onClick={closePanel}>
                         Terms
                       </Link>
-
-                      <Link
-                        href="/account"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/account" className="st3-mega__secondary-link" onClick={closePanel}>
                         Your account
                       </Link>
                     </div>
@@ -621,88 +471,45 @@ export function V3Header() {
               ) : activeCategory ? (
                 <>
                   <div>
-                    <p className="st3-mega__eyebrow">
-                      Explore
-                    </p>
-
+                    <p className="st3-mega__eyebrow">Explore</p>
                     <div className="st3-mega__links">
                       <Link
-                        href={`/shop?category=${encodeURIComponent(
-                          activeCategory.name,
-                        )}`}
+                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}`}
                         className="st3-mega__primary-link"
-                        onClick={
-                          closeMenu
-                        }
+                        onClick={closePanel}
                       >
-                        {
-                          activeCategory.name
-                        }
+                        {activeCategory.name}
                       </Link>
-
                       <Link
-                        href={`/shop?category=${encodeURIComponent(
-                          activeCategory.name,
-                        )}&sort=newest`}
+                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}&sort=newest`}
                         className="st3-mega__primary-link"
-                        onClick={
-                          closeMenu
-                        }
+                        onClick={closePanel}
                       >
                         Newest
                       </Link>
-
                       <Link
-                        href={`/shop?category=${encodeURIComponent(
-                          activeCategory.name,
-                        )}&offers=true`}
+                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}&offers=true`}
                         className="st3-mega__primary-link st3-mega__accent"
-                        onClick={
-                          closeMenu
-                        }
+                        onClick={closePanel}
                       >
                         Offers
                       </Link>
                     </div>
                   </div>
-
                   <div className="st3-mega__secondary">
-                    <p className="st3-mega__eyebrow">
-                      {
-                        activeCategory.name
-                      }
-                    </p>
-
+                    <p className="st3-mega__eyebrow">{activeCategory.name}</p>
                     <div className="st3-mega__secondary-links">
                       <Link
-                        href={`/shop?category=${encodeURIComponent(
-                          activeCategory.name,
-                        )}`}
+                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}`}
                         className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
+                        onClick={closePanel}
                       >
                         View all products
                       </Link>
-
-                      <Link
-                        href="/wishlist"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/wishlist" className="st3-mega__secondary-link" onClick={closePanel}>
                         Wishlist
                       </Link>
-
-                      <Link
-                        href="/track-order"
-                        className="st3-mega__secondary-link"
-                        onClick={
-                          closeMenu
-                        }
-                      >
+                      <Link href="/track-order" className="st3-mega__secondary-link" onClick={closePanel}>
                         Track an order
                       </Link>
                     </div>
@@ -710,128 +517,21 @@ export function V3Header() {
                 </>
               ) : null}
             </div>
-          )}
+          ) : null}
         </div>
-
-        {mobileOpen && (
-          <div className="st3-mobile">
-            <div className="st3-mobile__inner">
-              <p className="st3-mobile__label">
-                Shop
-              </p>
-
-              <div className="st3-mobile__links">
-                <Link
-                  href="/shop"
-                  className="st3-mobile__link"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  Shop All
-                </Link>
-
-                <Link
-                  href="/shop?offers=true"
-                  className="st3-mobile__link st3-mega__accent"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  Offers
-                </Link>
-
-                {visibleCategories.map(
-                  (category) => (
-                    <Link
-                      key={category.id}
-                      href={`/shop?category=${encodeURIComponent(
-                        category.name,
-                      )}`}
-                      className="st3-mobile__link"
-                      onClick={() =>
-                        setMobileOpen(
-                          false,
-                        )
-                      }
-                    >
-                      {category.name}
-                    </Link>
-                  ),
-                )}
-              </div>
-
-              <div className="st3-mobile__utility">
-                <Link
-                  href="/account"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  Account
-                </Link>
-
-                <Link
-                  href="/wishlist"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  Wishlist
-                </Link>
-
-                <Link
-                  href="/track-order"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  Track order
-                </Link>
-
-                <Link
-                  href="/delivery"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  Delivery
-                </Link>
-
-                <Link
-                  href="/returns"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  Returns
-                </Link>
-
-                <Link
-                  href="/about"
-                  onClick={() =>
-                    setMobileOpen(false)
-                  }
-                >
-                  About Stereophonie
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
       </header>
 
-      {(desktopMenu !== null || menuClosing) && (
+      {(panelIsOpen || panelClosing) && (
         <button
           type="button"
           className={`st3-header__scrim st3-header__scrim--v3 ${
-            menuClosing
+            panelClosing
               ? "st3-header__scrim--closing"
               : "st3-header__scrim--open"
           }`}
-          aria-label="Close navigation"
+          aria-label="Close header panel"
           onMouseEnter={scheduleClose}
-          onClick={closeMenu}
+          onClick={closePanel}
         />
       )}
     </>

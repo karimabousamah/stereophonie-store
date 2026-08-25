@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent, useEffect } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,6 +18,7 @@ import {
   moveProductImage,
   setPrimaryProductImage,
   updateProductImageAltText,
+  updateProductImageVariantName,
   finalizeDirectProductImageUploads,
 } from "./image-actions";
 
@@ -39,12 +40,29 @@ type ProductImage = {
   alt_text: string | null;
   position: number;
   is_primary: boolean;
+  variant_name: string | null;
+  variant_id: string | null;
+  variant_position: number;
+  is_variant_primary: boolean;
+};
+
+type LiveImageConfiguration = {
+  id: string;
+  variant_name: string;
+  fallbackLabel: string;
+  persisted: boolean;
 };
 
 type ImageManagerProps = {
   productId: string;
   productName: string;
   images: ProductImage[];
+
+  configurations: {
+    id: string;
+    variant_name: string;
+  }[];
+
   successMessage?: string;
 };
 
@@ -57,6 +75,7 @@ export default function ImageManager({
   productId,
   productName,
   images,
+  configurations,
   successMessage,
 }: ImageManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -65,6 +84,109 @@ export default function ImageManager({
   const allowServerSubmissionRef = useRef(false);
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+
+  /*
+   * Initial values are the configurations already stored in the
+   * database. The configuration editor can then update this list
+   * live through the custom event below.
+   */
+  const [liveConfigurations, setLiveConfigurations] =
+    useState<LiveImageConfiguration[]>(() =>
+      configurations.map((configuration) => ({
+        id: configuration.id,
+        variant_name:
+          String(
+            configuration.variant_name ?? "",
+          ).trim(),
+        fallbackLabel:
+          String(
+            configuration.variant_name ?? "",
+          ).trim() ||
+          "Untitled configuration",
+        persisted: true,
+      })),
+    );
+
+  useEffect(() => {
+    setLiveConfigurations(
+      configurations.map((configuration) => ({
+        id: configuration.id,
+        variant_name:
+          String(
+            configuration.variant_name ?? "",
+          ).trim(),
+        fallbackLabel:
+          String(
+            configuration.variant_name ?? "",
+          ).trim() ||
+          "Untitled configuration",
+        persisted: true,
+      })),
+    );
+  }, [configurations]);
+
+  useEffect(() => {
+    function handleLiveConfigurations(event: Event) {
+      const customEvent =
+        event as CustomEvent<{
+          configurations?: LiveImageConfiguration[];
+        }>;
+
+      const incoming =
+        customEvent.detail?.configurations;
+
+      if (!Array.isArray(incoming)) {
+        return;
+      }
+
+      setLiveConfigurations(
+        incoming.map((configuration, index) => ({
+          id:
+            String(
+              configuration.id ?? "",
+            ).trim() ||
+            `configuration-${index + 1}`,
+          variant_name:
+            String(
+              configuration.variant_name ?? "",
+            ).trim(),
+          fallbackLabel:
+            String(
+              configuration.fallbackLabel ?? "",
+            ).trim() ||
+            String(
+              configuration.variant_name ?? "",
+            ).trim() ||
+            `Configuration ${index + 1}`,
+          persisted:
+            Boolean(
+              configuration.persisted,
+            ),
+        })),
+      );
+    }
+
+    window.addEventListener(
+      "stereophonie:admin-product-configurations",
+      handleLiveConfigurations,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "stereophonie:admin-product-configurations",
+        handleLiveConfigurations,
+      );
+    };
+  }, []);
+
+  /*
+   * Empty string = photograph shared by every configuration.
+   * Otherwise this contains the exact variant_name.
+   */
+  const [selectedVariantNames, setSelectedVariantNames] =
+    useState<string[]>([]);
+
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadError, setUploadError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -73,9 +195,114 @@ export default function ImageManager({
     percentage: number;
   } | null>(null);
 
-  const orderedImages = [...images].sort(
-    (first, second) => first.position - second.position,
-  );
+  /*
+   * Product media is grouped and ordered by configuration.
+   *
+   * `variant_position` is the real customer-facing photograph
+   * order inside one configuration.
+   *
+   * The old global `position` remains only as a stable fallback.
+   */
+  function imageConfigurationKey(
+    image: ProductImage,
+  ) {
+    if (image.variant_id) {
+      return `id:${image.variant_id}`;
+    }
+
+    const legacyName =
+      String(
+        image.variant_name ?? "",
+      )
+        .trim()
+        .toLowerCase();
+
+    return legacyName
+      ? `name:${legacyName}`
+      : "__shared__";
+  }
+
+  function sameImageConfiguration(
+    first: ProductImage,
+    second: ProductImage,
+  ) {
+    return (
+      imageConfigurationKey(first) ===
+      imageConfigurationKey(second)
+    );
+  }
+
+  const configurationPosition =
+    new Map(
+      configurations.map(
+        (configuration, index) => [
+          configuration.id,
+          index,
+        ],
+      ),
+    );
+
+  const orderedImages =
+    [...images].sort(
+      (first, second) => {
+        const firstConfiguration =
+          first.variant_id
+            ? (
+                configurationPosition.get(
+                  first.variant_id,
+                ) ?? 9999
+              )
+            : -1;
+
+        const secondConfiguration =
+          second.variant_id
+            ? (
+                configurationPosition.get(
+                  second.variant_id,
+                ) ?? 9999
+              )
+            : -1;
+
+        if (
+          firstConfiguration !==
+          secondConfiguration
+        ) {
+          return (
+            firstConfiguration -
+            secondConfiguration
+          );
+        }
+
+        const firstVariantPosition =
+          Number(
+            first.variant_position ??
+              first.position ??
+              0,
+          );
+
+        const secondVariantPosition =
+          Number(
+            second.variant_position ??
+              second.position ??
+              0,
+          );
+
+        if (
+          firstVariantPosition !==
+          secondVariantPosition
+        ) {
+          return (
+            firstVariantPosition -
+            secondVariantPosition
+          );
+        }
+
+        return (
+          Number(first.position ?? 0) -
+          Number(second.position ?? 0)
+        );
+      },
+    );
 
   function clearSelectedFiles() {
     previewUrls.forEach((previewUrl) => {
@@ -83,6 +310,7 @@ export default function ImageManager({
     });
 
     setSelectedFiles([]);
+    setSelectedVariantNames([]);
     setPreviewUrls([]);
     setUploadError("");
 
@@ -136,6 +364,7 @@ export default function ImageManager({
       size: number;
       position: number;
       alt_text: string;
+      variant_name: string;
     }[] = [];
 
     try {
@@ -171,6 +400,8 @@ export default function ImageManager({
           size: file.size,
           position: index,
           alt_text: "",
+          variant_name:
+            String(selectedVariantNames[index] ?? "").trim(),
         });
       }
 
@@ -289,6 +520,14 @@ export default function ImageManager({
       processedFiles,
     );
 
+    /*
+     * New photographs default to Shared with all configurations.
+     * The admin can change each photograph independently before upload.
+     */
+    setSelectedVariantNames(
+      processedFiles.map(() => ""),
+    );
+
     setPreviewUrls(
       processedFiles.map(
         (file) =>
@@ -327,8 +566,8 @@ export default function ImageManager({
             <h2 className="mt-2 text-xl font-semibold">Manage photographs</h2>
 
             <p className="mt-2 text-sm leading-6 text-white/35">
-              Add, remove, reorder, describe, and select the main storefront
-              photograph.
+              Add, remove, reorder and connect photographs to the correct
+              product configuration.
             </p>
           </div>
 
@@ -456,6 +695,66 @@ export default function ImageManager({
                         <p className="mt-1 text-xs text-white/35">
                           {(file.size / 1024 / 1024).toFixed(2)} MB
                         </p>
+
+                        <div className="mt-4">
+                          <label
+                            htmlFor={`new-image-configuration-${index}`}
+                            className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35"
+                          >
+                            Photograph usage
+                          </label>
+
+                          <select
+                            id={`new-image-configuration-${index}`}
+                            value={selectedVariantNames[index] ?? ""}
+                            onChange={(event) => {
+                              const value = event.target.value;
+
+                              setSelectedVariantNames((current) => {
+                                const next = [...current];
+                                next[index] = value;
+                                return next;
+                              });
+                            }}
+                            className="mt-2 min-h-11 w-full border border-white/10 bg-black/40 px-3 text-xs text-white outline-none transition focus:border-white/40"
+                          >
+                            <option value="">
+                              Shared with all configurations
+                            </option>
+
+                            {liveConfigurations.map(
+                              (configuration) => {
+                                const selectable =
+                                  configuration.persisted &&
+                                  Boolean(
+                                    configuration.variant_name,
+                                  );
+
+                                return (
+                                  <option
+                                    key={configuration.id}
+                                    value={
+                                      selectable
+                                        ? configuration.variant_name
+                                        : ""
+                                    }
+                                    disabled={!selectable}
+                                  >
+                                    {selectable
+                                      ? configuration.variant_name
+                                      : `${configuration.fallbackLabel} — save changes first`}
+                                  </option>
+                                );
+                              },
+                            )}
+                          </select>
+
+                          <p className="mt-2 text-[10px] leading-4 text-white/25">
+                            Choose a saved configuration when this photograph belongs
+                            specifically to that version. New configurations appear
+                            immediately and become selectable after Save changes.
+                          </p>
+                        </div>
                       </div>
                     </article>
                   ))}
@@ -530,7 +829,27 @@ export default function ImageManager({
             </div>
           ) : (
             <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-              {orderedImages.map((image, index) => (
+              {orderedImages.map((image, index) => {
+                const configurationImages =
+                  orderedImages.filter(
+                    (candidate) =>
+                      sameImageConfiguration(
+                        candidate,
+                        image,
+                      ),
+                  );
+
+                const configurationIndex =
+                  configurationImages.findIndex(
+                    (candidate) =>
+                      candidate.id ===
+                      image.id,
+                  );
+
+                const configurationCount =
+                  configurationImages.length;
+
+                return (
                 <article
                   key={image.id}
                   className={`overflow-hidden border bg-[#101010] ${
@@ -557,7 +876,7 @@ export default function ImageManager({
 
                     <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent p-3">
                       <span className="border border-white/15 bg-black/60 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-                        Position {index + 1}
+                        Position {configurationIndex + 1}
                       </span>
 
                       {image.is_primary && (
@@ -570,6 +889,65 @@ export default function ImageManager({
                   </div>
 
                   <div className="space-y-4 p-4">
+                    <form
+                      action={updateProductImageVariantName}
+                      className="border border-white/10 bg-black/20 p-3"
+                    >
+                      <input
+                        type="hidden"
+                        name="product_id"
+                        value={productId}
+                      />
+
+                      <input
+                        type="hidden"
+                        name="image_id"
+                        value={image.id}
+                      />
+
+                      <label
+                        htmlFor={`image-configuration-${image.id}`}
+                        className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35"
+                      >
+                        Photograph usage
+                      </label>
+
+                      <select
+                        id={`image-configuration-${image.id}`}
+                        name="variant_name"
+                        defaultValue={image.variant_name ?? ""}
+                        className="mt-2 min-h-11 w-full border border-white/10 bg-black/40 px-3 text-xs text-white outline-none transition focus:border-white/40"
+                      >
+                        <option value="">
+                          Shared with all configurations
+                        </option>
+
+                        {configurations.map((configuration) => (
+                          <option
+                            key={configuration.id}
+                            value={configuration.variant_name}
+                          >
+                            {configuration.variant_name}
+                          </option>
+                        ))}
+                      </select>
+
+                      <div className="mt-3 flex items-center justify-between gap-3">
+                        <span className="text-[10px] text-white/30">
+                          {image.variant_name
+                            ? `Only ${image.variant_name}`
+                            : "Used by every configuration"}
+                        </span>
+
+                        <button
+                          type="submit"
+                          className="shrink-0 border border-white/10 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-white/50 transition hover:border-white hover:bg-white hover:text-black"
+                        >
+                          Save usage
+                        </button>
+                      </div>
+                    </form>
+
                     <form action={updateProductImageAltText}>
                       <input
                         type="hidden"
@@ -618,7 +996,9 @@ export default function ImageManager({
 
                         <button
                           type="submit"
-                          disabled={index === 0}
+                          disabled={
+                            configurationIndex <= 0
+                          }
                           aria-label="Move photograph left"
                           className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                         >
@@ -639,7 +1019,10 @@ export default function ImageManager({
 
                         <button
                           type="submit"
-                          disabled={index === orderedImages.length - 1}
+                          disabled={
+                            configurationIndex >=
+                            configurationCount - 1
+                          }
                           aria-label="Move photograph right"
                           className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                         >
@@ -702,16 +1085,27 @@ export default function ImageManager({
 
                     <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-[0.13em] text-white/30">
                       <div className="border border-white/10 bg-black/20 px-3 py-2">
-                        Position {index + 1}
+                        Position {configurationIndex + 1}
                       </div>
 
                       <div className="border border-white/10 bg-black/20 px-3 py-2 text-right">
-                        {image.is_primary ? "Main image" : "Gallery image"}
+                        {image.variant_id
+                          ? (
+                              image.is_variant_primary
+                                ? "Main image"
+                                : "Gallery image"
+                            )
+                          : (
+                              image.is_primary
+                                ? "Main image"
+                                : "Gallery image"
+                            )}
                       </div>
                     </div>
                   </div>
                 </article>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

@@ -3,7 +3,7 @@
 import {
   Check,
   CheckCircle2,
-  Heart,
+  Bookmark,
   LoaderCircle,
   Mail,
   Minus,
@@ -29,6 +29,7 @@ type ProductVariant = {
   id: string;
   size: string;
   variant_name: string | null;
+  display_position?: number | null;
   attributes: Record<string, string> | null;
   sku: string | null;
   regular_price: number | null;
@@ -121,6 +122,59 @@ function variantAttributes(variant: ProductVariant) {
     .filter((item) => item.key && item.value);
 }
 
+
+const attributePriority = [
+  "color",
+  "colour",
+  "storage",
+  "capacity",
+  "memory",
+  "ram",
+  "processor",
+  "connectivity",
+  "sim",
+  "edition",
+  "model",
+  "generation",
+];
+
+function normalizedAttributeKey(
+  value: string,
+) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+}
+
+function attributesRecord(
+  variant: ProductVariant,
+) {
+  const entries =
+    variantAttributes(
+      variant,
+    );
+
+  return Object.fromEntries(
+    entries.map(
+      ({ key, value }) => [
+        normalizedAttributeKey(
+          key,
+        ),
+        value,
+      ],
+    ),
+  );
+}
+
+function optionIdentity(
+  value: string,
+) {
+  return value
+    .trim()
+    .toLocaleLowerCase();
+}
+
 function purchasable(variant: ProductVariant) {
   return (
     variant.stock_quantity > 0 &&
@@ -189,6 +243,73 @@ function validEmail(value: string) {
   );
 }
 
+
+/*
+ * Storefront product-colour resolver.
+ *
+ * The actual colour is applied directly to the swatch element.
+ * This deliberately avoids depending on old global CSS colour
+ * rules, which previously caused the colour to appear only as
+ * a narrow stripe inside a white circle.
+ */
+function storefrontColourHex(value: string) {
+  const normalized = String(value ?? "")
+    .trim()
+    .toLowerCase();
+
+  const colours: Record<string, string> = {
+    black: "#111111",
+    midnight: "#283544",
+    "space black": "#2f3032",
+    graphite: "#55565a",
+    charcoal: "#4c4c4e",
+
+    gray: "#8e8e93",
+    grey: "#8e8e93",
+    silver: "#d7d8da",
+    white: "#f5f5f7",
+
+    titanium: "#8c8982",
+    "natural titanium": "#aaa69d",
+    "desert titanium": "#c8a88d",
+
+    gold: "#d5b174",
+    "rose gold": "#d9a49a",
+    bronze: "#98694c",
+
+    red: "#d52f36",
+    "product red": "#bf0013",
+    burgundy: "#681c2c",
+    pink: "#e5a5b7",
+
+    purple: "#735b99",
+    lavender: "#b5a8d7",
+
+    navy: "#26364f",
+    blue: "#3478c7",
+    "sierra blue": "#9bb6cf",
+    "sky blue": "#a8c7e7",
+    cyan: "#55b8c8",
+    teal: "#318789",
+
+    green: "#47885e",
+    "alpine green": "#536b5c",
+    mint: "#a8d5bd",
+    olive: "#777957",
+
+    yellow: "#e3c353",
+    orange: "#e87932",
+    coral: "#e78778",
+
+    brown: "#76584b",
+    beige: "#d7c5a7",
+    cream: "#eee4d2",
+  };
+
+  return colours[normalized] ?? "#8e8e93";
+}
+
+
 export default function ProductPurchaseControls({
   product,
   variants,
@@ -206,15 +327,118 @@ export default function ProductPurchaseControls({
 
   const ordered = useMemo(
     () =>
-      [...variants].sort((first, second) =>
-        variantName(first).localeCompare(variantName(second), undefined, {
-          numeric: true,
-        }),
+      [...variants].sort(
+        (first, second) => {
+          const firstPosition =
+            Number(
+              first.display_position ??
+              0,
+            );
+
+          const secondPosition =
+            Number(
+              second.display_position ??
+              0,
+            );
+
+          if (
+            firstPosition !==
+            secondPosition
+          ) {
+            return (
+              firstPosition -
+              secondPosition
+            );
+          }
+
+          return variantName(
+            first,
+          ).localeCompare(
+            variantName(second),
+            undefined,
+            {
+              numeric: true,
+            },
+          );
+        },
       ),
     [variants],
   );
 
+
+  /*
+   * ==========================================================
+   * CUSTOMER-FACING CONFIGURATION OPTIONS
+   * ==========================================================
+   *
+   * The purchase area is intentionally minimal.
+   *
+   * Only attributes that represent an actual choice between
+   * sellable configurations are shown here.
+   *
+   * Things such as:
+   *   processor
+   *   battery
+   *   MagSafe
+   *   material
+   *   protection
+   *   finish
+   *   camera
+   *   display
+   *
+   * remain product specifications and therefore belong in the
+   * Specifications section farther down the product page.
+   */
+  const purchaseAttributePriority = [
+    "color",
+    "colour",
+    "storage",
+    "capacity",
+    "memory",
+    "ram",
+  ] as const;
+
+  const configurationAttributeKeys = useMemo(() => {
+    return purchaseAttributePriority.filter((attributeKey) => {
+      const values = new Set(
+        ordered
+          .map((variant) =>
+            optionIdentity(
+              attributesRecord(variant)[attributeKey] ?? "",
+            ),
+          )
+          .filter(Boolean),
+      );
+
+      /*
+       * Do not waste storefront space on an attribute that does
+       * not actually give the customer a choice.
+       *
+       * Example:
+       * every configuration has "Silicone" material -> specification.
+       *
+       * Midnight / Orange -> purchasing option.
+       * 512GB / 1TB -> purchasing option.
+       */
+      return values.size > 1;
+    });
+  }, [ordered]);
+
+  const structuredConfigurator =
+    configurationAttributeKeys.length > 0;
+
   const [selectedId, setSelectedId] = useState("");
+
+  /*
+   * Customer-facing selections are attribute based:
+   * Colour → Storage → RAM → etc.
+   *
+   * The selected attributes resolve back to one exact database
+   * product_variant.
+   */
+  const [selectedAttributes, setSelectedAttributes] =
+    useState<Record<string, string>>({});
+
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
@@ -255,16 +479,54 @@ export default function ProductPurchaseControls({
     }
 
     const preferred =
-      ordered.find((variant) => purchasable(variant)) ?? ordered[0];
+      ordered.find((variant) => purchasable(variant)) ??
+      ordered[0];
 
     setSelectedId(preferred.id);
-  }, [ordered, selectedId]);
+
+    if (structuredConfigurator) {
+      setSelectedAttributes(
+        attributesRecord(preferred),
+      );
+    }
+  }, [
+    ordered,
+    selectedId,
+    structuredConfigurator,
+  ]);
 
   useEffect(() => {
     setQuantity(1);
     setMessage("");
     setMessageType("");
   }, [selectedId]);
+
+  useEffect(() => {
+    if (!selected) {
+      return;
+    }
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "stereophonie:product-configuration",
+        {
+          detail: {
+            variantId:
+              selected.id,
+            variantName:
+              variantName(
+                selected,
+              ),
+            attributes:
+              attributesRecord(
+                selected,
+              ),
+          },
+        },
+      ),
+    );
+  }, [selected]);
+
 
   useEffect(() => {
     if (!message) {
@@ -291,6 +553,233 @@ export default function ProductPurchaseControls({
       setEmailOpen(true);
     }
   }, [openStockNotification, ordered]);
+
+
+  function variantsMatchingSelections(
+    selections: Record<string, string>,
+    ignoreKey?: string,
+  ) {
+    return ordered.filter(
+      (variant) => {
+        const record =
+          attributesRecord(
+            variant,
+          );
+
+        return Object.entries(
+          selections,
+        ).every(
+          ([
+            key,
+            requestedValue,
+          ]) => {
+            if (
+              key === ignoreKey ||
+              !requestedValue
+            ) {
+              return true;
+            }
+
+            return (
+              optionIdentity(
+                record[key] ?? "",
+              ) ===
+              optionIdentity(
+                requestedValue,
+              )
+            );
+          },
+        );
+      },
+    );
+  }
+
+  function optionsForAttribute(
+    attributeKey: string,
+  ) {
+    const candidates =
+      variantsMatchingSelections(
+        selectedAttributes,
+        attributeKey,
+      );
+
+    const values =
+      new Map<
+        string,
+        {
+          value: string;
+          available: boolean;
+        }
+      >();
+
+    for (
+      const variant of candidates
+    ) {
+      const record =
+        attributesRecord(
+          variant,
+        );
+
+      const value =
+        record[attributeKey];
+
+      if (!value) {
+        continue;
+      }
+
+      const identity =
+        optionIdentity(value);
+
+      const existing =
+        values.get(identity);
+
+      values.set(
+        identity,
+        {
+          value:
+            existing?.value ??
+            value,
+          available:
+            Boolean(
+              existing?.available,
+            ) ||
+            purchasable(
+              variant,
+            ),
+        },
+      );
+    }
+
+    return Array.from(
+      values.values(),
+    );
+  }
+
+  function chooseAttribute(
+    attributeKey: string,
+    value: string,
+  ) {
+    const nextSelections = {
+      ...selectedAttributes,
+      [attributeKey]:
+        value,
+    };
+
+    /*
+     * Later selections may become impossible after an earlier
+     * choice changes. Remove only the selections that no longer
+     * correspond to a real configuration.
+     */
+    const keyIndex =
+      configurationAttributeKeys.findIndex(
+        (key) => key === attributeKey,
+      );
+
+    for (
+      let index =
+        keyIndex + 1;
+      index <
+      configurationAttributeKeys.length;
+      index += 1
+    ) {
+      delete nextSelections[
+        configurationAttributeKeys[
+          index
+        ]
+      ];
+    }
+
+    let candidates =
+      variantsMatchingSelections(
+        nextSelections,
+      );
+
+    if (
+      candidates.length === 0
+    ) {
+      return;
+    }
+
+    /*
+     * Fill deterministic values for remaining attributes so the
+     * customer always lands on a complete real configuration.
+     */
+    for (
+      let index =
+        keyIndex + 1;
+      index <
+      configurationAttributeKeys.length;
+      index += 1
+    ) {
+      const key =
+        configurationAttributeKeys[
+          index
+        ];
+
+      const availableCandidate =
+        candidates.find(
+          (variant) => {
+            const record =
+              attributesRecord(
+                variant,
+              );
+
+            return (
+              Boolean(
+                record[key],
+              ) &&
+              purchasable(
+                variant,
+              )
+            );
+          },
+        ) ??
+        candidates.find(
+          (variant) =>
+            Boolean(
+              attributesRecord(
+                variant,
+              )[key],
+            ),
+        );
+
+      const nextValue =
+        availableCandidate
+          ? attributesRecord(
+              availableCandidate,
+            )[key]
+          : "";
+
+      if (nextValue) {
+        nextSelections[key] =
+          nextValue;
+
+        candidates =
+          variantsMatchingSelections(
+            nextSelections,
+          );
+      }
+    }
+
+    const exact =
+      candidates.find(
+        (variant) =>
+          purchasable(
+            variant,
+          ),
+      ) ??
+      candidates[0];
+
+    setSelectedAttributes(
+      nextSelections,
+    );
+
+    if (exact) {
+      setSelectedId(
+        exact.id,
+      );
+    }
+  }
 
   function addSelected(openCheckout: boolean) {
     if (!selected || !selectedAvailable || !selectedPrice) {
@@ -417,226 +906,348 @@ export default function ProductPurchaseControls({
 
   return (
     <>
-      <section id="stock-notification-controls" className="st-buy17">
-        <header className="st-buy17__header">
-          <div>
-            <span className="st-buy17__led" />
-            ORDER CONSOLE
-          </div>
+      <section
+        id="stock-notification-controls"
+        className="st-purchase-v6"
+      >
+        {ordered.length > 1 ? (
+          structuredConfigurator ? (
+            <div className="st-purchase-apple">
+              {configurationAttributeKeys.map((attributeKey) => {
+                const options =
+                  optionsForAttribute(attributeKey);
 
-          <small>PLAYER 1</small>
-        </header>
+                if (options.length === 0) {
+                  return null;
+                }
 
-        <div className="st-buy17__body">
-          {ordered.length > 1 ? (
-            <div className="st-buy17__section">
-              <div className="st-buy17__section-title">
-                <span>01</span>
+                const selectedValue =
+                  selectedAttributes[attributeKey] ?? "";
 
-                <div>
-                  <strong>CHOOSE CONFIGURATION</strong>
-                  <small>Select the exact version you want.</small>
-                </div>
-              </div>
+                const isColour =
+                  attributeKey === "color" ||
+                  attributeKey === "colour";
 
-              <div className="st-buy17__variants">
-                {ordered.map((variant) => {
-                  const active = variant.id === selectedId;
-                  const ready = purchasable(variant);
+                return (
+                  <section
+                    key={attributeKey}
+                    className={`st-purchase-apple__group ${
+                      isColour ? "is-colour" : ""
+                    }`}
+                  >
+                    <header className="st-purchase-apple__heading">
+                      <strong>
+                        {formatLabel(attributeKey)}
 
-                  return (
-                    <button
-                      key={variant.id}
-                      type="button"
-                      onClick={() => setSelectedId(variant.id)}
-                      className={`${active ? "is-active" : ""} ${
-                        ready ? "" : "is-unavailable"
-                      }`}
-                      aria-pressed={active}
-                    >
-                      <span>{variantName(variant)}</span>
+                        {selectedValue ? (
+                          <>
+                            <span aria-hidden="true"> – </span>
+                            <em>{selectedValue}</em>
+                          </>
+                        ) : null}
+                      </strong>
+                    </header>
 
-                      {active ? <Check /> : null}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
+                    <div className="st-purchase-apple__options">
+                      {options.map((option) => {
+                        const active =
+                          optionIdentity(selectedValue) ===
+                          optionIdentity(option.value);
 
-          {selected && selectedPrice ? (
-            <>
-              <div className="st-buy17__selection">
-                <div>
-                  <small>SELECTED</small>
-                  <strong>{variantName(selected)}</strong>
-
-                  {selected.sku ? <span>SKU / {selected.sku}</span> : null}
-                </div>
-
-                <div className="st-buy17__selected-price">
-                  <strong>${selectedPrice.current.toFixed(2)}</strong>
-
-                  {selectedPrice.sale !== null &&
-                  selectedPrice.regular !== null &&
-                  selectedPrice.sale < selectedPrice.regular ? (
-                    <del>${selectedPrice.regular.toFixed(2)}</del>
-                  ) : null}
-                </div>
-              </div>
-
-              {attributes.length ? (
-                <div className="st-buy17__specs">
-                  {attributes.map((attribute) => (
-                    <div key={attribute.key}>
-                      <small>{formatLabel(attribute.key)}</small>
-                      <strong>{attribute.value}</strong>
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            aria-pressed={active}
+                            aria-label={
+                              isColour
+                                ? `${formatLabel(attributeKey)} ${option.value}`
+                                : undefined
+                            }
+                            title={
+                              isColour
+                                ? option.value
+                                : undefined
+                            }
+                            className={`st-purchase-apple__option ${
+                              isColour
+                                ? "is-colour"
+                                : "is-value"
+                            } ${
+                              active ? "is-active" : ""
+                            } ${
+                              option.available
+                                ? ""
+                                : "is-unavailable"
+                            }`}
+                            onClick={() =>
+                              chooseAttribute(
+                                attributeKey,
+                                option.value,
+                              )
+                            }
+                          >
+                            {isColour ? (
+                              <span className="st-purchase-apple__colour-shell">
+                                <i
+                                  className="st-purchase-v7__colour-dot st-purchase-apple__colour"
+                                  data-colour-name={option.value}
+                                  style={{
+                                    backgroundColor:
+                                      storefrontColourHex(option.value),
+                                  }}
+                                  aria-hidden="true"
+                                />
+                              </span>
+                            ) : (
+                              <span>{option.value}</span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
-              ) : null}
+                  </section>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="st-purchase-v6__variants">
+              <div className="st-purchase-v6__label-row">
+                <div>
+                  <span>
+                    Configuration
+                  </span>
 
-              {selectedStatus ? (
-                <div className={`st-buy17__status ${selectedStatus.className}`}>
-                  <i />
-
-                  <div>
-                    <strong>{selectedStatus.title}</strong>
-                    <span>{selectedStatus.text}</span>
-                  </div>
-                </div>
-              ) : null}
-            </>
-          ) : null}
-
-          {selectedAvailable ? (
-            <div className="st-buy17__quantity">
-              <div>
-                <small>QUANTITY</small>
-
-                <div className="st-buy17__stepper">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setQuantity((value) => Math.max(1, value - 1))
-                    }
-                    disabled={quantity <= 1}
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus />
-                  </button>
-
-                  <strong>{quantity}</strong>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setQuantity((value) =>
-                        Math.min(maximumQuantity, value + 1),
-                      )
-                    }
-                    disabled={quantity >= maximumQuantity}
-                    aria-label="Increase quantity"
-                  >
-                    <Plus />
-                  </button>
+                  <strong>
+                    Choose your option
+                  </strong>
                 </div>
               </div>
 
-              <span>MAX {maximumQuantity}</span>
-            </div>
-          ) : null}
+              <div className="st-purchase-v6__variant-list">
+                {ordered.map(
+                  (variant) => {
+                    const active =
+                      variant.id ===
+                      selectedId;
 
-          {message ? (
-            <div
-              className={`st-buy17__message ${
-                messageType === "success" ? "is-success" : "is-error"
-              }`}
-              role="status"
-            >
-              {messageType === "success" ? <CheckCircle2 /> : <Zap />}
+                    const ready =
+                      purchasable(
+                        variant,
+                      );
 
-              {message}
-            </div>
-          ) : null}
+                    return (
+                      <button
+                        key={
+                          variant.id
+                        }
+                        type="button"
+                        onClick={() => {
+                          setSelectedId(
+                            variant.id,
+                          );
 
-          <div className="st-buy17__actions">
-            {selectedAvailable ? (
-              <>
-                <button
-                  type="button"
-                  className="st-buy17__cart"
-                  onClick={() => addSelected(false)}
-                >
-                  <ShoppingBag />
-                  <span>
-                    <small>PRESS A</small>
-                    ADD TO CART
-                  </span>
-                </button>
+                          setSelectedAttributes(
+                            attributesRecord(
+                              variant,
+                            ),
+                          );
+                        }}
+                        className={`${active ? "is-active" : ""} ${
+                          ready
+                            ? ""
+                            : "is-unavailable"
+                        }`}
+                        aria-pressed={
+                          active
+                        }
+                      >
+                        <span>
+                          {variantName(
+                            variant,
+                          )}
+                        </span>
 
-                <button
-                  type="button"
-                  className="st-buy17__buy"
-                  onClick={() => addSelected(true)}
-                >
-                  <Zap />
-                  <span>
-                    <small>START</small>
-                    BUY NOW
-                  </span>
-                </button>
-              </>
-            ) : selected ? (
-              <button
-                type="button"
-                className="st-buy17__notify"
-                disabled={notificationLoading}
-                onClick={() => requestNotification()}
-              >
-                {notificationLoading ? (
-                  <LoaderCircle className="is-spin" />
-                ) : (
-                  <Mail />
+                        {active ? (
+                          <Check />
+                        ) : null}
+                      </button>
+                    );
+                  },
                 )}
-                ENABLE STOCK ALERT
-              </button>
+              </div>
+            </div>
+          )
+        ) : null}
+
+        {selectedStatus ? (
+          <div
+            className={`st-purchase-v6__status ${selectedStatus.className}`}
+          >
+            <i />
+
+            <div>
+              <strong>{selectedStatus.title}</strong>
+              <span>{selectedStatus.text}</span>
+            </div>
+          </div>
+        ) : null}
+
+        {message ? (
+          <div
+            data-st-product-message={messageType || undefined}
+            className={`st-purchase-v6__message ${
+              messageType === "success"
+                ? "is-success"
+                : "is-error"
+            }`}
+            role="status"
+          >
+            {messageType === "success" ? (
+              <CheckCircle2 />
             ) : (
-              <button type="button" className="st-buy17__disabled" disabled>
-                <Package />
-                SELECT A CONFIGURATION
-              </button>
+              <Zap />
             )}
 
-            <button
-              type="button"
-              className={`st-buy17__wishlist ${wishlisted ? "is-active" : ""}`}
-              disabled={!wishlistReady}
-              onClick={() => toggleProduct(wishlistProduct)}
-              aria-pressed={wishlisted}
-            >
-              <Heart className={wishlisted ? "fill-current" : ""} />
-
-              {wishlisted ? "SAVED TO WISHLIST" : "SAVE TO WISHLIST"}
-            </button>
+            <span>{message}</span>
           </div>
-        </div>
+        ) : null}
+
+        {selectedAvailable ? (
+          <div className="st-purchase-v6__commerce">
+            <div className="st-purchase-v6__quantity">
+              <span>Quantity</span>
+
+              <div className="st-purchase-v6__stepper">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setQuantity((value) =>
+                      Math.max(1, value - 1),
+                    )
+                  }
+                  disabled={quantity <= 1}
+                  aria-label="Decrease quantity"
+                >
+                  <Minus />
+                </button>
+
+                <strong>{quantity}</strong>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setQuantity((value) =>
+                      Math.min(
+                        maximumQuantity,
+                        value + 1,
+                      ),
+                    )
+                  }
+                  disabled={
+                    quantity >= maximumQuantity
+                  }
+                  aria-label="Increase quantity"
+                >
+                  <Plus />
+                </button>
+              </div>
+            </div>
+
+            <div className="st-purchase-v6__primary-actions">
+              <button
+                type="button"
+                className="st-purchase-v6__cart"
+                onClick={() => addSelected(false)}
+              >
+                <ShoppingBag />
+
+                <span>Add to bag</span>
+              </button>
+
+              <button
+                type="button"
+                className="st-purchase-v6__buy"
+                onClick={() => addSelected(true)}
+              >
+                <Zap />
+
+                <span>Buy now</span>
+              </button>
+            </div>
+          </div>
+        ) : selected ? (
+          <button
+            type="button"
+            className="st-purchase-v6__notify"
+            disabled={notificationLoading}
+            onClick={() => requestNotification()}
+          >
+            {notificationLoading ? (
+              <LoaderCircle className="is-spin" />
+            ) : (
+              <Mail />
+            )}
+
+            <span>Notify me when available</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="st-purchase-v6__disabled"
+            disabled
+          >
+            <Package />
+
+            <span>Select a configuration</span>
+          </button>
+        )}
+
+        <button
+          type="button"
+          className={`st-purchase-v6__save ${
+            wishlisted ? "is-active" : ""
+          }`}
+          disabled={!wishlistReady}
+          onClick={() =>
+            toggleProduct(wishlistProduct)
+          }
+          aria-pressed={wishlisted}
+        >
+          <Bookmark
+            className={
+              wishlisted ? "fill-current" : ""
+            }
+          />
+
+          <span>
+            {wishlisted
+              ? "Saved"
+              : "Save for later"}
+          </span>
+        </button>
       </section>
 
       {emailOpen ? (
         <div
-          className="st-buy17-modal"
+          className="st-purchase-v6-modal"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
               setEmailOpen(false);
             }
           }}
         >
-          <form className="st-buy17-modal__window" onSubmit={submitEmail}>
+          <form
+            className="st-purchase-v6-modal__window"
+            onSubmit={submitEmail}
+          >
             <header>
               <div>
-                <i />
-                STOCK ALERT
+                <Mail />
+                <strong>Stock notification</strong>
               </div>
 
               <button
@@ -648,16 +1259,15 @@ export default function ProductPurchaseControls({
               </button>
             </header>
 
-            <div className="st-buy17-modal__body">
-              <Mail />
+            <div className="st-purchase-v6-modal__body">
+              <span>Restock alert</span>
 
-              <small>SYSTEM NOTIFICATION</small>
-
-              <h2>GET A RESTOCK ALERT</h2>
+              <h2>Notify me when available.</h2>
 
               <p>
-                Enter your email and Stereophonie will notify you when this
-                configuration becomes available.
+                Enter your email and Stereophonie
+                will notify you when this
+                configuration returns.
               </p>
 
               <input
@@ -674,16 +1284,22 @@ export default function ProductPurchaseControls({
               />
 
               {emailError ? (
-                <span className="st-buy17-modal__error">{emailError}</span>
+                <span className="st-purchase-v6-modal__error">
+                  {emailError}
+                </span>
               ) : null}
 
-              <button type="submit" disabled={notificationLoading}>
+              <button
+                type="submit"
+                disabled={notificationLoading}
+              >
                 {notificationLoading ? (
                   <LoaderCircle className="is-spin" />
                 ) : (
                   <Mail />
                 )}
-                ENABLE ALERT
+
+                <span>Notify me</span>
               </button>
             </div>
           </form>

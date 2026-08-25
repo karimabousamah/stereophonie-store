@@ -5,11 +5,34 @@ import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 export type StoreProductImage = {
   image_url: string | null;
   alt_text: string | null;
+
+  /*
+   * Legacy global image ordering.
+   */
   position: number;
   is_primary: boolean;
+
+  /*
+   * Stable configuration-specific media.
+   *
+   * null variant_id = shared product photograph.
+   */
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
 };
 
 export type StoreProductVariant = {
+  /*
+   * Exact database configuration identity.
+   */
+  id?: string | null;
+
+  /*
+   * Administrator-controlled storefront order.
+   */
+  display_position?: number | null;
+
   regular_price: number | null;
   sale_price: number | null;
   stock_quantity: number;

@@ -6830,5 +6830,8197 @@ html
 
 /* ===== OFFERS + HEADER AUTO RAIL END ===== */
 
+/* === ST ADMIN CLEANUP V53 START === */
 
 
+/* =========================================================
+   ADMIN SIDEBAR — CURRENT STORE LOGO
+   ========================================================= */
+
+.st3-admin-sidebar
+.st-admin-sidebar-brand {
+  width:
+    100%;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    flex-start;
+
+  gap:
+    8px;
+
+  text-decoration:
+    none;
+}
+
+
+.st3-admin-sidebar
+.st-admin-sidebar-brand__logo {
+  display:
+    block;
+
+  width:
+    auto;
+
+  height:
+    29px;
+
+  max-width:
+    170px;
+
+  object-fit:
+    contain;
+
+  object-position:
+    left center;
+}
+
+
+.st3-admin-sidebar
+.st-admin-sidebar-brand__subtitle {
+  color:
+    #8a8a8f;
+
+  font-size:
+    11px;
+
+  font-weight:
+    500;
+
+  line-height:
+    1.3;
+}
+
+
+@media (max-width: 760px) {
+
+  .st3-admin-sidebar
+  .st-admin-sidebar-brand__logo {
+    width:
+      42px;
+
+    height:
+      27px;
+
+    object-fit:
+      contain;
+  }
+
+
+  .st3-admin-sidebar
+  .st-admin-sidebar-brand__subtitle {
+    display:
+      none;
+  }
+
+}
+
+
+/* =========================================================
+   BRAND DIRECTORY — REMOVE ALL OLD SEARCH UI
+   ========================================================= */
+
+.st-admin-brand-search,
+.st-admin-brand-search-v41,
+.st-admin-brand-directory {
+  display:
+    none !important;
+}
+
+
+/* =========================================================
+   BRAND DIRECTORY V53
+   ========================================================= */
+
+.st-admin-brand-search-v53 {
+  margin-top:
+    22px;
+
+  padding:
+    20px;
+
+  border:
+    1px solid rgba(29,29,31,.075);
+
+  border-radius:
+    20px;
+
+  background:
+    #ffffff;
+
+  box-shadow:
+    0 8px 28px rgba(29,29,31,.035);
+}
+
+
+.st-admin-brand-search-v53__heading {
+  display:
+    flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  gap:
+    18px;
+}
+
+
+.st-admin-brand-search-v53__heading
+> div:first-child
+> span {
+  display:
+    block;
+
+  color:
+    #98989d;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .16em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.st-admin-brand-search-v53__heading
+> div:first-child
+> strong {
+  display:
+    block;
+
+  margin-top:
+    7px;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    19px;
+
+  font-weight:
+    660;
+
+  letter-spacing:
+    -.035em;
+
+  line-height:
+    1;
+}
+
+
+.st-admin-brand-search-v53__count {
+  min-width:
+    78px;
+
+  min-height:
+    44px;
+
+  padding:
+    0 13px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    5px;
+
+  border:
+    1px solid rgba(29,29,31,.075);
+
+  border-radius:
+    13px;
+
+  background:
+    #f7f7f8;
+}
+
+
+.st-admin-brand-search-v53__count
+strong {
+  color:
+    #1d1d1f;
+
+  font-size:
+    15px;
+
+  font-weight:
+    680;
+}
+
+
+.st-admin-brand-search-v53__count
+span {
+  color:
+    #929297;
+
+  font-size:
+    9px;
+
+  font-weight:
+    600;
+}
+
+
+/*
+ * The search itself.
+ *
+ * Important:
+ * It has its own margin-bottom / section padding.
+ * It cannot visually touch the outer white card.
+ */
+
+.st-admin-brand-search-v53__field {
+  position:
+    relative;
+
+  width:
+    100%;
+
+  min-height:
+    54px;
+
+  margin-top:
+    17px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    38px minmax(0,1fr) auto;
+
+  align-items:
+    center;
+
+  gap:
+    10px;
+
+  padding:
+    0 9px 0 11px;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid rgba(29,29,31,.10);
+
+  border-radius:
+    15px;
+
+  background:
+    #f5f5f7;
+
+  box-shadow:
+    none;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+
+.st-admin-brand-search-v53__field:focus-within {
+  border-color:
+    rgba(245,179,53,.78);
+
+  background:
+    #ffffff;
+
+  box-shadow:
+    0 0 0 4px rgba(245,179,53,.095);
+}
+
+
+.st-admin-brand-search-v53__icon {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border-radius:
+    10px;
+
+  background:
+    #ffffff;
+
+  color:
+    #818186;
+}
+
+
+.st-admin-brand-search-v53__icon
+svg {
+  width:
+    16px;
+
+  height:
+    16px;
+}
+
+
+.st-admin-brand-search-v53__field
+input {
+  width:
+    100% !important;
+
+  height:
+    50px !important;
+
+  min-height:
+    50px !important;
+
+  padding:
+    0 8px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    none !important;
+
+  outline:
+    0 !important;
+
+  font-size:
+    14px !important;
+
+  font-weight:
+    500;
+}
+
+
+.st-admin-brand-search-v53__field
+input::placeholder {
+  color:
+    #a0a0a5;
+}
+
+
+.st-admin-brand-search-v53__field
+button {
+  width:
+    34px !important;
+
+  height:
+    34px !important;
+
+  min-height:
+    34px !important;
+
+  padding:
+    0 !important;
+
+  display:
+    grid !important;
+
+  place-items:
+    center;
+
+  border:
+    1px solid rgba(29,29,31,.075) !important;
+
+  border-radius:
+    10px !important;
+
+  background:
+    #ffffff !important;
+
+  color:
+    #7f7f84 !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+.st-admin-brand-search-v53__field
+button:hover {
+  background:
+    #efeff1 !important;
+
+  color:
+    #1d1d1f !important;
+}
+
+
+.st-admin-brand-search-v53__field
+button svg {
+  width:
+    14px;
+
+  height:
+    14px;
+}
+
+
+.st-admin-brand-search-v53__status {
+  margin:
+    10px 2px 0;
+
+  color:
+    #88888d;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.45;
+}
+
+
+/* =========================================================
+   PRODUCT COLOUR LIBRARY
+   ========================================================= */
+
+
+/*
+ * User requested the custom colour creator removed for now.
+ *
+ * Existing preset colours are completely untouched.
+ * Existing backend colour data is completely untouched.
+ */
+
+.st-admin-color-custom {
+  display:
+    none !important;
+}
+
+
+/*
+ * Remove any custom-area helper text left behind.
+ */
+
+.st-admin-color-custom
++ small {
+  display:
+    none !important;
+}
+
+
+/*
+ * Make sure colour library ends cleanly once the custom
+ * section is removed.
+ */
+
+.st-admin-color-panel {
+  padding-bottom:
+    10px;
+}
+
+
+.st-admin-color-grid {
+  border-bottom:
+    0 !important;
+}
+
+
+/* =========================================================
+   COLOUR SEARCH — MORE LEFT BREATHING ROOM
+   ========================================================= */
+
+
+/*
+ * Support both the current implementation and possible
+ * existing class variations without changing React logic.
+ */
+
+.st-admin-color-panel
+input[type="search"],
+.st-admin-color-search
+input,
+.st-admin-color-panel
+input[placeholder*="Search colour" i],
+.st-admin-color-panel
+input[placeholder*="Search color" i] {
+  padding-left:
+    46px !important;
+
+  padding-right:
+    16px !important;
+
+  box-sizing:
+    border-box !important;
+}
+
+
+/*
+ * If the search icon sits as an absolutely-positioned
+ * sibling, keep it comfortably separated from text.
+ */
+
+.st-admin-color-panel
+label:has(input[type="search"]) {
+  position:
+    relative;
+}
+
+
+.st-admin-color-panel
+label:has(input[type="search"])
+> svg {
+  position:
+    absolute;
+
+  left:
+    16px;
+
+  z-index:
+    2;
+
+  pointer-events:
+    none;
+}
+
+
+/*
+ * Search focus should stay clean rather than cramped.
+ */
+
+.st-admin-color-panel
+input[type="search"]:focus {
+  outline:
+    none !important;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 680px) {
+
+  .st-admin-brand-search-v53 {
+    padding:
+      16px;
+  }
+
+
+  .st-admin-brand-search-v53__heading {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+  }
+
+
+  .st-admin-brand-search-v53__count {
+    min-height:
+      38px;
+  }
+
+}
+
+
+/* === ST ADMIN CLEANUP V53 END === */
+
+/* === ST COLOUR SEARCH V54 START === */
+
+/*
+ * PRODUCT COLOUR LIBRARY
+ *
+ * The search icon and text now have separate visual zones.
+ * This specifically fixes the cramped left side visible in
+ * the current admin screenshot.
+ */
+
+html body .st3-admin
+.st-admin-color-panel
+input[type="search"],
+html body .st3-admin
+.st-admin-color-panel
+input[placeholder="Search colours..."],
+html body .st3-admin
+.st-admin-color-panel
+input[placeholder*="Search colour" i],
+html body .st3-admin
+.st-admin-color-panel
+input[placeholder*="Search color" i] {
+  box-sizing: border-box !important;
+
+  /*
+   * Deliberately generous.
+   * The icon owns the first ~42px and the text begins after it.
+   */
+  padding-left: 58px !important;
+  padding-right: 18px !important;
+
+  text-indent: 0 !important;
+
+  font-size: 14px !important;
+
+  outline: none !important;
+}
+
+
+/*
+ * Keep the search holder positioned so the icon can sit
+ * independently from the input text.
+ */
+html body .st3-admin
+.st-admin-color-panel
+label:has(
+  input[type="search"]
+),
+html body .st3-admin
+.st-admin-color-panel
+div:has(
+  > input[type="search"]
+) {
+  position: relative !important;
+}
+
+
+/*
+ * Magnifying glass positioning.
+ */
+html body .st3-admin
+.st-admin-color-panel
+label:has(
+  input[type="search"]
+)
+> svg,
+html body .st3-admin
+.st-admin-color-panel
+div:has(
+  > input[type="search"]
+)
+> svg {
+  position: absolute !important;
+
+  left: 18px !important;
+  top: 50% !important;
+
+  width: 17px !important;
+  height: 17px !important;
+
+  transform: translateY(-50%) !important;
+
+  z-index: 3 !important;
+
+  pointer-events: none !important;
+
+  color: #85858a !important;
+}
+
+
+/*
+ * If the implementation uses a dedicated search class rather
+ * than the generic parent rules above, this is the fallback.
+ */
+html body .st3-admin
+.st-admin-color-search
+input {
+  padding-left: 58px !important;
+  padding-right: 18px !important;
+}
+
+
+/*
+ * Make the colour library finish naturally now that the
+ * custom-colour creator no longer exists.
+ */
+html body .st3-admin
+.st-admin-color-panel {
+  padding-bottom: 12px !important;
+}
+
+
+html body .st3-admin
+.st-admin-color-grid {
+  margin-bottom: 0 !important;
+  border-bottom: 0 !important;
+}
+
+
+/*
+ * Any obsolete custom-colour remnants from older builds must
+ * remain invisible even if stale markup somehow survives HMR.
+ */
+html body .st3-admin
+.st-admin-color-custom {
+  display: none !important;
+}
+
+
+/* === ST COLOUR SEARCH V54 END === */
+
+/* === ST COLOUR SEARCH HARD FIX START === */
+
+/*
+ * FINAL colour-library search spacing.
+ * This rule is intentionally last in globals.css.
+ */
+
+html body .st3-admin #st-colour-library-search {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  /*
+   * Space between magnifying glass and first typed letter.
+   */
+  margin-left: 8px !important;
+
+  /*
+   * Internal breathing room before "Search colours..."
+   * and before typed text such as "orange".
+   */
+  padding-left: 18px !important;
+  padding-right: 18px !important;
+
+  text-indent: 0 !important;
+}
+
+
+/*
+ * Kill every previous custom-colour visual rule as a
+ * secondary safeguard. JSX is removed as well.
+ */
+html body .st3-admin
+:is(
+  .st-admin-color-custom,
+  .st-admin-colour-custom
+) {
+  display: none !important;
+}
+
+/* === ST COLOUR SEARCH HARD FIX END === */
+
+
+
+
+
+
+
+
+
+
+/* === ST ADMIN UNIFIED DIRECTORY SEARCH START === */
+
+.st-admin-directory-search {
+  margin-top: 28px;
+  overflow: hidden;
+
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 30px rgba(29,29,31,.035);
+}
+
+.st-admin-directory-search__heading {
+  padding: 18px 18px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  border-bottom:
+    1px solid rgba(29,29,31,.07);
+}
+
+.st-admin-directory-search__heading > div:first-child {
+  min-width: 0;
+}
+
+.st-admin-directory-search__heading span,
+.st-admin-directory-search__heading strong {
+  display: block;
+}
+
+.st-admin-directory-search__heading > div:first-child > span {
+  color: #86868b;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.st-admin-directory-search__heading > div:first-child > strong {
+  margin-top: 5px;
+
+  color: #1d1d1f;
+
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -.02em;
+}
+
+.st-admin-directory-search__count {
+  min-width: 72px;
+  min-height: 48px;
+
+  padding: 8px 12px;
+
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 14px;
+
+  background: #f7f7f8;
+}
+
+.st-admin-directory-search__count strong {
+  color: #1d1d1f;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.st-admin-directory-search__count span {
+  color: #86868b;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.st-admin-directory-search__field {
+  margin: 14px 16px 16px;
+  min-height: 56px;
+
+  padding: 7px 8px;
+
+  display: grid;
+  grid-template-columns:
+    40px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+
+  border: 1px solid rgba(29,29,31,.09);
+  border-radius: 15px;
+
+  background: #f5f5f7;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-admin-directory-search__field:focus-within {
+  border-color:
+    rgba(245,179,53,.72);
+
+  background:
+    #fff;
+
+  box-shadow:
+    0 0 0 4px rgba(245,179,53,.10);
+}
+
+.st-admin-directory-search__icon {
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(29,29,31,.06);
+  border-radius: 11px;
+
+  background: #fff;
+  color: #86868b;
+}
+
+.st-admin-directory-search__icon svg {
+  width: 17px;
+  height: 17px;
+
+  margin: 0;
+}
+
+.st-admin-directory-search__field input[type="search"] {
+  width: 100% !important;
+  height: 42px !important;
+  min-height: 42px !important;
+
+  margin: 0 !important;
+
+  padding:
+    0 18px !important;
+
+  border:
+    1px solid rgba(29,29,31,.06) !important;
+
+  border-radius:
+    11px !important;
+
+  background:
+    #fff !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    none !important;
+
+  outline:
+    none !important;
+
+  font-size:
+    14px !important;
+}
+
+.st-admin-directory-search__field input[type="search"]::placeholder {
+  color:
+    #9b9ba0 !important;
+
+  opacity:
+    1 !important;
+}
+
+.st-admin-directory-search__field button {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+
+  padding: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border:
+    1px solid rgba(29,29,31,.06) !important;
+
+  border-radius:
+    11px !important;
+
+  background:
+    #fff !important;
+
+  color:
+    #86868b !important;
+
+  box-shadow:
+    none !important;
+}
+
+.st-admin-directory-search__field button:hover {
+  background:
+    #1d1d1f !important;
+
+  color:
+    #fff !important;
+}
+
+.st-admin-directory-search__field button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.st-admin-directory-search__status {
+  margin:
+    -4px 18px 16px;
+
+  color:
+    #86868b;
+
+  font-size:
+    11px;
+  line-height:
+    1.5;
+}
+
+[data-admin-brand-card="true"][hidden],
+[data-admin-product-search-card="true"][hidden],
+[data-admin-category-card="true"][hidden],
+[data-admin-order-search-card="true"][hidden] {
+  display:
+    none !important;
+}
+
+@media (max-width: 720px) {
+  .st-admin-directory-search__heading {
+    align-items:
+      flex-start;
+  }
+
+  .st-admin-directory-search__field {
+    grid-template-columns:
+      40px minmax(0,1fr) auto;
+
+    margin:
+      12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-admin-directory-search *,
+  .st-admin-directory-search *::before,
+  .st-admin-directory-search *::after {
+    transition:
+      none !important;
+  }
+}
+
+/* === ST ADMIN UNIFIED DIRECTORY SEARCH END === */
+
+
+/* === ST DASHBOARD INTELLIGENCE V1 START === */
+
+.st-dash-intel {
+  max-width: 1540px;
+  margin: 0 auto;
+  padding: 34px 32px 70px;
+  color: #1d1d1f;
+}
+
+.st-dash-intel-hero {
+  min-height: 182px;
+  padding: 34px 36px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 24px;
+  background:
+    radial-gradient(
+      circle at 92% 2%,
+      rgba(245,179,53,.11),
+      transparent 25rem
+    ),
+    #ffffff;
+  box-shadow:
+    0 14px 42px rgba(29,29,31,.035);
+}
+
+.st-dash-intel-hero > div:first-child > span,
+.st-dash-intel-section__heading > div > span {
+  display: block;
+  color: #86868b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .21em;
+  text-transform: uppercase;
+}
+
+.st-dash-intel-hero h1 {
+  margin: 10px 0 0;
+  max-width: none !important;
+  font-size: clamp(2.7rem,4vw,4.7rem) !important;
+  line-height: .98 !important;
+  letter-spacing: -.065em !important;
+}
+
+.st-dash-intel-hero p {
+  max-width: 650px;
+  margin: 16px 0 0;
+  color: #6e6e73;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.st-dash-intel-hero__status {
+  flex: 0 0 auto;
+  margin-bottom: 3px;
+  padding: 11px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(31,169,113,.16);
+  border-radius: 999px;
+  background: #effbf5;
+  color: #16815d;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.st-dash-intel-hero__status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #20c997;
+  box-shadow: 0 0 0 4px rgba(32,201,151,.10);
+}
+
+.st-dash-intel-section {
+  margin-top: 42px;
+}
+
+.st-dash-intel-section__heading {
+  margin-bottom: 18px;
+}
+
+.st-dash-intel-section__heading h2 {
+  margin: 8px 0 0;
+  font-size: clamp(1.85rem,2.4vw,2.6rem) !important;
+  letter-spacing: -.05em !important;
+}
+
+.st-dash-intel-section__heading p {
+  max-width: 720px;
+  margin: 9px 0 0;
+  color: #86868b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.st-dash-intel-section__heading--split {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.st-dash-intel-metrics {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 14px;
+}
+
+.st-dash-intel-metric {
+  min-height: 178px;
+  padding: 20px;
+  border: 1px solid rgba(29,29,31,.07);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(29,29,31,.035);
+}
+
+.st-dash-intel-metric__icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #f5f5f7;
+}
+
+.st-dash-intel-metric__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.st-dash-intel-metric.is-green
+.st-dash-intel-metric__icon {
+  background: #ecfbf3;
+  color: #14986a;
+}
+
+.st-dash-intel-metric.is-blue
+.st-dash-intel-metric__icon {
+  background: #edf7ff;
+  color: #147fc1;
+}
+
+.st-dash-intel-metric.is-orange
+.st-dash-intel-metric__icon {
+  background: #fff7e7;
+  color: #bd7100;
+}
+
+.st-dash-intel-metric.is-rose
+.st-dash-intel-metric__icon {
+  background: #fff0f3;
+  color: #d91f4c;
+}
+
+.st-dash-intel-metric.is-violet
+.st-dash-intel-metric__icon {
+  background: #f4efff;
+  color: #6e36db;
+}
+
+.st-dash-intel-metric > span {
+  display: block;
+  margin-top: 26px;
+  color: #86868b;
+  font-size: 11px;
+}
+
+.st-dash-intel-metric > strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 27px;
+  font-weight: 650;
+  letter-spacing: -.04em;
+}
+
+.st-dash-intel-metric > small {
+  display: block;
+  margin-top: 8px;
+  color: #a1a1a6;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.st-dash-health-score {
+  min-width: 190px;
+  padding: 14px 17px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(245,179,53,.22);
+  border-radius: 17px;
+  background: #fff8e9;
+}
+
+.st-dash-health-score.is-clear {
+  border-color: rgba(31,169,113,.16);
+  background: #effbf5;
+}
+
+.st-dash-health-score > svg {
+  width: 21px;
+  height: 21px;
+  color: #b46f00;
+}
+
+.st-dash-health-score.is-clear > svg {
+  color: #16815d;
+}
+
+.st-dash-health-score strong,
+.st-dash-health-score span {
+  display: block;
+}
+
+.st-dash-health-score strong {
+  font-size: 13px;
+}
+
+.st-dash-health-score span {
+  margin-top: 3px;
+  color: #86868b;
+  font-size: 10px;
+}
+
+.st-dash-attention-grid {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 14px;
+}
+
+.st-dash-attention-card {
+  min-height: 224px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 21px;
+  background: #fff;
+  color: #1d1d1f;
+  box-shadow: 0 10px 32px rgba(29,29,31,.035);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.st-dash-attention-card:hover {
+  border-color: rgba(245,179,53,.42);
+  box-shadow: 0 14px 38px rgba(29,29,31,.055);
+}
+
+.st-dash-attention-card.is-clear {
+  background: rgba(255,255,255,.62);
+}
+
+.st-dash-attention-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.st-dash-attention-card__icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #fff5df;
+  color: #a76500;
+}
+
+.st-dash-attention-card.is-clear
+.st-dash-attention-card__icon {
+  background: #effbf5;
+  color: #16815d;
+}
+
+.st-dash-attention-card__icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.st-dash-attention-card__top > strong {
+  font-size: 31px;
+  font-weight: 620;
+  letter-spacing: -.05em;
+}
+
+.st-dash-attention-card h3 {
+  margin: 24px 0 0;
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.st-dash-attention-card p {
+  margin: 8px 0 18px;
+  color: #86868b;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.st-dash-attention-card > span {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #6e6e73;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+.st-dash-attention-card > span svg {
+  width: 15px;
+  height: 15px;
+}
+
+.st-dash-attention-clear {
+  min-height: 220px;
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(31,169,113,.13);
+  border-radius: 22px;
+  background: linear-gradient(180deg,#fff,#f5fcf8);
+  text-align: center;
+}
+
+.st-dash-attention-clear > div {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: #eaf9f1;
+  color: #16815d;
+}
+
+.st-dash-attention-clear svg {
+  width: 23px;
+  height: 23px;
+}
+
+.st-dash-attention-clear strong {
+  margin-top: 18px;
+  font-size: 18px;
+}
+
+.st-dash-attention-clear p {
+  max-width: 480px;
+  margin: 8px 0 0;
+  color: #86868b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.st-dash-performance-badge {
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 999px;
+  background: #fff;
+  color: #6e6e73;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.st-dash-performance-badge svg {
+  width: 15px;
+  height: 15px;
+  color: #b36c00;
+}
+
+.st-dash-performance {
+  overflow: hidden;
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 23px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(29,29,31,.035);
+}
+
+.st-dash-performance__stats {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  border-bottom: 1px solid rgba(29,29,31,.07);
+}
+
+.st-dash-performance-stat {
+  padding: 23px 25px;
+}
+
+.st-dash-performance-stat + .st-dash-performance-stat {
+  border-left: 1px solid rgba(29,29,31,.07);
+}
+
+.st-dash-performance-stat > span {
+  display: block;
+  color: #86868b;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.st-dash-performance-stat > strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 28px;
+  font-weight: 640;
+  letter-spacing: -.045em;
+}
+
+.st-dash-performance-stat > small {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.st-dash-performance-stat > small svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st-dash-performance-stat > small.is-positive {
+  color: #16815d;
+}
+
+.st-dash-performance-stat > small.is-negative {
+  color: #c73539;
+}
+
+.st-dash-performance-stat > small em {
+  margin-left: 3px;
+  color: #a1a1a6;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.st-dash-chart {
+  padding: 25px 25px 21px;
+}
+
+.st-dash-chart__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.st-dash-chart__top span,
+.st-dash-chart__top strong {
+  display: block;
+}
+
+.st-dash-chart__top span {
+  color: #86868b;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.st-dash-chart__top strong {
+  margin-top: 4px;
+  font-size: 15px;
+}
+
+.st-dash-chart__legend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #86868b;
+  font-size: 10px;
+}
+
+.st-dash-chart__legend i {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #f5b335;
+}
+
+.st-dash-chart__canvas {
+  position: relative;
+  height: 270px;
+  margin-top: 22px;
+  overflow: hidden;
+}
+
+.st-dash-chart__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(29,29,31,.055) 1px,
+      transparent 1px
+    );
+  background-size: 100% 25%;
+  pointer-events: none;
+}
+
+.st-dash-chart svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.st-dash-chart__empty {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.74);
+  text-align: center;
+}
+
+.st-dash-chart__empty svg {
+  width: 24px;
+  height: 24px;
+  color: #b8b8bd;
+}
+
+.st-dash-chart__empty strong {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.st-dash-chart__empty span {
+  max-width: 360px;
+  margin-top: 5px;
+  color: #a1a1a6;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.st-dash-chart__axis {
+  margin-top: 7px;
+  display: flex;
+  justify-content: space-between;
+  color: #a1a1a6;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1180px) {
+  .st-dash-intel-metrics {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+
+  .st-dash-attention-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .st-dash-intel {
+    padding: 22px 18px 50px;
+  }
+
+  .st-dash-intel-hero {
+    padding: 26px 22px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .st-dash-intel-section__heading--split {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .st-dash-intel-metrics,
+  .st-dash-attention-grid,
+  .st-dash-performance__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .st-dash-performance-stat + .st-dash-performance-stat {
+    border-top: 1px solid rgba(29,29,31,.07);
+    border-left: 0;
+  }
+
+  .st-dash-chart {
+    padding-inline: 16px;
+  }
+
+  .st-dash-chart__canvas {
+    height: 220px;
+  }
+}
+
+/* === ST DASHBOARD INTELLIGENCE V1 END === */
+
+
+
+/* === ST DASHBOARD LIVE PERFORMANCE V2 START === */
+
+.st-dash-live-performance {
+  margin-top: 42px;
+}
+
+.st-dash-live-performance__header {
+  margin-bottom: 18px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.st-dash-live-performance__header > div:first-child > span {
+  display: block;
+
+  color: #86868b;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .21em;
+  text-transform: uppercase;
+}
+
+.st-dash-live-performance__header h2 {
+  margin: 8px 0 0;
+
+  color: #1d1d1f;
+
+  font-size: clamp(1.85rem,2.4vw,2.6rem) !important;
+  letter-spacing: -.05em !important;
+}
+
+.st-dash-live-performance__header p {
+  max-width: 720px;
+
+  margin: 9px 0 0;
+
+  color: #86868b;
+
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.st-dash-live-performance__right {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.st-dash-live-clock {
+  min-height: 54px;
+
+  padding: 8px 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 15px;
+
+  background: #fff;
+
+  box-shadow:
+    0 7px 24px rgba(29,29,31,.025);
+}
+
+.st-dash-live-clock > svg {
+  width: 17px;
+  height: 17px;
+
+  color: #b36c00;
+}
+
+.st-dash-live-clock strong,
+.st-dash-live-clock span {
+  display: block;
+}
+
+.st-dash-live-clock strong {
+  color: #1d1d1f;
+
+  font-size: 10px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.st-dash-live-clock span {
+  margin-top: 3px;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #86868b;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.st-dash-live-clock span svg {
+  width: 10px;
+  height: 10px;
+}
+
+.st-dash-period-selector {
+  min-height: 54px;
+
+  padding: 5px;
+
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  border: 1px solid rgba(29,29,31,.08);
+  border-radius: 15px;
+
+  background: #fff;
+
+  box-shadow:
+    0 7px 24px rgba(29,29,31,.025);
+}
+
+.st-dash-period-selector button {
+  min-width: 46px;
+  height: 42px;
+
+  padding: 0 10px;
+
+  border: 0;
+  border-radius: 11px;
+
+  background: transparent;
+  color: #86868b;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.st-dash-period-selector button:hover {
+  background: #f5f5f7;
+
+  color: #1d1d1f;
+}
+
+.st-dash-period-selector button.is-active {
+  background: #1d1d1f;
+
+  color: #fff;
+
+  box-shadow:
+    0 5px 13px rgba(29,29,31,.13);
+}
+
+.st-dash-chart-shell {
+  margin-top: 22px;
+
+  display: grid;
+  grid-template-columns: 72px minmax(0,1fr);
+  gap: 12px;
+}
+
+.st-dash-chart-shell .st-dash-chart__canvas {
+  margin-top: 0;
+}
+
+.st-dash-chart-y-axis {
+  height: 270px;
+
+  padding: 0 0 1px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  color: #a1a1a6;
+
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.st-dash-chart__axis--live {
+  margin-left: 84px;
+}
+
+.st-dash-chart-zero-note {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+
+  padding: 8px 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  transform: translate(-50%,-50%);
+
+  border: 1px solid rgba(29,29,31,.07);
+  border-radius: 999px;
+
+  background: rgba(255,255,255,.92);
+
+  color: #86868b;
+
+  box-shadow:
+    0 5px 18px rgba(29,29,31,.035);
+
+  font-size: 9px;
+  font-weight: 600;
+
+  pointer-events: none;
+}
+
+.st-dash-chart-zero-note svg {
+  width: 13px;
+  height: 13px;
+}
+
+@media (max-width: 1080px) {
+  .st-dash-live-performance__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .st-dash-live-performance__right {
+    width: 100%;
+
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 720px) {
+  .st-dash-live-performance__right {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .st-dash-live-clock {
+    width: 100%;
+  }
+
+  .st-dash-period-selector {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+  }
+
+  .st-dash-period-selector button {
+    min-width: 0;
+  }
+
+  .st-dash-chart-shell {
+    grid-template-columns: 54px minmax(0,1fr);
+    gap: 8px;
+  }
+
+  .st-dash-chart-y-axis {
+    height: 220px;
+
+    font-size: 7px;
+  }
+
+  .st-dash-chart__axis--live {
+    margin-left: 62px;
+  }
+}
+
+/* === ST DASHBOARD LIVE PERFORMANCE V2 END === */
+
+
+/* === ST PRODUCT DRAFT DIRECTORY V1 START === */
+
+.st-admin-product-directory-v2__filters {
+  margin:
+    14px 16px 0;
+
+  padding:
+    5px;
+
+  display:
+    inline-flex;
+  align-items:
+    center;
+  gap:
+    4px;
+
+  border:
+    1px solid rgba(29,29,31,.07);
+
+  border-radius:
+    13px;
+
+  background:
+    #f5f5f7;
+}
+
+.st-admin-product-directory-v2__filters button {
+  min-height:
+    38px !important;
+
+  padding:
+    0 13px !important;
+
+  display:
+    inline-flex !important;
+
+  align-items:
+    center !important;
+
+  gap:
+    8px;
+
+  border:
+    1px solid transparent !important;
+
+  border-radius:
+    9px !important;
+
+  background:
+    transparent !important;
+
+  color:
+    #6e6e73 !important;
+
+  box-shadow:
+    none !important;
+
+  font-size:
+    11px !important;
+
+  font-weight:
+    650 !important;
+
+  letter-spacing:
+    0 !important;
+
+  text-transform:
+    none !important;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+.st-admin-product-directory-v2__filters button strong {
+  min-width:
+    22px;
+
+  padding:
+    3px 6px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(29,29,31,.06);
+
+  color:
+    #86868b;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+}
+
+.st-admin-product-directory-v2__filters button:hover {
+  background:
+    rgba(255,255,255,.72) !important;
+
+  color:
+    #1d1d1f !important;
+}
+
+.st-admin-product-directory-v2__filters button.is-active {
+  border-color:
+    rgba(29,29,31,.07) !important;
+
+  background:
+    #ffffff !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    0 2px 8px rgba(29,29,31,.05) !important;
+}
+
+.st-admin-product-directory-v2__filters
+button.is-active strong {
+  background:
+    #fff3da;
+
+  color:
+    #8a5800;
+}
+
+
+/* Product publishing status */
+
+.st-admin-product-status-badge {
+  min-height:
+    26px;
+
+  padding:
+    0 10px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+
+  border:
+    1px solid rgba(29,29,31,.08);
+
+  border-radius:
+    999px;
+
+  background:
+    #f5f5f7;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .12em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-admin-product-status-badge i {
+  width:
+    6px;
+
+  height:
+    6px;
+
+  border-radius:
+    999px;
+
+  background:
+    #86868b;
+}
+
+.st-admin-product-status-badge.is-live {
+  border-color:
+    rgba(31,169,113,.15);
+
+  background:
+    #effbf5;
+
+  color:
+    #16815d;
+}
+
+.st-admin-product-status-badge.is-live i {
+  background:
+    #20c997;
+
+  box-shadow:
+    0 0 0 3px rgba(32,201,151,.10);
+}
+
+.st-admin-product-status-badge.is-draft {
+  border-color:
+    rgba(245,179,53,.22);
+
+  background:
+    #fff8e9;
+
+  color:
+    #956000;
+}
+
+.st-admin-product-status-badge.is-draft i {
+  background:
+    #f5b335;
+}
+
+
+@media (max-width: 720px) {
+  .st-admin-product-directory-v2__filters {
+    width:
+      calc(100% - 24px);
+
+    margin:
+      12px 12px 0;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(3,minmax(0,1fr));
+  }
+
+  .st-admin-product-directory-v2__filters button {
+    justify-content:
+      center !important;
+
+    padding-inline:
+      8px !important;
+  }
+}
+
+/* === ST PRODUCT DRAFT DIRECTORY V1 END === */
+
+/* === ST RETAIL AUTH V1 START === */
+
+.st-retail-auth {
+  position: relative;
+  min-height: calc(100vh - 140px);
+  overflow: hidden;
+  background:
+    linear-gradient(180deg,#f8f7f4 0%,#f3f2ef 100%);
+  color: #1d1d1f;
+}
+
+.st-retail-auth__stage {
+  position: relative;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 72px 32px 88px;
+}
+
+.st-retail-auth__glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(1px);
+}
+
+.st-retail-auth__glow--one {
+  width: 520px;
+  height: 520px;
+  top: 10px;
+  right: -180px;
+  background: rgba(245,179,53,.09);
+}
+
+.st-retail-auth__glow--two {
+  width: 420px;
+  height: 420px;
+  bottom: -170px;
+  left: -150px;
+  background: rgba(29,29,31,.035);
+}
+
+.st-retail-auth__shell {
+  position: relative;
+  z-index: 2;
+  width: min(100%,1120px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(320px,.82fr) minmax(480px,1.18fr);
+  overflow: hidden;
+  border: 1px solid rgba(29,29,31,.09);
+  border-radius: 30px;
+  background: #fff;
+  box-shadow:
+    0 28px 90px rgba(29,29,31,.10);
+}
+
+.st-retail-auth__shell.is-login {
+  width: min(100%,1040px);
+}
+
+.st-retail-auth__aside {
+  min-height: 680px;
+  padding: 42px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 20% 8%,
+      rgba(245,179,53,.16),
+      transparent 24rem
+    ),
+    #181818;
+  color: #fff;
+}
+
+.st-retail-auth__aside::after {
+  content: "";
+  position: absolute;
+  right: -130px;
+  bottom: -170px;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 999px;
+}
+
+.st-retail-auth__logo {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+}
+
+.st-retail-auth__aside-copy {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+}
+
+.st-retail-auth__aside-copy > span {
+  display: block;
+  color: #f5b335;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+}
+
+.st-retail-auth__aside-copy h1 {
+  max-width: 560px;
+  margin: 14px 0 0;
+  font-size: clamp(2.6rem,4vw,4.8rem);
+  line-height: .96;
+  letter-spacing: -.065em;
+  font-weight: 620;
+}
+
+.st-retail-auth__aside-copy p {
+  max-width: 480px;
+  margin: 22px 0 0;
+  color: rgba(255,255,255,.55);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.st-retail-auth__benefits {
+  position: relative;
+  z-index: 2;
+  margin-top: 38px;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+.st-retail-auth__benefits > div {
+  padding: 15px 0;
+  display: flex;
+  gap: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.st-retail-auth__benefits > div > span {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(245,179,53,.12);
+  color: #f5b335;
+}
+
+.st-retail-auth__benefits svg {
+  width: 14px;
+  height: 14px;
+}
+
+.st-retail-auth__benefits strong,
+.st-retail-auth__benefits small {
+  display: block;
+}
+
+.st-retail-auth__benefits strong {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.st-retail-auth__benefits small {
+  margin-top: 4px;
+  color: rgba(255,255,255,.38);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.st-retail-auth__aside-footer {
+  position: relative;
+  z-index: 2;
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,.38);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.st-retail-auth__aside-footer svg {
+  width: 15px;
+  height: 15px;
+}
+
+.st-retail-auth__panel {
+  padding: 42px 46px 44px;
+  background: #fff;
+}
+
+.st-retail-auth__panel-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.st-retail-auth__panel-top > div:first-child > span {
+  display: block;
+  color: #a1a1a6;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.st-retail-auth__panel-top > div:first-child > strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -.045em;
+}
+
+.st-retail-auth__secure {
+  padding: 9px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(31,169,113,.16);
+  border-radius: 999px;
+  background: #effbf5;
+  color: #16815d;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.st-retail-auth__secure svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st-retail-auth__modes {
+  margin-top: 28px;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  border-radius: 15px;
+  background: #f5f5f7;
+}
+
+.st-retail-auth__modes a {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  color: #86868b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-retail-auth__modes a.is-active {
+  background: #fff;
+  color: #1d1d1f;
+  box-shadow:
+    0 3px 12px rgba(29,29,31,.07);
+}
+
+.st-retail-auth__form {
+  margin-top: 30px;
+  display: grid;
+  gap: 21px;
+}
+
+.st-retail-auth__two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.st-retail-auth__label {
+  display: block;
+  color: #6e6e73;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.st-retail-auth__label.is-error {
+  color: #c73539;
+}
+
+.st-retail-auth__input,
+.st-retail-auth .st-retail-auth__form input:not([type="hidden"]) {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 8px;
+  padding: 0 17px;
+  border: 1px solid rgba(29,29,31,.12);
+  border-radius: 13px;
+  background: #fafafa;
+  color: #1d1d1f;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.st-retail-auth .st-retail-auth__form input:focus {
+  border-color: rgba(245,179,53,.78);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(245,179,53,.10);
+}
+
+.st-retail-auth .st-retail-auth__form input::placeholder {
+  color: #b4b4b9;
+}
+
+.st-retail-auth .st-retail-auth__form button[type="button"] {
+  border: 0;
+}
+
+.st-retail-auth__phone {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 175px minmax(0,1fr);
+  overflow: hidden;
+  border: 1px solid rgba(29,29,31,.12);
+  border-radius: 13px;
+  background: #fafafa;
+}
+
+.st-retail-auth__phone:focus-within {
+  border-color: rgba(245,179,53,.78);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(245,179,53,.10);
+}
+
+.st-retail-auth__phone select,
+.st-retail-auth__phone input {
+  min-height: 54px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.st-retail-auth__phone select {
+  padding: 0 14px;
+  border-right: 1px solid rgba(29,29,31,.10) !important;
+  font-size: 12px;
+}
+
+.st-retail-auth__phone input {
+  padding: 0 17px !important;
+}
+
+.st-retail-auth__phone-meta {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: #a1a1a6;
+  font-size: 9px;
+}
+
+.st-retail-auth__phone-meta strong {
+  color: #86868b;
+}
+
+.st-retail-auth__verification {
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  border: 1px solid rgba(245,179,53,.18);
+  border-radius: 15px;
+  background: #fff9ed;
+}
+
+.st-retail-auth__verification > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: #fff1ce;
+  color: #a76500;
+}
+
+.st-retail-auth__verification svg {
+  width: 16px;
+  height: 16px;
+}
+
+.st-retail-auth__verification strong,
+.st-retail-auth__verification p {
+  display: block;
+}
+
+.st-retail-auth__verification strong {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.st-retail-auth__verification p {
+  margin: 4px 0 0;
+  color: #86868b;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.st-retail-auth__submit {
+  margin-top: 2px;
+}
+
+.st-retail-auth__submit button[type="submit"] {
+  min-height: 54px;
+  border-radius: 14px;
+  border-color: #1d1d1f;
+  background: #1d1d1f;
+}
+
+.st-retail-auth__submit button[type="submit"]:hover {
+  border-color: #f5b335;
+  background: #f5b335;
+  color: #1d1d1f;
+}
+
+.st-retail-auth__privacy {
+  margin: -7px 0 0;
+  text-align: center;
+  color: #a1a1a6;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.st-retail-auth__panel-footer {
+  margin-top: 32px;
+  padding-top: 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(29,29,31,.08);
+  color: #86868b;
+  font-size: 11px;
+}
+
+.st-retail-auth__panel-footer > svg {
+  width: 15px;
+  height: 15px;
+  color: #a1a1a6;
+}
+
+.st-retail-auth__panel-footer a {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #1d1d1f;
+  font-weight: 650;
+}
+
+.st-retail-auth__panel-footer a svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+/* SIGN OUT */
+
+.st-retail-signout {
+  margin-top: 20px;
+}
+
+.st-retail-signout__icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #fff7e7;
+  color: #a76500;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.st-retail-signout > p {
+  margin: 18px 0 0;
+  color: #6e6e73;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.st-retail-signout__note {
+  margin-top: 17px;
+  padding: 14px 15px;
+  border: 1px solid rgba(29,29,31,.07);
+  border-radius: 13px;
+  background: #f7f7f8;
+  color: #86868b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.st-retail-signout__actions {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.st-retail-signout__actions form {
+  width: 100%;
+}
+
+.st-retail-signout__cancel,
+.st-retail-signout__confirm {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 18px;
+  border-radius: 13px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.st-retail-signout__cancel {
+  border: 1px solid rgba(29,29,31,.12);
+  background: #fff;
+  color: #1d1d1f;
+}
+
+.st-retail-signout__cancel:hover {
+  background: #f5f5f7;
+}
+
+.st-retail-signout__confirm {
+  border: 1px solid #1d1d1f;
+  background: #1d1d1f;
+  color: #fff;
+}
+
+.st-retail-signout__confirm:hover {
+  border-color: #f5b335;
+  background: #f5b335;
+  color: #1d1d1f;
+}
+
+
+@media (max-width: 900px) {
+  .st-retail-auth__stage {
+    padding: 42px 18px 60px;
+  }
+
+  .st-retail-auth__shell {
+    grid-template-columns: 1fr;
+  }
+
+  .st-retail-auth__aside {
+    min-height: auto;
+    padding: 30px 26px;
+  }
+
+  .st-retail-auth__aside-copy {
+    margin-top: 80px;
+  }
+
+  .st-retail-auth__benefits {
+    display: none;
+  }
+
+  .st-retail-auth__aside-footer {
+    margin-top: 28px;
+  }
+
+  .st-retail-auth__panel {
+    padding: 30px 26px 34px;
+  }
+}
+
+@media (max-width: 560px) {
+  .st-retail-auth__stage {
+    padding-inline: 12px;
+  }
+
+  .st-retail-auth__shell {
+    border-radius: 22px;
+  }
+
+  .st-retail-auth__aside,
+  .st-retail-auth__panel {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .st-retail-auth__two {
+    grid-template-columns: 1fr;
+  }
+
+  .st-retail-auth__phone {
+    grid-template-columns: 145px minmax(0,1fr);
+  }
+
+  .st-retail-auth__panel-top {
+    flex-direction: column;
+  }
+
+  .st-retail-signout__actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === ST RETAIL AUTH V1 END === */
+
+
+/* === STEREOPHONIE RETAIL AUTH MESSAGE START === */
+
+.st-retail-auth-message {
+  margin: 0 0 22px;
+  padding: 15px 17px;
+
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 14px;
+
+  background: #f7f7f8;
+}
+
+.st-retail-auth-message__icon {
+  width: 30px;
+  height: 30px;
+
+  flex: 0 0 30px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.st-retail-auth-message__copy {
+  min-width: 0;
+}
+
+.st-retail-auth-message__copy strong {
+  display: block;
+
+  color: #1d1d1f;
+
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.st-retail-auth-message__copy p {
+  margin: 4px 0 0;
+
+  color: #6e6e73;
+
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.st-retail-auth-message--error {
+  border-color: rgba(197, 48, 48, 0.16);
+  background: #fff7f7;
+}
+
+.st-retail-auth-message--error
+.st-retail-auth-message__icon {
+  background: #fff0f0;
+  color: #c53030;
+}
+
+.st-retail-auth-message--success {
+  border-color: rgba(31, 169, 113, 0.16);
+  background: #f3fbf7;
+}
+
+.st-retail-auth-message--success
+.st-retail-auth-message__icon {
+  background: #e7f8ef;
+  color: #16815d;
+}
+
+/* === STEREOPHONIE RETAIL AUTH MESSAGE END === */
+
+/* === STEREOPHONIE RETAIL AUTH FIELD ERROR START === */
+
+.st-retail-auth-field-error {
+  margin: 8px 2px 0;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #b4232d;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.st-retail-auth-field-error > span {
+  width: 17px;
+  height: 17px;
+
+  flex: 0 0 17px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  background: #fff0f1;
+  color: #b4232d;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+/* === STEREOPHONIE RETAIL AUTH FIELD ERROR END === */
+
+/* === STEREOPHONIE RETAIL PASSWORD FIELD START === */
+
+.st-retail-auth-password-field {
+  min-width: 0;
+}
+
+.st-retail-auth-password-field__heading {
+  margin-bottom: 9px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.st-retail-auth-password-field__toggle {
+  min-height: 30px;
+
+  padding: 0 10px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #f5f5f7;
+  color: #6e6e73;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.st-retail-auth-password-field__toggle:hover {
+  background: #ececee;
+  color: #1d1d1f;
+}
+
+.st-retail-auth-password-field__toggle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.st-retail-auth-password-field__control {
+  position: relative;
+
+  min-height: 56px;
+
+  display: flex;
+  align-items: center;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(29,29,31,.12);
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.st-retail-auth-password-field__control:focus-within {
+  border-color: rgba(245,179,53,.78);
+
+  box-shadow:
+    0 0 0 4px rgba(245,179,53,.10);
+}
+
+.st-retail-auth-password-field__control.is-error {
+  border-color: rgba(197,48,48,.45);
+}
+
+.st-retail-auth-password-field__control.is-error:focus-within {
+  border-color: rgba(197,48,48,.70);
+
+  box-shadow:
+    0 0 0 4px rgba(197,48,48,.08);
+}
+
+.st-retail-auth-password-field__control input {
+  width: 100%;
+  min-width: 0;
+  height: 54px;
+
+  padding:
+    0 52px 0 17px !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+  outline: 0 !important;
+
+  font-size: 14px;
+}
+
+.st-retail-auth-password-field__control input::placeholder {
+  color: #a1a1a6;
+  opacity: 1;
+}
+
+.st-retail-auth-password-field__lock {
+  position: absolute;
+
+  right: 17px;
+  top: 50%;
+
+  width: 17px;
+  height: 17px;
+
+  transform: translateY(-50%);
+
+  color: #a1a1a6;
+
+  pointer-events: none;
+}
+
+/* === STEREOPHONIE RETAIL PASSWORD FIELD END === */
+
+/* === STEREOPHONIE RETAIL AUTH SUBMIT BUTTON START === */
+
+.st-retail-auth__submit-button {
+  width: 100%;
+  min-height: 54px;
+
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+
+  border: 1px solid #d89b28;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f7bd4d 0%,
+      #f1ad2f 100%
+    );
+
+  color: #181818;
+
+  box-shadow:
+    0 9px 24px rgba(214, 151, 35, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.st-retail-auth__submit-button > span {
+  font-size: 12px;
+  font-weight: 720;
+  letter-spacing: 0.04em;
+}
+
+.st-retail-auth__submit-arrow {
+  width: 17px;
+  height: 17px;
+
+  transition:
+    transform 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-retail-auth__submit-button:hover:not(:disabled) {
+    background:
+      linear-gradient(
+        180deg,
+        #f9c45b 0%,
+        #f3b239 100%
+      );
+
+    border-color: #ca8d1e;
+
+    box-shadow:
+      0 12px 28px rgba(214, 151, 35, 0.19),
+      inset 0 1px 0 rgba(255, 255, 255, 0.34);
+  }
+
+  .st-retail-auth__submit-button:hover:not(:disabled)
+  .st-retail-auth__submit-arrow {
+    transform: translateX(3px);
+  }
+}
+
+.st-retail-auth__submit-button:focus-visible {
+  outline: 3px solid rgba(245, 179, 53, 0.22);
+  outline-offset: 3px;
+}
+
+.st-retail-auth__submit-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+/* === STEREOPHONIE RETAIL AUTH SUBMIT BUTTON END === */
+
+/* === STEREOPHONIE CLEAN AUTH V1 START === */
+
+.st-auth-clean {
+  min-height: calc(100vh - 120px);
+  background:
+    radial-gradient(
+      circle at 90% 6%,
+      rgba(245,179,53,.12),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 8% 92%,
+      rgba(29,29,31,.035),
+      transparent 25rem
+    ),
+    #f8f7f4;
+  color: #1d1d1f;
+}
+
+.st-auth-clean-stage {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: 64px 24px 80px;
+}
+
+.st-auth-clean-card {
+  width: min(100%, 680px);
+  margin: 0 auto;
+  padding: 34px 38px 30px;
+
+  border:
+    1px solid rgba(29,29,31,.08);
+
+  border-radius:
+    26px;
+
+  background:
+    rgba(255,255,255,.96);
+
+  box-shadow:
+    0 26px 70px rgba(29,29,31,.075);
+}
+
+.st-auth-clean-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.st-auth-clean-logo {
+  display: block;
+}
+
+.st-auth-clean-logo img {
+  display: block;
+  width: 168px;
+  height: auto;
+  object-fit: contain;
+}
+
+.st-auth-clean-security {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 8px 11px;
+
+  border:
+    1px solid rgba(31,169,113,.14);
+
+  border-radius:
+    999px;
+
+  background:
+    #f1faf6;
+
+  color:
+    #16815d;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .08em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-auth-clean-security svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st-auth-clean-heading {
+  margin-top: 38px;
+}
+
+.st-auth-clean-heading > span {
+  display: block;
+
+  color:
+    #9a8357;
+
+  font-size:
+    10px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .2em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-auth-clean-heading h1 {
+  margin: 9px 0 0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    clamp(2rem,4vw,2.65rem);
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    -.055em;
+
+  line-height:
+    1.03;
+}
+
+.st-auth-clean-heading p {
+  max-width: 520px;
+
+  margin:
+    12px 0 0;
+
+  color:
+    #7b7b80;
+
+  font-size:
+    13px;
+
+  line-height:
+    1.65;
+}
+
+.st-auth-clean-tabs {
+  margin-top:
+    28px;
+
+  padding:
+    4px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap:
+    4px;
+
+  border-radius:
+    14px;
+
+  background:
+    #f4f4f5;
+}
+
+.st-auth-clean-tabs a {
+  min-height:
+    44px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    11px;
+
+  color:
+    #8a8a8f;
+
+  font-size:
+    10px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .11em;
+
+  text-transform:
+    uppercase;
+
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-auth-clean-tabs a.is-active {
+  background:
+    #ffffff;
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    0 5px 18px rgba(29,29,31,.055);
+}
+
+.st-auth-clean-form {
+  margin-top:
+    28px;
+
+  display:
+    grid;
+
+  gap:
+    19px;
+}
+
+.st-auth-clean-two {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+
+  gap:
+    14px;
+}
+
+.st-auth-clean-field {
+  min-width:
+    0;
+}
+
+.st-auth-clean-field > span:first-child,
+.st-auth-clean-label-row {
+  margin-bottom:
+    8px;
+
+  color:
+    #6e6e73;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .14em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-auth-clean-label-row {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    10px;
+}
+
+.st-auth-clean-label-row button {
+  padding:
+    0;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  border:
+    0;
+
+  background:
+    transparent;
+
+  color:
+    #9a8357;
+
+  cursor:
+    pointer;
+
+  font:
+    inherit;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .08em;
+
+  text-transform:
+    uppercase;
+}
+
+.st-auth-clean-label-row button svg {
+  width:
+    13px;
+
+  height:
+    13px;
+}
+
+.st-auth-clean-field > input,
+.st-auth-clean-password,
+.st-auth-clean-phone {
+  width:
+    100%;
+
+  min-height:
+    52px;
+
+  border:
+    1px solid rgba(29,29,31,.11);
+
+  border-radius:
+    13px;
+
+  background:
+    #ffffff;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.st-auth-clean-field > input {
+  padding:
+    0 16px;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    13px;
+
+  outline:
+    none;
+}
+
+.st-auth-clean-field > input::placeholder,
+.st-auth-clean-password input::placeholder,
+.st-auth-clean-phone input::placeholder {
+  color:
+    #b0b0b5;
+}
+
+.st-auth-clean-field > input:focus,
+.st-auth-clean-password:focus-within,
+.st-auth-clean-phone:focus-within {
+  border-color:
+    rgba(201,143,32,.68);
+
+  box-shadow:
+    0 0 0 4px rgba(245,179,53,.09);
+}
+
+.st-auth-clean-password {
+  position:
+    relative;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+}
+
+.st-auth-clean-password input {
+  width:
+    100%;
+
+  min-width:
+    0;
+
+  height:
+    50px;
+
+  padding:
+    0 46px 0 16px;
+
+  border:
+    0;
+
+  border-radius:
+    inherit;
+
+  background:
+    transparent;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    13px;
+
+  outline:
+    none;
+}
+
+.st-auth-clean-password > svg {
+  position:
+    absolute;
+
+  right:
+    16px;
+
+  width:
+    16px;
+
+  height:
+    16px;
+
+  color:
+    #aaaab0;
+
+  pointer-events:
+    none;
+}
+
+.st-auth-clean-phone {
+  display:
+    grid;
+
+  grid-template-columns:
+    185px minmax(0,1fr);
+
+  overflow:
+    hidden;
+}
+
+.st-auth-clean-phone select,
+.st-auth-clean-phone input {
+  min-width:
+    0;
+
+  height:
+    50px;
+
+  border:
+    0;
+
+  background:
+    transparent;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    12px;
+
+  outline:
+    none;
+}
+
+.st-auth-clean-phone select {
+  padding:
+    0 13px;
+
+  border-right:
+    1px solid rgba(29,29,31,.09);
+
+  background:
+    #fafafa;
+}
+
+.st-auth-clean-phone input {
+  padding:
+    0 16px;
+}
+
+.st-auth-clean-phone-meta {
+  margin-top:
+    7px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    12px;
+
+  color:
+    #a1a1a6;
+
+  font-size:
+    9px;
+}
+
+.st-auth-clean-phone-meta strong {
+  color:
+    #86868b;
+
+  font-weight:
+    650;
+}
+
+.st-auth-clean-verification {
+  padding:
+    14px 15px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+
+  border:
+    1px solid rgba(245,179,53,.17);
+
+  border-radius:
+    13px;
+
+  background:
+    #fffaf0;
+}
+
+.st-auth-clean-verification > svg {
+  width:
+    18px;
+
+  height:
+    18px;
+
+  flex:
+    0 0 auto;
+
+  color:
+    #ad6c00;
+}
+
+.st-auth-clean-verification strong,
+.st-auth-clean-verification p {
+  display:
+    block;
+}
+
+.st-auth-clean-verification strong {
+  color:
+    #39393d;
+
+  font-size:
+    11px;
+
+  font-weight:
+    650;
+}
+
+.st-auth-clean-verification p {
+  margin:
+    3px 0 0;
+
+  color:
+    #8b8b90;
+
+  font-size:
+    10px;
+
+  line-height:
+    1.5;
+}
+
+.st-auth-clean-submit {
+  width:
+    100%;
+
+  min-height:
+    54px;
+
+  padding:
+    0 19px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  border:
+    1px solid #1d1d1f;
+
+  border-radius:
+    13px;
+
+  background:
+    #1d1d1f;
+
+  color:
+    #ffffff;
+
+  cursor:
+    pointer;
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .09em;
+
+  text-transform:
+    uppercase;
+
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-auth-clean-submit svg {
+  width:
+    16px;
+
+  height:
+    16px;
+
+  transition:
+    transform 160ms ease;
+}
+
+.st-auth-clean-submit:hover:not(:disabled) {
+  border-color:
+    #c99029;
+
+  background:
+    #c99029;
+
+  box-shadow:
+    0 10px 26px rgba(201,144,41,.18);
+}
+
+.st-auth-clean-submit:hover:not(:disabled) svg {
+  transform:
+    translateX(3px);
+}
+
+.st-auth-clean-submit:disabled {
+  cursor:
+    wait;
+
+  opacity:
+    .65;
+}
+
+.st-auth-clean-note {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    7px;
+
+  color:
+    #a0a0a5;
+
+  font-size:
+    10px;
+}
+
+.st-auth-clean-note svg {
+  width:
+    13px;
+
+  height:
+    13px;
+
+  color:
+    #16815d;
+}
+
+.st-auth-clean-message {
+  margin-top:
+    18px;
+
+  padding:
+    13px 14px;
+
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  gap:
+    10px;
+
+  border:
+    1px solid;
+
+  border-radius:
+    12px;
+}
+
+.st-auth-clean-message > span {
+  width:
+    21px;
+
+  height:
+    21px;
+
+  flex:
+    0 0 21px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border-radius:
+    999px;
+
+  font-size:
+    10px;
+
+  font-weight:
+    800;
+}
+
+.st-auth-clean-message p {
+  margin:
+    1px 0 0;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.55;
+}
+
+.st-auth-clean-message.is-error {
+  border-color:
+    #f1cccc;
+
+  background:
+    #fff7f7;
+
+  color:
+    #a52e34;
+}
+
+.st-auth-clean-message.is-error > span {
+  background:
+    #ffe9ea;
+}
+
+.st-auth-clean-message.is-success {
+  border-color:
+    #cce9da;
+
+  background:
+    #f3fbf7;
+
+  color:
+    #16815d;
+}
+
+.st-auth-clean-message.is-success > span {
+  background:
+    #e6f7ee;
+}
+
+.st-auth-clean-footer {
+  margin-top:
+    28px;
+
+  padding-top:
+    20px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    15px;
+
+  border-top:
+    1px solid rgba(29,29,31,.07);
+
+  color:
+    #9b9ba0;
+
+  font-size:
+    11px;
+}
+
+.st-auth-clean-footer a {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    5px;
+
+  color:
+    #1d1d1f;
+
+  font-weight:
+    650;
+}
+
+.st-auth-clean-footer a svg {
+  width:
+    13px;
+
+  height:
+    13px;
+}
+
+@media (max-width: 700px) {
+  .st-auth-clean-stage {
+    padding:
+      34px 14px 50px;
+  }
+
+  .st-auth-clean-card {
+    padding:
+      26px 20px 24px;
+
+    border-radius:
+      20px;
+  }
+
+  .st-auth-clean-brand {
+    align-items:
+      flex-start;
+  }
+
+  .st-auth-clean-logo img {
+    width:
+      145px;
+  }
+
+  .st-auth-clean-security {
+    padding:
+      7px 9px;
+
+    font-size:
+      8px;
+  }
+
+  .st-auth-clean-heading {
+    margin-top:
+      30px;
+  }
+
+  .st-auth-clean-two {
+    grid-template-columns:
+      1fr;
+  }
+
+  .st-auth-clean-phone {
+    grid-template-columns:
+      145px minmax(0,1fr);
+  }
+
+  .st-auth-clean-footer {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+  }
+}
+
+/* === STEREOPHONIE CLEAN AUTH V1 END === */
+
+/* === ST ADMIN CATEGORY THEME MOON HARD FIX START === */
+
+/*
+ * Category Light / Dark selector
+ *
+ * Some legacy/global admin SVG rules can override
+ * Lucide's currentColor stroke. Force the moon itself
+ * to remain clearly visible in BOTH states.
+ */
+
+.st-admin-theme-moon,
+.st-admin-theme-moon path,
+.st-admin-theme-moon circle,
+.st-admin-theme-moon line,
+.st-admin-theme-moon polyline {
+  fill: none !important;
+  opacity: 1 !important;
+}
+
+
+/* Dark theme NOT selected:
+   bright white moon against black icon surface. */
+.st-admin-theme-moon--idle,
+.st-admin-theme-moon--idle path,
+.st-admin-theme-moon--idle circle,
+.st-admin-theme-moon--idle line,
+.st-admin-theme-moon--idle polyline {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  opacity: 1 !important;
+}
+
+
+/* Dark theme SELECTED:
+   Stereophonie mustard moon. */
+.st-admin-theme-moon--selected,
+.st-admin-theme-moon--selected path,
+.st-admin-theme-moon--selected circle,
+.st-admin-theme-moon--selected line,
+.st-admin-theme-moon--selected polyline {
+  color: #f5b335 !important;
+  stroke: #f5b335 !important;
+  opacity: 1 !important;
+}
+
+
+/*
+ * Give the unselected white moon enough optical contrast
+ * without making it glow excessively.
+ */
+.st-admin-theme-moon--idle {
+  filter:
+    drop-shadow(
+      0 0 2px rgba(255, 255, 255, 0.22)
+    ) !important;
+}
+
+
+.st-admin-theme-moon--selected {
+  filter:
+    drop-shadow(
+      0 0 3px rgba(245, 179, 53, 0.30)
+    ) !important;
+}
+
+/* === ST ADMIN CATEGORY THEME MOON HARD FIX END === */
+
+/* ==========================================================
+   STEREOPHONIE — GLOBAL INTERACTION POLISH
+   Fast, subtle, professional feedback
+   ========================================================== */
+
+:root {
+  --st-ui-fast: 150ms;
+  --st-ui-normal: 220ms;
+  --st-ui-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* ----------------------------------------------------------
+   CONTROLS
+   ---------------------------------------------------------- */
+
+button,
+a[href],
+[role="button"],
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/*
+ * Never use transition: all.
+ * Only animate inexpensive visual properties.
+ */
+button,
+a[href],
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  transition:
+    transform var(--st-ui-fast) var(--st-ui-ease),
+    background-color var(--st-ui-normal) var(--st-ui-ease),
+    border-color var(--st-ui-normal) var(--st-ui-ease),
+    color var(--st-ui-normal) var(--st-ui-ease),
+    opacity var(--st-ui-normal) var(--st-ui-ease),
+    box-shadow var(--st-ui-normal) var(--st-ui-ease);
+}
+
+
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  transition:
+    background-color var(--st-ui-normal) var(--st-ui-ease),
+    border-color var(--st-ui-normal) var(--st-ui-ease),
+    box-shadow var(--st-ui-normal) var(--st-ui-ease),
+    color var(--st-ui-normal) var(--st-ui-ease);
+}
+
+
+/* ----------------------------------------------------------
+   PRESS / TAP FEEDBACK
+   ---------------------------------------------------------- */
+
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active,
+a[href]:active,
+input[type="button"]:not(:disabled):active,
+input[type="submit"]:not(:disabled):active {
+  transform: scale(0.985);
+  transition-duration: 80ms;
+}
+
+
+/* ----------------------------------------------------------
+   KEYBOARD FOCUS
+   ---------------------------------------------------------- */
+
+button:focus-visible,
+a[href]:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(213, 145, 19, 0.72);
+  outline-offset: 3px;
+}
+
+
+/* ----------------------------------------------------------
+   FORM INTERACTION
+   ---------------------------------------------------------- */
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(213, 145, 19, 0.42);
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.08);
+}
+
+
+/* ----------------------------------------------------------
+   CHECKBOXES / RADIOS
+   ---------------------------------------------------------- */
+
+input[type="checkbox"],
+input[type="radio"] {
+  transition:
+    transform var(--st-ui-fast) var(--st-ui-ease),
+    box-shadow var(--st-ui-normal) var(--st-ui-ease),
+    accent-color var(--st-ui-normal) var(--st-ui-ease);
+}
+
+input[type="checkbox"]:active,
+input[type="radio"]:active {
+  transform: scale(0.92);
+}
+
+
+/* ----------------------------------------------------------
+   DESKTOP HOVER
+   Keep movement extremely subtle.
+   ---------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+
+  button:not(:disabled):hover,
+  [role="button"]:not([aria-disabled="true"]):hover {
+    transform: translateY(-1px);
+  }
+
+  button:not(:disabled):active,
+  [role="button"]:not([aria-disabled="true"]):active {
+    transform: translateY(0) scale(0.985);
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   ADMIN DASHBOARD
+   Extra refinement for the control-heavy interface.
+   ---------------------------------------------------------- */
+
+[class*="st-admin"] button,
+[class*="st-admin"] a[href],
+[class*="st-admin"] [role="button"],
+[class*="st-admin"] input,
+[class*="st-admin"] textarea,
+[class*="st-admin"] select {
+  transition-timing-function:
+    var(--st-ui-ease);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+  [class*="st-admin"] button:not(:disabled):hover,
+  [class*="st-admin"] [role="button"]:not([aria-disabled="true"]):hover {
+    box-shadow:
+      0 7px 20px rgba(0, 0, 0, 0.07);
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   DISABLED CONTROLS
+   ---------------------------------------------------------- */
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+
+/* ----------------------------------------------------------
+   ACCESSIBILITY
+   ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+}
+
+/* === GLOBAL INTERACTION POLISH END === */
+
+/* STEREOPHONIE ADVANCED INTERACTION SYSTEM START */
+
+/* ==========================================================
+   MOTION TOKENS
+   ========================================================== */
+
+:root {
+  --st-motion-instant: 90ms;
+  --st-motion-fast: 150ms;
+  --st-motion-medium: 220ms;
+  --st-motion-panel: 280ms;
+
+  --st-motion-ease:
+    cubic-bezier(0.22, 1, 0.36, 1);
+
+  --st-motion-press:
+    cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --st-focus-ring:
+    0 0 0 3px rgba(245, 179, 53, 0.13);
+
+  --st-hover-shadow:
+    0 7px 22px rgba(0, 0, 0, 0.065);
+
+  --st-selected-shadow:
+    0 0 0 1px rgba(245, 179, 53, 0.12),
+    0 8px 24px rgba(245, 179, 53, 0.055);
+}
+
+
+/* ==========================================================
+   BUTTON / CLICKABLE FOUNDATION
+   ========================================================== */
+
+button,
+a[href],
+[role="button"],
+[role="radio"],
+[role="tab"],
+[role="option"],
+[aria-pressed],
+[aria-expanded],
+[aria-selected] {
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform var(--st-motion-fast) var(--st-motion-ease),
+    background-color var(--st-motion-medium) var(--st-motion-ease),
+    border-color var(--st-motion-medium) var(--st-motion-ease),
+    color var(--st-motion-medium) var(--st-motion-ease),
+    opacity var(--st-motion-medium) var(--st-motion-ease),
+    box-shadow var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+/* ==========================================================
+   PHYSICAL PRESS FEEDBACK
+   Gives every real click a small tactile reaction.
+   ========================================================== */
+
+button:not(:disabled):active,
+a[href]:active,
+[role="button"]:not([aria-disabled="true"]):active,
+[role="radio"]:not([aria-disabled="true"]):active,
+[role="tab"]:not([aria-disabled="true"]):active {
+  transform:
+    translateY(0)
+    scale(0.975);
+
+  transition-duration:
+    var(--st-motion-instant);
+}
+
+
+/* ==========================================================
+   DESKTOP HOVER
+   Very small movement — no floating/bouncy UI.
+   ========================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+
+  button:not(:disabled):hover,
+  [role="button"]:not([aria-disabled="true"]):hover {
+    transform:
+      translateY(-1px);
+  }
+
+}
+
+
+/* ==========================================================
+   SELECTED / ACTIVE CONTROLS
+   Smooth transition rather than instant on/off.
+   ========================================================== */
+
+[aria-pressed="true"],
+[aria-selected="true"],
+[aria-checked="true"],
+[role="radio"][aria-checked="true"] {
+  box-shadow:
+    var(--st-selected-shadow);
+}
+
+
+/*
+ * Smooth visual response for native selectable controls.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+  transform-origin:
+    center;
+
+  transition:
+    transform var(--st-motion-fast) var(--st-motion-press),
+    box-shadow var(--st-motion-medium) var(--st-motion-ease),
+    filter var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+input[type="checkbox"]:active,
+input[type="radio"]:active {
+  transform:
+    scale(0.86);
+}
+
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  transform:
+    scale(1);
+}
+
+
+/* ==========================================================
+   INPUTS / SELECTORS
+   ========================================================== */
+
+input,
+textarea,
+select {
+  transition:
+    background-color var(--st-motion-medium) var(--st-motion-ease),
+    border-color var(--st-motion-medium) var(--st-motion-ease),
+    color var(--st-motion-medium) var(--st-motion-ease),
+    box-shadow var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  border-color:
+    rgba(213, 145, 19, 0.43);
+
+  box-shadow:
+    var(--st-focus-ring);
+}
+
+
+/* ==========================================================
+   EXPAND / COLLAPSE TRIGGERS
+   Chevron/icon motion when controls open.
+   ========================================================== */
+
+[aria-expanded] svg {
+  transition:
+    transform var(--st-motion-panel) var(--st-motion-ease),
+    opacity var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+[aria-expanded="true"] > svg:last-child {
+  transform:
+    rotate(180deg);
+}
+
+
+/* ==========================================================
+   DETAILS / ACCORDIONS
+   ========================================================== */
+
+details {
+  transition:
+    background-color var(--st-motion-panel) var(--st-motion-ease),
+    border-color var(--st-motion-panel) var(--st-motion-ease),
+    box-shadow var(--st-motion-panel) var(--st-motion-ease);
+}
+
+
+details > summary {
+  cursor:
+    pointer;
+
+  transition:
+    color var(--st-motion-medium) var(--st-motion-ease),
+    background-color var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+details[open] {
+  transition:
+    background-color var(--st-motion-panel) var(--st-motion-ease),
+    border-color var(--st-motion-panel) var(--st-motion-ease),
+    box-shadow var(--st-motion-panel) var(--st-motion-ease);
+}
+
+
+/* ==========================================================
+   COMMON OPEN/CLOSED STATE SYSTEMS
+   Works with components already using these state conventions.
+   ========================================================== */
+
+[data-state="open"],
+.is-open,
+.is-expanded,
+.is-active {
+  transition:
+    opacity var(--st-motion-panel) var(--st-motion-ease),
+    transform var(--st-motion-panel) var(--st-motion-ease),
+    background-color var(--st-motion-medium) var(--st-motion-ease),
+    border-color var(--st-motion-medium) var(--st-motion-ease),
+    box-shadow var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+[data-state="closed"] {
+  transition:
+    opacity var(--st-motion-panel) var(--st-motion-ease),
+    transform var(--st-motion-panel) var(--st-motion-ease);
+}
+
+
+/* ==========================================================
+   ADMIN DASHBOARD
+   More tactile because the admin contains many controls.
+   ========================================================== */
+
+[class*="st-admin"] button,
+[class*="st-admin"] [role="button"],
+[class*="st-admin"] [role="radio"],
+[class*="st-admin"] [role="tab"],
+[class*="st-admin"] input,
+[class*="st-admin"] textarea,
+[class*="st-admin"] select {
+  transition-timing-function:
+    var(--st-motion-ease);
+}
+
+
+/*
+ * Admin buttons should subtly respond on hover,
+ * but never jump noticeably.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  [class*="st-admin"] button:not(:disabled):hover,
+  [class*="st-admin"] [role="button"]:not([aria-disabled="true"]):hover,
+  [class*="st-admin"] [role="radio"]:not([aria-disabled="true"]):hover {
+    box-shadow:
+      var(--st-hover-shadow);
+  }
+
+}
+
+
+/*
+ * Stronger but still refined selection feedback.
+ */
+
+[class*="st-admin"] [aria-checked="true"],
+[class*="st-admin"] [aria-selected="true"],
+[class*="st-admin"] [aria-pressed="true"] {
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    var(--st-selected-shadow);
+}
+
+
+/*
+ * When clicked, selected admin controls settle back physically.
+ */
+
+[class*="st-admin"] [aria-checked="true"]:active,
+[class*="st-admin"] [aria-selected="true"]:active,
+[class*="st-admin"] [aria-pressed="true"]:active {
+  transform:
+    scale(0.985);
+}
+
+
+/* ==========================================================
+   ADMIN FORM LABELS CONTAINING CHECKBOX/RADIO
+   Smooth entire row, not only the tiny checkbox.
+   ========================================================== */
+
+[class*="st-admin"] label:has(
+  input[type="checkbox"]
+),
+[class*="st-admin"] label:has(
+  input[type="radio"]
+) {
+  transition:
+    transform var(--st-motion-fast) var(--st-motion-ease),
+    background-color var(--st-motion-medium) var(--st-motion-ease),
+    border-color var(--st-motion-medium) var(--st-motion-ease),
+    box-shadow var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+[class*="st-admin"] label:has(
+  input[type="checkbox"]:checked
+),
+[class*="st-admin"] label:has(
+  input[type="radio"]:checked
+) {
+  transition:
+    transform var(--st-motion-fast) var(--st-motion-ease),
+    background-color var(--st-motion-medium) var(--st-motion-ease),
+    border-color var(--st-motion-medium) var(--st-motion-ease),
+    box-shadow var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+/* ==========================================================
+   STOREFRONT PRODUCT / ACTION CONTROLS
+   ========================================================== */
+
+[class*="st3-"] button,
+[class*="st3-"] a[href],
+[class*="st-retail"] button,
+[class*="st-retail"] a[href] {
+  transition-timing-function:
+    var(--st-motion-ease);
+}
+
+
+/* ==========================================================
+   BUTTON ICONS
+   Small independent motion makes controls feel alive.
+   ========================================================== */
+
+button svg,
+a[href] svg,
+[role="button"] svg {
+  transition:
+    transform var(--st-motion-medium) var(--st-motion-ease),
+    opacity var(--st-motion-medium) var(--st-motion-ease),
+    color var(--st-motion-medium) var(--st-motion-ease);
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+  button:not(:disabled):hover > svg:last-child,
+  a[href]:hover > svg:last-child {
+    transform:
+      translateX(1.5px);
+  }
+
+}
+
+
+/* Do not horizontally move icons that clearly represent
+   expand/collapse controls.
+ */
+
+[aria-expanded] > svg:last-child {
+  transform-origin:
+    center;
+}
+
+
+[aria-expanded="true"] > svg:last-child {
+  transform:
+    rotate(180deg);
+}
+
+
+/* ==========================================================
+   KEYBOARD ACCESSIBILITY
+   ========================================================== */
+
+button:focus-visible,
+a[href]:focus-visible,
+[role="button"]:focus-visible,
+[role="radio"]:focus-visible,
+[role="tab"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline:
+    2px solid rgba(213, 145, 19, 0.74);
+
+  outline-offset:
+    3px;
+}
+
+
+/* ==========================================================
+   DISABLED / LOADING FEEDBACK
+   ========================================================== */
+
+button:disabled,
+[aria-disabled="true"] {
+  transform:
+    none !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+button[aria-busy="true"],
+[aria-busy="true"] {
+  cursor:
+    wait;
+}
+
+
+/* ==========================================================
+   REDUCED MOTION
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior:
+      auto !important;
+
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+
+}
+
+/* STEREOPHONIE ADVANCED INTERACTION SYSTEM END */
+
+
+/* ==========================================================
+   SHOP — IN STOCK FILTER REFINEMENT
+   Rounded-square signal + faded mustard active state
+   ========================================================== */
+
+/*
+ * Keep the existing button dimensions and layout.
+ */
+[data-in-stock-filter="true"] {
+  transition:
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+
+/* ----------------------------------------------------------
+   INDICATOR
+   Convert the existing circular dot into a rounded square.
+   ---------------------------------------------------------- */
+
+[data-in-stock-filter="true"] [class*="rounded-full"] {
+  width: 10px !important;
+  height: 10px !important;
+
+  min-width: 10px !important;
+  min-height: 10px !important;
+
+  border-radius: 3px !important;
+
+  border:
+    1px solid rgba(181, 116, 0, 0.38) !important;
+
+  background:
+    rgba(245, 179, 53, 0.12) !important;
+
+  box-shadow:
+    none !important;
+
+  transition:
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+
+/* ----------------------------------------------------------
+   ACTIVE STATE
+   Override the current black selected appearance.
+   ---------------------------------------------------------- */
+
+[data-in-stock-filter="true"][class*="bg-black"],
+[data-in-stock-filter="true"][aria-pressed="true"],
+[data-in-stock-filter="true"].is-active {
+  background:
+    rgba(245, 179, 53, 0.14) !important;
+
+  border-color:
+    rgba(213, 145, 19, 0.42) !important;
+
+  color:
+    #6f4700 !important;
+
+  box-shadow:
+    0 0 0 1px rgba(245, 179, 53, 0.08),
+    0 6px 18px rgba(181, 116, 0, 0.055) !important;
+}
+
+
+/* Active rounded-square signal */
+
+[data-in-stock-filter="true"][class*="bg-black"]
+  [class*="rounded-full"],
+[data-in-stock-filter="true"][aria-pressed="true"]
+  [class*="rounded-full"],
+[data-in-stock-filter="true"].is-active
+  [class*="rounded-full"] {
+
+  background:
+    #f5b335 !important;
+
+  border-color:
+    #d59113 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.10) !important;
+
+  transform:
+    scale(1.04);
+}
+
+
+/* ----------------------------------------------------------
+   HOVER
+   ---------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+
+  [data-in-stock-filter="true"]:hover {
+    border-color:
+      rgba(213, 145, 19, 0.32) !important;
+  }
+
+  [data-in-stock-filter="true"]:hover
+    [class*="rounded-full"] {
+
+    border-color:
+      rgba(181, 116, 0, 0.58) !important;
+  }
+
+}
+
+/* === IN STOCK FILTER REFINEMENT END === */
+
+
+/* === ST APPLE PRODUCT CONFIGURATOR V1 START === */
+
+/*
+ * ============================================================
+ * STEREOPHONIE — MINIMAL PRODUCT CONFIGURATOR
+ *
+ * Design principles:
+ * - no numbered specification rows
+ * - no technical-specification clutter
+ * - generous spacing
+ * - colour represented visually
+ * - one selected-value label
+ * - compact storage / capacity choices
+ * - no unnecessary animation
+ * ============================================================
+ */
+
+.st-purchase-v6 .st-purchase-apple {
+  width: 100%;
+  margin:
+    0 0 30px;
+}
+
+
+/* ------------------------------------------------------------
+   INDIVIDUAL CUSTOMER CHOICE
+   ------------------------------------------------------------ */
+
+.st-purchase-v6 .st-purchase-apple__group {
+  padding:
+    0 0 28px;
+}
+
+.st-purchase-v6
+.st-purchase-apple__group
++ .st-purchase-apple__group {
+  padding-top:
+    27px;
+
+  border-top:
+    1px solid
+    rgba(29, 29, 31, .10);
+}
+
+
+/* ------------------------------------------------------------
+   LABEL
+   "Colour – Midnight"
+   "Storage – 512GB"
+   ------------------------------------------------------------ */
+
+.st-purchase-v6 .st-purchase-apple__heading {
+  margin-bottom:
+    17px;
+}
+
+.st-purchase-v6 .st-purchase-apple__heading strong {
+  display:
+    block;
+
+  margin:
+    0;
+
+  color:
+    #1d1d1f;
+
+  font-size:
+    15px;
+
+  font-weight:
+    600;
+
+  line-height:
+    1.35;
+
+  letter-spacing:
+    -.012em;
+}
+
+.st-purchase-v6 .st-purchase-apple__heading strong > span {
+  color:
+    #1d1d1f;
+}
+
+.st-purchase-v6 .st-purchase-apple__heading em {
+  color:
+    #1d1d1f;
+
+  font-style:
+    normal;
+
+  font-weight:
+    400;
+}
+
+
+/* ------------------------------------------------------------
+   OPTIONS
+   ------------------------------------------------------------ */
+
+.st-purchase-v6 .st-purchase-apple__options {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  align-items:
+    center;
+
+  gap:
+    12px;
+}
+
+
+/* ------------------------------------------------------------
+   COLOUR
+   No text inside the button.
+   The selected colour name is displayed once in the heading.
+   ------------------------------------------------------------ */
+
+.st-purchase-v6
+.st-purchase-apple__option.is-colour {
+  position:
+    relative;
+
+  width:
+    44px;
+
+  height:
+    44px;
+
+  min-width:
+    44px;
+
+  padding:
+    0;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    2px solid
+    transparent;
+
+  border-radius:
+    999px;
+
+  background:
+    transparent;
+
+  box-shadow:
+    none;
+
+  cursor:
+    pointer;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    opacity 150ms ease;
+
+  transform:
+    none;
+}
+
+.st-purchase-v6
+.st-purchase-apple__option.is-colour:hover {
+  border-color:
+    rgba(29, 29, 31, .22);
+
+  transform:
+    none;
+}
+
+.st-purchase-v6
+.st-purchase-apple__option.is-colour.is-active {
+  border-color:
+    #1d1d1f;
+
+  box-shadow:
+    inset 0 0 0 2px #fff;
+}
+
+
+/*
+ * Neutral shell gives very pale product colours enough contrast.
+ */
+.st-purchase-v6
+.st-purchase-apple__colour-shell {
+  width:
+    32px;
+
+  height:
+    32px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, .12);
+
+  border-radius:
+    999px;
+
+  background:
+    #f5f5f7;
+}
+
+.st-purchase-v6
+.st-purchase-apple__colour {
+  width:
+    100% !important;
+
+  height:
+    100% !important;
+
+  min-width:
+    0 !important;
+
+  display:
+    block !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    inherit !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   STORAGE / CAPACITY / MEMORY
+   ------------------------------------------------------------ */
+
+.st-purchase-v6
+.st-purchase-apple__option.is-value {
+  min-width:
+    92px;
+
+  min-height:
+    48px;
+
+  padding:
+    12px 18px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    1px solid
+    #d2d2d7;
+
+  border-radius:
+    12px;
+
+  background:
+    #fff;
+
+  color:
+    #1d1d1f;
+
+  box-shadow:
+    none;
+
+  cursor:
+    pointer;
+
+  font-size:
+    14px;
+
+  font-weight:
+    500;
+
+  line-height:
+    1;
+
+  letter-spacing:
+    -.01em;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+
+  transform:
+    none;
+}
+
+.st-purchase-v6
+.st-purchase-apple__option.is-value:hover {
+  border-color:
+    #86868b;
+
+  transform:
+    none;
+}
+
+.st-purchase-v6
+.st-purchase-apple__option.is-value.is-active {
+  border-color:
+    #1d1d1f;
+
+  box-shadow:
+    inset 0 0 0 1px #1d1d1f;
+}
+
+
+/* ------------------------------------------------------------
+   TEMPORARILY UNAVAILABLE COMBINATIONS
+
+   They remain visible so customers understand available product
+   combinations, but appear quieter.
+   ------------------------------------------------------------ */
+
+.st-purchase-v6
+.st-purchase-apple__option.is-unavailable {
+  opacity:
+    .38;
+}
+
+
+/* ------------------------------------------------------------
+   REMOVE OLD CONFIGURATOR VISUAL NOISE
+   ------------------------------------------------------------ */
+
+.st-purchase-v6
+.st-purchase-v7__configurator {
+  border:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   MOBILE
+   ------------------------------------------------------------ */
+
+@media (max-width: 700px) {
+
+  .st-purchase-v6 .st-purchase-apple {
+    margin-bottom:
+      24px;
+  }
+
+  .st-purchase-v6
+  .st-purchase-apple__group {
+    padding-bottom:
+      23px;
+  }
+
+  .st-purchase-v6
+  .st-purchase-apple__group
+  + .st-purchase-apple__group {
+    padding-top:
+      22px;
+  }
+
+  .st-purchase-v6
+  .st-purchase-apple__option.is-value {
+    min-width:
+      84px;
+
+    min-height:
+      46px;
+
+    padding:
+      11px 15px;
+  }
+
+}
+
+
+/* ------------------------------------------------------------
+   ACCESSIBILITY
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .st-purchase-v6
+  .st-purchase-apple__option {
+    transition:
+      none !important;
+  }
+
+}
+
+/* === ST APPLE PRODUCT CONFIGURATOR V1 END === */
+
+
+/* =========================================================
+   STEREOPHONIE — SOLID APPLE-STYLE COLOUR SWATCHES
+   ========================================================= */
+
+/*
+ * The whole colour button is now visually represented
+ * by the physical product colour.
+ *
+ * No thin coloured stripe.
+ * No text inside.
+ * Selected colour receives a clean Apple-style outer ring.
+ */
+
+.st-purchase-apple__option.is-colour {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  background: transparent !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+
+.st-purchase-apple__colour-shell {
+  width: 34px !important;
+  height: 34px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 999px !important;
+
+  padding: 0 !important;
+
+  background: transparent !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.14) !important;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease !important;
+}
+
+.st-purchase-apple__colour {
+  display: block !important;
+
+  width: 30px !important;
+  height: 30px !important;
+
+  min-width: 30px !important;
+  min-height: 30px !important;
+
+  border-radius: 999px !important;
+
+  border: 0 !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+
+  transform: none !important;
+}
+
+/*
+ * Remove any old pseudo-elements / decorative stripe
+ * from previous colour implementations.
+ */
+.st-purchase-apple__colour::before,
+.st-purchase-apple__colour::after,
+.st-purchase-v7__colour-dot::before,
+.st-purchase-v7__colour-dot::after {
+  content: none !important;
+  display: none !important;
+}
+
+/*
+ * Selected colour:
+ * thin white separation + dark outside ring,
+ * similar to Apple's colour selectors.
+ */
+.st-purchase-apple__option.is-colour.is-active
+.st-purchase-apple__colour-shell {
+  border-color: transparent !important;
+
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px #1d1d1f !important;
+}
+
+/*
+ * Very subtle hover response.
+ */
+@media (hover: hover) {
+  .st-purchase-apple__option.is-colour:hover
+  .st-purchase-apple__colour-shell {
+    transform: scale(1.04) !important;
+  }
+}
+
+/*
+ * Unavailable colours remain identifiable
+ * without changing the layout.
+ */
+.st-purchase-apple__option.is-colour.is-unavailable {
+  opacity: 0.38 !important;
+}
+
+/* ---------------------------------------------------------
+   ACTUAL PRODUCT COLOUR VALUES
+   --------------------------------------------------------- */
+
+.st-purchase-apple__colour[data-colour-name="Black"] {
+  background: #111111 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Midnight"] {
+  background: #2f3640 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Space Black"] {
+  background: #2f3032 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Graphite"] {
+  background: #55565a !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Charcoal"] {
+  background: #4c4c4e !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Gray"],
+.st-purchase-apple__colour[data-colour-name="Grey"] {
+  background: #8e8e93 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Silver"] {
+  background: #d7d8da !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="White"] {
+  background: #f8f8f8 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Titanium"] {
+  background: #8c8982 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Natural Titanium"] {
+  background: #aaa69d !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Desert Titanium"] {
+  background: #c8a88d !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Gold"] {
+  background: #d5b174 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Rose Gold"] {
+  background: #d9a49a !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Bronze"] {
+  background: #98694c !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Red"] {
+  background: #d52f36 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Product Red"] {
+  background: #bf0013 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Burgundy"] {
+  background: #681c2c !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Pink"] {
+  background: #e5a5b7 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Purple"] {
+  background: #735b99 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Lavender"] {
+  background: #b5a8d7 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Navy"] {
+  background: #26364f !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Blue"] {
+  background: #3478c7 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Sierra Blue"] {
+  background: #9bb6cf !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Sky Blue"] {
+  background: #a8c7e7 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Teal"] {
+  background: #318789 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Cyan"] {
+  background: #55b8c8 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Green"] {
+  background: #47885e !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Alpine Green"] {
+  background: #536b5c !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Mint"] {
+  background: #a8d5bd !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Olive"] {
+  background: #777957 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Yellow"] {
+  background: #e3c353 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Orange"] {
+  background: #e87932 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Coral"] {
+  background: #e78778 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Brown"] {
+  background: #76584b !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Beige"] {
+  background: #d7c5a7 !important;
+}
+
+.st-purchase-apple__colour[data-colour-name="Cream"] {
+  background: #eee4d2 !important;
+}
+
+/* =========================================================
+   SOLID APPLE-STYLE COLOUR SWATCHES END
+   ========================================================= */
+
+
+
+/* =========================================================
+   ST REAL SOLID PRODUCT COLOUR SWATCHES — FINAL
+   ========================================================= */
+
+/*
+ * Important:
+ * The actual colour is now supplied inline by React.
+ * These rules control only geometry / selection presentation.
+ */
+
+.st-purchase-apple__options {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 14px !important;
+}
+
+
+/* Outer clickable area */
+.st-purchase-apple__option.is-colour {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 999px !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  box-shadow: none !important;
+  overflow: visible !important;
+
+  transform: none !important;
+}
+
+
+/* White separation around the physical colour */
+.st-purchase-apple__colour-shell {
+  box-sizing: border-box !important;
+
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+
+  padding: 2px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 999px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.14) !important;
+
+  background: #fff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  transition:
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease !important;
+}
+
+
+/*
+ * THIS is the actual physical colour.
+ *
+ * background-color is intentionally NOT overridden here because
+ * React supplies the selected colour directly with inline style.
+ */
+.st-purchase-apple__colour,
+.st-purchase-v7__colour-dot.st-purchase-apple__colour {
+  box-sizing: border-box !important;
+
+  display: block !important;
+
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+
+  flex: 0 0 24px !important;
+
+  border: 0 !important;
+  border-radius: 999px !important;
+
+  background-image: none !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08) !important;
+
+  opacity: 1 !important;
+
+  transform: none !important;
+  scale: 1 !important;
+}
+
+
+/* Kill every previous stripe / pseudo-element treatment. */
+.st-purchase-apple__colour::before,
+.st-purchase-apple__colour::after,
+.st-purchase-v7__colour-dot.st-purchase-apple__colour::before,
+.st-purchase-v7__colour-dot.st-purchase-apple__colour::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/*
+ * Apple-like selected treatment:
+ *
+ * physical colour
+ * ↓
+ * white breathing room
+ * ↓
+ * clean dark selection ring
+ */
+.st-purchase-apple__option.is-colour.is-active
+.st-purchase-apple__colour-shell {
+  border-color: transparent !important;
+
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #1d1d1f !important;
+}
+
+
+/* No tick/checkmark inside colour circles. */
+.st-purchase-apple__option.is-colour > svg,
+.st-purchase-apple__option.is-colour
+.st-purchase-apple__colour-shell + svg {
+  display: none !important;
+}
+
+
+/* Subtle interaction only. */
+@media (hover: hover) {
+  .st-purchase-apple__option.is-colour:hover
+  .st-purchase-apple__colour-shell {
+    transform: scale(1.045) !important;
+  }
+}
+
+
+.st-purchase-apple__option.is-colour:active
+.st-purchase-apple__colour-shell {
+  transform: scale(.97) !important;
+}
+
+
+/* Keep unavailable colour visible but clearly unavailable. */
+.st-purchase-apple__option.is-colour.is-unavailable {
+  opacity: .36 !important;
+}
+
+
+/* White / very pale products still need a visible physical edge. */
+.st-purchase-apple__colour[data-colour-name="White"],
+.st-purchase-apple__colour[data-colour-name="Silver"],
+.st-purchase-apple__colour[data-colour-name="Cream"] {
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .14) !important;
+}
+
+
+/* =========================================================
+   ST REAL SOLID PRODUCT COLOUR SWATCHES — END
+   ========================================================= */
+
+
+/* === ST ADMIN APPLE POLISH FINAL START === */
+
+/*
+   =========================================================
+   STEREOPHONIE — ADMIN APPLE POLISH
+   =========================================================
+
+   One consistent interaction language:
+   - soft corners
+   - subtle borders
+   - calm tinted states
+   - no arcade / aggressive status dots
+   - no hard square action buttons
+   =========================================================
+*/
+
+.st3-admin {
+  --st-admin-radius-sm: 12px;
+  --st-admin-radius-md: 16px;
+  --st-admin-radius-lg: 20px;
+  --st-admin-motion: 180ms;
+}
+
+
+/* ---------------------------------------------------------
+   GLOBAL ADMIN ACTION SHAPE
+   --------------------------------------------------------- */
+
+.st3-admin
+button:not([class*="rounded-full"]),
+.st3-admin
+[role="button"]:not([class*="rounded-full"]),
+.st3-admin
+input[type="button"],
+.st3-admin
+input[type="submit"],
+.st3-admin
+input[type="reset"] {
+  border-radius:
+    var(--st-admin-radius-sm)
+    !important;
+
+  transition:
+    background-color
+      var(--st-admin-motion)
+      ease,
+    border-color
+      var(--st-admin-motion)
+      ease,
+    color
+      var(--st-admin-motion)
+      ease,
+    box-shadow
+      var(--st-admin-motion)
+      ease,
+    opacity
+      var(--st-admin-motion)
+      ease
+    !important;
+}
+
+
+/*
+ * Form controls remain compact and Apple-clean.
+ */
+.st3-admin
+select,
+.st3-admin
+textarea,
+.st3-admin
+input:not(
+  [type="checkbox"]
+):not(
+  [type="radio"]
+):not(
+  [type="hidden"]
+) {
+  border-radius:
+    var(--st-admin-radius-sm);
+}
+
+
+/* Upload and file action controls. */
+.st3-admin
+::file-selector-button {
+  border-radius:
+    999px !important;
+}
+
+
+/* ---------------------------------------------------------
+   PRODUCT PHOTO MANAGER
+   --------------------------------------------------------- */
+
+.st3-admin
+select[id^="new-image-configuration-"],
+.st3-admin
+select[id^="image-configuration-"] {
+  border-radius:
+    12px !important;
+
+  background-color:
+    rgba(255, 255, 255, .055)
+    !important;
+}
+
+
+/* ---------------------------------------------------------
+   CUSTOMER AVAILABILITY
+   --------------------------------------------------------- */
+
+.st3-admin
+.st-admin-selling-status {
+  display:
+    grid !important;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr))
+    !important;
+
+  gap:
+    10px !important;
+}
+
+
+.st3-admin
+.st-admin-selling-status__option {
+  position:
+    relative;
+
+  display:
+    flex !important;
+
+  align-items:
+    flex-start !important;
+
+  width:
+    100%;
+
+  min-height:
+    96px !important;
+
+  padding:
+    17px 18px !important;
+
+  border:
+    1px solid
+    rgba(29, 29, 31, .08)
+    !important;
+
+  border-radius:
+    18px !important;
+
+  text-align:
+    left !important;
+
+  box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+
+  overflow:
+    hidden;
+}
+
+
+.st3-admin
+.st-admin-selling-status__option:hover {
+  transform:
+    none !important;
+
+  box-shadow:
+    0 5px 18px
+    rgba(29, 29, 31, .045)
+    !important;
+}
+
+
+/* IN STOCK */
+.st3-admin
+.st-admin-selling-status__option.is-in-stock {
+  background:
+    rgba(52, 199, 89, .075)
+    !important;
+
+  border-color:
+    rgba(52, 199, 89, .15)
+    !important;
+
+  color:
+    #1d6f36 !important;
+}
+
+
+/* LOW STOCK */
+.st3-admin
+.st-admin-selling-status__option.is-low-stock {
+  background:
+    rgba(245, 179, 53, .105)
+    !important;
+
+  border-color:
+    rgba(197, 138, 31, .19)
+    !important;
+
+  color:
+    #8a5a00 !important;
+}
+
+
+/* OUT OF STOCK */
+.st3-admin
+.st-admin-selling-status__option.is-out-of-stock {
+  background:
+    rgba(255, 59, 48, .07)
+    !important;
+
+  border-color:
+    rgba(255, 59, 48, .14)
+    !important;
+
+  color:
+    #a72923 !important;
+}
+
+
+/* COMING SOON */
+.st3-admin
+.st-admin-selling-status__option.is-coming-soon {
+  background:
+    rgba(0, 122, 255, .065)
+    !important;
+
+  border-color:
+    rgba(0, 122, 255, .14)
+    !important;
+
+  color:
+    #175f9f !important;
+}
+
+
+/*
+ * Selected state is deliberately subtle.
+ * It feels pressed / committed rather than brightly highlighted.
+ */
+
+.st3-admin
+.st-admin-selling-status__option.is-selected {
+  border-color:
+    currentColor
+    !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+    currentColor,
+    0 6px 18px
+    rgba(29, 29, 31, .055)
+    !important;
+}
+
+
+.st3-admin
+.st-admin-selling-status__option.is-selected::after {
+  content:
+    "Selected";
+
+  position:
+    absolute;
+
+  top:
+    12px;
+
+  right:
+    13px;
+
+  padding:
+    4px 8px;
+
+  border-radius:
+    999px;
+
+  background:
+    rgba(255, 255, 255, .72);
+
+  color:
+    currentColor;
+
+  font-size:
+    8px;
+
+  line-height:
+    1;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    .11em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.st3-admin
+.st-admin-selling-status__copy {
+  display:
+    flex !important;
+
+  flex-direction:
+    column !important;
+
+  gap:
+    6px !important;
+
+  padding-right:
+    54px;
+}
+
+
+.st3-admin
+.st-admin-selling-status__copy strong {
+  color:
+    currentColor !important;
+
+  font-size:
+    13px !important;
+
+  line-height:
+    1.25 !important;
+
+  font-weight:
+    650 !important;
+}
+
+
+.st3-admin
+.st-admin-selling-status__copy small {
+  max-width:
+    230px;
+
+  color:
+    rgba(29, 29, 31, .55)
+    !important;
+
+  font-size:
+    11px !important;
+
+  line-height:
+    1.5 !important;
+}
+
+
+/* Remove any old coloured indicator even if stale CSS remains. */
+.st3-admin
+.st-admin-selling-status__indicator {
+  display:
+    none !important;
+}
+
+
+/* ---------------------------------------------------------
+   SMALL SCREEN
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .st3-admin
+  .st-admin-selling-status {
+    grid-template-columns:
+      1fr !important;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   REDUCED MOTION
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-admin
+  button,
+  .st3-admin
+  [role="button"] {
+    transition:
+      none !important;
+  }
+}
+
+/* === ST ADMIN APPLE POLISH FINAL END === */
+
+
+
+/* === ST ADMIN AVAILABILITY PILLS V2 START === */
+
+/*
+   =========================================================
+   STEREOPHONIE ADMIN — COMPACT CUSTOMER AVAILABILITY
+   =========================================================
+
+   These overrides intentionally come AFTER the previous admin
+   polish rules so they win the cascade.
+
+   Design:
+   - small compact controls
+   - no status dots
+   - no tall cards
+   - no descriptions cluttering the selector
+   - faded semantic backgrounds
+   - selected state is clear but calm
+   =========================================================
+*/
+
+.st3-admin .st-admin-selling-status {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+
+.st3-admin .st-admin-selling-status__option {
+  position: relative !important;
+
+  display: inline-flex !important;
+  flex: 0 1 auto !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: auto !important;
+  min-width: 104px !important;
+  max-width: none !important;
+
+  min-height: 42px !important;
+  height: 42px !important;
+
+  padding: 0 15px !important;
+
+  border-width: 1px !important;
+  border-style: solid !important;
+
+  border-radius: 999px !important;
+
+  overflow: visible !important;
+
+  text-align: center !important;
+  white-space: nowrap !important;
+
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+
+.st3-admin .st-admin-selling-status__copy {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 0 !important;
+  padding: 0 !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+
+.st3-admin .st-admin-selling-status__copy strong {
+  display: block !important;
+
+  width: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 650 !important;
+
+  letter-spacing: -0.01em !important;
+
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+
+/*
+ * The explanation is already given directly above the selector.
+ * Keep the actual choice interface intentionally minimal.
+ */
+.st3-admin .st-admin-selling-status__copy small {
+  display: none !important;
+}
+
+
+/* Absolutely remove any old status indicator. */
+.st3-admin .st-admin-selling-status__indicator {
+  display: none !important;
+}
+
+
+/* Remove old SELECTED pseudo badge. */
+.st3-admin .st-admin-selling-status__option::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* ---------------------------------------------------------
+   IN STOCK — faded green
+   --------------------------------------------------------- */
+
+.st3-admin
+.st-admin-selling-status__option.is-in-stock {
+  background:
+    rgba(52, 199, 89, 0.10)
+    !important;
+
+  border-color:
+    rgba(38, 146, 68, 0.16)
+    !important;
+
+  color:
+    #23733b
+    !important;
+}
+
+
+/* ---------------------------------------------------------
+   LOW STOCK — faded mustard
+   --------------------------------------------------------- */
+
+.st3-admin
+.st-admin-selling-status__option.is-low-stock {
+  background:
+    rgba(230, 169, 38, 0.13)
+    !important;
+
+  border-color:
+    rgba(182, 124, 11, 0.18)
+    !important;
+
+  color:
+    #835b0d
+    !important;
+}
+
+
+/* ---------------------------------------------------------
+   OUT OF STOCK — faded red
+   --------------------------------------------------------- */
+
+.st3-admin
+.st-admin-selling-status__option.is-out-of-stock {
+  background:
+    rgba(255, 59, 48, 0.09)
+    !important;
+
+  border-color:
+    rgba(210, 45, 38, 0.15)
+    !important;
+
+  color:
+    #a5332e
+    !important;
+}
+
+
+/* ---------------------------------------------------------
+   COMING SOON — faded blue
+   --------------------------------------------------------- */
+
+.st3-admin
+.st-admin-selling-status__option.is-coming-soon {
+  background:
+    rgba(0, 122, 255, 0.085)
+    !important;
+
+  border-color:
+    rgba(0, 102, 204, 0.15)
+    !important;
+
+  color:
+    #28689d
+    !important;
+}
+
+
+/* ---------------------------------------------------------
+   SELECTED STATE
+   --------------------------------------------------------- */
+
+.st3-admin
+.st-admin-selling-status__option.is-selected {
+  border-color:
+    currentColor
+    !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+      color-mix(
+        in srgb,
+        currentColor 34%,
+        transparent
+      ),
+    0 3px 10px
+      rgba(29, 29, 31, 0.045)
+    !important;
+
+  font-weight:
+    700 !important;
+}
+
+
+/*
+ * Tiny tactile feedback without arcade-like animation.
+ */
+.st3-admin
+.st-admin-selling-status__option:hover {
+  filter:
+    brightness(0.985);
+
+  box-shadow:
+    0 3px 12px
+      rgba(29, 29, 31, 0.05)
+    !important;
+}
+
+
+/* ---------------------------------------------------------
+   SAVE CONFIGURATION
+   --------------------------------------------------------- */
+
+.st3-admin .st-admin-save-configuration {
+  border-radius:
+    999px !important;
+
+  min-height:
+    42px !important;
+
+  padding-inline:
+    16px !important;
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .st3-admin .st-admin-selling-status {
+    display: grid !important;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr))
+      !important;
+  }
+
+  .st3-admin .st-admin-selling-status__option {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+/* === ST ADMIN AVAILABILITY PILLS V2 END === */
+
+/* === ST RELATED PRODUCT CARDS COMPACT START === */
+
+/*
+   Product page only:
+   "You may also like" cards.
+
+   Do NOT alter the shared V2ProductCard globally.
+   These rules only apply inside the recommendation grid.
+*/
+
+.st-related-products-grid {
+  align-items: start;
+}
+
+/*
+ * Reduce the unnecessarily tall card shell.
+ */
+.st-related-products-grid article {
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/*
+ * The recommendation screenshot showed too much empty visual space.
+ * Make the media noticeably shorter while allowing the product itself
+ * to occupy more of that area.
+ */
+.st-related-products-grid article > a:first-child,
+.st-related-products-grid article [class*="media"] {
+  min-height: 0 !important;
+}
+
+/*
+ * Most V2 cards use a large visual block.
+ * Clamp it specifically in recommendations.
+ */
+.st-related-products-grid article img {
+  object-fit: contain !important;
+  transform: scale(1.28);
+  transform-origin: center center;
+}
+
+/*
+ * Target common V2 media wrappers without changing other storefront cards.
+ */
+.st-related-products-grid article > div:first-child,
+.st-related-products-grid article > a:first-child > div:first-child {
+  min-height: 0 !important;
+}
+
+/*
+ * Compact vertical rhythm.
+ */
+.st-related-products-grid article {
+  padding-bottom: 0 !important;
+}
+
+.st-related-products-grid article h3,
+.st-related-products-grid article h2 {
+  margin-top: 0 !important;
+}
+
+.st-related-products-grid article p {
+  margin-bottom: 0;
+}
+
+/*
+ * On desktop the cards should feel more compact and premium instead of
+ * long portrait slabs.
+ */
+@media (min-width: 768px) {
+  .st-related-products-grid {
+    grid-auto-rows: auto !important;
+  }
+
+  .st-related-products-grid article {
+    max-width: 100% !important;
+  }
+
+  /*
+   * Force the image area to a more compact proportion.
+   * This is intentionally scoped to this section only.
+   */
+  .st-related-products-grid article [class*="aspect-"] {
+    aspect-ratio: 1 / 1 !important;
+  }
+}
+
+/*
+ * Keep mobile natural and avoid oversized zoom.
+ */
+@media (max-width: 767px) {
+  .st-related-products-grid article img {
+    transform: scale(1.14);
+  }
+}
+
+/* === ST RELATED PRODUCT CARDS COMPACT END === */
+
+/* === ST RELATED PRODUCT CARDS COMPACT V2 START === */
+
+/*
+   =========================================================
+   PRODUCT PAGE — YOU MAY ALSO LIKE
+   COMPACT APPLE-STYLE PRODUCT TILES
+   =========================================================
+
+   Only affects recommendation cards inside:
+   .st-related-products-grid
+
+   Shop / Homepage cards are NOT affected.
+*/
+
+
+/* ---------------------------------------------------------
+   RECOMMENDATION GRID
+   --------------------------------------------------------- */
+
+.st-related-products-grid {
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(190px, 220px)
+    )
+    !important;
+
+  justify-content: start !important;
+  align-items: start !important;
+
+  gap: 18px !important;
+}
+
+
+/* ---------------------------------------------------------
+   CARD SHELL
+   --------------------------------------------------------- */
+
+.st-related-products-grid article {
+  width: 100% !important;
+  max-width: 220px !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+
+  border-radius: 22px !important;
+
+  overflow: hidden !important;
+
+  box-shadow:
+    0 8px 26px
+    rgba(29, 29, 31, 0.045)
+    !important;
+}
+
+
+/*
+ * V2 cards have a large media section.
+ * On related products we make it much closer to a square.
+ */
+.st-related-products-grid
+article
+[class*="media"] {
+  height: 230px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+
+  aspect-ratio: auto !important;
+}
+
+
+/*
+ * Catch the image wrapper used by the current V2 card even when
+ * it does not have "media" in its class name.
+ */
+.st-related-products-grid
+article
+[class*="aspect-"] {
+  height: 230px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+
+  aspect-ratio: auto !important;
+}
+
+
+/* ---------------------------------------------------------
+   PRODUCT IMAGE
+   --------------------------------------------------------- */
+
+.st-related-products-grid article img {
+  object-fit: contain !important;
+
+  /*
+   * Product assets contain a lot of white space.
+   * Increase the visible product without increasing card height.
+   */
+  transform: scale(1.42) !important;
+  transform-origin: center center !important;
+}
+
+
+/* ---------------------------------------------------------
+   PRODUCT INFORMATION
+   --------------------------------------------------------- */
+
+.st-related-products-grid
+article
+[class*="content"] {
+  padding:
+    15px 16px 16px
+    !important;
+}
+
+
+.st-related-products-grid article h2,
+.st-related-products-grid article h3 {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+
+  font-size: 17px !important;
+  line-height: 1.08 !important;
+
+  /*
+   * Keep long product names from making the tile tall again.
+   */
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+
+  overflow: hidden !important;
+}
+
+
+.st-related-products-grid article p {
+  margin-top: 0 !important;
+}
+
+
+/*
+ * Tighten metadata/category spacing.
+ */
+.st-related-products-grid
+article
+[class*="meta"] {
+  margin-bottom: 8px !important;
+}
+
+
+/*
+ * Keep price / availability close to the product name.
+ */
+.st-related-products-grid
+article
+[class*="bottom"] {
+  margin-top: 12px !important;
+}
+
+
+/* ---------------------------------------------------------
+   BADGES / BOOKMARK
+   --------------------------------------------------------- */
+
+.st-related-products-grid
+article
+[class*="badge"] {
+  transform: scale(.92);
+  transform-origin: left center;
+}
+
+
+/* ---------------------------------------------------------
+   TABLET / MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .st-related-products-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      )
+      !important;
+
+    gap: 12px !important;
+  }
+
+  .st-related-products-grid article {
+    max-width: none !important;
+  }
+
+  .st-related-products-grid
+  article
+  [class*="media"],
+  .st-related-products-grid
+  article
+  [class*="aspect-"] {
+    height: 190px !important;
+    min-height: 190px !important;
+    max-height: 190px !important;
+  }
+
+  .st-related-products-grid article img {
+    transform: scale(1.28) !important;
+  }
+}
+
+/* === ST RELATED PRODUCT CARDS COMPACT V2 END === */
+
+
+/* === ST RELATED PRODUCT CARDS REAL STRUCTURE V3 START === */
+
+/*
+   =========================================================
+   PRODUCT PAGE — YOU MAY ALSO LIKE
+   FINAL COMPACT PRODUCT TILE
+
+   IMPORTANT:
+   The real shared component uses:
+   .st-retail-card
+   .st-retail-card__visual
+   .st-retail-card__image-link
+   .st-retail-card__image
+
+   This section is intentionally scoped to
+   .st-related-products-grid so Shop/Home remain untouched.
+   =========================================================
+*/
+
+
+/* ---------------------------------------------------------
+   GRID
+   --------------------------------------------------------- */
+
+.st-related-products-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, 230px) !important;
+  justify-content: start !important;
+  align-items: start !important;
+  gap: 18px !important;
+}
+
+
+/* ---------------------------------------------------------
+   CARD
+   --------------------------------------------------------- */
+
+.st-related-products-grid .st-retail-card {
+  width: 230px !important;
+  max-width: 230px !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+
+  border-radius: 22px !important;
+  overflow: hidden !important;
+
+  background: #f5f5f7 !important;
+
+  box-shadow:
+    0 8px 28px
+    rgba(29, 29, 31, 0.045)
+    !important;
+}
+
+
+/* ---------------------------------------------------------
+   VISUAL AREA
+   THIS IS THE ELEMENT THE OLD PATCH WAS MISSING
+   --------------------------------------------------------- */
+
+.st-related-products-grid .st-retail-card__visual {
+  position: relative !important;
+
+  width: 100% !important;
+
+  height: 205px !important;
+  min-height: 205px !important;
+  max-height: 205px !important;
+
+  aspect-ratio: auto !important;
+
+  overflow: hidden !important;
+
+  background: #ffffff !important;
+
+  border-radius: 18px !important;
+}
+
+
+/* ---------------------------------------------------------
+   IMAGE LINK
+   --------------------------------------------------------- */
+
+.st-related-products-grid .st-retail-card__image-link {
+  position: absolute !important;
+
+  inset: 22px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: auto !important;
+  height: auto !important;
+}
+
+
+/* ---------------------------------------------------------
+   PRODUCT IMAGE
+   --------------------------------------------------------- */
+
+.st-related-products-grid .st-retail-card__image {
+  width: 100% !important;
+  height: 100% !important;
+
+  max-width: 100% !important;
+  max-height: 100% !important;
+
+  object-fit: contain !important;
+
+  transform: scale(1.34) !important;
+  transform-origin: center center !important;
+}
+
+
+/*
+ * Keep hover premium and subtle.
+ */
+.st-related-products-grid
+.st-retail-card:hover
+.st-retail-card__image {
+  transform: scale(1.39) !important;
+}
+
+
+/* ---------------------------------------------------------
+   INFORMATION AREA
+   --------------------------------------------------------- */
+
+.st-related-products-grid .st-retail-card__body,
+.st-related-products-grid .st-retail-card__content {
+  padding: 13px 14px 14px !important;
+}
+
+
+/* Category / metadata */
+.st-related-products-grid .st-retail-card__meta,
+.st-related-products-grid [class*="st-retail-card__meta"] {
+  margin: 0 0 7px !important;
+
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+
+/* Product title */
+.st-related-products-grid .st-retail-card__name {
+  min-height: 0 !important;
+
+  margin: 0 !important;
+
+  font-size: 16px !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.025em !important;
+
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+
+  overflow: hidden !important;
+}
+
+
+/* ---------------------------------------------------------
+   PRICE / STOCK ROW
+   --------------------------------------------------------- */
+
+.st-related-products-grid .st-retail-card__bottom {
+  margin-top: 12px !important;
+
+  padding-top: 0 !important;
+
+  border-top: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  gap: 8px !important;
+}
+
+
+.st-related-products-grid
+.st-retail-card__bottom strong {
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+
+.st-related-products-grid
+.st-retail-card__bottom del {
+  margin-left: 5px !important;
+
+  font-size: 9px !important;
+}
+
+
+/* ---------------------------------------------------------
+   BADGE / WISHLIST
+   --------------------------------------------------------- */
+
+.st-related-products-grid
+.st-retail-card__visual
+button {
+  transform: scale(.90);
+  transform-origin: top right;
+}
+
+
+/* ---------------------------------------------------------
+   SAFETY — REMOVE ANY INHERITED LARGE CARD HEIGHT
+   --------------------------------------------------------- */
+
+.st-related-products-grid .st-retail-card,
+.st-related-products-grid .st-retail-card > *,
+.st-related-products-grid .st-retail-card__visual {
+  min-block-size: 0 !important;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 767px) {
+  .st-related-products-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr))
+      !important;
+
+    gap: 12px !important;
+  }
+
+  .st-related-products-grid .st-retail-card {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .st-related-products-grid .st-retail-card__visual {
+    height: 180px !important;
+    min-height: 180px !important;
+    max-height: 180px !important;
+  }
+
+  .st-related-products-grid .st-retail-card__image-link {
+    inset: 20px !important;
+  }
+
+  .st-related-products-grid .st-retail-card__image {
+    transform: scale(1.24) !important;
+  }
+}
+
+/* === ST RELATED PRODUCT CARDS REAL STRUCTURE V3 END === */
+
+
+
+/* === ST RELATED PRODUCT IMAGE SIZE V4 START === */
+
+/*
+   YOU MAY ALSO LIKE — IMAGE ENLARGEMENT ONLY
+
+   IMPORTANT:
+   - Card width stays exactly the same.
+   - Card height stays exactly the same.
+   - Information section stays exactly the same.
+   - Only the visible product becomes larger.
+*/
+
+.st-related-products-grid .st-retail-card__image-link {
+  inset: 8px !important;
+}
+
+.st-related-products-grid .st-retail-card__image {
+  width: 100% !important;
+  height: 100% !important;
+
+  object-fit: contain !important;
+
+  transform: scale(1.72) !important;
+  transform-origin: center center !important;
+
+  transition:
+    transform 0.45s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    !important;
+}
+
+/* Slight premium enlargement on hover */
+.st-related-products-grid
+.st-retail-card:hover
+.st-retail-card__image {
+  transform: scale(1.80) !important;
+}
+
+
+/* Mobile */
+@media (max-width: 767px) {
+  .st-related-products-grid .st-retail-card__image-link {
+    inset: 10px !important;
+  }
+
+  .st-related-products-grid .st-retail-card__image {
+    transform: scale(1.55) !important;
+  }
+
+  .st-related-products-grid
+  .st-retail-card:hover
+  .st-retail-card__image {
+    transform: scale(1.55) !important;
+  }
+}
+
+/* === ST RELATED PRODUCT IMAGE SIZE V4 END === */
+
+
+/* === ST PRODUCT PRICE STATUS INDICATOR V1 START === */
+
+/*
+   =========================================================
+   PRODUCT PAGE — STOCK STATUS INDICATOR
+
+   Keep the existing "In stock" text and typography.
+   Only change the old circular mustard dot into the
+   Stereophonie rounded-square status signal used elsewhere.
+   =========================================================
+*/
+
+
+/*
+ * Current product-page status containers.
+ *
+ * Multiple selectors are intentionally included because older
+ * and newer versions of the product page use slightly different
+ * class names.
+ */
+:is(
+  .st-product-v5__availability,
+  .st-product-v5__status,
+  .st-product-v5__stock,
+  .st-product-v5__price-status,
+  .st-product-v5__availability-status,
+  .st-product-v6__availability,
+  .st-product-v6__status,
+  .st-product-v6__stock
+) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/*
+ * Convert the existing visual indicator itself from a circle
+ * to the same tiny rounded-square language as the assistant
+ * and storefront stock controls.
+ */
+:is(
+  .st-product-v5__availability,
+  .st-product-v5__status,
+  .st-product-v5__stock,
+  .st-product-v5__price-status,
+  .st-product-v5__availability-status,
+  .st-product-v6__availability,
+  .st-product-v6__status,
+  .st-product-v6__stock
+)
+:is(
+  i,
+  [aria-hidden="true"]
+):first-child {
+  width: 8px !important;
+  height: 8px !important;
+
+  min-width: 8px !important;
+  min-height: 8px !important;
+
+  flex: 0 0 8px !important;
+
+  border-radius: 2.5px !important;
+
+  background: #f5b335 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.10)
+    !important;
+}
+
+
+/*
+ * Also catch the legacy implementation where the signal is
+ * represented by the first empty span.
+ */
+:is(
+  .st-product-v5__availability,
+  .st-product-v5__status,
+  .st-product-v5__stock,
+  .st-product-v5__price-status,
+  .st-product-v5__availability-status,
+  .st-product-v6__availability,
+  .st-product-v6__status,
+  .st-product-v6__stock
+)
+> span:first-child:empty {
+  width: 8px !important;
+  height: 8px !important;
+
+  min-width: 8px !important;
+  min-height: 8px !important;
+
+  flex: 0 0 8px !important;
+
+  border-radius: 2.5px !important;
+
+  background: #f5b335 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.10)
+    !important;
+}
+
+
+/*
+ * Prevent an inherited "circle" rule from overriding it.
+ */
+:is(
+  .st-product-v5__availability,
+  .st-product-v5__status,
+  .st-product-v5__stock,
+  .st-product-v5__price-status,
+  .st-product-v5__availability-status,
+  .st-product-v6__availability,
+  .st-product-v6__status,
+  .st-product-v6__stock
+)
+.rounded-full {
+  border-radius: 2.5px !important;
+}
+
+
+/* === ST PRODUCT PRICE STATUS INDICATOR V1 END === */
+
+
+/* ============================================================
+   STEREOPHONIE — FINAL AVAILABILITY MARKERS
+   ============================================================
+
+   ONLY changes the mustard indicator shape.
+
+   QUICK VIEW:
+   Available
+
+   PRODUCT PAGE:
+   IN STOCK
+   Ready to add to your cart.
+
+   Existing:
+   - width
+   - height
+   - mustard colour
+   - spacing
+   - status logic
+
+   are intentionally preserved.
+
+   IMPORTANT:
+   A 3px radius on a tiny 6–8px indicator still looks circular.
+   The smaller radius below creates the actual rounded-square
+   appearance.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   QUICK VIEW — AVAILABLE
+   ------------------------------------------------------------ */
+
+.st-retail-qv__availability > i,
+.st-retail-qv__availability.is-available > i {
+  border-radius: 1.5px !important;
+}
+
+
+/* ------------------------------------------------------------
+   PRODUCT PAGE — IN STOCK / READY TO ADD
+   ------------------------------------------------------------ */
+
+.st-purchase-v6__status > i,
+.st-purchase-v6__status.is-in-stock > i,
+.st-purchase-v6__status.is-available > i {
+  border-radius: 1.5px !important;
+}
+
+
+/* Prevent inherited/pill styling from turning either marker
+   back into a circular dot. */
+.st-retail-qv__availability > i,
+.st-purchase-v6__status > i {
+  clip-path: none !important;
+}
+
+
+/* === FINAL AVAILABILITY MARKERS END === */
+
+
+
+/* ============================================================
+   STEREOPHONIE — GAMING DESKTOP BUILDER V1
+   Premium interactive gaming-desktop configurator.
+   ============================================================ */
+
+.st-gaming-builder {
+  --gaming-ink: #111111;
+  --gaming-soft: #f4f4f1;
+  --gaming-line: rgba(17, 17, 17, 0.1);
+  --gaming-muted: rgba(17, 17, 17, 0.48);
+  --gaming-mustard: #f2b632;
+  background:
+    radial-gradient(circle at 74% 9%, rgba(242,182,50,.13), transparent 24rem),
+    linear-gradient(180deg, #fafaf8 0%, #f1f1ed 100%);
+  color: var(--gaming-ink);
+  min-height: 100vh;
+  padding: 52px clamp(18px, 3vw, 54px) 90px;
+}
+
+.st-gaming-builder__hero {
+  max-width: 1540px;
+  margin: 0 auto 36px;
+  padding: clamp(34px, 5vw, 76px);
+  min-height: 390px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(17,17,17,.08);
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.96), rgba(245,245,241,.9)),
+    #fff;
+  box-shadow: 0 28px 80px rgba(17,17,17,.055);
+}
+
+.st-gaming-builder__hero::after {
+  content: "";
+  position: absolute;
+  width: 430px;
+  height: 430px;
+  right: -95px;
+  top: -180px;
+  border-radius: 50%;
+  border: 80px solid rgba(242,182,50,.1);
+  pointer-events: none;
+}
+
+.st-gaming-builder__hero-copy {
+  max-width: 900px;
+  position: relative;
+  z-index: 2;
+}
+
+.st-gaming-builder__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-weight: 750;
+}
+
+.st-gaming-builder__eyebrow svg {
+  width: 15px;
+  color: #a36a00;
+}
+
+.st-gaming-builder__hero h1 {
+  margin: 22px 0 0;
+  font-size: clamp(43px, 6.3vw, 92px);
+  line-height: .93;
+  letter-spacing: -.065em;
+  font-weight: 650;
+}
+
+.st-gaming-builder__hero h1 em {
+  color: #a76b00;
+  font-style: normal;
+}
+
+.st-gaming-builder__hero-copy > p {
+  max-width: 670px;
+  margin-top: 28px;
+  font-size: clamp(15px, 1.3vw, 19px);
+  line-height: 1.7;
+  color: rgba(17,17,17,.55);
+}
+
+.st-gaming-builder__hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px 24px;
+  margin-top: 30px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.st-gaming-builder__hero-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.st-gaming-builder__hero-meta svg {
+  width: 16px;
+}
+
+.st-gaming-builder__reference {
+  min-width: 210px;
+  position: relative;
+  z-index: 2;
+  padding: 17px 19px;
+  background: #111;
+  color: #fff;
+}
+
+.st-gaming-builder__reference small {
+  display: block;
+  color: rgba(255,255,255,.42);
+  font-size: 8px;
+  letter-spacing: .17em;
+}
+
+.st-gaming-builder__reference strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 13px;
+  letter-spacing: .12em;
+}
+
+.st-gaming-builder__workspace {
+  max-width: 1540px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 310px minmax(420px, 1fr) 350px;
+  min-height: 760px;
+  border: 1px solid var(--gaming-line);
+  background: rgba(255,255,255,.78);
+  box-shadow: 0 30px 90px rgba(17,17,17,.055);
+}
+
+.st-gaming-builder__parts,
+.st-gaming-builder__selector {
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(24px);
+}
+
+.st-gaming-builder__parts {
+  border-right: 1px solid var(--gaming-line);
+}
+
+.st-gaming-builder__selector {
+  border-left: 1px solid var(--gaming-line);
+}
+
+.st-gaming-builder__panel-heading {
+  min-height: 108px;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-bottom: 1px solid var(--gaming-line);
+}
+
+.st-gaming-builder__panel-heading > span {
+  font-size: 10px;
+  font-weight: 800;
+  color: #a66b00;
+}
+
+.st-gaming-builder__panel-heading strong {
+  display: block;
+  font-size: 15px;
+}
+
+.st-gaming-builder__panel-heading small {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.5;
+  font-size: 11px;
+  color: var(--gaming-muted);
+}
+
+.st-gaming-builder__parts-list > button {
+  width: 100%;
+  min-height: 82px;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--gaming-line);
+  background: transparent;
+  color: inherit;
+  display: grid;
+  grid-template-columns: 25px 38px minmax(0,1fr) 18px;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition: background .25s ease, color .25s ease;
+}
+
+.st-gaming-builder__parts-list > button:hover {
+  background: rgba(17,17,17,.035);
+}
+
+.st-gaming-builder__parts-list > button.is-active {
+  background: #111;
+  color: #fff;
+}
+
+.st-gaming-builder__part-index {
+  font-size: 8px;
+  opacity: .4;
+  letter-spacing: .1em;
+}
+
+.st-gaming-builder__part-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 11px;
+  opacity: .6;
+}
+
+.st-gaming-builder__part-icon svg {
+  width: 16px;
+}
+
+.st-gaming-builder__part-copy {
+  min-width: 0;
+}
+
+.st-gaming-builder__part-copy strong,
+.st-gaming-builder__part-copy small {
+  display: block;
+}
+
+.st-gaming-builder__part-copy strong {
+  font-size: 12px;
+}
+
+.st-gaming-builder__part-copy small {
+  margin-top: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 9px;
+  opacity: .45;
+}
+
+.st-gaming-builder__parts-list > button > svg {
+  width: 14px;
+  opacity: .3;
+}
+
+.st-gaming-builder__computer-area {
+  min-width: 0;
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 46%, #fff 0, #f3f3ef 42%, #e9e9e4 100%);
+}
+
+.st-gaming-builder__scene-label {
+  position: absolute;
+  left: 24px;
+  top: 22px;
+  z-index: 10;
+}
+
+.st-gaming-builder__scene-label span,
+.st-gaming-builder__scene-label small {
+  display: block;
+}
+
+.st-gaming-builder__scene-label span {
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-weight: 750;
+  font-size: 9px;
+}
+
+.st-gaming-builder__scene-label small {
+  margin-top: 5px;
+  font-size: 10px;
+  color: var(--gaming-muted);
+}
+
+.st-gaming-builder__scene {
+  min-height: 760px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  perspective: 1300px;
+  overflow: hidden;
+}
+
+.st-gaming-builder__floor {
+  position: absolute;
+  width: 620px;
+  height: 260px;
+  left: 50%;
+  bottom: 75px;
+  transform: translateX(-50%) rotateX(72deg);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(17,17,17,.19), transparent 65%);
+  filter: blur(7px);
+}
+
+.st-gaming-builder__pc {
+  width: min(440px, 62vw);
+  aspect-ratio: .75;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateY(-11deg) rotateX(2deg);
+  transition: transform .7s cubic-bezier(.2,.8,.2,1);
+  filter: drop-shadow(40px 45px 28px rgba(17,17,17,.19));
+}
+
+.st-gaming-builder__pc:hover {
+  transform: rotateY(-6deg) rotateX(1deg) translateY(-4px);
+}
+
+.st-gaming-builder__glass {
+  position: absolute;
+  inset: 0 13% 0 0;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.44), transparent 30%),
+    linear-gradient(160deg, #242424 0%, #111 72%);
+  border: 7px solid #161616;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.st-gaming-builder__glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(112deg, transparent 15%, rgba(255,255,255,.11) 16%, transparent 25%);
+  pointer-events: none;
+}
+
+.st-gaming-builder__front {
+  position: absolute;
+  right: 0;
+  top: 2%;
+  bottom: 2%;
+  width: 15%;
+  z-index: 3;
+  background: linear-gradient(90deg, #1b1b1b, #090909);
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: 8px;
+}
+
+.st-gaming-builder__fan {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(242,182,50,.75);
+  box-shadow:
+    0 0 13px rgba(242,182,50,.22),
+    inset 0 0 9px rgba(242,182,50,.15);
+  display: grid;
+  place-items: center;
+}
+
+.st-gaming-builder__fan i {
+  width: 24%;
+  height: 24%;
+  border-radius: 50%;
+  background: #f2b632;
+}
+
+.st-gaming-builder__motherboard {
+  position: absolute;
+  left: 14%;
+  top: 18%;
+  width: 61%;
+  height: 58%;
+  border: 2px solid rgba(255,255,255,.18);
+  background:
+    linear-gradient(90deg, transparent 48%, rgba(255,255,255,.07) 49%, transparent 51%),
+    linear-gradient(0deg, transparent 48%, rgba(255,255,255,.07) 49%, transparent 51%),
+    #252525;
+}
+
+.st-gaming-hotspot {
+  position: absolute;
+  z-index: 5;
+  border: 1px solid rgba(242,182,50,.35);
+  background: rgba(242,182,50,.09);
+  color: #f7ca68;
+  cursor: pointer;
+  transition:
+    background .2s ease,
+    border-color .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+.st-gaming-hotspot:hover,
+.st-gaming-hotspot.is-active {
+  background: #f2b632;
+  border-color: #f2b632;
+  color: #111;
+  transform: scale(1.04);
+  box-shadow: 0 0 0 5px rgba(242,182,50,.11);
+}
+
+.st-gaming-hotspot span {
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: .11em;
+}
+
+.st-gaming-hotspot--cpu {
+  width: 20%;
+  height: 17%;
+  left: 33%;
+  top: 29%;
+}
+
+.st-gaming-hotspot--gpu {
+  width: 58%;
+  height: 12%;
+  left: 16%;
+  top: 59%;
+}
+
+.st-gaming-hotspot--ram {
+  width: 8%;
+  height: 32%;
+  left: 58%;
+  top: 22%;
+}
+
+.st-gaming-hotspot--board {
+  width: 13%;
+  height: 13%;
+  left: 17%;
+  top: 23%;
+}
+
+.st-gaming-hotspot--storage {
+  width: 19%;
+  height: 8%;
+  left: 35%;
+  top: 49%;
+}
+
+.st-gaming-hotspot--cooling {
+  width: 21%;
+  height: 17%;
+  left: 7%;
+  top: 4%;
+}
+
+.st-gaming-hotspot--psu {
+  width: 31%;
+  height: 12%;
+  left: 12%;
+  bottom: 5%;
+}
+
+.st-gaming-builder__pc-top {
+  position: absolute;
+  height: 4%;
+  left: 3%;
+  right: 12%;
+  top: -3%;
+  background: #252525;
+  transform: rotateX(65deg);
+  transform-origin: bottom;
+}
+
+.st-gaming-builder__pc-side {
+  position: absolute;
+  right: 3%;
+  top: 4%;
+  width: 10%;
+  height: 90%;
+  background: #0d0d0d;
+  transform: rotateY(70deg);
+  transform-origin: left;
+}
+
+.st-gaming-builder__scene-hint {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: rgba(17,17,17,.38);
+}
+
+.st-gaming-builder__scene-hint svg {
+  width: 15px;
+}
+
+.st-gaming-builder__choices {
+  padding: 14px;
+}
+
+.st-gaming-builder__choices > button {
+  width: 100%;
+  padding: 18px;
+  border: 1px solid var(--gaming-line);
+  background: #fafaf8;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    background .25s ease,
+    box-shadow .25s ease;
+}
+
+.st-gaming-builder__choices > button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(17,17,17,.26);
+}
+
+.st-gaming-builder__choices > button.is-selected {
+  border-color: #c88a12;
+  background: #fff9ea;
+  box-shadow: inset 3px 0 0 #f2b632;
+}
+
+.st-gaming-builder__choice-top {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.st-gaming-builder__choice-top strong,
+.st-gaming-builder__choice-top em,
+.st-gaming-builder__choice-top small {
+  display: block;
+}
+
+.st-gaming-builder__choice-top small {
+  width: fit-content;
+  margin-bottom: 7px;
+  padding: 4px 6px;
+  background: #f2b632;
+  color: #111;
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.st-gaming-builder__choice-top strong {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.st-gaming-builder__choice-top em {
+  margin-top: 6px;
+  color: var(--gaming-muted);
+  font-size: 9px;
+  font-style: normal;
+}
+
+.st-gaming-builder__choice-check {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #111;
+  color: white;
+}
+
+.st-gaming-builder__choice-check:empty {
+  border: 1px solid rgba(17,17,17,.13);
+  background: transparent;
+}
+
+.st-gaming-builder__choice-check svg {
+  width: 13px;
+}
+
+.st-gaming-builder__choices > button > b {
+  display: block;
+  margin-top: 16px;
+  font-size: 11px;
+}
+
+.st-gaming-builder__summary {
+  max-width: 1540px;
+  margin: 32px auto 0;
+  padding: clamp(28px, 4vw, 54px);
+  border: 1px solid var(--gaming-line);
+  background: #111;
+  color: #fff;
+}
+
+.st-gaming-builder__summary-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.st-gaming-builder__summary-heading span {
+  display: block;
+  color: #e7b13f;
+  font-size: 9px;
+  text-transform: uppercase;
+  font-weight: 750;
+  letter-spacing: .17em;
+}
+
+.st-gaming-builder__summary-heading h2 {
+  margin-top: 12px;
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.st-gaming-builder__summary-heading p {
+  max-width: 680px;
+  margin-top: 15px;
+  color: rgba(255,255,255,.46);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.st-gaming-builder__reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: transparent;
+  color: rgba(255,255,255,.6);
+  padding: 12px 15px;
+  cursor: pointer;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.st-gaming-builder__reset svg {
+  width: 14px;
+}
+
+.st-gaming-builder__summary-grid {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.st-gaming-builder__spec-list {
+  padding-top: 15px;
+  padding-right: 40px;
+}
+
+.st-gaming-builder__spec-list > div {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 80px minmax(0,1fr) 90px;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid rgba(255,255,255,.09);
+}
+
+.st-gaming-builder__spec-list span {
+  font-size: 8px;
+  color: rgba(255,255,255,.34);
+  letter-spacing: .14em;
+}
+
+.st-gaming-builder__spec-list strong {
+  font-size: 11px;
+  font-weight: 550;
+}
+
+.st-gaming-builder__spec-list b {
+  text-align: right;
+  font-size: 10px;
+  color: rgba(255,255,255,.55);
+}
+
+.st-gaming-builder__checkout {
+  margin-top: 30px;
+  padding: 30px;
+  border: 1px solid rgba(242,182,50,.25);
+  background: rgba(242,182,50,.07);
+}
+
+.st-gaming-builder__checkout > span {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: rgba(255,255,255,.45);
+}
+
+.st-gaming-builder__checkout > strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 40px;
+  letter-spacing: -.04em;
+}
+
+.st-gaming-builder__checkout > p {
+  margin-top: 14px;
+  color: rgba(255,255,255,.42);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.st-gaming-builder__checkout > button {
+  width: 100%;
+  min-height: 62px;
+  margin-top: 24px;
+  padding: 0 18px;
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: #f2b632;
+  color: #111;
+  cursor: pointer;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .11em;
+  transition:
+    transform .2s ease,
+    background .2s ease;
+}
+
+.st-gaming-builder__checkout > button:hover {
+  transform: translateY(-2px);
+  background: #ffc94c;
+}
+
+.st-gaming-builder__checkout > button svg {
+  width: 18px;
+}
+
+.st-gaming-builder__checkout > small {
+  display: block;
+  margin-top: 12px;
+  color: rgba(255,255,255,.3);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1220px) {
+  .st-gaming-builder__workspace {
+    grid-template-columns: 260px minmax(400px,1fr);
+  }
+
+  .st-gaming-builder__selector {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--gaming-line);
+  }
+
+  .st-gaming-builder__choices {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .st-gaming-builder__choices > button {
+    margin: 0;
+  }
+}
+
+@media (max-width: 820px) {
+  .st-gaming-builder {
+    padding: 18px 12px 60px;
+  }
+
+  .st-gaming-builder__hero {
+    padding: 34px 24px;
+    min-height: 440px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .st-gaming-builder__reference {
+    min-width: 0;
+  }
+
+  .st-gaming-builder__workspace {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .st-gaming-builder__parts {
+    border-right: 0;
+  }
+
+  .st-gaming-builder__parts-list {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .st-gaming-builder__parts-list > button {
+    flex: 0 0 210px;
+    grid-template-columns: 34px minmax(0,1fr) 16px;
+  }
+
+  .st-gaming-builder__part-index {
+    display: none;
+  }
+
+  .st-gaming-builder__scene {
+    min-height: 580px;
+  }
+
+  .st-gaming-builder__pc {
+    width: min(350px, 80vw);
+  }
+
+  .st-gaming-builder__choices {
+    grid-template-columns: 1fr;
+  }
+
+  .st-gaming-builder__summary-heading {
+    flex-direction: column;
+  }
+
+  .st-gaming-builder__summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .st-gaming-builder__spec-list {
+    padding-right: 0;
+  }
+
+  .st-gaming-builder__spec-list > div {
+    grid-template-columns: 55px minmax(0,1fr) 70px;
+  }
+}
+
+/* === GAMING DESKTOP BUILDER V1 END === */

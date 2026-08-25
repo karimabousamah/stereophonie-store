@@ -4,17 +4,57 @@ export type StoreImageKind =
   | "product"
   | "category";
 
-const PRODUCT_CANVAS = 1800;
-const PRODUCT_SUBJECT = 1460;
+type ProcessStoreImageOptions = {
+  input: Buffer;
+  kind: StoreImageKind;
+};
 
-const CATEGORY_CANVAS = 2000;
-const CATEGORY_SUBJECT = 1840;
-
-type RawImage = {
+type PreparedImage = {
   data: Buffer;
   width: number;
   height: number;
 };
+
+function clamp(
+  value: number,
+  minimum: number,
+  maximum: number,
+) {
+  return Math.max(
+    minimum,
+    Math.min(
+      maximum,
+      value,
+    ),
+  );
+}
+
+async function prepareRgba(
+  input: Buffer,
+): Promise<PreparedImage> {
+  const result =
+    await sharp(input)
+      .rotate()
+      .ensureAlpha()
+      .raw()
+      .toBuffer({
+        resolveWithObject: true,
+      });
+
+  if (
+    result.info.channels !== 4
+  ) {
+    throw new Error(
+      "Image could not be converted to RGBA.",
+    );
+  }
+
+  return {
+    data: result.data,
+    width: result.info.width,
+    height: result.info.height,
+  };
+}
 
 function pixelOffset(
   pixel: number,
@@ -22,136 +62,306 @@ function pixelOffset(
   return pixel * 4;
 }
 
-/*
- * Determine how strongly a pixel resembles a white /
- * neutral studio background.
- *
- * 0 = definitely subject
- * 1 = definitely background
- *
- * We intentionally require near-neutral RGB values so
- * bright colored products are not erased.
- */
-function whiteBackgroundStrength(
+function sampleBackgroundColor({
+  data,
+  width,
+  height,
+}: PreparedImage) {
+  const samples: Array<
+    [number, number, number]
+  > = [];
+
+  const sampleSize = Math.max(
+    2,
+    Math.floor(
+      Math.min(
+        width,
+        height,
+      ) * 0.025,
+    ),
+  );
+
+  function collect(
+    startX: number,
+    startY: number,
+  ) {
+    for (
+      let y = startY;
+      y <
+      Math.min(
+        height,
+        startY + sampleSize,
+      );
+      y += 1
+    ) {
+      for (
+        let x = startX;
+        x <
+        Math.min(
+          width,
+          startX + sampleSize,
+        );
+        x += 1
+      ) {
+        const offset =
+          (
+            y * width +
+            x
+          ) * 4;
+
+        const alpha =
+          data[offset + 3];
+
+        if (alpha < 200) {
+          continue;
+        }
+
+        samples.push([
+          data[offset],
+          data[offset + 1],
+          data[offset + 2],
+        ]);
+      }
+    }
+  }
+
+  collect(
+    0,
+    0,
+  );
+
+  collect(
+    Math.max(
+      0,
+      width - sampleSize,
+    ),
+    0,
+  );
+
+  collect(
+    0,
+    Math.max(
+      0,
+      height - sampleSize,
+    ),
+  );
+
+  collect(
+    Math.max(
+      0,
+      width - sampleSize,
+    ),
+    Math.max(
+      0,
+      height - sampleSize,
+    ),
+  );
+
+  if (!samples.length) {
+    return {
+      r: 255,
+      g: 255,
+      b: 255,
+    };
+  }
+
+  const brightSamples =
+    samples.filter(
+      ([r, g, b]) => {
+        const brightness =
+          (
+            r +
+            g +
+            b
+          ) / 3;
+
+        const spread =
+          Math.max(
+            r,
+            g,
+            b,
+          ) -
+          Math.min(
+            r,
+            g,
+            b,
+          );
+
+        return (
+          brightness >= 185 &&
+          spread <= 60
+        );
+      },
+    );
+
+  const chosen =
+    brightSamples.length
+      ? brightSamples
+      : samples;
+
+  const average =
+    chosen.reduce(
+      (
+        totals,
+        [r, g, b],
+      ) => {
+        totals.r += r;
+        totals.g += g;
+        totals.b += b;
+
+        return totals;
+      },
+      {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
+    );
+
+  return {
+    r:
+      average.r /
+      chosen.length,
+
+    g:
+      average.g /
+      chosen.length,
+
+    b:
+      average.b /
+      chosen.length,
+  };
+}
+
+function backgroundStrength(
   r: number,
   g: number,
   b: number,
+  background: {
+    r: number;
+    g: number;
+    b: number;
+  },
 ) {
-  const min = Math.min(
-    r,
-    g,
-    b,
-  );
-
-  const max = Math.max(
-    r,
-    g,
-    b,
-  );
+  const brightness =
+    (
+      r +
+      g +
+      b
+    ) / 3;
 
   const spread =
-    max - min;
-
-  const brightness =
-    (r + g + b) / 3;
+    Math.max(
+      r,
+      g,
+      b,
+    ) -
+    Math.min(
+      r,
+      g,
+      b,
+    );
 
   if (
-    brightness < 225 ||
-    spread > 28
+    brightness < 185 ||
+    spread > 65
   ) {
     return 0;
   }
 
-  /*
-   * Soft transition handles JPEG compression and
-   * anti-aliased white/gray edges much better than
-   * a hard threshold.
-   */
-  const brightnessStrength =
-    Math.max(
-      0,
-      Math.min(
-        1,
-        (brightness - 225) / 27,
-      ),
+  const dr =
+    r - background.r;
+
+  const dg =
+    g - background.g;
+
+  const db =
+    b - background.b;
+
+  const distance =
+    Math.sqrt(
+      dr * dr +
+      dg * dg +
+      db * db,
     );
 
-  const neutralityStrength =
-    Math.max(
+  const colorMatch =
+    1 -
+    clamp(
+      distance / 105,
       0,
-      Math.min(
-        1,
-        (28 - spread) / 18,
-      ),
+      1,
+    );
+
+  const whiteStrength =
+    clamp(
+      (
+        brightness -
+        185
+      ) / 70,
+      0,
+      1,
+    );
+
+  const neutrality =
+    1 -
+    clamp(
+      spread / 65,
+      0,
+      1,
     );
 
   return (
-    brightnessStrength *
-    neutralityStrength
+    colorMatch *
+    0.46 +
+    whiteStrength *
+    0.36 +
+    neutrality *
+    0.18
   );
 }
 
-/*
- * Flood-fill only from the OUTSIDE of the image.
- *
- * This is important:
- * a white iPhone / AirPods / controller inside the
- * photograph does not disappear simply because it is white.
- */
-async function removeStudioBackground(
+async function removeConnectedBackground(
   input: Buffer,
-): Promise<Buffer> {
+) {
   const prepared =
-    await sharp(input)
-      .rotate()
-      .ensureAlpha()
-      .raw()
-      .toBuffer({
-        resolveWithObject:
-          true,
-      });
+    await prepareRgba(
+      input,
+    );
 
   const {
     data,
-    info,
+    width,
+    height,
   } = prepared;
 
-  if (
-    info.channels !== 4
-  ) {
-    throw new Error(
-      "Could not prepare RGBA image.",
+  const background =
+    sampleBackgroundColor(
+      prepared,
     );
-  }
 
-  const width =
-    info.width;
-
-  const height =
-    info.height;
-
-  const pixels =
+  const totalPixels =
     width * height;
 
   const visited =
     new Uint8Array(
-      pixels,
+      totalPixels,
     );
 
   const queue =
     new Int32Array(
-      pixels,
+      totalPixels,
     );
 
-  let read = 0;
-  let write = 0;
+  let readIndex = 0;
+  let writeIndex = 0;
 
   function canEnter(
     pixel: number,
   ) {
     if (
       pixel < 0 ||
-      pixel >= pixels ||
+      pixel >= totalPixels ||
       visited[pixel]
     ) {
       return false;
@@ -162,22 +372,24 @@ async function removeStudioBackground(
         pixel,
       );
 
-    const alpha =
-      data[
-        offset + 3
-      ];
-
-    if (alpha <= 4) {
+    if (
+      data[offset + 3] <
+      10
+    ) {
       return true;
     }
 
-    return (
-      whiteBackgroundStrength(
+    const strength =
+      backgroundStrength(
         data[offset],
         data[offset + 1],
         data[offset + 2],
-      ) >
-      0.06
+        background,
+      );
+
+    return (
+      strength >=
+      0.42
     );
   }
 
@@ -195,22 +407,25 @@ async function removeStudioBackground(
     visited[pixel] = 1;
 
     queue[
-      write++
+      writeIndex
     ] = pixel;
+
+    writeIndex += 1;
   }
 
-  /*
-   * Seed from every outside edge.
-   */
   for (
     let x = 0;
     x < width;
     x += 1
   ) {
-    enqueue(x);
+    enqueue(
+      x,
+    );
 
     enqueue(
-      (height - 1) *
+      (
+        height - 1
+      ) *
         width +
         x,
     );
@@ -233,12 +448,15 @@ async function removeStudioBackground(
   }
 
   while (
-    read < write
+    readIndex <
+    writeIndex
   ) {
     const pixel =
       queue[
-        read++
+        readIndex
       ];
+
+    readIndex += 1;
 
     const x =
       pixel % width;
@@ -279,21 +497,13 @@ async function removeStudioBackground(
     }
   }
 
-  /*
-   * Turn only OUTSIDE-CONNECTED background pixels
-   * transparent.
-   *
-   * The soft alpha edge avoids ugly white JPEG halos.
-   */
   for (
     let pixel = 0;
-    pixel < pixels;
+    pixel < totalPixels;
     pixel += 1
   ) {
     if (
-      !visited[
-        pixel
-      ]
+      !visited[pixel]
     ) {
       continue;
     }
@@ -304,43 +514,41 @@ async function removeStudioBackground(
       );
 
     const strength =
-      whiteBackgroundStrength(
+      backgroundStrength(
         data[offset],
         data[offset + 1],
         data[offset + 2],
+        background,
       );
 
-    if (
-      strength >=
-      0.88
-    ) {
-      data[
-        offset + 3
-      ] = 0;
-
-      continue;
-    }
-
-    const currentAlpha =
+    const originalAlpha =
       data[
         offset + 3
       ];
+
+    const removal =
+      clamp(
+        (
+          strength -
+          0.34
+        ) /
+          0.48,
+        0,
+        1,
+      );
 
     data[
       offset + 3
     ] =
       Math.round(
-        currentAlpha *
-          (1 -
-            strength),
+        originalAlpha *
+          (
+            1 -
+            removal
+          ),
       );
   }
 
-  /*
-   * A tiny blur on alpha edge followed by sharpening
-   * removes hard cut-out artifacts without blurring
-   * the product itself.
-   */
   return sharp(
     data,
     {
@@ -355,43 +563,45 @@ async function removeStudioBackground(
     .toBuffer();
 }
 
-async function trimmedSubject(
+async function trimTransparentSpace(
   input: Buffer,
 ) {
-  return sharp(input)
-    .trim({
-      background: {
-        r: 0,
-        g: 0,
-        b: 0,
-        alpha: 0,
-      },
-
-      threshold: 3,
-    })
-    .png()
-    .toBuffer();
+  try {
+    return await sharp(
+      input,
+    )
+      .trim({
+        background: {
+          r: 0,
+          g: 0,
+          b: 0,
+          alpha: 0,
+        },
+        threshold: 4,
+      })
+      .png()
+      .toBuffer();
+  } catch {
+    return input;
+  }
 }
 
-async function standardizedCanvas({
-  image,
-  canvas,
-  subject,
-}: {
-  image: Buffer;
-  canvas: number;
-  subject: number;
-}) {
-  /*
-   * Resize subject while preserving aspect ratio.
-   */
-  const contained =
-    await sharp(image)
+async function productCanvas(
+  input: Buffer,
+) {
+  const canvasSize =
+    1800;
+
+  const subjectSize =
+    1500;
+
+  const resized =
+    await sharp(input)
       .resize({
         width:
-          subject,
+          subjectSize,
         height:
-          subject,
+          subjectSize,
         fit:
           "inside",
         withoutEnlargement:
@@ -402,43 +612,24 @@ async function standardizedCanvas({
 
   const metadata =
     await sharp(
-      contained,
+      resized,
     ).metadata();
 
   const width =
-    metadata.width ?? subject;
+    metadata.width ??
+    subjectSize;
 
   const height =
-    metadata.height ?? subject;
-
-  const left =
-    Math.max(
-      0,
-      Math.floor(
-        (canvas -
-          width) /
-          2,
-      ),
-    );
-
-  const top =
-    Math.max(
-      0,
-      Math.floor(
-        (canvas -
-          height) /
-          2,
-      ),
-    );
+    metadata.height ??
+    subjectSize;
 
   return sharp({
     create: {
       width:
-        canvas,
+        canvasSize,
       height:
-        canvas,
-      channels:
-        4,
+        canvasSize,
+      channels: 4,
       background: {
         r: 0,
         g: 0,
@@ -450,9 +641,21 @@ async function standardizedCanvas({
     .composite([
       {
         input:
-          contained,
-        left,
-        top,
+          resized,
+        left:
+          Math.round(
+            (
+              canvasSize -
+              width
+            ) / 2,
+          ),
+        top:
+          Math.round(
+            (
+              canvasSize -
+              height
+            ) / 2,
+          ),
       },
     ])
     .png({
@@ -464,20 +667,105 @@ async function standardizedCanvas({
     .toBuffer();
 }
 
+async function categoryCanvas(
+  input: Buffer,
+) {
+  /*
+   * Homepage category artwork does not need a 2200px source.
+   *
+   * 1800 × 1186 keeps the same approximate aspect ratio,
+   * preserves Retina-quality rendering, transparency and
+   * background removal while reducing transferred/storage size.
+   */
+  const canvasWidth =
+    1800;
+
+  const canvasHeight =
+    1186;
+
+  const resized =
+    await sharp(input)
+      .resize({
+        width:
+          1640,
+        height:
+          1040,
+        fit:
+          "inside",
+        withoutEnlargement:
+          true,
+      })
+      .png()
+      .toBuffer();
+
+  const metadata =
+    await sharp(
+      resized,
+    ).metadata();
+
+  const width =
+    metadata.width ??
+    1640;
+
+  const height =
+    metadata.height ??
+    1040;
+
+  return sharp({
+    create: {
+      width:
+        canvasWidth,
+      height:
+        canvasHeight,
+      channels: 4,
+      background: {
+        r: 0,
+        g: 0,
+        b: 0,
+        alpha: 0,
+      },
+    },
+  })
+    .composite([
+      {
+        input:
+          resized,
+        left:
+          Math.round(
+            (
+              canvasWidth -
+              width
+            ) / 2,
+          ),
+        top:
+          Math.round(
+            (
+              canvasHeight -
+              height
+            ) / 2,
+          ),
+      },
+    ])
+    .webp({
+      quality: 88,
+      alphaQuality: 90,
+      effort: 5,
+      smartSubsample: true,
+    })
+    .toBuffer();
+}
+
 export async function processStoreImage({
   input,
   kind,
-}: {
-  input: Buffer;
-  kind: StoreImageKind;
-}) {
+}: ProcessStoreImageOptions) {
   const transparent =
-    await removeStudioBackground(
+    await removeConnectedBackground(
       input,
     );
 
-  const subject =
-    await trimmedSubject(
+  const trimmed =
+    await trimTransparentSpace(
       transparent,
     );
 
@@ -485,22 +773,12 @@ export async function processStoreImage({
     kind ===
     "category"
   ) {
-    return standardizedCanvas({
-      image:
-        subject,
-      canvas:
-        CATEGORY_CANVAS,
-      subject:
-        CATEGORY_SUBJECT,
-    });
+    return categoryCanvas(
+      trimmed,
+    );
   }
 
-  return standardizedCanvas({
-    image:
-      subject,
-    canvas:
-      PRODUCT_CANVAS,
-    subject:
-      PRODUCT_SUBJECT,
-  });
+  return productCanvas(
+    trimmed,
+  );
 }

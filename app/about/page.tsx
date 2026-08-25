@@ -1,211 +1,369 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, Gem, Heart, Scissors, Diamond } from "lucide-react";
+import {
+  ArrowRight,
+  Gamepad2,
+  Headphones,
+  Laptop,
+  MessagesSquare,
+  PackageCheck,
+  ShieldCheck,
+  ShoppingBag,
+  Smartphone,
+  Sparkles,
+  CheckCircle2,
+  Clock3,
+  MapPin,
+  Navigation,
+  CalendarDays,
+} from "lucide-react";
 
-import StoreFooter from "@/components/storefront/store-footer";
-import StoreHeader from "@/components/storefront/store-header";
+import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 
 export const metadata: Metadata = {
   title: "About Stereophonie",
   description:
-    "Discover Stereophonie, a Lebanon-based electronics store founded by Nicole and Tania and dedicated to curated consumer electronics and technology.",
+    "Discover Stereophonie, a Lebanon-based destination for thoughtfully selected consumer technology and support.",
 };
 
 const values = [
   {
-    title: "Selected quality",
+    icon: CheckCircle2,
+    title: "Considered selection",
     description:
-      "Every piece is chosen carefully for its fabric, finish, silhouette, and ability to remain elegant beyond a single season.",
-    icon: Gem,
+      "Useful technology chosen for quality, value, and the role it plays in everyday life.",
   },
   {
-    title: "Italian character",
+    icon: MessagesSquare,
+    title: "Clear guidance",
     description:
-      "Our collections reflect the confidence, refinement, and distinctive details associated with modern Italian fashion.",
-    icon: Scissors,
+      "Straightforward product information and responsive help when you need a human answer.",
   },
   {
-    title: "Modern femininity",
+    icon: ShieldCheck,
+    title: "Confidence first",
     description:
-      "We select products that feel polished yet effortless, helping women express their personal style with confidence.",
-    icon: Diamond,
+      "A clear checkout, transparent policies, and secure account tools designed around trust.",
   },
   {
-    title: "Personal service",
+    icon: PackageCheck,
+    title: "Local delivery",
     description:
-      "Stereophonie is built around trust, attentive support, and a more personal approach to shopping online.",
-    icon: Heart,
+      "Dependable delivery across Lebanon with a simple way to follow every active order.",
   },
 ];
 
-const selectionPrinciples = [
-  "Distinctive designs without unnecessary excess",
-  "Elegant silhouettes for modern everyday styling",
-  "Considered fabrics, finishes, and details",
-  "Focused collections instead of overwhelming choice",
+const categories = [
+  { icon: Smartphone, label: "Phones & wearables" },
+  { icon: Laptop, label: "Computing" },
+  { icon: Gamepad2, label: "Gaming" },
+  { icon: Headphones, label: "Audio & accessories" },
 ];
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-white text-black">
-      <StoreHeader />
+    <div className="st-retail-shell">
+      <V3Header />
 
-      <section className="relative overflow-hidden border-b border-black/10 bg-[#0b0b0b] text-white">
-        <div className="absolute inset-0 opacity-[0.07]">
-          <div className="absolute -left-20 top-20 h-80 w-80 rounded-full border border-white" />
-          <div className="absolute -right-16 bottom-[-120px] h-[430px] w-[430px] rounded-full border border-white" />
-          <div className="absolute left-1/2 top-0 h-full w-px bg-white" />
-        </div>
-
-        <div className="relative mx-auto grid min-h-[calc(100vh-88px)] max-w-[1600px] lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="flex items-end border-b border-white/10 px-5 py-16 sm:px-8 lg:border-b-0 lg:border-r lg:px-12 lg:py-20">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/40">
-                About Stereophonie
-              </p>
-
-              <h1 className="mt-6 text-[clamp(4rem,10vw,9rem)] font-semibold uppercase leading-[0.82] tracking-[-0.075em]">
-                Our
-                <br />
-                Story
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
-            <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/35">
-                Founded by Nicole &amp; Tania
-              </p>
-
-              <p className="mt-7 text-2xl font-medium leading-[1.35] tracking-[-0.025em] text-white sm:text-3xl lg:text-4xl">
-                Stereophonie was created from a shared love for quality
-                technology, distinctive details, and the effortless confidence
-                of Italian fashion.
-              </p>
-
-              <p className="mt-8 max-w-xl text-sm leading-7 text-white/50 sm:text-base">
-                Based in Lebanon and operating entirely online, we curate
-                consumer electronics and technology that feels modern, refined,
-                and easy to make your own.
-              </p>
-
+      <main className="st-retail-page st-support-page st-about-page">
+        <section className="st-retail-hero st-about-page__hero">
+          <div className="st-retail-hero__copy">
+            <p className="st-retail-eyebrow">About Stereophonie</p>
+            <h1>Technology, chosen with purpose.</h1>
+            <p>
+              Stereophonie is a Lebanon-based technology store built to make
+              discovering, choosing, and receiving the right products feel
+              simpler.
+            </p>
+            <div className="st-retail-hero__actions">
               <Link
                 href="/shop"
-                className="group mt-10 inline-flex min-h-14 items-center gap-8 border border-white bg-white px-7 py-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-transparent hover:text-white"
+                className="st-retail-button st-retail-button--mustard"
               >
-                Explore the collection
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                Explore the store
+                <ArrowRight />
+              </Link>
+              <Link
+                href="/delivery"
+                className="st-retail-button st-retail-button--quiet"
+              >
+                How delivery works
               </Link>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-              Who we are
-            </p>
-
-            <h2 className="mt-5 text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.05em] sm:text-6xl">
-              A more
-              <br />
-              thoughtful
-              <br />
-              wardrobe
-            </h2>
+          <div className="st-about-page__wordmark" aria-hidden="true">
+            <img
+              src="/brand/stereophonie-store-logo.png"
+              alt="Stereophonie Store"
+              className="h-auto w-[210px] max-w-[72%] object-contain sm:w-[245px]"
+            />
           </div>
+        </section>
 
-          <div className="border-t border-black/10 pt-8">
-            <p className="max-w-3xl text-xl leading-9 tracking-[-0.02em] text-black/75 sm:text-2xl sm:leading-10">
-              Stereophonie is an online technology destination for women who
-              appreciate distinctive products that remain easy to wear and
-              style.
+        <section className="st-about-page__story">
+          <div>
+            <p className="st-retail-eyebrow">Why we exist</p>
+            <h2>A better way to shop technology.</h2>
+          </div>
+          <div>
+            <p>
+              Buying electronics should not feel like decoding a catalogue. We
+              bring phones, computing, gaming, audio, smart devices, and useful
+              accessories into one considered storefront with clearer choices.
             </p>
+            <p>
+              Our aim is practical: strong products, honest information, an
+              easy cart and checkout, attentive support, and dependable local
+              delivery. Every part of the experience should help you decide
+              with confidence.
+            </p>
+          </div>
+        </section>
 
-            <div className="mt-10 grid gap-8 text-sm leading-7 text-black/50 md:grid-cols-2">
-              <p>
-                Rather than offering hundreds of unrelated products, we focus on
-                selected technology that works together as a clear and
-                considered collection. Each arrival is selected for its shape,
-                detail, quality, and styling potential.
-              </p>
-
-              <p>
-                Our goal is to make discovering fashion feel personal again:
-                fewer distractions, stronger products, and a shopping experience
-                built around elegance, confidence, and attention to detail.
-              </p>
+        <section className="st-retail-section st-about-page__values">
+          <div className="st-retail-section__heading">
+            <div>
+              <p className="st-retail-eyebrow">What guides us</p>
+              <h2>Built around the customer.</h2>
             </div>
           </div>
-        </div>
-      </section>
+          <div className="st-about-page__value-grid">
+            {values.map((value, index) => {
+              const Icon = value.icon;
+              return (
+                <article key={value.title}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Icon />
+                  <h3>{value.title}</h3>
+                  <p>{value.description}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
-      <section className="nita-about-values mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-        <div className="border-b border-black/10 pb-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-black/40">
-            What guides us
-          </p>
-
-          <h2 className="mt-5 text-4xl font-semibold uppercase tracking-[-0.05em] sm:text-6xl">
-            Our values
-          </h2>
-        </div>
-
-        <div className="grid border-b border-black/10 md:grid-cols-2 xl:grid-cols-4">
-          {values.map((value, index) => {
-            const Icon = value.icon;
-
-            return (
-              <article
-                key={value.title}
-                className={`py-9 md:px-7 ${
-                  index < values.length - 1
-                    ? "border-b border-black/10 xl:border-b-0 xl:border-r"
-                    : ""
-                } ${index % 2 === 0 ? "md:border-r md:border-black/10" : ""}`}
-              >
-                <Icon className="h-5 w-5" />
-
-                <h3 className="mt-8 text-sm font-semibold uppercase tracking-[0.16em]">
-                  {value.title}
-                </h3>
-
-                <p className="mt-4 text-sm leading-7 text-black/50">
-                  {value.description}
-                </p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="border-t border-black/10 bg-black text-white">
-        <div className="mx-auto flex max-w-[1600px] flex-col gap-10 px-5 py-16 sm:px-8 lg:flex-row lg:items-end lg:justify-between lg:px-12 lg:py-20">
+        <section className="st-about-page__categories">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-white/35">
-              Discover Stereophonie
+            <p className="st-retail-eyebrow">What you will find</p>
+            <h2>Technology for work, play, and everyday life.</h2>
+            <p>
+              A focused mix of products that are useful on their own and work
+              even better together.
             </p>
+          </div>
+          <div className="st-about-page__category-list">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <Link key={category.label} href="/shop">
+                  <Icon />
+                  <span>{category.label}</span>
+                  <ArrowRight />
+                </Link>
+              );
+            })}
+          </div>
+        </section>
 
-            <h2 className="mt-5 max-w-3xl text-4xl font-semibold uppercase leading-[0.95] tracking-[-0.05em] sm:text-6xl">
-              Find your next favourite piece.
-            </h2>
+        
+
+{/* ====================================================
+          VISIT STEREOPHONIE
+          Store location + opening hours
+          ==================================================== */}
+
+      <section
+        className="st-about-visit"
+        aria-labelledby="st-about-visit-title"
+      >
+        <div className="st-about-visit__inner">
+
+          <header className="st-about-visit__heading">
+            <div>
+              <p className="st-retail-eyebrow">
+                Visit Stereophonie
+              </p>
+
+              <h2 id="st-about-visit-title">
+                Find us in Mtaileb.
+              </h2>
+            </div>
+
+            <p className="st-about-visit__intro">
+              Visit our store for personal assistance,
+              product guidance and an in-person look at
+              selected technology.
+            </p>
+          </header>
+
+
+          <div className="st-about-visit__layout">
+
+            {/* ================================
+                LOCATION / MAP
+                ================================ */}
+
+            <div className="st-about-visit__map-shell">
+
+              <iframe
+                className="st-about-visit__map"
+                src="https://www.google.com/maps?q=Stereophonie+Store+Mtaileb+Lebanon&output=embed"
+                title="Stereophonie Store location in Mtaileb"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+
+              <div className="st-about-visit__map-label">
+                <span className="st-about-visit__map-signal">
+                  <MapPin />
+                </span>
+
+                <div>
+                  <small>Store location</small>
+                  <strong>Mtaileb, Lebanon</strong>
+                </div>
+              </div>
+
+            </div>
+
+
+            {/* ================================
+                STORE DETAILS
+                ================================ */}
+
+            <div className="st-about-visit__details">
+
+              <div className="st-about-visit__location">
+
+                <span className="st-about-visit__detail-icon">
+                  <MapPin />
+                </span>
+
+                <div>
+                  <p className="st-about-visit__label">
+                    Stereophonie Store
+                  </p>
+
+                  <h3>
+                    Mtaileb
+                  </h3>
+
+                  <p>
+                    Mount Lebanon, Lebanon
+                  </p>
+                </div>
+
+              </div>
+
+
+              <div className="st-about-visit__hours">
+
+                <div className="st-about-visit__hours-head">
+
+                  <div>
+                    <p className="st-about-visit__label">
+                      Opening hours
+                    </p>
+
+                    <h3>
+                      When to visit
+                    </h3>
+                  </div>
+
+                  <Clock3 />
+
+                </div>
+
+
+                <div className="st-about-visit__schedule">
+
+                  <div className="st-about-visit__schedule-row">
+                    <span>
+                      Monday – Saturday
+                    </span>
+
+                    <strong>
+                      10:00 AM – 8:00 PM
+                    </strong>
+                  </div>
+
+
+                  <div className="
+                    st-about-visit__schedule-row
+                    st-about-visit__schedule-row--closed
+                  ">
+                    <span>
+                      Sunday
+                    </span>
+
+                    <strong>
+                      Closed
+                    </strong>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div className="st-about-visit__notice">
+
+                <CalendarDays />
+
+                <p>
+                  Store hours may vary on public holidays.
+                  Contact us before visiting during holiday periods.
+                </p>
+
+              </div>
+
+
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Stereophonie+Store+Mtaileb+Lebanon"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="st-about-visit__directions"
+              >
+                <span>
+                  Get directions
+                </span>
+
+                <Navigation />
+              </a>
+
+            </div>
+
           </div>
 
-          <Link
-            href="/shop"
-            className="group inline-flex min-h-14 shrink-0 items-center justify-between gap-10 border border-white bg-white px-7 py-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-black hover:text-white"
-          >
-            Shop now
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
         </div>
       </section>
 
-      <StoreFooter />
-    </main>
+<section className="st-retail-assistance st-about-page__cta">
+          <div>
+            <ShoppingBag />
+            <div>
+              <p className="st-retail-eyebrow">Ready to discover more?</p>
+              <h2>Find your next everyday upgrade.</h2>
+            </div>
+          </div>
+          <Link
+            href="/shop"
+            className="st-retail-button st-retail-button--mustard"
+          >
+            Shop all products
+            <ArrowRight />
+          </Link>
+        </section>
+      </main>
+
+
+
+      
+
+      <V3Footer />
+    </div>
   );
 }

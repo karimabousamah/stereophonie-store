@@ -10,9 +10,14 @@ import {
   useMemo,
   useRef,
   useState,
-} from "react";
+  } from "react";
 import { createPortal } from "react-dom";
-import { CheckCircle2, Heart, LoaderCircle, Mail, X } from "lucide-react";
+import { CheckCircle2,
+  Bookmark,
+  LoaderCircle,
+  Mail,
+  X,
+} from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -606,15 +611,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             setAuthenticated(true);
           }
 
-          setNotice(data.message ?? "The product was added to your wishlist.");
 
           setNoticeType("success");
         } catch (error) {
-          setNotice(
-            error instanceof Error
-              ? error.message
-              : "The product could not be added to your wishlist.",
-          );
 
           setNoticeType("error");
         }
@@ -828,15 +827,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       setPendingProduct(null);
       setEmailModalError("");
 
-      setNotice(data.message ?? "The product was added to your wishlist.");
 
       setNoticeType("success");
     } catch (error) {
-      setEmailModalError(
-        error instanceof Error
-          ? error.message
-          : "The product could not be added to your wishlist.",
-      );
     } finally {
       setEmailModalLoading(false);
     }
@@ -906,7 +899,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
                 </button>
 
                 <div className="flex h-12 w-12 items-center justify-center bg-black text-white">
-                  <Heart className="h-5 w-5" />
+                  <Bookmark className="h-5 w-5" />
                 </div>
 
                 <p className="mt-7 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
@@ -992,7 +985,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
               role="status"
               className={`fixed bottom-5 right-5 z-[220] flex max-w-sm items-start gap-3 border px-5 py-4 text-sm shadow-xl ${
                 noticeType === "success"
-                  ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                  ? "border-amber-200 bg-amber-50 text-emerald-800"
                   : "border-red-200 bg-red-50 text-red-700"
               }`}
             >

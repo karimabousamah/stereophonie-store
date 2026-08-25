@@ -88,8 +88,8 @@ const sortOptions: {
 
 function filterButtonClass(active: boolean) {
   return active
-    ? "border-black bg-black text-white"
-    : "border-black/10 bg-white text-black/45 hover:border-black hover:text-black";
+    ? "border-[#d59113]/35 bg-[#d59113]/12 text-black"
+    : "border-black/10 bg-white text-black/45 hover:border-[#d59113]/35 hover:bg-[#d59113]/[0.06] hover:text-black";
 }
 
 type PriceRangeSliderProps = {
@@ -1269,7 +1269,7 @@ export default function ShopFilterBar({
               Availability
             </p>
 
-            <button
+            <button data-in-stock-filter="true"
               type="button"
               disabled={isPending}
               onClick={() =>
@@ -1278,14 +1278,14 @@ export default function ShopFilterBar({
                     selectedAvailability === "in-stock" ? "" : "in-stock",
                 })
               }
-              className="mt-4 flex min-h-11 w-full items-center justify-between text-left text-[11px] font-medium text-black/60 transition hover:text-black disabled:opacity-50"
+              className="mt-4 flex min-h-11 w-full items-center justify-between text-left text-[11px] font-medium text-black/60 transition-[color,opacity,transform] duration-200 ease-out hover:text-black active:scale-[0.995] disabled:opacity-50"
             >
               In stock only
               <span
-                className={`flex h-5 w-5 items-center justify-center border ${
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] border transition-all duration-200 ${
                   selectedAvailability === "in-stock"
-                    ? "border-black bg-black text-white"
-                    : "border-black/20 bg-white"
+                    ? "border-[#d59113]/55 bg-[#d59113]/15 text-[#b87500] shadow-[0_0_0_3px_rgba(213,145,19,0.06)]"
+                    : "border-black/20 bg-white text-transparent"
                 }`}
               >
                 {selectedAvailability === "in-stock" ? (

@@ -36,7 +36,7 @@ export default async function NewProductPage({
     redirect("/admin/login");
   }
 
-  const [categoriesResult, brandsResult, collectionsResult] = await Promise.all([
+  const [categoriesResult, brandsResult] = await Promise.all([
     supabase.from("categories").select("id, name").order("name", {
       ascending: true,
     }),
@@ -48,27 +48,23 @@ export default async function NewProductPage({
       .order("sort_order", { ascending: true })
       .order("name", { ascending: true }),
 
-    supabase.from("collections").select("id, name").order("name", {
-      ascending: true,
-    }),
   ]);
 
   const resolvedSearchParams = await searchParams;
 
-  const loadingError =
-    categoriesResult.error || brandsResult.error || collectionsResult.error;
+  const loadingError = categoriesResult.error || brandsResult.error;
 
   const errorMessage =
     resolvedSearchParams.error ??
     (loadingError
-      ? "Categories or collections could not be loaded."
+      ? "Categories or brands could not be loaded."
       : undefined);
 
   return (
     <AdminShell
       role={admin.role}
       pageTitle="Add product"
-      pageDescription="Create product information, independent size inventory and storefront visibility."
+      pageDescription="Add product details, images, pricing, configurations, inventory and visibility."
     >
       <div className="px-5 py-8 sm:px-8 sm:py-10">
         <div className="mx-auto max-w-[1540px]">
@@ -87,21 +83,21 @@ export default async function NewProductPage({
                   <PackagePlus className="h-5 w-5 text-white/55" />
 
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40">
-                    Catalogue management
+                    Catalog
                   </p>
                 </div>
 
-                <h1 className="mt-5 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">
-                  Create product
+                <h1 className="mt-5 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
+                  Add product
                 </h1>
 
                 <p className="mt-5 max-w-3xl text-base leading-7 text-white/45">
-                  Select the product sizes first, then configure stock and
-                  availability independently for every selected size.
+                  Enter the essentials first, then add configurations such as
+                  storage, colour, connectivity, SKU and stock.
                 </p>
               </div>
 
-              <div className="flex max-w-md items-start gap-3 border border-emerald-400/20 bg-emerald-400/[0.05] px-5 py-4">
+              <div className="flex max-w-md items-start gap-3 rounded-[18px] border border-emerald-400/20 bg-emerald-400/[0.05] px-5 py-4">
                 <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
 
                 <div>
@@ -121,7 +117,6 @@ export default async function NewProductPage({
           <ProductForm
             categories={categoriesResult.data ?? []}
             brands={brandsResult.data ?? []}
-            collections={collectionsResult.data ?? []}
             errorMessage={errorMessage}
           />
         </div>

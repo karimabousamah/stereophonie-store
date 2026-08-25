@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import V3Reveal from "@/components/stereophonie-v3/shared/v3-reveal";
@@ -13,7 +14,10 @@ export type V3HomeCategory = {
   homepage_title?: string | null;
   homepage_description?: string | null;
   homepage_wallpaper_url?: string | null;
+  homepage_theme?: "light" | "dark" | null;
 };
+
+import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 
 function primaryProductImage(
   product: V3Product | undefined,
@@ -134,7 +138,9 @@ function CategoryMedia({
         <img
           src={image}
           alt=""
-          loading="lazy"
+          loading="eager"
+          decoding="async"
+          fetchPriority="auto"
         />
       ) : (
         <div
@@ -240,14 +246,13 @@ function ProductSection({
         </div>
 
         <div className="st3-product-grid">
-          {products.map(
-            (product) => (
-              <V3ProductCard
-                key={product.id}
-                product={product}
-              />
-            ),
-          )}
+          {products.map((product, index) => (
+            <V2ProductCard
+              key={product.id}
+              product={product}
+              index={index}
+            />
+          ))}
         </div>
       </section>
     </V3Reveal>
@@ -260,19 +265,51 @@ export default function V3Homepage({
   offerProducts,
   featuredProducts,
   catalogProducts,
+  heroImageUrl,
+  heroProductId,
+  heroEyebrow,
+  heroLineOne,
+  heroLineTwo,
+  heroLineThree,
+  heroDescription,
+  primaryButtonLabel,
+  primaryButtonHref,
+  secondaryButtonLabel,
+  secondaryButtonHref,
 }: {
   categories: V3HomeCategory[];
   latestProducts: V3Product[];
   offerProducts: V3Product[];
   featuredProducts: V3Product[];
   catalogProducts: V3Product[];
+  heroImageUrl?: string | null;
+  heroProductId?: string | null;
+  heroEyebrow: string;
+  heroLineOne: string;
+  heroLineTwo: string;
+  heroLineThree: string;
+  heroDescription: string;
+  primaryButtonLabel: string;
+  primaryButtonHref: string;
+  secondaryButtonLabel: string;
+  secondaryButtonHref: string;
 }) {
+  const selectedHeroProduct =
+    heroProductId
+      ? catalogProducts.find(
+          (product) =>
+            product.id === heroProductId,
+        ) ?? null
+      : null;
+
   const heroProduct =
+    selectedHeroProduct ??
     featuredProducts[0] ??
     latestProducts[0] ??
     catalogProducts[0];
 
   const heroImage =
+    heroImageUrl?.trim() ||
     primaryProductImage(
       heroProduct,
     );
@@ -297,34 +334,38 @@ export default function V3Homepage({
         <div className="st3-premium-hero__inner">
           <div className="st3-premium-hero__copy">
             <p className="st3-premium-hero__eyebrow">
-              Stereophonie
+              {heroEyebrow}
             </p>
 
             <h1>
-              Technology.
+              {heroLineOne}
               <br />
-              Simply better.
+              {heroLineTwo}
+              {heroLineThree ? (
+                <>
+                  <br />
+                  {heroLineThree}
+                </>
+              ) : null}
             </h1>
 
             <p className="st3-premium-hero__description">
-              Phones, computers,
-              entertainment and more,
-              selected for everyday life.
+              {heroDescription}
             </p>
 
             <div className="st3-premium-hero__actions">
               <Link
-                href="/shop"
+                href={primaryButtonHref}
                 className="st3-button"
               >
-                Shop
+                {primaryButtonLabel}
               </Link>
 
               <Link
-                href="/shop?offers=true"
+                href={secondaryButtonHref}
                 className="st3-link-arrow"
               >
-                View offers
+                {secondaryButtonLabel}
                 <span aria-hidden="true">
                   ›
                 </span>
@@ -339,12 +380,19 @@ export default function V3Homepage({
             />
 
             {heroImage ? (
-              <img
+              <Image
                 src={heroImage}
                 alt={
-                  heroProduct?.name ??
-                  ""
+                  heroImageUrl
+                    ? "Stereophonie homepage hero"
+                    : heroProduct?.name ??
+                      ""
                 }
+                fill
+                priority
+                fetchPriority="high"
+                sizes="(max-width: 900px) 100vw, 50vw"
+                quality={90}
                 className="st3-premium-hero__image"
               />
             ) : null}
@@ -380,7 +428,18 @@ export default function V3Homepage({
 
           {first ? (
             <V3Reveal>
-              <article className="st3-cat-hero st3-cat-hero--light">
+              <article
+                data-category-theme={
+                  first.homepage_theme === "dark"
+                    ? "dark"
+                    : "light"
+                }
+                className={`st3-cat-hero ${
+                  first.homepage_theme === "dark"
+                    ? "st3-cat-hero--dark"
+                    : "st3-cat-hero--light"
+                }`}
+              >
                 <div className="st3-cat-hero__copy">
                   <h2>
                     {first.name}
@@ -394,6 +453,9 @@ export default function V3Homepage({
 
                   <CategoryActions
                     category={first}
+                    inverted={
+                      first.homepage_theme === "dark"
+                    }
                   />
                 </div>
 
@@ -413,7 +475,18 @@ export default function V3Homepage({
 
           {second ? (
             <V3Reveal>
-              <article className="st3-cat-split">
+              <article
+                data-category-theme={
+                  second.homepage_theme === "dark"
+                    ? "dark"
+                    : "light"
+                }
+                className={`st3-cat-split ${
+                  second.homepage_theme === "dark"
+                    ? "st3-cat-split--dark"
+                    : "st3-cat-split--light"
+                }`}
+              >
                 <div className="st3-cat-split__copy">
                   <p className="st3-cat-kicker">
                     Featured category
@@ -431,7 +504,9 @@ export default function V3Homepage({
 
                   <CategoryActions
                     category={second}
-                    inverted
+                    inverted={
+                      second.homepage_theme === "dark"
+                    }
                   />
                 </div>
 
@@ -454,7 +529,8 @@ export default function V3Homepage({
               {gridCategories.map(
                 (category, index) => {
                   const dark =
-                    index % 4 === 3;
+                    category.homepage_theme ===
+                    "dark";
 
                   const wide =
                     index > 0 &&
@@ -467,6 +543,11 @@ export default function V3Homepage({
                       }
                     >
                       <article
+                        data-category-theme={
+                          dark
+                            ? "dark"
+                            : "light"
+                        }
                         className={`st3-cat-tile ${
                           dark
                             ? "st3-cat-tile--dark"
@@ -556,40 +637,6 @@ export default function V3Homepage({
         />
       ) : null}
 
-      <V3Reveal>
-        <section className="st3-home-banner">
-          <div className="st3-home-banner__copy">
-            <p className="st3-section-eyebrow">
-              Stereophonie
-            </p>
-
-            <h2>
-              Technology for
-              every day.
-            </h2>
-
-            <p>
-              Explore everything from
-              phones and computers to
-              entertainment and
-              accessories.
-            </p>
-
-            <Link
-              href="/shop"
-              className="st3-button"
-            >
-              Explore store
-            </Link>
-          </div>
-
-          <div
-            className="st3-home-banner__shape"
-            aria-hidden="true"
-          />
-        </section>
-      </V3Reveal>
-
       <ProductSection
         eyebrow="Selected"
         title="Worth discovering."
@@ -599,42 +646,6 @@ export default function V3Homepage({
         linkLabel="Explore store"
       />
 
-      <V3Reveal>
-        <section className="st3-service-strip">
-          <div className="st3-service-strip__item">
-            <strong>
-              Secure shopping
-            </strong>
-
-            <span>
-              A streamlined checkout
-              experience.
-            </span>
-          </div>
-
-          <div className="st3-service-strip__item">
-            <strong>
-              Selected technology
-            </strong>
-
-            <span>
-              Products across leading
-              technology categories.
-            </span>
-          </div>
-
-          <div className="st3-service-strip__item">
-            <strong>
-              Order support
-            </strong>
-
-            <span>
-              Track orders and manage
-              your account online.
-            </span>
-          </div>
-        </section>
-      </V3Reveal>
     </main>
   );
 }

@@ -225,6 +225,9 @@ type DirectUploadedExistingProductImage = {
   size: number;
   position: number;
   alt_text: string;
+  variant_name: string;
+  variant_position?: number;
+  is_variant_primary?: boolean;
 };
 
 export async function finalizeDirectProductImageUploads(formData: FormData) {
@@ -289,6 +292,47 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     redirectWithError(productId, imagesError.message);
   }
 
+  const {
+    data: productConfigurations,
+    error: productConfigurationsError,
+  } = await supabase
+    .from("product_variants")
+    .select("id, variant_name")
+    .eq("product_id", productId);
+
+  if (productConfigurationsError) {
+    redirectWithError(
+      productId,
+      productConfigurationsError.message,
+    );
+  }
+
+  const validConfigurationNames = new Set(
+    (productConfigurations ?? [])
+      .map((configuration) =>
+        String(configuration.variant_name ?? "").trim(),
+      )
+      .filter(Boolean),
+  );
+
+  const validConfigurationIdsByName =
+    new Map(
+      (productConfigurations ?? [])
+        .map(
+          (configuration): [string, string] => [
+            String(
+              configuration.variant_name ?? "",
+            ).trim().toLowerCase(),
+            String(configuration.id),
+          ],
+        )
+        .filter(
+          ([name]) =>
+            Boolean(name),
+        ),
+    );
+
+
   const currentImageCount = existingImages?.length ?? 0;
 
   if (currentImageCount + uploadedImages.length > maximumImagesPerProduct) {
@@ -343,6 +387,19 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       redirectWithError(
         productId,
         "The photograph order contains duplicate positions.",
+      );
+    }
+
+    const imageVariantName =
+      String(image.variant_name ?? "").trim();
+
+    if (
+      imageVariantName &&
+      !validConfigurationNames.has(imageVariantName)
+    ) {
+      redirectWithError(
+        productId,
+        `The photograph assigned to "${imageVariantName}" no longer matches a product configuration.`,
       );
     }
 
@@ -410,6 +467,38 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
           `${product.name} photograph ${nextPosition + index + 1}`,
         position: nextPosition + index,
         is_primary: !productHasPrimaryImage && index === 0,
+
+        /*
+         * NULL = shared photograph.
+         * Otherwise this photograph belongs to this exact
+         * product configuration.
+         */
+        variant_name:
+          String(image.variant_name ?? "").trim() || null,
+
+        variant_id:
+          validConfigurationIdsByName.get(
+            String(
+              image.variant_name ?? "",
+            )
+              .trim()
+              .toLowerCase(),
+          ) ?? null,
+
+        variant_position:
+          Math.max(
+            0,
+            Number(
+              image.variant_position ??
+                image.position ??
+                index,
+            ) || 0,
+          ),
+
+        is_variant_primary:
+          Boolean(
+            image.is_variant_primary,
+          ),
       });
     }
 
@@ -448,44 +537,406 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
   );
 }
 
-export async function setPrimaryProductImage(formData: FormData) {
+export async function setPrimaryProductImage(
+  formData: FormData,
+) {
+  const supabase =
+    await requireAdministrator();
+
+  const productId =
+    String(
+      formData.get("product_id") ??
+        "",
+    ).trim();
+
+  const imageId =
+    String(
+      formData.get("image_id") ??
+        "",
+    ).trim();
+
+  if (
+    !productId ||
+    !imageId
+  ) {
+    redirect("/admin/products");
+  }
+
+  const {
+    data: selectedImage,
+    error: selectedImageError,
+  } = await supabase
+    .from("product_images")
+    .select(
+      "id, variant_id, variant_position, position",
+    )
+    .eq(
+      "product_id",
+      productId,
+    )
+    .eq(
+      "id",
+      imageId,
+    )
+    .single();
+
+  if (
+    selectedImageError ||
+    !selectedImage
+  ) {
+    redirectWithError(
+      productId,
+      selectedImageError?.message ??
+        "The photograph could not be found.",
+    );
+  }
+
+  /*
+   * ========================================================
+   * CONFIGURATION-SPECIFIC MAIN
+   * ========================================================
+   *
+   * Every sellable configuration has its own Main photograph.
+   *
+   * Black  -> one Main
+   * Navy   -> one Main
+   * Orange -> one Main
+   *
+   * Making a photograph Main also moves it to
+   * variant_position 0.
+   */
+  if (
+    selectedImage.variant_id
+  ) {
+    const {
+      data: groupImages,
+      error: groupImagesError,
+    } = await supabase
+      .from("product_images")
+      .select(
+        "id, variant_position, position",
+      )
+      .eq(
+        "product_id",
+        productId,
+      )
+      .eq(
+        "variant_id",
+        selectedImage.variant_id,
+      )
+      .order(
+        "variant_position",
+        {
+          ascending: true,
+        },
+      )
+      .order(
+        "position",
+        {
+          ascending: true,
+        },
+      );
+
+    if (
+      groupImagesError ||
+      !groupImages
+    ) {
+      redirectWithError(
+        productId,
+        groupImagesError?.message ??
+          "Configuration photographs could not be loaded.",
+      );
+    }
+
+    const selectedIndex =
+      groupImages.findIndex(
+        (image) =>
+          image.id === imageId,
+      );
+
+    if (
+      selectedIndex < 0
+    ) {
+      redirectWithError(
+        productId,
+        "The configuration photograph could not be found.",
+      );
+    }
+
+    /*
+     * Rebuild clean configuration positions with selected image first.
+     */
+    const reordered = [
+      groupImages[selectedIndex],
+      ...groupImages.filter(
+        (image) =>
+          image.id !== imageId,
+      ),
+    ];
+
+    /*
+     * Clear old configuration Main flag first.
+     */
+    const {
+      error: clearMainError,
+    } = await supabase
+      .from("product_images")
+      .update({
+        is_variant_primary:
+          false,
+      })
+      .eq(
+        "product_id",
+        productId,
+      )
+      .eq(
+        "variant_id",
+        selectedImage.variant_id,
+      );
+
+    if (clearMainError) {
+      redirectWithError(
+        productId,
+        clearMainError.message,
+      );
+    }
+
+    /*
+     * Store deterministic positions inside this configuration.
+     */
+    for (
+      let index = 0;
+      index <
+      reordered.length;
+      index += 1
+    ) {
+      const image =
+        reordered[index];
+
+      const {
+        error: positionError,
+      } = await supabase
+        .from("product_images")
+        .update({
+          variant_position:
+            index,
+
+          is_variant_primary:
+            image.id === imageId,
+        })
+        .eq(
+          "id",
+          image.id,
+        )
+        .eq(
+          "product_id",
+          productId,
+        );
+
+      if (positionError) {
+        redirectWithError(
+          productId,
+          positionError.message,
+        );
+      }
+    }
+
+    await refreshProductPages(
+      productId,
+    );
+
+    redirectWithSuccess(
+      productId,
+      "Configuration Main photograph updated.",
+    );
+  }
+
+  /*
+   * ========================================================
+   * SHARED / LEGACY PRODUCT MAIN
+   * ========================================================
+   *
+   * Shared photographs continue using the original one-primary
+   * product behaviour for backwards compatibility.
+   */
+  const {
+    error: clearPrimaryError,
+  } = await supabase
+    .from("product_images")
+    .update({
+      is_primary: false,
+    })
+    .eq(
+      "product_id",
+      productId,
+    );
+
+  if (clearPrimaryError) {
+    redirectWithError(
+      productId,
+      clearPrimaryError.message,
+    );
+  }
+
+  const {
+    error: primaryError,
+  } = await supabase
+    .from("product_images")
+    .update({
+      is_primary: true,
+    })
+    .eq(
+      "id",
+      imageId,
+    )
+    .eq(
+      "product_id",
+      productId,
+    );
+
+  if (primaryError) {
+    redirectWithError(
+      productId,
+      primaryError.message,
+    );
+  }
+
+  await refreshProductPages(
+    productId,
+  );
+
+  redirectWithSuccess(
+    productId,
+    "Main photograph updated.",
+  );
+}
+
+
+export async function updateProductImageVariantName(
+  formData: FormData,
+) {
   const supabase = await requireAdministrator();
 
-  const productId = String(formData.get("product_id") ?? "").trim();
+  const productId =
+    String(formData.get("product_id") ?? "").trim();
 
-  const imageId = String(formData.get("image_id") ?? "").trim();
+  const imageId =
+    String(formData.get("image_id") ?? "").trim();
+
+  const variantName =
+    String(formData.get("variant_name") ?? "").trim();
 
   if (!productId || !imageId) {
     redirect("/admin/products");
   }
 
-  const { error: removePrimaryError } = await supabase
-    .from("product_images")
-    .update({
-      is_primary: false,
-    })
-    .eq("product_id", productId);
+  /*
+   * Empty variantName intentionally means:
+   * Shared with every product configuration.
+   */
+  if (variantName) {
+    const {
+      data: matchingConfiguration,
+      error: matchingConfigurationError,
+    } = await supabase
+      .from("product_variants")
+      .select("id")
+      .eq("product_id", productId)
+      .eq("variant_name", variantName)
+      .maybeSingle();
 
-  if (removePrimaryError) {
-    redirectWithError(productId, removePrimaryError.message);
+    if (
+      matchingConfigurationError ||
+      !matchingConfiguration
+    ) {
+      redirectWithError(
+        productId,
+        "That product configuration no longer exists. Choose another photograph usage.",
+      );
+    }
   }
 
-  const { error: setPrimaryError } = await supabase
+  let selectedVariantId: string | null =
+    null;
+
+  if (variantName) {
+    const {
+      data: selectedVariant,
+      error: selectedVariantError,
+    } = await supabase
+      .from("product_variants")
+      .select("id")
+      .eq("product_id", productId)
+      .eq("variant_name", variantName)
+      .maybeSingle();
+
+    if (
+      selectedVariantError ||
+      !selectedVariant
+    ) {
+      redirectWithError(
+        productId,
+        "That product configuration no longer exists.",
+      );
+    }
+
+    selectedVariantId =
+      selectedVariant.id;
+  }
+
+  /*
+   * Put the photograph at the end of the selected configuration.
+   */
+  let nextVariantPosition = 0;
+
+  if (selectedVariantId) {
+    const {
+      data: configurationImages,
+    } = await supabase
+      .from("product_images")
+      .select("variant_position")
+      .eq("product_id", productId)
+      .eq(
+        "variant_id",
+        selectedVariantId,
+      );
+
+    nextVariantPosition =
+      configurationImages?.length ?? 0;
+  }
+
+  const { error } = await supabase
     .from("product_images")
     .update({
-      is_primary: true,
+      variant_name:
+        variantName || null,
+      variant_id:
+        selectedVariantId,
+      variant_position:
+        nextVariantPosition,
+      is_variant_primary:
+        false,
     })
     .eq("id", imageId)
     .eq("product_id", productId);
 
-  if (setPrimaryError) {
-    redirectWithError(productId, setPrimaryError.message);
+  if (error) {
+    redirectWithError(
+      productId,
+      error.message,
+    );
   }
 
   await refreshProductPages(productId);
 
-  redirectWithSuccess(productId, "Main photograph updated.");
+  redirectWithSuccess(
+    productId,
+    variantName
+      ? `Photograph assigned to ${variantName}.`
+      : "Photograph shared with all configurations.",
+  );
 }
+
 
 export async function updateProductImageAltText(formData: FormData) {
   const supabase = await requireAdministrator();
@@ -517,91 +968,103 @@ export async function updateProductImageAltText(formData: FormData) {
   redirectWithSuccess(productId, "Image description updated.");
 }
 
-export async function moveProductImage(formData: FormData) {
-  const supabase = await requireAdministrator();
+export async function moveProductImage(
+  formData: FormData,
+) {
+  const supabase =
+    await requireAdministrator();
 
-  const productId = String(formData.get("product_id") ?? "").trim();
+  const productId =
+    String(
+      formData.get("product_id") ??
+        "",
+    ).trim();
 
-  const imageId = String(formData.get("image_id") ?? "").trim();
+  const imageId =
+    String(
+      formData.get("image_id") ??
+        "",
+    ).trim();
 
-  const direction = String(formData.get("direction") ?? "");
+  const direction =
+    String(
+      formData.get("direction") ??
+        "",
+    ).trim();
 
-  if (!productId || !imageId) {
+  if (
+    !productId ||
+    !imageId
+  ) {
     redirect("/admin/products");
   }
 
-  if (direction !== "left" && direction !== "right") {
-    redirectWithError(productId, "Invalid photograph direction.");
+  if (
+    direction !== "left" &&
+    direction !== "right"
+  ) {
+    redirectWithError(
+      productId,
+      "Invalid photograph direction.",
+    );
   }
 
-  const { data: images, error: imagesError } = await supabase
-    .from("product_images")
-    .select("id, position")
-    .eq("product_id", productId)
-    .order("position", {
-      ascending: true,
-    });
+  /*
+   * The database function performs the complete move atomically.
+   *
+   * IMPORTANT:
+   *
+   * Configuration photographs move by `variant_position`.
+   * They DO NOT move by the old global `position`.
+   *
+   * Therefore:
+   *
+   * Black photo 1 -> Black photo 2
+   * Navy photo 1  -> Navy photo 2
+   *
+   * are completely independent galleries.
+   */
+  const {
+    data,
+    error,
+  } = await supabase.rpc(
+    "admin_move_product_configuration_image",
+    {
+      requested_product_id:
+        productId,
 
-  if (imagesError) {
-    redirectWithError(productId, imagesError.message);
+      requested_image_id:
+        imageId,
+
+      requested_direction:
+        direction,
+    },
+  );
+
+  if (error) {
+    redirectWithError(
+      productId,
+      error.message,
+    );
   }
 
-  const currentIndex = images?.findIndex((image) => image.id === imageId) ?? -1;
+  const result =
+    Array.isArray(data)
+      ? data[0]
+      : data;
 
-  if (currentIndex === -1) {
-    redirectWithError(productId, "The photograph could not be found.");
-  }
+  await refreshProductPages(
+    productId,
+  );
 
-  const targetIndex =
-    direction === "left" ? currentIndex - 1 : currentIndex + 1;
-
-  if (targetIndex < 0 || !images || targetIndex >= images.length) {
-    redirectWithSuccess(productId, "Photograph order unchanged.");
-  }
-
-  const currentImage = images[currentIndex];
-  const targetImage = images[targetIndex];
-
-  const temporaryPosition =
-    Math.max(...images.map((image) => image.position)) + 1;
-
-  const { error: temporaryError } = await supabase
-    .from("product_images")
-    .update({
-      position: temporaryPosition,
-    })
-    .eq("id", currentImage.id);
-
-  if (temporaryError) {
-    redirectWithError(productId, temporaryError.message);
-  }
-
-  const { error: targetError } = await supabase
-    .from("product_images")
-    .update({
-      position: currentImage.position,
-    })
-    .eq("id", targetImage.id);
-
-  if (targetError) {
-    redirectWithError(productId, targetError.message);
-  }
-
-  const { error: currentError } = await supabase
-    .from("product_images")
-    .update({
-      position: targetImage.position,
-    })
-    .eq("id", currentImage.id);
-
-  if (currentError) {
-    redirectWithError(productId, currentError.message);
-  }
-
-  await refreshProductPages(productId);
-
-  redirectWithSuccess(productId, "Photograph order updated.");
+  redirectWithSuccess(
+    productId,
+    result?.moved
+      ? "Configuration photograph order updated."
+      : "This photograph is already at the edge of its configuration.",
+  );
 }
+
 
 export async function deleteProductImage(formData: FormData) {
   const supabase = await requireAdministrator();

@@ -1,6 +1,5 @@
-import V2Header from "@/components/stereophonie-v2/layout/v2-header";
-import V2Footer from "@/components/stereophonie-v2/layout/v2-footer";
-
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
+import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
 import { createClient } from "@/lib/supabase/server";
 
 import AccountAuthClient from "./account-auth-client";
@@ -84,7 +83,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   if (!user) {
     return (
       <>
-        <V2Header />
+        <V3Header />
 
         <AccountAuthClient
           mode={mode}
@@ -92,7 +91,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           message={params.message}
         />
 
-        <V2Footer />
+        <V3Footer />
       </>
     );
   }
@@ -269,7 +268,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
   return (
     <>
-      <V2Header />
+      <V3Header />
 
       <AccountCommandCenter
         firstName={firstName}
@@ -284,7 +283,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         hasStockPreferenceError={Boolean(stockPreferenceError)}
       />
 
-      <V2Footer />
+        <V3Footer />
     </>
   );
 }

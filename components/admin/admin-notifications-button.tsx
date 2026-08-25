@@ -26,6 +26,7 @@ type NotificationsResponse =
   | {
       success: true;
       counts: NotificationCounts;
+      itemIds: Record<keyof NotificationCounts, string[]>;
       total: number;
       generatedAt: string;
     }
@@ -52,6 +53,89 @@ export default function AdminNotificationsButton() {
 
   const [counts, setCounts] = useState<NotificationCounts>(emptyCounts);
 
+  const [itemIds, setItemIds] = useState<
+    Record<keyof NotificationCounts, string[]>
+  >({
+    pendingOrders: [],
+    draftProducts: [],
+    lowStockVariants: [],
+    pendingStockAlerts: [],
+  });
+
+  const [seenIds, setSeenIds] = useState<
+    Record<keyof NotificationCounts, string[]>
+  >({
+    pendingOrders: [],
+    draftProducts: [],
+    lowStockVariants: [],
+    pendingStockAlerts: [],
+  });
+
+  const storageKey =
+    "stereophonie-admin-seen-notifications-v1";
+
+  useEffect(() => {
+    try {
+      const stored =
+        window.localStorage.getItem(storageKey);
+
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored) as Partial<
+        Record<keyof NotificationCounts, string[]>
+      >;
+
+      setSeenIds({
+        pendingOrders:
+          parsed.pendingOrders ?? [],
+        draftProducts:
+          parsed.draftProducts ?? [],
+        lowStockVariants:
+          parsed.lowStockVariants ?? [],
+        pendingStockAlerts:
+          parsed.pendingStockAlerts ?? [],
+      });
+    } catch {
+      // Ignore corrupt browser storage and start fresh.
+    }
+  }, []);
+
+  function persistSeenIds(
+    next: Record<
+      keyof NotificationCounts,
+      string[]
+    >,
+  ) {
+    setSeenIds(next);
+
+    try {
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify(next),
+      );
+    } catch {
+      // Browser privacy settings may block storage.
+    }
+  }
+
+  function markCategorySeen(
+    category: keyof NotificationCounts,
+  ) {
+    const next = {
+      ...seenIds,
+      [category]: Array.from(
+        new Set([
+          ...seenIds[category],
+          ...itemIds[category],
+        ]),
+      ),
+    };
+
+    persistSeenIds(next);
+  }
+
   const loadNotifications = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -74,6 +158,7 @@ export default function AdminNotificationsButton() {
       }
 
       setCounts(data.counts);
+      setItemIds(data.itemIds);
     } catch (loadError) {
       setError(
         loadError instanceof Error
@@ -132,53 +217,81 @@ export default function AdminNotificationsButton() {
     });
   }
 
+
+  const unseenCounts: NotificationCounts = {
+    pendingOrders:
+      itemIds.pendingOrders.filter(
+        (id) => !seenIds.pendingOrders.includes(id),
+      ).length,
+
+    draftProducts:
+      itemIds.draftProducts.filter(
+        (id) => !seenIds.draftProducts.includes(id),
+      ).length,
+
+    lowStockVariants:
+      itemIds.lowStockVariants.filter(
+        (id) => !seenIds.lowStockVariants.includes(id),
+      ).length,
+
+    pendingStockAlerts:
+      itemIds.pendingStockAlerts.filter(
+        (id) => !seenIds.pendingStockAlerts.includes(id),
+      ).length,
+  };
+
   const total =
-    counts.pendingOrders +
-    counts.draftProducts +
-    counts.lowStockVariants +
-    counts.pendingStockAlerts;
+    unseenCounts.pendingOrders +
+    unseenCounts.draftProducts +
+    unseenCounts.lowStockVariants +
+    unseenCounts.pendingStockAlerts;
+
 
   const notificationItems = [
     {
+      key: "pendingOrders" as const,
       title: "Pending orders",
       description:
-        counts.pendingOrders === 1
+        unseenCounts.pendingOrders === 1
           ? "1 order is waiting for confirmation."
-          : `${counts.pendingOrders} orders are waiting for confirmation.`,
-      count: counts.pendingOrders,
+          : `${unseenCounts.pendingOrders} orders are waiting for confirmation.`,
+      count: unseenCounts.pendingOrders,
       href: "/admin/orders",
       icon: PackageCheck,
       tone: "amber",
     },
     {
+      key: "lowStockVariants" as const,
       title: "Inventory warnings",
       description:
-        counts.lowStockVariants === 1
+        unseenCounts.lowStockVariants === 1
           ? "1 product variant requires stock attention."
-          : `${counts.lowStockVariants} product variants require stock attention.`,
-      count: counts.lowStockVariants,
+          : `${unseenCounts.lowStockVariants} product variants require stock attention.`,
+      count: unseenCounts.lowStockVariants,
       href: "/admin/products",
       icon: AlertTriangle,
       tone: "red",
     },
     {
+      key: "pendingStockAlerts" as const,
       title: "Customer stock requests",
       description:
-        counts.pendingStockAlerts === 1
+        unseenCounts.pendingStockAlerts === 1
           ? "1 customer is waiting for a restock notification."
-          : `${counts.pendingStockAlerts} customers are waiting for restock notifications.`,
-      count: counts.pendingStockAlerts,
+          : `${unseenCounts.pendingStockAlerts} customers are waiting for restock notifications.`,
+      count: unseenCounts.pendingStockAlerts,
       href: "/admin/stock-alerts",
       icon: BellRing,
       tone: "blue",
     },
     {
+      key: "draftProducts" as const,
       title: "Draft products",
       description:
-        counts.draftProducts === 1
+        unseenCounts.draftProducts === 1
           ? "1 product is currently hidden from the storefront."
-          : `${counts.draftProducts} products are currently hidden from the storefront.`,
-      count: counts.draftProducts,
+          : `${unseenCounts.draftProducts} products are currently hidden from the storefront.`,
+      count: unseenCounts.draftProducts,
       href: "/admin/products",
       icon: Box,
       tone: "neutral",
@@ -299,7 +412,7 @@ export default function AdminNotificationsButton() {
             </div>
 
             <h3 className="mt-5 text-base font-semibold">
-              Everything is up to date
+              No new notifications
             </h3>
 
             <p className="mt-2 max-w-xs text-xs leading-5 text-white/40">
@@ -326,7 +439,10 @@ export default function AdminNotificationsButton() {
                     <Link
                       key={item.title}
                       href={item.href}
-                      onClick={() => setOpen(false)}
+                      onClick={() => {
+                        markCategorySeen(item.key);
+                        setOpen(false);
+                      }}
                       className="group flex items-start gap-4 px-5 py-5 transition hover:bg-white/[0.045]"
                     >
                       <div

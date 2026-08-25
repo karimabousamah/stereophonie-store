@@ -14,9 +14,9 @@ const sections = [
     content: (
       <>
         <p>
-          Stereophonie is a Lebanon-based electronics store founded by Nicole
-          and Tania. The store offers a curated selection of Italian
-          women&apos;s apparel.
+          Stereophonie is a Lebanon-based electronics store offering a
+          considered selection of consumer technology, including phones,
+          computing, gaming, audio, smart devices, and accessories.
         </p>
 
         <p>
@@ -33,13 +33,13 @@ const sections = [
       <>
         <p>
           We aim to present product descriptions, photographs, prices, colours,
-          sizes, and availability as accurately as reasonably possible. Minor
+          specifications, and availability as accurately as reasonably possible. Minor
           differences may occur because of photography, lighting, screen
           settings, production variation, or manual error.
         </p>
 
         <p>
-          Products and sizes are subject to availability. Adding an item to a
+          Products and configurations are subject to availability. Adding an item to a
           cart does not reserve it. We may correct an error, update information,
           limit quantities, or cancel an unavailable item.
         </p>
@@ -70,7 +70,7 @@ const sections = [
       <>
         <p>
           Product prices and applicable delivery fees are displayed during
-          shopping and checkout. A flat delivery fee of $5 applies to orders
+          shopping and checkout. A flat delivery fee of $4 applies to orders
           below $150, while orders of $150 or more qualify for free delivery.
         </p>
 
@@ -107,7 +107,7 @@ const sections = [
       <>
         <p>
           Purchases are generally final and are subject to the separate No
-          Returns Policy. Change-of-mind returns, refunds, and size exchanges
+          Returns Policy. Change-of-mind returns, refunds, and configuration exchanges
           are not normally accepted.
         </p>
 
@@ -182,8 +182,7 @@ const sections = [
         </p>
 
         <p>
-          Contact us at thenitastyle@gmail.com or through WhatsApp at +961 76 99
-          22 06.
+          Contact us at thenitastyle@gmail.com or through WhatsApp at +961 3 161 285.
         </p>
       </>
     ),

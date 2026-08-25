@@ -2,16 +2,20 @@
 
 import Link from "next/link";
 import {
-  ArrowRight,
   Check,
   Eye,
-  Gamepad2,
-  Heart,
+  Bookmark,
   ImageOff,
   X,
-  Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 import {
@@ -22,19 +26,176 @@ import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 type Props = {
   product: StoreProductCardProduct;
-  index: number;
+  index?: number;
 };
 
-function orderedImages(product: StoreProductCardProduct) {
-  return [...product.images]
-    .filter((image) => Boolean(image.image_url))
-    .sort((first, second) => {
-      if (first.is_primary !== second.is_primary) {
-        return first.is_primary ? -1 : 1;
+/*
+ * Product-card photography follows the FIRST storefront
+ * configuration, not the old global photograph ordering.
+ *
+ * Example:
+ *
+ * Black   display_position 0
+ * Navy    display_position 1
+ * Orange  display_position 2
+ *
+ * The Shop card therefore shows:
+ *
+ * Black variant_position 0 -> normal card photograph
+ * Black variant_position 1 -> hover photograph
+ *
+ * Changing Black's photograph order in Admin immediately changes
+ * the card and hover ordering.
+ *
+ * Legacy products without variant_id continue using the old
+ * is_primary / position behaviour.
+ */
+function orderedImages(
+  product: StoreProductCardProduct,
+) {
+  const availableImages =
+    [...product.images].filter(
+      (image) =>
+        Boolean(image.image_url),
+    );
+
+  const orderedVariants =
+    [...product.variants]
+      .filter(
+        (variant) =>
+          variant.is_active !== false,
+      )
+      .sort((first, second) => {
+        const firstPosition =
+          Number(
+            first.display_position ??
+              0,
+          );
+
+        const secondPosition =
+          Number(
+            second.display_position ??
+              0,
+          );
+
+        if (
+          firstPosition !==
+          secondPosition
+        ) {
+          return (
+            firstPosition -
+            secondPosition
+          );
+        }
+
+        return String(
+          first.variant_name ??
+            first.size ??
+            "",
+        ).localeCompare(
+          String(
+            second.variant_name ??
+              second.size ??
+              "",
+          ),
+          undefined,
+          {
+            numeric: true,
+          },
+        );
+      });
+
+  /*
+   * The first configuration controls catalogue-card photography.
+   */
+  const firstVariant =
+    orderedVariants[0] ?? null;
+
+  if (
+    firstVariant?.id
+  ) {
+    const configurationImages =
+      availableImages
+        .filter(
+          (image) =>
+            image.variant_id ===
+            firstVariant.id,
+        )
+        .sort((first, second) => {
+          /*
+           * Explicit Main wins even if legacy data contains
+           * imperfect positions.
+           */
+          if (
+            Boolean(
+              first.is_variant_primary,
+            ) !==
+            Boolean(
+              second.is_variant_primary,
+            )
+          ) {
+            return first.is_variant_primary
+              ? -1
+              : 1;
+          }
+
+          const firstPosition =
+            Number(
+              first.variant_position ??
+                first.position ??
+                0,
+            );
+
+          const secondPosition =
+            Number(
+              second.variant_position ??
+                second.position ??
+                0,
+            );
+
+          if (
+            firstPosition !==
+            secondPosition
+          ) {
+            return (
+              firstPosition -
+              secondPosition
+            );
+          }
+
+          return (
+            Number(first.position ?? 0) -
+            Number(second.position ?? 0)
+          );
+        });
+
+    if (
+      configurationImages.length
+    ) {
+      return configurationImages;
+    }
+  }
+
+  /*
+   * Legacy / shared-photo compatibility.
+   */
+  return availableImages.sort(
+    (first, second) => {
+      if (
+        first.is_primary !==
+        second.is_primary
+      ) {
+        return first.is_primary
+          ? -1
+          : 1;
       }
 
-      return first.position - second.position;
-    });
+      return (
+        Number(first.position ?? 0) -
+        Number(second.position ?? 0)
+      );
+    },
+  );
 }
 
 function getPrice(product: StoreProductCardProduct) {
@@ -84,165 +245,183 @@ function isAvailable(product: StoreProductCardProduct) {
   );
 }
 
-function shortReference(id: string) {
-  return id.replace(/-/g, "").slice(0, 8).toUpperCase();
-}
-
-function systemBadge(
-  product: StoreProductCardProduct,
-  now: number,
-) {
+function badgeFor(product: StoreProductCardProduct, now: number) {
   if (
     product.is_new_arrival &&
-    isNewDropActive(
-      product.new_drop_started_at,
-      now,
-    )
+    isNewDropActive(product.new_drop_started_at, now)
   ) {
-    return {
-      code: "01",
-      title: "NEW DROP",
-    };
+    return "New";
   }
 
   if (product.is_trending) {
-    return {
-      code: "02",
-      title: "HOT ITEM",
-    };
+    return "Trending";
   }
 
   if (product.is_featured) {
-    return {
-      code: "03",
-      title: "FEATURED",
-    };
+    return "Featured";
   }
 
   return null;
 }
 
-export default function V2ProductCard({ product, index }: Props) {
+export default function V2ProductCard({ product }: Props) {
   const images = useMemo(() => orderedImages(product), [product]);
+
   const primaryImage = images[0] ?? null;
   const secondaryImage = images[1] ?? null;
+
   const price = useMemo(() => getPrice(product), [product]);
   const available = useMemo(() => isAvailable(product), [product]);
 
-  /*
-   * Keep a small local clock only for NEW DROP expiration.
-   * This means the badge can disappear automatically even if
-   * a customer leaves the page open across the seven-day limit.
-   */
-  const [badgeClock, setBadgeClock] = useState(() =>
-    Date.now(),
-  );
-
-  const badge = systemBadge(
-    product,
-    badgeClock,
-  );
+  const [clock, setClock] = useState(() => Date.now());
 
   useEffect(() => {
-    if (
-      !product.is_new_arrival ||
-      !product.new_drop_started_at
-    ) {
+    if (!product.is_new_arrival || !product.new_drop_started_at) {
       return;
     }
 
-    const remaining = newDropRemainingMs(
-      product.new_drop_started_at,
-    );
+    const remaining = newDropRemainingMs(product.new_drop_started_at);
 
     if (remaining <= 0) {
       return;
     }
 
-    /*
-     * setTimeout has a practical maximum around 24.8 days,
-     * so seven days is safely supported.
-     */
-    const timer = window.setTimeout(
-      () => {
-        setBadgeClock(Date.now());
-      },
-      remaining + 250,
-    );
+    const timer = window.setTimeout(() => {
+      setClock(Date.now());
+    }, remaining + 250);
 
-    return () => {
-      window.clearTimeout(timer);
-    };
+    return () => window.clearTimeout(timer);
   }, [
     product.is_new_arrival,
     product.new_drop_started_at,
   ]);
 
-  const href = product.slug ? `/shop/${product.slug}` : "/shop";
+  const badge = badgeFor(product, clock);
 
-  const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const href = product.slug
+    ? `/shop/${product.slug}`
+    : "/shop";
 
-  const { hydrated, isWishlisted, toggleProduct } = useWishlist();
+  const {
+    hydrated,
+    isWishlisted,
+    toggleProduct,
+  } = useWishlist();
 
-  const wishlisted = hydrated && isWishlisted(product.id);
+  const wishlisted =
+    hydrated && isWishlisted(product.id);
+
+  const [quickViewMounted, setQuickViewMounted] =
+    useState(false);
+  const [quickViewOpen, setQuickViewOpen] =
+    useState(false);
+  const closeTimer = useRef<number | null>(null);
+  const quickViewTrigger = useRef<HTMLButtonElement>(null);
+  const quickViewClose = useRef<HTMLButtonElement>(null);
+
+  const openQuickView = useCallback(() => {
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+
+    setQuickViewOpen(true);
+    setQuickViewMounted(true);
+  }, []);
+
+  const closeQuickView = useCallback(() => {
+    setQuickViewOpen(false);
+
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current);
+    }
+
+    closeTimer.current = window.setTimeout(() => {
+      setQuickViewMounted(false);
+      closeTimer.current = null;
+      quickViewTrigger.current?.focus();
+    }, 420);
+  }, []);
+
+  const finishQuickViewAnimation = useCallback(
+    (event: React.AnimationEvent<HTMLDivElement>) => {
+      if (
+        event.target !== event.currentTarget ||
+        quickViewOpen
+      ) {
+        return;
+      }
+
+      if (closeTimer.current !== null) {
+        window.clearTimeout(closeTimer.current);
+        closeTimer.current = null;
+      }
+
+      setQuickViewMounted(false);
+      quickViewTrigger.current?.focus();
+    },
+    [quickViewOpen],
+  );
 
   useEffect(() => {
-    if (!quickViewOpen) {
+    if (!quickViewMounted) {
       return;
     }
 
-    const oldOverflow = document.body.style.overflow;
+    const previous =
+      document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
 
-    const escape = (event: KeyboardEvent) => {
+    function escape(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setQuickViewOpen(false);
+        closeQuickView();
       }
-    };
+    }
 
     window.addEventListener("keydown", escape);
 
     return () => {
-      document.body.style.overflow = oldOverflow;
-      window.removeEventListener("keydown", escape);
+      document.body.style.overflow = previous;
+      window.removeEventListener(
+        "keydown",
+        escape,
+      );
     };
+  }, [closeQuickView, quickViewMounted]);
+
+  useEffect(() => {
+    if (quickViewOpen) {
+      quickViewClose.current?.focus();
+    }
   }, [quickViewOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current !== null) {
+        window.clearTimeout(closeTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <>
-      <article
-        className={`st-card17 ${
-          secondaryImage?.image_url ? "has-secondary-image" : ""
-        }`}
-      >
-        <div className="st-card17__topbar">
-          <span>
-            <i />
-            SLOT {String(index + 1).padStart(2, "0")}
-          </span>
-
-          <strong className={available ? "is-ready" : "is-offline"}>
-            {available ? "READY" : "OFFLINE"}
-          </strong>
-        </div>
-
-        <div className="st-card17__media">
-          <div className="st-card17__grid" />
-
-          <span className="st-card17__visual-label">PRODUCT VISUAL</span>
-
+      <article className="st-retail-card">
+        <div className="st-retail-card__visual">
           <Link
             href={href}
-            className="st-card17__image-link"
+            className="st-retail-card__image-link"
             aria-label={`View ${product.name}`}
           >
             {primaryImage?.image_url ? (
               <>
                 <img
                   src={primaryImage.image_url}
-                  alt={primaryImage.alt_text ?? product.name}
-                  className="st-card17__image st-card17__image--primary"
+                  alt={
+                    primaryImage.alt_text ??
+                    product.name
+                  }
+                  className="st-retail-card__image st-retail-card__image--primary"
                   loading="lazy"
                   decoding="async"
                 />
@@ -252,214 +431,302 @@ export default function V2ProductCard({ product, index }: Props) {
                     src={secondaryImage.image_url}
                     alt=""
                     aria-hidden="true"
-                    className="st-card17__image st-card17__image--secondary"
+                    className="st-retail-card__image st-retail-card__image--secondary"
                     loading="lazy"
                     decoding="async"
                   />
                 ) : null}
               </>
             ) : (
-              <div className="st-card17__empty">
+              <div className="st-retail-card__empty">
                 <ImageOff />
-                <span>NO VISUAL SIGNAL</span>
+                <span>Image unavailable</span>
               </div>
             )}
           </Link>
 
-          {badge ? (
-            <div className="st-card17__badge">
-              <span className="st-card17__badge-icon">
-                <Gamepad2 />
-              </span>
+          <div className="st-retail-card__top">
+            <div className="st-retail-card__badges">
+              {badge ? (
+                <span
+                  className={
+                    badge === "New"
+                      ? "st-retail-card__badge st-retail-card__badge--new"
+                      : "st-retail-card__badge"
+                  }
+                >
+                  {badge === "New" ? (
+                    <i
+                      className="st-retail-card__new-pulse"
+                      aria-hidden="true"
+                    />
+                  ) : null}
 
-              <span>
-                <small>SYSTEM FLAG / {badge.code}</small>
-                <strong>{badge.title}</strong>
-              </span>
+                  <b>{badge}</b>
+                </span>
+              ) : null}
+
+              {!available ? (
+                <span className="is-muted">
+                  Out of stock
+                </span>
+              ) : null}
             </div>
-          ) : null}
+
+            <button
+              type="button"
+              className={`st-retail-card__wishlist ${
+                wishlisted ? "is-active" : ""
+              }`}
+              disabled={!hydrated}
+              onClick={() => toggleProduct(product)}
+              aria-pressed={wishlisted}
+              aria-label={
+                wishlisted
+                  ? `Remove ${product.name} from wishlist`
+                  : `Add ${product.name} to wishlist`
+              }
+            >
+              <Bookmark
+                className={
+                  wishlisted
+                    ? "fill-current"
+                    : ""
+                }
+              />
+            </button>
+          </div>
 
           <button
+            ref={quickViewTrigger}
             type="button"
-            className={`st-card17__wishlist ${wishlisted ? "is-active" : ""}`}
-            disabled={!hydrated}
-            onClick={() => toggleProduct(product)}
-            aria-pressed={wishlisted}
-            aria-label={
-              wishlisted
-                ? `Remove ${product.name} from wishlist`
-                : `Save ${product.name} to wishlist`
-            }
-          >
-            <Heart className={wishlisted ? "fill-current" : ""} />
-
-            <span>{wishlisted ? "SAVED" : "SAVE"}</span>
-          </button>
-
-          <button
-            type="button"
-            className="st-card17__quick"
-            onClick={() => setQuickViewOpen(true)}
+            className="st-retail-card__quick"
+            onClick={openQuickView}
           >
             <Eye />
-            <span>QUICK VIEW</span>
-            <small>PRESS A</small>
+            Quick view
           </button>
         </div>
 
-        <div className="st-card17__content">
-          <div className="st-card17__meta">
-            <span>{product.categoryName || "TECHNOLOGY"}</span>
-
-            <span>
-              {product.variants.length}{" "}
-              {product.variants.length === 1 ? "OPTION" : "OPTIONS"}
-            </span>
+        <div className="st-retail-card__content">
+          <div className="st-retail-card__category">
+            {product.categoryName ||
+              "Technology"}
           </div>
 
-          <Link href={href} className="st-card17__name">
+          <Link
+            href={href}
+            className="st-retail-card__name"
+          >
             {product.name}
           </Link>
 
-          <div className="st-card17__price">
-            <div>
+
+          {(() => {
+            const colours = Array.from(
+              new Map(
+                product.variants.flatMap((variant) => {
+                  const attributes =
+                    variant.attributes &&
+                    typeof variant.attributes === "object"
+                      ? variant.attributes
+                      : {};
+
+                  const name = String(
+                    attributes.color_name ??
+                    attributes.color ??
+                    attributes.colour ??
+                    "",
+                  ).trim();
+
+                  const hex = String(
+                    attributes.color_hex ?? "",
+                  ).trim();
+
+                  return name && /^#[0-9a-fA-F]{6}$/.test(hex)
+                    ? [[`${name}-${hex}`, { name, hex }]]
+                    : [];
+                }),
+              ).values(),
+            );
+
+            return colours.length > 0 ? (
+              <div
+                className="st-retail-card__colors"
+                aria-label="Available colours"
+              >
+                {colours.slice(0, 6).map((colour) => (
+                  <span
+                    key={`${colour.name}-${colour.hex}`}
+                    title={colour.name}
+                    style={{ backgroundColor: colour.hex }}
+                  />
+                ))}
+
+                {colours.length > 6 ? (
+                  <small>+{colours.length - 6}</small>
+                ) : null}
+              </div>
+            ) : null;
+          })()}
+
+          <div className="st-retail-card__footer">
+            <div className="st-retail-card__price">
               {price ? (
                 <>
-                  <strong>${price.current.toFixed(2)}</strong>
+                  <strong>
+                    ${price.current.toFixed(2)}
+                  </strong>
 
-                  {price.sale ? <del>${price.regular.toFixed(2)}</del> : null}
+                  {price.sale ? (
+                    <del>
+                      ${price.regular.toFixed(2)}
+                    </del>
+                  ) : null}
                 </>
               ) : (
-                <strong>CONTACT STORE</strong>
+                <strong>Contact us</strong>
               )}
             </div>
 
-            <small>REF / {shortReference(product.id)}</small>
+            <span
+              className={
+                available
+                  ? "is-available"
+                  : ""
+              }
+            >
+              {available
+                ? "In stock"
+                : "Unavailable"}
+            </span>
           </div>
-
-          <Link href={href} className="st-card17__open">
-            <span>VIEW PRODUCT</span>
-            <ArrowRight />
-          </Link>
         </div>
       </article>
 
-      {quickViewOpen ? (
+      {quickViewMounted && typeof document !== "undefined"
+        ? createPortal(
         <div
-          className="st-qv17"
+          className={`st-retail-qv ${
+            quickViewOpen ? "is-open" : "is-closing"
+          }`}
           role="dialog"
           aria-modal="true"
           aria-label={`Quick view ${product.name}`}
+          onAnimationEnd={finishQuickViewAnimation}
         >
           <button
             type="button"
-            className="st-qv17__backdrop"
-            onClick={() => setQuickViewOpen(false)}
+            className="st-retail-qv__backdrop"
+            onClick={closeQuickView}
             aria-label="Close quick view"
           />
 
-          <section className="st-qv17__window">
-            <header className="st-qv17__header">
-              <div>
-                <i />
+          <section className="st-retail-qv__window">
+            <button
+              ref={quickViewClose}
+              type="button"
+              className="st-retail-qv__close"
+              onClick={closeQuickView}
+              aria-label="Close quick view"
+            >
+              <X />
+            </button>
 
-                <span>
-                  STEREOPHONIE OS
-                  <strong>QUICK VIEW</strong>
-                </span>
-              </div>
+            <div className="st-retail-qv__visual">
+              {primaryImage?.image_url ? (
+                <img
+                  src={primaryImage.image_url}
+                  alt={
+                    primaryImage.alt_text ??
+                    product.name
+                  }
+                />
+              ) : (
+                <ImageOff />
+              )}
+            </div>
 
-              <button
-                type="button"
-                onClick={() => setQuickViewOpen(false)}
-                aria-label="Close quick view"
-              >
-                <X />
-              </button>
-            </header>
+            <div className="st-retail-qv__info">
+              <span className="st-retail-qv__category">
+                {product.categoryName ||
+                  "Technology"}
+              </span>
 
-            <div className="st-qv17__layout">
-              <div className="st-qv17__visual">
-                <div className="st-qv17__grid" />
+              <h2>{product.name}</h2>
 
-                {primaryImage?.image_url ? (
-                  <img
-                    src={primaryImage.image_url}
-                    alt={primaryImage.alt_text ?? product.name}
-                  />
+              <div className="st-retail-qv__price">
+                {price ? (
+                  <>
+                    <strong>
+                      ${price.current.toFixed(2)}
+                    </strong>
+
+                    {price.sale ? (
+                      <del>
+                        ${price.regular.toFixed(2)}
+                      </del>
+                    ) : null}
+                  </>
                 ) : (
-                  <ImageOff />
+                  <strong>Contact us</strong>
                 )}
               </div>
 
-              <div className="st-qv17__info">
-                <div className="st-qv17__online">
-                  <i />
-
-                  {available ? "AVAILABLE NOW" : "CURRENTLY OFFLINE"}
-                </div>
-
-                <p>{product.categoryName || "TECHNOLOGY"}</p>
-
-                <h2>{product.name}</h2>
-
-                <div className="st-qv17__price">
-                  {price ? (
-                    <>
-                      <strong>${price.current.toFixed(2)}</strong>
-
-                      {price.sale ? (
-                        <del>${price.regular.toFixed(2)}</del>
-                      ) : null}
-                    </>
-                  ) : (
-                    <strong>CONTACT STORE</strong>
-                  )}
-                </div>
-
-                <div className="st-qv17__stats">
-                  <div>
-                    <small>CONFIGURATIONS</small>
-                    <strong>{product.variants.length}</strong>
-                  </div>
-
-                  <div>
-                    <small>STATUS</small>
-                    <strong>{available ? "READY" : "OFFLINE"}</strong>
-                  </div>
-                </div>
-
-                {product.description ? (
-                  <p className="st-qv17__description">{product.description}</p>
-                ) : null}
-
-                <div className="st-qv17__actions">
-                  <Link href={href}>
-                    VIEW FULL PRODUCT
-                    <ArrowRight />
-                  </Link>
-
-                  <button
-                    type="button"
-                    disabled={!hydrated}
-                    className={wishlisted ? "is-active" : ""}
-                    onClick={() => toggleProduct(product)}
-                  >
-                    {wishlisted ? <Check /> : <Heart />}
-
-                    {wishlisted ? "SAVED" : "SAVE PRODUCT"}
-                  </button>
-                </div>
-
-                <footer>
-                  <Zap />
-                  LIVE CATALOG / REF {shortReference(product.id)}
-                </footer>
+              <div
+                className={`st-retail-qv__availability ${
+                  available
+                    ? "is-available"
+                    : ""
+                }`}
+              >
+                <i />
+                {available
+                  ? "Available"
+                  : "Currently unavailable"}
               </div>
+
+              {product.description ? (
+                <p>
+                  {product.description}
+                </p>
+              ) : null}
+
+              <Link
+                href={href}
+                className="st-retail-qv__primary"
+              >
+                View product
+              </Link>
+
+              <button
+                type="button"
+                className={`st-retail-qv__save ${
+                  wishlisted
+                    ? "is-active"
+                    : ""
+                }`}
+                disabled={!hydrated}
+                onClick={() =>
+                  toggleProduct(product)
+                }
+              >
+                {wishlisted ? (
+                  <Check />
+                ) : (
+                  <Bookmark />
+                )}
+
+                {wishlisted
+                  ? "Saved"
+                  : "Add to wishlist"}
+              </button>
             </div>
           </section>
-        </div>
-      ) : null}
+        </div>,
+        document.body,
+      )
+        : null}
     </>
   );
 }
