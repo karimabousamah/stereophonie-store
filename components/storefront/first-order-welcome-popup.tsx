@@ -308,7 +308,7 @@ export default function FirstOrderWelcomePopup({
               <button
                 type="button"
                 onClick={close}
-                className="mt-5 h-12 w-full rounded-[13px] bg-[#1d1d1f] text-xs font-semibold text-white"
+                className="st-welcome-continue-button mt-5 h-12 w-full rounded-[13px] border border-[#c58b22]/45 bg-white text-xs font-semibold text-[#1d1d1f] shadow-[0_2px_8px_rgba(29,29,31,0.035)] transition-all duration-300 hover:border-[#c58b22]/75 hover:bg-[#fffaf0] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.10),0_10px_30px_rgba(196,135,27,0.12)] focus:outline-none focus-visible:border-[#c58b22]/80 focus-visible:ring-4 focus-visible:ring-[#f5b335]/12"
               >
                 Continue shopping
               </button>
