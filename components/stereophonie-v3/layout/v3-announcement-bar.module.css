@@ -1,0 +1,336 @@
+/* =========================================================
+   ANNOUNCEMENT BACKGROUND MODES
+   ========================================================= */
+
+.backgroundAnimated {
+  background: #ffffff;
+}
+
+.backgroundStill {
+  background: rgba(253, 183, 62, 0.42);
+}
+
+.backgroundNone {
+  background: #ffffff;
+}
+
+.bar {
+  position: relative;
+  isolation: isolate;
+
+  width: 100%;
+  height: 46px;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  /*
+   * Clean Apple-style starting surface.
+   *
+   * The mustard layer below physically fills this
+   * white surface from left to right.
+   */
+  background: #ffffff;
+
+  border-top: 1px solid rgba(29, 29, 31, 0.025);
+  border-bottom: 1px solid rgba(29, 29, 31, 0.07);
+
+  color: #1d1d1f;
+
+  contain: paint;
+}
+
+/* =========================================================
+   0 → 100 FULL BACKGROUND MUSTARD LOADING SURFACE
+   ========================================================= */
+
+.fillSurface {
+  position: absolute;
+  z-index: 0;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+
+  /*
+   * Important:
+   *
+   * No CSS animation is used here.
+   * React's requestAnimationFrame physically changes scaleX
+   * from 0 to 1 during every 4-second announcement cycle.
+   */
+  transform: scaleX(0);
+  transform-origin: left center;
+
+  background: linear-gradient(
+    90deg,
+    rgba(253, 183, 62, 0.24) 0%,
+    rgba(253, 183, 62, 0.34) 48%,
+    rgba(253, 183, 62, 0.42) 100%
+  );
+
+  will-change: transform;
+}
+
+/*
+ * Premium moving light on the front edge of the loader.
+ */
+.fillGlow {
+  position: absolute;
+  z-index: 1;
+
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 105px;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 235, 194, 0.68) 43%,
+    rgba(255, 248, 230, 0.9) 50%,
+    rgba(255, 235, 194, 0.58) 57%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  filter: blur(13px);
+
+  transform: translate3d(-120px, 0, 0);
+
+  will-change: transform, opacity;
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.content {
+  position: relative;
+  z-index: 3;
+
+  width: min(1180px, 100%);
+  height: 100%;
+
+  margin: 0 auto;
+  padding: 0 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.messageStage {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.message {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  text-align: center;
+
+  /*
+   * No transition / animation declaration.
+   *
+   * Opacity, transform and blur are controlled directly
+   * by requestAnimationFrame so no old stylesheet can
+   * turn the transition off.
+   */
+  opacity: 1;
+
+  transform: translate3d(0, 0, 0) scale(1);
+
+  filter: blur(0);
+
+  will-change: opacity, transform, filter;
+
+  backface-visibility: hidden;
+
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+
+.text {
+  color: rgba(29, 29, 31, 0.94);
+
+  font-size: 13px;
+  font-weight: 500;
+
+  line-height: 1.35;
+
+  letter-spacing: -0.008em;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 2px;
+
+  color: #684400;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.35;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.link svg {
+  width: 12px;
+  height: 12px;
+
+  flex: none;
+
+  transition: transform 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: #382500;
+  }
+
+  .link:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .bar {
+    height: 50px;
+    min-height: 50px;
+  }
+
+  .content {
+    padding: 0 16px;
+  }
+
+  .message {
+    flex-wrap: wrap;
+
+    gap: 1px 5px;
+  }
+
+  .text,
+  .link {
+    font-size: 12px;
+
+    line-height: 1.3;
+  }
+}
+
+/*
+ * IMPORTANT:
+ *
+ * Intentionally no prefers-reduced-motion block here.
+ *
+ * The announcement timing is part of the functional
+ * storefront rotation and is now controlled by the
+ * component's requestAnimationFrame engine rather than
+ * CSS animation.
+ */
+
+/* =========================================================
+   ADMIN-SELECTABLE ANNOUNCEMENT BACKGROUND MODES
+   ========================================================= */
+
+/*
+ * Still mustard:
+ * same premium mustard surface, but permanently filled.
+ */
+.fillSurfaceStill {
+  transform: scaleX(1) !important;
+
+  background: linear-gradient(
+    90deg,
+    rgba(253, 183, 62, 0.28) 0%,
+    rgba(253, 183, 62, 0.34) 48%,
+    rgba(253, 183, 62, 0.4) 100%
+  );
+}
+
+/* === ST ANNOUNCEMENT BACKGROUND MODE FINAL CASCADE FIX === */
+
+/*
+ * FINAL source of truth for announcement backgrounds.
+ *
+ * These compound selectors intentionally have greater
+ * specificity than the generic .bar background rule.
+ */
+
+.bar.backgroundAnimated {
+  background-color: #ffffff;
+  background-image: none;
+}
+
+.bar.backgroundStill {
+  background-color: rgba(253, 183, 62, 0.55);
+  background-image: linear-gradient(
+    90deg,
+    rgba(253, 183, 62, 0.5) 0%,
+    rgba(253, 183, 62, 0.6) 50%,
+    rgba(253, 183, 62, 0.5) 100%
+  );
+}
+
+.bar.backgroundNone {
+  background-color: #ffffff;
+  background-image: none;
+}
+
+/*
+ * In still mode there must never be an animated loading
+ * surface sitting above the static mustard background.
+ */
+.bar.backgroundStill .fillSurface,
+.bar.backgroundStill .fillGlow,
+.bar.backgroundNone .fillSurface,
+.bar.backgroundNone .fillGlow {
+  display: none !important;
+}
+
+/* === ST ANNOUNCEMENT BACKGROUND MODE FINAL CASCADE FIX END === */

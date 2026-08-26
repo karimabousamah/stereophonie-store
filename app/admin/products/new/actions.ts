@@ -129,13 +129,10 @@ export async function createProduct(formData: FormData) {
   const collectionId = String(formData.get("collection_id") ?? "").trim();
 
   const resolvedIntent = String(
-    formData.get("resolved_intent") ??
-      formData.get("intent") ??
-      "draft",
+    formData.get("resolved_intent") ?? formData.get("intent") ?? "draft",
   );
 
-  const publishingIntent =
-    resolvedIntent === "publish" ? "publish" : "draft";
+  const publishingIntent = resolvedIntent === "publish" ? "publish" : "draft";
 
   const variantsJson = String(formData.get("variants_json") ?? "[]");
 
@@ -152,7 +149,6 @@ export async function createProduct(formData: FormData) {
   const isFeatured = formData.get("is_featured") === "on";
   const isTrending = formData.get("is_trending") === "on";
   const isNewArrival = formData.get("is_new_arrival") === "on";
-
 
   if (
     publishingIntent === "publish" &&
@@ -191,7 +187,6 @@ export async function createProduct(formData: FormData) {
     "out_of_stock",
     "coming_soon",
   ];
-
 
   if (
     publishingIntent === "publish" &&
@@ -275,8 +270,7 @@ export async function createProduct(formData: FormData) {
       );
     }
 
-    const configurationRegularPrice =
-      Number(variant.regular_price);
+    const configurationRegularPrice = Number(variant.regular_price);
 
     const configurationSalePriceText =
       variant.sale_price === "" ||
@@ -298,10 +292,8 @@ export async function createProduct(formData: FormData) {
      */
     if (
       publishingIntent === "publish" &&
-      (
-        !Number.isFinite(configurationRegularPrice) ||
-        configurationRegularPrice <= 0
-      )
+      (!Number.isFinite(configurationRegularPrice) ||
+        configurationRegularPrice <= 0)
     ) {
       redirectWithError(
         `Enter a valid regular price for ${configurationName}.`,
@@ -310,14 +302,9 @@ export async function createProduct(formData: FormData) {
 
     if (
       configurationSalePrice !== null &&
-      (
-        !Number.isFinite(configurationSalePrice) ||
-        configurationSalePrice < 0
-      )
+      (!Number.isFinite(configurationSalePrice) || configurationSalePrice < 0)
     ) {
-      redirectWithError(
-        `Enter a valid sale price for ${configurationName}.`,
-      );
+      redirectWithError(`Enter a valid sale price for ${configurationName}.`);
     }
 
     if (
@@ -375,62 +362,44 @@ export async function createProduct(formData: FormData) {
    * has been assigned. Resolving the ID here, at final submission,
    * prevents photographs from silently losing their configuration.
    */
-  const configurationNameByClientId =
-    new Map(
-      variants
-        .map((variant) => [
-          String(
-            variant.client_id ?? "",
-          ).trim(),
-          String(
-            variant.variant_name ?? "",
-          ).trim(),
-        ] as const)
-        .filter(
-          ([clientId, configurationName]) =>
-            Boolean(
-              clientId &&
-              configurationName,
-            ),
-        ),
-    );
+  const configurationNameByClientId = new Map(
+    variants
+      .map(
+        (variant) =>
+          [
+            String(variant.client_id ?? "").trim(),
+            String(variant.variant_name ?? "").trim(),
+          ] as const,
+      )
+      .filter(([clientId, configurationName]) =>
+        Boolean(clientId && configurationName),
+      ),
+  );
 
-  directUploadedImages =
-    directUploadedImages.map(
-      (image) => {
-        const configurationId =
-          String(
-            image.configuration_id ?? "",
-          ).trim();
+  directUploadedImages = directUploadedImages.map((image) => {
+    const configurationId = String(image.configuration_id ?? "").trim();
 
-        if (!configurationId) {
-          return {
-            ...image,
-            variant_name:
-              String(
-                image.variant_name ?? "",
-              ).trim(),
-          };
-        }
+    if (!configurationId) {
+      return {
+        ...image,
+        variant_name: String(image.variant_name ?? "").trim(),
+      };
+    }
 
-        const resolvedConfigurationName =
-          configurationNameByClientId.get(
-            configurationId,
-          );
+    const resolvedConfigurationName =
+      configurationNameByClientId.get(configurationId);
 
-        if (!resolvedConfigurationName) {
-          redirectWithError(
-            "A photograph is assigned to a configuration that could not be resolved. Reassign the photograph and try again.",
-          );
-        }
+    if (!resolvedConfigurationName) {
+      redirectWithError(
+        "A photograph is assigned to a configuration that could not be resolved. Reassign the photograph and try again.",
+      );
+    }
 
-        return {
-          ...image,
-          variant_name:
-            resolvedConfigurationName,
-        };
-      },
-    );
+    return {
+      ...image,
+      variant_name: resolvedConfigurationName,
+    };
+  });
 
   if (uploadedFiles.length > 0 && directUploadedImages.length > 0) {
     redirectWithError(
@@ -543,28 +512,18 @@ export async function createProduct(formData: FormData) {
     (first, second) => first.position - second.position,
   );
 
-  const submittedConfigurationNames =
-    new Set(
-      variants
-        .map((variant) =>
-          String(
-            variant.variant_name ?? "",
-          ).trim(),
-        )
-        .filter(Boolean),
-    );
+  const submittedConfigurationNames = new Set(
+    variants
+      .map((variant) => String(variant.variant_name ?? "").trim())
+      .filter(Boolean),
+  );
 
   for (const image of directUploadedImages) {
-    const imageVariantName =
-      String(
-        image.variant_name ?? "",
-      ).trim();
+    const imageVariantName = String(image.variant_name ?? "").trim();
 
     if (
       imageVariantName &&
-      !submittedConfigurationNames.has(
-        imageVariantName,
-      )
+      !submittedConfigurationNames.has(imageVariantName)
     ) {
       redirectWithError(
         `The photograph assigned to "${imageVariantName}" no longer matches a product configuration. Reassign that photograph and try again.`,
@@ -633,21 +592,9 @@ export async function createProduct(formData: FormData) {
       size: configurationName,
 
       variant_name: configurationName,
-      display_position:
-        Number.isFinite(
-          Number(
-            variant.display_position,
-          ),
-        )
-          ? Math.max(
-              0,
-              Math.trunc(
-                Number(
-                  variant.display_position,
-                ),
-              ),
-            )
-          : 0,
+      display_position: Number.isFinite(Number(variant.display_position))
+        ? Math.max(0, Math.trunc(Number(variant.display_position)))
+        : 0,
       attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
       regular_price:
@@ -684,47 +631,35 @@ export async function createProduct(formData: FormData) {
   );
 
   try {
-    
-  /*
-   * Resolve the administrator-facing configuration name
-   * to the newly-created stable product_variant UUID.
-   *
-   * variant_name remains stored temporarily for backwards
-   * compatibility, but variant_id is now authoritative.
-   */
-  const {
-    data: persistedVariantRows,
-    error: persistedVariantRowsError,
-  } = await supabase
-    .from("product_variants")
-    .select("id, variant_name")
-    .eq("product_id", product.id);
+    /*
+     * Resolve the administrator-facing configuration name
+     * to the newly-created stable product_variant UUID.
+     *
+     * variant_name remains stored temporarily for backwards
+     * compatibility, but variant_id is now authoritative.
+     */
+    const { data: persistedVariantRows, error: persistedVariantRowsError } =
+      await supabase
+        .from("product_variants")
+        .select("id, variant_name")
+        .eq("product_id", product.id);
 
-  if (persistedVariantRowsError) {
-    redirectWithError(
-      persistedVariantRowsError.message,
-    );
-  }
+    if (persistedVariantRowsError) {
+      redirectWithError(persistedVariantRowsError.message);
+    }
 
-  const persistedVariantIdByName =
-    new Map(
+    const persistedVariantIdByName = new Map(
       (persistedVariantRows ?? [])
-        .map(
-          (variant): [string, string] => [
-            String(
-              variant.variant_name ?? "",
-            ).trim().toLowerCase(),
-            String(variant.id),
-          ],
-        )
-        .filter(
-          ([name]) =>
-            Boolean(name),
-        ),
+        .map((variant): [string, string] => [
+          String(variant.variant_name ?? "")
+            .trim()
+            .toLowerCase(),
+          String(variant.id),
+        ])
+        .filter(([name]) => Boolean(name)),
     );
 
-
-const imageRows = [];
+    const imageRows = [];
 
     if (directUploadedImages.length > 0) {
       for (let index = 0; index < directUploadedImages.length; index += 1) {
@@ -772,34 +707,21 @@ const imageRows = [];
             `${name} photograph ${index + 1}`,
           position: index,
           is_primary: image.is_primary,
-          variant_name:
-            String(
-              image.variant_name ?? "",
-            ).trim() || null,
+          variant_name: String(image.variant_name ?? "").trim() || null,
 
           variant_id:
             persistedVariantIdByName.get(
-              String(
-                image.variant_name ?? "",
-              )
+              String(image.variant_name ?? "")
                 .trim()
                 .toLowerCase(),
             ) ?? null,
 
-          variant_position:
-            Math.max(
-              0,
-              Number(
-                image.variant_position ??
-                  image.position ??
-                  0,
-              ) || 0,
-            ),
+          variant_position: Math.max(
+            0,
+            Number(image.variant_position ?? image.position ?? 0) || 0,
+          ),
 
-          is_variant_primary:
-            Boolean(
-              image.is_variant_primary,
-            ),
+          is_variant_primary: Boolean(image.is_variant_primary),
         });
       }
     } else {

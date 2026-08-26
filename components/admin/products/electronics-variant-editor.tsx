@@ -87,7 +87,6 @@ const availabilityOptions: {
   },
 ];
 
-
 const productColorPalette = [
   { name: "Black", hex: "#111111" },
   { name: "Midnight", hex: "#232427" },
@@ -133,6 +132,20 @@ const productColorPalette = [
 ] as const;
 
 type SuggestedAttribute = readonly [string, string];
+
+type PendingCustomAttribute = {
+  clientId: string;
+  key: string;
+  label: string;
+};
+
+function normalizeCustomAttributeKey(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
 
 const commonAttributePresets: SuggestedAttribute[] = [
   ["model", "Model"],
@@ -421,19 +434,9 @@ const commonAttributeOptions: Record<string, string[]> = {
     "360 Hz",
   ],
 
-  network: [
-    "Wi-Fi",
-    "Wi-Fi + Cellular",
-    "4G LTE",
-    "5G",
-    "5G + Wi-Fi",
-  ],
+  network: ["Wi-Fi", "Wi-Fi + Cellular", "4G LTE", "5G", "5G + Wi-Fi"],
 
-  magsafe: [
-    "Yes",
-    "No",
-    "MagSafe compatible",
-  ],
+  magsafe: ["Yes", "No", "MagSafe compatible"],
 
   material: [
     "Silicone",
@@ -484,30 +487,13 @@ const commonAttributeOptions: Record<string, string[]> = {
     "Adaptive Noise Cancellation",
   ],
 
-  compatibility: [
-    "Universal",
-  ],
+  compatibility: ["Universal"],
 
-  stylus_support: [
-    "Yes",
-    "No",
-  ],
+  stylus_support: ["Yes", "No"],
 
-  gps: [
-    "Yes",
-    "No",
-    "GPS",
-    "GPS + Cellular",
-  ],
+  gps: ["Yes", "No", "GPS", "GPS + Cellular"],
 
-  water_resistance: [
-    "Not rated",
-    "IPX4",
-    "IPX5",
-    "IPX7",
-    "IP67",
-    "IP68",
-  ],
+  water_resistance: ["Not rated", "IPX4", "IPX5", "IPX7", "IP67", "IP68"],
 
   platform: [
     "PlayStation 5",
@@ -521,7 +507,6 @@ const commonAttributeOptions: Record<string, string[]> = {
     "Mobile",
   ],
 };
-
 
 /*
  * Brand-aware processor suggestions.
@@ -613,15 +598,7 @@ const processorOptionsByBrand: Array<{
   },
 
   {
-    match: [
-      "asus",
-      "acer",
-      "lenovo",
-      "hp",
-      "dell",
-      "msi",
-      "razer",
-    ],
+    match: ["asus", "acer", "lenovo", "hp", "dell", "msi", "razer"],
     values: [
       "Intel Core i3",
       "Intel Core i5",
@@ -639,7 +616,6 @@ const processorOptionsByBrand: Array<{
     ],
   },
 ];
-
 
 const genericProcessorOptions = [
   "Apple A18",
@@ -678,86 +654,42 @@ const genericProcessorOptions = [
   "AMD Ryzen AI 9",
 ];
 
-
-function uniqueOptions(
-  values: string[],
-) {
+function uniqueOptions(values: string[]) {
   return Array.from(
     new Map(
-      values.map((value) => [
-        value.trim().toLowerCase(),
-        value.trim(),
-      ]),
+      values.map((value) => [value.trim().toLowerCase(), value.trim()]),
     ).values(),
   ).filter(Boolean);
 }
 
-
-function processorOptionsForBrand(
-  brandName: string,
-) {
-  const normalizedBrand =
-    brandName
-      .trim()
-      .toLowerCase();
+function processorOptionsForBrand(brandName: string) {
+  const normalizedBrand = brandName.trim().toLowerCase();
 
   if (!normalizedBrand) {
     return genericProcessorOptions;
   }
 
-  const matched =
-    processorOptionsByBrand.find(
-      (group) =>
-        group.match.some(
-          (keyword) =>
-            normalizedBrand.includes(
-              keyword,
-            ),
-        ),
-    );
+  const matched = processorOptionsByBrand.find((group) =>
+    group.match.some((keyword) => normalizedBrand.includes(keyword)),
+  );
 
-  return matched?.values ??
-    genericProcessorOptions;
+  return matched?.values ?? genericProcessorOptions;
 }
 
+function optionsForAttribute(key: string, brandName: string) {
+  const normalizedKey = key.trim().toLowerCase();
 
-function optionsForAttribute(
-  key: string,
-  brandName: string,
-) {
-  const normalizedKey =
-    key.trim().toLowerCase();
-
-  if (
-    normalizedKey === "processor" ||
-    normalizedKey === "cpu"
-  ) {
-    return uniqueOptions(
-      processorOptionsForBrand(
-        brandName,
-      ),
-    );
+  if (normalizedKey === "processor" || normalizedKey === "cpu") {
+    return uniqueOptions(processorOptionsForBrand(brandName));
   }
 
-  return uniqueOptions(
-    commonAttributeOptions[
-      normalizedKey
-    ] ?? [],
-  );
+  return uniqueOptions(commonAttributeOptions[normalizedKey] ?? []);
 }
 
+function attributeHelpText(key: string, brandName: string) {
+  const normalizedKey = key.trim().toLowerCase();
 
-function attributeHelpText(
-  key: string,
-  brandName: string,
-) {
-  const normalizedKey =
-    key.trim().toLowerCase();
-
-  if (
-    normalizedKey === "processor" ||
-    normalizedKey === "cpu"
-  ) {
+  if (normalizedKey === "processor" || normalizedKey === "cpu") {
     return brandName.trim()
       ? `Available choices adapted to ${brandName}.`
       : "Select the processor for this configuration.";
@@ -775,9 +707,7 @@ function attributeHelpText(
     return "Select the SIM configuration customers will receive.";
   }
 
-  if (
-    normalizedKey === "connectivity"
-  ) {
+  if (normalizedKey === "connectivity") {
     return "Select the applicable connection type.";
   }
 
@@ -791,14 +721,9 @@ function attributesForCategory(categoryName: string): SuggestedAttribute[] {
     preset.match.some((keyword) => normalized.includes(keyword)),
   );
 
-  const merged = [
-    ...(matched?.attributes ?? []),
-    ...commonAttributePresets,
-  ];
+  const merged = [...(matched?.attributes ?? []), ...commonAttributePresets];
 
-  return Array.from(
-    new Map(merged.map((item) => [item[0], item])).values(),
-  );
+  return Array.from(new Map(merged.map((item) => [item[0], item])).values());
 }
 
 function createVariant(): AdminElectronicsVariant {
@@ -848,30 +773,22 @@ const configurationNamePriority = [
   "connectivity",
 ] as const;
 
-function normalizeConfigurationValue(
-  value: unknown,
-) {
+function normalizeConfigurationValue(value: unknown) {
   return String(value ?? "").trim();
 }
 
-function generatedConfigurationName(
-  attributes: ProductVariantAttributes,
-) {
+function generatedConfigurationName(attributes: ProductVariantAttributes) {
   const values: string[] = [];
   const seen = new Set<string>();
 
   for (const key of configurationNamePriority) {
-    const value =
-      normalizeConfigurationValue(
-        attributes[key],
-      );
+    const value = normalizeConfigurationValue(attributes[key]);
 
     if (!value) {
       continue;
     }
 
-    const identity =
-      value.toLowerCase();
+    const identity = value.toLowerCase();
 
     if (seen.has(identity)) {
       continue;
@@ -888,15 +805,13 @@ function generatedConfigurationName(
    */
   if (values.length === 0) {
     for (const value of Object.values(attributes)) {
-      const normalized =
-        normalizeConfigurationValue(value);
+      const normalized = normalizeConfigurationValue(value);
 
       if (!normalized) {
         continue;
       }
 
-      const identity =
-        normalized.toLowerCase();
+      const identity = normalized.toLowerCase();
 
       if (seen.has(identity)) {
         continue;
@@ -911,9 +826,7 @@ function generatedConfigurationName(
     }
   }
 
-  return values
-    .slice(0, 4)
-    .join(" · ");
+  return values.slice(0, 4).join(" · ");
 }
 
 export default function ElectronicsVariantEditor({
@@ -929,15 +842,43 @@ export default function ElectronicsVariantEditor({
 
   const [customAttributeName, setCustomAttributeName] = useState("");
 
+  const [pendingCustomAttributes, setPendingCustomAttributes] = useState<
+    PendingCustomAttribute[]
+  >([]);
+
+  const [customAttributeError, setCustomAttributeError] = useState("");
 
   const suggestedAttributes = useMemo(
     () =>
       attributesForCategory(categoryName).filter(
-        ([key]) =>
-          key !== "color" &&
-          key !== "colour",
+        ([key]) => key !== "color" && key !== "colour",
       ),
     [categoryName],
+  );
+
+  /*
+   * IMPORTANT:
+   *
+   * A preset is only considered a built-in specification when
+   * the editor can actually render it as a built-in selector.
+   *
+   * Previously a preset such as "lighting" could exist in the
+   * category preset list while optionsForAttribute("lighting")
+   * returned no values.
+   *
+   * Result:
+   *   - it was hidden from the built-in area
+   *   - AND filtered out of the custom area
+   *
+   * That made successfully-added custom specifications appear
+   * to disappear.
+   */
+  const visibleSuggestedAttributes = useMemo(
+    () =>
+      suggestedAttributes.filter(
+        ([key]) => optionsForAttribute(key, brandName).length > 0,
+      ),
+    [suggestedAttributes, brandName],
   );
 
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
@@ -951,45 +892,34 @@ export default function ElectronicsVariantEditor({
    */
   const orderedVariants = useMemo(
     () =>
-      [...variants].sort(
-        (first, second) => {
-          const positionDifference =
-            Number(first.display_position ?? 0) -
-            Number(second.display_position ?? 0);
+      [...variants].sort((first, second) => {
+        const positionDifference =
+          Number(first.display_position ?? 0) -
+          Number(second.display_position ?? 0);
 
-          if (positionDifference !== 0) {
-            return positionDifference;
-          }
+        if (positionDifference !== 0) {
+          return positionDifference;
+        }
 
-          /*
-           * Stable fallback for legacy configurations that may
-           * temporarily share the same display_position.
-           */
-          return (
-            variants.indexOf(first) -
-            variants.indexOf(second)
-          );
-        },
-      ),
+        /*
+         * Stable fallback for legacy configurations that may
+         * temporarily share the same display_position.
+         */
+        return variants.indexOf(first) - variants.indexOf(second);
+      }),
     [variants],
   );
 
   const activeVariant =
-    orderedVariants.find(
-      (variant) =>
-        variant.clientId === activeVariantId,
-    ) ??
+    orderedVariants.find((variant) => variant.clientId === activeVariantId) ??
     orderedVariants[0] ??
     null;
 
-  const activeVariantOrderIndex =
-    activeVariant
-      ? orderedVariants.findIndex(
-          (variant) =>
-            variant.clientId ===
-            activeVariant.clientId,
-        )
-      : -1;
+  const activeVariantOrderIndex = activeVariant
+    ? orderedVariants.findIndex(
+        (variant) => variant.clientId === activeVariant.clientId,
+      )
+    : -1;
 
   const totalStock = useMemo(
     () =>
@@ -1043,9 +973,7 @@ export default function ElectronicsVariantEditor({
     setActiveVariantId(nextVariant.clientId);
   }
 
-  function duplicateVariant(
-    source: AdminElectronicsVariant,
-  ) {
+  function duplicateVariant(source: AdminElectronicsVariant) {
     const nextVariant: AdminElectronicsVariant = {
       ...source,
 
@@ -1082,14 +1010,9 @@ export default function ElectronicsVariantEditor({
       display_position: variants.length,
     };
 
-    onChange([
-      ...variants,
-      nextVariant,
-    ]);
+    onChange([...variants, nextVariant]);
 
-    setActiveVariantId(
-      nextVariant.clientId,
-    );
+    setActiveVariantId(nextVariant.clientId);
   }
 
   function saveActiveConfiguration() {
@@ -1116,10 +1039,9 @@ export default function ElectronicsVariantEditor({
         ? "st-save-existing-product-publish"
         : "st-save-existing-product-draft";
 
-    const saveButton =
-      document.getElementById(
-        targetId,
-      ) as HTMLButtonElement | null;
+    const saveButton = document.getElementById(
+      targetId,
+    ) as HTMLButtonElement | null;
 
     if (!saveButton) {
       return;
@@ -1128,37 +1050,23 @@ export default function ElectronicsVariantEditor({
     saveButton.click();
   }
 
-
-  function moveVariant(
-    clientId: string,
-    direction: "up" | "down",
-  ) {
-    const currentIndex =
-      orderedVariants.findIndex(
-        (variant) =>
-          variant.clientId === clientId,
-      );
+  function moveVariant(clientId: string, direction: "up" | "down") {
+    const currentIndex = orderedVariants.findIndex(
+      (variant) => variant.clientId === clientId,
+    );
 
     if (currentIndex === -1) {
       return;
     }
 
     const targetIndex =
-      direction === "up"
-        ? currentIndex - 1
-        : currentIndex + 1;
+      direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
-    if (
-      targetIndex < 0 ||
-      targetIndex >= orderedVariants.length
-    ) {
+    if (targetIndex < 0 || targetIndex >= orderedVariants.length) {
       return;
     }
 
-    [
-      orderedVariants[currentIndex],
-      orderedVariants[targetIndex],
-    ] = [
+    [orderedVariants[currentIndex], orderedVariants[targetIndex]] = [
       orderedVariants[targetIndex],
       orderedVariants[currentIndex],
     ];
@@ -1172,37 +1080,27 @@ export default function ElectronicsVariantEditor({
      * storefront from seeing two different configuration orders.
      */
     onChange(
-      orderedVariants.map(
-        (variant, index) => ({
-          ...variant,
-          display_position: index,
-        }),
-      ),
+      orderedVariants.map((variant, index) => ({
+        ...variant,
+        display_position: index,
+      })),
     );
   }
-
 
   function generateActiveVariantName() {
     if (!activeVariant) {
       return;
     }
 
-    const generated =
-      generatedConfigurationName(
-        activeVariant.attributes,
-      );
+    const generated = generatedConfigurationName(activeVariant.attributes);
 
     if (!generated) {
       return;
     }
 
-    updateVariant(
-      activeVariant.clientId,
-      {
-        variant_name:
-          generated,
-      },
-    );
+    updateVariant(activeVariant.clientId, {
+      variant_name: generated,
+    });
   }
 
   function removeVariant(clientId: string) {
@@ -1211,10 +1109,7 @@ export default function ElectronicsVariantEditor({
     }
 
     const nextVariants = variants
-      .filter(
-        (variant) =>
-          variant.clientId !== clientId,
-      )
+      .filter((variant) => variant.clientId !== clientId)
       .sort(
         (first, second) =>
           Number(first.display_position ?? 0) -
@@ -1233,30 +1128,22 @@ export default function ElectronicsVariantEditor({
   }
 
   function updateAttribute(clientId: string, key: string, value: string) {
-    const variant =
-      variants.find(
-        (item) =>
-          item.clientId === clientId,
-      );
+    const variant = variants.find((item) => item.clientId === clientId);
 
     if (!variant) {
       return;
     }
 
-    const previousGeneratedName =
-      generatedConfigurationName(
-        variant.attributes,
-      );
+    const previousGeneratedName = generatedConfigurationName(
+      variant.attributes,
+    );
 
     const nextAttributes = {
       ...variant.attributes,
       [key]: value,
     };
 
-    const nextGeneratedName =
-      generatedConfigurationName(
-        nextAttributes,
-      );
+    const nextGeneratedName = generatedConfigurationName(nextAttributes);
 
     /*
      * Automatic naming is intentionally respectful:
@@ -1265,25 +1152,18 @@ export default function ElectronicsVariantEditor({
      * - previously auto-generated name -> keep it synchronized
      * - manually customized name -> leave it completely untouched
      */
-    const currentName =
-      variant.variant_name.trim();
+    const currentName = variant.variant_name.trim();
 
     const shouldAutoName =
       !currentName ||
-      (
-        Boolean(previousGeneratedName) &&
-        currentName === previousGeneratedName
-      );
+      (Boolean(previousGeneratedName) && currentName === previousGeneratedName);
 
     updateVariant(clientId, {
-      attributes:
-        nextAttributes,
+      attributes: nextAttributes,
 
-      ...(shouldAutoName &&
-      nextGeneratedName
+      ...(shouldAutoName && nextGeneratedName
         ? {
-            variant_name:
-              nextGeneratedName,
+            variant_name: nextGeneratedName,
           }
         : {}),
     });
@@ -1305,6 +1185,13 @@ export default function ElectronicsVariantEditor({
     updateVariant(clientId, {
       attributes: nextAttributes,
     });
+
+    setPendingCustomAttributes((current) =>
+      current.filter(
+        (attribute) =>
+          !(attribute.clientId === clientId && attribute.key === key),
+      ),
+    );
   }
 
   function addCustomAttribute() {
@@ -1312,29 +1199,126 @@ export default function ElectronicsVariantEditor({
       return;
     }
 
-    const key = customAttributeName
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "");
+    const rawLabel = customAttributeName.trim();
 
-    if (!key) {
+    const key = normalizeCustomAttributeKey(rawLabel);
+
+    setCustomAttributeError("");
+
+    if (!rawLabel || !key) {
+      setCustomAttributeError("Enter a specification name first.");
       return;
     }
 
-    updateVariant(activeVariant.clientId, {
-      attributes: {
-        ...activeVariant.attributes,
-        [key]: activeVariant.attributes[key] ?? "",
+    /*
+     * Built-in attributes already have their own dedicated
+     * selection field above. Do not silently make a custom
+     * specification disappear into that built-in field.
+     */
+    /*
+     * A specification only counts as a built-in field when it is
+     * actually rendered in the editor.
+     *
+     * Some category presets intentionally exist without predefined
+     * choices. Those presets are hidden by the UI because
+     * optionsForAttribute() returns an empty array.
+     *
+     * Hidden presets must therefore remain available through
+     * "Add spec". Otherwise the administrator gets told that a field
+     * exists "above" even though no such field is visible.
+     */
+    const builtInMatch = suggestedAttributes.find(
+      ([suggestedKey]) =>
+        suggestedKey === key &&
+        optionsForAttribute(suggestedKey, brandName).length > 0,
+    );
+
+    if (builtInMatch) {
+      setCustomAttributeError(
+        `"${builtInMatch[1]}" already exists as a built-in specification above.`,
+      );
+      return;
+    }
+
+    /*
+     * Prevent duplicates against already-saved attributes.
+     */
+    if (Object.prototype.hasOwnProperty.call(activeVariant.attributes, key)) {
+      setCustomAttributeError(
+        `"${humanizeAttributeKey(key)}" already exists for this configuration.`,
+      );
+      return;
+    }
+
+    /*
+     * Prevent duplicate pending rows too.
+     */
+    const alreadyPending = pendingCustomAttributes.some(
+      (attribute) =>
+        attribute.clientId === activeVariant.clientId && attribute.key === key,
+    );
+
+    if (alreadyPending) {
+      setCustomAttributeError(
+        `"${humanizeAttributeKey(key)}" is already being added.`,
+      );
+      return;
+    }
+
+    /*
+     * IMPORTANT:
+     *
+     * Do NOT immediately write an empty string to attributes.
+     * Instead create a visible local draft card.
+     *
+     * The real JSONB attribute is created the moment the admin
+     * enters a value in that card.
+     */
+    setPendingCustomAttributes((current) => [
+      ...current,
+      {
+        clientId: activeVariant.clientId,
+        key,
+        label: rawLabel,
       },
-    });
+    ]);
 
     setCustomAttributeName("");
   }
 
+  function updatePendingCustomAttribute(
+    clientId: string,
+    key: string,
+    value: string,
+  ) {
+    updateAttribute(clientId, key, value);
+
+    /*
+     * As soon as it exists in the real attributes object,
+     * the normal saved-custom-spec UI becomes authoritative.
+     */
+    if (value.length > 0) {
+      setPendingCustomAttributes((current) =>
+        current.filter(
+          (attribute) =>
+            !(attribute.clientId === clientId && attribute.key === key),
+        ),
+      );
+    }
+  }
+
+  function removePendingCustomAttribute(clientId: string, key: string) {
+    setPendingCustomAttributes((current) =>
+      current.filter(
+        (attribute) =>
+          !(attribute.clientId === clientId && attribute.key === key),
+      ),
+    );
+  }
+
   if (!activeVariant) {
     return (
-      <div className="border border-dashed border-white/15 bg-black/20 px-6 py-14 text-center">
+      <div className="border border-dashed border-white/15 bg-black/20 px-5 py-9 text-center">
         <Package className="mx-auto h-7 w-7 text-white/30" />
 
         <p className="mt-4 font-semibold">No configurations</p>
@@ -1352,7 +1336,7 @@ export default function ElectronicsVariantEditor({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
+    <div className="grid gap-5 xl:grid-cols-[250px_minmax(0,1fr)]">
       <aside className="border border-white/10 bg-black/20">
         <div className="border-b border-white/10 p-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
@@ -1447,7 +1431,7 @@ export default function ElectronicsVariantEditor({
           <button
             type="button"
             onClick={addVariant}
-            className="flex min-h-12 w-full items-center justify-center gap-2 border border-white/15 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:border-white hover:bg-white hover:text-black"
+            className="flex min-h-10 w-full items-center justify-center gap-2 border border-white/15 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:border-white hover:bg-white hover:text-black"
           >
             <CirclePlus className="h-4 w-4" />
             Add configuration
@@ -1462,7 +1446,7 @@ export default function ElectronicsVariantEditor({
               Configuration editor
             </p>
 
-            <h3 className="mt-2 text-2xl font-semibold">
+            <h3 className="mt-2 text-xl font-semibold">
               {activeVariant.variant_name.trim() || "Untitled configuration"}
             </h3>
 
@@ -1472,8 +1456,7 @@ export default function ElectronicsVariantEditor({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {saveExistingConfigurationIntent &&
-            !activeVariant.id ? (
+            {saveExistingConfigurationIntent && !activeVariant.id ? (
               <button
                 type="button"
                 onClick={saveActiveConfiguration}
@@ -1491,15 +1474,8 @@ export default function ElectronicsVariantEditor({
             >
               <button
                 type="button"
-                onClick={() =>
-                  moveVariant(
-                    activeVariant.clientId,
-                    "up",
-                  )
-                }
-                disabled={
-                  activeVariantOrderIndex <= 0
-                }
+                onClick={() => moveVariant(activeVariant.clientId, "up")}
+                disabled={activeVariantOrderIndex <= 0}
                 className="min-h-11 rounded-none border-0 px-3 text-[10px] font-semibold uppercase tracking-[0.11em] text-white/55 transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
               >
                 ↑ Earlier
@@ -1513,16 +1489,8 @@ export default function ElectronicsVariantEditor({
 
               <button
                 type="button"
-                onClick={() =>
-                  moveVariant(
-                    activeVariant.clientId,
-                    "down",
-                  )
-                }
-                disabled={
-                  activeVariantOrderIndex >=
-                  orderedVariants.length - 1
-                }
+                onClick={() => moveVariant(activeVariant.clientId, "down")}
+                disabled={activeVariantOrderIndex >= orderedVariants.length - 1}
                 className="min-h-11 rounded-none border-0 px-3 text-[10px] font-semibold uppercase tracking-[0.11em] text-white/55 transition hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25"
               >
                 Later ↓
@@ -1541,11 +1509,7 @@ export default function ElectronicsVariantEditor({
 
             <button
               type="button"
-              onClick={() =>
-                duplicateVariant(
-                  activeVariant,
-                )
-              }
+              onClick={() => duplicateVariant(activeVariant)}
               title="Copy this configuration, then change only the options that are different"
               className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/15 px-4 text-[10px] font-semibold uppercase tracking-[0.13em] text-white transition hover:border-white hover:bg-white hover:text-black"
             >
@@ -1556,11 +1520,7 @@ export default function ElectronicsVariantEditor({
             {variants.length > 1 ? (
               <button
                 type="button"
-                onClick={() =>
-                  removeVariant(
-                    activeVariant.clientId,
-                  )
-                }
+                onClick={() => removeVariant(activeVariant.clientId)}
                 className="inline-flex min-h-11 items-center justify-center gap-2 border border-red-400/20 px-4 text-[10px] font-semibold uppercase tracking-[0.13em] text-red-300 transition hover:bg-red-400/[0.08]"
               >
                 <Trash2 className="h-4 w-4" />
@@ -1570,7 +1530,7 @@ export default function ElectronicsVariantEditor({
           </div>
         </header>
 
-        <div className="p-5 sm:p-6">
+        <div className="p-4 sm:p-5">
           <div className="grid gap-5 md:grid-cols-2">
             <label>
               <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/40">
@@ -1585,13 +1545,13 @@ export default function ElectronicsVariantEditor({
                   })
                 }
                 placeholder="e.g. 256GB / Black"
-                className="mt-3 min-h-14 w-full border border-white/10 bg-black/30 px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
+                className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
               />
 
               <span className="mt-2 block text-xs leading-5 text-white/25">
                 We build this automatically from important options such as
-                colour, storage and RAM. You can still type your own name at
-                any time.
+                colour, storage and RAM. You can still type your own name at any
+                time.
               </span>
             </label>
 
@@ -1608,114 +1568,105 @@ export default function ElectronicsVariantEditor({
                   })
                 }
                 placeholder="Optional internal SKU"
-                className="mt-3 min-h-14 w-full border border-white/10 bg-black/30 px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
+                className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/50"
               />
             </label>
           </div>
 
-                      <section className="st-admin-config-color mt-8 border-t border-white/10 pt-7">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/40">
-                    Product colour
-                  </p>
+          <section className="st-admin-config-color mt-8 border-t border-white/10 pt-7">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/40">
+                  Product colour
+                </p>
 
-                  <h4 className="mt-2 text-xl font-semibold">
-                    Choose configuration colour
-                  </h4>
+                <h4 className="mt-2 text-xl font-semibold">
+                  Choose configuration colour
+                </h4>
 
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
-                    Select the physical colour for this configuration. The full palette stays hidden until you need it.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setColorPickerOpen((current) => !current)
-                  }
-                  aria-expanded={colorPickerOpen}
-                  className="st-admin-color-trigger"
-                >
-                  <span
-                    className="st-admin-color-trigger__swatch"
-                    style={{
-                      background:
-                        productColorPalette.find(
-                          (colour) =>
-                            colour.name === activeVariant.attributes.color,
-                        )?.hex ?? "#f5f5f7",
-                    }}
-                    aria-hidden="true"
-                  />
-
-                  <span className="min-w-0 flex-1 truncate text-left">
-                    {activeVariant.attributes.color || "Choose colour"}
-                  </span>
-
-                  <ChevronRight
-                    className={`h-4 w-4 shrink-0 transition ${
-                      colorPickerOpen ? "rotate-90" : ""
-                    }`}
-                  />
-                </button>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
+                  Select the physical colour for this configuration. The full
+                  palette stays hidden until you need it.
+                </p>
               </div>
 
-              {colorPickerOpen ? (
-                <div className="st-admin-color-panel">
-                  <div className="st-admin-color-grid">
-                    {productColorPalette.map((colour) => {
-                      const selected =
-                        activeVariant.attributes.color === colour.name;
+              <button
+                type="button"
+                onClick={() => setColorPickerOpen((current) => !current)}
+                aria-expanded={colorPickerOpen}
+                className="st-admin-color-trigger"
+              >
+                <span
+                  className="st-admin-color-trigger__swatch"
+                  style={{
+                    background:
+                      productColorPalette.find(
+                        (colour) =>
+                          colour.name === activeVariant.attributes.color,
+                      )?.hex ?? "#f5f5f7",
+                  }}
+                  aria-hidden="true"
+                />
 
-                      return (
-                        <button
-                          key={colour.name}
-                          type="button"
-                          aria-pressed={selected}
-                          className={`st-admin-color-option ${
-                            selected ? "is-selected" : ""
-                          }`}
-                          onClick={() => {
-                            updateAttribute(
-                              activeVariant.clientId,
-                              "color",
-                              colour.name,
-                            );
+                <span className="min-w-0 flex-1 truncate text-left">
+                  {activeVariant.attributes.color || "Choose colour"}
+                </span>
 
-                            setColorPickerOpen(false);
-                          }}
-                        >
-                          <span
-                            className="st-admin-color-option__swatch"
-                            style={{ background: colour.hex }}
-                            aria-hidden="true"
-                          />
+                <ChevronRight
+                  className={`h-4 w-4 shrink-0 transition ${
+                    colorPickerOpen ? "rotate-90" : ""
+                  }`}
+                />
+              </button>
+            </div>
 
-                          <span className="truncate">
-                            {colour.name}
-                          </span>
+            {colorPickerOpen ? (
+              <div className="st-admin-color-panel">
+                <div className="st-admin-color-grid">
+                  {productColorPalette.map((colour) => {
+                    const selected =
+                      activeVariant.attributes.color === colour.name;
 
-                          {selected ? (
-                            <Check
-                              className="h-4 w-4"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <span />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+                    return (
+                      <button
+                        key={colour.name}
+                        type="button"
+                        aria-pressed={selected}
+                        className={`st-admin-color-option ${
+                          selected ? "is-selected" : ""
+                        }`}
+                        onClick={() => {
+                          updateAttribute(
+                            activeVariant.clientId,
+                            "color",
+                            colour.name,
+                          );
 
-                  
+                          setColorPickerOpen(false);
+                        }}
+                      >
+                        <span
+                          className="st-admin-color-option__swatch"
+                          style={{ background: colour.hex }}
+                          aria-hidden="true"
+                        />
+
+                        <span className="truncate">{colour.name}</span>
+
+                        {selected ? (
+                          <Check className="h-4 w-4" aria-hidden="true" />
+                        ) : (
+                          <span />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-              ) : null}
-            </section>
+              </div>
+            ) : null}
+          </section>
 
-
-<section className="mt-8 border-t border-white/10 pt-7">
+          <section className="mt-8 border-t border-white/10 pt-7">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/40">
                 Technical specifications
@@ -1726,17 +1677,16 @@ export default function ElectronicsVariantEditor({
               </h4>
 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
-                Choose the exact predefined value for each built-in specification. Built-in attributes are selection-only. Use Add spec below only when you need an additional custom specification.
+                Choose the exact predefined value for each built-in
+                specification. Built-in attributes are selection-only. Use Add
+                spec below only when you need an additional custom
+                specification.
               </p>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-2">
-              {suggestedAttributes.map(([key, label]) => {
-                const options =
-                  optionsForAttribute(
-                    key,
-                    brandName,
-                  );
+              {visibleSuggestedAttributes.map(([key, label]) => {
+                const options = optionsForAttribute(key, brandName);
 
                 /*
                  * Built-in catalogue attributes are deliberately
@@ -1757,8 +1707,7 @@ export default function ElectronicsVariantEditor({
                   return null;
                 }
 
-                const selectedValue =
-                  activeVariant.attributes[key] ?? "";
+                const selectedValue = activeVariant.attributes[key] ?? "";
 
                 return (
                   <label
@@ -1779,22 +1728,15 @@ export default function ElectronicsVariantEditor({
                             event.target.value,
                           )
                         }
-                        className="min-h-12 w-full cursor-pointer appearance-none border border-white/10 bg-black/30 px-3 pr-11 text-sm text-white outline-none transition focus:border-white/45"
+                        className="min-h-10 w-full cursor-pointer appearance-none border border-white/10 bg-black/30 px-3 pr-11 text-sm text-white outline-none transition focus:border-white/45"
                       >
-                        <option value="">
-                          Select {label}
-                        </option>
+                        <option value="">Select {label}</option>
 
-                        {options.map(
-                          (option) => (
-                            <option
-                              key={option}
-                              value={option}
-                            >
-                              {option}
-                            </option>
-                          ),
-                        )}
+                        {options.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
                       </select>
 
                       <span
@@ -1806,10 +1748,7 @@ export default function ElectronicsVariantEditor({
                     </div>
 
                     <span className="mt-2 block text-[11px] leading-5 text-white/25">
-                      {attributeHelpText(
-                        key,
-                        brandName,
-                      )}
+                      {attributeHelpText(key, brandName)}
                     </span>
                   </label>
                 );
@@ -1818,7 +1757,7 @@ export default function ElectronicsVariantEditor({
 
             {Object.entries(activeVariant.attributes).filter(
               ([key]) =>
-                !suggestedAttributes.some(
+                !visibleSuggestedAttributes.some(
                   ([suggestedKey]) => suggestedKey === key,
                 ),
             ).length > 0 ? (
@@ -1826,7 +1765,7 @@ export default function ElectronicsVariantEditor({
                 {Object.entries(activeVariant.attributes)
                   .filter(
                     ([key]) =>
-                      !suggestedAttributes.some(
+                      !visibleSuggestedAttributes.some(
                         ([suggestedKey]) => suggestedKey === key,
                       ),
                   )
@@ -1868,10 +1807,74 @@ export default function ElectronicsVariantEditor({
               </div>
             ) : null}
 
+            {pendingCustomAttributes.some(
+              (attribute) => attribute.clientId === activeVariant.clientId,
+            ) ? (
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {pendingCustomAttributes
+                  .filter(
+                    (attribute) =>
+                      attribute.clientId === activeVariant.clientId,
+                  )
+                  .map((attribute) => (
+                    <div
+                      key={`${attribute.clientId}-${attribute.key}`}
+                      className="border border-[#f5b335]/30 bg-[#f5b335]/[0.035] p-4"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[#f5b335]/80">
+                            {attribute.label}
+                          </span>
+
+                          <p className="mt-1 text-[10px] text-white/25">
+                            New custom specification
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            removePendingCustomAttribute(
+                              activeVariant.clientId,
+                              attribute.key,
+                            )
+                          }
+                          aria-label={`Remove ${attribute.label}`}
+                          className="text-white/30 transition hover:text-red-300"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      <input
+                        autoFocus
+                        defaultValue=""
+                        onChange={(event) =>
+                          updatePendingCustomAttribute(
+                            activeVariant.clientId,
+                            attribute.key,
+                            event.target.value,
+                          )
+                        }
+                        placeholder={`Enter ${attribute.label}`}
+                        className="mt-3 w-full border border-[#f5b335]/25 bg-black/30 px-3 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-[#f5b335]/70"
+                      />
+                    </div>
+                  ))}
+              </div>
+            ) : null}
+
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
               <input
                 value={customAttributeName}
-                onChange={(event) => setCustomAttributeName(event.target.value)}
+                onChange={(event) => {
+                  setCustomAttributeName(event.target.value);
+
+                  if (customAttributeError) {
+                    setCustomAttributeError("");
+                  }
+                }}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
                     event.preventDefault();
@@ -1879,18 +1882,27 @@ export default function ElectronicsVariantEditor({
                   }
                 }}
                 placeholder="Custom specification name, e.g. Charging standard"
-                className="min-h-12 flex-1 border border-white/10 bg-black/30 px-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/45"
+                className="min-h-10 flex-1 border border-white/10 bg-black/30 px-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/45"
               />
 
               <button
                 type="button"
                 onClick={addCustomAttribute}
-                className="inline-flex min-h-12 items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white hover:text-black"
+                className="inline-flex min-h-10 items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white hover:text-black"
               >
                 <Plus className="h-4 w-4" />
                 Add spec
               </button>
             </div>
+
+            {customAttributeError ? (
+              <p
+                role="alert"
+                className="mt-3 text-xs leading-5 text-red-300/90"
+              >
+                {customAttributeError}
+              </p>
+            ) : null}
           </section>
 
           <section className="mt-8 border-t border-white/10 pt-7">
@@ -1898,14 +1910,12 @@ export default function ElectronicsVariantEditor({
               Pricing
             </p>
 
-            <h4 className="mt-2 text-xl font-semibold">
-              Configuration price
-            </h4>
+            <h4 className="mt-2 text-xl font-semibold">Configuration price</h4>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
               Set the selling price for this exact configuration. Different
-              storage, memory, colour or edition combinations can have their
-              own prices.
+              storage, memory, colour or edition combinations can have their own
+              prices.
             </p>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
@@ -1914,7 +1924,7 @@ export default function ElectronicsVariantEditor({
                   Regular price
                 </span>
 
-                <div className="mt-3 flex min-h-14 overflow-hidden border border-white/10 bg-black/30 focus-within:border-white/50">
+                <div className="mt-3 flex min-h-11 overflow-hidden border border-white/10 bg-black/30 focus-within:border-white/50">
                   <span className="flex items-center border-r border-white/10 px-4 text-white/35">
                     $
                   </span>
@@ -1943,7 +1953,7 @@ export default function ElectronicsVariantEditor({
                   Sale price
                 </span>
 
-                <div className="mt-3 flex min-h-14 overflow-hidden border border-white/10 bg-black/30 focus-within:border-white/50">
+                <div className="mt-3 flex min-h-11 overflow-hidden border border-white/10 bg-black/30 focus-within:border-white/50">
                   <span className="flex items-center border-r border-white/10 px-4 text-white/35">
                     $
                   </span>
@@ -1973,9 +1983,7 @@ export default function ElectronicsVariantEditor({
             Number(activeVariant.sale_price) >=
               Number(activeVariant.regular_price) ? (
               <div className="mt-4 flex items-start gap-3 border border-red-400/20 bg-red-400/[0.06] px-4 py-3 text-sm text-red-200">
-                <span>
-                  Sale price must be lower than the regular price.
-                </span>
+                <span>Sale price must be lower than the regular price.</span>
               </div>
             ) : null}
           </section>
@@ -2012,7 +2020,7 @@ export default function ElectronicsVariantEditor({
                       ),
                     })
                   }
-                  className="mt-3 min-h-14 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50 disabled:opacity-30"
+                  className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50 disabled:opacity-30"
                 />
               </label>
 
@@ -2033,58 +2041,59 @@ export default function ElectronicsVariantEditor({
                       ),
                     })
                   }
-                  className="mt-3 min-h-14 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50"
+                  className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50"
                 />
               </label>
             </div>
           </section>
 
-                      <section className="mt-8 border-t border-white/10 pt-7">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/40">
-                Selling status
-              </p>
+          <section className="mt-8 border-t border-white/10 pt-7">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/40">
+              Selling status
+            </p>
 
-              <h4 className="mt-2 text-xl font-semibold">
-                Customer availability
-              </h4>
+            <h4 className="mt-2 text-xl font-semibold">
+              Customer availability
+            </h4>
 
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
-                Choose how this exact configuration should appear and behave in the store.
-              </p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
+              Choose how this exact configuration should appear and behave in
+              the store.
+            </p>
 
-              <div className="st-admin-selling-status mt-5">
-                {availabilityOptions.map((option) => {
-                  const active =
-                    activeVariant.availability_status === option.value;
+            <div className="st-admin-selling-status mt-5">
+              {availabilityOptions.map((option) => {
+                const active =
+                  activeVariant.availability_status === option.value;
 
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      aria-pressed={active}
-                      className={`st-admin-selling-status__option ${option.className} ${
-                        active ? "is-selected" : ""
-                      }`}
-                      onClick={() =>
-                        updateVariant(activeVariant.clientId, {
-                          availability_status: option.value,
-                          stock_quantity:
-                            option.value === "out_of_stock" ||
-                            option.value === "coming_soon"
-                              ? 0
-                              : activeVariant.stock_quantity,
-                        })
-                      }
-                    >
-<span className="st-admin-selling-status__copy">
-                        <strong>{option.label}</strong>
-                        <small>{option.description}</small>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    aria-pressed={active}
+                    className={`st-admin-selling-status__option ${option.className} ${
+                      active ? "is-selected" : ""
+                    }`}
+                    onClick={() =>
+                      updateVariant(activeVariant.clientId, {
+                        availability_status: option.value,
+                        stock_quantity:
+                          option.value === "out_of_stock" ||
+                          option.value === "coming_soon"
+                            ? 0
+                            : activeVariant.stock_quantity,
+                      })
+                    }
+                  >
+                    <span className="st-admin-selling-status__copy">
+                      <strong>{option.label}</strong>
+                      <small>{option.description}</small>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
         </div>
       </section>
     </div>

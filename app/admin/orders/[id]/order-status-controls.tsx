@@ -346,7 +346,7 @@ export default function OrderStatusControls({
                   onClick={() =>
                     requestPaymentStatus(status.value, status.label)
                   }
-                  className={`min-h-12 border px-2 py-3 text-[9px] font-semibold uppercase tracking-[0.11em] transition sm:px-3 sm:text-[10px] ${
+                  className={`min-h-11 border px-2 py-3 text-[9px] font-semibold uppercase tracking-[0.11em] transition sm:px-3 sm:text-[10px] ${
                     selected
                       ? "border-emerald-300/50 bg-emerald-300/[0.1] text-emerald-200"
                       : "border-white/10 bg-white/[0.025] text-white/45 hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
@@ -470,11 +470,11 @@ export default function OrderStatusControls({
               fulfilment status. Confirm that this action is correct.
             </p>
 
-            <div className="mt-7 grid grid-cols-2 gap-3">
+            <div className="mt-5 grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setConfirmation(null)}
-                className="min-h-12 border border-white/15 bg-transparent px-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55 transition hover:border-white/30 hover:text-white"
+                className="min-h-11 border border-white/15 bg-transparent px-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55 transition hover:border-white/30 hover:text-white"
               >
                 Go back
               </button>
@@ -482,7 +482,7 @@ export default function OrderStatusControls({
               <button
                 type="button"
                 onClick={confirmChange}
-                className="min-h-12 border border-white/20 bg-white/[0.1] px-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:border-white/35 hover:bg-white/[0.16]"
+                className="min-h-11 border border-white/20 bg-white/[0.1] px-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:border-white/35 hover:bg-white/[0.16]"
               >
                 Confirm change
               </button>

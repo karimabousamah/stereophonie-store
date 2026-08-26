@@ -9,7 +9,6 @@ import {
   Check,
   CreditCard,
   MapPin,
-  MessageCircle,
   PackageCheck,
   Truck,
   WalletCards,
@@ -29,7 +28,8 @@ const deliveryFacts = [
     icon: MapPin,
     label: "Coverage",
     value: "All Lebanon",
-    description: "We deliver to cities, towns, and accessible areas nationwide.",
+    description:
+      "We deliver to cities, towns, and accessible areas nationwide.",
   },
   {
     icon: BadgeDollarSign,
@@ -47,7 +47,8 @@ const deliveryFacts = [
     icon: CalendarClock,
     label: "Estimated timing",
     value: "3–4 working days",
-    description: "Timing may vary by location, weekend, and courier availability.",
+    description:
+      "Timing may vary by location, weekend, and courier availability.",
   },
 ];
 
@@ -80,8 +81,8 @@ export default function DeliveryPage() {
             <p className="st-retail-eyebrow">Shipping across Lebanon</p>
             <h1>Delivery, made clear.</h1>
             <p>
-              Straightforward fees, realistic timing, and a simple way to
-              follow your order from confirmation to arrival.
+              Straightforward fees, realistic timing, and a simple way to follow
+              your order from confirmation to arrival.
             </p>
             <div className="st-retail-hero__actions">
               <Link
@@ -176,7 +177,7 @@ export default function DeliveryPage() {
               </div>
               <Check />
             </article>
-            <article>
+            <article className="is-coming-soon" aria-disabled="true">
               <WalletCards />
               <div>
                 <span>Coming soon</span>
@@ -184,7 +185,7 @@ export default function DeliveryPage() {
                 <p>Digital payment will be added when fully enabled.</p>
               </div>
             </article>
-            <article>
+            <article className="is-coming-soon" aria-disabled="true">
               <CreditCard />
               <div>
                 <span>Coming soon</span>
@@ -197,7 +198,6 @@ export default function DeliveryPage() {
 
         <section className="st-delivery-page__notice">
           <div>
-            <MessageCircle />
             <div>
               <p className="st-retail-eyebrow">Before your order arrives</p>
               <h2>Keep your phone nearby.</h2>

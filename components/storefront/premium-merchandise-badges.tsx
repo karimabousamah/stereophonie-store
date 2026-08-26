@@ -2,7 +2,18 @@
 
 import { useEffect } from "react";
 
-const badgeLabels = new Set(["NEW", "NEW ARRIVAL", "NEW ARRIVALS"]);
+type PremiumBadgeKind = "new" | "low-stock" | "trending";
+
+const badgeLabels = new Map<string, PremiumBadgeKind>([
+  ["NEW", "new"],
+  ["NEW ARRIVAL", "new"],
+  ["NEW ARRIVALS", "new"],
+
+  ["LOW STOCK", "low-stock"],
+  ["LOW STOCK.", "low-stock"],
+
+  ["TRENDING", "trending"],
+]);
 
 export default function PremiumMerchandiseBadges() {
   useEffect(() => {
@@ -12,29 +23,47 @@ export default function PremiumMerchandiseBadges() {
       );
 
       candidates.forEach((element) => {
+        /*
+         * Only decorate real text badges.
+         * Never decorate containers/headings.
+         */
         if (element.children.length > 0) {
           return;
         }
 
         const value = (element.textContent ?? "")
           .trim()
-          .replace(/\s+/g, " ")
+          .replace(/\\s+/g, " ")
           .toUpperCase();
 
-        if (!badgeLabels.has(value)) {
+        const badgeKind = badgeLabels.get(value);
+
+        if (!badgeKind) {
           return;
         }
 
         const rect = element.getBoundingClientRect();
 
         /*
-         * Avoid decorating headings or large text blocks.
+         * Prevent accidental styling of large UI blocks.
          */
-        if (rect.width > 260 || rect.height > 100) {
+        if (rect.width > 280 || rect.height > 110) {
           return;
         }
 
-        element.classList.add("nita-merch-badge");
+        /*
+         * Remove stale variant classes first.
+         */
+        element.classList.remove(
+          "nita-merch-badge--new",
+          "nita-merch-badge--low-stock",
+          "nita-merch-badge--trending",
+        );
+
+        element.classList.add(
+          "nita-merch-badge",
+          `nita-merch-badge--${badgeKind}`,
+        );
       });
     }
 
@@ -47,6 +76,7 @@ export default function PremiumMerchandiseBadges() {
     observer.observe(document.body, {
       childList: true,
       subtree: true,
+      characterData: true,
     });
 
     return () => {

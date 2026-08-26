@@ -217,7 +217,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
       pageTitle="Coupons"
       pageDescription="Create promotional codes, schedule campaigns and control discount usage."
     >
-      <div className="px-4 py-7 sm:px-8 sm:py-10">
+      <div className="px-4 py-6 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           {params.success ? (
             <div className="mb-6 border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-4 text-sm text-emerald-200">
@@ -241,7 +241,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                 <TicketPercent className="h-5 w-5 text-emerald-300" />
               </div>
 
-              <p className="mt-6 text-4xl font-semibold tracking-[-0.04em]">
+              <p className="mt-6 text-2xl font-semibold tracking-[-0.04em]">
                 {activeCoupons}
               </p>
             </div>
@@ -255,7 +255,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                 <CalendarDays className="h-5 w-5 text-blue-300" />
               </div>
 
-              <p className="mt-6 text-4xl font-semibold tracking-[-0.04em]">
+              <p className="mt-6 text-2xl font-semibold tracking-[-0.04em]">
                 {scheduledCoupons}
               </p>
             </div>
@@ -269,13 +269,13 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                 <Users className="h-5 w-5 text-violet-300" />
               </div>
 
-              <p className="mt-6 text-4xl font-semibold tracking-[-0.04em]">
+              <p className="mt-6 text-2xl font-semibold tracking-[-0.04em]">
                 {totalRedemptions}
               </p>
             </div>
           </section>
 
-          <section className="mt-7 grid gap-7 xl:grid-cols-[430px_minmax(0,1fr)]">
+          <section className="mt-5 grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
             <div className="border border-white/10 bg-[#0d0d0d]">
               <div className="border-b border-white/10 px-5 py-5">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
@@ -301,7 +301,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                     name="name"
                     type="text"
                     placeholder="Summer promotion"
-                    className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
+                    className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
                   />
                 </div>
 
@@ -319,7 +319,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                     type="text"
                     placeholder="SUMMER20"
                     autoCapitalize="characters"
-                    className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm uppercase tracking-[0.12em] text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
+                    className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm uppercase tracking-[0.12em] text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
                   />
                 </div>
 
@@ -352,7 +352,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       id="discount-type"
                       name="discount_type"
                       defaultValue="percentage"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-[#111111] px-4 text-sm text-white outline-none transition focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-[#111111] px-4 text-sm text-white outline-none transition focus:border-white/40"
                     >
                       <option value="percentage">Percentage</option>
 
@@ -375,7 +375,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       min="0.01"
                       step="0.01"
                       placeholder="20"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
                     />
                   </div>
                 </div>
@@ -396,7 +396,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       min="0"
                       step="0.01"
                       defaultValue="0"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition focus:border-white/40"
                     />
                   </div>
 
@@ -415,7 +415,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       min="0.01"
                       step="0.01"
                       placeholder="Optional"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
                     />
                   </div>
                 </div>
@@ -433,7 +433,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       id="starts-at"
                       name="starts_at"
                       type="datetime-local"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition focus:border-white/40"
                     />
                   </div>
 
@@ -449,7 +449,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       id="ends-at"
                       name="ends_at"
                       type="datetime-local"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition focus:border-white/40"
                     />
                   </div>
                 </div>
@@ -470,7 +470,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       min="1"
                       step="1"
                       placeholder="Unlimited"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
                     />
                   </div>
 
@@ -489,7 +489,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                       min="1"
                       step="1"
                       placeholder="Unlimited"
-                      className="mt-2 min-h-12 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
+                      className="mt-2 min-h-11 w-full border border-white/10 bg-white/[0.035] px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
                     />
                   </div>
                 </div>
@@ -535,7 +535,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
 
                 <button
                   type="submit"
-                  className="flex min-h-14 w-full items-center justify-center gap-3 bg-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-white/85"
+                  className="flex min-h-11 w-full items-center justify-center gap-3 bg-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-white/85"
                 >
                   <TicketPercent className="h-4 w-4" />
                   Create coupon
@@ -561,8 +561,8 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
               </div>
 
               {coupons.length === 0 ? (
-                <div className="flex min-h-[500px] flex-col items-center justify-center px-6 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center border border-white/10 bg-white/[0.035]">
+                <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center border border-white/10 bg-white/[0.035]">
                     <TicketPercent className="h-7 w-7 text-white/35" />
                   </div>
 
@@ -586,7 +586,7 @@ export default async function CouponsPage({ searchParams }: CouponsPageProps) {
                     const usedCount = redemptionCounts[coupon.id] ?? 0;
 
                     return (
-                      <article key={coupon.id} className="p-5 sm:p-6">
+                      <article key={coupon.id} className="p-4 sm:p-5">
                         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-3">

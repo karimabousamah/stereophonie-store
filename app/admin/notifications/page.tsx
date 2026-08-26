@@ -71,11 +71,13 @@ export default async function AdminNotificationsPage() {
 
     supabase
       .from("product_variants")
-      .select("id", {
+      .select("id, product_id", {
         count: "exact",
-        head: true,
       })
-      .in("availability_status", ["low_stock", "out_of_stock"]),
+      .in("availability_status", ["low_stock", "out_of_stock"])
+      .order("stock_quantity", {
+        ascending: true,
+      }),
 
     supabase
       .from("stock_alerts")
@@ -95,6 +97,16 @@ export default async function AdminNotificationsPage() {
 
     pendingStockAlerts: pendingStockAlertsResult.count ?? 0,
   };
+
+  const firstInventoryWarningProductId =
+    lowStockVariantsResult.data?.find(
+      (variant) =>
+        typeof variant.product_id === "string" && variant.product_id.length > 0,
+    )?.product_id ?? null;
+
+  const inventoryWarningHref = firstInventoryWarningProductId
+    ? `/admin/products/${firstInventoryWarningProductId}#inventory`
+    : "/admin/products";
 
   const total =
     counts.pendingOrders +
@@ -159,9 +171,12 @@ export default async function AdminNotificationsPage() {
       pageTitle="Notifications"
       pageDescription="Review live store activity and items requiring administrative attention."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
-        <section className="border-b border-white/10 pb-9">
-          <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+      <div className="px-5 py-5 sm:px-7 sm:py-7">
+        <header
+          data-admin-page-intro="true"
+          className="border-b border-black/[0.07] pb-8"
+        >
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/35">
                 Operational activity
@@ -173,7 +188,7 @@ export default async function AdminNotificationsPage() {
                 centre
               </h2>
 
-              <p className="mt-7 max-w-2xl text-sm leading-7 text-white/45 sm:text-base">
+              <p className="mt-5 max-w-2xl text-sm leading-7 text-white/45 sm:text-base">
                 Monitor pending orders, inventory warnings, customer stock
                 requests and unpublished products from one place.
               </p>
@@ -181,13 +196,13 @@ export default async function AdminNotificationsPage() {
 
             <Link
               href="/admin/notifications"
-              className="inline-flex min-h-12 items-center justify-center gap-3 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.17em] text-white/60 transition hover:border-white hover:bg-white hover:text-black"
+              className="inline-flex min-h-11 items-center justify-center gap-3 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.17em] text-white/60 transition hover:border-white hover:bg-white hover:text-black"
             >
               <RefreshCw className="h-4 w-4" />
               Refresh activity
             </Link>
           </div>
-        </section>
+        </header>
 
         <section className="grid gap-4 py-7 sm:grid-cols-2 xl:grid-cols-4">
           <div className="border border-white/10 bg-white/[0.025] p-5">
@@ -195,7 +210,7 @@ export default async function AdminNotificationsPage() {
               Total attention
             </p>
 
-            <p className="mt-4 text-4xl font-semibold">{total}</p>
+            <p className="mt-4 text-2xl font-semibold">{total}</p>
 
             <p className="mt-2 text-xs text-white/35">
               Current operational items
@@ -207,7 +222,7 @@ export default async function AdminNotificationsPage() {
               Orders
             </p>
 
-            <p className="mt-4 text-4xl font-semibold">
+            <p className="mt-4 text-2xl font-semibold">
               {counts.pendingOrders}
             </p>
 
@@ -219,7 +234,7 @@ export default async function AdminNotificationsPage() {
               Inventory
             </p>
 
-            <p className="mt-4 text-4xl font-semibold">
+            <p className="mt-4 text-2xl font-semibold">
               {counts.lowStockVariants}
             </p>
 
@@ -233,7 +248,7 @@ export default async function AdminNotificationsPage() {
               Customer demand
             </p>
 
-            <p className="mt-4 text-4xl font-semibold">
+            <p className="mt-4 text-2xl font-semibold">
               {counts.pendingStockAlerts}
             </p>
 
@@ -244,8 +259,8 @@ export default async function AdminNotificationsPage() {
         </section>
 
         {total === 0 ? (
-          <section className="flex min-h-[360px] flex-col items-center justify-center border border-emerald-400/20 bg-emerald-400/[0.035] px-6 text-center">
-            <div className="flex h-14 w-14 items-center justify-center border border-emerald-400/25 bg-emerald-400/[0.07]">
+          <section className="flex min-h-[280px] flex-col items-center justify-center border border-emerald-400/20 bg-emerald-400/[0.035] px-6 text-center">
+            <div className="flex h-11 w-11 items-center justify-center border border-emerald-400/25 bg-emerald-400/[0.07]">
               <CheckCircle2 className="h-6 w-6 text-emerald-300" />
             </div>
 
@@ -278,10 +293,13 @@ export default async function AdminNotificationsPage() {
                   <Link
                     key={item.title}
                     href={item.href}
-                    className="group grid gap-5 py-6 transition hover:bg-white/[0.025] sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center sm:px-5"
+                    data-admin-notification-row="true"
+                    data-notification-tone={item.tone}
+                    className="group grid gap-5 px-5 py-5 transition sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center"
                   >
                     <div
-                      className={`flex h-12 w-12 items-center justify-center border ${iconClass}`}
+                      data-admin-notification-icon="true"
+                      className={`flex h-11 w-11 items-center justify-center rounded-[13px] border ${iconClass}`}
                     >
                       <Icon className="h-5 w-5" />
                     </div>
@@ -290,7 +308,10 @@ export default async function AdminNotificationsPage() {
                       <div className="flex items-center gap-3">
                         <h3 className="text-lg font-semibold">{item.title}</h3>
 
-                        <span className="flex min-h-6 min-w-6 items-center justify-center rounded-full bg-white px-2 text-[10px] font-bold text-black">
+                        <span
+                          data-admin-notification-count="true"
+                          className="inline-flex min-h-6 items-center justify-center rounded-[8px] border border-black/[0.07] bg-[#f5f5f7] px-2 text-[10px] font-semibold text-black/55"
+                        >
                           {item.count}
                         </span>
                       </div>
@@ -311,7 +332,7 @@ export default async function AdminNotificationsPage() {
           </section>
         )}
 
-        <section className="mt-8 border border-white/10 bg-white/[0.02] p-6">
+        <section className="mt-6 border border-white/10 bg-white/[0.02] p-6">
           <div className="flex items-start gap-4">
             <ShoppingBag className="mt-0.5 h-5 w-5 text-white/45" />
 

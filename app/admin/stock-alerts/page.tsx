@@ -256,7 +256,7 @@ export default async function AdminStockAlertsPage({
       pageTitle="Stock alerts"
       pageDescription="Review customer restock requests and manage notification progress."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
+      <div className="px-5 py-5 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           <header className="border-b border-white/10 pb-8">
             <Link
@@ -267,11 +267,11 @@ export default async function AdminStockAlertsPage({
               Dashboard
             </Link>
 
-            <p className="mt-8 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
               Customer demand
             </p>
 
-            <h1 className="mt-3 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">
+            <h1 className="mt-3 text-2xl font-semibold uppercase tracking-[-0.045em] sm:text-4xl">
               Stock alerts
             </h1>
 
@@ -281,13 +281,13 @@ export default async function AdminStockAlertsPage({
             </p>
           </header>
 
-          <section className="mt-7 grid gap-4 sm:grid-cols-3">
+          <section className="mt-5 grid gap-4 sm:grid-cols-3">
             <div className="border border-amber-400/20 bg-amber-400/[0.05] p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-300/70">
                 Pending
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{pendingCount}</p>
+              <p className="mt-3 text-2xl font-semibold">{pendingCount}</p>
 
               <p className="mt-2 text-sm text-white/35">
                 Waiting for availability
@@ -299,7 +299,7 @@ export default async function AdminStockAlertsPage({
                 Notified
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{notifiedCount}</p>
+              <p className="mt-3 text-2xl font-semibold">{notifiedCount}</p>
 
               <p className="mt-2 text-sm text-white/35">Customer contacted</p>
             </div>
@@ -309,13 +309,13 @@ export default async function AdminStockAlertsPage({
                 Cancelled
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{cancelledCount}</p>
+              <p className="mt-3 text-2xl font-semibold">{cancelledCount}</p>
 
               <p className="mt-2 text-sm text-white/35">No longer active</p>
             </div>
           </section>
 
-          <nav className="mt-7 flex flex-wrap gap-2">
+          <nav className="mt-5 flex flex-wrap gap-2">
             {filters.map((filter) => {
               const href =
                 filter.value === "all"
@@ -347,19 +347,19 @@ export default async function AdminStockAlertsPage({
           </nav>
 
           {alertsError ? (
-            <div className="mt-7 border border-red-400/25 bg-red-400/[0.07] p-5 text-sm text-red-200">
+            <div className="mt-5 border border-red-400/25 bg-red-400/[0.07] p-5 text-sm text-red-200">
               Stock alerts could not be loaded: {alertsError.message}
             </div>
           ) : null}
 
-          <section className="mt-7 overflow-hidden border border-white/10 bg-[#0d0d0d]">
+          <section className="mt-5 overflow-hidden border border-white/10 bg-[#0d0d0d]">
             {!alertsError && visibleAlerts.length === 0 ? (
-              <div className="flex min-h-[480px] flex-col items-center justify-center px-6 text-center">
-                <div className="flex h-16 w-16 items-center justify-center border border-white/15 bg-white/[0.04]">
+              <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
+                <div className="flex h-12 w-12 items-center justify-center border border-white/15 bg-white/[0.04]">
                   <PackageOpen className="h-7 w-7 text-white/45" />
                 </div>
 
-                <h2 className="mt-7 text-3xl font-semibold">No stock alerts</h2>
+                <h2 className="mt-5 text-2xl font-semibold">No stock alerts</h2>
 
                 <p className="mt-3 max-w-md text-sm leading-6 text-white/40">
                   Customer restock requests matching this status will appear
@@ -382,7 +382,7 @@ export default async function AdminStockAlertsPage({
                   return (
                     <article
                       key={alert.id}
-                      className="grid gap-6 p-5 transition hover:bg-white/[0.025] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_auto] lg:items-center"
+                      className="grid gap-5 p-5 transition hover:bg-white/[0.025] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_auto] lg:items-center"
                     >
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-3">
@@ -535,7 +535,7 @@ export default async function AdminStockAlertsPage({
             ) : null}
           </section>
 
-          <div className="mt-7 flex items-start gap-4 border border-white/10 bg-white/[0.025] p-5">
+          <div className="mt-5 flex items-start gap-4 border border-white/10 bg-white/[0.025] p-5">
             <BellRing className="mt-0.5 h-5 w-5 shrink-0 text-white/40" />
 
             <div>

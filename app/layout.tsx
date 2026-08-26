@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 
+import FirstOrderWelcomePopup from "@/components/storefront/first-order-welcome-popup";
 import { CartProvider } from "@/components/cart/cart-provider";
 import GlobalStorefrontAssistant from "@/components/storefront/global-storefront-assistant";
 import StoreAvailabilityGate from "@/components/storefront/store-availability-gate";
 import { StoreSettingsProvider } from "@/components/storefront/store-settings-provider";
 import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
 import { getPublicStoreSettings } from "@/lib/store-settings";
+import { createClient } from "@/lib/supabase/server";
 
 import "./globals.css";
 import "../styles/stereophonie-v3.css";
@@ -33,6 +35,12 @@ export default async function RootLayout({
 }>) {
   const settings = await getPublicStoreSettings();
 
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <html lang="en">
       <body>
@@ -41,6 +49,9 @@ export default async function RootLayout({
             <CartProvider>
               <WishlistProvider>
                 {children}
+
+                <FirstOrderWelcomePopup shouldShow={!user} />
+
                 <GlobalStorefrontAssistant />
               </WishlistProvider>
             </CartProvider>

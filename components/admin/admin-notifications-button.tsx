@@ -71,13 +71,11 @@ export default function AdminNotificationsButton() {
     pendingStockAlerts: [],
   });
 
-  const storageKey =
-    "stereophonie-admin-seen-notifications-v1";
+  const storageKey = "stereophonie-admin-seen-notifications-v1";
 
   useEffect(() => {
     try {
-      const stored =
-        window.localStorage.getItem(storageKey);
+      const stored = window.localStorage.getItem(storageKey);
 
       if (!stored) {
         return;
@@ -88,48 +86,31 @@ export default function AdminNotificationsButton() {
       >;
 
       setSeenIds({
-        pendingOrders:
-          parsed.pendingOrders ?? [],
-        draftProducts:
-          parsed.draftProducts ?? [],
-        lowStockVariants:
-          parsed.lowStockVariants ?? [],
-        pendingStockAlerts:
-          parsed.pendingStockAlerts ?? [],
+        pendingOrders: parsed.pendingOrders ?? [],
+        draftProducts: parsed.draftProducts ?? [],
+        lowStockVariants: parsed.lowStockVariants ?? [],
+        pendingStockAlerts: parsed.pendingStockAlerts ?? [],
       });
     } catch {
       // Ignore corrupt browser storage and start fresh.
     }
   }, []);
 
-  function persistSeenIds(
-    next: Record<
-      keyof NotificationCounts,
-      string[]
-    >,
-  ) {
+  function persistSeenIds(next: Record<keyof NotificationCounts, string[]>) {
     setSeenIds(next);
 
     try {
-      window.localStorage.setItem(
-        storageKey,
-        JSON.stringify(next),
-      );
+      window.localStorage.setItem(storageKey, JSON.stringify(next));
     } catch {
       // Browser privacy settings may block storage.
     }
   }
 
-  function markCategorySeen(
-    category: keyof NotificationCounts,
-  ) {
+  function markCategorySeen(category: keyof NotificationCounts) {
     const next = {
       ...seenIds,
       [category]: Array.from(
-        new Set([
-          ...seenIds[category],
-          ...itemIds[category],
-        ]),
+        new Set([...seenIds[category], ...itemIds[category]]),
       ),
     };
 
@@ -217,27 +198,22 @@ export default function AdminNotificationsButton() {
     });
   }
 
-
   const unseenCounts: NotificationCounts = {
-    pendingOrders:
-      itemIds.pendingOrders.filter(
-        (id) => !seenIds.pendingOrders.includes(id),
-      ).length,
+    pendingOrders: itemIds.pendingOrders.filter(
+      (id) => !seenIds.pendingOrders.includes(id),
+    ).length,
 
-    draftProducts:
-      itemIds.draftProducts.filter(
-        (id) => !seenIds.draftProducts.includes(id),
-      ).length,
+    draftProducts: itemIds.draftProducts.filter(
+      (id) => !seenIds.draftProducts.includes(id),
+    ).length,
 
-    lowStockVariants:
-      itemIds.lowStockVariants.filter(
-        (id) => !seenIds.lowStockVariants.includes(id),
-      ).length,
+    lowStockVariants: itemIds.lowStockVariants.filter(
+      (id) => !seenIds.lowStockVariants.includes(id),
+    ).length,
 
-    pendingStockAlerts:
-      itemIds.pendingStockAlerts.filter(
-        (id) => !seenIds.pendingStockAlerts.includes(id),
-      ).length,
+    pendingStockAlerts: itemIds.pendingStockAlerts.filter(
+      (id) => !seenIds.pendingStockAlerts.includes(id),
+    ).length,
   };
 
   const total =
@@ -245,7 +221,6 @@ export default function AdminNotificationsButton() {
     unseenCounts.draftProducts +
     unseenCounts.lowStockVariants +
     unseenCounts.pendingStockAlerts;
-
 
   const notificationItems = [
     {
@@ -371,7 +346,7 @@ export default function AdminNotificationsButton() {
         </div>
 
         {loading ? (
-          <div className="flex min-h-[260px] flex-col items-center justify-center px-6 text-center">
+          <div className="flex min-h-[220px] flex-col items-center justify-center px-6 text-center">
             <Loader2 className="h-6 w-6 animate-spin text-white/50" />
 
             <p className="mt-4 text-xs font-semibold uppercase tracking-[0.17em] text-white/35">
@@ -406,7 +381,7 @@ export default function AdminNotificationsButton() {
             </div>
           </div>
         ) : total === 0 ? (
-          <div className="flex min-h-[260px] flex-col items-center justify-center px-6 text-center">
+          <div className="flex min-h-[220px] flex-col items-center justify-center px-6 text-center">
             <div className="flex h-12 w-12 items-center justify-center border border-emerald-400/20 bg-emerald-400/[0.06]">
               <CheckCircle2 className="h-5 w-5 text-emerald-300" />
             </div>

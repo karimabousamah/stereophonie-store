@@ -92,31 +92,24 @@ export default async function BestSellingPage() {
       )
       .neq("status", "cancelled"),
 
-    supabase
-      .from("products")
-      .select(
-        `
+    supabase.from("products").select(
+      `
         id,
         name,
         slug,
         status,
         availability
       `,
-      ),
+    ),
   ]);
 
-  const dataError =
-    ordersResult.error ||
-    productsResult.error;
+  const dataError = ordersResult.error || productsResult.error;
 
   const orders = (ordersResult.data ?? []) as OrderRow[];
   const products = (productsResult.data ?? []) as ProductRow[];
 
   const productsByName = new Map(
-    products.map((product) => [
-      normalizeProductName(product.name),
-      product,
-    ]),
+    products.map((product) => [normalizeProductName(product.name), product]),
   );
 
   const aggregate = new Map<string, BestSeller>();
@@ -129,10 +122,7 @@ export default async function BestSellingPage() {
         continue;
       }
 
-      const quantity = Math.max(
-        0,
-        Number(item.quantity ?? 0) || 0,
-      );
+      const quantity = Math.max(0, Number(item.quantity ?? 0) || 0);
 
       if (quantity <= 0) {
         continue;
@@ -140,21 +130,18 @@ export default async function BestSellingPage() {
 
       const key = normalizeProductName(productName);
 
-      const current =
-        aggregate.get(key) ??
-        {
-          key,
-          productName,
-          unitsSold: 0,
-          orderIds: new Set<string>(),
-          revenue: 0,
-          product: productsByName.get(key) ?? null,
-        };
+      const current = aggregate.get(key) ?? {
+        key,
+        productName,
+        unitsSold: 0,
+        orderIds: new Set<string>(),
+        revenue: 0,
+        product: productsByName.get(key) ?? null,
+      };
 
       current.unitsSold += quantity;
       current.orderIds.add(order.id);
-      current.revenue +=
-        Number(item.line_total ?? 0) || 0;
+      current.revenue += Number(item.line_total ?? 0) || 0;
 
       aggregate.set(key, current);
     }
@@ -190,7 +177,7 @@ export default async function BestSellingPage() {
       pageTitle="Best Selling"
       pageDescription="See which products are performing best based on real non-cancelled customer orders."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
+      <div className="px-5 py-5 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           <header className="border-b border-black/[0.08] pb-8">
             <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-neutral-500">
@@ -217,44 +204,43 @@ export default async function BestSellingPage() {
           </header>
 
           {dataError ? (
-            <div className="mt-7 rounded-[22px] border border-red-200 bg-red-50 p-5 text-sm text-red-700">
-              Best-selling information could not be loaded:{" "}
-              {dataError.message}
+            <div className="mt-5 rounded-[18px] border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+              Best-selling information could not be loaded: {dataError.message}
             </div>
           ) : null}
 
-          <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[22px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
+          <section className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-[18px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
               <BarChart3 className="h-5 w-5 text-neutral-500" />
               <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                 Best sellers
               </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
+              <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
                 {bestSellers.length}
               </p>
             </div>
 
-            <div className="rounded-[22px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
+            <div className="rounded-[18px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
               <Boxes className="h-5 w-5 text-neutral-500" />
               <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                 Units sold
               </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
+              <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
                 {totalUnits}
               </p>
             </div>
 
-            <div className="rounded-[22px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
+            <div className="rounded-[18px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
               <CircleDollarSign className="h-5 w-5 text-neutral-500" />
               <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                 Revenue
               </p>
-              <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
+              <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
                 {money(totalRevenue)}
               </p>
             </div>
 
-            <div className="rounded-[22px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
+            <div className="rounded-[18px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_40px_rgba(29,29,31,0.04)]">
               <ShoppingBag className="h-5 w-5 text-neutral-500" />
               <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                 Top product
@@ -265,10 +251,10 @@ export default async function BestSellingPage() {
             </div>
           </section>
 
-          <section className="mt-7 overflow-hidden rounded-[24px] border border-black/[0.08] bg-white shadow-[0_18px_55px_rgba(29,29,31,0.045)]">
+          <section className="mt-5 overflow-hidden rounded-[20px] border border-black/[0.08] bg-white shadow-[0_18px_55px_rgba(29,29,31,0.045)]">
             {bestSellers.length === 0 ? (
-              <div className="px-6 py-20 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#fff5df]">
+              <div className="px-6 py-14 text-center">
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#fff5df]">
                   <Trophy className="h-6 w-6 text-[#a86d09]" />
                 </div>
 
@@ -299,15 +285,14 @@ export default async function BestSellingPage() {
                       : null;
 
                     const storefrontHref =
-                      item.product?.slug &&
-                      item.product.status === "published"
+                      item.product?.slug && item.product.status === "published"
                         ? `/shop/${item.product.slug}`
                         : null;
 
                     return (
                       <article
                         key={item.key}
-                        className="grid gap-5 px-6 py-6 transition hover:bg-[#fffaf0] lg:grid-cols-[90px_minmax(260px,1.6fr)_150px_150px_170px_180px] lg:items-center"
+                        className="grid gap-5 px-5 py-5 transition hover:bg-[#fffaf0] lg:grid-cols-[90px_minmax(260px,1.6fr)_150px_150px_170px_180px] lg:items-center"
                       >
                         <div>
                           <span

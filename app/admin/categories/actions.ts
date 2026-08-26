@@ -500,3 +500,142 @@ export async function removeCategoryWallpaper(
     "Category wallpaper removed.",
   );
 }
+
+
+// STEREOPHONIE MOVIES SERIES CATEGORY ACTION START
+
+export async function createMoviesSeriesCategory(
+  formData: FormData,
+) {
+  const supabase =
+    await requireAdministrator();
+
+  const requestedOrder =
+    Number(
+      formData.get("sort_order") ??
+      20,
+    );
+
+  const sortOrder =
+    Number.isInteger(requestedOrder) &&
+    requestedOrder >= 0
+      ? requestedOrder
+      : 20;
+
+  /*
+   * Search for any existing version first.
+   * This makes the action safe to run multiple times.
+   */
+  const { data: existingRows, error: lookupError } =
+    await supabase
+      .from("categories")
+      .select(
+        `
+          id,
+          name,
+          slug
+        `,
+      )
+      .in(
+        "slug",
+        [
+          "movies-series",
+          "movies-and-series",
+          "films-series",
+          "films-and-series",
+        ],
+      )
+      .limit(1);
+
+  if (lookupError) {
+    redirectWithMessage(
+      "error",
+      `Movies & Series could not be checked: ${lookupError.message}`,
+    );
+  }
+
+  const existing =
+    existingRows?.[0] ?? null;
+
+  /*
+   * IMPORTANT:
+   * Only use category columns already present in the
+   * Stereophonie database.
+   */
+  const categoryData = {
+    name:
+      "Movies & Series",
+
+    slug:
+      "movies-series",
+
+    description:
+      "Movies and series sourcing through Stereophonie. Browse featured entertainment, preview trailers and request availability and pricing directly through WhatsApp.",
+
+    sort_order:
+      sortOrder,
+
+    is_active:
+      true,
+
+    show_on_homepage:
+      true,
+
+    homepage_theme:
+      "dark",
+  };
+
+  const result =
+    existing?.id
+      ? await supabase
+          .from("categories")
+          .update({
+            ...categoryData,
+            updated_at:
+              new Date().toISOString(),
+          })
+          .eq(
+            "id",
+            existing.id,
+          )
+      : await supabase
+          .from("categories")
+          .insert(
+            categoryData,
+          );
+
+  if (result.error) {
+    redirectWithMessage(
+      "error",
+      friendlyDatabaseError(
+        result.error.message,
+      ),
+    );
+  }
+
+  revalidatePath(
+    "/admin/categories",
+  );
+
+  revalidatePath(
+    "/",
+  );
+
+  revalidatePath(
+    "/movies-series",
+  );
+
+  revalidatePath(
+    "/api/storefront/header-categories",
+  );
+
+  redirectWithMessage(
+    "success",
+    existing
+      ? "Movies & Series was repaired and enabled."
+      : "Movies & Series category created successfully.",
+  );
+}
+
+// STEREOPHONIE MOVIES SERIES CATEGORY ACTION END
+

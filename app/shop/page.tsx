@@ -129,29 +129,18 @@ function variantPrice(variant: StoreProductVariant) {
   return validSale ? sale : regular;
 }
 
-
 function productOnOffer(product: ProductRow) {
-  return (product.product_variants ?? []).some(
-    (variant) => {
-      if (variant.is_active === false) {
-        return false;
-      }
+  return (product.product_variants ?? []).some((variant) => {
+    if (variant.is_active === false) {
+      return false;
+    }
 
-      const regular = numberValue(
-        variant.regular_price,
-      );
+    const regular = numberValue(variant.regular_price);
 
-      const sale = numberValue(
-        variant.sale_price,
-      );
+    const sale = numberValue(variant.sale_price);
 
-      return (
-        regular > 0 &&
-        sale > 0 &&
-        sale < regular
-      );
-    },
-  );
+    return regular > 0 && sale > 0 && sale < regular;
+  });
 }
 
 function productPrices(product: ProductRow) {
@@ -322,34 +311,27 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   const category = singleParameter(parameters.category).trim();
 
-  
-
   /*
    * STEREOPHONIE_GAMING_DESKTOP_BUILDER_ROUTE
    *
    * Gaming Desktop is a custom consultation experience rather than
    * a normal product-grid category.
    */
-  const normalizedGamingDesktopCategory =
-    category
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, " ");
+  const normalizedGamingDesktopCategory = category
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ");
 
   const isGamingDesktopExperience =
     normalizedGamingDesktopCategory.includes("gaming") &&
-    (
-      normalizedGamingDesktopCategory.includes("desktop") ||
-      normalizedGamingDesktopCategory.includes("pc")
-    );
+    (normalizedGamingDesktopCategory.includes("desktop") ||
+      normalizedGamingDesktopCategory.includes("pc"));
 
   if (isGamingDesktopExperience) {
     return <GamingDesktopBuilder />;
   }
-const offers =
-    singleParameter(parameters.offers)
-      .trim()
-      .toLowerCase() === "true";
+  const offers =
+    singleParameter(parameters.offers).trim().toLowerCase() === "true";
 
   const brand = singleParameter(parameters.brand).trim();
 
@@ -481,11 +463,7 @@ const offers =
    * otherwise the rail would collapse around itself.
    */
   const priceWindowProducts = products.filter((product) => {
-
-    if (
-      offers &&
-      !productOnOffer(product)
-    ) {
+    if (offers && !productOnOffer(product)) {
       return false;
     }
 
@@ -559,11 +537,7 @@ const offers =
   }
 
   const filteredProducts = products.filter((product) => {
-
-    if (
-      offers &&
-      !productOnOffer(product)
-    ) {
+    if (offers && !productOnOffer(product)) {
       return false;
     }
 

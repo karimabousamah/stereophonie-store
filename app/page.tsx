@@ -4,6 +4,9 @@ import V3Homepage, {
   type V3HomeCategory,
 } from "@/components/stereophonie-v3/home/v3-homepage";
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
+import V3AnnouncementBar, {
+  type StorefrontAnnouncement,
+} from "@/components/stereophonie-v3/layout/v3-announcement-bar";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import {
   isCurrentNewDrop,
@@ -87,7 +90,12 @@ function normalizeProduct(product: ProductRow): V3Product {
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [productsResult, categoriesResult, homepageSettingsResult] = await Promise.all([
+  const [
+    productsResult,
+    categoriesResult,
+    homepageSettingsResult,
+    announcementsResult,
+  ] = await Promise.all([
     supabase
       .from("products")
       .select(
@@ -160,6 +168,24 @@ export default async function HomePage() {
       .select("*")
       .eq("id", "default")
       .maybeSingle(),
+
+    supabase
+      .from("homepage_announcements")
+      .select(
+        `
+          id,
+          message,
+          link_label,
+          link_href
+        `,
+      )
+      .eq("is_active", true)
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("created_at", {
+        ascending: true,
+      }),
   ]);
 
   if (productsResult.error) {
@@ -177,10 +203,19 @@ export default async function HomePage() {
     normalizeProduct,
   );
 
-  const homepageSettings =
-    normalizeHomepageSettings(
-      homepageSettingsResult.data ?? null,
+  const homepageSettings = normalizeHomepageSettings(
+    homepageSettingsResult.data ?? null,
+  );
+
+  const announcements = (announcementsResult.data ??
+    []) as StorefrontAnnouncement[];
+
+  if (announcementsResult.error) {
+    console.error(
+      "V3 homepage announcements could not load:",
+      announcementsResult.error,
     );
+  }
 
   const categories: V3HomeCategory[] = (
     (categoriesResult.data ?? []) as CategoryRow[]
@@ -191,10 +226,7 @@ export default async function HomePage() {
     homepage_title: null,
     homepage_description: null,
     homepage_wallpaper_url: category.image_url ?? null,
-    homepage_theme:
-      category.homepage_theme === "dark"
-        ? "dark"
-        : "light",
+    homepage_theme: category.homepage_theme === "dark" ? "dark" : "light",
   }));
 
   const latestProducts = products.filter(isCurrentNewDrop).slice(0, 4);
@@ -214,6 +246,11 @@ export default async function HomePage() {
   return (
     <>
       <V3Header />
+
+      <V3AnnouncementBar
+        announcements={announcements}
+        backgroundMode={homepageSettings.announcement_background_mode}
+      />
 
       <V3Homepage
         categories={categories}
@@ -235,7 +272,6 @@ export default async function HomePage() {
       />
 
       <V3Footer />
-
     </>
   );
 }

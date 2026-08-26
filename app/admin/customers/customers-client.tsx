@@ -169,14 +169,14 @@ export default function CustomersClient({
   ).length;
 
   return (
-    <div className="px-5 py-8 sm:px-8 sm:py-10">
+    <div className="px-5 py-5 sm:px-7 sm:py-7">
       <div className="mx-auto max-w-[1540px]">
         <header className="border-b border-white/10 pb-8">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
             Customer management
           </p>
 
-          <h1 className="mt-3 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">
+          <h1 className="mt-3 text-2xl font-semibold uppercase tracking-[-0.045em] sm:text-4xl">
             Customers
           </h1>
 
@@ -186,7 +186,7 @@ export default function CustomersClient({
           </p>
         </header>
 
-        <section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -194,7 +194,7 @@ export default function CustomersClient({
                   Registered
                 </p>
 
-                <p className="mt-3 text-3xl font-semibold">
+                <p className="mt-3 text-2xl font-semibold">
                   {customers.length}
                 </p>
 
@@ -212,7 +212,7 @@ export default function CustomersClient({
                   Confirmed
                 </p>
 
-                <p className="mt-3 text-3xl font-semibold">
+                <p className="mt-3 text-2xl font-semibold">
                   {confirmedCustomers}
                 </p>
 
@@ -230,7 +230,7 @@ export default function CustomersClient({
                   Purchased
                 </p>
 
-                <p className="mt-3 text-3xl font-semibold">
+                <p className="mt-3 text-2xl font-semibold">
                   {customersWithOrders}
                 </p>
 
@@ -250,7 +250,7 @@ export default function CustomersClient({
                   Order value
                 </p>
 
-                <p className="mt-3 text-3xl font-semibold">
+                <p className="mt-3 text-2xl font-semibold">
                   {formatCurrency(totalOrderValue)}
                 </p>
 
@@ -264,7 +264,7 @@ export default function CustomersClient({
           </div>
         </section>
 
-        <section className="mt-7 overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
+        <section className="mt-5 overflow-hidden rounded-[18px] border border-white/10 bg-[#0d0d0d]">
           <div className="grid gap-4 border-b border-white/10 p-5 lg:grid-cols-[minmax(0,1fr)_240px_auto] lg:items-center">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/25" />
@@ -274,7 +274,7 @@ export default function CustomersClient({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search name, email, phone or address"
-                className="min-h-12 w-full rounded-xl border border-white/10 bg-black pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-white/35"
+                className="min-h-11 w-full rounded-xl border border-white/10 bg-black pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-white/35"
               />
             </div>
 
@@ -283,7 +283,7 @@ export default function CustomersClient({
               onChange={(event) =>
                 setFilter(event.target.value as CustomerFilter)
               }
-              className="min-h-12 w-full rounded-xl border border-white/10 bg-black px-4 text-sm text-white outline-none transition focus:border-white/35"
+              className="min-h-11 w-full rounded-xl border border-white/10 bg-black px-4 text-sm text-white outline-none transition focus:border-white/35"
             >
               <option value="all">All customers</option>
 
@@ -296,7 +296,7 @@ export default function CustomersClient({
               <option value="stock-disabled">Stock emails disabled</option>
             </select>
 
-            <div className="flex min-h-12 items-center justify-center border border-white/10 px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">
+            <div className="flex min-h-11 items-center justify-center border border-white/10 px-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">
               {filteredCustomers.length} shown
             </div>
           </div>
@@ -308,12 +308,12 @@ export default function CustomersClient({
           ) : null}
 
           {filteredCustomers.length === 0 ? (
-            <div className="flex min-h-[430px] flex-col items-center justify-center px-6 text-center">
-              <div className="flex h-16 w-16 items-center justify-center border border-white/15 bg-white/[0.04]">
+            <div className="flex min-h-[320px] flex-col items-center justify-center px-6 text-center">
+              <div className="flex h-12 w-12 items-center justify-center border border-white/15 bg-white/[0.04]">
                 <Users className="h-7 w-7 text-white/40" />
               </div>
 
-              <h2 className="mt-7 text-3xl font-semibold">
+              <h2 className="mt-5 text-2xl font-semibold">
                 No customers found
               </h2>
 

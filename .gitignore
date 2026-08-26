@@ -51,3 +51,6 @@ install-nita-v2.sh
 .turbo/
 node_modules/
 .env.local
+
+# Local development backup files
+*.bak-*

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa6";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -11,12 +12,7 @@ import { V3BrandLogo } from "@/components/stereophonie-v3/shared/v3-brand-logo";
 
 function WishlistIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      focusable="false"
-      data-st3-wishlist-icon
-    >
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M8.25 4.75h7.5c.83 0 1.5.67 1.5 1.5v13.1c0 .35-.4.55-.68.34L12 16.45l-4.57 3.24c-.28.21-.68.01-.68-.34V6.25c0-.83.67-1.5 1.5-1.5Z" />
     </svg>
   );
@@ -49,6 +45,15 @@ function BagIcon() {
   );
 }
 
+function VisitUsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 21s6-5.15 6-11a6 6 0 1 0-12 0c0 5.85 6 11 6 11Z" />
+      <circle cx="12" cy="10" r="2.25" />
+    </svg>
+  );
+}
+
 function TrackOrderIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -66,12 +71,7 @@ type HeaderCategory = {
 };
 
 type HeaderPanel =
-  | "store"
-  | "support"
-  | "search"
-  | "cart"
-  | `category:${string}`
-  | null;
+  "store" | "support" | "search" | "cart" | `category:${string}` | null;
 
 type OpenHeaderPanel = Exclude<HeaderPanel, null>;
 
@@ -82,7 +82,8 @@ export function V3Header() {
   const [renderedPanel, setRenderedPanel] = useState<HeaderPanel>(null);
   const [panelClosing, setPanelClosing] = useState(false);
   const closeTimer = useRef<number | null>(null);
-  const { totalItems, isCartReady, isCartOpen, openCart, closeCart } = useCart();
+  const { totalItems, isCartReady, isCartOpen, openCart, closeCart } =
+    useCart();
 
   useEffect(() => {
     let cancelled = false;
@@ -140,9 +141,7 @@ export function V3Header() {
   const closePanel = useCallback(() => {
     cancelClose();
 
-    const currentPanel = isCartOpen
-      ? "cart"
-      : activePanel ?? renderedPanel;
+    const currentPanel = isCartOpen ? "cart" : (activePanel ?? renderedPanel);
 
     if (!currentPanel) {
       return;
@@ -180,17 +179,26 @@ export function V3Header() {
     return () => cancelClose();
   }, [cancelClose]);
 
+  /*
+   * Do not silently hide catalogue categories.
+   *
+   * The header receives the live active category collection.
+   * Every category is now allowed into the V3 navigation instead
+   * of arbitrarily cutting the catalogue at 12 categories and
+   * then cutting the visible navigation again at 6.
+   */
   const visibleCategories = categories.slice(0, 12);
   const topCategories = visibleCategories.slice(0, 6);
   const panelForContent: HeaderPanel = isCartOpen
     ? "cart"
-    : activePanel ?? renderedPanel;
+    : (activePanel ?? renderedPanel);
   const panelIsOpen = isCartOpen || activePanel !== null;
-  const utilityPanel = panelForContent === "search" || panelForContent === "cart";
+  const utilityPanel =
+    panelForContent === "search" || panelForContent === "cart";
   const activeCategory = panelForContent?.startsWith("category:")
-    ? categories.find(
+    ? (categories.find(
         (category) => `category:${category.id}` === panelForContent,
-      ) ?? null
+      ) ?? null)
     : null;
 
   function toggleSearch() {
@@ -225,6 +233,22 @@ export function V3Header() {
       >
         <div className="st3-header__bar">
           <div className="st3-header__inner">
+            <a
+              href="https://maps.app.goo.gl/kCsBPgCRFXaK298i6?g_st=ic"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="st3-header__visit-us"
+              aria-label="Stereophonie store location"
+              title="Store location"
+              onMouseEnter={closePanel}
+              onFocus={closePanel}
+            >
+              <VisitUsIcon />
+              <span>Store location</span>
+            </a>
+
+            <div className="st3-header__visit-divider" aria-hidden="true" />
+
             <Link
               href="/"
               className="st3-header__logo"
@@ -271,7 +295,9 @@ export function V3Header() {
               <button
                 type="button"
                 className={`st3-header__nav-item ${
-                  activePanel === "support" ? "st3-header__nav-item--active" : ""
+                  activePanel === "support"
+                    ? "st3-header__nav-item--active"
+                    : ""
                 }`}
                 onMouseEnter={() => openPanel("support")}
                 onFocus={() => openPanel("support")}
@@ -282,83 +308,124 @@ export function V3Header() {
               </button>
             </nav>
 
-            <div className="st3-header__actions">
-              <button
-                type="button"
-                className={`st3-header__icon ${
-                  panelIsOpen && panelForContent === "search" ? "is-active" : ""
-                }`}
-                aria-label="Search products"
-                aria-expanded={panelIsOpen && panelForContent === "search"}
-                aria-controls="st3-header-panel"
-                onMouseEnter={cancelClose}
-                onClick={toggleSearch}
-              >
-                <SearchIcon />
-              </button>
+            <div className="st3-header__right-zone">
+              <div className="st3-header__utility-divider" aria-hidden="true" />
 
-              <Link
-                href="/wishlist"
-                className={`st3-header__icon st3-header__desktop-only ${
-                  pathname.startsWith("/wishlist") ? "is-active" : ""
-                }`}
-                aria-label="Wishlist"
-                aria-current={
-                  pathname.startsWith("/wishlist") ? "page" : undefined
-                }
-                onMouseEnter={closePanel}
-              >
-                <WishlistIcon />
-              </Link>
+              <div className="st3-header__actions">
+                <button
+                  type="button"
+                  className={`st3-header__icon ${
+                    panelIsOpen && panelForContent === "search"
+                      ? "is-active"
+                      : ""
+                  }`}
+                  aria-label="Search products"
+                  aria-expanded={panelIsOpen && panelForContent === "search"}
+                  aria-controls="st3-header-panel"
+                  onMouseEnter={cancelClose}
+                  onClick={toggleSearch}
+                >
+                  <SearchIcon />
+                </button>
 
-              <Link
-                href="/account"
-                className={`st3-header__icon st3-header__desktop-only ${
-                  pathname.startsWith("/account") ? "is-active" : ""
-                }`}
-                aria-label="Account"
-                aria-current={
-                  pathname.startsWith("/account") ? "page" : undefined
-                }
-                onMouseEnter={closePanel}
-              >
-                <UserIcon />
-              </Link>
+                <Link
+                  href="/wishlist"
+                  className={`st3-header__icon st3-header__desktop-only ${
+                    pathname.startsWith("/wishlist") ? "is-active" : ""
+                  }`}
+                  aria-label="Wishlist"
+                  aria-current={
+                    pathname.startsWith("/wishlist") ? "page" : undefined
+                  }
+                  onMouseEnter={closePanel}
+                >
+                  <WishlistIcon />
+                </Link>
 
-              <button
-                type="button"
-                className={`st3-header__icon st3-header__cart-icon ${
-                  isCartOpen ? "is-active" : ""
-                }`}
-                aria-label={`Shopping bag with ${totalItems} ${
-                  totalItems === 1 ? "item" : "items"
-                }`}
-                aria-expanded={isCartOpen}
-                aria-controls="st3-header-panel"
-                onMouseEnter={cancelClose}
-                onClick={toggleCart}
-              >
-                <BagIcon />
-                {isCartReady && totalItems > 0 ? (
-                  <span className="st3-header__cart-count">
-                    {totalItems > 99 ? "99+" : totalItems}
-                  </span>
-                ) : null}
-              </button>
+                <Link
+                  href="/account"
+                  className={`st3-header__icon st3-header__desktop-only ${
+                    pathname.startsWith("/account") ? "is-active" : ""
+                  }`}
+                  aria-label="Account"
+                  aria-current={
+                    pathname.startsWith("/account") ? "page" : undefined
+                  }
+                  onMouseEnter={closePanel}
+                >
+                  <UserIcon />
+                </Link>
 
-              <Link
-                href="/track-order"
-                className={`st3-header__icon st3-header__track-icon ${
-                  pathname.startsWith("/track-order") ? "is-active" : ""
-                }`}
-                aria-label="Track your order"
-                aria-current={
-                  pathname.startsWith("/track-order") ? "page" : undefined
-                }
-                onMouseEnter={closePanel}
+                <button
+                  type="button"
+                  className={`st3-header__icon st3-header__cart-icon ${
+                    isCartOpen ? "is-active" : ""
+                  }`}
+                  aria-label={`Shopping bag with ${totalItems} ${
+                    totalItems === 1 ? "item" : "items"
+                  }`}
+                  aria-expanded={isCartOpen}
+                  aria-controls="st3-header-panel"
+                  onMouseEnter={cancelClose}
+                  onClick={toggleCart}
+                >
+                  <BagIcon />
+                  {isCartReady && totalItems > 0 ? (
+                    <span className="st3-header__cart-count">
+                      {totalItems > 99 ? "99+" : totalItems}
+                    </span>
+                  ) : null}
+                </button>
+
+                <Link
+                  href="/track-order"
+                  className={`st3-header__icon st3-header__track-icon ${
+                    pathname.startsWith("/track-order") ? "is-active" : ""
+                  }`}
+                  aria-label="Track your order"
+                  aria-current={
+                    pathname.startsWith("/track-order") ? "page" : undefined
+                  }
+                  onMouseEnter={closePanel}
+                >
+                  <TrackOrderIcon />
+                </Link>
+              </div>
+
+              <div
+                className="st3-header__socials"
+                aria-label="Stereophonie social media"
               >
-                <TrackOrderIcon />
-              </Link>
+                <a
+                  href="https://www.instagram.com/stereophoniestore?igsh=azJyaXBlMmI0OWwz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  title="Instagram"
+                >
+                  <FaInstagram />
+                </a>
+
+                <a
+                  href="https://www.tiktok.com/@stereophoniestore?_r=1&_t=ZS-98jTbFPraRc"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="TikTok"
+                  title="TikTok"
+                >
+                  <FaTiktok />
+                </a>
+
+                <a
+                  href="https://www.facebook.com/stereophoniestore"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  title="Facebook"
+                >
+                  <FaFacebookF />
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -394,7 +461,11 @@ export function V3Header() {
                   <div>
                     <p className="st3-mega__eyebrow">Shop</p>
                     <div className="st3-mega__links">
-                      <Link href="/shop" className="st3-mega__primary-link" onClick={closePanel}>
+                      <Link
+                        href="/shop"
+                        className="st3-mega__primary-link"
+                        onClick={closePanel}
+                      >
                         Shop All
                       </Link>
                       <Link
@@ -419,16 +490,32 @@ export function V3Header() {
                   <div className="st3-mega__secondary">
                     <p className="st3-mega__eyebrow">Quick Links</p>
                     <div className="st3-mega__secondary-links">
-                      <Link href="/wishlist" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/wishlist"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Wishlist
                       </Link>
-                      <Link href="/account" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/account"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Your account
                       </Link>
-                      <Link href="/track-order" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/track-order"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Track your order
                       </Link>
-                      <Link href="/delivery" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/delivery"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Delivery
                       </Link>
                     </div>
@@ -439,16 +526,32 @@ export function V3Header() {
                   <div>
                     <p className="st3-mega__eyebrow">Support</p>
                     <div className="st3-mega__links">
-                      <Link href="/track-order" className="st3-mega__primary-link" onClick={closePanel}>
+                      <Link
+                        href="/track-order"
+                        className="st3-mega__primary-link"
+                        onClick={closePanel}
+                      >
                         Track your order
                       </Link>
-                      <Link href="/delivery" className="st3-mega__primary-link" onClick={closePanel}>
+                      <Link
+                        href="/delivery"
+                        className="st3-mega__primary-link"
+                        onClick={closePanel}
+                      >
                         Delivery
                       </Link>
-                      <Link href="/returns" className="st3-mega__primary-link" onClick={closePanel}>
+                      <Link
+                        href="/returns"
+                        className="st3-mega__primary-link"
+                        onClick={closePanel}
+                      >
                         Returns
                       </Link>
-                      <Link href="/about" className="st3-mega__primary-link" onClick={closePanel}>
+                      <Link
+                        href="/about"
+                        className="st3-mega__primary-link"
+                        onClick={closePanel}
+                      >
                         About Stereophonie
                       </Link>
                     </div>
@@ -456,13 +559,25 @@ export function V3Header() {
                   <div className="st3-mega__secondary">
                     <p className="st3-mega__eyebrow">Information</p>
                     <div className="st3-mega__secondary-links">
-                      <Link href="/privacy" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/privacy"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Privacy
                       </Link>
-                      <Link href="/terms" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/terms"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Terms
                       </Link>
-                      <Link href="/account" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/account"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Your account
                       </Link>
                     </div>
@@ -506,10 +621,18 @@ export function V3Header() {
                       >
                         View all products
                       </Link>
-                      <Link href="/wishlist" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/wishlist"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Wishlist
                       </Link>
-                      <Link href="/track-order" className="st3-mega__secondary-link" onClick={closePanel}>
+                      <Link
+                        href="/track-order"
+                        className="st3-mega__secondary-link"
+                        onClick={closePanel}
+                      >
                         Track an order
                       </Link>
                     </div>

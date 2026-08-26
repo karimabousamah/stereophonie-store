@@ -150,19 +150,20 @@ export default function DashboardClient({
       pageTitle="Dashboard"
       pageDescription="Monitor products, orders, customers, stock and store activity."
     >
-      <div className="st3-admin-dashboard px-5 py-7 sm:px-8 sm:py-9">
-        <section className="st3-admin-dashboard__welcome mb-6 flex flex-col gap-5 rounded-[28px] border border-black/[0.07] bg-white p-6 shadow-[0_18px_55px_rgba(29,29,31,0.05)] sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+      <div className="st3-admin-dashboard px-5 py-5 sm:px-7 sm:py-7">
+        <section className="st3-admin-dashboard__welcome mb-6 flex flex-col gap-5 rounded-[18px] border border-black/[0.07] bg-white p-6 shadow-[0_18px_55px_rgba(29,29,31,0.05)] sm:p-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#9a6500]">
               Store overview
             </p>
 
-            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
               Everything in one place.
             </h2>
 
             <p className="mt-3 max-w-2xl text-sm leading-6 text-black/50">
-              Monitor products, orders, customers and stock without leaving the dashboard.
+              Monitor products, orders, customers and stock without leaving the
+              dashboard.
             </p>
           </div>
 
@@ -170,13 +171,15 @@ export default function DashboardClient({
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
             <div>
               <p className="text-sm font-semibold capitalize">{role}</p>
-              <p className="text-xs text-black/40">Administrator account active</p>
+              <p className="text-xs text-black/40">
+                Administrator account active
+              </p>
             </div>
           </div>
         </section>
 
         <section
-          className={`mb-7 flex flex-col gap-4 rounded-[24px] border p-5 sm:flex-row sm:items-center sm:justify-between ${
+          className={`mb-7 flex flex-col gap-4 rounded-[20px] border p-5 sm:flex-row sm:items-center sm:justify-between ${
             hasUrgentActions
               ? "border-amber-300/55 bg-[#fff8e9]"
               : "border-emerald-200 bg-emerald-50/70"
@@ -217,7 +220,9 @@ export default function DashboardClient({
                       statistics.lowStockVariants > 0
                         ? `${statistics.lowStockVariants} stock ${statistics.lowStockVariants === 1 ? "warning" : "warnings"}`
                         : null,
-                    ].filter(Boolean).join(" · ")
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")
                   : "New orders, stock warnings and unpublished products will appear here."}
               </p>
             </div>
@@ -241,55 +246,60 @@ export default function DashboardClient({
         <section>
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/35">Key metrics</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em]">Today at a glance</h2>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/35">
+                Key metrics
+              </p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-[-0.03em]">
+                Today at a glance
+              </h2>
             </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
-          {statisticItems.map((item) => {
-            const Icon = item.icon;
+            {statisticItems.map((item) => {
+              const Icon = item.icon;
 
-            const statusStyles = {
-              live: "bg-emerald-50 text-emerald-700",
-              draft: "bg-sky-50 text-sky-700",
-              attention: "bg-amber-50 text-amber-700",
-              demand: "bg-rose-50 text-rose-700",
-              neutral: "bg-violet-50 text-violet-700",
-            };
+              const statusStyles = {
+                live: "bg-emerald-50 text-emerald-700",
+                draft: "bg-sky-50 text-sky-700",
+                attention: "bg-amber-50 text-amber-700",
+                demand: "bg-rose-50 text-rose-700",
+                neutral: "bg-violet-50 text-violet-700",
+              };
 
-            return (
-              <article
-                key={item.label}
-                className="group overflow-hidden rounded-[22px] border border-black/[0.07] bg-white transition duration-300 hover:-translate-y-0.5 hover:border-[#f5b335]/40 hover:shadow-[0_18px_45px_rgba(29,29,31,0.07)]"
-              >
-                <Link href={item.href} className="block h-full p-5">
-                  <div className="flex items-start justify-between">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ${statusStyles[item.status as keyof typeof statusStyles]}`}>
-                      <Icon
-                        strokeWidth={1.8}
-                        className="h-5 w-5"
-                      />
+              return (
+                <article
+                  key={item.label}
+                  className="group overflow-hidden rounded-[18px] border border-black/[0.07] bg-white transition duration-300 hover:-translate-y-0.5 hover:border-[#f5b335]/40 hover:shadow-[0_18px_45px_rgba(29,29,31,0.07)]"
+                >
+                  <Link href={item.href} className="block h-full p-5">
+                    <div className="flex items-start justify-between">
+                      <div
+                        className={`flex h-10 w-10 items-center justify-center rounded-2xl ${statusStyles[item.status as keyof typeof statusStyles]}`}
+                      >
+                        <Icon strokeWidth={1.8} className="h-5 w-5" />
+                      </div>
+
+                      <ArrowUpRight className="h-4 w-4 text-black/20 transition group-hover:text-[#9a6500]" />
                     </div>
 
-                    <ArrowUpRight className="h-4 w-4 text-black/20 transition group-hover:text-[#9a6500]" />
-                  </div>
+                    <div className="mt-5">
+                      <p className="text-xs font-medium text-black/45">
+                        {item.label}
+                      </p>
 
-                  <div className="mt-7">
-                    <p className="text-xs font-medium text-black/45">
-                      {item.label}
-                    </p>
+                      <p className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
+                        {item.value}
+                      </p>
 
-                    <p className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
-                      {item.value}
-                    </p>
-
-                    <p className="mt-2 text-xs leading-5 text-black/40">{item.detail}</p>
-                  </div>
-                </Link>
-              </article>
-            );
-          })}
+                      <p className="mt-2 text-xs leading-5 text-black/40">
+                        {item.detail}
+                      </p>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
           </div>
         </section>
 
@@ -309,24 +319,26 @@ export default function DashboardClient({
               const Icon = item.icon;
 
               return (
-                <div
-                  key={item.title}
-                >
+                <div key={item.title}>
                   <Link
                     href={item.href}
-                    className="group flex h-full min-h-[190px] flex-col justify-between rounded-[24px] border border-black/[0.07] bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:border-[#f5b335]/40 hover:shadow-[0_18px_45px_rgba(29,29,31,0.07)]"
+                    className="group flex h-full min-h-[155px] flex-col justify-between rounded-[20px] border border-black/[0.07] bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:border-[#f5b335]/40 hover:shadow-[0_18px_45px_rgba(29,29,31,0.07)]"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff3da] text-[#8a5800]">
                         <Icon className="h-5 w-5" />
                       </div>
 
-                      <span className="text-xs font-semibold text-black/20">{item.number}</span>
+                      <span className="text-xs font-semibold text-black/20">
+                        {item.number}
+                      </span>
                     </div>
 
-                    <div className="mt-8">
+                    <div className="mt-6">
                       <div className="flex items-center justify-between gap-4">
-                        <h3 className="text-xl font-semibold tracking-[-0.02em]">{item.title}</h3>
+                        <h3 className="text-xl font-semibold tracking-[-0.02em]">
+                          {item.title}
+                        </h3>
                         <ArrowUpRight className="h-4 w-4 text-black/20 transition group-hover:text-[#9a6500]" />
                       </div>
 

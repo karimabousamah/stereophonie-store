@@ -138,8 +138,11 @@ export default async function AdminSettingsPage() {
       pageTitle="Settings"
       pageDescription="Configure store identity, delivery, communication, AI and operational preferences."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
-        <section className="border-b border-white/10 pb-9">
+      <div className="px-5 py-5 sm:px-7 sm:py-7">
+        <header
+          data-admin-page-intro="true"
+          className="border-b border-black/[0.07] pb-8"
+        >
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/35">
             Store configuration
           </p>
@@ -150,12 +153,12 @@ export default async function AdminSettingsPage() {
             settings
           </h2>
 
-          <p className="mt-7 max-w-2xl text-sm leading-7 text-white/45 sm:text-base">
+          <p className="mt-5 max-w-2xl text-sm leading-7 text-white/45 sm:text-base">
             Manage safe operational settings used by the store. Passwords,
             Supabase keys, email API secrets and private authentication
             credentials are never displayed here.
           </p>
-        </section>
+        </header>
 
         <div className="grid gap-4 py-7 sm:grid-cols-2">
           <div className="flex items-start gap-4 border border-emerald-400/20 bg-emerald-400/[0.035] p-5">

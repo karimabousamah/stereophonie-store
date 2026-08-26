@@ -176,7 +176,7 @@ export default async function AdminOrdersPage() {
       pageTitle="Orders"
       pageDescription="Review customer orders, delivery details, payment status and fulfilment progress."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
+      <div className="px-5 py-5 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           <header className="border-b border-white/10 pb-8">
             <Link
@@ -187,11 +187,11 @@ export default async function AdminOrdersPage() {
               Dashboard
             </Link>
 
-            <p className="mt-8 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
               Commerce management
             </p>
 
-            <h1 className="mt-3 text-5xl font-semibold uppercase tracking-[-0.055em] sm:text-7xl">
+            <h1 className="mt-3 text-2xl font-semibold uppercase tracking-[-0.045em] sm:text-4xl">
               Orders
             </h1>
 
@@ -201,13 +201,13 @@ export default async function AdminOrdersPage() {
             </p>
           </header>
 
-          <section className="mt-7 grid gap-4 sm:grid-cols-3">
+          <section className="mt-5 grid gap-4 sm:grid-cols-3">
             <div className="border border-white/10 bg-[#0d0d0d] p-5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
                 Pending
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{pendingCount}</p>
+              <p className="mt-3 text-2xl font-semibold">{pendingCount}</p>
 
               <p className="mt-2 text-sm text-white/35">Awaiting review</p>
             </div>
@@ -217,7 +217,7 @@ export default async function AdminOrdersPage() {
                 Active
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{activeCount}</p>
+              <p className="mt-3 text-2xl font-semibold">{activeCount}</p>
 
               <p className="mt-2 text-sm text-white/35">
                 Being prepared or delivered
@@ -229,7 +229,7 @@ export default async function AdminOrdersPage() {
                 Completed
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{completedCount}</p>
+              <p className="mt-3 text-2xl font-semibold">{completedCount}</p>
 
               <p className="mt-2 text-sm text-white/35">
                 Successfully fulfilled
@@ -238,21 +238,21 @@ export default async function AdminOrdersPage() {
           </section>
 
           {ordersError && (
-            <div className="mt-7 border border-red-400/25 bg-red-400/[0.07] p-5 text-sm text-red-200">
+            <div className="mt-5 border border-red-400/25 bg-red-400/[0.07] p-5 text-sm text-red-200">
               Orders could not be loaded: {ordersError.message}
             </div>
           )}
 
           <OrderSearch total={orderList.length} />
 
-          <section className="mt-7 overflow-hidden border border-white/10 bg-[#0d0d0d]">
+          <section className="mt-5 overflow-hidden border border-white/10 bg-[#0d0d0d]">
             {orderList.length === 0 ? (
-              <div className="flex min-h-[480px] flex-col items-center justify-center px-6 text-center">
-                <div className="flex h-16 w-16 items-center justify-center border border-white/15 bg-white/[0.04]">
+              <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
+                <div className="flex h-12 w-12 items-center justify-center border border-white/15 bg-white/[0.04]">
                   <PackageOpen className="h-7 w-7 text-white/45" />
                 </div>
 
-                <h2 className="mt-7 text-3xl font-semibold">No orders yet</h2>
+                <h2 className="mt-5 text-2xl font-semibold">No orders yet</h2>
 
                 <p className="mt-3 max-w-md text-sm leading-6 text-white/40">
                   Customer orders will appear here after checkout is completed

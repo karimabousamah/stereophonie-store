@@ -49,7 +49,7 @@ type SettingsFormProps = {
 };
 
 const inputClass =
-  "mt-2 min-h-12 w-full border border-white/10 bg-black/30 px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/35";
+  "mt-2 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/35";
 
 const labelClass =
   "text-[9px] font-semibold uppercase tracking-[0.18em] text-white/40";
@@ -106,7 +106,7 @@ export default function SettingsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-7">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {!databaseReady ? (
         <div className="border border-amber-400/25 bg-amber-400/[0.06] px-5 py-4 text-sm text-amber-200">
           Apply the new Supabase migration before saving these settings. The
@@ -133,7 +133,7 @@ export default function SettingsForm({
       ) : null}
 
       <section className="border border-white/10 bg-white/[0.02]">
-        <div className="flex items-start gap-4 border-b border-white/10 p-5 sm:p-6">
+        <div className="flex items-start gap-4 border-b border-white/10 p-4 sm:p-5">
           <Store className="mt-0.5 h-5 w-5 text-white/50" />
 
           <div>
@@ -193,7 +193,7 @@ export default function SettingsForm({
       </section>
 
       <section className="border border-white/10 bg-white/[0.02]">
-        <div className="flex items-start gap-4 border-b border-white/10 p-5 sm:p-6">
+        <div className="flex items-start gap-4 border-b border-white/10 p-4 sm:p-5">
           <Truck className="mt-0.5 h-5 w-5 text-white/50" />
 
           <div>
@@ -282,7 +282,7 @@ export default function SettingsForm({
       </section>
 
       <section className="border border-white/10 bg-white/[0.02]">
-        <div className="flex items-start gap-4 border-b border-white/10 p-5 sm:p-6">
+        <div className="flex items-start gap-4 border-b border-white/10 p-4 sm:p-5">
           <Mail className="mt-0.5 h-5 w-5 text-white/50" />
 
           <div>
@@ -312,7 +312,7 @@ export default function SettingsForm({
       </section>
 
       <section className="border border-white/10 bg-white/[0.02]">
-        <div className="flex items-start gap-4 border-b border-white/10 p-5 sm:p-6">
+        <div className="flex items-start gap-4 border-b border-white/10 p-4 sm:p-5">
           <Bot className="mt-0.5 h-5 w-5 text-white/50" />
 
           <div>
@@ -369,7 +369,7 @@ export default function SettingsForm({
       </section>
 
       <section className="border border-white/10 bg-white/[0.02]">
-        <div className="flex items-start gap-4 border-b border-white/10 p-5 sm:p-6">
+        <div className="flex items-start gap-4 border-b border-white/10 p-4 sm:p-5">
           <PackageCheck className="mt-0.5 h-5 w-5 text-white/50" />
 
           <div>
@@ -416,7 +416,7 @@ export default function SettingsForm({
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-12 items-center justify-center gap-3 bg-white px-7 text-[10px] font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-white/80 disabled:cursor-wait disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-3 bg-white px-7 text-[10px] font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-white/80 disabled:cursor-wait disabled:opacity-50"
         >
           {pending ? (
             <Loader2 className="h-4 w-4 animate-spin" />

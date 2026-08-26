@@ -40,7 +40,6 @@ function readInternalHref(formData: FormData, name: string, label: string) {
   return value;
 }
 
-
 function safeHeroImageExtension(file: File) {
   const type = file.type.toLowerCase();
 
@@ -84,6 +83,74 @@ async function requireAdministrator() {
   };
 }
 
+export async function updateAnnouncementAppearance(formData: FormData) {
+  const { supabase } = await requireAdministrator();
+
+  const rawMode = String(formData.get("announcement_background_mode") ?? "")
+    .trim()
+    .toLowerCase();
+
+  let announcementBackgroundMode: "animated" | "still" | "none";
+
+  if (rawMode === "animated") {
+    announcementBackgroundMode = "animated";
+  } else if (rawMode === "still") {
+    announcementBackgroundMode = "still";
+  } else if (rawMode === "none") {
+    announcementBackgroundMode = "none";
+  } else {
+    redirectWithMessage(
+      "error",
+      "Please select a valid announcement background.",
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("homepage_settings")
+    .update({
+      announcement_background_mode: announcementBackgroundMode,
+    })
+    .eq("id", "default")
+    .select("announcement_background_mode")
+    .single();
+
+  if (error) {
+    console.error("Announcement appearance update failed:", error);
+
+    redirectWithMessage(
+      "error",
+      `Announcement appearance could not be saved: ${error.message}`,
+    );
+  }
+
+  if (data?.announcement_background_mode !== announcementBackgroundMode) {
+    console.error("Announcement background verification failed.", {
+      requested: announcementBackgroundMode,
+      saved: data?.announcement_background_mode,
+    });
+
+    redirectWithMessage(
+      "error",
+      "The announcement background did not save correctly. Please try again.",
+    );
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/homepage");
+
+  const successLabel =
+    announcementBackgroundMode === "animated"
+      ? "Animated loader"
+      : announcementBackgroundMode === "still"
+        ? "Still mustard"
+        : "No wallpaper";
+
+  redirectWithMessage(
+    "success",
+    `${successLabel} announcement background saved successfully.`,
+  );
+}
+
 export async function updateHomepageSettings(formData: FormData) {
   const { supabase, userId } = await requireAdministrator();
 
@@ -92,21 +159,17 @@ export async function updateHomepageSettings(formData: FormData) {
   const removeHeroImage =
     String(formData.get("remove_hero_image") ?? "") === "1";
 
-  const heroImageInput =
-    formData.get("hero_image");
+  const heroImageInput = formData.get("hero_image");
 
-  const { data: existingHomepage } =
-    await supabase
-      .from("homepage_settings")
-      .select("hero_image_url, hero_image_storage_path")
-      .eq("id", "default")
-      .maybeSingle();
+  const { data: existingHomepage } = await supabase
+    .from("homepage_settings")
+    .select("hero_image_url, hero_image_storage_path")
+    .eq("id", "default")
+    .maybeSingle();
 
-  let heroImageUrl =
-    existingHomepage?.hero_image_url ?? null;
+  let heroImageUrl = existingHomepage?.hero_image_url ?? null;
 
-  let heroImageStoragePath =
-    existingHomepage?.hero_image_storage_path ?? null;
+  let heroImageStoragePath = existingHomepage?.hero_image_storage_path ?? null;
 
   if (removeHeroImage) {
     if (heroImageStoragePath) {
@@ -119,15 +182,9 @@ export async function updateHomepageSettings(formData: FormData) {
     heroImageStoragePath = null;
   }
 
-  if (
-    heroImageInput instanceof File &&
-    heroImageInput.size > 0
-  ) {
+  if (heroImageInput instanceof File && heroImageInput.size > 0) {
     if (heroImageInput.size > 10 * 1024 * 1024) {
-      redirectWithMessage(
-        "error",
-        "Hero image must be smaller than 10 MB.",
-      );
+      redirectWithMessage("error", "Hero image must be smaller than 10 MB.");
     }
 
     if (!safeHeroImageExtension(heroImageInput)) {
@@ -140,40 +197,25 @@ export async function updateHomepageSettings(formData: FormData) {
     let processedImage: Buffer;
 
     try {
-      processedImage =
-        await processStoreImage({
-          input: Buffer.from(
-            await heroImageInput.arrayBuffer(),
-          ),
-          kind: "category",
-        });
+      processedImage = await processStoreImage({
+        input: Buffer.from(await heroImageInput.arrayBuffer()),
+        kind: "category",
+      });
     } catch (error) {
-      console.error(
-        "Homepage hero image processing failed:",
-        error,
-      );
+      console.error("Homepage hero image processing failed:", error);
 
-      redirectWithMessage(
-        "error",
-        "The hero image could not be processed.",
-      );
+      redirectWithMessage("error", "The hero image could not be processed.");
     }
 
-    const objectPath =
-      `hero/${Date.now()}-${crypto.randomUUID()}.webp`;
+    const objectPath = `hero/${Date.now()}-${crypto.randomUUID()}.webp`;
 
-    const { error: uploadError } =
-      await supabase.storage
-        .from("homepage-images")
-        .upload(
-          objectPath,
-          new Uint8Array(processedImage),
-          {
-            contentType: "image/webp",
-            cacheControl: "31536000",
-            upsert: false,
-          },
-        );
+    const { error: uploadError } = await supabase.storage
+      .from("homepage-images")
+      .upload(objectPath, new Uint8Array(processedImage), {
+        contentType: "image/webp",
+        cacheControl: "31536000",
+        upsert: false,
+      });
 
     if (uploadError) {
       redirectWithMessage(
@@ -182,27 +224,18 @@ export async function updateHomepageSettings(formData: FormData) {
       );
     }
 
-    const { data: publicUrlData } =
-      supabase.storage
-        .from("homepage-images")
-        .getPublicUrl(objectPath);
+    const { data: publicUrlData } = supabase.storage
+      .from("homepage-images")
+      .getPublicUrl(objectPath);
 
-    const previousPath =
-      heroImageStoragePath;
+    const previousPath = heroImageStoragePath;
 
-    heroImageStoragePath =
-      objectPath;
+    heroImageStoragePath = objectPath;
 
-    heroImageUrl =
-      publicUrlData.publicUrl;
+    heroImageUrl = publicUrlData.publicUrl;
 
-    if (
-      previousPath &&
-      previousPath !== objectPath
-    ) {
-      await supabase.storage
-        .from("homepage-images")
-        .remove([previousPath]);
+    if (previousPath && previousPath !== objectPath) {
+      await supabase.storage.from("homepage-images").remove([previousPath]);
     }
   }
 
@@ -488,3 +521,201 @@ export async function updateHomepageSettings(formData: FormData) {
 
   redirectWithMessage("success", "Homepage settings saved successfully.");
 }
+
+/* === ST HOMEPAGE ANNOUNCEMENTS ACTIONS START === */
+
+function readAnnouncementText(
+  formData: FormData,
+  field: string,
+  maximumLength: number,
+) {
+  return String(formData.get(field) ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maximumLength);
+}
+
+function readAnnouncementHref(formData: FormData, field: string) {
+  const href = String(formData.get(field) ?? "").trim();
+
+  if (!href) {
+    return null;
+  }
+
+  if (href.startsWith("/") && !href.startsWith("//")) {
+    return href.slice(0, 500);
+  }
+
+  try {
+    const parsed = new URL(href);
+
+    if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+      return href.slice(0, 500);
+    }
+  } catch {
+    // handled below
+  }
+
+  redirectWithMessage(
+    "error",
+    "Announcement links must be a website path or a valid http/https URL.",
+  );
+}
+
+function readAnnouncementOrder(formData: FormData) {
+  const value = Number(formData.get("sort_order") ?? 0);
+
+  if (!Number.isFinite(value) || value < 0) {
+    return 0;
+  }
+
+  return Math.trunc(value);
+}
+
+export async function createHomepageAnnouncement(formData: FormData) {
+  const { supabase, userId } = await requireAdministrator();
+
+  const message = readAnnouncementText(formData, "message", 300);
+
+  const linkLabel = readAnnouncementText(formData, "link_label", 80);
+
+  const linkHref = readAnnouncementHref(formData, "link_href");
+
+  if (!message) {
+    redirectWithMessage("error", "Announcement text is required.");
+  }
+
+  if ((linkLabel && !linkHref) || (!linkLabel && linkHref)) {
+    redirectWithMessage(
+      "error",
+      "Complete both the announcement link label and destination, or leave both empty.",
+    );
+  }
+
+  const { error } = await supabase.from("homepage_announcements").insert({
+    message,
+    link_label: linkLabel || null,
+    link_href: linkHref,
+    is_active: formData.get("is_active") === "on",
+    sort_order: readAnnouncementOrder(formData),
+    created_by: userId,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    redirectWithMessage("error", error.message);
+  }
+
+  revalidatePath("/");
+  revalidatePath(homepageAdminPath);
+
+  redirectWithMessage("success", "Announcement created successfully.");
+}
+
+export async function updateHomepageAnnouncement(formData: FormData) {
+  const { supabase } = await requireAdministrator();
+
+  const announcementId = String(formData.get("announcement_id") ?? "").trim();
+
+  const message = readAnnouncementText(formData, "message", 300);
+
+  const linkLabel = readAnnouncementText(formData, "link_label", 80);
+
+  const linkHref = readAnnouncementHref(formData, "link_href");
+
+  if (!announcementId) {
+    redirectWithMessage("error", "Announcement could not be identified.");
+  }
+
+  if (!message) {
+    redirectWithMessage("error", "Announcement text is required.");
+  }
+
+  if ((linkLabel && !linkHref) || (!linkLabel && linkHref)) {
+    redirectWithMessage(
+      "error",
+      "Complete both the announcement link label and destination, or leave both empty.",
+    );
+  }
+
+  const { error } = await supabase
+    .from("homepage_announcements")
+    .update({
+      message,
+      link_label: linkLabel || null,
+      link_href: linkHref,
+      is_active: formData.get("is_active") === "on",
+      sort_order: readAnnouncementOrder(formData),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", announcementId);
+
+  if (error) {
+    redirectWithMessage("error", error.message);
+  }
+
+  revalidatePath("/");
+  revalidatePath(homepageAdminPath);
+
+  redirectWithMessage("success", "Announcement updated successfully.");
+}
+
+export async function toggleHomepageAnnouncement(formData: FormData) {
+  const { supabase } = await requireAdministrator();
+
+  const announcementId = String(formData.get("announcement_id") ?? "").trim();
+
+  const nextActive = String(formData.get("next_active") ?? "") === "true";
+
+  if (!announcementId) {
+    redirectWithMessage("error", "Announcement could not be identified.");
+  }
+
+  const { error } = await supabase
+    .from("homepage_announcements")
+    .update({
+      is_active: nextActive,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", announcementId);
+
+  if (error) {
+    redirectWithMessage("error", error.message);
+  }
+
+  revalidatePath("/");
+  revalidatePath(homepageAdminPath);
+
+  redirectWithMessage(
+    "success",
+    nextActive
+      ? "Announcement activated."
+      : "Announcement hidden from the storefront.",
+  );
+}
+
+export async function deleteHomepageAnnouncement(formData: FormData) {
+  const { supabase } = await requireAdministrator();
+
+  const announcementId = String(formData.get("announcement_id") ?? "").trim();
+
+  if (!announcementId) {
+    redirectWithMessage("error", "Announcement could not be identified.");
+  }
+
+  const { error } = await supabase
+    .from("homepage_announcements")
+    .delete()
+    .eq("id", announcementId);
+
+  if (error) {
+    redirectWithMessage("error", error.message);
+  }
+
+  revalidatePath("/");
+  revalidatePath(homepageAdminPath);
+
+  redirectWithMessage("success", "Announcement deleted successfully.");
+}
+
+/* === ST HOMEPAGE ANNOUNCEMENTS ACTIONS END === */

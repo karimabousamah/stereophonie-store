@@ -23,6 +23,7 @@ import {
   TicketPercent,
   TrendingUp,
   Users,
+  type LucideIcon,
 } from "lucide-react";
 
 type AdminShellProps = {
@@ -128,7 +129,7 @@ const navigation: NavigationGroup[] = [
 
 function AdminNavigation({ pathname }: { pathname: string }) {
   return (
-    <nav className="flex-1 overflow-y-auto px-4 py-6">
+    <nav className="flex-1 overflow-y-auto px-3 py-4">
       <div className="space-y-8">
         {navigation.map((group) => (
           <section key={group.title}>
@@ -138,7 +139,7 @@ function AdminNavigation({ pathname }: { pathname: string }) {
 
             <div className="space-y-1">
               {group.items.map((item) => {
-                const Icon = item.icon;
+                const Icon = item.icon as LucideIcon;
 
                 const isActive =
                   item.href === "/admin"
@@ -204,7 +205,7 @@ export default function AdminShell({
     <div className="st3-admin-shell min-h-screen bg-[#f5f5f7] text-[#1d1d1f]">
       <div className="st3-admin-shell-grid relative min-h-screen">
         <aside className="st3-admin-sidebar fixed inset-y-0 left-0 z-40 flex h-screen w-[280px] flex-col border-r border-black/[0.08] bg-white">
-          <div className="border-b border-black/[0.08] px-7 py-7">
+          <div className="border-b border-black/[0.08] px-6 py-5">
             <Link
               href="/admin"
               className="st-admin-sidebar-brand"
@@ -256,7 +257,7 @@ export default function AdminShell({
 
         <div className="st3-admin-content min-w-0">
           <header className="st3-admin-toolbar sticky top-0 z-30 border-b border-black/[0.08] bg-white/90 backdrop-blur-xl">
-            <div className="flex min-h-[82px] items-center justify-between gap-5 px-8">
+            <div className="flex min-h-[68px] items-center justify-between gap-4 px-6">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/35">
                   <Home className="h-3 w-3" />
@@ -268,7 +269,7 @@ export default function AdminShell({
                   <span className="truncate text-black/55">{pageTitle}</span>
                 </div>
 
-                <h1 className="mt-1 truncate text-2xl font-semibold tracking-[-0.025em]">
+                <h1 className="mt-1 truncate text-xl font-semibold tracking-[-0.025em]">
                   {pageTitle}
                 </h1>
               </div>
@@ -287,7 +288,7 @@ export default function AdminShell({
             </div>
 
             {pageDescription ? (
-              <div className="border-t border-black/[0.06] px-8 py-3 text-sm text-black/45">
+              <div className="border-t border-black/[0.06] px-6 py-2.5 text-xs text-black/45">
                 {pageDescription}
               </div>
             ) : null}

@@ -126,8 +126,7 @@ function validateVariants(productId: string, variants: VariantInput[]) {
       );
     }
 
-    const regularPrice =
-      Number(variant.regular_price);
+    const regularPrice = Number(variant.regular_price);
 
     const salePriceText =
       variant.sale_price === null ||
@@ -136,10 +135,7 @@ function validateVariants(productId: string, variants: VariantInput[]) {
         ? ""
         : String(variant.sale_price).trim();
 
-    if (
-      !Number.isFinite(regularPrice) ||
-      regularPrice <= 0
-    ) {
+    if (!Number.isFinite(regularPrice) || regularPrice <= 0) {
       redirectWithError(
         productId,
         `Enter a valid regular price for ${configurationName}.`,
@@ -147,8 +143,7 @@ function validateVariants(productId: string, variants: VariantInput[]) {
     }
 
     if (salePriceText) {
-      const salePrice =
-        Number(salePriceText);
+      const salePrice = Number(salePriceText);
 
       if (
         !Number.isFinite(salePrice) ||
@@ -320,8 +315,7 @@ export async function updateProduct(formData: FormData) {
 
     const configurationName = variant.variant_name.trim();
 
-    const configurationRegularPrice =
-      Number(variant.regular_price);
+    const configurationRegularPrice = Number(variant.regular_price);
 
     const configurationSalePrice =
       variant.sale_price === "" ||
@@ -335,40 +329,21 @@ export async function updateProduct(formData: FormData) {
       size: configurationName,
 
       variant_name: configurationName,
-      display_position:
-        Number.isFinite(
-          Number(
-            variant.display_position,
-          ),
-        )
-          ? Math.max(
-              0,
-              Math.trunc(
-                Number(
-                  variant.display_position,
-                ),
-              ),
-            )
-          : 0,
+      display_position: Number.isFinite(Number(variant.display_position))
+        ? Math.max(0, Math.trunc(Number(variant.display_position)))
+        : 0,
       attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
 
-      regular_price:
-        configurationRegularPrice,
+      regular_price: configurationRegularPrice,
 
-      sale_price:
-        configurationSalePrice,
+      sale_price: configurationSalePrice,
 
-      stock_quantity:
-        unavailable
-          ? 0
-          : Number(variant.stock_quantity),
+      stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
 
-      low_stock_threshold:
-        Number(variant.low_stock_threshold),
+      low_stock_threshold: Number(variant.low_stock_threshold),
 
-      availability_status:
-        variant.availability_status,
+      availability_status: variant.availability_status,
     };
 
     if (variant.id) {

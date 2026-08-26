@@ -16,11 +16,7 @@ export type V3ProductVariant = {
   attributes?: Record<string, unknown> | null;
   is_active?: boolean | null;
   availability_status:
-    | "in_stock"
-    | "low_stock"
-    | "out_of_stock"
-    | "coming_soon"
-    | null;
+    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | null;
 };
 
 export type V3Product = {
@@ -40,27 +36,20 @@ export type V3Product = {
 };
 
 function numberValue(value: unknown) {
-  const parsed =
-    typeof value === "number" ? value : Number(value);
+  const parsed = typeof value === "number" ? value : Number(value);
 
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function activeVariants(product: V3Product) {
-  return product.variants.filter(
-    (variant) => variant.is_active !== false,
-  );
+  return product.variants.filter((variant) => variant.is_active !== false);
 }
 
 function variantPrice(variant: V3ProductVariant) {
   const regular = numberValue(variant.regular_price);
   const sale = numberValue(variant.sale_price);
 
-  if (
-    regular > 0 &&
-    sale > 0 &&
-    sale < regular
-  ) {
+  if (regular > 0 && sale > 0 && sale < regular) {
     return sale;
   }
 
@@ -81,9 +70,7 @@ function lowestPrice(product: V3Product) {
 
 function lowestRegularPrice(product: V3Product) {
   const prices = activeVariants(product)
-    .map((variant) =>
-      numberValue(variant.regular_price),
-    )
+    .map((variant) => numberValue(variant.regular_price))
     .filter((price) => price > 0);
 
   if (!prices.length) {
@@ -93,48 +80,28 @@ function lowestRegularPrice(product: V3Product) {
   return Math.min(...prices);
 }
 
-export function isProductOnOffer(
-  product: V3Product,
-) {
-  return activeVariants(product).some(
-    (variant) => {
-      const regular = numberValue(
-        variant.regular_price,
-      );
+export function isProductOnOffer(product: V3Product) {
+  return activeVariants(product).some((variant) => {
+    const regular = numberValue(variant.regular_price);
 
-      const sale = numberValue(
-        variant.sale_price,
-      );
+    const sale = numberValue(variant.sale_price);
 
-      return (
-        regular > 0 &&
-        sale > 0 &&
-        sale < regular
-      );
-    },
-  );
+    return regular > 0 && sale > 0 && sale < regular;
+  });
 }
 
-export function isCurrentNewDrop(
-  product: V3Product,
-) {
-  if (
-    !product.is_new_arrival ||
-    !product.new_drop_started_at
-  ) {
+export function isCurrentNewDrop(product: V3Product) {
+  if (!product.is_new_arrival || !product.new_drop_started_at) {
     return false;
   }
 
-  const started = new Date(
-    product.new_drop_started_at,
-  ).getTime();
+  const started = new Date(product.new_drop_started_at).getTime();
 
   if (!Number.isFinite(started)) {
     return false;
   }
 
-  const sevenDays =
-    7 * 24 * 60 * 60 * 1000;
+  const sevenDays = 7 * 24 * 60 * 60 * 1000;
 
   const age = Date.now() - started;
 
@@ -145,25 +112,17 @@ function productImage(product: V3Product) {
   const available = product.images
     .filter((image) => image.image_url)
     .sort((first, second) => {
-      if (
-        first.is_primary !==
-        second.is_primary
-      ) {
+      if (first.is_primary !== second.is_primary) {
         return first.is_primary ? -1 : 1;
       }
 
-      return (
-        (first.position ?? 0) -
-        (second.position ?? 0)
-      );
+      return (first.position ?? 0) - (second.position ?? 0);
     });
 
   return available[0] ?? null;
 }
 
-function productAvailability(
-  product: V3Product,
-) {
+function productAvailability(product: V3Product) {
   const variants = activeVariants(product);
 
   if (!variants.length) {
@@ -173,10 +132,8 @@ function productAvailability(
   if (
     variants.some(
       (variant) =>
-        variant.availability_status ===
-          "in_stock" ||
-        variant.availability_status ===
-          "low_stock" ||
+        variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock" ||
         variant.stock_quantity > 0,
     )
   ) {
@@ -184,11 +141,7 @@ function productAvailability(
   }
 
   if (
-    variants.some(
-      (variant) =>
-        variant.availability_status ===
-        "coming_soon",
-    )
+    variants.some((variant) => variant.availability_status === "coming_soon")
   ) {
     return "Coming soon";
   }
@@ -204,24 +157,20 @@ function money(value: number) {
   }).format(value);
 }
 
-export default function V3ProductCard({
-  product,
-}: {
-  product: V3Product;
-}) {
+export default function V3ProductCard({ product }: { product: V3Product }) {
   const image = productImage(product);
   const price = lowestPrice(product);
-  const regularPrice =
-    lowestRegularPrice(product);
+  const regularPrice = lowestRegularPrice(product);
   const onOffer = isProductOnOffer(product);
   const newDrop = isCurrentNewDrop(product);
 
-  const href = product.slug
-    ? `/shop/${product.slug}`
-    : `/shop`;
+  const href = product.slug ? `/shop/${product.slug}` : `/shop`;
 
   return (
-    <article className="st3-product-card">
+    <article
+      className={`st3-product-card ${onOffer ? "is-on-sale" : ""}`}
+      data-st-sale={onOffer ? "true" : "false"}
+    >
       <Link
         href={href}
         className="st3-product-card__media"
@@ -229,14 +178,15 @@ export default function V3ProductCard({
       >
         <div className="st3-product-card__badges">
           {newDrop ? (
-            <span className="st3-product-card__badge">
-              New
-            </span>
+            <span className="st3-product-card__badge">New</span>
           ) : null}
 
           {onOffer ? (
-            <span className="st3-product-card__badge st3-product-card__badge--offer">
-              Offer
+            <span
+              className="st3-product-card__badge st3-sale-sticker-live"
+              data-st-sale-sticker="true"
+            >
+              Sale
             </span>
           ) : null}
         </div>
@@ -244,10 +194,7 @@ export default function V3ProductCard({
         {image?.image_url ? (
           <img
             src={image.image_url}
-            alt={
-              image.alt_text ||
-              product.name
-            }
+            alt={image.alt_text || product.name}
             className="st3-product-card__image"
             loading="eager"
           />
@@ -260,14 +207,10 @@ export default function V3ProductCard({
 
       <div className="st3-product-card__content">
         <div className="st3-product-card__meta">
-          {product.brandName ||
-            product.categoryName}
+          {product.brandName || product.categoryName}
         </div>
 
-        <Link
-          href={href}
-          className="st3-product-card__name"
-        >
+        <Link href={href} className="st3-product-card__name">
           {product.name}
         </Link>
 
@@ -275,22 +218,16 @@ export default function V3ProductCard({
           <div className="st3-product-card__pricing">
             {price !== null ? (
               <>
-                <span className="st3-product-card__price">
-                  {money(price)}
-                </span>
+                <span className="st3-product-card__price">{money(price)}</span>
 
-                {onOffer &&
-                regularPrice !== null &&
-                regularPrice > price ? (
+                {onOffer && regularPrice !== null && regularPrice > price ? (
                   <span className="st3-product-card__old-price">
                     {money(regularPrice)}
                   </span>
                 ) : null}
               </>
             ) : (
-              <span className="st3-product-card__price">
-                Contact us
-              </span>
+              <span className="st3-product-card__price">Contact us</span>
             )}
           </div>
 

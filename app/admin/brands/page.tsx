@@ -110,9 +110,7 @@ export default async function AdminBrandsPage({
     );
   }
 
-  const activeCount = brands.filter(
-    (brand) => brand.is_active,
-  ).length;
+  const activeCount = brands.filter((brand) => brand.is_active).length;
 
   const totalAssignedProducts = productLinks.filter((product) =>
     Boolean(product.brand_id),
@@ -124,7 +122,7 @@ export default async function AdminBrandsPage({
       pageTitle="Brands"
       pageDescription="Create and organize the product brands displayed throughout the store."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
+      <div className="px-5 py-5 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           <header className="border-b border-white/10 pb-8">
             <Link
@@ -135,11 +133,11 @@ export default async function AdminBrandsPage({
               Dashboard
             </Link>
 
-            <p className="mt-8 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
               Catalog
             </p>
 
-            <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
+            <h1 className="mt-3 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
               Brands
             </h1>
 
@@ -149,7 +147,7 @@ export default async function AdminBrandsPage({
             </p>
           </header>
 
-          <section className="mt-7 grid gap-4 sm:grid-cols-3">
+          <section className="mt-5 grid gap-4 sm:grid-cols-3">
             <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
               <Tags className="h-5 w-5 text-white/30" />
 
@@ -157,7 +155,7 @@ export default async function AdminBrandsPage({
                 Total brands
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{brands.length}</p>
+              <p className="mt-3 text-2xl font-semibold">{brands.length}</p>
             </div>
 
             <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
@@ -167,7 +165,7 @@ export default async function AdminBrandsPage({
                 Active brands
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">{activeCount}</p>
+              <p className="mt-3 text-2xl font-semibold">{activeCount}</p>
             </div>
 
             <div className="rounded-[20px] border border-white/10 bg-[#0d0d0d] p-5">
@@ -177,31 +175,31 @@ export default async function AdminBrandsPage({
                 Assigned products
               </p>
 
-              <p className="mt-3 text-3xl font-semibold">
+              <p className="mt-3 text-2xl font-semibold">
                 {totalAssignedProducts}
               </p>
             </div>
           </section>
 
           {query.success ? (
-            <div className="mt-7 rounded-[16px] border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-4 text-sm text-emerald-200">
+            <div className="mt-5 rounded-[16px] border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-4 text-sm text-emerald-200">
               {query.success}
             </div>
           ) : null}
 
           {query.error ? (
-            <div className="mt-7 rounded-[16px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
+            <div className="mt-5 rounded-[16px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
               {query.error}
             </div>
           ) : null}
 
           {brandsResult.error || productLinksResult.error ? (
-            <div className="mt-7 rounded-[16px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
+            <div className="mt-5 rounded-[16px] border border-red-400/25 bg-red-400/[0.08] px-5 py-4 text-sm text-red-200">
               Brand information could not be loaded completely.
             </div>
           ) : null}
 
-          <section className="mt-7 overflow-hidden rounded-[22px] border border-white/10 bg-[#0d0d0d]">
+          <section className="mt-5 overflow-hidden rounded-[18px] border border-white/10 bg-[#0d0d0d]">
             <div className="flex items-center gap-4 border-b border-white/10 px-5 py-5 sm:px-6">
               <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
                 <Plus className="h-5 w-5 text-white/50" />
@@ -218,7 +216,7 @@ export default async function AdminBrandsPage({
 
             <form
               action={createBrand}
-              className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_140px_auto] lg:items-end"
+              className="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_140px_auto] lg:items-end"
             >
               <div>
                 <label
@@ -233,7 +231,7 @@ export default async function AdminBrandsPage({
                   name="name"
                   required
                   placeholder="Example: Apple"
-                  className="mt-3 min-h-12 w-full border border-white/10 bg-black px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/45"
+                  className="mt-3 min-h-11 w-full border border-white/10 bg-black px-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/45"
                 />
               </div>
 
@@ -252,13 +250,13 @@ export default async function AdminBrandsPage({
                   min="0"
                   step="1"
                   defaultValue="0"
-                  className="mt-3 min-h-12 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
+                  className="mt-3 min-h-11 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
                 />
               </div>
 
               <button
                 type="submit"
-                className="flex min-h-12 items-center justify-center gap-2 bg-white px-6 text-xs font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-white/85"
+                className="flex min-h-11 items-center justify-center gap-2 bg-white px-6 text-xs font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-white/85"
               >
                 <Plus className="h-4 w-4" />
                 Create
@@ -293,7 +291,7 @@ export default async function AdminBrandsPage({
             </form>
           </section>
 
-          <section className="mt-7 flex flex-col gap-5 rounded-[22px] border border-[#f4b632]/35 bg-[#fff7e3] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <section className="mt-5 flex flex-col gap-5 rounded-[18px] border border-[#f4b632]/35 bg-[#fff7e3] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#946000]">
                 Starter library
@@ -311,7 +309,7 @@ export default async function AdminBrandsPage({
             <form action={installElectronicsBrandLibrary}>
               <button
                 type="submit"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#f4b632] px-6 text-sm font-semibold text-black transition hover:bg-[#e8a91f]"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#f4b632] px-6 text-sm font-semibold text-black transition hover:bg-[#e8a91f]"
               >
                 <Plus className="h-4 w-4" />
                 Add brand library
@@ -321,14 +319,12 @@ export default async function AdminBrandsPage({
 
           <BrandSearch total={brands.length} />
 
-          <section className="mt-7 space-y-4">
+          <section className="mt-5 space-y-4">
             {brands.length === 0 ? (
-              <div className="flex min-h-[360px] flex-col items-center justify-center border border-white/10 bg-[#0d0d0d] px-6 text-center">
+              <div className="flex min-h-[280px] flex-col items-center justify-center border border-white/10 bg-[#0d0d0d] px-6 text-center">
                 <Tags className="h-8 w-8 text-white/30" />
 
-                <h2 className="mt-6 text-3xl font-semibold">
-                  No brands yet
-                </h2>
+                <h2 className="mt-6 text-2xl font-semibold">No brands yet</h2>
 
                 <p className="mt-3 max-w-md text-sm leading-6 text-white/40">
                   Create the first brand using the form above.
@@ -341,8 +337,8 @@ export default async function AdminBrandsPage({
                 return (
                   <article
                     key={brand.id}
-                  data-admin-brand-card="true"
-                  data-admin-brand-search={`${brand.name} ${brand.slug} ${brand.description ?? ""}`}
+                    data-admin-brand-card="true"
+                    data-admin-brand-search={`${brand.name} ${brand.slug} ${brand.description ?? ""}`}
                     className="border border-white/10 bg-[#0d0d0d]"
                   >
                     <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
@@ -412,13 +408,9 @@ export default async function AdminBrandsPage({
 
                     <form
                       action={updateBrand}
-                      className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_140px_auto] lg:items-end"
+                      className="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_140px_auto] lg:items-end"
                     >
-                      <input
-                        type="hidden"
-                        name="brand_id"
-                        value={brand.id}
-                      />
+                      <input type="hidden" name="brand_id" value={brand.id} />
 
                       <div>
                         <label
@@ -433,7 +425,7 @@ export default async function AdminBrandsPage({
                           name="name"
                           required
                           defaultValue={brand.name}
-                          className="mt-3 min-h-12 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
+                          className="mt-3 min-h-11 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
                         />
                       </div>
 
@@ -452,13 +444,13 @@ export default async function AdminBrandsPage({
                           min="0"
                           step="1"
                           defaultValue={brand.sort_order}
-                          className="mt-3 min-h-12 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
+                          className="mt-3 min-h-11 w-full border border-white/10 bg-black px-4 text-white outline-none transition focus:border-white/45"
                         />
                       </div>
 
                       <button
                         type="submit"
-                        className="min-h-12 bg-white px-6 text-xs font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-white/85"
+                        className="min-h-11 bg-white px-6 text-xs font-semibold uppercase tracking-[0.16em] text-black transition hover:bg-white/85"
                       >
                         Save brand
                       </button>
@@ -496,7 +488,7 @@ export default async function AdminBrandsPage({
             )}
           </section>
 
-          <div className="mt-7 flex items-start gap-3 border border-amber-400/20 bg-amber-400/[0.06] p-5 text-sm leading-6 text-amber-100/70">
+          <div className="mt-5 flex items-start gap-3 border border-amber-400/20 bg-amber-400/[0.06] p-5 text-sm leading-6 text-amber-100/70">
             <Trash2 className="mt-0.5 h-4 w-4 shrink-0" />
             Brands containing products cannot be deleted. Reassign those
             products first to prevent broken storefront organization.

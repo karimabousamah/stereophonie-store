@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  ImageIcon,
-  ImageOff,
-  MonitorUp,
-  Moon,
-  Save,
-  Sun,
-} from "lucide-react";
+import { ImageIcon, ImageOff, MonitorUp, Moon, Save, Sun } from "lucide-react";
 
 import { useState } from "react";
 
@@ -33,13 +26,13 @@ export default function CategoryHomepageControls({
   showOnHomepage,
   homepageTheme,
 }: Props) {
-  const [selectedTheme, setSelectedTheme] =
-    useState<"light" | "dark">(homepageTheme);
+  const [selectedTheme, setSelectedTheme] = useState<"light" | "dark">(
+    homepageTheme,
+  );
 
   return (
-    <section className="border-t border-white/10 bg-black/30 p-5 sm:p-6">
-      <div className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
-
+    <section className="border-t border-white/10 bg-black/30 p-4 sm:p-5">
+      <div className="grid gap-5 xl:grid-cols-[300px_minmax(0,1fr)]">
         {/* =========================================
             WALLPAPER PREVIEW
         ========================================== */}
@@ -70,8 +63,8 @@ export default function CategoryHomepageControls({
           </div>
 
           <p className="mt-3 text-xs leading-5 text-white/30">
-            The image appears inside the existing category card in
-            “CHOOSE YOUR MODE.”
+            The image appears inside the existing category card in “CHOOSE YOUR
+            MODE.”
           </p>
         </div>
 
@@ -80,7 +73,6 @@ export default function CategoryHomepageControls({
         ========================================== */}
 
         <div className="min-w-0">
-
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-white/10 bg-white/[0.03]">
               <MonitorUp className="h-4 w-4 text-white/40" />
@@ -92,8 +84,8 @@ export default function CategoryHomepageControls({
               </h3>
 
               <p className="mt-1 max-w-2xl text-sm leading-6 text-white/35">
-                Control whether this category appears on the homepage and
-                manage the visual displayed inside its category card.
+                Control whether this category appears on the homepage and manage
+                the visual displayed inside its category card.
               </p>
             </div>
           </div>
@@ -103,15 +95,8 @@ export default function CategoryHomepageControls({
               IMPORTANT: no form exists inside this form
           ========================================== */}
 
-          <form
-            action={updateCategoryHomepagePresentation}
-            className="mt-5"
-          >
-            <input
-              type="hidden"
-              name="category_id"
-              value={categoryId}
-            />
+          <form action={updateCategoryHomepagePresentation} className="mt-5">
+            <input type="hidden" name="category_id" value={categoryId} />
 
             <label className="flex cursor-pointer items-center justify-between gap-5 border border-white/10 bg-black px-4 py-4">
               <div>
@@ -341,9 +326,7 @@ export default function CategoryHomepageControls({
             >
               <Save className="h-3.5 w-3.5" />
 
-              {imageUrl
-                ? "Save / Replace wallpaper"
-                : "Save homepage settings"}
+              {imageUrl ? "Save / Replace wallpaper" : "Save homepage settings"}
             </button>
           </form>
 
@@ -353,15 +336,8 @@ export default function CategoryHomepageControls({
           ========================================== */}
 
           {imageUrl ? (
-            <form
-              action={removeCategoryWallpaper}
-              className="mt-3"
-            >
-              <input
-                type="hidden"
-                name="category_id"
-                value={categoryId}
-              />
+            <form action={removeCategoryWallpaper} className="mt-3">
+              <input type="hidden" name="category_id" value={categoryId} />
 
               <ConfirmSubmitButton
                 label="Remove wallpaper"
@@ -384,7 +360,6 @@ export default function CategoryHomepageControls({
               />
             </form>
           ) : null}
-
         </div>
       </div>
     </section>

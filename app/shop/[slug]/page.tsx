@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/server";
 import ProductGallery from "./product-gallery";
 import ProductPurchaseControls from "./product-purchase-controls";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
+import ProductBackButton from "@/components/stereophonie-v3/shop/product-back-button";
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
 type ProductPageProps = {
   params: Promise<{
@@ -205,6 +206,20 @@ export async function generateMetadata({
   };
 }
 
+function productHasLowStock(
+  variants: Array<{
+    stock_quantity: number;
+    availability_status:
+      "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  }>,
+) {
+  return variants.some(
+    (variant) =>
+      Number(variant.stock_quantity ?? 0) > 0 &&
+      variant.availability_status === "low_stock",
+  );
+}
+
 export default async function ProductPage({
   params,
   searchParams,
@@ -298,36 +313,16 @@ export default async function ProductPage({
 
   const variants = ((product.product_variants as ProductVariant[]) ?? []).sort(
     (first, second) => {
-      const firstPosition =
-        Number(
-          first.display_position ??
-          0,
-        );
+      const firstPosition = Number(first.display_position ?? 0);
 
-      const secondPosition =
-        Number(
-          second.display_position ??
-          0,
-        );
+      const secondPosition = Number(second.display_position ?? 0);
 
-      if (
-        firstPosition !==
-        secondPosition
-      ) {
-        return (
-          firstPosition -
-          secondPosition
-        );
+      if (firstPosition !== secondPosition) {
+        return firstPosition - secondPosition;
       }
 
-      return (
-        first.variant_name?.trim() ||
-        first.size ||
-        ""
-      ).localeCompare(
-        second.variant_name?.trim() ||
-        second.size ||
-        "",
+      return (first.variant_name?.trim() || first.size || "").localeCompare(
+        second.variant_name?.trim() || second.size || "",
         undefined,
         {
           numeric: true,
@@ -389,52 +384,45 @@ export default async function ProductPage({
       .replace(/\s+/g, " ")
       .trim();
 
-  const recommendationSourceText =
-    normalizeRecommendationText(
-      [
-        currentProductName,
-        product.description ?? "",
-        brandName,
-        categoryName,
-        collectionName,
-      ].join(" "),
-    );
+  const recommendationSourceText = normalizeRecommendationText(
+    [
+      currentProductName,
+      product.description ?? "",
+      brandName,
+      categoryName,
+      collectionName,
+    ].join(" "),
+  );
 
-  const sourceIsPhone =
-    /\b(phone|iphone|smartphone|mobile)\b/.test(
-      recommendationSourceText,
-    );
+  const sourceIsPhone = /\b(phone|iphone|smartphone|mobile)\b/.test(
+    recommendationSourceText,
+  );
 
-  const sourceIsLaptop =
-    /\b(laptop|macbook|notebook|computer|pc)\b/.test(
-      recommendationSourceText,
-    );
+  const sourceIsLaptop = /\b(laptop|macbook|notebook|computer|pc)\b/.test(
+    recommendationSourceText,
+  );
 
-  const sourceIsTablet =
-    /\b(tablet|ipad|galaxy tab)\b/.test(
-      recommendationSourceText,
-    );
+  const sourceIsTablet = /\b(tablet|ipad|galaxy tab)\b/.test(
+    recommendationSourceText,
+  );
 
-  const sourceIsWatch =
-    /\b(watch|smartwatch|apple watch|fitness watch)\b/.test(
-      recommendationSourceText,
-    );
+  const sourceIsWatch = /\b(watch|smartwatch|apple watch|fitness watch)\b/.test(
+    recommendationSourceText,
+  );
 
   const sourceIsGaming =
     /\b(playstation|ps5|xbox|nintendo|switch|console|gaming)\b/.test(
       recommendationSourceText,
     );
 
-  const sourceIsCamera =
-    /\b(camera|gopro|photography|instax|polaroid)\b/.test(
-      recommendationSourceText,
-    );
+  const sourceIsCamera = /\b(camera|gopro|photography|instax|polaroid)\b/.test(
+    recommendationSourceText,
+  );
 
   const sourceIsAudio =
     /\b(airpods|earphones|earbuds|headphones|headset|speaker|audio)\b/.test(
       recommendationSourceText,
     );
-
 
   /*
    * ============================================================
@@ -461,39 +449,26 @@ export default async function ProductPage({
    * ============================================================
    */
 
-  
-
-  function recommendationTokens(
-    value: unknown,
-  ) {
-    return normalizeRecommendationText(
-      value,
-    )
-      .split(" ")
-      .filter(Boolean);
+  function recommendationTokens(value: unknown) {
+    return normalizeRecommendationText(value).split(" ").filter(Boolean);
   }
 
-  function relationRecommendationName(
-    value: unknown,
-  ) {
+  function relationRecommendationName(value: unknown) {
     if (!value) {
       return "";
     }
 
     if (Array.isArray(value)) {
-      const first =
-        value[0] as {
-          name?: unknown;
-        } | undefined;
+      const first = value[0] as
+        | {
+            name?: unknown;
+          }
+        | undefined;
 
-      return normalizeRecommendationText(
-        first?.name,
-      );
+      return normalizeRecommendationText(first?.name);
     }
 
-    if (
-      typeof value === "object"
-    ) {
+    if (typeof value === "object") {
       return normalizeRecommendationText(
         (
           value as {
@@ -506,9 +481,7 @@ export default async function ProductPage({
     return "";
   }
 
-  function flattenRecommendationAttributes(
-    variantsValue: unknown,
-  ) {
+  function flattenRecommendationAttributes(variantsValue: unknown) {
     if (!Array.isArray(variantsValue)) {
       return "";
     }
@@ -516,19 +489,15 @@ export default async function ProductPage({
     const values: string[] = [];
 
     for (const variant of variantsValue) {
-      if (
-        !variant ||
-        typeof variant !== "object"
-      ) {
+      if (!variant || typeof variant !== "object") {
         continue;
       }
 
-      const attributes =
-        (
-          variant as {
-            attributes?: unknown;
-          }
-        ).attributes;
+      const attributes = (
+        variant as {
+          attributes?: unknown;
+        }
+      ).attributes;
 
       if (
         !attributes ||
@@ -538,25 +507,14 @@ export default async function ProductPage({
         continue;
       }
 
-      for (
-        const [key, value]
-        of Object.entries(
-          attributes as Record<
-            string,
-            unknown
-          >,
-        )
-      ) {
-        values.push(
-          key,
-          String(value ?? ""),
-        );
+      for (const [key, value] of Object.entries(
+        attributes as Record<string, unknown>,
+      )) {
+        values.push(key, String(value ?? ""));
       }
     }
 
-    return normalizeRecommendationText(
-      values.join(" "),
-    );
+    return normalizeRecommendationText(values.join(" "));
   }
 
   type RecommendationFamily =
@@ -573,13 +531,8 @@ export default async function ProductPage({
     | "accessory"
     | "other";
 
-  function recommendationFamily(
-    textValue: string,
-  ): RecommendationFamily {
-    const value =
-      normalizeRecommendationText(
-        textValue,
-      );
+  function recommendationFamily(textValue: string): RecommendationFamily {
+    const value = normalizeRecommendationText(textValue);
 
     if (
       /\b(scooter|electric scooter|e scooter|escooter|mobility|hoverboard|e bike|ebike|electric bike)\b/.test(
@@ -597,34 +550,20 @@ export default async function ProductPage({
       return "phone";
     }
 
-    if (
-      /\b(ipad|tablet|galaxy tab|surface tablet)\b/.test(
-        value,
-      )
-    ) {
+    if (/\b(ipad|tablet|galaxy tab|surface tablet)\b/.test(value)) {
       return "tablet";
     }
 
-    if (
-      /\b(macbook|laptop|notebook|ultrabook)\b/.test(
-        value,
-      )
-    ) {
+    if (/\b(macbook|laptop|notebook|ultrabook)\b/.test(value)) {
       return "laptop";
     }
 
-    if (
-      /\b(desktop|imac|pc tower|all in one|mini pc)\b/.test(
-        value,
-      )
-    ) {
+    if (/\b(desktop|imac|pc tower|all in one|mini pc)\b/.test(value)) {
       return "desktop";
     }
 
     if (
-      /\b(apple watch|smartwatch|smart watch|fitness watch|watch)\b/.test(
-        value,
-      )
+      /\b(apple watch|smartwatch|smart watch|fitness watch|watch)\b/.test(value)
     ) {
       return "watch";
     }
@@ -645,11 +584,7 @@ export default async function ProductPage({
       return "gaming";
     }
 
-    if (
-      /\b(camera|dslr|mirrorless|gopro|action camera|lens)\b/.test(
-        value,
-      )
-    ) {
+    if (/\b(camera|dslr|mirrorless|gopro|action camera|lens)\b/.test(value)) {
       return "camera";
     }
 
@@ -672,43 +607,28 @@ export default async function ProductPage({
     return "other";
   }
 
-  const sourceVariantAttributes =
-    normalizeRecommendationText(
-      variants
-        .map(
-          (variant) =>
-            Object.entries(
-              variant.attributes ?? {},
-            )
-              .flatMap(
-                ([key, value]) => [
-                  key,
-                  String(
-                    value ?? "",
-                  ),
-                ],
-              )
-              .join(" "),
-        )
-        .join(" "),
-    );
+  const sourceVariantAttributes = normalizeRecommendationText(
+    variants
+      .map((variant) =>
+        Object.entries(variant.attributes ?? {})
+          .flatMap(([key, value]) => [key, String(value ?? "")])
+          .join(" "),
+      )
+      .join(" "),
+  );
 
-  const sourceRecommendationText =
-    normalizeRecommendationText(
-      [
-        currentProductName,
-        brandName,
-        categoryName,
-        collectionName,
-        product.description ?? "",
-        sourceVariantAttributes,
-      ].join(" "),
-    );
+  const sourceRecommendationText = normalizeRecommendationText(
+    [
+      currentProductName,
+      brandName,
+      categoryName,
+      collectionName,
+      product.description ?? "",
+      sourceVariantAttributes,
+    ].join(" "),
+  );
 
-  const sourceFamily =
-    recommendationFamily(
-      sourceRecommendationText,
-    );
+  const sourceFamily = recommendationFamily(sourceRecommendationText);
 
   /*
    * Model tokens intentionally preserve numbers.
@@ -719,53 +639,43 @@ export default async function ProductPage({
    * Galaxy S26 Ultra
    * iPad Pro 13
    */
-  const ignoredRecommendationTokens =
-    new Set([
-      "apple",
-      "samsung",
-      "xiaomi",
-      "sony",
-      "huawei",
-      "phone",
-      "smartphone",
-      "tablet",
-      "laptop",
-      "desktop",
-      "watch",
-      "smartwatch",
-      "electric",
-      "scooter",
-      "gaming",
-      "audio",
-      "camera",
-      "product",
-      "with",
-      "and",
-      "for",
-      "the",
-      "new",
-    ]);
+  const ignoredRecommendationTokens = new Set([
+    "apple",
+    "samsung",
+    "xiaomi",
+    "sony",
+    "huawei",
+    "phone",
+    "smartphone",
+    "tablet",
+    "laptop",
+    "desktop",
+    "watch",
+    "smartwatch",
+    "electric",
+    "scooter",
+    "gaming",
+    "audio",
+    "camera",
+    "product",
+    "with",
+    "and",
+    "for",
+    "the",
+    "new",
+  ]);
 
-  const sourceModelTokens =
-    recommendationTokens(
-      currentProductName,
-    ).filter(
-      (token) =>
-        token.length >= 2 &&
-        !ignoredRecommendationTokens.has(
-          token,
-        ),
-    );
+  const sourceModelTokens = recommendationTokens(currentProductName).filter(
+    (token) => token.length >= 2 && !ignoredRecommendationTokens.has(token),
+  );
 
   const genericAccessoryWords =
     /\b(case|cover|coque|screen protector|charger|charging|cable|adapter|power bank|dock|hub|stand|mount|holder|strap|band|bag|sleeve|keyboard|mouse|stylus|pencil|tripod|memory card|microphone|controller|headset)\b/;
 
   function complementaryScore(
-    source:
-      RecommendationFamily,
+    source: RecommendationFamily,
     candidateText: string,
-    candidateFamily:
-      RecommendationFamily,
+    candidateFamily: RecommendationFamily,
   ) {
     switch (source) {
       case "phone":
@@ -869,10 +779,7 @@ export default async function ProductPage({
          * Another scooter is a sensible alternative,
          * although weaker than a complementary accessory.
          */
-        if (
-          candidateFamily ===
-          "mobility"
-        ) {
+        if (candidateFamily === "mobility") {
           return 24;
         }
 
@@ -895,10 +802,8 @@ export default async function ProductPage({
   }
 
   function incompatiblePenalty(
-    source:
-      RecommendationFamily,
-    candidate:
-      RecommendationFamily,
+    source: RecommendationFamily,
+    candidate: RecommendationFamily,
     candidateText: string,
   ) {
     if (
@@ -914,81 +819,58 @@ export default async function ProductPage({
      * merchandising recommendations without an explicit
      * compatibility signal.
      */
-    const stronglyUnrelated =
-      new Set([
-        "mobility:phone",
-        "mobility:tablet",
-        "mobility:laptop",
-        "mobility:desktop",
-        "mobility:gaming",
-        "mobility:camera",
-        "phone:mobility",
-        "tablet:mobility",
-        "laptop:mobility",
-        "desktop:mobility",
-        "gaming:mobility",
-        "camera:mobility",
-        "networking:watch",
-        "networking:camera",
-        "watch:networking",
-      ]);
+    const stronglyUnrelated = new Set([
+      "mobility:phone",
+      "mobility:tablet",
+      "mobility:laptop",
+      "mobility:desktop",
+      "mobility:gaming",
+      "mobility:camera",
+      "phone:mobility",
+      "tablet:mobility",
+      "laptop:mobility",
+      "desktop:mobility",
+      "gaming:mobility",
+      "camera:mobility",
+      "networking:watch",
+      "networking:camera",
+      "watch:networking",
+    ]);
 
-    if (
-      stronglyUnrelated.has(
-        `${source}:${candidate}`,
-      )
-    ) {
+    if (stronglyUnrelated.has(`${source}:${candidate}`)) {
       return -90;
     }
 
     /*
      * Generic unrelated device families get a lighter penalty.
      */
-    if (
-      source !== candidate &&
-      !genericAccessoryWords.test(
-        candidateText,
-      )
-    ) {
+    if (source !== candidate && !genericAccessoryWords.test(candidateText)) {
       return -24;
     }
 
     return 0;
   }
 
-  function recommendationCompatibilityScore(
-    item: any,
-  ) {
-    const candidateBrandName =
-      relationRecommendationName(
-        item.brands,
-      );
+  function recommendationCompatibilityScore(item: any) {
+    const candidateBrandName = relationRecommendationName(item.brands);
 
-    const candidateCategoryName =
-      relationRecommendationName(
-        item.categories,
-      );
+    const candidateCategoryName = relationRecommendationName(item.categories);
 
-    const candidateAttributes =
-      flattenRecommendationAttributes(
-        item.product_variants,
-      );
+    const candidateAttributes = flattenRecommendationAttributes(
+      item.product_variants,
+    );
 
-    const candidateText =
-      normalizeRecommendationText(
-        [
-          item.name,
-          item.description ?? "",
-          candidateBrandName,
-          candidateCategoryName,
-          candidateAttributes,
-        ].join(" "),
-      );
+    const candidateText = normalizeRecommendationText(
+      [
+        item.name,
+        item.description ?? "",
+        candidateBrandName,
+        candidateCategoryName,
+        candidateAttributes,
+      ].join(" "),
+    );
 
-    const candidateFamily =
-      recommendationFamily(
-        candidateText,
-      );
+    const candidateFamily = recommendationFamily(candidateText);
 
     let score = 0;
 
@@ -999,16 +881,9 @@ export default async function ProductPage({
      */
 
     const normalizedSourceName =
-      normalizeRecommendationText(
-        currentProductName,
-      );
+      normalizeRecommendationText(currentProductName);
 
-    if (
-      normalizedSourceName &&
-      candidateText.includes(
-        normalizedSourceName,
-      )
-    ) {
+    if (normalizedSourceName && candidateText.includes(normalizedSourceName)) {
       score += 130;
     }
 
@@ -1022,39 +897,24 @@ export default async function ProductPage({
      */
     if (
       normalizedSourceName &&
-      candidateAttributes.includes(
-        normalizedSourceName,
-      )
+      candidateAttributes.includes(normalizedSourceName)
     ) {
       score += 140;
     }
 
-    const matchingModelTokens =
-      sourceModelTokens.filter(
-        (token) =>
-          candidateText.includes(
-            token,
-          ),
-      ).length;
+    const matchingModelTokens = sourceModelTokens.filter((token) =>
+      candidateText.includes(token),
+    ).length;
 
-    if (
-      genericAccessoryWords.test(
-        candidateText,
-      ) &&
-      matchingModelTokens >= 3
-    ) {
+    if (genericAccessoryWords.test(candidateText) && matchingModelTokens >= 3) {
       score += 85;
     } else if (
-      genericAccessoryWords.test(
-        candidateText,
-      ) &&
+      genericAccessoryWords.test(candidateText) &&
       matchingModelTokens === 2
     ) {
       score += 62;
     } else if (
-      genericAccessoryWords.test(
-        candidateText,
-      ) &&
+      genericAccessoryWords.test(candidateText) &&
       matchingModelTokens === 1
     ) {
       score += 24;
@@ -1066,12 +926,7 @@ export default async function ProductPage({
      * ------------------------------------------------------------
      */
 
-    score +=
-      complementaryScore(
-        sourceFamily,
-        candidateText,
-        candidateFamily,
-      );
+    score += complementaryScore(sourceFamily, candidateText, candidateFamily);
 
     /*
      * ------------------------------------------------------------
@@ -1080,11 +935,7 @@ export default async function ProductPage({
      *
      * A same-family product is a sensible alternative.
      */
-    if (
-      sourceFamily !== "other" &&
-      candidateFamily ===
-        sourceFamily
-    ) {
+    if (sourceFamily !== "other" && candidateFamily === sourceFamily) {
       score += 28;
     }
 
@@ -1097,24 +948,13 @@ export default async function ProductPage({
      * make an unrelated device appear.
      */
     const sameBrand =
-      Boolean(
-        currentProductBrandId,
-      ) &&
-      item.brand_id ===
-        currentProductBrandId;
+      Boolean(currentProductBrandId) && item.brand_id === currentProductBrandId;
 
     if (sameBrand) {
-      if (
-        sourceFamily ===
-          candidateFamily
-      ) {
+      if (sourceFamily === candidateFamily) {
         score += 28;
       } else if (
-        complementaryScore(
-          sourceFamily,
-          candidateText,
-          candidateFamily,
-        ) > 0
+        complementaryScore(sourceFamily, candidateText, candidateFamily) > 0
       ) {
         score += 24;
       } else {
@@ -1134,16 +974,14 @@ export default async function ProductPage({
 
     if (
       currentProductCollectionId &&
-      item.collection_id ===
-        currentProductCollectionId
+      item.collection_id === currentProductCollectionId
     ) {
       score += 18;
     }
 
     if (
       currentProductCategoryId &&
-      item.category_id ===
-        currentProductCategoryId
+      item.category_id === currentProductCategoryId
     ) {
       score += 16;
     }
@@ -1154,12 +992,7 @@ export default async function ProductPage({
      * ------------------------------------------------------------
      */
 
-    score +=
-      incompatiblePenalty(
-        sourceFamily,
-        candidateFamily,
-        candidateText,
-      );
+    score += incompatiblePenalty(sourceFamily, candidateFamily, candidateText);
 
     /*
      * ------------------------------------------------------------
@@ -1189,35 +1022,20 @@ export default async function ProductPage({
     };
   }
 
-  function isCandidateAvailable(
-    item: any,
-  ) {
-    const candidateVariants =
-      Array.isArray(
-        item.product_variants,
-      )
-        ? item.product_variants
-        : [];
+  function isCandidateAvailable(item: any) {
+    const candidateVariants = Array.isArray(item.product_variants)
+      ? item.product_variants
+      : [];
 
     return candidateVariants.some(
       (variant: any) =>
-        Number(
-          variant.stock_quantity ??
-            0,
-        ) > 0 &&
-        (
-          variant.availability_status ===
-            "in_stock" ||
-          variant.availability_status ===
-            "low_stock"
-        ),
+        Number(variant.stock_quantity ?? 0) > 0 &&
+        (variant.availability_status === "in_stock" ||
+          variant.availability_status === "low_stock"),
     );
   }
 
-  const {
-    data: relatedData,
-    error: relatedError,
-  } = await supabase
+  const { data: relatedData, error: relatedError } = await supabase
     .from("products")
     .select(
       `
@@ -1263,84 +1081,41 @@ export default async function ProductPage({
         )
       `,
     )
-    .eq(
-      "status",
-      "published",
-    )
-    .neq(
-      "id",
-      product.id,
-    )
+    .eq("status", "published")
+    .neq("id", product.id)
     .limit(120);
 
   if (relatedError) {
-    console.error(
-      "Related products could not be loaded:",
-      relatedError,
-    );
+    console.error("Related products could not be loaded:", relatedError);
   }
 
-  const scoredRelatedProducts =
-    (
-      (
-        relatedData ??
-        []
-      ) as any[]
-    )
-      .filter(
-        isCandidateAvailable,
-      )
-      .map(
-        (item) => {
-          const relevance =
-            recommendationCompatibilityScore(
-              item,
-            );
+  const scoredRelatedProducts = ((relatedData ?? []) as any[])
+    .filter(isCandidateAvailable)
+    .map((item) => {
+      const relevance = recommendationCompatibilityScore(item);
 
-          return {
-            ...relevance,
-            item,
-          };
-        },
-      )
-      .sort(
-        (
-          first,
-          second,
-        ) => {
-          if (
-            first.score !==
-            second.score
-          ) {
-            return (
-              second.score -
-              first.score
-            );
-          }
+      return {
+        ...relevance,
+        item,
+      };
+    })
+    .sort((first, second) => {
+      if (first.score !== second.score) {
+        return second.score - first.score;
+      }
 
-          /*
-           * Same-brand products only win ties after relevance
-           * has already been established.
-           */
-          if (
-            first.sameBrand !==
-            second.sameBrand
-          ) {
-            return first.sameBrand
-              ? -1
-              : 1;
-          }
+      /*
+       * Same-brand products only win ties after relevance
+       * has already been established.
+       */
+      if (first.sameBrand !== second.sameBrand) {
+        return first.sameBrand ? -1 : 1;
+      }
 
-          return String(
-            first.item.name ?? "",
-          ).localeCompare(
-            String(
-              second.item.name ??
-                "",
-            ),
-          );
-        },
+      return String(first.item.name ?? "").localeCompare(
+        String(second.item.name ?? ""),
       );
+    });
 
   /*
    * Minimum relevance threshold.
@@ -1356,11 +1131,9 @@ export default async function ProductPage({
    * the engine will NOT recommend the iPhones simply because
    * there is empty space.
    */
-  const strongRecommendations =
-    scoredRelatedProducts.filter(
-      (candidate) =>
-        candidate.score >= 24,
-    );
+  const strongRecommendations = scoredRelatedProducts.filter(
+    (candidate) => candidate.score >= 24,
+  );
 
   /*
    * Prefer complementary items before alternatives when their
@@ -1374,30 +1147,16 @@ export default async function ProductPage({
    * → Apple Watch
    * → another iPhone only afterwards
    */
-  const diversifiedRecommendations: typeof strongRecommendations =
-    [];
+  const diversifiedRecommendations: typeof strongRecommendations = [];
 
-  const usedFamilies =
-    new Map<
-      RecommendationFamily,
-      number
-    >();
+  const usedFamilies = new Map<RecommendationFamily, number>();
 
-  for (
-    const candidate
-    of strongRecommendations
-  ) {
-    if (
-      diversifiedRecommendations.length >=
-      4
-    ) {
+  for (const candidate of strongRecommendations) {
+    if (diversifiedRecommendations.length >= 4) {
       break;
     }
 
-    const familyCount =
-      usedFamilies.get(
-        candidate.candidateFamily,
-      ) ?? 0;
+    const familyCount = usedFamilies.get(candidate.candidateFamily) ?? 0;
 
     /*
      * Avoid filling all four cards with almost identical
@@ -1408,65 +1167,39 @@ export default async function ProductPage({
       strongRecommendations.some(
         (other) =>
           other !== candidate &&
-          (
-            usedFamilies.get(
-              other.candidateFamily,
-            ) ?? 0
-          ) === 0 &&
-          other.score >=
-            candidate.score - 14,
+          (usedFamilies.get(other.candidateFamily) ?? 0) === 0 &&
+          other.score >= candidate.score - 14,
       )
     ) {
       continue;
     }
 
-    diversifiedRecommendations.push(
-      candidate,
-    );
+    diversifiedRecommendations.push(candidate);
 
-    usedFamilies.set(
-      candidate.candidateFamily,
-      familyCount + 1,
-    );
+    usedFamilies.set(candidate.candidateFamily, familyCount + 1);
   }
 
-  const relatedProducts =
-    diversifiedRecommendations
-      .slice(0, 4)
-      .map(
-        ({ item }) => ({
-          id: item.id,
-          name: item.name,
-          slug: item.slug,
+  const relatedProducts = diversifiedRecommendations
+    .slice(0, 4)
+    .map(({ item }) => ({
+      id: item.id,
+      name: item.name,
+      slug: item.slug,
 
-          description:
-            item.description ??
-            null,
+      description: item.description ?? null,
 
-          categoryName:
-            relationName(
-              item.categories as Relation,
-              "Technology",
-            ),
+      categoryName: relationName(item.categories as Relation, "Technology"),
 
-          is_featured:
-            item.is_featured,
+      is_featured: item.is_featured,
 
-          is_trending:
-            item.is_trending,
+      is_trending: item.is_trending,
 
-          is_new_arrival:
-            item.is_new_arrival,
+      is_new_arrival: item.is_new_arrival,
 
-          images:
-            item.product_images ??
-            [],
+      images: item.product_images ?? [],
 
-          variants:
-            item.product_variants ??
-            [],
-        }),
-      );
+      variants: item.product_variants ?? [],
+    }));
 
   return (
     <>
@@ -1474,6 +1207,10 @@ export default async function ProductPage({
 
       <main className="st-product-v5">
         <div className="st-product-v5__shell">
+          <div className="st-product-v5__back-row">
+            <ProductBackButton />
+          </div>
+
           <nav className="st-product-v5__breadcrumb">
             <Link href="/">Home</Link>
             <span>/</span>
@@ -1494,15 +1231,9 @@ export default async function ProductPage({
             <div className="st-product-v5__intro-meta">
               {price ? (
                 <div className="st-product-v5__price">
-                  <strong>
-                    ${price.current.toFixed(2)}
-                  </strong>
+                  <strong>${price.current.toFixed(2)}</strong>
 
-                  {price.sale ? (
-                    <del>
-                      ${price.regular.toFixed(2)}
-                    </del>
-                  ) : null}
+                  {price.sale ? <del>${price.regular.toFixed(2)}</del> : null}
                 </div>
               ) : (
                 <div className="st-product-v5__price">
@@ -1512,20 +1243,25 @@ export default async function ProductPage({
 
               <span
                 className={`st-product-v5__availability ${
-                  available ? "is-available" : ""
+                  productHasLowStock(variants)
+                    ? "is-low-stock"
+                    : available
+                      ? "is-available"
+                      : ""
                 }`}
               >
                 <i />
-                {available ? "In stock" : "Unavailable"}
+                {productHasLowStock(variants)
+                  ? "Low Stock"
+                  : available
+                    ? "In stock"
+                    : "Unavailable"}
               </span>
             </div>
           </header>
 
           <section className="st-product-v5__gallery">
-            <ProductGallery
-              productName={product.name}
-              images={galleryImages}
-            />
+            <ProductGallery productName={product.name} images={galleryImages} />
           </section>
 
           <section className="st-product-v5__buy">
@@ -1535,9 +1271,7 @@ export default async function ProductPage({
                 <h2>Choose your options.</h2>
               </div>
 
-              <small>
-                Ref. {product.id.slice(0, 8).toUpperCase()}
-              </small>
+              <small>Ref. {product.id.slice(0, 8).toUpperCase()}</small>
             </header>
 
             <ProductPurchaseControls
@@ -1577,10 +1311,7 @@ export default async function ProductPage({
 
               <h2>Product overview.</h2>
 
-              <p>
-                {product.description ||
-                  `${product.name} by ${brandName}.`}
-              </p>
+              <p>{product.description || `${product.name} by ${brandName}.`}</p>
 
               <dl className="st-product-v5__basic-info">
                 <div>
@@ -1607,26 +1338,24 @@ export default async function ProductPage({
 
               {Object.keys(firstAttributes).length ? (
                 <dl>
-                  {Object.entries(firstAttributes)
-                    .slice(0, 12)
-                    .map(([key, value]) => (
-                      <div key={key}>
-                        <dt>
-                          {key
-                            .replace(/[_-]+/g, " ")
-                            .replace(/\b\w/g, (character) =>
-                              character.toUpperCase(),
-                            )}
-                        </dt>
+                  {Object.entries(firstAttributes).map(([key, value]) => (
+                    <div key={key}>
+                      <dt>
+                        {key
+                          .replace(/[_-]+/g, " ")
+                          .replace(/\b\w/g, (character) =>
+                            character.toUpperCase(),
+                          )}
+                      </dt>
 
-                        <dd>{String(value)}</dd>
-                      </div>
-                    ))}
+                      <dd>{String(value)}</dd>
+                    </div>
+                  ))}
                 </dl>
               ) : (
                 <p>
-                  Technical information will appear
-                  when a configuration is available.
+                  Technical information will appear when a configuration is
+                  available.
                 </p>
               )}
             </div>
@@ -1680,15 +1409,13 @@ export default async function ProductPage({
               </header>
 
               <div className="st-related-products-grid st-product-v5__related-grid">
-                {relatedProducts.map(
-                  (relatedProduct, index) => (
-                    <V2ProductCard
-                      key={relatedProduct.id}
-                      product={relatedProduct}
-                      index={index}
-                    />
-                  ),
-                )}
+                {relatedProducts.map((relatedProduct, index) => (
+                  <V2ProductCard
+                    key={relatedProduct.id}
+                    product={relatedProduct}
+                    index={index}
+                  />
+                ))}
               </div>
             </section>
           ) : null}

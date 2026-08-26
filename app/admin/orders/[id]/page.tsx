@@ -266,7 +266,7 @@ export default async function OrderDetailsPage({
       pageTitle="Order details"
       pageDescription="Review customer information, purchased items, payment and fulfilment progress."
     >
-      <div className="px-4 py-7 sm:px-8 sm:py-10">
+      <div className="px-4 py-6 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           <header className="border-b border-white/10 pb-8">
             <Link
@@ -277,13 +277,13 @@ export default async function OrderDetailsPage({
               All orders
             </Link>
 
-            <div className="mt-8 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+            <div className="mt-6 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
                   Customer order
                 </p>
 
-                <h1 className="mt-3 break-all text-3xl font-semibold uppercase tracking-[-0.045em] sm:text-5xl xl:text-6xl">
+                <h1 className="mt-3 break-all text-2xl font-semibold uppercase tracking-[-0.045em] sm:text-5xl xl:text-6xl">
                   {order.order_number}
                 </h1>
 
@@ -321,7 +321,7 @@ export default async function OrderDetailsPage({
             </div>
           </header>
 
-          <section className="mt-7 overflow-x-auto border border-white/10 bg-[#0d0d0d] p-5">
+          <section className="mt-5 overflow-x-auto border border-white/10 bg-[#0d0d0d] p-5">
             {order.status === "cancelled" ? (
               <div className="flex items-center gap-4">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center border border-red-400/25 bg-red-400/[0.08]">
@@ -392,8 +392,8 @@ export default async function OrderDetailsPage({
             )}
           </section>
 
-          <div className="mt-7 grid gap-7 xl:grid-cols-[minmax(0,1fr)_430px]">
-            <div className="min-w-0 space-y-7">
+          <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="min-w-0 space-y-5">
               <section className="border border-white/10 bg-[#0d0d0d]">
                 <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
                   <ShoppingBag className="h-5 w-5 text-white/45" />
@@ -456,7 +456,7 @@ export default async function OrderDetailsPage({
                   <div className="mt-6 grid gap-3">
                     <a
                       href={`mailto:${order.customer_email}`}
-                      className="flex min-h-12 items-center gap-3 border border-white/10 bg-white/[0.025] px-4 text-sm text-white/50 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
+                      className="flex min-h-11 items-center gap-3 border border-white/10 bg-white/[0.025] px-4 text-sm text-white/50 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
                     >
                       <Mail className="h-4 w-4 shrink-0" />
 
@@ -465,7 +465,7 @@ export default async function OrderDetailsPage({
 
                     <a
                       href={`tel:${order.customer_phone}`}
-                      className="flex min-h-12 items-center gap-3 border border-white/10 bg-white/[0.025] px-4 text-sm text-white/50 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
+                      className="flex min-h-11 items-center gap-3 border border-white/10 bg-white/[0.025] px-4 text-sm text-white/50 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
                     >
                       <Phone className="h-4 w-4 shrink-0" />
                       {order.customer_phone}

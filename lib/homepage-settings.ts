@@ -1,4 +1,5 @@
 export type HomepageSettings = {
+  announcement_background_mode: "animated" | "still" | "none";
   id: string;
   hero_eyebrow: string;
   hero_line_one: string;
@@ -42,6 +43,7 @@ export type HomepageSettings = {
 };
 
 export const defaultHomepageSettings: HomepageSettings = {
+  announcement_background_mode: "animated",
   id: "default",
 
   hero_image_url: null,
@@ -124,6 +126,12 @@ export function normalizeHomepageSettings(
   input: Partial<HomepageSettings> | null | undefined,
 ): HomepageSettings {
   return {
+    announcement_background_mode:
+      input?.announcement_background_mode === "still" ||
+      input?.announcement_background_mode === "none" ||
+      input?.announcement_background_mode === "animated"
+        ? input.announcement_background_mode
+        : defaultHomepageSettings.announcement_background_mode,
     id: "default",
 
     hero_eyebrow: readText(

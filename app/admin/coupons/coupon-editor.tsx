@@ -44,7 +44,7 @@ function toDateTimeLocal(value: string | null) {
 
 function inputClass() {
   return [
-    "mt-2 min-h-12 w-full border border-white/10",
+    "mt-2 min-h-11 w-full border border-white/10",
     "bg-[#111111] px-4 text-sm text-white outline-none",
     "transition placeholder:text-white/20",
     "focus:border-white/45",
@@ -86,7 +86,7 @@ export default function CouponEditor({ coupon }: CouponEditorProps) {
       <button
         type="button"
         onClick={() => setIsEditing(true)}
-        className="flex min-h-12 w-full items-center justify-center gap-2 border border-white/15 px-5 text-[9px] font-semibold uppercase tracking-[0.15em] text-white/55 transition hover:border-white/40 hover:bg-white/[0.05] hover:text-white"
+        className="flex min-h-11 w-full items-center justify-center gap-2 border border-white/15 px-5 text-[9px] font-semibold uppercase tracking-[0.15em] text-white/55 transition hover:border-white/40 hover:bg-white/[0.05] hover:text-white"
       >
         <Pencil className="h-4 w-4" />
         Edit complete coupon
@@ -384,7 +384,7 @@ export default function CouponEditor({ coupon }: CouponEditorProps) {
           <button
             type="button"
             onClick={closeEditor}
-            className="flex min-h-12 items-center justify-center gap-2 border border-white/15 px-5 text-[9px] font-semibold uppercase tracking-[0.15em] text-white/50 transition hover:border-white/40 hover:text-white"
+            className="flex min-h-11 items-center justify-center gap-2 border border-white/15 px-5 text-[9px] font-semibold uppercase tracking-[0.15em] text-white/50 transition hover:border-white/40 hover:text-white"
           >
             <X className="h-4 w-4" />
             Cancel
@@ -392,7 +392,7 @@ export default function CouponEditor({ coupon }: CouponEditorProps) {
 
           <button
             type="submit"
-            className="flex min-h-12 items-center justify-center gap-2 bg-white px-6 text-[9px] font-semibold uppercase tracking-[0.15em] text-black transition hover:bg-white/85"
+            className="flex min-h-11 items-center justify-center gap-2 bg-white px-6 text-[9px] font-semibold uppercase tracking-[0.15em] text-black transition hover:bg-white/85"
           >
             <Check className="h-4 w-4" />
             Save all changes
@@ -415,7 +415,7 @@ export default function CouponEditor({ coupon }: CouponEditorProps) {
 
           <button
             type="submit"
-            className="flex min-h-12 w-full items-center justify-center gap-2 border border-red-400/25 px-5 text-[9px] font-semibold uppercase tracking-[0.15em] text-red-300 transition hover:bg-red-400/[0.08]"
+            className="flex min-h-11 w-full items-center justify-center gap-2 border border-red-400/25 px-5 text-[9px] font-semibold uppercase tracking-[0.15em] text-red-300 transition hover:bg-red-400/[0.08]"
           >
             <Trash2 className="h-4 w-4" />
             Delete coupon permanently

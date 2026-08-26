@@ -82,10 +82,10 @@ export default async function EditProductPage({
   }
 
   const [productResult, categoriesResult, brandsResult] = await Promise.all([
-      supabase
-        .from("products")
-        .select(
-          `
+    supabase
+      .from("products")
+      .select(
+        `
         id,
         name,
         slug,
@@ -125,21 +125,20 @@ export default async function EditProductPage({
           is_variant_primary
         )
       `,
-        )
-        .eq("id", productId)
-        .single(),
+      )
+      .eq("id", productId)
+      .single(),
 
-      supabase.from("categories").select("id, name").order("name", {
-        ascending: true,
-      }),
+    supabase.from("categories").select("id, name").order("name", {
+      ascending: true,
+    }),
 
-      supabase
-        .from("brands")
-        .select("id, name")
-        .order("sort_order", { ascending: true })
-        .order("name", { ascending: true }),
-
-    ]);
+    supabase
+      .from("brands")
+      .select("id, name")
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true }),
+  ]);
 
   if (productResult.error || !productResult.data) {
     notFound();
@@ -159,26 +158,16 @@ export default async function EditProductPage({
    */
   const variants = ((product.product_variants as ProductVariant[]) ?? []).sort(
     (first, second) => {
-      const firstPosition = Number(
-        first.display_position ?? 0,
-      );
+      const firstPosition = Number(first.display_position ?? 0);
 
-      const secondPosition = Number(
-        second.display_position ?? 0,
-      );
+      const secondPosition = Number(second.display_position ?? 0);
 
       if (firstPosition !== secondPosition) {
         return firstPosition - secondPosition;
       }
 
-      return (
-        first.variant_name?.trim() ||
-        first.size ||
-        ""
-      ).localeCompare(
-        second.variant_name?.trim() ||
-        second.size ||
-        "",
+      return (first.variant_name?.trim() || first.size || "").localeCompare(
+        second.variant_name?.trim() || second.size || "",
         undefined,
         {
           numeric: true,
@@ -201,9 +190,7 @@ export default async function EditProductPage({
 
   const errorMessage =
     resolvedSearchParams.error ??
-    (loadingError
-      ? "Categories or brands could not be loaded."
-      : undefined);
+    (loadingError ? "Categories or brands could not be loaded." : undefined);
 
   const savedStatus = resolvedSearchParams.saved;
 
@@ -217,7 +204,7 @@ export default async function EditProductPage({
       pageTitle="Edit product"
       pageDescription="Update product information, images, inventory, visibility and merchandising."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
+      <div className="px-5 py-6 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           <header className="mb-8 border-b border-white/10 pb-8">
             <Link
@@ -228,7 +215,7 @@ export default async function EditProductPage({
               Back to products
             </Link>
 
-            <div className="mt-8 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="flex items-center gap-3">
                   <PackageSearch className="h-5 w-5 text-white/55" />
@@ -238,7 +225,7 @@ export default async function EditProductPage({
                   </p>
                 </div>
 
-                <h1 className="mt-4 max-w-4xl text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+                <h1 className="mt-3 max-w-4xl text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
                   {product.name}
                 </h1>
 

@@ -29,9 +29,7 @@ import {
   validateProductImageFiles,
 } from "@/lib/uploads/product-image-upload";
 
-import {
-  processImageBeforeUpload,
-} from "@/lib/stereophonie-v3/images/process-upload-client";
+import { processImageBeforeUpload } from "@/lib/stereophonie-v3/images/process-upload-client";
 
 type ProductImage = {
   id: string;
@@ -85,41 +83,31 @@ export default function ImageManager({
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-
   /*
    * Initial values are the configurations already stored in the
    * database. The configuration editor can then update this list
    * live through the custom event below.
    */
-  const [liveConfigurations, setLiveConfigurations] =
-    useState<LiveImageConfiguration[]>(() =>
-      configurations.map((configuration) => ({
-        id: configuration.id,
-        variant_name:
-          String(
-            configuration.variant_name ?? "",
-          ).trim(),
-        fallbackLabel:
-          String(
-            configuration.variant_name ?? "",
-          ).trim() ||
-          "Untitled configuration",
-        persisted: true,
-      })),
-    );
+  const [liveConfigurations, setLiveConfigurations] = useState<
+    LiveImageConfiguration[]
+  >(() =>
+    configurations.map((configuration) => ({
+      id: configuration.id,
+      variant_name: String(configuration.variant_name ?? "").trim(),
+      fallbackLabel:
+        String(configuration.variant_name ?? "").trim() ||
+        "Untitled configuration",
+      persisted: true,
+    })),
+  );
 
   useEffect(() => {
     setLiveConfigurations(
       configurations.map((configuration) => ({
         id: configuration.id,
-        variant_name:
-          String(
-            configuration.variant_name ?? "",
-          ).trim(),
+        variant_name: String(configuration.variant_name ?? "").trim(),
         fallbackLabel:
-          String(
-            configuration.variant_name ?? "",
-          ).trim() ||
+          String(configuration.variant_name ?? "").trim() ||
           "Untitled configuration",
         persisted: true,
       })),
@@ -128,13 +116,11 @@ export default function ImageManager({
 
   useEffect(() => {
     function handleLiveConfigurations(event: Event) {
-      const customEvent =
-        event as CustomEvent<{
-          configurations?: LiveImageConfiguration[];
-        }>;
+      const customEvent = event as CustomEvent<{
+        configurations?: LiveImageConfiguration[];
+      }>;
 
-      const incoming =
-        customEvent.detail?.configurations;
+      const incoming = customEvent.detail?.configurations;
 
       if (!Array.isArray(incoming)) {
         return;
@@ -143,26 +129,14 @@ export default function ImageManager({
       setLiveConfigurations(
         incoming.map((configuration, index) => ({
           id:
-            String(
-              configuration.id ?? "",
-            ).trim() ||
+            String(configuration.id ?? "").trim() ||
             `configuration-${index + 1}`,
-          variant_name:
-            String(
-              configuration.variant_name ?? "",
-            ).trim(),
+          variant_name: String(configuration.variant_name ?? "").trim(),
           fallbackLabel:
-            String(
-              configuration.fallbackLabel ?? "",
-            ).trim() ||
-            String(
-              configuration.variant_name ?? "",
-            ).trim() ||
+            String(configuration.fallbackLabel ?? "").trim() ||
+            String(configuration.variant_name ?? "").trim() ||
             `Configuration ${index + 1}`,
-          persisted:
-            Boolean(
-              configuration.persisted,
-            ),
+          persisted: Boolean(configuration.persisted),
         })),
       );
     }
@@ -184,8 +158,9 @@ export default function ImageManager({
    * Empty string = photograph shared by every configuration.
    * Otherwise this contains the exact variant_name.
    */
-  const [selectedVariantNames, setSelectedVariantNames] =
-    useState<string[]>([]);
+  const [selectedVariantNames, setSelectedVariantNames] = useState<string[]>(
+    [],
+  );
 
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadError, setUploadError] = useState("");
@@ -203,106 +178,53 @@ export default function ImageManager({
    *
    * The old global `position` remains only as a stable fallback.
    */
-  function imageConfigurationKey(
-    image: ProductImage,
-  ) {
+  function imageConfigurationKey(image: ProductImage) {
     if (image.variant_id) {
       return `id:${image.variant_id}`;
     }
 
-    const legacyName =
-      String(
-        image.variant_name ?? "",
-      )
-        .trim()
-        .toLowerCase();
+    const legacyName = String(image.variant_name ?? "")
+      .trim()
+      .toLowerCase();
 
-    return legacyName
-      ? `name:${legacyName}`
-      : "__shared__";
+    return legacyName ? `name:${legacyName}` : "__shared__";
   }
 
-  function sameImageConfiguration(
-    first: ProductImage,
-    second: ProductImage,
-  ) {
-    return (
-      imageConfigurationKey(first) ===
-      imageConfigurationKey(second)
-    );
+  function sameImageConfiguration(first: ProductImage, second: ProductImage) {
+    return imageConfigurationKey(first) === imageConfigurationKey(second);
   }
 
-  const configurationPosition =
-    new Map(
-      configurations.map(
-        (configuration, index) => [
-          configuration.id,
-          index,
-        ],
-      ),
+  const configurationPosition = new Map(
+    configurations.map((configuration, index) => [configuration.id, index]),
+  );
+
+  const orderedImages = [...images].sort((first, second) => {
+    const firstConfiguration = first.variant_id
+      ? (configurationPosition.get(first.variant_id) ?? 9999)
+      : -1;
+
+    const secondConfiguration = second.variant_id
+      ? (configurationPosition.get(second.variant_id) ?? 9999)
+      : -1;
+
+    if (firstConfiguration !== secondConfiguration) {
+      return firstConfiguration - secondConfiguration;
+    }
+
+    const firstVariantPosition = Number(
+      first.variant_position ?? first.position ?? 0,
     );
 
-  const orderedImages =
-    [...images].sort(
-      (first, second) => {
-        const firstConfiguration =
-          first.variant_id
-            ? (
-                configurationPosition.get(
-                  first.variant_id,
-                ) ?? 9999
-              )
-            : -1;
-
-        const secondConfiguration =
-          second.variant_id
-            ? (
-                configurationPosition.get(
-                  second.variant_id,
-                ) ?? 9999
-              )
-            : -1;
-
-        if (
-          firstConfiguration !==
-          secondConfiguration
-        ) {
-          return (
-            firstConfiguration -
-            secondConfiguration
-          );
-        }
-
-        const firstVariantPosition =
-          Number(
-            first.variant_position ??
-              first.position ??
-              0,
-          );
-
-        const secondVariantPosition =
-          Number(
-            second.variant_position ??
-              second.position ??
-              0,
-          );
-
-        if (
-          firstVariantPosition !==
-          secondVariantPosition
-        ) {
-          return (
-            firstVariantPosition -
-            secondVariantPosition
-          );
-        }
-
-        return (
-          Number(first.position ?? 0) -
-          Number(second.position ?? 0)
-        );
-      },
+    const secondVariantPosition = Number(
+      second.variant_position ?? second.position ?? 0,
     );
+
+    if (firstVariantPosition !== secondVariantPosition) {
+      return firstVariantPosition - secondVariantPosition;
+    }
+
+    return Number(first.position ?? 0) - Number(second.position ?? 0);
+  });
 
   function clearSelectedFiles() {
     previewUrls.forEach((previewUrl) => {
@@ -400,8 +322,7 @@ export default function ImageManager({
           size: file.size,
           position: index,
           alt_text: "",
-          variant_name:
-            String(selectedVariantNames[index] ?? "").trim(),
+          variant_name: String(selectedVariantNames[index] ?? "").trim(),
         });
       }
 
@@ -489,12 +410,7 @@ export default function ImageManager({
       );
 
       processedFiles = await Promise.all(
-        selected.map((file) =>
-          processImageBeforeUpload(
-            file,
-            "product",
-          ),
-        ),
+        selected.map((file) => processImageBeforeUpload(file, "product")),
       );
     } catch (error) {
       setUploadError(
@@ -506,58 +422,38 @@ export default function ImageManager({
       return;
     }
 
-    previewUrls.forEach(
-      (previewUrl) => {
-        URL.revokeObjectURL(
-          previewUrl,
-        );
-      },
-    );
+    previewUrls.forEach((previewUrl) => {
+      URL.revokeObjectURL(previewUrl);
+    });
 
     setUploadError("");
 
-    setSelectedFiles(
-      processedFiles,
-    );
+    setSelectedFiles(processedFiles);
 
     /*
      * New photographs default to Shared with all configurations.
      * The admin can change each photograph independently before upload.
      */
-    setSelectedVariantNames(
-      processedFiles.map(() => ""),
-    );
+    setSelectedVariantNames(processedFiles.map(() => ""));
 
-    setPreviewUrls(
-      processedFiles.map(
-        (file) =>
-          URL.createObjectURL(
-            file,
-          ),
-      ),
-    );
+    setPreviewUrls(processedFiles.map((file) => URL.createObjectURL(file)));
   }
 
   return (
     <div className="space-y-6">
       {successMessage && (
-        <div className="flex items-start gap-4 border border-emerald-400/25 bg-emerald-400/[0.07] p-5">
-          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
+        <div role="status" className="st-admin-notice st-admin-notice--success">
+          <CheckCircle2 className="st-admin-notice__icon" aria-hidden="true" />
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-              Photographs updated
-            </p>
-
-            <p className="mt-2 text-sm leading-6 text-white/65">
-              {successMessage}
-            </p>
+            <strong>Photographs updated</strong>
+            <p>{successMessage}</p>
           </div>
         </div>
       )}
 
       <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-        <div className="flex flex-col gap-5 border-b border-white/10 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
               Product media
@@ -582,7 +478,7 @@ export default function ImageManager({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-5">
           <form
             ref={uploadFormRef}
             action={finalizeDirectProductImageUploads}
@@ -606,9 +502,7 @@ export default function ImageManager({
               multiple
               className="sr-only"
               onChange={(event) => {
-                void selectFiles(
-                  event.target.files,
-                );
+                void selectFiles(event.target.files);
 
                 event.currentTarget.value = "";
               }}
@@ -673,17 +567,17 @@ export default function ImageManager({
                   </button>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
                   {selectedFiles.map((file, index) => (
                     <article
                       key={`${file.name}-${file.size}-${index}`}
                       className="overflow-hidden border border-white/10 bg-[#101010]"
                     >
-                      <div className="aspect-[4/5] overflow-hidden bg-black">
+                      <div className="aspect-[4/3] overflow-hidden bg-[#f5f5f7]">
                         <img
                           src={previewUrls[index]}
                           alt={`New product photograph ${index + 1}`}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain p-3"
                         />
                       </div>
 
@@ -722,37 +616,32 @@ export default function ImageManager({
                               Shared with all configurations
                             </option>
 
-                            {liveConfigurations.map(
-                              (configuration) => {
-                                const selectable =
-                                  configuration.persisted &&
-                                  Boolean(
-                                    configuration.variant_name,
-                                  );
+                            {liveConfigurations.map((configuration) => {
+                              const selectable =
+                                configuration.persisted &&
+                                Boolean(configuration.variant_name);
 
-                                return (
-                                  <option
-                                    key={configuration.id}
-                                    value={
-                                      selectable
-                                        ? configuration.variant_name
-                                        : ""
-                                    }
-                                    disabled={!selectable}
-                                  >
-                                    {selectable
-                                      ? configuration.variant_name
-                                      : `${configuration.fallbackLabel} — save changes first`}
-                                  </option>
-                                );
-                              },
-                            )}
+                              return (
+                                <option
+                                  key={configuration.id}
+                                  value={
+                                    selectable ? configuration.variant_name : ""
+                                  }
+                                  disabled={!selectable}
+                                >
+                                  {selectable
+                                    ? configuration.variant_name
+                                    : `${configuration.fallbackLabel} — save changes first`}
+                                </option>
+                              );
+                            })}
                           </select>
 
                           <p className="mt-2 text-[10px] leading-4 text-white/25">
-                            Choose a saved configuration when this photograph belongs
-                            specifically to that version. New configurations appear
-                            immediately and become selectable after Save changes.
+                            Choose a saved configuration when this photograph
+                            belongs specifically to that version. New
+                            configurations appear immediately and become
+                            selectable after Save changes.
                           </p>
                         </div>
                       </div>
@@ -787,7 +676,7 @@ export default function ImageManager({
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className="mt-5 inline-flex items-center justify-center gap-3 border border-white bg-white px-6 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-white disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-white/10 disabled:text-white/30"
+                  className="mt-5 inline-flex items-center justify-center gap-3 border border-white bg-white px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-white disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-white/10 disabled:text-white/30"
                 >
                   <Upload className="h-4 w-4" />
 
@@ -802,7 +691,7 @@ export default function ImageManager({
       </section>
 
       <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-        <div className="border-b border-white/10 px-6 py-5">
+        <div className="border-b border-white/10 px-5 py-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
             Existing media
           </p>
@@ -815,9 +704,9 @@ export default function ImageManager({
           </p>
         </div>
 
-        <div className="p-6">
+        <div className="p-5">
           {orderedImages.length === 0 ? (
-            <div className="flex min-h-[260px] flex-col items-center justify-center border border-dashed border-white/15 bg-black/20 px-6 text-center">
+            <div className="flex min-h-[190px] flex-col items-center justify-center border border-dashed border-white/15 bg-black/20 px-6 text-center">
               <ImageOff className="h-8 w-8 text-white/25" />
 
               <h3 className="mt-5 text-lg font-semibold">No photographs</h3>
@@ -828,242 +717,61 @@ export default function ImageManager({
               </p>
             </div>
           ) : (
-            <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
               {orderedImages.map((image, index) => {
-                const configurationImages =
-                  orderedImages.filter(
-                    (candidate) =>
-                      sameImageConfiguration(
-                        candidate,
-                        image,
-                      ),
-                  );
+                const configurationImages = orderedImages.filter((candidate) =>
+                  sameImageConfiguration(candidate, image),
+                );
 
-                const configurationIndex =
-                  configurationImages.findIndex(
-                    (candidate) =>
-                      candidate.id ===
-                      image.id,
-                  );
+                const configurationIndex = configurationImages.findIndex(
+                  (candidate) => candidate.id === image.id,
+                );
 
-                const configurationCount =
-                  configurationImages.length;
+                const configurationCount = configurationImages.length;
 
                 return (
-                <article
-                  key={image.id}
-                  className={`overflow-hidden border bg-[#101010] ${
-                    image.is_primary
-                      ? "border-emerald-400/45"
-                      : "border-white/10"
-                  }`}
-                >
-                  <div className="relative aspect-[4/5] overflow-hidden bg-black">
-                    {image.image_url ? (
-                      <img
-                        src={image.image_url}
-                        alt={
-                          image.alt_text ||
-                          `${productName} photograph ${index + 1}`
-                        }
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <ImageOff className="h-8 w-8 text-white/25" />
-                      </div>
-                    )}
-
-                    <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent p-3">
-                      <span className="border border-white/15 bg-black/60 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-                        Position {configurationIndex + 1}
-                      </span>
-
-                      {image.is_primary && (
-                        <span className="inline-flex items-center gap-2 border border-emerald-300/30 bg-emerald-300 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black">
-                          <Star className="h-3 w-3 fill-current" />
-                          Main
-                        </span>
+                  <article
+                    key={image.id}
+                    className={`overflow-hidden border bg-[#101010] ${
+                      image.is_primary
+                        ? "border-emerald-400/45"
+                        : "border-white/10"
+                    }`}
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-[#f5f5f7]">
+                      {image.image_url ? (
+                        <img
+                          src={image.image_url}
+                          alt={
+                            image.alt_text ||
+                            `${productName} photograph ${index + 1}`
+                          }
+                          className="h-full w-full object-contain p-3"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center">
+                          <ImageOff className="h-8 w-8 text-white/25" />
+                        </div>
                       )}
-                    </div>
-                  </div>
 
-                  <div className="space-y-4 p-4">
-                    <form
-                      action={updateProductImageVariantName}
-                      className="border border-white/10 bg-black/20 p-3"
-                    >
-                      <input
-                        type="hidden"
-                        name="product_id"
-                        value={productId}
-                      />
-
-                      <input
-                        type="hidden"
-                        name="image_id"
-                        value={image.id}
-                      />
-
-                      <label
-                        htmlFor={`image-configuration-${image.id}`}
-                        className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35"
-                      >
-                        Photograph usage
-                      </label>
-
-                      <select
-                        id={`image-configuration-${image.id}`}
-                        name="variant_name"
-                        defaultValue={image.variant_name ?? ""}
-                        className="mt-2 min-h-11 w-full border border-white/10 bg-black/40 px-3 text-xs text-white outline-none transition focus:border-white/40"
-                      >
-                        <option value="">
-                          Shared with all configurations
-                        </option>
-
-                        {configurations.map((configuration) => (
-                          <option
-                            key={configuration.id}
-                            value={configuration.variant_name}
-                          >
-                            {configuration.variant_name}
-                          </option>
-                        ))}
-                      </select>
-
-                      <div className="mt-3 flex items-center justify-between gap-3">
-                        <span className="text-[10px] text-white/30">
-                          {image.variant_name
-                            ? `Only ${image.variant_name}`
-                            : "Used by every configuration"}
+                      <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent p-3">
+                        <span className="border border-white/15 bg-black/60 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                          Position {configurationIndex + 1}
                         </span>
 
-                        <button
-                          type="submit"
-                          className="shrink-0 border border-white/10 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-white/50 transition hover:border-white hover:bg-white hover:text-black"
-                        >
-                          Save usage
-                        </button>
+                        {image.is_primary && (
+                          <span className="inline-flex items-center gap-2 border border-emerald-300/30 bg-emerald-300 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black">
+                            <Star className="h-3 w-3 fill-current" />
+                            Main
+                          </span>
+                        )}
                       </div>
-                    </form>
+                    </div>
 
-                    <form action={updateProductImageAltText}>
-                      <input
-                        type="hidden"
-                        name="product_id"
-                        value={productId}
-                      />
-
-                      <input type="hidden" name="image_id" value={image.id} />
-
-                      <label
-                        htmlFor={`alt-text-${image.id}`}
-                        className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/40"
-                      >
-                        Image description
-                      </label>
-
-                      <textarea
-                        id={`alt-text-${image.id}`}
-                        name="alt_text"
-                        rows={2}
-                        defaultValue={image.alt_text ?? ""}
-                        placeholder="Example: Front view of the dress"
-                        className="mt-2 w-full resize-none border border-white/10 bg-black/30 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
-                      />
-
-                      <button
-                        type="submit"
-                        className="mt-3 inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/50 transition hover:border-white hover:bg-white hover:text-black"
-                      >
-                        <Save className="h-3.5 w-3.5" />
-                        Save description
-                      </button>
-                    </form>
-
-                    <div className="grid grid-cols-4 gap-2">
-                      <form action={moveProductImage}>
-                        <input
-                          type="hidden"
-                          name="product_id"
-                          value={productId}
-                        />
-
-                        <input type="hidden" name="image_id" value={image.id} />
-
-                        <input type="hidden" name="direction" value="left" />
-
-                        <button
-                          type="submit"
-                          disabled={
-                            configurationIndex <= 0
-                          }
-                          aria-label="Move photograph left"
-                          className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
-                        >
-                          <ArrowLeft className="h-4 w-4" />
-                        </button>
-                      </form>
-
-                      <form action={moveProductImage}>
-                        <input
-                          type="hidden"
-                          name="product_id"
-                          value={productId}
-                        />
-
-                        <input type="hidden" name="image_id" value={image.id} />
-
-                        <input type="hidden" name="direction" value="right" />
-
-                        <button
-                          type="submit"
-                          disabled={
-                            configurationIndex >=
-                            configurationCount - 1
-                          }
-                          aria-label="Move photograph right"
-                          className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
-                        >
-                          <ArrowRight className="h-4 w-4" />
-                        </button>
-                      </form>
-
-                      <form action={setPrimaryProductImage}>
-                        <input
-                          type="hidden"
-                          name="product_id"
-                          value={productId}
-                        />
-
-                        <input type="hidden" name="image_id" value={image.id} />
-
-                        <button
-                          type="submit"
-                          disabled={image.is_primary}
-                          aria-label="Set as main photograph"
-                          className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-emerald-400/35 hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/30 disabled:text-emerald-300"
-                        >
-                          <Star
-                            className={`h-4 w-4 ${
-                              image.is_primary ? "fill-current" : ""
-                            }`}
-                          />
-                        </button>
-                      </form>
-
+                    <div className="space-y-4 p-4">
                       <form
-                        action={deleteProductImage}
-                        onSubmit={(event) => {
-                          const confirmed = window.confirm(
-                            "Delete this photograph permanently?",
-                          );
-
-                          if (!confirmed) {
-                            event.preventDefault();
-                          }
-                        }}
+                        action={updateProductImageVariantName}
+                        className="border border-white/10 bg-black/20 p-3"
                       >
                         <input
                           type="hidden"
@@ -1073,37 +781,214 @@ export default function ImageManager({
 
                         <input type="hidden" name="image_id" value={image.id} />
 
+                        <label
+                          htmlFor={`image-configuration-${image.id}`}
+                          className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35"
+                        >
+                          Photograph usage
+                        </label>
+
+                        <select
+                          id={`image-configuration-${image.id}`}
+                          name="variant_name"
+                          defaultValue={image.variant_name ?? ""}
+                          className="mt-2 min-h-11 w-full border border-white/10 bg-black/40 px-3 text-xs text-white outline-none transition focus:border-white/40"
+                        >
+                          <option value="">
+                            Shared with all configurations
+                          </option>
+
+                          {configurations.map((configuration) => (
+                            <option
+                              key={configuration.id}
+                              value={configuration.variant_name}
+                            >
+                              {configuration.variant_name}
+                            </option>
+                          ))}
+                        </select>
+
+                        <div className="mt-3 flex items-center justify-between gap-3">
+                          <span className="text-[10px] text-white/30">
+                            {image.variant_name
+                              ? `Only ${image.variant_name}`
+                              : "Used by every configuration"}
+                          </span>
+
+                          <button
+                            type="submit"
+                            className="shrink-0 border border-white/10 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-white/50 transition hover:border-white hover:bg-white hover:text-black"
+                          >
+                            Save usage
+                          </button>
+                        </div>
+                      </form>
+
+                      <form action={updateProductImageAltText}>
+                        <input
+                          type="hidden"
+                          name="product_id"
+                          value={productId}
+                        />
+
+                        <input type="hidden" name="image_id" value={image.id} />
+
+                        <label
+                          htmlFor={`alt-text-${image.id}`}
+                          className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/40"
+                        >
+                          Image description
+                        </label>
+
+                        <textarea
+                          id={`alt-text-${image.id}`}
+                          name="alt_text"
+                          rows={2}
+                          defaultValue={image.alt_text ?? ""}
+                          placeholder="Example: Front view of the dress"
+                          className="mt-2 w-full resize-none border border-white/10 bg-black/30 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
+                        />
+
                         <button
                           type="submit"
-                          aria-label="Delete photograph"
-                          className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-red-400/35 hover:bg-red-400/[0.06] hover:text-red-300"
+                          className="mt-3 inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/50 transition hover:border-white hover:bg-white hover:text-black"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Save className="h-3.5 w-3.5" />
+                          Save description
                         </button>
                       </form>
-                    </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-[0.13em] text-white/30">
-                      <div className="border border-white/10 bg-black/20 px-3 py-2">
-                        Position {configurationIndex + 1}
+                      <div className="grid grid-cols-4 gap-2">
+                        <form action={moveProductImage}>
+                          <input
+                            type="hidden"
+                            name="product_id"
+                            value={productId}
+                          />
+
+                          <input
+                            type="hidden"
+                            name="image_id"
+                            value={image.id}
+                          />
+
+                          <input type="hidden" name="direction" value="left" />
+
+                          <button
+                            type="submit"
+                            disabled={configurationIndex <= 0}
+                            aria-label="Move photograph left"
+                            className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                          >
+                            <ArrowLeft className="h-4 w-4" />
+                          </button>
+                        </form>
+
+                        <form action={moveProductImage}>
+                          <input
+                            type="hidden"
+                            name="product_id"
+                            value={productId}
+                          />
+
+                          <input
+                            type="hidden"
+                            name="image_id"
+                            value={image.id}
+                          />
+
+                          <input type="hidden" name="direction" value="right" />
+
+                          <button
+                            type="submit"
+                            disabled={
+                              configurationIndex >= configurationCount - 1
+                            }
+                            aria-label="Move photograph right"
+                            className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                          >
+                            <ArrowRight className="h-4 w-4" />
+                          </button>
+                        </form>
+
+                        <form action={setPrimaryProductImage}>
+                          <input
+                            type="hidden"
+                            name="product_id"
+                            value={productId}
+                          />
+
+                          <input
+                            type="hidden"
+                            name="image_id"
+                            value={image.id}
+                          />
+
+                          <button
+                            type="submit"
+                            disabled={image.is_primary}
+                            aria-label="Set as main photograph"
+                            className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-emerald-400/35 hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/30 disabled:text-emerald-300"
+                          >
+                            <Star
+                              className={`h-4 w-4 ${
+                                image.is_primary ? "fill-current" : ""
+                              }`}
+                            />
+                          </button>
+                        </form>
+
+                        <form
+                          action={deleteProductImage}
+                          onSubmit={(event) => {
+                            const confirmed = window.confirm(
+                              "Delete this photograph permanently?",
+                            );
+
+                            if (!confirmed) {
+                              event.preventDefault();
+                            }
+                          }}
+                        >
+                          <input
+                            type="hidden"
+                            name="product_id"
+                            value={productId}
+                          />
+
+                          <input
+                            type="hidden"
+                            name="image_id"
+                            value={image.id}
+                          />
+
+                          <button
+                            type="submit"
+                            aria-label="Delete photograph"
+                            className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-red-400/35 hover:bg-red-400/[0.06] hover:text-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </form>
                       </div>
 
-                      <div className="border border-white/10 bg-black/20 px-3 py-2 text-right">
-                        {image.variant_id
-                          ? (
-                              image.is_variant_primary
-                                ? "Main image"
-                                : "Gallery image"
-                            )
-                          : (
-                              image.is_primary
-                                ? "Main image"
-                                : "Gallery image"
-                            )}
+                      <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-[0.13em] text-white/30">
+                        <div className="border border-white/10 bg-black/20 px-3 py-2">
+                          Position {configurationIndex + 1}
+                        </div>
+
+                        <div className="border border-white/10 bg-black/20 px-3 py-2 text-right">
+                          {image.variant_id
+                            ? image.is_variant_primary
+                              ? "Main image"
+                              : "Gallery image"
+                            : image.is_primary
+                              ? "Main image"
+                              : "Gallery image"}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </article>
+                  </article>
                 );
               })}
             </div>

@@ -47,7 +47,6 @@ export default async function NewProductPage({
       .eq("is_active", true)
       .order("sort_order", { ascending: true })
       .order("name", { ascending: true }),
-
   ]);
 
   const resolvedSearchParams = await searchParams;
@@ -56,9 +55,7 @@ export default async function NewProductPage({
 
   const errorMessage =
     resolvedSearchParams.error ??
-    (loadingError
-      ? "Categories or brands could not be loaded."
-      : undefined);
+    (loadingError ? "Categories or brands could not be loaded." : undefined);
 
   return (
     <AdminShell
@@ -66,7 +63,7 @@ export default async function NewProductPage({
       pageTitle="Add product"
       pageDescription="Add product details, images, pricing, configurations, inventory and visibility."
     >
-      <div className="px-5 py-8 sm:px-8 sm:py-10">
+      <div className="px-5 py-6 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
           <header className="mb-8 border-b border-white/10 pb-8">
             <Link
@@ -77,7 +74,7 @@ export default async function NewProductPage({
               Back to products
             </Link>
 
-            <div className="mt-8 flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="flex items-center gap-3">
                   <PackagePlus className="h-5 w-5 text-white/55" />
@@ -87,7 +84,7 @@ export default async function NewProductPage({
                   </p>
                 </div>
 
-                <h1 className="mt-5 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
+                <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
                   Add product
                 </h1>
 

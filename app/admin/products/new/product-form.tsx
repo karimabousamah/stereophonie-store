@@ -20,6 +20,8 @@ import {
 } from "./direct-upload-client";
 import ImageUploader from "./image-uploader";
 
+import ProductBrandPicker from "@/components/admin/product-brand-picker";
+import ProductCategoryPicker from "@/components/admin/product-category-picker";
 import ElectronicsVariantEditor, {
   type AdminElectronicsVariant,
 } from "@/components/admin/products/electronics-variant-editor";
@@ -67,7 +69,7 @@ function SectionHeader({
   description: string;
 }) {
   return (
-    <div className="flex gap-4 border-b border-white/10 px-6 py-5">
+    <div className="flex gap-3 border-b border-white/10 px-5 py-4">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] text-[10px] font-semibold text-white/40">
         {number}
       </span>
@@ -89,23 +91,20 @@ export default function ProductForm({
   errorMessage,
 }: ProductFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  
 
   /*
    * Preserve exactly which publishing action the administrator
    * selected while photographs are prepared before the final
    * server submission.
    */
-  const pendingIntentRef =
-    useRef<"draft" | "publish">("draft");
+  const pendingIntentRef = useRef<"draft" | "publish">("draft");
 
   /*
    * Hidden form field is updated imperatively because changing
    * a React ref does not itself trigger a re-render.
    */
-  const resolvedIntentInputRef =
-    useRef<HTMLInputElement>(null);
-const [productName, setProductName] = useState("");
+  const resolvedIntentInputRef = useRef<HTMLInputElement>(null);
+  const [productName, setProductName] = useState("");
   const [selectedImages, setSelectedImages] = useState<
     DirectUploadSelectedImage[]
   >([]);
@@ -129,7 +128,6 @@ const [productName, setProductName] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
 
   const [selectedBrandName, setSelectedBrandName] = useState("");
-
 
   const totalStock = useMemo(() => {
     return variants.reduce((total, variant) => {
@@ -186,9 +184,7 @@ const [productName, setProductName] = useState("");
           );
         });
 
-        return unchanged
-          ? current
-          : images;
+        return unchanged ? current : images;
       });
     },
     [],
@@ -197,8 +193,7 @@ const [productName, setProductName] = useState("");
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     const form = event.currentTarget;
 
-    const nativeEvent =
-      event.nativeEvent as SubmitEvent;
+    const nativeEvent = event.nativeEvent as SubmitEvent;
 
     const submitter =
       nativeEvent.submitter instanceof HTMLButtonElement
@@ -212,12 +207,10 @@ const [productName, setProductName] = useState("");
           ? "publish"
           : "draft";
 
-    pendingIntentRef.current =
-      submissionIntent;
+    pendingIntentRef.current = submissionIntent;
 
     if (resolvedIntentInputRef.current) {
-      resolvedIntentInputRef.current.value =
-        submissionIntent;
+      resolvedIntentInputRef.current.value = submissionIntent;
     }
 
     /*
@@ -252,33 +245,21 @@ const [productName, setProductName] = useState("");
                         : "Preparing product submission"} 0%".
        */
       if (selectedImages.length > 0) {
-        uploadedImages =
-          await uploadImagesBeforeProductSubmission(
-            form,
-            {
-              images: selectedImages,
-              validateForm:
-                submissionIntent === "publish",
+        uploadedImages = await uploadImagesBeforeProductSubmission(form, {
+          images: selectedImages,
+          validateForm: submissionIntent === "publish",
 
-              onProgress(progress) {
-                setUploadPercentage(
-                  progress.percentage,
-                );
+          onProgress(progress) {
+            setUploadPercentage(progress.percentage);
 
-                setUploadFileName(
-                  progress.currentFileName,
-                );
-              },
-            },
-          );
+            setUploadFileName(progress.currentFileName);
+          },
+        });
       }
 
-      const uploadedImagesJson =
-        JSON.stringify(uploadedImages);
+      const uploadedImagesJson = JSON.stringify(uploadedImages);
 
-      setDirectUploadedImagesJson(
-        uploadedImagesJson,
-      );
+      setDirectUploadedImagesJson(uploadedImagesJson);
 
       /*
        * Build the exact FormData ourselves.
@@ -286,23 +267,13 @@ const [productName, setProductName] = useState("");
        * This avoids requestSubmit(), browser revalidation,
        * duplicate submit events and submitter-loss entirely.
        */
-      const formData =
-        new FormData(form);
+      const formData = new FormData(form);
 
-      formData.set(
-        "resolved_intent",
-        submissionIntent,
-      );
+      formData.set("resolved_intent", submissionIntent);
 
-      formData.set(
-        "intent",
-        submissionIntent,
-      );
+      formData.set("intent", submissionIntent);
 
-      formData.set(
-        "direct_uploaded_images",
-        uploadedImagesJson,
-      );
+      formData.set("direct_uploaded_images", uploadedImagesJson);
 
       /*
        * Call the Server Action directly.
@@ -329,10 +300,7 @@ const [productName, setProductName] = useState("");
         throw error;
       }
 
-      console.error(
-        "Product submission failed:",
-        error,
-      );
+      console.error("Product submission failed:", error);
 
       setSubmissionError(
         error instanceof Error
@@ -369,11 +337,7 @@ const [productName, setProductName] = useState("");
           variants.map((variant) => ({
             client_id: variant.clientId,
             variant_name: variant.variant_name,
-            display_position:
-              Number(
-                variant.display_position ??
-                0,
-              ),
+            display_position: Number(variant.display_position ?? 0),
             attributes: variant.attributes,
             sku: variant.sku,
             regular_price: variant.regular_price,
@@ -402,7 +366,7 @@ const [productName, setProductName] = useState("");
         </div>
       )}
 
-      <div className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
         <div className="space-y-7">
           <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
@@ -411,7 +375,7 @@ const [productName, setProductName] = useState("");
               description="Add the essential product details, category and manufacturer."
             />
 
-            <div className="space-y-7 p-6">
+            <div className="space-y-5 p-5">
               <div>
                 <label
                   htmlFor="name"
@@ -458,63 +422,28 @@ const [productName, setProductName] = useState("");
                     Category
                   </label>
 
-                  <select
-                    id="category"
-                    name="category_id"
-                    required
-                    defaultValue=""
-                    onChange={(event) => {
-                      const option = event.currentTarget.selectedOptions[0];
-                      setSelectedCategoryName(option?.textContent?.trim() ?? "");
+                  <ProductCategoryPicker
+                    categories={categories}
+                    onCategoryChange={(category) => {
+                      setSelectedCategoryName(category?.name ?? "");
                     }}
-                    className="mt-3 w-full border border-white/10 bg-[#111111] px-4 py-4 text-white outline-none focus:border-white/55"
-                  >
-                    <option value="" disabled>
-                      Select category
-                    </option>
-
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="brand"
-                    className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                  >
+                  <label className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
                     Brand
                   </label>
 
-                  <select
-                    id="brand"
-                    name="brand_id"
-                    defaultValue=""
-                    onChange={(event) => {
-                      const option =
-                        event.currentTarget.selectedOptions[0];
-
-                      setSelectedBrandName(
-                        option?.value
-                          ? option.textContent?.trim() ?? ""
-                          : "",
-                      );
-                    }}
-                    className="mt-3 w-full border border-white/10 bg-[#111111] px-4 py-4 text-white outline-none focus:border-white/55"
-                  >
-                    <option value="">No brand</option>
-
-                    {brands.map((brand) => (
-                      <option key={brand.id} value={brand.id}>
-                        {brand.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="mt-3">
+                    <ProductBrandPicker
+                      brands={brands}
+                      onBrandChange={(brand) =>
+                        setSelectedBrandName(brand?.name ?? "")
+                      }
+                    />
+                  </div>
                 </div>
-
               </div>
             </div>
           </section>
@@ -526,7 +455,7 @@ const [productName, setProductName] = useState("");
               description="Upload clear product images, choose the main image and arrange their order."
             />
 
-            <div className="p-6">
+            <div className="p-5">
               <ImageUploader
                 disabled={isSubmitting}
                 configurations={variants.map((variant, index) => ({
@@ -547,7 +476,7 @@ const [productName, setProductName] = useState("");
               description="Create every sellable version of this product and define its technical specifications, SKU, stock and availability."
             />
 
-            <div className="p-6">
+            <div className="p-5">
               <ElectronicsVariantEditor
                 variants={variants}
                 onChange={setVariants}
@@ -558,107 +487,114 @@ const [productName, setProductName] = useState("");
           </section>
 
           <section className="st-admin-store-placement overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-              <SectionHeader
-                number="04"
-                title="Store placement"
-                description="Choose where this product should receive extra visibility in the storefront."
-              />
+            <SectionHeader
+              number="04"
+              title="Store placement"
+              description="Choose where this product should receive extra visibility in the storefront."
+            />
 
-              <div className="st-admin-placement-grid">
-                <label className="st-admin-placement-card">
-                  <input
-                    type="checkbox"
-                    name="is_featured"
-                    checked={placementSelection.featured}
-                    onChange={(event) =>
-                      setPlacementSelection((current) => ({
-                        ...current,
-                        featured: event.target.checked,
-                      }))
-                    }
-                    className="sr-only"
-                  />
+            <div className="st-admin-placement-grid">
+              <label className="st-admin-placement-card">
+                <input
+                  type="checkbox"
+                  name="is_featured"
+                  checked={placementSelection.featured}
+                  onChange={(event) =>
+                    setPlacementSelection((current) => ({
+                      ...current,
+                      featured: event.target.checked,
+                    }))
+                  }
+                  className="sr-only"
+                />
 
-                  <span className={`st-admin-placement-card__surface ${placementSelection.featured ? "is-selected" : ""}`}>
-                    <span className="st-admin-placement-card__icon">
-                      <Star className="h-5 w-5" />
-                    </span>
-
-                    <span className="st-admin-placement-card__copy">
-                      <strong>Featured</strong>
-                      <small>
-                        Give this product priority in featured storefront areas.
-                      </small>
-                    </span>
+                <span
+                  className={`st-admin-placement-card__surface ${placementSelection.featured ? "is-selected" : ""}`}
+                >
+                  <span className="st-admin-placement-card__icon">
+                    <Star className="h-5 w-5" />
                   </span>
-                </label>
 
-                <label className="st-admin-placement-card">
-                  <input
-                    type="checkbox"
-                    name="is_trending"
-                    checked={placementSelection.trending}
-                    onChange={(event) =>
-                      setPlacementSelection((current) => ({
-                        ...current,
-                        trending: event.target.checked,
-                      }))
-                    }
-                    className="sr-only"
-                  />
-
-                  <span className={`st-admin-placement-card__surface ${placementSelection.trending ? "is-selected" : ""}`}>
-                    <span className="st-admin-placement-card__icon">
-                      <TrendingUp className="h-5 w-5" />
-                    </span>
-
-                    <span className="st-admin-placement-card__copy">
-                      <strong>Trending</strong>
-                      <small>
-                        Include this product in highlighted and trending selections.
-                      </small>
-                    </span>
+                  <span className="st-admin-placement-card__copy">
+                    <strong>Featured</strong>
+                    <small>
+                      Give this product priority in featured storefront areas.
+                    </small>
                   </span>
-                </label>
+                </span>
+              </label>
 
-                <label className="st-admin-placement-card">
-                  <input
-                    type="checkbox"
-                    name="is_new_arrival"
-                    checked={placementSelection.newArrival}
-                    onChange={(event) =>
-                      setPlacementSelection((current) => ({
-                        ...current,
-                        newArrival: event.target.checked,
-                      }))
-                    }
-                    className="sr-only"
-                  />
+              <label className="st-admin-placement-card">
+                <input
+                  type="checkbox"
+                  name="is_trending"
+                  checked={placementSelection.trending}
+                  onChange={(event) =>
+                    setPlacementSelection((current) => ({
+                      ...current,
+                      trending: event.target.checked,
+                    }))
+                  }
+                  className="sr-only"
+                />
 
-                  <span className={`st-admin-placement-card__surface ${placementSelection.newArrival ? "is-selected" : ""}`}>
-                    <span className="st-admin-placement-card__icon">
-                      <Diamond className="h-5 w-5" />
-                    </span>
-
-                    <span className="st-admin-placement-card__copy">
-                      <strong>New arrival</strong>
-                      <small>
-                        Present this item as recently added to the catalogue.
-                      </small>
-                    </span>
+                <span
+                  className={`st-admin-placement-card__surface ${placementSelection.trending ? "is-selected" : ""}`}
+                >
+                  <span className="st-admin-placement-card__icon">
+                    <TrendingUp className="h-5 w-5" />
                   </span>
-                </label>
-              </div>
-            </section>
+
+                  <span className="st-admin-placement-card__copy">
+                    <strong>Trending</strong>
+                    <small>
+                      Include this product in highlighted and trending
+                      selections.
+                    </small>
+                  </span>
+                </span>
+              </label>
+
+              <label className="st-admin-placement-card">
+                <input
+                  type="checkbox"
+                  name="is_new_arrival"
+                  checked={placementSelection.newArrival}
+                  onChange={(event) =>
+                    setPlacementSelection((current) => ({
+                      ...current,
+                      newArrival: event.target.checked,
+                    }))
+                  }
+                  className="sr-only"
+                />
+
+                <span
+                  className={`st-admin-placement-card__surface ${placementSelection.newArrival ? "is-selected" : ""}`}
+                >
+                  <span className="st-admin-placement-card__icon">
+                    <Diamond className="h-5 w-5" />
+                  </span>
+
+                  <span className="st-admin-placement-card__copy">
+                    <strong>New arrival</strong>
+                    <small>
+                      Present this item as recently added to the catalogue.
+                    </small>
+                  </span>
+                </span>
+              </label>
+            </div>
+          </section>
         </div>
 
         <aside>
-          <section className="rounded-[24px] border border-white/10 bg-[#101010] p-6 xl:sticky xl:top-[120px]">
+          <section className="rounded-[18px] border border-white/10 bg-[#101010] p-5 xl:sticky xl:top-[92px]">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
               Product summary
             </p>
 
-            <h2 className="mt-2 text-2xl font-semibold">Save product</h2>
+            <h2 className="mt-2 text-xl font-semibold">Save product</h2>
 
             <div className="mt-6 space-y-3">
               <div className="rounded-2xl border border-white/10 bg-black/20 p-4">

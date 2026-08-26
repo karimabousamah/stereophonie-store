@@ -5,50 +5,42 @@
 .st3-admin {
   min-height: 100vh;
 
-  background:
-    #f5f5f7;
+  background: #f5f5f7;
 
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 
-  font-family:
-    var(--st3-font,
+  font-family: var(
+    --st3-font,
     -apple-system,
     BlinkMacSystemFont,
     "SF Pro Display",
     "SF Pro Text",
     "Helvetica Neue",
     Arial,
-    sans-serif);
+    sans-serif
+  );
 
-  -webkit-font-smoothing:
-    antialiased;
+  -webkit-font-smoothing: antialiased;
 }
 
 .st3-admin *,
 .st3-admin *::before,
 .st3-admin *::after {
-  box-sizing:
-    border-box;
+  box-sizing: border-box;
 }
 
 .st3-admin h1,
 .st3-admin h2,
 .st3-admin h3 {
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 
-  letter-spacing:
-    -0.035em;
+  letter-spacing: -0.035em;
 }
 
 .st3-admin button,
-.st3-admin
-input[type="submit"],
-.st3-admin
-a[role="button"] {
-  border-radius:
-    999px;
+.st3-admin input[type="submit"],
+.st3-admin a[role="button"] {
+  border-radius: 999px;
 }
 
 .st3-admin button {
@@ -59,38 +51,21 @@ a[role="button"] {
 }
 
 .st3-admin button:hover {
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 }
 
 .st3-admin input,
 .st3-admin textarea,
 .st3-admin select {
-  border-radius:
-    14px !important;
+  border-radius: 14px !important;
 
-  border:
-    1px solid
-    rgba(
-      0,
-      0,
-      0,
-      0.12
-    ) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
 
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.92
-    ) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 
-  outline:
-    none;
+  outline: none;
 
   transition:
     border-color 150ms ease,
@@ -100,175 +75,103 @@ a[role="button"] {
 .st3-admin input:focus,
 .st3-admin textarea:focus,
 .st3-admin select:focus {
-  border-color:
-    #fdb73e !important;
+  border-color: #fdb73e !important;
 
-  box-shadow:
-    0 0 0 4px
-    rgba(
-      253,
-      183,
-      62,
-      0.16
-    ) !important;
+  box-shadow: 0 0 0 4px rgba(253, 183, 62, 0.16) !important;
 }
 
 .st3-admin table {
-  overflow:
-    hidden;
+  overflow: hidden;
 
-  border-radius:
-    18px;
+  border-radius: 18px;
 
-  background:
-    #fff;
+  background: #fff;
 
-  border-collapse:
-    separate;
+  border-collapse: separate;
 
-  border-spacing:
-    0;
+  border-spacing: 0;
 
-  box-shadow:
-    0 1px 0
-    rgba(
-      0,
-      0,
-      0,
-      0.04
-    );
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
 
 .st3-admin th {
-  color:
-    #6e6e73;
+  color: #6e6e73;
 
-  background:
-    #fafafa;
+  background: #fafafa;
 
-  font-size:
-    12px;
+  font-size: 12px;
 
-  font-weight:
-    600;
+  font-weight: 600;
 }
 
 .st3-admin td {
-  background:
-    #fff;
+  background: #fff;
 
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 }
 
 .st3-admin img {
-  border-radius:
-    18px;
+  border-radius: 18px;
 }
 
-.st3-admin
-[data-image-preview],
-.st3-admin
-.image-preview,
-.st3-admin
-.product-image-preview {
-  overflow:
-    hidden;
+.st3-admin [data-image-preview],
+.st3-admin .image-preview,
+.st3-admin .product-image-preview {
+  overflow: hidden;
 
-  border-radius:
-    22px;
+  border-radius: 22px;
 
-  background:
-    #fff;
+  background: #fff;
 }
 
-.st3-admin
-[data-primary-action] {
-  border:
-    0;
+.st3-admin [data-primary-action] {
+  border: 0;
 
-  background:
-    #fdb73e;
+  background: #fdb73e;
 
-  color:
-    #000;
+  color: #000;
 
-  box-shadow:
-    0 7px 22px
-    rgba(
-      253,
-      183,
-      62,
-      0.22
-    );
+  box-shadow: 0 7px 22px rgba(253, 183, 62, 0.22);
 }
 
-.st3-admin
-[data-primary-action]:hover {
-  background:
-    #f4a91c;
+.st3-admin [data-primary-action]:hover {
+  background: #f4a91c;
 }
-
 
 /* ==========================================================
    V3 ADMIN — IMAGE MANAGEMENT POLISH
    ========================================================== */
 
 .st3-admin {
-  --admin-bg:
-    #f5f5f7;
+  --admin-bg: #f5f5f7;
 
-  --admin-surface:
-    #ffffff;
+  --admin-surface: #ffffff;
 
-  --admin-text:
-    #1d1d1f;
+  --admin-text: #1d1d1f;
 
-  --admin-muted:
-    #6e6e73;
+  --admin-muted: #6e6e73;
 
-  --admin-line:
-    rgba(0, 0, 0, 0.09);
+  --admin-line: rgba(0, 0, 0, 0.09);
 
-  --admin-accent:
-    #fdb73e;
+  --admin-accent: #fdb73e;
 }
-
 
 /*
  * Override legacy dark upload UI inside the V3 Admin.
  */
 
-.st3-admin
-label[for="product-images"] {
+.st3-admin label[for="product-images"] {
   overflow: hidden;
 
-  border-radius:
-    24px !important;
+  border-radius: 24px !important;
 
-  border:
-    1px dashed
-    rgba(
-      0,
-      0,
-      0,
-      0.16
-    ) !important;
+  border: 1px dashed rgba(0, 0, 0, 0.16) !important;
 
-  background:
-    #ffffff !important;
+  background: #ffffff !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 
-  box-shadow:
-    0 1px 2px
-    rgba(
-      0,
-      0,
-      0,
-      0.03
-    );
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 
   transition:
     border-color 180ms ease,
@@ -276,209 +179,136 @@ label[for="product-images"] {
     transform 180ms ease;
 }
 
-.st3-admin
-label[for="product-images"]:hover {
-  border-color:
-    #fdb73e !important;
+.st3-admin label[for="product-images"]:hover {
+  border-color: #fdb73e !important;
 
-  background:
-    #ffffff !important;
+  background: #ffffff !important;
 
-  box-shadow:
-    0 14px 40px
-    rgba(
-      0,
-      0,
-      0,
-      0.06
-    );
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.06);
 
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 }
-
 
 /*
  * Legacy white text utilities.
  */
 
-.st3-admin
-.text-white,
-.st3-admin
-[class*="text-white"] {
-  color:
-    #1d1d1f !important;
+.st3-admin .text-white,
+.st3-admin [class*="text-white"] {
+  color: #1d1d1f !important;
 }
 
-.st3-admin
-[class*="text-white/"] {
-  color:
-    #6e6e73 !important;
+.st3-admin [class*="text-white/"] {
+  color: #6e6e73 !important;
 }
-
 
 /*
  * Legacy black translucent admin surfaces.
  */
 
-.st3-admin
-[class~="bg-black"] {
-  background:
-    #ffffff !important;
+.st3-admin [class~="bg-black"] {
+  background: #ffffff !important;
 }
-
 
 /*
  * Legacy white borders become subtle gray lines.
  */
 
-.st3-admin
-[class*="border-white"] {
-  border-color:
-    rgba(
-      0,
-      0,
-      0,
-      0.10
-    ) !important;
+.st3-admin [class*="border-white"] {
+  border-color: rgba(0, 0, 0, 0.1) !important;
 }
-
 
 /*
  * Upload icon/action controls.
  */
 
-.st3-admin
-label[for="product-images"]
-svg {
-  color:
-    #1d1d1f;
+.st3-admin label[for="product-images"] svg {
+  color: #1d1d1f;
 }
 
-.st3-admin
-label[for="product-images"]
-span {
-  border-radius:
-    999px !important;
+.st3-admin label[for="product-images"] span {
+  border-radius: 999px !important;
 }
-
 
 /*
  * Product previews are standardized square canvases.
  */
 
-.st3-admin
-.product-image-preview,
-.st3-admin
-[data-product-image],
-.st3-admin
-[data-image-preview] {
-  aspect-ratio:
-    1 / 1;
+.st3-admin .product-image-preview,
+.st3-admin [data-product-image],
+.st3-admin [data-image-preview] {
+  aspect-ratio: 1 / 1;
 
-  overflow:
-    hidden;
+  overflow: hidden;
 
-  border-radius:
-    22px;
+  border-radius: 22px;
 
-  background:
-    #f5f5f7;
+  background: #f5f5f7;
 }
 
-.st3-admin
-.product-image-preview img,
-.st3-admin
-[data-product-image] img,
-.st3-admin
-[data-image-preview] img {
-  width:
-    100%;
+.st3-admin .product-image-preview img,
+.st3-admin [data-product-image] img,
+.st3-admin [data-image-preview] img {
+  width: 100%;
 
-  height:
-    100%;
+  height: 100%;
 
-  object-fit:
-    contain;
+  object-fit: contain;
 
-  border-radius:
-    18px;
+  border-radius: 18px;
 }
-
 
 /*
  * Generic admin cards become softer.
  */
 
-.st3-admin
-section,
-.st3-admin
-article {
-  border-radius:
-    22px;
+.st3-admin section,
+.st3-admin article {
+  border-radius: 22px;
 }
 
-.st3-admin
-form {
-  color:
-    #1d1d1f;
+.st3-admin form {
+  color: #1d1d1f;
 }
-
 
 /*
  * Mustard primary action language.
  */
 
-.st3-admin
-button[type="submit"] {
-  border-radius:
-    999px !important;
+.st3-admin button[type="submit"] {
+  border-radius: 999px !important;
 }
 
-.st3-admin
-button[type="submit"]:not(
-  [data-destructive]
-) {
+.st3-admin button[type="submit"]:not([data-destructive]) {
   transition:
     transform 160ms ease,
     box-shadow 160ms ease;
 }
 
-
 /*
  * Category wallpaper inputs.
  */
 
-.st3-admin
-input[type="file"] {
-  border-radius:
-    16px !important;
+.st3-admin input[type="file"] {
+  border-radius: 16px !important;
 
-  background:
-    #fff !important;
+  background: #fff !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 }
-
 
 /*
  * Success / error notices retain semantic color,
  * but use a clean light UI.
  */
 
-.st3-admin
-[class*="emerald"] {
-  border-radius:
-    16px;
+.st3-admin [class*="emerald"] {
+  border-radius: 16px;
 }
 
-.st3-admin
-[class*="red-"] {
-  border-radius:
-    16px;
+.st3-admin [class*="red-"] {
+  border-radius: 16px;
 }
-
 
 /* ==========================================================
    STEREOPHONIE V3 — COMPLETE LIGHT ADMIN EXPERIENCE
@@ -611,7 +441,12 @@ input[type="file"] {
   .st3-admin .st3-admin-shell-grid > aside > div:first-child p,
   .st3-admin .st3-admin-shell-grid > aside > div:last-child a span,
   .st3-admin .st3-admin-shell-grid > aside > div:last-child a svg:last-child,
-  .st3-admin .st3-admin-shell-grid > aside > div:last-child > div > div:last-child {
+  .st3-admin
+    .st3-admin-shell-grid
+    > aside
+    > div:last-child
+    > div
+    > div:last-child {
     display: none;
   }
 
@@ -635,7 +470,13 @@ input[type="file"] {
     padding-inline: 18px;
   }
 
-  .st3-admin .st3-admin-shell-grid > div > header > div > div:last-child > div:first-child {
+  .st3-admin
+    .st3-admin-shell-grid
+    > div
+    > header
+    > div
+    > div:last-child
+    > div:first-child {
     display: none;
   }
 }
@@ -681,7 +522,11 @@ input[type="file"] {
 .st3-admin .st3-admin-main {
   min-height: calc(100vh - 82px);
   background:
-    radial-gradient(circle at 92% 0%, rgba(245, 179, 53, 0.07), transparent 24rem),
+    radial-gradient(
+      circle at 92% 0%,
+      rgba(245, 179, 53, 0.07),
+      transparent 24rem
+    ),
     #f5f5f7;
 }
 
@@ -689,32 +534,39 @@ input[type="file"] {
   border-radius: 22px;
 }
 
-.st3-admin .st3-admin-main :where(
-  div[class*="border"][class*="bg-white"],
-  div[class*="border"][class*="bg-[#f"],
-  div[class*="border"][class~="bg-black"],
-  form[class*="border"]
-) {
+.st3-admin
+  .st3-admin-main
+  :where(
+    div[class*="border"][class*="bg-white"],
+    div[class*="border"][class*="bg-[#f"],
+    div[class*="border"][class~="bg-black"],
+    form[class*="border"]
+  ) {
   border-radius: 18px;
 }
 
-.st3-admin :where(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  textarea,
-  select
-) {
+.st3-admin
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    textarea,
+    select
+  ) {
   border-radius: 14px !important;
   border-color: rgba(29, 29, 31, 0.11) !important;
   background: #f7f7f8 !important;
   color: #1d1d1f !important;
-  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
 }
 
-.st3-admin :where(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  textarea,
-  select
-):focus {
+.st3-admin
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    textarea,
+    select
+  ):focus {
   border-color: rgba(245, 179, 53, 0.8) !important;
   background: #fff !important;
   box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.14) !important;
@@ -814,19 +666,21 @@ input[type="file"] {
   overflow-wrap: anywhere;
 }
 
-.st3-admin .st3-admin-main :where(section, article, form, div)[class*="border"][class*="bg-"] {
+.st3-admin
+  .st3-admin-main
+  :where(section, article, form, div)[class*="border"][class*="bg-"] {
   border-radius: 20px !important;
 }
 
-.st3-admin .st3-admin-main :where(
-  input:not([type="checkbox"]):not([type="radio"]),
-  textarea,
-  select
-) {
+.st3-admin
+  .st3-admin-main
+  :where(input:not([type="checkbox"]):not([type="radio"]), textarea, select) {
   border-radius: 16px !important;
 }
 
-.st3-admin .st3-admin-main :where(button, a[role="button"], a[class*="rounded-"]) {
+.st3-admin
+  .st3-admin-main
+  :where(button, a[role="button"], a[class*="rounded-"]) {
   border-radius: 999px !important;
 }
 
@@ -848,7 +702,6 @@ input[type="file"] {
    Storefront rules are NOT affected.
    ========================================================= */
 
-
 /* ---------------------------------------------------------
    1. GLOBAL ADMIN RHYTHM
    --------------------------------------------------------- */
@@ -860,7 +713,7 @@ input[type="file"] {
   --st-admin-muted: #6e6e73;
   --st-admin-soft: #f5f5f7;
   --st-admin-panel: #ffffff;
-  --st-admin-line: rgba(29,29,31,.085);
+  --st-admin-line: rgba(29, 29, 31, 0.085);
   --st-admin-radius: 18px;
   --st-admin-control-radius: 12px;
 }
@@ -869,12 +722,11 @@ input[type="file"] {
   background:
     radial-gradient(
       circle at 96% -10%,
-      rgba(245,179,53,.055),
+      rgba(245, 179, 53, 0.055),
       transparent 29rem
     ),
     #f5f5f7 !important;
 }
-
 
 /* ---------------------------------------------------------
    2. CONTENT WIDTH + PAGE SPACING
@@ -885,56 +737,42 @@ input[type="file"] {
   margin-inline: auto;
 }
 
-
 /* ---------------------------------------------------------
    3. CARDS
    --------------------------------------------------------- */
 
-.st3-admin .st3-admin-main
-:is(
-  section,
-  article
-)[class*="border"] {
-  border-color:
-    var(--st-admin-line) !important;
+.st3-admin .st3-admin-main :is(section, article)[class*="border"] {
+  border-color: var(--st-admin-line) !important;
 
-  border-radius:
-    18px !important;
+  border-radius: 18px !important;
 
-  box-shadow:
-    0 8px 28px rgba(29,29,31,.035) !important;
+  box-shadow: 0 8px 28px rgba(29, 29, 31, 0.035) !important;
 }
-
 
 /* ---------------------------------------------------------
    4. BUTTON SYSTEM
    --------------------------------------------------------- */
 
-.st3-admin .st3-admin-main
-:is(
-  button[type="submit"],
-  a[class*="bg-black"],
-  button[class*="bg-black"],
-  a[class*="bg-white"],
-  button[class*="bg-white"]
-) {
-  min-height:
-    42px;
+.st3-admin
+  .st3-admin-main
+  :is(
+    button[type="submit"],
+    a[class*="bg-black"],
+    button[class*="bg-black"],
+    a[class*="bg-white"],
+    button[class*="bg-white"]
+  ) {
+  min-height: 42px;
 
-  padding-inline:
-    18px !important;
+  padding-inline: 18px !important;
 
-  border-radius:
-    999px !important;
+  border-radius: 999px !important;
 
-  font-size:
-    11px !important;
+  font-size: 11px !important;
 
-  font-weight:
-    650 !important;
+  font-weight: 650 !important;
 
-  letter-spacing:
-    .08em !important;
+  letter-spacing: 0.08em !important;
 
   transition:
     background-color 160ms ease,
@@ -944,412 +782,284 @@ input[type="file"] {
     opacity 160ms ease !important;
 }
 
+.st3-admin .st3-admin-main button[type="submit"] {
+  background: var(--st-admin-accent) !important;
 
-.st3-admin .st3-admin-main
-button[type="submit"] {
-  background:
-    var(--st-admin-accent) !important;
+  border-color: var(--st-admin-accent) !important;
 
-  border-color:
-    var(--st-admin-accent) !important;
+  color: #171719 !important;
 
-  color:
-    #171719 !important;
-
-  box-shadow:
-    0 5px 16px rgba(245,179,53,.14) !important;
+  box-shadow: 0 5px 16px rgba(245, 179, 53, 0.14) !important;
 }
 
+.st3-admin .st3-admin-main button[type="submit"]:hover {
+  background: var(--st-admin-accent-hover) !important;
 
-.st3-admin .st3-admin-main
-button[type="submit"]:hover {
-  background:
-    var(--st-admin-accent-hover) !important;
+  border-color: var(--st-admin-accent-hover) !important;
 
-  border-color:
-    var(--st-admin-accent-hover) !important;
+  box-shadow: 0 7px 20px rgba(245, 179, 53, 0.2) !important;
 
-  box-shadow:
-    0 7px 20px rgba(245,179,53,.20) !important;
-
-  transform:
-    none !important;
+  transform: none !important;
 }
-
 
 /*
  * Do not inflate small utility / icon buttons.
  */
-.st3-admin .st3-admin-main
-:is(
-  button[aria-label],
-  button[class*="h-8"],
-  button[class*="h-9"],
-  button[class*="w-8"],
-  button[class*="w-9"]
-) {
-  min-height:
-    unset;
+.st3-admin
+  .st3-admin-main
+  :is(
+    button[aria-label],
+    button[class*="h-8"],
+    button[class*="h-9"],
+    button[class*="w-8"],
+    button[class*="w-9"]
+  ) {
+  min-height: unset;
 
-  padding-inline:
-    unset;
+  padding-inline: unset;
 }
-
 
 /* ---------------------------------------------------------
    5. FORM CONTROLS
    --------------------------------------------------------- */
 
-.st3-admin .st3-admin-main
-:is(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  textarea,
-  select
-) {
-  border:
-    1px solid var(--st-admin-line) !important;
+.st3-admin
+  .st3-admin-main
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    textarea,
+    select
+  ) {
+  border: 1px solid var(--st-admin-line) !important;
 
-  border-radius:
-    12px !important;
+  border-radius: 12px !important;
 
-  background:
-    #fff !important;
+  background: #fff !important;
 
-  box-shadow:
-    inset 0 1px 0 rgba(29,29,31,.018);
+  box-shadow: inset 0 1px 0 rgba(29, 29, 31, 0.018);
 
-  color:
-    var(--st-admin-ink) !important;
+  color: var(--st-admin-ink) !important;
 }
 
+.st3-admin
+  .st3-admin-main
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    textarea,
+    select
+  ):focus {
+  border-color: rgba(245, 179, 53, 0.78) !important;
 
-.st3-admin .st3-admin-main
-:is(
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  textarea,
-  select
-):focus {
-  border-color:
-    rgba(245,179,53,.78) !important;
-
-  box-shadow:
-    0 0 0 4px rgba(245,179,53,.105) !important;
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.105) !important;
 }
 
-
-.st3-admin .st3-admin-main
-textarea {
-  line-height:
-    1.55;
+.st3-admin .st3-admin-main textarea {
+  line-height: 1.55;
 }
-
 
 /* ---------------------------------------------------------
    6. LABELS
    --------------------------------------------------------- */
 
 .st3-admin .st3-admin-main label {
-  color:
-    var(--st-admin-muted);
+  color: var(--st-admin-muted);
 }
 
-
-.st3-admin .st3-admin-main
-label[class*="uppercase"] {
-  letter-spacing:
-    .13em !important;
+.st3-admin .st3-admin-main label[class*="uppercase"] {
+  letter-spacing: 0.13em !important;
 }
-
 
 /* ---------------------------------------------------------
    7. STATUS PILLS
    Fix rectangular HOME PAGE / ACTIVE badges.
    --------------------------------------------------------- */
 
-.st3-admin .st3-admin-main
-span[class*="uppercase"][class*="border"][class*="px-2"] {
-  border-radius:
-    999px !important;
+.st3-admin
+  .st3-admin-main
+  span[class*="uppercase"][class*="border"][class*="px-2"] {
+  border-radius: 999px !important;
 
-  padding:
-    5px 10px !important;
+  padding: 5px 10px !important;
 
-  line-height:
-    1 !important;
+  line-height: 1 !important;
 }
-
 
 /*
  * Homepage state becomes Stereophonie mustard instead of
  * looking like a random blue rectangular developer badge.
  */
-.st3-admin .st3-admin-main
-span[class*="border-sky"] {
-  border-color:
-    rgba(245,179,53,.30) !important;
+.st3-admin .st3-admin-main span[class*="border-sky"] {
+  border-color: rgba(245, 179, 53, 0.3) !important;
 
-  background:
-    rgba(245,179,53,.09) !important;
+  background: rgba(245, 179, 53, 0.09) !important;
 
-  color:
-    #8b5900 !important;
+  color: #8b5900 !important;
 }
-
 
 /* ---------------------------------------------------------
    8. SIDE NAV
    --------------------------------------------------------- */
 
 .st3-admin .st3-admin-nav-link {
-  border-radius:
-    12px !important;
+  border-radius: 12px !important;
 }
-
 
 .st3-admin .st3-admin-nav-link.is-active {
-  background:
-    #fff4df !important;
+  background: #fff4df !important;
 
-  color:
-    #7a4d00 !important;
+  color: #7a4d00 !important;
 
-  box-shadow:
-    inset 0 0 0 1px rgba(245,179,53,.26) !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 179, 53, 0.26) !important;
 }
-
 
 /* =========================================================
    HOMEPAGE EDITOR
    ========================================================= */
-
 
 /* ---------------------------------------------------------
    9. HOME PAGE EDITOR — CALMER CONTAINER
    --------------------------------------------------------- */
 
 .st3-admin-homepage-v3 {
-  --homepage-gap:
-    18px;
+  --homepage-gap: 18px;
 }
 
+.st3-admin-homepage-v3 :is(section, article)[class*="border"] {
+  border-radius: 18px !important;
 
-.st3-admin-homepage-v3
-:is(
-  section,
-  article
-)[class*="border"] {
-  border-radius:
-    18px !important;
-
-  box-shadow:
-    0 6px 24px rgba(29,29,31,.03) !important;
+  box-shadow: 0 6px 24px rgba(29, 29, 31, 0.03) !important;
 }
-
 
 /* ---------------------------------------------------------
    10. HOME PAGE EDITOR — COMPACT SECTION HEADERS
    --------------------------------------------------------- */
 
 .st3-admin-homepage-v3
-:is(
-  section,
-  article
-)
-> div:first-child[class*="border-b"] {
-  padding-top:
-    20px !important;
+  :is(section, article)
+  > div:first-child[class*="border-b"] {
+  padding-top: 20px !important;
 
-  padding-bottom:
-    20px !important;
+  padding-bottom: 20px !important;
 }
 
+.st3-admin-homepage-v3 h2 {
+  font-size: clamp(1.45rem, 2vw, 1.9rem) !important;
 
-.st3-admin-homepage-v3
-h2 {
-  font-size:
-    clamp(1.45rem, 2vw, 1.9rem) !important;
-
-  letter-spacing:
-    -.035em !important;
+  letter-spacing: -0.035em !important;
 }
-
 
 /* ---------------------------------------------------------
    11. HOME PAGE EDITOR — LESS DEAD SPACE
    --------------------------------------------------------- */
 
-.st3-admin-homepage-v3
-:is(
-  form,
-  section,
-  article
-)
-[class*="p-8"] {
-  padding:
-    24px !important;
+.st3-admin-homepage-v3 :is(form, section, article) [class*="p-8"] {
+  padding: 24px !important;
 }
 
-
-.st3-admin-homepage-v3
-:is(
-  form,
-  section,
-  article
-)
-[class*="gap-8"] {
-  gap:
-    20px !important;
+.st3-admin-homepage-v3 :is(form, section, article) [class*="gap-8"] {
+  gap: 20px !important;
 }
-
 
 /* ---------------------------------------------------------
    12. CURRENT PREVIEW
    Gives editor a clearer edit → preview relationship.
    --------------------------------------------------------- */
 
-.st3-admin-homepage-v3
-:is(
-  [class*="sticky"],
-  aside
-) {
-  border-radius:
-    18px !important;
+.st3-admin-homepage-v3 :is([class*="sticky"], aside) {
+  border-radius: 18px !important;
 }
-
 
 .st3-admin-homepage-v3 img {
-  border-radius:
-    14px;
+  border-radius: 14px;
 }
-
 
 /* ---------------------------------------------------------
    13. HOMEPAGE SAVE ACTION
    --------------------------------------------------------- */
 
-.st3-admin-homepage-v3
-button[type="submit"] {
-  min-width:
-    132px;
+.st3-admin-homepage-v3 button[type="submit"] {
+  min-width: 132px;
 
-  justify-content:
-    center;
+  justify-content: center;
 }
-
 
 /* =========================================================
    BRAND SEARCH
    ========================================================= */
 
 .st-admin-brand-search {
-  margin-top:
-    22px;
+  margin-top: 22px;
 
-  padding:
-    18px;
+  padding: 18px;
 
-  display:
-    grid;
+  display: grid;
 
   grid-template-columns:
-    minmax(190px, .65fr)
+    minmax(190px, 0.65fr)
     minmax(280px, 1.35fr);
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    18px;
+  gap: 18px;
 
-  border:
-    1px solid
-    var(--st-admin-line);
+  border: 1px solid var(--st-admin-line);
 
-  border-radius:
-    18px;
+  border-radius: 18px;
 
-  background:
-    rgba(255,255,255,.88);
+  background: rgba(255, 255, 255, 0.88);
 
-  box-shadow:
-    0 8px 28px rgba(29,29,31,.03);
+  box-shadow: 0 8px 28px rgba(29, 29, 31, 0.03);
 
-  backdrop-filter:
-    blur(14px);
+  backdrop-filter: blur(14px);
 }
-
 
 .st-admin-brand-search__copy {
-  min-width:
-    0;
+  min-width: 0;
 }
-
 
 .st-admin-brand-search__copy span,
 .st-admin-brand-search__copy strong {
-  display:
-    block;
+  display: block;
 }
-
 
 .st-admin-brand-search__copy span {
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    10px;
+  font-size: 10px;
 
-  font-weight:
-    650;
+  font-weight: 650;
 
-  letter-spacing:
-    .13em;
+  letter-spacing: 0.13em;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 }
-
 
 .st-admin-brand-search__copy strong {
-  margin-top:
-    5px;
+  margin-top: 5px;
 
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 
-  font-size:
-    15px;
+  font-size: 15px;
 
-  font-weight:
-    620;
+  font-weight: 620;
 }
 
-
 .st-admin-brand-search__field {
-  position:
-    relative;
+  position: relative;
 
-  min-height:
-    48px;
+  min-height: 48px;
 
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    10px;
+  gap: 10px;
 
-  border:
-    1px solid
-    rgba(29,29,31,.10);
+  border: 1px solid rgba(29, 29, 31, 0.1);
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
-  background:
-    #f5f5f7;
+  background: #f5f5f7;
 
   transition:
     border-color 160ms ease,
@@ -1357,757 +1067,527 @@ button[type="submit"] {
     box-shadow 160ms ease;
 }
 
-
 .st-admin-brand-search__field:focus-within {
-  border-color:
-    rgba(245,179,53,.80);
+  border-color: rgba(245, 179, 53, 0.8);
 
-  background:
-    #fff;
+  background: #fff;
 
-  box-shadow:
-    0 0 0 4px rgba(245,179,53,.11);
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11);
 }
-
 
 .st-admin-brand-search__field > svg {
-  width:
-    17px;
+  width: 17px;
 
-  height:
-    17px;
+  height: 17px;
 
-  margin-left:
-    17px;
+  margin-left: 17px;
 
-  flex:
-    0 0 auto;
+  flex: 0 0 auto;
 
-  color:
-    #86868b;
+  color: #86868b;
 }
-
 
 .st-admin-brand-search__field input {
-  min-width:
-    0;
+  min-width: 0;
 
-  width:
-    100%;
+  width: 100%;
 
-  height:
-    46px !important;
+  height: 46px !important;
 
-  padding:
-    0 !important;
+  padding: 0 !important;
 
-  border:
-    0 !important;
+  border: 0 !important;
 
-  border-radius:
-    0 !important;
+  border-radius: 0 !important;
 
-  background:
-    transparent !important;
+  background: transparent !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 
-  outline:
-    0 !important;
+  outline: 0 !important;
 
-  font-size:
-    14px;
+  font-size: 14px;
 }
 
+.st-admin-brand-search__field button {
+  width: 34px;
 
-.st-admin-brand-search__field
-button {
-  width:
-    34px;
+  height: 34px;
 
-  height:
-    34px;
+  min-height: 34px !important;
 
-  min-height:
-    34px !important;
+  margin-right: 7px;
 
-  margin-right:
-    7px;
+  padding: 0 !important;
 
-  padding:
-    0 !important;
+  display: grid;
 
-  display:
-    grid;
+  place-items: center;
 
-  place-items:
-    center;
+  border: 0;
 
-  border:
-    0;
+  border-radius: 999px !important;
 
-  border-radius:
-    999px !important;
+  background: #fff;
 
-  background:
-    #fff;
+  color: #6e6e73;
 
-  color:
-    #6e6e73;
-
-  cursor:
-    pointer;
+  cursor: pointer;
 }
 
+.st-admin-brand-search__field button svg {
+  width: 14px;
 
-.st-admin-brand-search__field
-button svg {
-  width:
-    14px;
-
-  height:
-    14px;
+  height: 14px;
 }
-
 
 .st-admin-brand-search__empty {
-  grid-column:
-    1 / -1;
+  grid-column: 1 / -1;
 
-  margin:
-    -3px 0 0;
+  margin: -3px 0 0;
 
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    12px;
+  font-size: 12px;
 
-  line-height:
-    1.5;
+  line-height: 1.5;
 }
-
 
 /*
  * Browser `hidden` must win over broad admin display classes.
  */
 [data-admin-brand-card="true"][hidden] {
-  display:
-    none !important;
+  display: none !important;
 }
-
 
 /* ---------------------------------------------------------
    14. BRAND / CATEGORY MANAGEMENT CARDS
    --------------------------------------------------------- */
 
 [data-admin-brand-card="true"] {
-  overflow:
-    hidden;
+  overflow: hidden;
 
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease;
 }
 
-
-@media (hover:hover) {
-
+@media (hover: hover) {
   [data-admin-brand-card="true"]:hover {
-    border-color:
-      rgba(29,29,31,.13) !important;
+    border-color: rgba(29, 29, 31, 0.13) !important;
 
-    box-shadow:
-      0 10px 30px rgba(29,29,31,.045) !important;
+    box-shadow: 0 10px 30px rgba(29, 29, 31, 0.045) !important;
   }
-
 }
-
 
 /* ---------------------------------------------------------
    15. NO ARCADE MOVEMENT
    --------------------------------------------------------- */
 
-.st3-admin .st3-admin-main
-:is(
-  button,
-  a
-):hover {
-  translate:
-    none !important;
+.st3-admin .st3-admin-main :is(button, a):hover {
+  translate: none !important;
 }
-
 
 /* ---------------------------------------------------------
    16. MOBILE ADMIN
    --------------------------------------------------------- */
 
 @media (max-width: 760px) {
-
   .st-admin-brand-search {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
 
-    padding:
-      14px;
+    padding: 14px;
   }
-
 
   .st-admin-brand-search__field {
-    min-width:
-      0;
+    min-width: 0;
   }
 
-
-  .st3-admin-homepage-v3
-  :is(
-    form,
-    section,
-    article
-  )
-  [class*="p-8"] {
-    padding:
-      18px !important;
+  .st3-admin-homepage-v3 :is(form, section, article) [class*="p-8"] {
+    padding: 18px !important;
   }
-
 }
-
 
 /* ---------------------------------------------------------
    17. REDUCED MOTION
    --------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-
   .st3-admin *,
   .st-admin-brand-search * {
-    transition:
-      none !important;
+    transition: none !important;
 
-    animation:
-      none !important;
+    animation: none !important;
   }
-
 }
 
 /* === ST ADMIN PREMIUM V3 END === */
 
 /* === ST ADMIN PRODUCT HOMEPAGE V41 START === */
 
-
 /* =========================================================
    ADMIN BUTTON CONTRAST
    ========================================================= */
 
-.st3-admin .st3-admin-main
-a[class*="border"][class*="text-white"] {
-  border-color:
-    rgba(29,29,31,.12) !important;
+.st3-admin .st3-admin-main a[class*="border"][class*="text-white"] {
+  border-color: rgba(29, 29, 31, 0.12) !important;
 
-  background:
-    #fff !important;
+  background: #fff !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 }
 
-.st3-admin .st3-admin-main
-a[class*="border"][class*="text-white"]:hover {
-  border-color:
-    rgba(245,179,53,.55) !important;
+.st3-admin .st3-admin-main a[class*="border"][class*="text-white"]:hover {
+  border-color: rgba(245, 179, 53, 0.55) !important;
 
-  background:
-    #fff8e8 !important;
+  background: #fff8e8 !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 }
-
 
 /* =========================================================
    SELLING STATUS
    ========================================================= */
 
 .st-admin-selling-status {
-  display:
-    grid;
+  display: grid;
 
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  gap:
-    10px;
+  gap: 10px;
 }
 
 .st-admin-selling-status__option {
-  position:
-    relative;
+  position: relative;
 
-  min-height:
-    108px;
+  min-height: 108px;
 
-  padding:
-    17px 48px 17px 17px !important;
+  padding: 17px 48px 17px 17px !important;
 
-  display:
-    grid !important;
+  display: grid !important;
 
-  grid-template-columns:
-    10px minmax(0,1fr);
+  grid-template-columns: 10px minmax(0, 1fr);
 
-  gap:
-    12px;
+  gap: 12px;
 
-  align-items:
-    start;
+  align-items: start;
 
-  border:
-    1px solid rgba(29,29,31,.09) !important;
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
 
-  border-radius:
-    17px !important;
+  border-radius: 17px !important;
 
-  background:
-    #f7f7f8 !important;
+  background: #f7f7f8 !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 
-  text-align:
-    left;
+  text-align: left;
 }
 
 .st-admin-selling-status__option:hover {
-  border-color:
-    rgba(29,29,31,.17) !important;
+  border-color: rgba(29, 29, 31, 0.17) !important;
 
-  background:
-    #fff !important;
+  background: #fff !important;
 }
 
 .st-admin-selling-status__option.is-selected {
-  border-color:
-    rgba(245,179,53,.76) !important;
+  border-color: rgba(245, 179, 53, 0.76) !important;
 
-  background:
-    #fff8e9 !important;
+  background: #fff8e9 !important;
 
-  box-shadow:
-    0 0 0 3px rgba(245,179,53,.10) !important;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.1) !important;
 }
 
 .st-admin-selling-status__indicator {
-  width:
-    9px;
+  width: 9px;
 
-  height:
-    9px;
+  height: 9px;
 
-  margin-top:
-    5px;
+  margin-top: 5px;
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
-  background:
-    #86868b;
+  background: #86868b;
 }
 
 .st-admin-selling-status__indicator.is-in-stock {
-  background:
-    #34c759;
+  background: #34c759;
 }
 
 .st-admin-selling-status__indicator.is-low-stock {
-  background:
-    #ff9f0a;
+  background: #ff9f0a;
 }
 
 .st-admin-selling-status__indicator.is-out-of-stock {
-  background:
-    #ff453a;
+  background: #ff453a;
 }
 
 .st-admin-selling-status__indicator.is-coming-soon {
-  background:
-    #0a84ff;
+  background: #0a84ff;
 }
 
 .st-admin-selling-status__copy strong,
 .st-admin-selling-status__copy small {
-  display:
-    block;
+  display: block;
 }
 
 .st-admin-selling-status__copy strong {
-  font-size:
-    14px;
+  font-size: 14px;
 
-  font-weight:
-    650;
+  font-weight: 650;
 }
 
 .st-admin-selling-status__copy small {
-  margin-top:
-    7px;
+  margin-top: 7px;
 
-  color:
-    #6e6e73;
+  color: #6e6e73;
 
-  font-size:
-    12px;
+  font-size: 12px;
 
-  line-height:
-    1.45;
+  line-height: 1.45;
 }
 
 .st-admin-selling-status__check {
-  position:
-    absolute;
+  position: absolute;
 
-  top:
-    15px;
+  top: 15px;
 
-  right:
-    15px;
+  right: 15px;
 
-  width:
-    24px;
+  width: 24px;
 
-  height:
-    24px;
+  height: 24px;
 
-  display:
-    grid;
+  display: grid;
 
-  place-items:
-    center;
+  place-items: center;
 
-  border:
-    1px solid rgba(29,29,31,.12);
+  border: 1px solid rgba(29, 29, 31, 0.12);
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
-  background:
-    #fff;
+  background: #fff;
 }
 
-.st-admin-selling-status__option.is-selected
-.st-admin-selling-status__check {
-  border-color:
-    #f5b335;
+.st-admin-selling-status__option.is-selected .st-admin-selling-status__check {
+  border-color: #f5b335;
 
-  background:
-    #f5b335;
+  background: #f5b335;
 }
-
 
 /* =========================================================
    COLOR PICKER
    ========================================================= */
 
 .st-admin-color-trigger {
-  min-width:
-    190px;
+  min-width: 190px;
 
-  min-height:
-    46px;
+  min-height: 46px;
 
-  padding:
-    0 14px !important;
+  padding: 0 14px !important;
 
-  display:
-    inline-flex !important;
+  display: inline-flex !important;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    10px;
+  gap: 10px;
 
-  border:
-    1px solid rgba(29,29,31,.11) !important;
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
 
-  border-radius:
-    999px !important;
+  border-radius: 999px !important;
 
-  background:
-    #f5f5f7 !important;
+  background: #f5f5f7 !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 
-  font-size:
-    13px !important;
+  font-size: 13px !important;
 
-  letter-spacing:
-    0 !important;
+  letter-spacing: 0 !important;
 
-  text-transform:
-    none !important;
+  text-transform: none !important;
 }
 
 .st-admin-color-trigger__swatch {
-  width:
-    22px;
+  width: 22px;
 
-  height:
-    22px;
+  height: 22px;
 
-  flex:
-    0 0 auto;
+  flex: 0 0 auto;
 
-  border:
-    1px solid rgba(29,29,31,.14);
+  border: 1px solid rgba(29, 29, 31, 0.14);
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 }
 
 .st-admin-color-panel {
-  margin-top:
-    15px;
+  margin-top: 15px;
 
-  overflow:
-    hidden;
+  overflow: hidden;
 
-  border:
-    1px solid rgba(29,29,31,.09);
+  border: 1px solid rgba(29, 29, 31, 0.09);
 
-  border-radius:
-    18px;
+  border-radius: 18px;
 
-  background:
-    #f7f7f8;
+  background: #f7f7f8;
 }
 
 .st-admin-color-grid {
-  max-height:
-    288px;
+  max-height: 288px;
 
-  overflow-y:
-    auto;
+  overflow-y: auto;
 
-  padding:
-    12px;
+  padding: 12px;
 
-  display:
-    grid;
+  display: grid;
 
-  grid-template-columns:
-    repeat(3,minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  gap:
-    7px;
+  gap: 7px;
 }
 
 .st-admin-color-option {
-  min-height:
-    44px !important;
+  min-height: 44px !important;
 
-  padding:
-    0 10px !important;
+  padding: 0 10px !important;
 
-  display:
-    grid !important;
+  display: grid !important;
 
-  grid-template-columns:
-    21px minmax(0,1fr) 17px;
+  grid-template-columns: 21px minmax(0, 1fr) 17px;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    8px;
+  gap: 8px;
 
-  border:
-    1px solid transparent !important;
+  border: 1px solid transparent !important;
 
-  border-radius:
-    11px !important;
+  border-radius: 11px !important;
 
-  background:
-    transparent !important;
+  background: transparent !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 
-  font-size:
-    12px !important;
+  font-size: 12px !important;
 
-  font-weight:
-    550 !important;
+  font-weight: 550 !important;
 
-  letter-spacing:
-    0 !important;
+  letter-spacing: 0 !important;
 
-  text-transform:
-    none !important;
+  text-transform: none !important;
 }
 
 .st-admin-color-option:hover {
-  background:
-    #fff !important;
+  background: #fff !important;
 }
 
 .st-admin-color-option.is-selected {
-  border-color:
-    rgba(245,179,53,.55) !important;
+  border-color: rgba(245, 179, 53, 0.55) !important;
 
-  background:
-    #fff7e6 !important;
+  background: #fff7e6 !important;
 }
 
 .st-admin-color-option__swatch {
-  width:
-    20px;
+  width: 20px;
 
-  height:
-    20px;
+  height: 20px;
 
-  border:
-    1px solid rgba(29,29,31,.13);
+  border: 1px solid rgba(29, 29, 31, 0.13);
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 }
 
 .st-admin-color-custom {
-  padding:
-    12px;
+  padding: 12px;
 
-  display:
-    grid;
+  display: grid;
 
-  grid-template-columns:
-    minmax(0,1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
 
-  align-items:
-    end;
+  align-items: end;
 
-  gap:
-    10px;
+  gap: 10px;
 
-  border-top:
-    1px solid rgba(29,29,31,.08);
+  border-top: 1px solid rgba(29, 29, 31, 0.08);
 
-  background:
-    #fff;
+  background: #fff;
 }
 
 .st-admin-color-custom label > span {
-  display:
-    block;
+  display: block;
 
-  margin-bottom:
-    6px;
+  margin-bottom: 6px;
 
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    10px;
+  font-size: 10px;
 
-  font-weight:
-    650;
+  font-weight: 650;
 
-  letter-spacing:
-    .08em;
+  letter-spacing: 0.08em;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 }
 
 .st-admin-color-custom input {
-  min-height:
-    42px !important;
+  min-height: 42px !important;
 
-  width:
-    100%;
+  width: 100%;
 }
 
 .st-admin-color-custom button {
-  min-height:
-    42px !important;
+  min-height: 42px !important;
 
-  padding:
-    0 18px !important;
+  padding: 0 18px !important;
 
-  border:
-    1px solid #f5b335 !important;
+  border: 1px solid #f5b335 !important;
 
-  background:
-    #f5b335 !important;
+  background: #f5b335 !important;
 
-  color:
-    #1d1d1f !important;
+  color: #1d1d1f !important;
 }
-
 
 /* =========================================================
    STORE PLACEMENT
    ========================================================= */
 
 .st-admin-placement-grid {
-  padding:
-    20px;
+  padding: 20px;
 
-  display:
-    grid;
+  display: grid;
 
-  grid-template-columns:
-    repeat(3,minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  gap:
-    10px;
+  gap: 10px;
 }
 
 .st-admin-placement-card {
-  cursor:
-    pointer;
+  cursor: pointer;
 }
 
 .st-admin-placement-card__surface {
-  position:
-    relative;
+  position: relative;
 
-  min-height:
-    145px;
+  min-height: 145px;
 
-  padding:
-    17px;
+  padding: 17px;
 
-  display:
-    flex;
+  display: flex;
 
-  flex-direction:
-    column;
+  flex-direction: column;
 
-  border:
-    1px solid rgba(29,29,31,.09);
+  border: 1px solid rgba(29, 29, 31, 0.09);
 
-  border-radius:
-    17px;
+  border-radius: 17px;
 
-  background:
-    #f7f7f8;
+  background: #f7f7f8;
 
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 
   transition:
     border-color 160ms ease,
@@ -2115,283 +1595,203 @@ a[class*="border"][class*="text-white"]:hover {
     box-shadow 160ms ease;
 }
 
-.st-admin-placement-card:hover
-.st-admin-placement-card__surface {
-  border-color:
-    rgba(29,29,31,.17);
+.st-admin-placement-card:hover .st-admin-placement-card__surface {
+  border-color: rgba(29, 29, 31, 0.17);
 
-  background:
-    #fff;
+  background: #fff;
 }
 
-.st-admin-placement-card
-input:checked
-+ .st-admin-placement-card__surface {
-  border-color:
-    rgba(245,179,53,.76);
+.st-admin-placement-card input:checked + .st-admin-placement-card__surface {
+  border-color: rgba(245, 179, 53, 0.76);
 
-  background:
-    #fff8e9;
+  background: #fff8e9;
 
-  box-shadow:
-    0 0 0 3px rgba(245,179,53,.10);
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.1);
 }
 
 .st-admin-placement-card__icon {
-  width:
-    38px;
+  width: 38px;
 
-  height:
-    38px;
+  height: 38px;
 
-  display:
-    grid;
+  display: grid;
 
-  place-items:
-    center;
+  place-items: center;
 
-  border:
-    1px solid rgba(29,29,31,.08);
+  border: 1px solid rgba(29, 29, 31, 0.08);
 
-  border-radius:
-    11px;
+  border-radius: 11px;
 
-  background:
-    #fff;
+  background: #fff;
 
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 }
 
 .st-admin-placement-card__copy {
-  margin-top:
-    16px;
+  margin-top: 16px;
 }
 
 .st-admin-placement-card__copy strong,
 .st-admin-placement-card__copy small {
-  display:
-    block;
+  display: block;
 }
 
 .st-admin-placement-card__copy strong {
-  font-size:
-    14px;
+  font-size: 14px;
 
-  font-weight:
-    650;
+  font-weight: 650;
 }
 
 .st-admin-placement-card__copy small {
-  margin-top:
-    6px;
+  margin-top: 6px;
 
-  padding-right:
-    28px;
+  padding-right: 28px;
 
-  color:
-    #6e6e73;
+  color: #6e6e73;
 
-  font-size:
-    11px;
+  font-size: 11px;
 
-  line-height:
-    1.45;
+  line-height: 1.45;
 }
 
 .st-admin-placement-card__switch {
-  position:
-    absolute;
+  position: absolute;
 
-  top:
-    17px;
+  top: 17px;
 
-  right:
-    17px;
+  right: 17px;
 
-  width:
-    34px;
+  width: 34px;
 
-  height:
-    20px;
+  height: 20px;
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
-  background:
-    #d7d7dc;
+  background: #d7d7dc;
 
-  transition:
-    background 160ms ease;
+  transition: background 160ms ease;
 }
 
 .st-admin-placement-card__switch::after {
-  content:
-    "";
+  content: "";
 
-  position:
-    absolute;
+  position: absolute;
 
-  top:
-    2px;
+  top: 2px;
 
-  left:
-    2px;
+  left: 2px;
 
-  width:
-    16px;
+  width: 16px;
 
-  height:
-    16px;
+  height: 16px;
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
-  background:
-    #fff;
+  background: #fff;
 
-  box-shadow:
-    0 1px 4px rgba(0,0,0,.17);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.17);
 
-  transition:
-    transform 160ms ease;
+  transition: transform 160ms ease;
 }
 
 .st-admin-placement-card
-input:checked
-+ .st-admin-placement-card__surface
-.st-admin-placement-card__switch {
-  background:
-    #f5b335;
+  input:checked
+  + .st-admin-placement-card__surface
+  .st-admin-placement-card__switch {
+  background: #f5b335;
 }
 
 .st-admin-placement-card
-input:checked
-+ .st-admin-placement-card__surface
-.st-admin-placement-card__switch::after {
-  transform:
-    translateX(14px);
+  input:checked
+  + .st-admin-placement-card__surface
+  .st-admin-placement-card__switch::after {
+  transform: translateX(14px);
 }
-
 
 /* =========================================================
    BRAND DIRECTORY SEARCH
    ========================================================= */
 
 .st-admin-brand-search {
-  display:
-    none !important;
+  display: none !important;
 }
 
 .st-admin-brand-search-v41 {
-  margin-top:
-    22px;
+  margin-top: 22px;
 
-  padding:
-    20px;
+  padding: 20px;
 
-  border:
-    1px solid rgba(29,29,31,.08);
+  border: 1px solid rgba(29, 29, 31, 0.08);
 
-  border-radius:
-    20px;
+  border-radius: 20px;
 
-  background:
-    #fff;
+  background: #fff;
 
-  box-shadow:
-    0 8px 30px rgba(29,29,31,.035);
+  box-shadow: 0 8px 30px rgba(29, 29, 31, 0.035);
 }
 
 .st-admin-brand-search-v41__top {
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    flex-end;
+  align-items: flex-end;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
-  gap:
-    16px;
+  gap: 16px;
 }
 
 .st-admin-brand-search-v41__top p {
-  margin:
-    0;
+  margin: 0;
 
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    10px;
+  font-size: 10px;
 
-  font-weight:
-    650;
+  font-weight: 650;
 
-  letter-spacing:
-    .13em;
+  letter-spacing: 0.13em;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 }
 
 .st-admin-brand-search-v41__top strong {
-  display:
-    block;
+  display: block;
 
-  margin-top:
-    5px;
+  margin-top: 5px;
 
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 
-  font-size:
-    17px;
+  font-size: 17px;
 }
 
 .st-admin-brand-search-v41__top button {
-  min-height:
-    34px !important;
+  min-height: 34px !important;
 
-  padding:
-    0 13px !important;
+  padding: 0 13px !important;
 
-  border:
-    0 !important;
+  border: 0 !important;
 
-  background:
-    #f5f5f7 !important;
+  background: #f5f5f7 !important;
 
-  color:
-    #6e6e73 !important;
+  color: #6e6e73 !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 }
 
 .st-admin-brand-search-v41__search {
-  min-height:
-    54px;
+  min-height: 54px;
 
-  margin-top:
-    15px;
+  margin-top: 15px;
 
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  border:
-    1px solid rgba(29,29,31,.11);
+  border: 1px solid rgba(29, 29, 31, 0.11);
 
-  border-radius:
-    15px;
+  border-radius: 15px;
 
-  background:
-    #f5f5f7;
+  background: #f5f5f7;
 
   transition:
     border-color 160ms ease,
@@ -2400,576 +1800,418 @@ input:checked
 }
 
 .st-admin-brand-search-v41__search:focus-within {
-  border-color:
-    rgba(245,179,53,.72);
+  border-color: rgba(245, 179, 53, 0.72);
 
-  background:
-    #fff;
+  background: #fff;
 
-  box-shadow:
-    0 0 0 4px rgba(245,179,53,.10);
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.1);
 }
 
 .st-admin-brand-search-v41__search > svg {
-  width:
-    18px;
+  width: 18px;
 
-  height:
-    18px;
+  height: 18px;
 
-  margin-left:
-    17px;
+  margin-left: 17px;
 
-  color:
-    #86868b;
+  color: #86868b;
 }
 
 .st-admin-brand-search-v41__search input {
-  min-width:
-    0;
+  min-width: 0;
 
-  width:
-    100%;
+  width: 100%;
 
-  height:
-    52px !important;
+  height: 52px !important;
 
-  padding:
-    0 13px !important;
+  padding: 0 13px !important;
 
-  border:
-    0 !important;
+  border: 0 !important;
 
-  background:
-    transparent !important;
+  background: transparent !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 }
 
 .st-admin-brand-search-v41__search button {
-  width:
-    34px;
+  width: 34px;
 
-  height:
-    34px;
+  height: 34px;
 
-  min-height:
-    34px !important;
+  min-height: 34px !important;
 
-  margin-right:
-    9px;
+  margin-right: 9px;
 
-  padding:
-    0 !important;
+  padding: 0 !important;
 
-  display:
-    grid !important;
+  display: grid !important;
 
-  place-items:
-    center;
+  place-items: center;
 
-  border:
-    0 !important;
+  border: 0 !important;
 
-  background:
-    #fff !important;
+  background: #fff !important;
 
-  color:
-    #6e6e73 !important;
+  color: #6e6e73 !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 }
 
 .st-admin-brand-search-v41 > small {
-  display:
-    block;
+  display: block;
 
-  margin:
-    9px 2px 0;
+  margin: 9px 2px 0;
 
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    11px;
+  font-size: 11px;
 }
 
 .st-admin-brand-search-v41__empty {
-  margin-top:
-    13px;
+  margin-top: 13px;
 
-  padding:
-    13px 15px;
+  padding: 13px 15px;
 
-  border-radius:
-    13px;
+  border-radius: 13px;
 
-  background:
-    #f5f5f7;
+  background: #f5f5f7;
 }
 
 .st-admin-brand-search-v41__empty strong,
 .st-admin-brand-search-v41__empty span {
-  display:
-    block;
+  display: block;
 }
 
 .st-admin-brand-search-v41__empty strong {
-  font-size:
-    13px;
+  font-size: 13px;
 }
 
 .st-admin-brand-search-v41__empty span {
-  margin-top:
-    4px;
+  margin-top: 4px;
 
-  color:
-    #6e6e73;
+  color: #6e6e73;
 
-  font-size:
-    12px;
+  font-size: 12px;
 }
-
 
 /* =========================================================
    HOMEPAGE ADMIN PREVIEW
    ========================================================= */
 
 .st-admin-home-preview__shell {
-  overflow:
-    hidden;
+  overflow: hidden;
 
-  border:
-    1px solid rgba(29,29,31,.08);
+  border: 1px solid rgba(29, 29, 31, 0.08);
 
-  border-radius:
-    21px;
+  border-radius: 21px;
 
-  background:
-    #fff;
+  background: #fff;
 
-  box-shadow:
-    0 14px 42px rgba(29,29,31,.055);
+  box-shadow: 0 14px 42px rgba(29, 29, 31, 0.055);
 }
 
 .st-admin-home-preview__heading {
-  min-height:
-    54px;
+  min-height: 54px;
 
-  padding:
-    0 17px;
+  padding: 0 17px;
 
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
-  gap:
-    14px;
+  gap: 14px;
 
-  border-bottom:
-    1px solid rgba(29,29,31,.07);
+  border-bottom: 1px solid rgba(29, 29, 31, 0.07);
 }
 
 .st-admin-home-preview__heading > div {
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    8px;
+  gap: 8px;
 }
 
 .st-admin-home-preview__heading span,
 .st-admin-home-preview__heading small {
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    9px;
+  font-size: 9px;
 
-  font-weight:
-    650;
+  font-weight: 650;
 
-  letter-spacing:
-    .10em;
+  letter-spacing: 0.1em;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 }
 
 .st-admin-home-preview__browser {
-  margin:
-    14px;
+  margin: 14px;
 
-  overflow:
-    hidden;
+  overflow: hidden;
 
-  border:
-    1px solid rgba(29,29,31,.09);
+  border: 1px solid rgba(29, 29, 31, 0.09);
 
-  border-radius:
-    14px;
+  border-radius: 14px;
 
-  background:
-    #f5f5f7;
+  background: #f5f5f7;
 }
 
 .st-admin-home-preview__chrome {
-  height:
-    29px;
+  height: 29px;
 
-  padding:
-    0 9px;
+  padding: 0 9px;
 
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    5px;
+  gap: 5px;
 
-  background:
-    #e9e9ec;
+  background: #e9e9ec;
 }
 
 .st-admin-home-preview__chrome > span {
-  width:
-    6px;
+  width: 6px;
 
-  height:
-    6px;
+  height: 6px;
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
-  background:
-    #bfc0c5;
+  background: #bfc0c5;
 }
 
 .st-admin-home-preview__chrome > div {
-  margin:
-    0 auto;
+  margin: 0 auto;
 
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    6px;
+  font-size: 6px;
 }
 
 .st-admin-home-preview__site-header {
-  height:
-    36px;
+  height: 36px;
 
-  padding:
-    0 11px;
+  padding: 0 11px;
 
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    10px;
+  gap: 10px;
 
-  border-bottom:
-    1px solid rgba(29,29,31,.06);
+  border-bottom: 1px solid rgba(29, 29, 31, 0.06);
 
-  background:
-    #fff;
+  background: #fff;
 }
 
 .st-admin-home-preview__site-header strong {
-  margin-right:
-    auto;
+  margin-right: auto;
 
-  font-size:
-    7px;
+  font-size: 7px;
 
-  letter-spacing:
-    .08em;
+  letter-spacing: 0.08em;
 }
 
 .st-admin-home-preview__site-header nav {
-  display:
-    flex;
+  display: flex;
 
-  gap:
-    8px;
+  gap: 8px;
 }
 
 .st-admin-home-preview__site-header nav span,
 .st-admin-home-preview__site-header > span {
-  color:
-    #6e6e73;
+  color: #6e6e73;
 
-  font-size:
-    5.5px;
+  font-size: 5.5px;
 }
 
 .st-admin-home-preview__hero {
-  min-height:
-    285px;
+  min-height: 285px;
 
-  padding:
-    23px 17px;
+  padding: 23px 17px;
 
-  display:
-    grid;
+  display: grid;
 
   grid-template-columns:
-    minmax(0,.95fr)
-    minmax(0,1.05fr);
+    minmax(0, 0.95fr)
+    minmax(0, 1.05fr);
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    8px;
+  gap: 8px;
 
-  background:
-    #f5f5f7;
+  background: #f5f5f7;
 }
 
 .st-admin-home-preview__copy small {
-  color:
-    #6e6e73;
+  color: #6e6e73;
 
-  font-size:
-    6px;
+  font-size: 6px;
 }
 
 .st-admin-home-preview__copy h2 {
-  margin:
-    8px 0 0;
+  margin: 8px 0 0;
 
-  font-size:
-    clamp(22px,2.3vw,34px) !important;
+  font-size: clamp(22px, 2.3vw, 34px) !important;
 
-  line-height:
-    .89 !important;
+  line-height: 0.89 !important;
 
-  letter-spacing:
-    -.065em !important;
+  letter-spacing: -0.065em !important;
 }
 
 .st-admin-home-preview__copy p {
-  margin-top:
-    10px;
+  margin-top: 10px;
 
-  max-width:
-    26ch;
+  max-width: 26ch;
 
-  color:
-    #6e6e73;
+  color: #6e6e73;
 
-  font-size:
-    6.5px;
+  font-size: 6.5px;
 
-  line-height:
-    1.45;
+  line-height: 1.45;
 }
 
 .st-admin-home-preview__copy > div {
-  margin-top:
-    12px;
+  margin-top: 12px;
 
-  display:
-    flex;
+  display: flex;
 
-  align-items:
-    center;
+  align-items: center;
 
-  gap:
-    7px;
+  gap: 7px;
 }
 
 .st-admin-home-preview__copy > div span:first-child {
-  padding:
-    6px 9px;
+  padding: 6px 9px;
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
-  background:
-    #f5b335;
+  background: #f5b335;
 
-  color:
-    #1d1d1f;
+  color: #1d1d1f;
 
-  font-size:
-    6px;
+  font-size: 6px;
 
-  font-weight:
-    650;
+  font-weight: 650;
 }
 
 .st-admin-home-preview__copy > div span:last-child {
-  color:
-    #805000;
+  color: #805000;
 
-  font-size:
-    6px;
+  font-size: 6px;
 }
 
 .st-admin-home-preview__visual {
-  position:
-    relative;
+  position: relative;
 
-  min-height:
-    220px;
+  min-height: 220px;
 }
 
 .st-admin-home-preview__visual img {
-  border-radius:
-    0 !important;
+  border-radius: 0 !important;
 }
 
 .st-admin-home-preview__next {
-  padding:
-    15px;
+  padding: 15px;
 
-  background:
-    #fff;
+  background: #fff;
 }
 
 .st-admin-home-preview__next > small,
 .st-admin-home-preview__next > strong {
-  display:
-    block;
+  display: block;
 }
 
 .st-admin-home-preview__next > small {
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    6px;
+  font-size: 6px;
 }
 
 .st-admin-home-preview__next > strong {
-  margin-top:
-    3px;
+  margin-top: 3px;
 
-  font-size:
-    15px;
+  font-size: 15px;
 }
 
 .st-admin-home-preview__next > div {
-  margin-top:
-    10px;
+  margin-top: 10px;
 
-  display:
-    grid;
+  display: grid;
 
-  grid-template-columns:
-    repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
 
-  gap:
-    5px;
+  gap: 5px;
 }
 
 .st-admin-home-preview__next > div span {
-  height:
-    35px;
+  height: 35px;
 
-  border-radius:
-    6px;
+  border-radius: 6px;
 
-  background:
-    #f1f1f3;
+  background: #f1f1f3;
 }
 
 .st-admin-home-preview__help {
-  margin:
-    0;
+  margin: 0;
 
-  padding:
-    0 17px 17px;
+  padding: 0 17px 17px;
 
-  color:
-    #86868b;
+  color: #86868b;
 
-  font-size:
-    11px;
+  font-size: 11px;
 
-  line-height:
-    1.55;
+  line-height: 1.55;
 }
-
 
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
 @media (max-width: 900px) {
-
   .st-admin-placement-grid {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
   .st-admin-color-grid {
-    grid-template-columns:
-      repeat(2,minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
 }
 
 @media (max-width: 700px) {
-
   .st-admin-selling-status {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
   .st-admin-color-trigger {
-    width:
-      100%;
+    width: 100%;
   }
 
   .st-admin-color-grid {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
   .st-admin-color-custom {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
   .st-admin-home-preview__site-header nav {
-    display:
-      none;
+    display: none;
   }
 
   .st-admin-home-preview__hero {
-    min-height:
-      250px;
+    min-height: 250px;
 
-    padding:
-      17px 11px;
+    padding: 17px 11px;
 
-    grid-template-columns:
-      1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
-
 }
 
 /* === ST ADMIN PRODUCT HOMEPAGE V41 END === */
-
 
 /* =========================================================
    ST PRODUCT V5
@@ -2991,7 +2233,7 @@ input:checked
 
 .st-admin-placement-card__surface {
   min-height: 132px;
-  border: 1px solid rgba(29,29,31,.09) !important;
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
   border-radius: 18px !important;
   background: #f7f7f8 !important;
   color: #1d1d1f !important;
@@ -3004,14 +2246,14 @@ input:checked
 
 .st-admin-placement-card:hover .st-admin-placement-card__surface {
   background: #fff !important;
-  border-color: rgba(29,29,31,.17) !important;
+  border-color: rgba(29, 29, 31, 0.17) !important;
 }
 
 .st-admin-placement-card input:checked + .st-admin-placement-card__surface,
 .st-admin-placement-card__surface.is-selected {
-  border-color: rgba(245,179,53,.8) !important;
+  border-color: rgba(245, 179, 53, 0.8) !important;
   background: #fff8e9 !important;
-  box-shadow: 0 0 0 3px rgba(245,179,53,.10) !important;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.1) !important;
 }
 
 /* V5 Colour Picker */
@@ -3024,10 +2266,10 @@ input:checked
   min-height: 68px !important;
   padding: 10px 14px !important;
   display: grid !important;
-  grid-template-columns: 38px minmax(0,1fr) 24px;
+  grid-template-columns: 38px minmax(0, 1fr) 24px;
   align-items: center;
   gap: 12px;
-  border: 1px solid rgba(29,29,31,.11) !important;
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
   border-radius: 16px !important;
   background: #f7f7f8 !important;
   color: #1d1d1f !important;
@@ -3038,9 +2280,9 @@ input:checked
 .st-admin-v5-color__selected-swatch {
   width: 34px;
   height: 34px;
-  border: 1px solid rgba(29,29,31,.14);
+  border: 1px solid rgba(29, 29, 31, 0.14);
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
 }
 
 .st-admin-v5-color__trigger small,
@@ -3052,7 +2294,7 @@ input:checked
   color: #86868b;
   font-size: 10px;
   font-weight: 650;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -3075,11 +2317,11 @@ input:checked
 .st-admin-v5-color__panel {
   margin-top: 10px;
   overflow: hidden;
-  border: 1px solid rgba(29,29,31,.10) !important;
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
   border-radius: 20px !important;
   background: #fff !important;
   color: #1d1d1f;
-  box-shadow: 0 18px 55px rgba(29,29,31,.08) !important;
+  box-shadow: 0 18px 55px rgba(29, 29, 31, 0.08) !important;
 }
 
 .st-admin-v5-color__panel > header {
@@ -3087,7 +2329,7 @@ input:checked
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(29,29,31,.07);
+  border-bottom: 1px solid rgba(29, 29, 31, 0.07);
 }
 
 .st-admin-v5-color__panel > header > div {
@@ -3109,7 +2351,7 @@ input:checked
   color: #86868b;
   font-size: 9px;
   font-weight: 650;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -3138,7 +2380,7 @@ input:checked
   display: flex;
   align-items: center;
   gap: 9px;
-  border: 1px solid rgba(29,29,31,.09);
+  border: 1px solid rgba(29, 29, 31, 0.09);
   border-radius: 999px;
   background: #f5f5f7;
 }
@@ -3162,7 +2404,7 @@ input:checked
   overflow-y: auto;
   padding: 0 14px 14px;
   display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -3170,7 +2412,7 @@ input:checked
   min-height: 48px !important;
   padding: 0 10px !important;
   display: grid !important;
-  grid-template-columns: 23px minmax(0,1fr) 16px;
+  grid-template-columns: 23px minmax(0, 1fr) 16px;
   align-items: center;
   gap: 8px;
   border: 1px solid transparent !important;
@@ -3188,14 +2430,14 @@ input:checked
 }
 
 .st-admin-v5-color__grid button.is-selected {
-  border-color: rgba(245,179,53,.7) !important;
+  border-color: rgba(245, 179, 53, 0.7) !important;
   background: #fff8e8 !important;
 }
 
 .st-admin-v5-color__grid button i {
   width: 22px;
   height: 22px;
-  border: 1px solid rgba(29,29,31,.12);
+  border: 1px solid rgba(29, 29, 31, 0.12);
   border-radius: 50%;
 }
 
@@ -3214,7 +2456,7 @@ input:checked
 
 .st-admin-v5-color__custom {
   padding: 16px;
-  border-top: 1px solid rgba(29,29,31,.08);
+  border-top: 1px solid rgba(29, 29, 31, 0.08);
   background: #f7f7f8;
 }
 
@@ -3227,7 +2469,7 @@ input:checked
   color: #9a6200;
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -3239,7 +2481,7 @@ input:checked
 .st-admin-v5-color__custom-editor {
   margin-top: 13px;
   display: grid;
-  grid-template-columns: 52px minmax(180px,1fr) 125px auto;
+  grid-template-columns: 52px minmax(180px, 1fr) 125px auto;
   align-items: end;
   gap: 10px;
 }
@@ -3265,7 +2507,7 @@ input:checked
 .st-admin-v5-color__wheel span {
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(29,29,31,.12);
+  border: 1px solid rgba(29, 29, 31, 0.12);
   border-radius: 12px;
 }
 
@@ -3275,7 +2517,7 @@ input:checked
   color: #86868b;
   font-size: 9px;
   font-weight: 650;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -3312,7 +2554,7 @@ input:checked
 
 @media (max-width: 760px) {
   .st-admin-v5-color__grid {
-    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .st-admin-v5-color__custom-editor {
@@ -3335,9 +2577,9 @@ input:checked
 .st-retail-card__colors > span {
   width: 14px;
   height: 14px;
-  border: 1px solid rgba(0,0,0,.14);
+  border: 1px solid rgba(0, 0, 0, 0.14);
   border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
 }
 
 .st-retail-card__colors > small {
@@ -3346,8 +2588,6 @@ input:checked
 }
 
 /* === ST PRODUCT V5 END === */
-
-
 
 /* === ST ADMIN LOGIN PREMIUM CTA START === */
 
@@ -3365,11 +2605,9 @@ form[action*="login"] button[type="submit"] {
   background: #ffffff !important;
   color: #1d1d1f !important;
 
-  border:
-    1px solid rgba(185, 132, 37, 0.34) !important;
+  border: 1px solid rgba(185, 132, 37, 0.34) !important;
 
-  border-radius:
-    13px !important;
+  border-radius: 13px !important;
 
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.025),
@@ -3382,7 +2620,6 @@ form[action*="login"] button[type="submit"] {
     transform 220ms ease,
     color 220ms ease !important;
 }
-
 
 /*
  * Soft mustard sheen.
@@ -3397,39 +2634,34 @@ form[action*="login"] button[type="submit"]::before {
 
   pointer-events: none;
 
-  background:
-    linear-gradient(
-      100deg,
-      rgba(244, 181, 62, 0),
-      rgba(244, 181, 62, 0.10),
-      rgba(244, 181, 62, 0)
-    );
+  background: linear-gradient(
+    100deg,
+    rgba(244, 181, 62, 0),
+    rgba(244, 181, 62, 0.1),
+    rgba(244, 181, 62, 0)
+  );
 
   opacity: 0;
   transform: translateX(-18%);
 
   transition:
     opacity 240ms ease,
-    transform 420ms cubic-bezier(.16, 1, .3, 1);
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 
 @media (hover: hover) {
   .st3-admin-login button[type="submit"]:not(:disabled):hover,
   .st-admin-login button[type="submit"]:not(:disabled):hover,
   form[action*="login"] button[type="submit"]:not(:disabled):hover {
-    background:
-      #fffaf0 !important;
+    background: #fffaf0 !important;
 
-    border-color:
-      rgba(190, 132, 24, 0.62) !important;
+    border-color: rgba(190, 132, 24, 0.62) !important;
 
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.02),
-      0 8px 24px rgba(184, 127, 23, 0.10) !important;
+      0 8px 24px rgba(184, 127, 23, 0.1) !important;
 
-    transform:
-      translateY(-1px);
+    transform: translateY(-1px);
   }
 
   .st3-admin-login button[type="submit"]:not(:disabled):hover::before,
@@ -3440,7 +2672,6 @@ form[action*="login"] button[type="submit"]::before {
   }
 }
 
-
 .st3-admin-login button[type="submit"] > *,
 .st-admin-login button[type="submit"] > *,
 form[action*="login"] button[type="submit"] > * {
@@ -3448,49 +2679,38 @@ form[action*="login"] button[type="submit"] > * {
   z-index: 1;
 }
 
-
 .st3-admin-login button[type="submit"]:focus-visible,
 .st-admin-login button[type="submit"]:focus-visible,
 form[action*="login"] button[type="submit"]:focus-visible {
   outline: none !important;
 
-  border-color:
-    rgba(183, 125, 20, 0.75) !important;
+  border-color: rgba(183, 125, 20, 0.75) !important;
 
   box-shadow:
     0 0 0 4px rgba(217, 164, 63, 0.13),
     0 6px 20px rgba(0, 0, 0, 0.04) !important;
 }
 
-
 .st3-admin-login button[type="submit"]:not(:disabled):active,
 .st-admin-login button[type="submit"]:not(:disabled):active,
 form[action*="login"] button[type="submit"]:not(:disabled):active {
-  transform:
-    scale(0.995);
+  transform: scale(0.995);
 
-  background:
-    #fff7e8 !important;
+  background: #fff7e8 !important;
 }
-
 
 .st3-admin-login button[type="submit"]:disabled,
 .st-admin-login button[type="submit"]:disabled,
 form[action*="login"] button[type="submit"]:disabled {
-  background:
-    #f7f7f8 !important;
+  background: #f7f7f8 !important;
 
-  color:
-    #aaa9ad !important;
+  color: #aaa9ad !important;
 
-  border-color:
-    #ececef !important;
+  border-color: #ececef !important;
 
-  box-shadow:
-    none !important;
+  box-shadow: none !important;
 
-  cursor:
-    not-allowed;
+  cursor: not-allowed;
 }
 
 /* === ST ADMIN LOGIN PREMIUM CTA END === */
@@ -3528,7 +2748,6 @@ form[action*="login"] button[type="submit"]:disabled {
     color 220ms ease !important;
 }
 
-
 /* Soft mustard light sweep */
 .st3-admin button[type="submit"].st3-admin-login-submit::before {
   content: "";
@@ -3537,36 +2756,32 @@ form[action*="login"] button[type="submit"]:disabled {
 
   pointer-events: none;
 
-  background:
-    linear-gradient(
-      100deg,
-      rgba(244, 181, 62, 0),
-      rgba(244, 181, 62, 0.10),
-      rgba(244, 181, 62, 0)
-    );
+  background: linear-gradient(
+    100deg,
+    rgba(244, 181, 62, 0),
+    rgba(244, 181, 62, 0.1),
+    rgba(244, 181, 62, 0)
+  );
 
   opacity: 0;
   transform: translateX(-18%);
 
   transition:
     opacity 240ms ease,
-    transform 420ms cubic-bezier(.16, 1, .3, 1);
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-
 @media (hover: hover) {
-
   .st3-admin button[type="submit"].st3-admin-login-submit:hover {
     background: #fffaf0 !important;
 
-    border-color:
-      rgba(190, 132, 24, 0.62) !important;
+    border-color: rgba(190, 132, 24, 0.62) !important;
 
     color: #1d1d1f !important;
 
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.02),
-      0 8px 24px rgba(184, 127, 23, 0.10) !important;
+      0 8px 24px rgba(184, 127, 23, 0.1) !important;
 
     transform: translateY(-1px);
   }
@@ -3577,19 +2792,16 @@ form[action*="login"] button[type="submit"]:disabled {
   }
 }
 
-
 /* Keyboard focus */
 .st3-admin button[type="submit"].st3-admin-login-submit:focus-visible {
   outline: none !important;
 
-  border-color:
-    rgba(183, 125, 20, 0.75) !important;
+  border-color: rgba(183, 125, 20, 0.75) !important;
 
   box-shadow:
     0 0 0 4px rgba(217, 164, 63, 0.13),
     0 6px 20px rgba(0, 0, 0, 0.04) !important;
 }
-
 
 /* Press feedback */
 .st3-admin button[type="submit"].st3-admin-login-submit:active {
@@ -3598,8 +2810,6 @@ form[action*="login"] button[type="submit"]:disabled {
 }
 
 /* === ADMIN LOGIN PREMIUM CTA END === */
-
-
 
 /* === CUSTOMER DIRECTORY COUNT PILL START === */
 
@@ -3621,32 +2831,23 @@ form[action*="login"] button[type="submit"]:disabled {
 
   padding: 0 16px !important;
 
-  border:
-    1px solid rgba(29, 29, 31, 0.10) !important;
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
 
-  border-radius:
-    999px !important;
+  border-radius: 999px !important;
 
-  background:
-    #ffffff !important;
+  background: #ffffff !important;
 
-  color:
-    #6e6e73 !important;
+  color: #6e6e73 !important;
 
-  font-size:
-    10px !important;
+  font-size: 10px !important;
 
-  font-weight:
-    600 !important;
+  font-weight: 600 !important;
 
-  letter-spacing:
-    0.16em !important;
+  letter-spacing: 0.16em !important;
 
-  text-transform:
-    uppercase;
+  text-transform: uppercase;
 
-  white-space:
-    nowrap;
+  white-space: nowrap;
 
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.02),
@@ -3658,7 +2859,6 @@ form[action*="login"] button[type="submit"]:disabled {
     box-shadow 180ms ease;
 }
 
-
 /* Slight premium hover treatment */
 @media (hover: hover) {
   .st3-admin [data-customer-count]:hover,
@@ -3666,16 +2866,1872 @@ form[action*="login"] button[type="submit"]:disabled {
   .st3-admin .st-customer-directory-count:hover,
   .st3-admin span[class*="shown"]:hover,
   .st3-admin div[class*="shown"]:hover {
-    border-color:
-      rgba(245, 179, 53, 0.34) !important;
+    border-color: rgba(245, 179, 53, 0.34) !important;
 
-    background:
-      #fffaf0 !important;
+    background: #fffaf0 !important;
 
-    box-shadow:
-      0 5px 16px rgba(184, 127, 23, 0.07) !important;
+    box-shadow: 0 5px 16px rgba(184, 127, 23, 0.07) !important;
   }
 }
 
 /* === CUSTOMER DIRECTORY COUNT PILL END === */
 
+/* === ST ADMIN PROFESSIONAL DENSITY V6 START === */
+
+/*
+ * Admin-only refinement.
+ *
+ * Goals:
+ * - restrained Apple-inspired commerce workspace
+ * - denser layouts
+ * - readable system feedback
+ * - fewer decorative effects
+ * - no storefront impact
+ */
+
+.st3-admin {
+  --st-admin-canvas: #f5f5f7;
+  --st-admin-surface: #ffffff;
+  --st-admin-surface-soft: #f7f7f8;
+  --st-admin-border: rgba(29, 29, 31, 0.09);
+  --st-admin-border-strong: rgba(29, 29, 31, 0.14);
+  --st-admin-text: #1d1d1f;
+  --st-admin-secondary: #6e6e73;
+  --st-admin-tertiary: #86868b;
+  --st-admin-mustard: #f5b335;
+  --st-admin-radius: 16px;
+  --st-admin-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.018), 0 8px 28px rgba(29, 29, 31, 0.035);
+}
+
+/* ---------------------------------------------------------
+   WORKSPACE
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main {
+  background: var(--st-admin-canvas);
+}
+
+.st3-admin .st3-admin-main > * {
+  color: var(--st-admin-text);
+}
+
+/* ---------------------------------------------------------
+   TYPOGRAPHY — DENSE AND PROFESSIONAL
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main h1 {
+  letter-spacing: -0.04em;
+}
+
+.st3-admin .st3-admin-main h2 {
+  letter-spacing: -0.025em;
+}
+
+.st3-admin .st3-admin-main :is(p, label, small) {
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------------------------------------------------------
+   SYSTEM NOTICES
+   --------------------------------------------------------- */
+
+.st3-admin .st-admin-notice {
+  width: 100%;
+
+  min-height: 48px;
+
+  margin-top: 18px;
+
+  padding: 13px 16px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 11px;
+
+  border: 1px solid var(--st-admin-border-strong);
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #1d1d1f;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  line-height: 1.45;
+
+  box-shadow: 0 1px 2px rgba(29, 29, 31, 0.025);
+}
+
+.st3-admin .st-admin-notice--success {
+  border-left: 3px solid #218739;
+
+  background: linear-gradient(90deg, rgba(52, 199, 89, 0.055), #ffffff 120px);
+}
+
+.st3-admin .st-admin-notice--error {
+  border-left: 3px solid #c9342f;
+
+  background: linear-gradient(90deg, rgba(255, 69, 58, 0.05), #ffffff 120px);
+
+  color: #7c211e;
+}
+
+.st3-admin .st-admin-notice__icon {
+  width: 17px;
+
+  height: 17px;
+
+  margin-top: 1px;
+
+  flex: 0 0 auto;
+
+  color: #218739;
+}
+
+.st3-admin .st-admin-notice strong {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #1d1d1f;
+
+  font-size: 12px;
+
+  font-weight: 650;
+}
+
+.st3-admin .st-admin-notice p {
+  margin: 0;
+
+  color: #515154;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+}
+
+/* ---------------------------------------------------------
+   REMOVE DECORATIVE STATUS DOT LANGUAGE
+   Keep useful semantic text.
+   --------------------------------------------------------- */
+
+.st3-admin .st-admin-selling-status__indicator {
+  display: none !important;
+}
+
+/*
+ * Hide tiny standalone decorative status circles.
+ * This is intentionally scoped to admin only and avoids
+ * colour swatches, buttons, avatars and form controls.
+ */
+.st3-admin
+  :is(
+    [data-status-dot],
+    .status-dot,
+    .st-admin-status-dot,
+    .st3-admin-status-dot
+  ) {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------
+   ADMIN CONTENT SURFACES
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main :is(section, article) {
+  box-shadow: none;
+}
+
+.st3-admin
+  .st3-admin-main
+  :is(
+    section,
+    article,
+    [class*="rounded-[18px]"],
+    [class*="rounded-[20px]"],
+    [class*="rounded-[22px]"],
+    [class*="rounded-[24px]"]
+  ) {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+/* ---------------------------------------------------------
+   PRODUCT MEDIA — COMPACT WORKSPACE
+   --------------------------------------------------------- */
+
+/*
+ * Edit-product existing photographs.
+ * These selectors are admin-only; storefront product
+ * photography and storefront product cards are unaffected.
+ */
+
+.st3-admin .st3-admin-main img[src*="supabase"] {
+  image-rendering: auto;
+}
+
+/*
+ * Image cards should read as management thumbnails,
+ * not full storefront product cards.
+ */
+.st3-admin .st3-admin-main article > div[class*="aspect-[4/3]"] {
+  max-height: 260px;
+}
+
+/* tighter metadata/forms underneath media */
+.st3-admin .st3-admin-main article :is(input, select, textarea) {
+  font-size: 12px;
+}
+
+/* ---------------------------------------------------------
+   FORMS
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main :is(input, select, textarea) {
+  border-color: rgba(29, 29, 31, 0.11);
+
+  box-shadow: none;
+}
+
+.st3-admin .st3-admin-main :is(input, select, textarea):focus {
+  outline: none;
+
+  border-color: rgba(181, 126, 25, 0.64);
+
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.09);
+}
+
+/* ---------------------------------------------------------
+   BUTTONS
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main button {
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st3-admin .st3-admin-main button:not(:disabled):hover {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   LESS BLOATED EMPTY STATES
+   --------------------------------------------------------- */
+
+.st3-admin .st3-admin-main [class*="min-h-[280px]"],
+.st3-admin .st3-admin-main [class*="min-h-[320px]"],
+.st3-admin .st3-admin-main [class*="min-h-[340px]"] {
+  min-height: 220px !important;
+}
+
+/* ---------------------------------------------------------
+   DESKTOP DENSITY
+   --------------------------------------------------------- */
+
+@media (min-width: 1280px) {
+  .st3-admin .st3-admin-main {
+    font-size: 0.96rem;
+  }
+}
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .st3-admin .st-admin-notice {
+    padding: 12px 14px;
+  }
+}
+
+/* === ST ADMIN PROFESSIONAL DENSITY V6 END === */
+
+/* === ST ADMIN DESTRUCTIVE ACTION SYSTEM V7 START === */
+
+/*
+ * Destructive actions must never inherit the normal
+ * Stereophonie mustard primary-action treatment.
+ */
+
+.st3-admin button[data-destructive="true"],
+.st3-admin button[data-destructive-trigger="true"] {
+  border-color: #c9342f !important;
+  background: #c9342f !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 1px 2px rgba(137, 27, 23, 0.08),
+    0 7px 20px rgba(137, 27, 23, 0.12) !important;
+}
+
+@media (hover: hover) {
+  .st3-admin button[data-destructive="true"]:hover,
+  .st3-admin button[data-destructive-trigger="true"]:hover {
+    border-color: #a82824 !important;
+    background: #a82824 !important;
+    color: #ffffff !important;
+    box-shadow:
+      0 1px 2px rgba(137, 27, 23, 0.08),
+      0 9px 24px rgba(137, 27, 23, 0.16) !important;
+    transform: translateY(-1px);
+  }
+}
+
+.st3-admin button[data-destructive="true"]:focus-visible,
+.st3-admin button[data-destructive-trigger="true"]:focus-visible {
+  outline: none !important;
+  box-shadow:
+    0 0 0 4px rgba(201, 52, 47, 0.13),
+    0 7px 20px rgba(137, 27, 23, 0.12) !important;
+}
+
+.st3-admin button[data-destructive="true"]:active,
+.st3-admin button[data-destructive-trigger="true"]:active {
+  background: #92211e !important;
+  transform: scale(0.99);
+}
+
+/*
+ * Archive is intentionally secondary and must not
+ * inherit the global mustard submit-button treatment.
+ */
+
+.st3-admin button[type="submit"][data-secondary-action="true"] {
+  border-color: rgba(29, 29, 31, 0.12) !important;
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+  box-shadow: none !important;
+}
+
+@media (hover: hover) {
+  .st3-admin button[type="submit"][data-secondary-action="true"]:hover {
+    border-color: rgba(29, 29, 31, 0.2) !important;
+    background: #f5f5f7 !important;
+    color: #1d1d1f !important;
+    box-shadow: none !important;
+  }
+}
+
+/*
+ * Product Danger Zone: restrained serious treatment.
+ */
+
+.st3-admin [data-admin-danger-zone="true"] {
+  border-color: rgba(180, 35, 24, 0.16) !important;
+  background: #fffafa !important;
+  box-shadow: 0 8px 28px rgba(29, 29, 31, 0.035) !important;
+}
+
+/*
+ * Confirmation overlay.
+ * Do not allow generic admin button styling to turn
+ * the full-screen overlay into a pill or mustard CTA.
+ */
+
+.st3-admin [aria-label="Cancel product deletion"] {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: rgba(0, 0, 0, 0.44) !important;
+  box-shadow: none !important;
+}
+
+/*
+ * Keep the destructive confirmation dialog compact.
+ */
+
+.st3-admin [aria-labelledby="delete-product-dialog-title"] {
+  border-radius: 22px !important;
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+  box-shadow:
+    0 32px 100px rgba(0, 0, 0, 0.22),
+    0 4px 18px rgba(0, 0, 0, 0.06) !important;
+}
+
+/*
+ * Admin media remains management-sized rather than
+ * storefront-sized.
+ */
+
+.st3-admin [data-admin-product-media-grid="true"] img,
+.st3-admin [data-admin-product-image-card="true"] img {
+  max-height: 210px;
+  object-fit: contain;
+}
+
+/*
+ * Serious admin interaction language:
+ * restrained movement only.
+ */
+
+.st3-admin button,
+.st3-admin a {
+  transition-duration: 180ms !important;
+}
+
+/* === ST ADMIN DESTRUCTIVE ACTION SYSTEM V7 END === */
+
+/* === ST ADMIN APPLE PROFESSIONAL SYSTEM V8 START === */
+
+/*
+ * ==========================================================
+ * STEREOPHONIE ADMIN — APPLE PROFESSIONAL DESIGN SYSTEM
+ * ==========================================================
+ *
+ * ADMIN ONLY.
+ *
+ * No storefront selectors.
+ * No database behavior.
+ * No server actions.
+ * No form names.
+ * No input values.
+ * No JavaScript behavior.
+ *
+ * This layer only normalizes visual presentation.
+ */
+
+/* ----------------------------------------------------------
+   1. CORE ADMIN CANVAS
+   ---------------------------------------------------------- */
+
+.st3-admin {
+  --st-admin-canvas: #f5f5f7;
+  --st-admin-surface: #ffffff;
+  --st-admin-surface-soft: #fafafa;
+  --st-admin-surface-muted: #f7f7f8;
+
+  --st-admin-text: #1d1d1f;
+  --st-admin-secondary: #6e6e73;
+  --st-admin-tertiary: #86868b;
+
+  --st-admin-border: rgba(29, 29, 31, 0.085);
+  --st-admin-border-strong: rgba(29, 29, 31, 0.135);
+
+  --st-admin-mustard: #f5b335;
+  --st-admin-mustard-hover: #eaaa2b;
+  --st-admin-mustard-soft: #fff8e9;
+
+  --st-admin-success: #18794e;
+  --st-admin-success-bg: #f0faf4;
+  --st-admin-success-border: #b9e4c9;
+
+  --st-admin-danger: #b42318;
+  --st-admin-danger-bg: #fff6f5;
+  --st-admin-danger-border: #efc7c3;
+
+  --st-admin-warning: #9a6200;
+  --st-admin-warning-bg: #fff9ed;
+  --st-admin-warning-border: #ead6a8;
+
+  background: #f5f5f7 !important;
+
+  color: #1d1d1f !important;
+}
+
+/* ----------------------------------------------------------
+   2. MAJOR PAGE SURFACES
+   ---------------------------------------------------------- */
+
+/*
+ * Older admin pages contain many rectangular section/article
+ * containers. Give them one consistent premium language.
+ */
+
+.st3-admin main section[class*="border"],
+.st3-admin main article[class*="border"] {
+  border-color: var(--st-admin-border) !important;
+
+  border-radius: 20px !important;
+
+  background: var(--st-admin-surface) !important;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.018),
+    0 10px 32px rgba(29, 29, 31, 0.035) !important;
+}
+
+/*
+ * Nested sections should not look as heavy as primary cards.
+ */
+.st3-admin main section[class*="border"] section[class*="border"],
+.st3-admin main article[class*="border"] section[class*="border"],
+.st3-admin main section[class*="border"] article[class*="border"] {
+  border-radius: 16px !important;
+
+  box-shadow: none !important;
+}
+
+/* ----------------------------------------------------------
+   3. LEGACY DARK SURFACES -> CLEAN LIGHT SURFACES
+   ---------------------------------------------------------- */
+
+.st3-admin main [class*="bg-[#080808]"],
+.st3-admin main [class*="bg-[#090909]"],
+.st3-admin main [class*="bg-[#0b0b0b]"],
+.st3-admin main [class*="bg-[#0d0d0d]"],
+.st3-admin main [class*="bg-[#101010]"],
+.st3-admin main [class*="bg-[#111111]"],
+.st3-admin main [class*="bg-neutral-950"] {
+  background: #ffffff !important;
+
+  color: var(--st-admin-text) !important;
+}
+
+.st3-admin main [class*="bg-black/"] {
+  background: var(--st-admin-surface-muted) !important;
+}
+
+/* ----------------------------------------------------------
+   4. FORM CONTROLS
+   ---------------------------------------------------------- */
+
+.st3-admin
+  main
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+    select,
+    textarea
+  ) {
+  min-height: 42px;
+
+  border: 1px solid var(--st-admin-border) !important;
+
+  border-radius: 12px !important;
+
+  background: #ffffff !important;
+
+  color: var(--st-admin-text) !important;
+
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.012);
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease !important;
+}
+
+.st3-admin
+  main
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+    select,
+    textarea
+  ):focus {
+  outline: none !important;
+
+  border-color: rgba(195, 139, 36, 0.62) !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.1) !important;
+}
+
+.st3-admin main textarea {
+  border-radius: 14px !important;
+}
+
+.st3-admin main input[type="file"] {
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+}
+
+/* ----------------------------------------------------------
+   5. LABELS / HELPER COPY
+   ---------------------------------------------------------- */
+
+.st3-admin main label {
+  color: var(--st-admin-text);
+}
+
+.st3-admin main :is(p, small)[class*="text-white/"] {
+  color: var(--st-admin-secondary) !important;
+}
+
+.st3-admin main [class*="uppercase"][class*="tracking"] {
+  letter-spacing: 0.13em;
+}
+
+/* ----------------------------------------------------------
+   6. BUTTON SYSTEM
+   ---------------------------------------------------------- */
+
+/*
+ * Standard buttons should feel deliberate and compact.
+ */
+
+.st3-admin main button,
+.st3-admin main a[class*="border"] {
+  border-radius: 12px;
+}
+
+/*
+ * True action pills can remain pills.
+ */
+.st3-admin main :is(button, a)[class*="rounded-full"] {
+  border-radius: 999px !important;
+}
+
+/*
+ * Primary submit actions.
+ *
+ * Destructive and secondary actions have dedicated
+ * overrides below and are intentionally excluded.
+ */
+.st3-admin
+  main
+  button[type="submit"]:not([data-destructive]):not([data-secondary-action]) {
+  border: 1px solid #e2a427 !important;
+
+  background: var(--st-admin-mustard) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 5px 16px rgba(179, 119, 14, 0.12) !important;
+}
+
+@media (hover: hover) {
+  .st3-admin
+    main
+    button[type="submit"]:not([data-destructive]):not(
+      [data-secondary-action]
+    ):hover {
+    border-color: #d6961c !important;
+
+    background: var(--st-admin-mustard-hover) !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow: 0 7px 20px rgba(179, 119, 14, 0.16) !important;
+
+    transform: translateY(-1px);
+  }
+}
+
+/* ----------------------------------------------------------
+   7. DESTRUCTIVE ACTIONS
+   ---------------------------------------------------------- */
+
+.st3-admin button[data-destructive="true"],
+.st3-admin button[data-destructive-trigger="true"] {
+  border-color: #c9342f !important;
+
+  background: #c9342f !important;
+
+  color: #ffffff !important;
+
+  box-shadow: 0 5px 16px rgba(180, 35, 24, 0.14) !important;
+}
+
+@media (hover: hover) {
+  .st3-admin button[data-destructive="true"]:hover,
+  .st3-admin button[data-destructive-trigger="true"]:hover {
+    border-color: #aa2b27 !important;
+
+    background: #aa2b27 !important;
+
+    color: #ffffff !important;
+
+    box-shadow: 0 7px 20px rgba(180, 35, 24, 0.18) !important;
+  }
+}
+
+.st3-admin button[type="submit"][data-secondary-action="true"] {
+  border: 1px solid var(--st-admin-border-strong) !important;
+
+  background: #ffffff !important;
+
+  color: var(--st-admin-text) !important;
+
+  box-shadow: none !important;
+}
+
+/* ----------------------------------------------------------
+   8. STATUS / SUCCESS / ERROR NOTICES
+   ---------------------------------------------------------- */
+
+/*
+ * Kill the flashy neon appearance.
+ */
+
+.st3-admin [role="status"] {
+  border: 1px solid var(--st-admin-success-border) !important;
+
+  border-radius: 14px !important;
+
+  background: var(--st-admin-success-bg) !important;
+
+  color: #17653e !important;
+
+  box-shadow: none !important;
+}
+
+.st3-admin [role="alert"] {
+  border: 1px solid var(--st-admin-danger-border) !important;
+
+  border-radius: 14px !important;
+
+  background: var(--st-admin-danger-bg) !important;
+
+  color: #8f241d !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * User specifically does not want decorative dots.
+ * Remove standalone decorative circles inside notice boxes.
+ */
+.st3-admin [role="status"] > span:empty,
+.st3-admin [role="alert"] > span:empty {
+  display: none !important;
+}
+
+/* ----------------------------------------------------------
+   9. BADGES / CHIPS / COUNTERS
+   ---------------------------------------------------------- */
+
+.st3-admin main :is(span, div)[class*="rounded-full"][class*="border"] {
+  box-shadow: none;
+}
+
+/*
+ * Small data badges should be softly rounded, not boxed.
+ */
+.st3-admin main :is(span, small)[class*="uppercase"][class*="border"] {
+  border-radius: 999px !important;
+}
+
+/* ----------------------------------------------------------
+   10. TABLES / DATA DIRECTORIES
+   ---------------------------------------------------------- */
+
+.st3-admin main table {
+  overflow: hidden;
+
+  border-collapse: separate;
+
+  border-spacing: 0;
+
+  border: 1px solid var(--st-admin-border);
+
+  border-radius: 16px;
+
+  background: #ffffff;
+}
+
+.st3-admin main table thead {
+  background: #fafafa;
+}
+
+.st3-admin main table th {
+  color: #86868b;
+
+  font-size: 10px;
+
+  font-weight: 650;
+
+  letter-spacing: 0.1em;
+
+  text-transform: uppercase;
+}
+
+.st3-admin main table td,
+.st3-admin main table th {
+  border-color: rgba(29, 29, 31, 0.065) !important;
+}
+
+/* ----------------------------------------------------------
+   11. GRID DIRECTORY CARDS
+   ---------------------------------------------------------- */
+
+.st3-admin main [data-admin-brand-card="true"] {
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.015) !important;
+}
+
+@media (hover: hover) {
+  .st3-admin main [data-admin-brand-card="true"]:hover {
+    border-color: rgba(29, 29, 31, 0.14) !important;
+
+    box-shadow: 0 8px 24px rgba(29, 29, 31, 0.05) !important;
+  }
+}
+
+/* ----------------------------------------------------------
+   12. PRODUCT ADMIN CARDS
+   ---------------------------------------------------------- */
+
+.st3-admin main .st-admin-store-placement {
+  border-radius: 20px !important;
+}
+
+.st3-admin main .st-admin-store-placement > div {
+  border-radius: inherit;
+}
+
+/*
+ * Featured / Trending / New Arrival selectors.
+ * Clean selected cards with restrained mustard instead
+ * of old arcade/Nita-style blocks.
+ */
+.st3-admin main .st-admin-store-placement label {
+  border-radius: 14px !important;
+}
+
+.st3-admin main .st-admin-store-placement [class*="amber"],
+.st3-admin main .st-admin-store-placement [class*="yellow"] {
+  border-radius: 14px;
+}
+
+/* ----------------------------------------------------------
+   13. ADMIN PRODUCT MEDIA
+   ---------------------------------------------------------- */
+
+/*
+ * Product management media should remain compact.
+ * This selector is ADMIN ONLY.
+ */
+
+.st3-admin main [data-admin-product-media-grid="true"] {
+  gap: 14px !important;
+}
+
+.st3-admin main [data-admin-product-image-card="true"] {
+  overflow: hidden;
+
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+}
+
+.st3-admin main [data-admin-product-image-card="true"] img {
+  max-height: 190px !important;
+
+  object-fit: contain !important;
+}
+
+/*
+ * Existing generic image manager cards.
+ */
+.st3-admin main section article:has(img) {
+  border-radius: 16px;
+}
+
+/* ----------------------------------------------------------
+   14. UPLOAD AREAS
+   ---------------------------------------------------------- */
+
+.st3-admin main label[class*="border-dashed"],
+.st3-admin main div[class*="border-dashed"] {
+  border-radius: 16px !important;
+
+  background: #fafafa !important;
+}
+
+@media (hover: hover) {
+  .st3-admin main label[class*="border-dashed"]:hover {
+    border-color: rgba(195, 139, 36, 0.45) !important;
+
+    background: #fffaf0 !important;
+  }
+}
+
+/* ----------------------------------------------------------
+   15. MODALS / DIALOGS
+   ---------------------------------------------------------- */
+
+.st3-admin [role="dialog"] {
+  overflow: hidden;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  border-radius: 20px !important;
+
+  background: rgba(255, 255, 255, 0.985) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 28px 90px rgba(29, 29, 31, 0.18) !important;
+
+  backdrop-filter: blur(24px);
+}
+
+/* ----------------------------------------------------------
+   16. DROPDOWNS / FLOATING PANELS
+   ---------------------------------------------------------- */
+
+.st3-admin [role="listbox"],
+.st3-admin [role="menu"] {
+  overflow: hidden;
+
+  border: 1px solid var(--st-admin-border) !important;
+
+  border-radius: 16px !important;
+
+  background: rgba(255, 255, 255, 0.98) !important;
+
+  box-shadow: 0 18px 55px rgba(29, 29, 31, 0.13) !important;
+
+  backdrop-filter: blur(20px);
+}
+
+/* ----------------------------------------------------------
+   17. SIDEBAR NAVIGATION
+   ---------------------------------------------------------- */
+
+.st3-admin .st3-admin-sidebar nav a {
+  min-height: 42px;
+
+  border-radius: 12px !important;
+}
+
+.st3-admin .st3-admin-sidebar nav a[aria-current="page"],
+.st3-admin .st3-admin-sidebar nav a[class*="bg-[#fff"] {
+  border: 1px solid rgba(231, 164, 39, 0.34);
+
+  background: #fff6df !important;
+}
+
+/* ----------------------------------------------------------
+   18. TOOLBAR
+   ---------------------------------------------------------- */
+
+.st3-admin .st3-admin-toolbar {
+  background: rgba(255, 255, 255, 0.88) !important;
+
+  box-shadow: 0 1px 0 rgba(29, 29, 31, 0.045);
+
+  backdrop-filter: saturate(180%) blur(24px);
+}
+
+/* ----------------------------------------------------------
+   19. EMPTY STATES
+   ---------------------------------------------------------- */
+
+.st3-admin
+  main
+  :is(
+    div,
+    section
+  )[class*="min-h-"][class*="items-center"][class*="justify-center"] {
+  border-radius: 18px;
+}
+
+/* ----------------------------------------------------------
+   20. DANGER ZONES
+   ---------------------------------------------------------- */
+
+.st3-admin [data-admin-danger-zone="true"] {
+  border: 1px solid rgba(180, 35, 24, 0.14) !important;
+
+  border-radius: 20px !important;
+
+  background: #fffafa !important;
+
+  box-shadow: 0 6px 22px rgba(180, 35, 24, 0.035) !important;
+}
+
+/* ----------------------------------------------------------
+   21. CHECKBOXES / RADIO CONTROLS
+   ---------------------------------------------------------- */
+
+.st3-admin main input[type="checkbox"],
+.st3-admin main input[type="radio"] {
+  accent-color: var(--st-admin-mustard);
+}
+
+/* ----------------------------------------------------------
+   22. SEARCH FIELDS
+   ---------------------------------------------------------- */
+
+.st3-admin .st-admin-brand-search__field {
+  border-radius: 14px !important;
+
+  background: #f7f7f8 !important;
+}
+
+.st3-admin .st-admin-brand-search__field:focus-within {
+  border-color: rgba(195, 139, 36, 0.55) !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.09) !important;
+}
+
+/* ----------------------------------------------------------
+   23. SOFTER SEPARATORS
+   ---------------------------------------------------------- */
+
+.st3-admin main [class*="border-b"] {
+  border-color: rgba(29, 29, 31, 0.07) !important;
+}
+
+.st3-admin main [class*="border-t"] {
+  border-color: rgba(29, 29, 31, 0.07) !important;
+}
+
+/* ----------------------------------------------------------
+   24. CARD HOVER LANGUAGE
+   ---------------------------------------------------------- */
+
+@media (hover: hover) {
+  .st3-admin main article[class*="border"]:hover {
+    border-color: rgba(29, 29, 31, 0.13) !important;
+  }
+}
+
+/* ----------------------------------------------------------
+   25. PREVENT OLD ARCADE-LIKE MOVEMENT
+   ---------------------------------------------------------- */
+
+.st3-admin main :is(section, article, form):hover {
+  transform: none;
+}
+
+/* ----------------------------------------------------------
+   26. COMPACT MOBILE ADMIN
+   ---------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .st3-admin main section[class*="border"],
+  .st3-admin main article[class*="border"] {
+    border-radius: 16px !important;
+  }
+
+  .st3-admin
+    main
+    :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+    border-radius: 11px !important;
+  }
+
+  .st3-admin [role="dialog"] {
+    border-radius: 18px !important;
+  }
+}
+
+/* ----------------------------------------------------------
+   27. ACCESSIBILITY
+   ---------------------------------------------------------- */
+
+.st3-admin main :is(button, a, input, select, textarea):focus-visible {
+  outline: none;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.12);
+}
+
+/* ----------------------------------------------------------
+   28. REDUCED MOTION
+   ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-admin * {
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === ST ADMIN APPLE PROFESSIONAL SYSTEM V8 END === */
+
+/* === ST ADMIN PROFESSIONAL SYSTEM V9 START === */
+
+/*
+ * ==========================================================
+ * STEREOPHONIE ADMIN — PROFESSIONAL SYSTEM V9
+ * ==========================================================
+ *
+ * ADMIN UI ONLY.
+ *
+ * This layer intentionally changes presentation only.
+ * It does NOT change:
+ * - server actions
+ * - form field names
+ * - Supabase/database operations
+ * - prices
+ * - stock
+ * - product variants
+ * - product image logic
+ * - storefront components
+ */
+
+/* ==========================================================
+   1. SHARED ADMIN DESIGN TOKENS
+   ========================================================== */
+
+.st3-admin {
+  --st9-canvas: #f5f5f7;
+  --st9-surface: #ffffff;
+  --st9-surface-secondary: #f8f8fa;
+  --st9-surface-tertiary: #f3f3f5;
+
+  --st9-text: #1d1d1f;
+  --st9-text-secondary: #6e6e73;
+  --st9-text-tertiary: #86868b;
+
+  --st9-border: rgba(29, 29, 31, 0.085);
+  --st9-border-strong: rgba(29, 29, 31, 0.14);
+
+  --st9-radius-large: 22px;
+  --st9-radius-medium: 16px;
+  --st9-radius-small: 12px;
+
+  --st9-mustard: #f5b335;
+  --st9-mustard-hover: #e8a725;
+
+  --st9-green: #246b45;
+  --st9-green-bg: #f1f8f4;
+  --st9-green-border: #c3dfcd;
+
+  --st9-red: #8f2c27;
+  --st9-red-bg: #fff5f4;
+  --st9-red-border: #e8c8c5;
+
+  --st9-warning: #885d12;
+  --st9-warning-bg: #fff9ed;
+  --st9-warning-border: #ead7aa;
+}
+
+/* ==========================================================
+   2. PRIMARY ADMIN CARDS
+   ========================================================== */
+
+.st3-admin main section[class*="border"],
+.st3-admin main article[class*="border"] {
+  border-radius: var(--st9-radius-large) !important;
+  border-color: var(--st9-border) !important;
+
+  background: var(--st9-surface) !important;
+
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.018),
+    0 10px 34px rgba(29, 29, 31, 0.035) !important;
+}
+
+/*
+ * The screenshots show that many old UI sections are DIVs
+ * rather than SECTION/ARTICLE elements.
+ *
+ * These selectors catch those legacy panels without touching
+ * the storefront because everything stays under .st3-admin.
+ */
+
+.st3-admin main div[class*="border"][class*="bg-[#0d0d0d]"],
+.st3-admin main div[class*="border"][class*="bg-[#101010]"],
+.st3-admin main div[class*="border"][class*="bg-black/"],
+.st3-admin main div[class*="border"][class*="bg-white/"],
+.st3-admin main div[class*="border"][class*="bg-[#f"],
+.st3-admin main label[class*="border"][class*="bg-"] {
+  border-radius: var(--st9-radius-medium) !important;
+}
+
+/* ==========================================================
+   3. NESTED SETTING PANELS
+   ========================================================== */
+
+/*
+ * Payment,
+ * Customer communication,
+ * AI assistant,
+ * coupon conditions,
+ * store placement,
+ * notification rows,
+ * configuration cards,
+ * etc.
+ */
+
+.st3-admin main :is(div, label, article) [class*="border"][class*="bg-"] {
+  border-radius: var(--st9-radius-medium);
+}
+
+/*
+ * Tailwind layouts where the bordered element itself is the
+ * settings row.
+ */
+
+.st3-admin main :is(div, label)[class*="border"][class*="px-"][class*="py-"] {
+  border-radius: var(--st9-radius-medium) !important;
+}
+
+/*
+ * Old rectangular toggle rows.
+ */
+
+.st3-admin main :is(div, label)[class*="border"][class*="items-center"] {
+  border-radius: var(--st9-radius-medium) !important;
+}
+
+/* ==========================================================
+   4. COUPON / SETTING OPTION BOXES
+   ========================================================== */
+
+.st3-admin main form :is(div, label)[class*="border"][class*="bg-white"] {
+  border-radius: 15px !important;
+}
+
+.st3-admin main form :is(div, label)[class*="border"][class*="bg-black"] {
+  border-radius: 15px !important;
+}
+
+.st3-admin main form :is(div, label)[class*="border"][class*="bg-[#"] {
+  border-radius: 15px !important;
+}
+
+/* ==========================================================
+   5. NOTIFICATION CENTRE ROWS
+   ========================================================== */
+
+.st3-admin main a[class*="border"][class*="items-center"],
+.st3-admin main button[class*="border"][class*="items-center"],
+.st3-admin
+  main
+  div[class*="border"][class*="items-center"][class*="justify-between"] {
+  border-radius: 16px !important;
+}
+
+/*
+ * Make operational activity cards feel intentional rather
+ * than like old rectangular strips.
+ */
+
+.st3-admin main :is(a, button, div)[class*="transition"][class*="border"] {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+@media (hover: hover) {
+  .st3-admin main :is(a, button)[class*="border"]:hover {
+    box-shadow: 0 7px 22px rgba(29, 29, 31, 0.05);
+  }
+}
+
+/* ==========================================================
+   6. FORM CONTROLS
+   ========================================================== */
+
+.st3-admin
+  main
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+    textarea,
+    select
+  ) {
+  border-radius: 12px !important;
+
+  border-color: var(--st9-border) !important;
+
+  background: #ffffff !important;
+
+  color: var(--st9-text) !important;
+
+  box-shadow: inset 0 1px 1px rgba(29, 29, 31, 0.012) !important;
+}
+
+.st3-admin main textarea {
+  border-radius: 14px !important;
+}
+
+.st3-admin
+  main
+  :is(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+    textarea,
+    select
+  ):focus {
+  outline: none !important;
+
+  border-color: rgba(184, 128, 28, 0.58) !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.1) !important;
+}
+
+/* ==========================================================
+   7. CHECKBOXES
+   ========================================================== */
+
+/*
+ * Do not turn these into decorative dots.
+ * Keep them as clear utility controls.
+ */
+
+.st3-admin main input[type="checkbox"] {
+  border-radius: 5px !important;
+  accent-color: var(--st9-mustard);
+}
+
+.st3-admin main input[type="radio"] {
+  accent-color: var(--st9-mustard);
+}
+
+/* ==========================================================
+   8. BUTTON SYSTEM
+   ========================================================== */
+
+.st3-admin main button,
+.st3-admin main a[class*="border"] {
+  border-radius: 12px;
+}
+
+/*
+ * Buttons explicitly designed as pills remain pills.
+ */
+
+.st3-admin main :is(button, a)[class*="rounded-full"] {
+  border-radius: 999px !important;
+}
+
+/*
+ * Main actions.
+ */
+
+.st3-admin
+  main
+  button[type="submit"]:not([data-destructive]):not([data-secondary-action]) {
+  border: 1px solid #dfa126 !important;
+
+  background: var(--st9-mustard) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 5px 15px rgba(180, 120, 18, 0.12) !important;
+}
+
+@media (hover: hover) {
+  .st3-admin
+    main
+    button[type="submit"]:not([data-destructive]):not(
+      [data-secondary-action]
+    ):hover {
+    border-color: #cf9018 !important;
+
+    background: var(--st9-mustard-hover) !important;
+
+    box-shadow: 0 7px 19px rgba(180, 120, 18, 0.16) !important;
+  }
+}
+
+/* ==========================================================
+   9. DESTRUCTIVE ACTIONS
+   ========================================================== */
+
+.st3-admin button[data-destructive="true"],
+.st3-admin button[data-destructive-trigger="true"] {
+  border-color: #bd3731 !important;
+
+  background: #bd3731 !important;
+
+  color: #ffffff !important;
+
+  box-shadow: 0 5px 16px rgba(155, 34, 28, 0.14) !important;
+}
+
+@media (hover: hover) {
+  .st3-admin button[data-destructive="true"]:hover,
+  .st3-admin button[data-destructive-trigger="true"]:hover {
+    border-color: #9f2e29 !important;
+
+    background: #9f2e29 !important;
+
+    color: #ffffff !important;
+
+    box-shadow: 0 7px 21px rgba(155, 34, 28, 0.18) !important;
+  }
+}
+
+/* ==========================================================
+   10. PROFESSIONAL SUCCESS MESSAGES
+   ========================================================== */
+
+/*
+ * Handles proper role=status messages.
+ */
+
+.st3-admin [role="status"] {
+  border: 1px solid var(--st9-green-border) !important;
+
+  border-radius: 14px !important;
+
+  background: var(--st9-green-bg) !important;
+
+  color: var(--st9-green) !important;
+
+  box-shadow: 0 1px 2px rgba(29, 29, 31, 0.015) !important;
+
+  font-weight: 500 !important;
+}
+
+/*
+ * Older admin pages sometimes use Tailwind emerald classes
+ * without role=status.
+ */
+
+.st3-admin main :is(div, p)[class*="emerald"][class*="border"] {
+  border: 1px solid var(--st9-green-border) !important;
+
+  border-radius: 14px !important;
+
+  background: var(--st9-green-bg) !important;
+
+  color: var(--st9-green) !important;
+
+  box-shadow: none !important;
+}
+
+.st3-admin main :is(div, p)[class*="emerald"] :is(span, strong, p) {
+  color: var(--st9-green) !important;
+}
+
+/* ==========================================================
+   11. PROFESSIONAL ERROR MESSAGES
+   ========================================================== */
+
+.st3-admin [role="alert"] {
+  border: 1px solid var(--st9-red-border) !important;
+
+  border-radius: 14px !important;
+
+  background: var(--st9-red-bg) !important;
+
+  color: var(--st9-red) !important;
+
+  box-shadow: 0 1px 2px rgba(29, 29, 31, 0.015) !important;
+
+  font-weight: 500 !important;
+}
+
+.st3-admin main :is(div, p)[class*="red-"][class*="border"] {
+  border-color: var(--st9-red-border) !important;
+
+  border-radius: 14px !important;
+
+  background: var(--st9-red-bg) !important;
+
+  color: var(--st9-red) !important;
+
+  box-shadow: none !important;
+}
+
+/* ==========================================================
+   12. WARNING STATES
+   ========================================================== */
+
+.st3-admin main :is(div, section)[class*="amber"][class*="border"] {
+  border-color: var(--st9-warning-border) !important;
+
+  background: var(--st9-warning-bg) !important;
+
+  color: var(--st9-warning) !important;
+}
+
+/* ==========================================================
+   13. REMOVE DECORATIVE STATUS DOTS
+   ========================================================== */
+
+/*
+ * Empty circles used only as visual status indicators.
+ * Actual checkbox/radio controls are NOT affected.
+ */
+
+.st3-admin [role="status"] > span:empty,
+.st3-admin [role="alert"] > span:empty,
+.st3-admin
+  :is([data-status-dot], [data-admin-status-dot], .st-admin-status-dot) {
+  display: none !important;
+}
+
+/*
+ * Common empty circular Tailwind decorations.
+ * Restrict this to admin chrome/status areas so icons and
+ * counters remain intact.
+ */
+
+.st3-admin header span:empty[class*="rounded-full"][class*="bg-"],
+.st3-admin [role="status"] span:empty[class*="rounded-full"],
+.st3-admin [role="alert"] span:empty[class*="rounded-full"] {
+  display: none !important;
+}
+
+/* ==========================================================
+   14. BADGES AND COUNTERS
+   ========================================================== */
+
+.st3-admin main :is(span, small)[class*="border"][class*="uppercase"] {
+  border-radius: 999px !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Numeric count cards / pills.
+ */
+
+.st3-admin main :is(span, div)[class*="rounded-full"][class*="border"] {
+  box-shadow: none !important;
+}
+
+/* ==========================================================
+   15. TABLES
+   ========================================================== */
+
+.st3-admin main table {
+  overflow: hidden;
+
+  border: 1px solid var(--st9-border);
+
+  border-radius: 16px !important;
+
+  border-collapse: separate;
+
+  border-spacing: 0;
+
+  background: #ffffff;
+}
+
+.st3-admin main table thead {
+  background: #fafafa;
+}
+
+.st3-admin main table th,
+.st3-admin main table td {
+  border-color: rgba(29, 29, 31, 0.06) !important;
+}
+
+/* ==========================================================
+   16. SEARCH / DIRECTORY BOXES
+   ========================================================== */
+
+.st3-admin .st-admin-brand-search__field {
+  border-radius: 14px !important;
+
+  background: #f7f7f8 !important;
+}
+
+.st3-admin .st-admin-brand-search__field:focus-within {
+  border-color: rgba(184, 128, 28, 0.52) !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.09) !important;
+}
+
+/* ==========================================================
+   17. EMPTY STATES
+   ========================================================== */
+
+.st3-admin
+  main
+  :is(
+    div,
+    section
+  )[class*="min-h-"][class*="items-center"][class*="justify-center"] {
+  border-radius: 18px !important;
+}
+
+/* ==========================================================
+   18. ADMIN PRODUCT MEDIA
+   ========================================================== */
+
+/*
+ * Still restricted to administrator UI.
+ */
+
+.st3-admin main [data-admin-product-image-card="true"] {
+  overflow: hidden;
+
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+}
+
+.st3-admin main [data-admin-product-image-card="true"] img {
+  max-height: 180px !important;
+
+  object-fit: contain !important;
+}
+
+/* ==========================================================
+   19. FILE / UPLOAD AREAS
+   ========================================================== */
+
+.st3-admin main :is(label, div)[class*="border-dashed"] {
+  border-radius: 16px !important;
+
+  background: #fafafa !important;
+}
+
+/* ==========================================================
+   20. MODALS
+   ========================================================== */
+
+.st3-admin [role="dialog"] {
+  overflow: hidden;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  border-radius: 22px !important;
+
+  background: rgba(255, 255, 255, 0.985) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 30px 90px rgba(29, 29, 31, 0.18) !important;
+
+  backdrop-filter: saturate(180%) blur(24px);
+}
+
+/* ==========================================================
+   21. SIDEBAR
+   ========================================================== */
+
+.st3-admin .st3-admin-sidebar nav a {
+  border-radius: 13px !important;
+}
+
+/* ==========================================================
+   22. TOOLBAR
+   ========================================================== */
+
+.st3-admin .st3-admin-toolbar {
+  background: rgba(255, 255, 255, 0.89) !important;
+
+  box-shadow: 0 1px 0 rgba(29, 29, 31, 0.045);
+
+  backdrop-filter: saturate(180%) blur(24px);
+}
+
+/* ==========================================================
+   23. STORE PLACEMENT / FEATURE CONTROLS
+   ========================================================== */
+
+.st3-admin main .st-admin-store-placement {
+  border-radius: 20px !important;
+}
+
+.st3-admin main .st-admin-store-placement label {
+  border-radius: 15px !important;
+}
+
+/* ==========================================================
+   24. DANGER ZONES
+   ========================================================== */
+
+.st3-admin [data-admin-danger-zone="true"] {
+  border: 1px solid rgba(157, 44, 39, 0.14) !important;
+
+  border-radius: 20px !important;
+
+  background: #fffafa !important;
+
+  box-shadow: 0 5px 20px rgba(157, 44, 39, 0.035) !important;
+}
+
+/* ==========================================================
+   25. SOFT INTERNAL SEPARATORS
+   ========================================================== */
+
+.st3-admin main [class*="border-b"] {
+  border-color: rgba(29, 29, 31, 0.065) !important;
+}
+
+.st3-admin main [class*="border-t"] {
+  border-color: rgba(29, 29, 31, 0.065) !important;
+}
+
+/* ==========================================================
+   26. PROFESSIONAL HOVER LANGUAGE
+   ========================================================== */
+
+@media (hover: hover) {
+  .st3-admin main article[class*="border"]:hover {
+    border-color: rgba(29, 29, 31, 0.13) !important;
+  }
+
+  .st3-admin main section[class*="border"]:hover {
+    border-color: rgba(29, 29, 31, 0.105) !important;
+  }
+}
+
+/* ==========================================================
+   27. NO ARCADE MOVEMENT
+   ========================================================== */
+
+.st3-admin main :is(section, article, form):hover {
+  transform: none !important;
+}
+
+/* ==========================================================
+   28. KEYBOARD ACCESSIBILITY
+   ========================================================== */
+
+.st3-admin main :is(button, a, input, select, textarea):focus-visible {
+  outline: none !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.12);
+}
+
+/* ==========================================================
+   29. MOBILE
+   ========================================================== */
+
+@media (max-width: 760px) {
+  .st3-admin main section[class*="border"],
+  .st3-admin main article[class*="border"] {
+    border-radius: 17px !important;
+  }
+
+  .st3-admin [role="dialog"] {
+    border-radius: 18px !important;
+  }
+}
+
+/* ==========================================================
+   30. REDUCED MOTION
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-admin * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === ST ADMIN PROFESSIONAL SYSTEM V9 END === */
+
+/* === ST ADMIN TARGETED SOURCE POLISH V10 START === */
+
+/*
+ * ==========================================================
+ * TARGETED SOURCE-LEVEL ADMIN POLISH
+ * ==========================================================
+ *
+ * No broad SECTION / DIV catching.
+ * Only explicit admin data hooks.
+ */
+
+/* ----------------------------------------------------------
+   OPEN PAGE INTROS
+   ---------------------------------------------------------- */
+
+.st3-admin [data-admin-page-intro="true"] {
+  margin: 0 !important;
+  padding-top: 0 !important;
+
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * V8/V9 intentionally rounded generic sections.
+ * These page intros are HEADER elements now, so they remain
+ * visually open and editorial instead of becoming cards.
+ */
+.st3-admin [data-admin-page-intro="true"] h2 {
+  color: #1d1d1f !important;
+}
+
+/* ----------------------------------------------------------
+   NOTIFICATION OPERATION ROWS
+   ---------------------------------------------------------- */
+
+.st3-admin [data-admin-notification-row="true"] {
+  position: relative;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(29, 29, 31, 0.075);
+
+  border-radius: 17px !important;
+
+  background: #ffffff;
+
+  color: #1d1d1f;
+
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.018),
+    0 7px 24px rgba(29, 29, 31, 0.025);
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+/*
+ * Inventory warning:
+ * serious, restrained semantic red.
+ * Not neon.
+ * Not arcade.
+ */
+.st3-admin
+  [data-admin-notification-row="true"]
+  [data-admin-notification-icon="true"] {
+  border-radius: 13px !important;
+}
+
+.st3-admin [data-admin-notification-row="true"][data-notification-tone="red"] {
+  border-color: rgba(177, 55, 45, 0.16);
+
+  background: linear-gradient(90deg, rgba(180, 35, 24, 0.035), #ffffff 22%);
+}
+
+.st3-admin
+  [data-admin-notification-row="true"][data-notification-tone="amber"] {
+  border-color: rgba(175, 118, 18, 0.16);
+
+  background: linear-gradient(90deg, rgba(245, 179, 53, 0.055), #ffffff 22%);
+}
+
+.st3-admin [data-admin-notification-row="true"][data-notification-tone="blue"] {
+  border-color: rgba(48, 112, 176, 0.14);
+}
+
+.st3-admin [data-admin-notification-count="true"] {
+  border-radius: 8px !important;
+
+  box-shadow: none !important;
+}
+
+@media (hover: hover) {
+  .st3-admin [data-admin-notification-row="true"]:hover {
+    border-color: rgba(29, 29, 31, 0.14);
+
+    background: #ffffff;
+
+    box-shadow:
+      0 1px 2px rgba(29, 29, 31, 0.015),
+      0 10px 30px rgba(29, 29, 31, 0.045) !important;
+  }
+
+  .st3-admin
+    [data-admin-notification-row="true"][data-notification-tone="red"]:hover {
+    border-color: rgba(177, 55, 45, 0.28);
+
+    background: linear-gradient(90deg, rgba(180, 35, 24, 0.055), #ffffff 25%);
+  }
+}
+
+/* ----------------------------------------------------------
+   INVENTORY ANCHOR
+   ---------------------------------------------------------- */
+
+.st3-admin #inventory {
+  scroll-margin-top: 110px;
+}
+
+/* === ST ADMIN TARGETED SOURCE POLISH V10 END === */
