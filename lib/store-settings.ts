@@ -23,11 +23,11 @@ export type PublicStoreSettings = {
 
 export const defaultPublicStoreSettings: PublicStoreSettings = {
   storeName: "Stereophonie",
-  supportEmail: "thenitastyle@gmail.com",
-  whatsappNumber: "+961 76 99 22 06",
-  instagramHandle: "@thenitastyle",
+  supportEmail: "info@stereophonie.com",
+  whatsappNumber: "+961 3 161 285",
+  instagramHandle: "@stereophoniestore",
 
-  deliveryFee: 4,
+  deliveryFee: 5,
   freeDeliveryThreshold: 150,
   deliveryEstimate: "3–4 working days",
   deliveryCountry: "Lebanon",
