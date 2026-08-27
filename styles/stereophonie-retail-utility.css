@@ -7487,3 +7487,293 @@
 }
 
 /* === ST MOBILE BADGE — EXACT DESKTOP BREATHING ENGINE END === */
+
+/* ============================================================
+   ST MOBILE SALE BADGE + FOOTER STOCK FINAL
+   ============================================================ */
+
+@media screen and (max-width: 767px) {
+  /* ==========================================================
+     1. SALE BADGE
+     Match the compact New / Low Stock mobile badge.
+     Keep the existing desktop Sale breathing animation.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__badge--sale,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__badge--sale {
+    box-sizing: border-box !important;
+
+    position: relative !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    width: auto !important;
+
+    min-width: 64px !important;
+
+    max-width: none !important;
+
+    height: 24px !important;
+
+    min-height: 24px !important;
+
+    max-height: 24px !important;
+
+    flex: 0 0 auto !important;
+
+    margin: 0 !important;
+
+    padding: 0 10px !important;
+
+    overflow: visible !important;
+
+    border-radius: 999px !important;
+
+    font-size: 8px !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+
+    transform-origin: center center !important;
+  }
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__badge--sale
+    > b,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__badge--sale
+    > b {
+    position: relative !important;
+
+    z-index: 3 !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    width: 100% !important;
+
+    height: 100% !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    font-size: 8px !important;
+
+    font-weight: 600 !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+  }
+
+  /* ==========================================================
+     2. SALE BREATHING AURA
+     Keep same real desktop pulse, just compact around the pill.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__badge--sale
+    > .st-retail-card__sale-pulse,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__badge--sale
+    > .st-retail-card__sale-pulse {
+    position: absolute !important;
+
+    inset: -6px !important;
+
+    z-index: -1 !important;
+
+    display: block !important;
+
+    visibility: visible !important;
+
+    width: auto !important;
+
+    min-width: 0 !important;
+
+    max-width: none !important;
+
+    height: auto !important;
+
+    min-height: 0 !important;
+
+    max-height: none !important;
+
+    flex: none !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    border-radius: 999px !important;
+
+    pointer-events: none !important;
+
+    animation: stRealNewBadgeGlow 2.35s cubic-bezier(0.42, 0, 0.2, 1) infinite !important;
+  }
+
+  /* ==========================================================
+     3. BADGE STACK
+     Keep New / Low Stock / Sale tidy when more than one exists.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__badges,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__badges {
+    display: flex !important;
+
+    align-items: flex-start !important;
+
+    flex-wrap: wrap !important;
+
+    gap: 5px !important;
+
+    width: auto !important;
+
+    max-width: calc(100% - 38px) !important;
+  }
+
+  /* ==========================================================
+     4. MOBILE FOOTER STOCK STATUS
+     Remove bottom-right:
+       In stock
+       Low Stock
+       Unavailable
+
+     The top badge already communicates Low Stock.
+     This also prevents collision with sale/old prices.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__footer
+    > span,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__footer
+    > span {
+    display: none !important;
+  }
+
+  /* ==========================================================
+     5. PRICE AREA
+     Now that stock status is gone, let pricing use the width.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__footer,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__footer {
+    display: flex !important;
+
+    align-items: flex-end !important;
+
+    justify-content: flex-start !important;
+
+    width: 100% !important;
+
+    gap: 6px !important;
+  }
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__price,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__price {
+    display: flex !important;
+
+    align-items: baseline !important;
+
+    flex-wrap: wrap !important;
+
+    gap: 5px !important;
+
+    min-width: 0 !important;
+
+    max-width: 100% !important;
+  }
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__price
+    del,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__price
+    del {
+    font-size: 10px !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+  }
+}
+
+/* === ST MOBILE SALE BADGE + FOOTER STOCK FINAL END === */
