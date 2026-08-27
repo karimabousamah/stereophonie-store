@@ -10,14 +10,9 @@ import {
   useMemo,
   useRef,
   useState,
-  } from "react";
+} from "react";
 import { createPortal } from "react-dom";
-import { CheckCircle2,
-  Bookmark,
-  LoaderCircle,
-  Mail,
-  X,
-} from "lucide-react";
+import { CheckCircle2, Bookmark, LoaderCircle, Mail, X } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -560,6 +555,20 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      /*
+       * Guest wishlist:
+       * no account, email or popup is required.
+       *
+       * Signed-out customers save the product immediately
+       * to the local wishlist. Existing account migration
+       * logic can merge these products after a future sign-in.
+       */
+      if (authenticated === false) {
+        addProductLocally(product);
+        setNoticeType("success");
+        return;
+      }
+
       void (async () => {
         try {
           const normalizedEmail = guestEmailRef.current.trim().toLowerCase();
@@ -581,11 +590,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
           const data = await readApiResponse(response);
 
           if (data.requiresEmail) {
-            setPendingProduct(product);
-
-            setEmailModalError("");
-
-            setEmailModalOpen(true);
+            /*
+             * The API may still support the historical guest-email
+             * workflow, but the current storefront no longer uses it.
+             * Save locally instead.
+             */
+            setAuthenticated(false);
+            addProductLocally(product);
+            setNoticeType("success");
 
             return;
           }
@@ -611,67 +623,46 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             setAuthenticated(true);
           }
 
-
           setNoticeType("success");
         } catch (error) {
-
           setNoticeType("error");
         }
       })();
     },
-    [addProductLocally, saveGuestDetails],
+    [authenticated, addProductLocally, saveGuestDetails],
   );
 
-  const removeProduct = useCallback((productId: string) => {
-    const currentProducts = productsRef.current;
+  const removeProduct = useCallback(
+    (productId: string) => {
+      const currentProducts = productsRef.current;
 
-    const removedProduct = currentProducts.find(
-      (product) => product.id === productId,
-    );
+      const removedProduct = currentProducts.find(
+        (product) => product.id === productId,
+      );
 
-    if (!removedProduct) {
-      return;
-    }
+      if (!removedProduct) {
+        return;
+      }
 
-    const nextProducts = currentProducts.filter(
-      (product) => product.id !== productId,
-    );
+      const nextProducts = currentProducts.filter(
+        (product) => product.id !== productId,
+      );
 
-    productsRef.current = nextProducts;
+      productsRef.current = nextProducts;
 
-    setProducts(nextProducts);
+      setProducts(nextProducts);
 
-    void (async () => {
-      try {
-        const token = guestTokensRef.current[productId] ?? "";
-
-        const response = await fetch("/api/wishlist", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            productId,
-            email: guestEmailRef.current || undefined,
-            guestAccessToken: token || undefined,
-          }),
-        });
-
-        const data = await readApiResponse(response);
-
-        if (!response.ok || !data.success) {
-          const isLegacyLocalItem = !token && Boolean(guestEmailRef.current);
-
-          if (!isLegacyLocalItem) {
-            throw new Error(
-              data.message ??
-                "The product could not be removed from your wishlist.",
-            );
-          }
-        }
-
+      /*
+       * Guest/local wishlist:
+       * the product was saved only in this browser, so removing it
+       * should also happen locally with no API request and no popup.
+       */
+      if (authenticated === false) {
         setGuestTokens((currentTokens) => {
+          if (!currentTokens[productId]) {
+            return currentTokens;
+          }
+
           const nextTokens = {
             ...currentTokens,
           };
@@ -682,33 +673,80 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
           return nextTokens;
         });
-      } catch (error) {
-        setProducts((currentProducts) => {
-          const alreadyRestored = currentProducts.some(
-            (product) => product.id === removedProduct.id,
-          );
 
-          if (alreadyRestored) {
-            return currentProducts;
+        return;
+      }
+
+      void (async () => {
+        try {
+          const token = guestTokensRef.current[productId] ?? "";
+
+          const response = await fetch("/api/wishlist", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              productId,
+              email: guestEmailRef.current || undefined,
+              guestAccessToken: token || undefined,
+            }),
+          });
+
+          const data = await readApiResponse(response);
+
+          if (!response.ok || !data.success) {
+            const isLegacyLocalItem = !token && Boolean(guestEmailRef.current);
+
+            if (!isLegacyLocalItem) {
+              throw new Error(
+                data.message ??
+                  "The product could not be removed from your wishlist.",
+              );
+            }
           }
 
-          const restoredProducts = [removedProduct, ...currentProducts];
+          setGuestTokens((currentTokens) => {
+            const nextTokens = {
+              ...currentTokens,
+            };
 
-          productsRef.current = restoredProducts;
+            delete nextTokens[productId];
 
-          return restoredProducts;
-        });
+            guestTokensRef.current = nextTokens;
 
-        setNotice(
-          error instanceof Error
-            ? error.message
-            : "The product could not be removed from your wishlist.",
-        );
+            return nextTokens;
+          });
+        } catch (error) {
+          setProducts((currentProducts) => {
+            const alreadyRestored = currentProducts.some(
+              (product) => product.id === removedProduct.id,
+            );
 
-        setNoticeType("error");
-      }
-    })();
-  }, []);
+            if (alreadyRestored) {
+              return currentProducts;
+            }
+
+            const restoredProducts = [removedProduct, ...currentProducts];
+
+            productsRef.current = restoredProducts;
+
+            return restoredProducts;
+          });
+
+          setNotice(
+            error instanceof Error
+              ? error.message
+              : "The product could not be removed from your wishlist.",
+          );
+
+          setNoticeType("error");
+        }
+      })();
+    },
+    [authenticated],
+  );
 
   const toggleProduct = useCallback(
     (product: WishlistProduct) => {
@@ -827,7 +865,6 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       setPendingProduct(null);
       setEmailModalError("");
 
-
       setNoticeType("success");
     } catch (error) {
     } finally {
@@ -870,114 +907,6 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   return (
     <WishlistContext.Provider value={contextValue}>
       {children}
-
-      {hydrated && emailModalOpen && pendingProduct
-        ? createPortal(
-            <div
-              className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
-              role="presentation"
-              onMouseDown={(event) => {
-                if (event.target === event.currentTarget) {
-                  closeEmailModal();
-                }
-              }}
-            >
-              <div
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="wishlist-email-title"
-                className="relative w-full max-w-md border border-black/10 bg-white p-6 text-black shadow-2xl sm:p-8"
-              >
-                <button
-                  type="button"
-                  onClick={closeEmailModal}
-                  disabled={emailModalLoading}
-                  aria-label="Close"
-                  className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center border border-black/10 text-black/50 transition hover:border-black hover:text-black disabled:opacity-40"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-
-                <div className="flex h-12 w-12 items-center justify-center bg-black text-white">
-                  <Bookmark className="h-5 w-5" />
-                </div>
-
-                <p className="mt-7 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                  Save your favourite
-                </p>
-
-                <h2
-                  id="wishlist-email-title"
-                  className="mt-3 pr-10 text-3xl font-semibold tracking-[-0.04em]"
-                >
-                  Enter your email
-                </h2>
-
-                <p className="mt-4 text-sm leading-6 text-black/50">
-                  Save{" "}
-                  <span className="font-semibold text-black">
-                    {pendingProduct.name}
-                  </span>{" "}
-                  and receive important availability updates.
-                </p>
-
-                <form onSubmit={submitGuestEmail} className="mt-7">
-                  <label
-                    htmlFor="wishlist-email"
-                    className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/50"
-                  >
-                    Email address
-                  </label>
-
-                  <input
-                    id="wishlist-email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    value={guestEmail}
-                    onChange={(event) => {
-                      const value = event.target.value;
-
-                      guestEmailRef.current = value;
-
-                      setGuestEmail(value);
-
-                      setEmailModalError("");
-                    }}
-                    placeholder="you@example.com"
-                    className="mt-3 min-h-14 w-full border border-black/15 bg-white px-4 text-sm outline-none transition placeholder:text-black/25 focus:border-black"
-                  />
-
-                  {emailModalError ? (
-                    <p className="mt-3 text-sm text-red-600">
-                      {emailModalError}
-                    </p>
-                  ) : null}
-
-                  <button
-                    type="submit"
-                    disabled={emailModalLoading}
-                    className="mt-5 flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424] disabled:cursor-wait disabled:opacity-60"
-                  >
-                    {emailModalLoading ? (
-                      <LoaderCircle className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Mail className="h-4 w-4" />
-                    )}
-
-                    {emailModalLoading ? "Saving..." : "Save to wishlist"}
-                  </button>
-                </form>
-
-                <p className="mt-4 text-center text-xs leading-5 text-black/35">
-                  No account is required. Your email will be used for wishlist
-                  and stock availability updates.
-                </p>
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
 
       {hydrated && notice
         ? createPortal(

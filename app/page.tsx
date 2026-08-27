@@ -8,6 +8,7 @@ import V3AnnouncementBar, {
   type StorefrontAnnouncement,
 } from "@/components/stereophonie-v3/layout/v3-announcement-bar";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
+import AccountSigninSuccessToast from "@/components/storefront/account-signin-success-toast";
 import {
   isCurrentNewDrop,
   isProductOnOffer,
@@ -87,7 +88,21 @@ function normalizeProduct(product: ProductRow): V3Product {
   };
 }
 
-export default async function HomePage() {
+type HomePageProps = {
+  searchParams: Promise<{
+    account?: string | string[];
+  }>;
+};
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const resolvedSearchParams = await searchParams;
+
+  const accountState = Array.isArray(resolvedSearchParams.account)
+    ? resolvedSearchParams.account[0]
+    : resolvedSearchParams.account;
+
+  const showSigninSuccess = accountState === "logged-in";
+
   const supabase = await createClient();
 
   const [
@@ -246,6 +261,8 @@ export default async function HomePage() {
   return (
     <>
       <V3Header />
+
+      <AccountSigninSuccessToast show={showSigninSuccess} />
 
       <V3AnnouncementBar
         announcements={announcements}

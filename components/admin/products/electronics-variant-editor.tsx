@@ -88,47 +88,87 @@ const availabilityOptions: {
 ];
 
 const productColorPalette = [
+  // Core neutrals
   { name: "Black", hex: "#111111" },
+  { name: "Jet Black", hex: "#1c1c1e" },
   { name: "Midnight", hex: "#232427" },
   { name: "Space Black", hex: "#2f3032" },
-  { name: "Graphite", hex: "#55565a" },
+  { name: "Obsidian", hex: "#303033" },
   { name: "Charcoal", hex: "#4c4c4e" },
+  { name: "Graphite", hex: "#55565a" },
+  { name: "Lunar Gray", hex: "#7d7f82" },
   { name: "Gray", hex: "#8e8e93" },
+  { name: "Stone", hex: "#a7a49d" },
   { name: "Silver", hex: "#d7d8da" },
+  { name: "Arctic White", hex: "#f4f5f3" },
   { name: "White", hex: "#f8f8f8" },
 
+  // Apple / premium metallic tones
   { name: "Titanium", hex: "#8c8982" },
   { name: "Natural Titanium", hex: "#aaa69d" },
+  { name: "White Titanium", hex: "#d2d0cb" },
+  { name: "Blue Titanium", hex: "#5f6975" },
   { name: "Desert Titanium", hex: "#c8a88d" },
+  { name: "Starlight", hex: "#e6dfd3" },
+  { name: "Soft Gold", hex: "#d8bd8f" },
   { name: "Gold", hex: "#d5b174" },
   { name: "Rose Gold", hex: "#d9a49a" },
   { name: "Bronze", hex: "#98694c" },
 
+  // Reds / pinks / berry
   { name: "Red", hex: "#d52f36" },
   { name: "Product Red", hex: "#bf0013" },
+  { name: "Crimson", hex: "#9f2636" },
   { name: "Burgundy", hex: "#681c2c" },
+  { name: "Berry", hex: "#9d3e63" },
   { name: "Pink", hex: "#e5a5b7" },
+  { name: "Pink Sand", hex: "#d7a8a0" },
+  { name: "Blush", hex: "#e8c1bf" },
+  { name: "Peach", hex: "#e8a17f" },
+  { name: "Coral", hex: "#e78778" },
+
+  // Purples
+  { name: "Deep Purple", hex: "#4f455d" },
   { name: "Purple", hex: "#735b99" },
+  { name: "Plum", hex: "#765169" },
+  { name: "Lilac", hex: "#a793c5" },
   { name: "Lavender", hex: "#b5a8d7" },
 
+  // Blues
+  { name: "Midnight Blue", hex: "#28334a" },
   { name: "Navy", hex: "#26364f" },
+  { name: "Ocean Blue", hex: "#356a8a" },
   { name: "Blue", hex: "#3478c7" },
+  { name: "Ultramarine", hex: "#4a62c6" },
   { name: "Sierra Blue", hex: "#9bb6cf" },
+  { name: "Ice Blue", hex: "#b9d6df" },
   { name: "Sky Blue", hex: "#a8c7e7" },
   { name: "Teal", hex: "#318789" },
   { name: "Cyan", hex: "#55b8c8" },
 
-  { name: "Green", hex: "#47885e" },
+  // Greens
+  { name: "Forest", hex: "#344d3b" },
   { name: "Alpine Green", hex: "#536b5c" },
-  { name: "Mint", hex: "#a8d5bd" },
+  { name: "Green", hex: "#47885e" },
+  { name: "Moss", hex: "#6b7456" },
   { name: "Olive", hex: "#777957" },
+  { name: "Sage", hex: "#98a58f" },
+  { name: "Mint", hex: "#a8d5bd" },
+  { name: "Lime", hex: "#a8c83a" },
 
+  // Warm / earthy colours
   { name: "Yellow", hex: "#e3c353" },
+  { name: "Lemon", hex: "#e8d75b" },
   { name: "Orange", hex: "#e87932" },
-  { name: "Coral", hex: "#e78778" },
+  { name: "Clay", hex: "#ad765e" },
   { name: "Brown", hex: "#76584b" },
+  { name: "Chestnut", hex: "#704836" },
+  { name: "Espresso", hex: "#49362f" },
+  { name: "Taupe", hex: "#a38f7e" },
+  { name: "Sand", hex: "#c9b79d" },
   { name: "Beige", hex: "#d7c5a7" },
   { name: "Cream", hex: "#eee4d2" },
+  { name: "Mist", hex: "#d8ddd9" },
 ] as const;
 
 type SuggestedAttribute = readonly [string, string];

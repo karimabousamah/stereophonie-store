@@ -118,13 +118,12 @@ function CategoryActions({
   inverted?: boolean;
 }) {
   return (
-    <div className="st3-cat-actions">
-      <Link href={categoryHref(category)} className="st3-button">
+    <div className="st3-cat-actions" aria-hidden="true">
+      <span className="st3-button">
         {isMoviesSeriesCategory(category) ? "Explore" : "Shop"}
-      </Link>
+      </span>
 
-      <Link
-        href={categoryHref(category)}
+      <span
         className={
           inverted
             ? "st3-cat-text-link st3-cat-text-link--light"
@@ -133,7 +132,7 @@ function CategoryActions({
       >
         Explore
         <span aria-hidden="true">›</span>
-      </Link>
+      </span>
     </div>
   );
 }
@@ -324,7 +323,9 @@ export default function V3Homepage({
 
           {first ? (
             <V3Reveal>
-              <article
+              <Link
+                href={categoryHref(first)}
+                aria-label={`Explore ${first.name}`}
                 data-category-theme={
                   first.homepage_theme === "dark" ? "dark" : "light"
                 }
@@ -350,7 +351,7 @@ export default function V3Homepage({
                   products={catalogProducts}
                   className="st3-cat-media--hero"
                 />
-              </article>
+              </Link>
             </V3Reveal>
           ) : null}
 
@@ -360,7 +361,9 @@ export default function V3Homepage({
 
           {second ? (
             <V3Reveal>
-              <article
+              <Link
+                href={categoryHref(second)}
+                aria-label={`Explore ${second.name}`}
                 data-category-theme={
                   second.homepage_theme === "dark" ? "dark" : "light"
                 }
@@ -390,7 +393,7 @@ export default function V3Homepage({
                   products={catalogProducts}
                   className="st3-cat-media--split"
                 />
-              </article>
+              </Link>
             </V3Reveal>
           ) : null}
 
@@ -427,7 +430,9 @@ export default function V3Homepage({
 
                 return (
                   <V3Reveal key={category.id}>
-                    <article
+                    <Link
+                      href={categoryHref(category)}
+                      aria-label={`Explore ${category.name}`}
                       data-category-theme={dark ? "dark" : "light"}
                       className={`st3-cat-tile ${
                         dark ? "st3-cat-tile--dark" : ""
@@ -440,17 +445,17 @@ export default function V3Homepage({
 
                         <p>{categoryDescription(category)}</p>
 
-                        <Link
-                          href={categoryHref(category)}
+                        <span
                           className={
                             dark
                               ? "st3-cat-text-link st3-cat-text-link--light"
                               : "st3-cat-text-link"
                           }
+                          aria-hidden="true"
                         >
                           Explore
                           <span aria-hidden="true">›</span>
-                        </Link>
+                        </span>
                       </div>
 
                       <CategoryMedia
@@ -458,7 +463,7 @@ export default function V3Homepage({
                         products={catalogProducts}
                         className="st3-cat-media--tile"
                       />
-                    </article>
+                    </Link>
                   </V3Reveal>
                 );
               })}
