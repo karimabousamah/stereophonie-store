@@ -1,5 +1,7 @@
 "use client";
 
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
+
 import { megaPcCatalog } from "@/lib/gaming-desktop/mega-catalog";
 
 import { extendedPcCatalog } from "@/lib/gaming-desktop/extended-catalog";
@@ -45,8 +47,6 @@ import {
   getCompatibleCatalogItems,
   sanitizeChosenParts,
 } from "@/lib/gaming-desktop/compatibility";
-
-const WHATSAPP_NUMBER = "9613161285";
 
 /*
  * Uses the same Stereophonie mustard family used throughout the
@@ -1428,6 +1428,8 @@ export default function GamingDesktopBuilder() {
     setBrandFilter("All");
   }
 
+  const { whatsappNumber } = useStoreSettings();
+
   function sendToWhatsApp() {
     /*
      * A quotation can only be sent after the customer has
@@ -1462,7 +1464,9 @@ export default function GamingDesktopBuilder() {
 
     const message = encodeURIComponent(lines.join("\n"));
 
-    const destination = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    const phone = whatsappNumber.replace(/\D/g, "");
+
+    const destination = `https://wa.me/${phone}?text=${message}`;
 
     window.open(destination, "_blank", "noopener,noreferrer");
   }

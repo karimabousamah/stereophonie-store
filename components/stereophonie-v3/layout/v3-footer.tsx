@@ -1,10 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa6";
 
 import { V3BrandLogo } from "@/components/stereophonie-v3/shared/v3-brand-logo";
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 import { MapPin } from "lucide-react";
 
 export default function V3Footer() {
+  const { instagramHandle } = useStoreSettings();
+
+  const instagramUsername = instagramHandle.replace(/^@/, "").trim();
+
+  const instagramHref = instagramUsername
+    ? `https://www.instagram.com/${instagramUsername}`
+    : "https://www.instagram.com/stereophoniestore";
+
   return (
     <footer className="st3-footer">
       <div className="st3-footer__inner">
@@ -52,7 +63,7 @@ export default function V3Footer() {
               aria-label="Stereophonie social media"
             >
               <a
-                href="https://www.instagram.com/stereophoniestore?igsh=azJyaXBlMmI0OWwz"
+                href={instagramHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Stereophonie on Instagram"

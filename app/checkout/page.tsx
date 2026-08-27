@@ -32,6 +32,7 @@ import CouponBox, {
   type AppliedCoupon,
 } from "@/components/checkout/coupon-box";
 import { useCart } from "@/components/cart/cart-provider";
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import { createClient } from "@/lib/supabase/client";
 
@@ -569,7 +570,8 @@ function AddressEditor({
 
           {!errors.country ? (
             <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-neutral-400">
-              Delivery is currently available in Lebanon only.
+              Delivery availability follows the store's current delivery
+              settings.
             </p>
           ) : null}
         </div>
@@ -828,6 +830,12 @@ export default function CheckoutPage() {
     updateQuantity,
   } = useCart();
 
+  const {
+    deliveryFee: configuredDeliveryFee,
+    freeDeliveryThreshold,
+    deliveryCountry,
+  } = useStoreSettings();
+
   const [form, setForm] = useState<CheckoutForm>(initialForm);
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -878,9 +886,14 @@ export default function CheckoutPage() {
 
   const addressEditorRef = useRef<HTMLDivElement | null>(null);
 
-  const deliveryFee = 0;
-
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
+
+  const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
+
+  const deliveryFee =
+    freeDeliveryThreshold >= 0 && subtotalAfterDiscount >= freeDeliveryThreshold
+      ? 0
+      : Math.max(0, configuredDeliveryFee);
 
   const orderTotal = useMemo(
     () => Math.max(0, subtotal - discountAmount + deliveryFee),
@@ -2141,7 +2154,7 @@ export default function CheckoutPage() {
                       </h2>
 
                       <p className="mt-2 text-sm leading-6 text-black/45">
-                        Delivery is currently available in Lebanon only.
+                        Delivery is currently available in {deliveryCountry}.
                         Additional countries are coming soon.
                       </p>
                     </div>
@@ -2392,7 +2405,7 @@ export default function CheckoutPage() {
                       </div>
 
                       <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-black/35">
-                        Delivery is currently available in Lebanon only.
+                        Delivery is currently available in {deliveryCountry}.
                       </p>
                     </div>
 

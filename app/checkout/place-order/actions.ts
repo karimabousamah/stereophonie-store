@@ -2,6 +2,7 @@
 
 import { processStockNotificationsForVariants } from "@/lib/email/process-stock-notifications";
 import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
+import { getPublicStoreSettings } from "@/lib/store-settings";
 import { createClient } from "@/lib/supabase/server";
 
 type CustomerDetails = {
@@ -166,10 +167,19 @@ function applySavedAddress(
 export async function submitOrder(
   input: PlaceOrderInput,
 ): Promise<PlaceOrderResult> {
+  const storeSettings = await getPublicStoreSettings();
+
   if (!input?.customer) {
     return {
       success: false,
       message: "Customer information is missing.",
+    };
+  }
+
+  if (!storeSettings.codEnabled) {
+    return {
+      success: false,
+      message: "Cash on Delivery is currently unavailable.",
     };
   }
 
@@ -229,7 +239,10 @@ export async function submitOrder(
     };
   }
 
-  let verifiedCustomer = normalizeCustomer(input.customer);
+  let verifiedCustomer = {
+    ...normalizeCustomer(input.customer),
+    country: storeSettings.deliveryCountry,
+  };
 
   if (user) {
     if (!user.email) {
@@ -286,10 +299,13 @@ export async function submitOrder(
         };
       }
 
-      verifiedCustomer = applySavedAddress(
-        verifiedCustomer,
-        savedAddressData as SavedAddressRow,
-      );
+      verifiedCustomer = {
+        ...applySavedAddress(
+          verifiedCustomer,
+          savedAddressData as SavedAddressRow,
+        ),
+        country: storeSettings.deliveryCountry,
+      };
     }
   }
 
@@ -334,16 +350,42 @@ export async function submitOrder(
     };
   }
 
-  const subtotal = Number(result.subtotal ?? 0);
+  const { data: authoritativeOrder, error: authoritativeOrderError } =
+    await supabase
+      .from("orders")
+      .select(
+        "order_number, subtotal, discount_amount, delivery_fee, total, coupon_code",
+      )
+      .eq("id", result.order_id)
+      .single();
 
-  const discountAmount = Number(result.discount_amount ?? 0);
+  if (authoritativeOrderError || !authoritativeOrder) {
+    console.error(
+      "Authoritative order totals could not be reloaded:",
+      authoritativeOrderError,
+    );
 
-  const deliveryFee = Number(result.delivery_fee ?? 0);
+    return {
+      success: false,
+      message:
+        "Your order was created, but its final totals could not be verified.",
+    };
+  }
 
-  const total = Number(result.total ?? 0);
+  const subtotal = Number(authoritativeOrder.subtotal ?? 0);
+
+  const discountAmount = Number(authoritativeOrder.discount_amount ?? 0);
+
+  const deliveryFee = Number(authoritativeOrder.delivery_fee ?? 0);
+
+  const total = Number(authoritativeOrder.total ?? 0);
+
+  const authoritativeOrderNumber = String(
+    authoritativeOrder.order_number ?? result.order_number,
+  ).trim();
 
   const emailResult = await sendOrderConfirmationEmail({
-    orderNumber: result.order_number,
+    orderNumber: authoritativeOrderNumber,
 
     customer: verifiedCustomer,
 
@@ -355,7 +397,7 @@ export async function submitOrder(
 
     total,
 
-    couponCode: cleanText(result.coupon_code) || null,
+    couponCode: cleanText(authoritativeOrder.coupon_code) || null,
 
     items: input.items.map((item) => ({
       name: cleanText(item.name) || "Product",
@@ -375,7 +417,7 @@ export async function submitOrder(
 
   if (!emailResult.success) {
     console.error(
-      `Order confirmation email failed for order ${result.order_number}:`,
+      `Order confirmation email failed for order ${authoritativeOrderNumber}:`,
       emailResult.message,
     );
   }
@@ -391,13 +433,13 @@ export async function submitOrder(
 
     if (stockNotificationErrors.length > 0) {
       console.error(
-        `Some stock notifications failed after order ${result.order_number}:`,
+        `Some stock notifications failed after order ${authoritativeOrderNumber}:`,
         stockNotificationErrors,
       );
     }
   } catch (error) {
     console.error(
-      `Stock notifications could not be processed after order ${result.order_number}:`,
+      `Stock notifications could not be processed after order ${authoritativeOrderNumber}:`,
       error,
     );
   }
@@ -406,7 +448,7 @@ export async function submitOrder(
 
     order_id: result.order_id,
 
-    order_number: result.order_number,
+    order_number: authoritativeOrderNumber,
 
     subtotal,
 
@@ -416,7 +458,7 @@ export async function submitOrder(
 
     total,
 
-    coupon_code: cleanText(result.coupon_code) || null,
+    coupon_code: cleanText(authoritativeOrder.coupon_code) || null,
 
     confirmation_email_sent: emailResult.success,
 

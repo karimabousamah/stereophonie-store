@@ -12,6 +12,7 @@ export type PublicStoreSettings = {
   deliveryCountry: string;
 
   codEnabled: boolean;
+  orderPrefix: string;
 
   assistantEnabled: boolean;
   assistantWelcomeMessage: string;
@@ -33,6 +34,7 @@ export const defaultPublicStoreSettings: PublicStoreSettings = {
   deliveryCountry: "Lebanon",
 
   codEnabled: true,
+  orderPrefix: "STER",
 
   assistantEnabled: true,
   assistantWelcomeMessage:
@@ -61,6 +63,7 @@ export async function getPublicStoreSettings(): Promise<PublicStoreSettings> {
           delivery_estimate,
           delivery_country,
           cod_enabled,
+          order_prefix,
           assistant_enabled,
           assistant_welcome_message,
           store_status,
@@ -116,6 +119,10 @@ export async function getPublicStoreSettings(): Promise<PublicStoreSettings> {
         defaultPublicStoreSettings.deliveryCountry,
 
       codEnabled: data.cod_enabled ?? defaultPublicStoreSettings.codEnabled,
+
+      orderPrefix:
+        data.order_prefix?.trim().toUpperCase() ||
+        defaultPublicStoreSettings.orderPrefix,
 
       assistantEnabled:
         data.assistant_enabled ?? defaultPublicStoreSettings.assistantEnabled,

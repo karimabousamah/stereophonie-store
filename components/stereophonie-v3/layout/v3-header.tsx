@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useCart } from "@/components/cart/cart-provider";
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 import V3HeaderCartPanel from "@/components/stereophonie-v3/layout/v3-header-cart-panel";
 import V3HeaderSearchPanel from "@/components/stereophonie-v3/layout/v3-header-search-panel";
 import { V3BrandLogo } from "@/components/stereophonie-v3/shared/v3-brand-logo";
@@ -76,6 +77,14 @@ type HeaderPanel =
 type OpenHeaderPanel = Exclude<HeaderPanel, null>;
 
 export function V3Header() {
+  const { instagramHandle } = useStoreSettings();
+
+  const instagramUsername = instagramHandle.replace(/^@/, "").trim();
+
+  const instagramHref = instagramUsername
+    ? `https://www.instagram.com/${instagramUsername}`
+    : "https://www.instagram.com/stereophoniestore";
+
   const pathname = usePathname();
   const [categories, setCategories] = useState<HeaderCategory[]>([]);
   const [activePanel, setActivePanel] = useState<HeaderPanel>(null);
@@ -397,7 +406,7 @@ export function V3Header() {
                 aria-label="Stereophonie social media"
               >
                 <a
-                  href="https://www.instagram.com/stereophoniestore?igsh=azJyaXBlMmI0OWwz"
+                  href={instagramHref}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"

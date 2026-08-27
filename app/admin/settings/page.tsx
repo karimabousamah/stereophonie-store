@@ -9,18 +9,18 @@ import SettingsForm, { type StoreSettings } from "./settings-form";
 export const dynamic = "force-dynamic";
 
 const defaultSettings: StoreSettings = {
-  store_name: "Stereophonie",
-  support_email: "thenitastyle@gmail.com",
+  store_name: "Stereophonie Store",
+  support_email: "info@stereophoniestore.com",
   whatsapp_number: "+961 3 161 285",
-  instagram_handle: "@thenitastyle",
+  instagram_handle: "@stereophoniestore",
 
-  delivery_fee: 4,
+  delivery_fee: 5,
   free_delivery_threshold: 150,
   delivery_estimate: "3–4 working days",
   delivery_country: "Lebanon",
 
   cod_enabled: true,
-  order_prefix: "NITA",
+  order_prefix: "STER",
 
   order_confirmation_emails_enabled: true,
 

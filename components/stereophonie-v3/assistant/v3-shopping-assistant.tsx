@@ -1,5 +1,7 @@
 "use client";
 
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
+
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
@@ -61,10 +63,6 @@ const suggestions: SuggestedAction[] = [
 ];
 
 function RobotIcon() {
-
-  
-
-
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 3v3" />
@@ -99,7 +97,6 @@ function CloseIcon() {
   );
 }
 
-
 function StereophonieWhatsAppIcon() {
   return (
     <svg
@@ -123,9 +120,7 @@ function StereophonieWhatsAppIcon() {
   );
 }
 
-function normalizeAssistantProducts(
-  data: unknown,
-): AssistantProductCard[] {
+function normalizeAssistantProducts(data: unknown): AssistantProductCard[] {
   if (!data || typeof data !== "object") {
     return [];
   }
@@ -139,39 +134,21 @@ function normalizeAssistantProducts(
   return record.products
     .filter(
       (product): product is Record<string, unknown> =>
-        Boolean(product) &&
-        typeof product === "object",
+        Boolean(product) && typeof product === "object",
     )
     .map((product) => ({
-      id:
-        typeof product.id === "string"
-          ? product.id
-          : crypto.randomUUID(),
+      id: typeof product.id === "string" ? product.id : crypto.randomUUID(),
 
-      name:
-        typeof product.name === "string"
-          ? product.name
-          : "Product",
+      name: typeof product.name === "string" ? product.name : "Product",
 
-      slug:
-        typeof product.slug === "string"
-          ? product.slug
-          : "",
+      slug: typeof product.slug === "string" ? product.slug : "",
 
       description:
-        typeof product.description === "string"
-          ? product.description
-          : null,
+        typeof product.description === "string" ? product.description : null,
 
-      category:
-        typeof product.category === "string"
-          ? product.category
-          : "",
+      category: typeof product.category === "string" ? product.category : "",
 
-      imageUrl:
-        typeof product.imageUrl === "string"
-          ? product.imageUrl
-          : null,
+      imageUrl: typeof product.imageUrl === "string" ? product.imageUrl : null,
 
       imageAlt:
         typeof product.imageAlt === "string"
@@ -180,76 +157,62 @@ function normalizeAssistantProducts(
             ? product.name
             : "Product",
 
-      price:
-        typeof product.price === "number"
-          ? product.price
-          : null,
+      price: typeof product.price === "number" ? product.price : null,
 
-      variants:
-        Array.isArray(product.variants)
-          ? product.variants
-              .filter(
-                (variant): variant is Record<string, unknown> =>
-                  Boolean(variant) &&
-                  typeof variant === "object",
-              )
-              .map((variant) => ({
-                regularPrice:
-                  typeof variant.regularPrice === "number"
-                    ? variant.regularPrice
-                    : undefined,
+      variants: Array.isArray(product.variants)
+        ? product.variants
+            .filter(
+              (variant): variant is Record<string, unknown> =>
+                Boolean(variant) && typeof variant === "object",
+            )
+            .map((variant) => ({
+              regularPrice:
+                typeof variant.regularPrice === "number"
+                  ? variant.regularPrice
+                  : undefined,
 
-                salePrice:
-                  typeof variant.salePrice === "number"
-                    ? variant.salePrice
-                    : null,
+              salePrice:
+                typeof variant.salePrice === "number"
+                  ? variant.salePrice
+                  : null,
 
-                currentPrice:
-                  typeof variant.currentPrice === "number"
-                    ? variant.currentPrice
-                    : undefined,
+              currentPrice:
+                typeof variant.currentPrice === "number"
+                  ? variant.currentPrice
+                  : undefined,
 
-                stockQuantity:
-                  typeof variant.stockQuantity === "number"
-                    ? variant.stockQuantity
-                    : undefined,
+              stockQuantity:
+                typeof variant.stockQuantity === "number"
+                  ? variant.stockQuantity
+                  : undefined,
 
-                availabilityStatus:
-                  typeof variant.availabilityStatus === "string"
-                    ? variant.availabilityStatus
-                    : undefined,
-              }))
-          : [],
+              availabilityStatus:
+                typeof variant.availabilityStatus === "string"
+                  ? variant.availabilityStatus
+                  : undefined,
+            }))
+        : [],
     }))
-    .filter(
-      (product) =>
-        product.name &&
-        product.slug,
-    )
+    .filter((product) => product.name && product.slug)
     .slice(0, 4);
 }
-
 
 function ProductRecommendationCard({
   product,
 }: {
   product: AssistantProductCard;
 }) {
-  const saleVariant =
-    product.variants?.find(
-      (variant) =>
-        variant.salePrice !== null &&
-        variant.salePrice !== undefined &&
-        variant.regularPrice !== undefined &&
-        variant.salePrice < variant.regularPrice,
-    );
+  const saleVariant = product.variants?.find(
+    (variant) =>
+      variant.salePrice !== null &&
+      variant.salePrice !== undefined &&
+      variant.regularPrice !== undefined &&
+      variant.salePrice < variant.regularPrice,
+  );
 
   const hasSale = Boolean(saleVariant);
 
-  const currentPrice =
-    product.price ??
-    saleVariant?.salePrice ??
-    null;
+  const currentPrice = product.price ?? saleVariant?.salePrice ?? null;
 
   return (
     <Link
@@ -270,16 +233,12 @@ function ProductRecommendationCard({
         )}
 
         {hasSale ? (
-          <span className="st3-ai-product-card__sale">
-            Offer
-          </span>
+          <span className="st3-ai-product-card__sale">Offer</span>
         ) : null}
       </span>
 
       <span className="st3-ai-product-card__body">
-        {product.category ? (
-          <small>{product.category}</small>
-        ) : null}
+        {product.category ? <small>{product.category}</small> : null}
 
         <strong>{product.name}</strong>
 
@@ -292,10 +251,7 @@ function ProductRecommendationCard({
               : "View product"}
           </span>
 
-          <span
-            className="st3-ai-product-card__arrow"
-            aria-hidden="true"
-          >
+          <span className="st3-ai-product-card__arrow" aria-hidden="true">
             →
           </span>
         </span>
@@ -303,7 +259,6 @@ function ProductRecommendationCard({
     </Link>
   );
 }
-
 
 function normalizeAssistantResponse(data: unknown): string {
   if (data && typeof data === "object") {
@@ -368,11 +323,6 @@ export default function V3ShoppingAssistant() {
       });
     }, 60);
   }, [open, messages]);
-
-
-
-
-
 
   async function sendMessage(rawValue?: string) {
     const value = (rawValue ?? input).trim();
@@ -445,18 +395,17 @@ export default function V3ShoppingAssistant() {
    * WhatsApp and AI are now fully independent.
    */
 
+  const { whatsappNumber } = useStoreSettings();
+
   function handleWhatsAppClick() {
-    window.open(
-      "https://wa.me/9613161285",
-      "_blank",
-      "noopener,noreferrer",
-    );
+    const phone = whatsappNumber.replace(/\D/g, "");
+
+    window.open(`https://wa.me/${phone}`, "_blank", "noopener,noreferrer");
   }
 
   function toggleAssistant() {
     setOpen((current) => !current);
   }
-
 
   /* ST_AI_OUTSIDE_CLICK_CLOSE_START */
   useEffect(() => {
@@ -464,9 +413,7 @@ export default function V3ShoppingAssistant() {
       return;
     }
 
-    function handleAssistantOutsidePointer(
-      event: MouseEvent | TouchEvent,
-    ) {
+    function handleAssistantOutsidePointer(event: MouseEvent | TouchEvent) {
       const target = event.target;
 
       if (!(target instanceof Node)) {
@@ -476,9 +423,7 @@ export default function V3ShoppingAssistant() {
       /*
        * Clicking inside the AI panel must never close it.
        */
-      if (
-        assistantPanelRef.current?.contains(target)
-      ) {
+      if (assistantPanelRef.current?.contains(target)) {
         return;
       }
 
@@ -490,9 +435,7 @@ export default function V3ShoppingAssistant() {
        */
       if (
         target instanceof Element &&
-        target.closest(
-          '[data-st-ai-edge-launcher="true"]',
-        )
+        target.closest('[data-st-ai-edge-launcher="true"]')
       ) {
         return;
       }
@@ -500,197 +443,174 @@ export default function V3ShoppingAssistant() {
       setOpen(false);
     }
 
-    document.addEventListener(
-      "mousedown",
-      handleAssistantOutsidePointer,
-    );
+    document.addEventListener("mousedown", handleAssistantOutsidePointer);
 
-    document.addEventListener(
-      "touchstart",
-      handleAssistantOutsidePointer,
-      {
-        passive: true,
-      },
-    );
+    document.addEventListener("touchstart", handleAssistantOutsidePointer, {
+      passive: true,
+    });
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleAssistantOutsidePointer,
-      );
+      document.removeEventListener("mousedown", handleAssistantOutsidePointer);
 
-      document.removeEventListener(
-        "touchstart",
-        handleAssistantOutsidePointer,
-      );
+      document.removeEventListener("touchstart", handleAssistantOutsidePointer);
     };
   }, [open]);
   /* ST_AI_OUTSIDE_CLICK_CLOSE_END */
 
-
   return (
     <>
-      
       <div
         className={`st3-ai-shell ${open ? "is-open" : ""}`}
         data-st-ai-shell="true"
       >
- <button
-   type="button"
-   data-st-ai-edge-launcher="true"
-   className={`st3-ai-edge-tab ${open ? "is-open" : ""}`}
-   onClick={toggleAssistant}
-   aria-label={
-     open
-       ? "Close Stereophonie AI assistant"
-       : "Open Stereophonie AI assistant"
-   }
-   aria-expanded={open}
-   aria-controls="stereophonie-ai-drawer"
- >
-   <span
-     className="st3-ai-edge-tab__status"
-     aria-hidden="true"
-   />
+        <button
+          type="button"
+          data-st-ai-edge-launcher="true"
+          className={`st3-ai-edge-tab ${open ? "is-open" : ""}`}
+          onClick={toggleAssistant}
+          aria-label={
+            open
+              ? "Close Stereophonie AI assistant"
+              : "Open Stereophonie AI assistant"
+          }
+          aria-expanded={open}
+          aria-controls="stereophonie-ai-drawer"
+        >
+          <span className="st3-ai-edge-tab__status" aria-hidden="true" />
 
-   <span
-     className="st3-ai-edge-tab__icon"
-     aria-hidden="true"
-   >
-     <RobotIcon />
-   </span>
+          <span className="st3-ai-edge-tab__icon" aria-hidden="true">
+            <RobotIcon />
+          </span>
 
-   <span className="st3-ai-edge-tab__text">
-     AI Assistant
-   </span>
- </button>
+          <span className="st3-ai-edge-tab__text">AI Assistant</span>
+        </button>
 
-      <aside
-        ref={assistantPanelRef}
-        id="stereophonie-ai-drawer"
-        className={`st3-ai-panel ${open ? "st3-ai-panel--open" : ""}`}
-        aria-hidden={!open}
-      >
-        <div className="st3-ai-panel__top">
-          <div>
-            <p className="st3-ai-panel__eyebrow">Stereophonie</p>
+        <aside
+          ref={assistantPanelRef}
+          id="stereophonie-ai-drawer"
+          className={`st3-ai-panel ${open ? "st3-ai-panel--open" : ""}`}
+          aria-hidden={!open}
+        >
+          <div className="st3-ai-panel__top">
+            <div>
+              <p className="st3-ai-panel__eyebrow">Stereophonie</p>
 
-            <h2>How can I help?</h2>
+              <h2>How can I help?</h2>
+            </div>
+
+            <button
+              type="button"
+              className="st3-ai-panel__close"
+              aria-label="Close assistant"
+              onClick={() => setOpen(false)}
+            >
+              <CloseIcon />
+            </button>
           </div>
 
-          <button
-            type="button"
-            className="st3-ai-panel__close"
-            aria-label="Close assistant"
-            onClick={() => setOpen(false)}
-          >
-            <CloseIcon />
-          </button>
-        </div>
-
-        <div className="st3-ai-panel__messages">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`st3-ai-message-group st3-ai-message-group--${message.role}`}
-            >
+          <div className="st3-ai-panel__messages">
+            {messages.map((message) => (
               <div
-                className={`st3-ai-message st3-ai-message--${message.role}`}
+                key={message.id}
+                className={`st3-ai-message-group st3-ai-message-group--${message.role}`}
               >
-                <p>{message.content}</p>
-              </div>
-
-              {message.role === "assistant" &&
-              message.products &&
-              message.products.length > 0 ? (
                 <div
-                  className="st3-ai-product-results"
-                  aria-label="Recommended products"
+                  className={`st3-ai-message st3-ai-message--${message.role}`}
                 >
-                  {message.products.map((product) => (
-                    <ProductRecommendationCard
-                      key={product.id}
-                      product={product}
-                    />
-                  ))}
+                  <p>{message.content}</p>
                 </div>
-              ) : null}
-            </div>
-          ))}
 
-          {sending ? (
-            <div className="st3-ai-message-group st3-ai-message-group--assistant">
-              <div
-                className="st3-ai-loader"
-                role="status"
-                aria-label="Stereophonie Assistant is preparing a response"
-              >
-                <span className="st3-ai-loader__track">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-
-                <span className="st3-ai-loader__line" />
+                {message.role === "assistant" &&
+                message.products &&
+                message.products.length > 0 ? (
+                  <div
+                    className="st3-ai-product-results"
+                    aria-label="Recommended products"
+                  >
+                    {message.products.map((product) => (
+                      <ProductRecommendationCard
+                        key={product.id}
+                        product={product}
+                      />
+                    ))}
+                  </div>
+                ) : null}
               </div>
+            ))}
+
+            {sending ? (
+              <div className="st3-ai-message-group st3-ai-message-group--assistant">
+                <div
+                  className="st3-ai-loader"
+                  role="status"
+                  aria-label="Stereophonie Assistant is preparing a response"
+                >
+                  <span className="st3-ai-loader__track">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+
+                  <span className="st3-ai-loader__line" />
+                </div>
+              </div>
+            ) : null}
+
+            {error ? <p className="st3-ai-panel__error">{error}</p> : null}
+
+            <div ref={endRef} />
+          </div>
+
+          {messages.length <= 1 ? (
+            <div className="st3-ai-suggestions">
+              {suggestions.map((suggestion) =>
+                suggestion.href ? (
+                  <Link
+                    key={suggestion.label}
+                    href={suggestion.href}
+                    className="st3-ai-suggestion"
+                    onClick={() => setOpen(false)}
+                  >
+                    {suggestion.label}
+                    <span aria-hidden="true">›</span>
+                  </Link>
+                ) : (
+                  <button
+                    key={suggestion.label}
+                    type="button"
+                    className="st3-ai-suggestion"
+                    onClick={() => void sendMessage(suggestion.prompt)}
+                  >
+                    {suggestion.label}
+                    <span aria-hidden="true">›</span>
+                  </button>
+                ),
+              )}
             </div>
           ) : null}
 
-          {error ? <p className="st3-ai-panel__error">{error}</p> : null}
+          <form className="st3-ai-composer" onSubmit={submit}>
+            <input
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="Ask about products, offers or orders"
+              aria-label="Message Stereophonie assistant"
+            />
 
-          <div ref={endRef} />
-        </div>
+            <button
+              type="submit"
+              disabled={sending || !input.trim()}
+              aria-label="Send message"
+            >
+              <SendIcon />
+            </button>
+          </form>
 
-        {messages.length <= 1 ? (
-          <div className="st3-ai-suggestions">
-            {suggestions.map((suggestion) =>
-              suggestion.href ? (
-                <Link
-                  key={suggestion.label}
-                  href={suggestion.href}
-                  className="st3-ai-suggestion"
-                  onClick={() => setOpen(false)}
-                >
-                  {suggestion.label}
-                  <span aria-hidden="true">›</span>
-                </Link>
-              ) : (
-                <button
-                  key={suggestion.label}
-                  type="button"
-                  className="st3-ai-suggestion"
-                  onClick={() => void sendMessage(suggestion.prompt)}
-                >
-                  {suggestion.label}
-                  <span aria-hidden="true">›</span>
-                </button>
-              ),
-            )}
-          </div>
-        ) : null}
-
-        <form className="st3-ai-composer" onSubmit={submit}>
-          <input
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            placeholder="Ask about products, offers or orders"
-            aria-label="Message Stereophonie assistant"
-          />
-
-          <button
-            type="submit"
-            disabled={sending || !input.trim()}
-            aria-label="Send message"
-          >
-            <SendIcon />
-          </button>
-        </form>
-
-        <p className="st3-ai-disclaimer">
-          Product details and availability may change. Confirm important
-          information before checkout.
-        </p>
-      </aside>
+          <p className="st3-ai-disclaimer">
+            Product details and availability may change. Confirm important
+            information before checkout.
+          </p>
+        </aside>
       </div>
 
       <button
@@ -725,10 +645,7 @@ export default function V3ShoppingAssistant() {
           aria-hidden="true"
         />
 
-
-        <span
-          className="st3-ai-launcher__icon is-whatsapp"
-        >
+        <span className="st3-ai-launcher__icon is-whatsapp">
           <span
             className="st3-ai-launcher__icon-layer st3-ai-launcher__icon-layer--ai"
             aria-hidden="true"
@@ -751,10 +668,7 @@ export default function V3ShoppingAssistant() {
           </span>
         </span>
 
-        
-   <span className="st3-ai-launcher__label">
-     WhatsApp
-   </span>
+        <span className="st3-ai-launcher__label">WhatsApp</span>
       </button>
     </>
   );

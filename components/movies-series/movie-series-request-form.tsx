@@ -1,16 +1,18 @@
 "use client";
 
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
+
 import { useMemo, useState } from "react";
 
 type RequestType = "movie" | "series";
-
-const STEREOPHONIE_WHATSAPP_NUMBER = "9613161285";
 
 function cleanPhone(value: string) {
   return String(value ?? "").replace(/\D/g, "");
 }
 
 export default function MovieSeriesRequestForm() {
+  const { whatsappNumber } = useStoreSettings();
+
   const [requestType, setRequestType] = useState<RequestType>("movie");
 
   const [title, setTitle] = useState("");
@@ -56,7 +58,7 @@ export default function MovieSeriesRequestForm() {
       return;
     }
 
-    const phone = cleanPhone(STEREOPHONIE_WHATSAPP_NUMBER);
+    const phone = cleanPhone(whatsappNumber);
 
     const url =
       `https://wa.me/${phone}` + `?text=${encodeURIComponent(message)}`;

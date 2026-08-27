@@ -16,6 +16,7 @@ import {
 
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
+import { getPublicStoreSettings } from "@/lib/store-settings";
 
 export const metadata: Metadata = {
   title: "Delivery",
@@ -23,34 +24,37 @@ export const metadata: Metadata = {
     "Learn about Stereophonie delivery coverage, timing, fees, and payment options across Lebanon.",
 };
 
-const deliveryFacts = [
-  {
-    icon: MapPin,
-    label: "Coverage",
-    value: "All Lebanon",
-    description:
-      "We deliver to cities, towns, and accessible areas nationwide.",
-  },
-  {
-    icon: BadgeDollarSign,
-    label: "Orders below $150",
-    value: "$4 delivery",
-    description: "A simple flat delivery fee is added at checkout.",
-  },
-  {
-    icon: PackageCheck,
-    label: "Orders from $150",
-    value: "Free delivery",
-    description: "Qualifying orders are delivered without a shipping fee.",
-  },
-  {
-    icon: CalendarClock,
-    label: "Estimated timing",
-    value: "3–4 working days",
-    description:
-      "Timing may vary by location, weekend, and courier availability.",
-  },
-];
+function createDeliveryFacts(
+  settings: Awaited<ReturnType<typeof getPublicStoreSettings>>,
+) {
+  return [
+    {
+      icon: MapPin,
+      label: "Coverage",
+      value: settings.deliveryCountry,
+      description: `Delivery is currently configured for ${settings.deliveryCountry}.`,
+    },
+    {
+      icon: BadgeDollarSign,
+      label: `Orders below $${settings.freeDeliveryThreshold}`,
+      value: `$${settings.deliveryFee} delivery`,
+      description: "A flat delivery fee is added at checkout.",
+    },
+    {
+      icon: PackageCheck,
+      label: `Orders from $${settings.freeDeliveryThreshold}`,
+      value: "Free delivery",
+      description: "Qualifying orders are delivered without a shipping fee.",
+    },
+    {
+      icon: CalendarClock,
+      label: "Estimated timing",
+      value: settings.deliveryEstimate,
+      description:
+        "Timing may vary by location, weekend, and courier availability.",
+    },
+  ];
+}
 
 const deliverySteps = [
   {
@@ -70,7 +74,11 @@ const deliverySteps = [
   },
 ];
 
-export default function DeliveryPage() {
+export default async function DeliveryPage() {
+  const settings = await getPublicStoreSettings();
+
+  const deliveryFacts = createDeliveryFacts(settings);
+
   return (
     <div className="st-retail-shell">
       <V3Header />
