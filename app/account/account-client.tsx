@@ -10,6 +10,8 @@ type OrderItem = {
   quantity: number;
   unit_price: number;
   line_total: number;
+  image_url: string | null;
+  product_slug: string | null;
 };
 
 export type CustomerOrder = {
@@ -173,7 +175,7 @@ function OrderRoadmap({ status }: { status: string }) {
 
                   <div
                     className={`absolute left-[15px] top-8 h-[calc(100%-20px)] w-px md:left-8 md:top-[15px] md:h-px md:w-[calc(100%-32px)] ${
-                      currentIndex > index ? "bg-black" : "bg-transparent"
+                      currentIndex > index ? "bg-[#fdb73e]" : "bg-transparent"
                     }`}
                   />
                 </>
@@ -183,9 +185,9 @@ function OrderRoadmap({ status }: { status: string }) {
                 <div
                   className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border text-[11px] font-semibold ${
                     completed
-                      ? "border-black bg-black text-white"
-                      : "border-neutral-300 bg-white text-neutral-400"
-                  } ${current ? "ring-4 ring-neutral-100" : ""}`}
+                      ? "border-[#e4a21f] bg-[#fdb73e] text-[#1d1d1f] shadow-[0_5px_18px_rgba(253,183,62,0.24)]"
+                      : "border-neutral-200 bg-white text-neutral-400"
+                  } ${current ? "ring-4 ring-[#fff4dc]" : ""}`}
                 >
                   {completed ? "✓" : index + 1}
                 </div>
@@ -193,7 +195,7 @@ function OrderRoadmap({ status }: { status: string }) {
                 <div className="md:mt-4">
                   <p
                     className={`text-xs font-semibold uppercase tracking-[0.1em] ${
-                      completed ? "text-black" : "text-neutral-400"
+                      completed ? "text-[#1d1d1f]" : "text-neutral-400"
                     }`}
                   >
                     {step.label}
@@ -218,7 +220,7 @@ function OrderCard({ order }: { order: CustomerOrder }) {
     .join(", ");
 
   return (
-    <article className="border border-neutral-200 bg-white p-5 sm:p-7">
+    <article className="overflow-hidden rounded-[24px] border border-black/[0.08] bg-white p-5 shadow-[0_12px_38px_rgba(0,0,0,0.035)] sm:p-7">
       <div className="flex flex-col gap-5 border-b border-neutral-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
@@ -234,12 +236,21 @@ function OrderCard({ order }: { order: CustomerOrder }) {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2 sm:justify-end">
-          <span className="border border-black bg-black px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <span className="inline-flex min-h-8 items-center rounded-full border border-[#e5a326] bg-[#fdb73e] px-4 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#1d1d1f] shadow-[0_5px_16px_rgba(253,183,62,0.18)]">
             {statusLabel(order.status)}
           </span>
 
-          <span className="border border-neutral-200 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
+          <span
+            className={`inline-flex min-h-8 items-center rounded-full border px-4 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+              String(order.payment_status ?? "unpaid").toLowerCase() === "paid"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                : String(order.payment_status ?? "unpaid").toLowerCase() ===
+                    "refunded"
+                  ? "border-blue-200 bg-blue-50 text-blue-700"
+                  : "border-[#efd8a6] bg-[#fffaf0] text-[#8a5b00]"
+            }`}
+          >
             {paymentStatusLabel(order.payment_status)}
           </span>
         </div>
@@ -255,27 +266,61 @@ function OrderCard({ order }: { order: CustomerOrder }) {
 
           <div className="mt-4 divide-y divide-neutral-100">
             {order.items.length ? (
-              order.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-start justify-between gap-5 py-4 first:pt-0"
-                >
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.03em]">
-                      {item.product_name}
-                    </p>
+              order.items.map((item) => {
+                const content = (
+                  <>
+                    <div className="grid h-[82px] w-[82px] shrink-0 place-items-center overflow-hidden rounded-[16px] border border-black/[0.07] bg-[#f7f7f7]">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={item.product_name}
+                          className="h-full w-full object-contain p-2.5"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-neutral-300">
+                          Product
+                        </span>
+                      )}
+                    </div>
 
-                    <p className="mt-1 text-xs text-neutral-500">
-                      {item.size ? `Size ${item.size} · ` : ""}
-                      Quantity {item.quantity}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[15px] font-semibold tracking-[-0.015em] text-[#1d1d1f]">
+                        {item.product_name}
+                      </p>
+
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-500">
+                        {item.size ? <span>{item.size}</span> : null}
+
+                        <span>Qty {item.quantity}</span>
+
+                        <span>{formatMoney(item.unit_price)} each</span>
+                      </div>
+                    </div>
+
+                    <p className="shrink-0 text-sm font-semibold text-[#1d1d1f]">
+                      {formatMoney(item.line_total)}
                     </p>
+                  </>
+                );
+
+                return item.product_slug ? (
+                  <Link
+                    key={item.id}
+                    href={`/shop/${item.product_slug}`}
+                    className="group flex items-center gap-4 py-5 transition first:pt-0 hover:opacity-75"
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-4 py-5 first:pt-0"
+                  >
+                    {content}
                   </div>
-
-                  <p className="shrink-0 text-sm font-semibold">
-                    {formatMoney(item.line_total)}
-                  </p>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p className="text-sm text-neutral-500">
                 No product details are available for this order.
@@ -365,7 +410,7 @@ export default function AccountClient({ orders }: AccountClientProps) {
   return (
     <section
       id="customer-orders"
-      className="border border-neutral-200 bg-white"
+      className="overflow-hidden rounded-[28px] border border-black/[0.08] bg-white shadow-[0_16px_50px_rgba(0,0,0,0.035)]"
     >
       <div className="border-b border-neutral-200 px-6 py-6 sm:px-8">
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-neutral-400">

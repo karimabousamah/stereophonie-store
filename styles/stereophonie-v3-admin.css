@@ -4735,3 +4735,254 @@ form[action*="login"] button[type="submit"]:disabled {
 }
 
 /* === ST ADMIN TARGETED SOURCE POLISH V10 END === */
+
+/* === ST ADMIN PROFESSIONAL POLISH V11 START === */
+
+/*
+ * ==========================================================
+ * PRODUCT STATUS
+ * ==========================================================
+ */
+
+.st3-admin [data-admin-product-status] {
+  min-height: 30px;
+
+  border-radius: 999px !important;
+
+  font-weight: 700 !important;
+
+  letter-spacing: 0.14em !important;
+
+  box-shadow: none !important;
+}
+
+.st3-admin [data-admin-product-status="published"] {
+  border-color: #b7ddc8 !important;
+
+  background: #eef8f2 !important;
+
+  color: #216844 !important;
+}
+
+.st3-admin [data-admin-product-status="draft"] {
+  border-color: rgba(29, 29, 31, 0.12) !important;
+
+  background: #f7f7f8 !important;
+
+  color: #65656a !important;
+}
+
+.st3-admin [data-admin-product-status="archived"] {
+  border-color: #edc9c6 !important;
+
+  background: #fff5f4 !important;
+
+  color: #972f29 !important;
+}
+
+/*
+ * ==========================================================
+ * PRODUCT SUCCESS MESSAGE
+ * ==========================================================
+ */
+
+.st3-admin [data-admin-product-success="true"] {
+  border: 1px solid #bddfc9 !important;
+
+  border-radius: 17px !important;
+
+  background: #f1f8f4 !important;
+
+  color: #1f6542 !important;
+
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.015),
+    0 6px 20px rgba(32, 107, 70, 0.035) !important;
+}
+
+.st3-admin [data-admin-product-success="true"] svg {
+  color: #278153 !important;
+}
+
+.st3-admin [data-admin-product-success="true"] p:first-child {
+  color: #246b45 !important;
+}
+
+.st3-admin [data-admin-product-success="true"] p:last-child {
+  color: #48675a !important;
+}
+
+.st3-admin [data-admin-product-success="true"] strong {
+  color: #1d5038 !important;
+}
+
+/*
+ * ==========================================================
+ * ARCHIVE ACTION
+ * ==========================================================
+ */
+
+.st3-admin [data-admin-archive-action="true"] {
+  border: 1px solid rgba(219, 157, 36, 0.56) !important;
+
+  border-radius: 12px !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.018),
+    0 4px 13px rgba(186, 124, 14, 0.035) !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+@media (hover: hover) {
+  .st3-admin [data-admin-archive-action="true"]:hover {
+    border-color: #e0a026 !important;
+
+    background: #fffdf8 !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.1),
+      0 8px 22px rgba(185, 121, 11, 0.12) !important;
+
+    transform: translateY(-1px);
+  }
+}
+
+.st3-admin [data-admin-archive-action="true"]:focus-visible {
+  outline: none !important;
+
+  border-color: #dda027 !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.13) !important;
+}
+
+/* === ST ADMIN PROFESSIONAL POLISH V11 END === */
+
+/* === ST ARCHIVE PREMIUM ACTION FINAL START === */
+
+html body .st3-admin [data-admin-archive-action="true"] {
+  border: 1px solid #dca02d !important;
+
+  border-radius: 12px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.02),
+    0 4px 14px rgba(190, 127, 12, 0.035) !important;
+}
+
+@media (hover: hover) {
+  html body .st3-admin [data-admin-archive-action="true"]:hover {
+    border-color: #dfa026 !important;
+
+    background: #fffdf8 !important;
+    background-color: #fffdf8 !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.12),
+      0 9px 25px rgba(190, 127, 12, 0.13) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+/* === ST ARCHIVE PREMIUM ACTION FINAL END === */
+
+/* ==========================================================
+   ADMIN PRODUCT DIRECTORY — STATUS COLOR SYSTEM
+   Live         = soft green
+   Draft        = soft mustard
+   Out of stock = soft red
+   ========================================================== */
+
+/*
+ * DRAFT
+ *
+ * Draft products are intentionally visually distinct from live
+ * inventory. Keep the treatment soft and premium rather than
+ * using a strong warning color.
+ */
+.st3-admin
+  [data-admin-product-search-card="true"][data-admin-product-status="draft"] {
+  background: linear-gradient(
+    90deg,
+    rgba(253, 183, 62, 0.115),
+    rgba(253, 183, 62, 0.075)
+  ) !important;
+
+  border-color: rgba(214, 145, 26, 0.12) !important;
+
+  box-shadow: inset 3px 0 0 rgba(225, 157, 25, 0.34);
+}
+
+/*
+ * DRAFT — hover
+ */
+@media (hover: hover) {
+  .st3-admin
+    [data-admin-product-search-card="true"][data-admin-product-status="draft"]:hover {
+    background: linear-gradient(
+      90deg,
+      rgba(253, 183, 62, 0.16),
+      rgba(253, 183, 62, 0.095)
+    ) !important;
+
+    box-shadow:
+      inset 3px 0 0 rgba(225, 157, 25, 0.58),
+      0 8px 24px rgba(181, 116, 8, 0.07);
+  }
+}
+
+/*
+ * OUT OF STOCK
+ *
+ * This selector intentionally comes after the published/live
+ * styling so an out-of-stock live product becomes red instead
+ * of retaining its normal green background.
+ */
+.st3-admin
+  [data-admin-product-search-card="true"][data-admin-product-out-of-stock="true"] {
+  background: linear-gradient(
+    90deg,
+    rgba(220, 38, 38, 0.085),
+    rgba(239, 68, 68, 0.055)
+  ) !important;
+
+  border-color: rgba(220, 38, 38, 0.12) !important;
+
+  box-shadow: inset 3px 0 0 rgba(220, 38, 38, 0.28);
+}
+
+/*
+ * OUT OF STOCK — hover
+ */
+@media (hover: hover) {
+  .st3-admin
+    [data-admin-product-search-card="true"][data-admin-product-out-of-stock="true"]:hover {
+    background: linear-gradient(
+      90deg,
+      rgba(220, 38, 38, 0.125),
+      rgba(239, 68, 68, 0.075)
+    ) !important;
+
+    box-shadow:
+      inset 3px 0 0 rgba(220, 38, 38, 0.48),
+      0 8px 24px rgba(185, 28, 28, 0.065);
+  }
+}

@@ -46,6 +46,19 @@ type OrderItemRow = {
   line_total: number | string | null;
 };
 
+type ProductLookupRow = {
+  id: string;
+  name: string;
+  slug: string;
+  product_images:
+    | {
+        image_url: string | null;
+        is_primary: boolean | null;
+        position: number | null;
+      }[]
+    | null;
+};
+
 type ProfileRow = {
   user_id: string;
   first_name: string;
@@ -208,6 +221,58 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     itemRows = (data ?? []) as OrderItemRow[];
   }
 
+  const orderedProductNames = Array.from(
+    new Set(
+      itemRows
+        .map((item) => String(item.product_name ?? "").trim())
+        .filter(Boolean),
+    ),
+  );
+
+  let productLookupRows: ProductLookupRow[] = [];
+
+  if (orderedProductNames.length > 0) {
+    const { data: productLookupData } = await supabase
+      .from("products")
+      .select(
+        `
+          id,
+          name,
+          slug,
+          product_images (
+            image_url,
+            is_primary,
+            position
+          )
+        `,
+      )
+      .in("name", orderedProductNames);
+
+    productLookupRows = (productLookupData ?? []) as ProductLookupRow[];
+  }
+
+  const productLookup = new Map(
+    productLookupRows.map((product) => {
+      const orderedImages = [...(product.product_images ?? [])].sort(
+        (first, second) => {
+          if (Boolean(first.is_primary) !== Boolean(second.is_primary)) {
+            return first.is_primary ? -1 : 1;
+          }
+
+          return Number(first.position ?? 0) - Number(second.position ?? 0);
+        },
+      );
+
+      return [
+        product.name.trim().toLowerCase(),
+        {
+          slug: product.slug,
+          imageUrl: orderedImages[0]?.image_url ?? null,
+        },
+      ] as const;
+    }),
+  );
+
   const profile: CustomerProfile = {
     email,
     firstName: profileRow?.first_name ?? String(metadata.first_name ?? ""),
@@ -258,6 +323,12 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         quantity: Number(item.quantity ?? 0),
         unit_price: Number(item.unit_price ?? 0),
         line_total: Number(item.line_total ?? 0),
+        image_url:
+          productLookup.get(item.product_name.trim().toLowerCase())?.imageUrl ??
+          null,
+        product_slug:
+          productLookup.get(item.product_name.trim().toLowerCase())?.slug ??
+          null,
       })),
   }));
 
@@ -283,7 +354,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         hasStockPreferenceError={Boolean(stockPreferenceError)}
       />
 
-        <V3Footer />
+      <V3Footer />
     </>
   );
 }

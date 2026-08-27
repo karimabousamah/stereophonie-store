@@ -646,7 +646,8 @@ export default function EditProductForm({
               <button
                 type="submit"
                 data-secondary-action="true"
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[11px] border border-black/10 bg-white px-4 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] transition hover:border-black/20 hover:bg-[#f5f5f7]"
+                data-admin-archive-action="true"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[12px] border border-[#dca02d] bg-white px-4 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] transition-all duration-200 hover:-translate-y-px hover:border-[#e0a126] hover:bg-[#fffdf8] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.12),0_8px_24px_rgba(190,127,12,0.13)] focus-visible:outline-none focus-visible:shadow-[0_0_0_4px_rgba(245,179,53,0.14)]"
               >
                 <Archive className="h-3.5 w-3.5" />
                 Archive product

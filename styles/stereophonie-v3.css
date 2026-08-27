@@ -53098,3 +53098,969 @@ html body .st3-footer__store-location:visited {
 /* =========================================================
    ST3 ANNOUNCEMENT — FULL BACKGROUND MUSTARD LOADER FINAL END
    ========================================================= */
+
+/* === ST SHOP FILTER CONTROL SYSTEM V13 START === */
+
+/*
+ * ==========================================================
+ * DIMENSIONS
+ * ==========================================================
+ *
+ * Category and Brand return to their proper original-looking
+ * desktop width instead of collapsing around their text.
+ */
+
+html body .st-retail-shop .st-filter-v4__filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+html body .st-retail-shop .st-filter-v4__select {
+  position: relative;
+
+  flex: 0 0 190px !important;
+
+  width: 190px !important;
+  min-width: 190px !important;
+  max-width: 190px !important;
+
+  min-height: 42px;
+
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+/*
+ * Native selects remain fully clickable.
+ * Their text is hidden because the custom span displays
+ * Category / Brand or the selected value.
+ */
+
+html body .st-retail-shop .st-filter-v4__select select {
+  position: absolute !important;
+  inset: 0 !important;
+
+  z-index: 3;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  opacity: 0 !important;
+
+  cursor: pointer;
+}
+
+html body .st-retail-shop .st-filter-v4__select > span {
+  position: relative;
+  z-index: 1;
+
+  display: block;
+
+  overflow: hidden;
+
+  max-width: calc(100% - 34px);
+
+  color: #1d1d1f !important;
+
+  font-weight: 500;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  pointer-events: none;
+}
+
+html body .st-retail-shop .st-filter-v4__select > svg {
+  position: relative;
+  z-index: 1;
+
+  flex: 0 0 auto;
+
+  color: #57575c !important;
+
+  pointer-events: none;
+}
+
+/*
+ * ==========================================================
+ * PRICE + IN STOCK — SAME FAMILY
+ * ==========================================================
+ */
+
+html body .st-retail-shop .st-filter-v4__filters .st-filter-v4__pill {
+  min-height: 42px;
+
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html body .st-retail-shop .st-filter-v4__price-wrap {
+  flex: 0 0 auto;
+}
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill {
+  width: auto !important;
+
+  min-width: 118px !important;
+  max-width: 205px !important;
+
+  padding-left: 17px !important;
+  padding-right: 17px !important;
+}
+
+/*
+ * ==========================================================
+ * NORMAL / INACTIVE STATE
+ * ==========================================================
+ */
+
+html body .st-retail-shop .st-filter-v4__select[data-filter-active="false"],
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-trigger[data-filter-active="false"],
+html body .st-retail-shop .st-filter-v4__pill:not(.is-active) {
+  border-color: rgba(29, 29, 31, 0.11) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * ==========================================================
+ * HOVER
+ * ==========================================================
+ *
+ * Same interaction language as the In Stock button:
+ * white / warm-white surface, mustard border and restrained
+ * mustard halo.
+ */
+
+@media (hover: hover) {
+  html body .st-retail-shop .st-filter-v4__filters .st-filter-v4__select:hover,
+  html body .st-retail-shop .st-filter-v4__filters .st-filter-v4__pill:hover {
+    border-color: rgba(224, 158, 31, 0.68) !important;
+
+    background: #fffaf1 !important;
+    background-color: #fffaf1 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.075),
+      0 6px 20px rgba(190, 127, 12, 0.075) !important;
+  }
+}
+
+/*
+ * ==========================================================
+ * ACTIVE / SELECTED
+ * ==========================================================
+ *
+ * Selected Category, Brand and Price now use precisely the
+ * same warm mustard language as selected In Stock.
+ */
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__filters
+  .st-filter-v4__select[data-filter-active="true"],
+html body .st-retail-shop .st-filter-v4__filters .st-filter-v4__pill.is-active,
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__filters
+  .st-filter-v4__price-trigger[data-filter-active="true"] {
+  border-color: rgba(224, 158, 31, 0.62) !important;
+
+  background: #fff9ee !important;
+  background-color: #fff9ee !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.07),
+    0 6px 19px rgba(190, 127, 12, 0.07) !important;
+}
+
+/*
+ * ==========================================================
+ * PRICE — KILL LEGACY BLACK STATE
+ * ==========================================================
+ *
+ * Deliberately high specificity because an older storefront
+ * rule was still turning active Price solid black.
+ */
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger,
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger.is-active,
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger[data-filter-active="true"] {
+  border-color: rgba(224, 158, 31, 0.62) !important;
+
+  background: #fff9ee !important;
+  background-color: #fff9ee !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  -webkit-text-fill-color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.07),
+    0 6px 19px rgba(190, 127, 12, 0.07) !important;
+}
+
+html body .st-retail-shop .st-filter-v4__price-trigger span,
+html body .st-retail-shop .st-filter-v4__price-trigger svg {
+  color: #1d1d1f !important;
+
+  stroke: currentColor !important;
+
+  -webkit-text-fill-color: #1d1d1f !important;
+}
+
+@media (hover: hover) {
+  html
+    body
+    .st-retail-shop
+    .st-filter-v4__bar
+    .st-filter-v4__filters
+    .st-filter-v4__price-wrap
+    > button.st-filter-v4__price-trigger:hover {
+    border-color: #dda028 !important;
+
+    background: #fffaf1 !important;
+    background-color: #fffaf1 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.095),
+      0 7px 22px rgba(190, 127, 12, 0.095) !important;
+  }
+}
+
+/*
+ * ==========================================================
+ * ACTIVE STOCK INDICATOR
+ * ==========================================================
+ */
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__pill.is-active
+  .st-filter-v4__stock-dot {
+  border-color: #dfa026 !important;
+
+  background: #dfa026 !important;
+
+  box-shadow: 0 0 0 5px rgba(245, 179, 53, 0.11) !important;
+}
+
+/*
+ * ==========================================================
+ * RESPONSIVE
+ * ==========================================================
+ */
+
+@media (max-width: 820px) {
+  html body .st-retail-shop .st-filter-v4__select {
+    flex: 1 1 150px !important;
+
+    width: auto !important;
+    min-width: 145px !important;
+    max-width: none !important;
+  }
+}
+
+/* === ST SHOP FILTER CONTROL SYSTEM V13 END === */
+
+/* =========================================================
+   STEREOPHONIE SHOP — SEARCHABLE CATEGORY / BRAND PICKERS
+   ========================================================= */
+
+html body .st-retail-shop .st-filter-v4__smart-picker {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-trigger {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 44px;
+  width: auto;
+  min-width: 156px;
+  max-width: 260px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 0 15px 0 16px;
+  border: 1px solid #dedede;
+  border-radius: 999px;
+  background: #fff;
+  color: #1d1d1f;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: none;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-trigger > svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 180ms ease;
+}
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__smart-trigger[aria-expanded="true"]
+  > svg {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  html body .st-retail-shop .st-filter-v4__smart-trigger:hover {
+    border-color: rgba(230, 161, 32, 0.74);
+    background: #fffaf0;
+    box-shadow:
+      0 0 0 1px rgba(230, 161, 32, 0.08),
+      0 7px 22px rgba(230, 161, 32, 0.17);
+  }
+}
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__smart-picker.is-active
+  .st-filter-v4__smart-trigger,
+html body .st-retail-shop .st-filter-v4__smart-trigger[aria-expanded="true"] {
+  border-color: rgba(230, 161, 32, 0.82);
+  background: #fffaf0;
+  box-shadow:
+    0 0 0 1px rgba(230, 161, 32, 0.08),
+    0 7px 22px rgba(230, 161, 32, 0.14);
+}
+
+html body .st-retail-shop .st-filter-v4__smart-popover {
+  position: absolute;
+  z-index: 120;
+  top: calc(100% + 10px);
+  left: 0;
+  width: min(320px, calc(100vw - 32px));
+  padding: 10px;
+  border: 1px solid #e6e6e6;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, 0.12),
+    0 2px 10px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  animation: stFilterPickerEnter 160ms ease-out both;
+}
+
+@keyframes stFilterPickerEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+html body .st-retail-shop .st-filter-v4__smart-search {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  margin-bottom: 8px;
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+  background: #f8f8f8;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-search > svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: #848484;
+  stroke-width: 1.8;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #1d1d1f;
+  font: inherit;
+  font-size: 13px;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-search:focus-within {
+  border-color: rgba(230, 161, 32, 0.7);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(230, 161, 32, 0.09);
+}
+
+html body .st-retail-shop .st-filter-v4__smart-options {
+  max-height: 270px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-option {
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #222;
+  text-align: left;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-option:hover {
+  background: #fff7e7;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-option.is-selected {
+  background: #fff3da;
+  color: #9d6200;
+  font-weight: 600;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-option strong {
+  color: #d99008;
+  font-size: 13px;
+}
+
+html body .st-retail-shop .st-filter-v4__smart-empty {
+  padding: 22px 12px;
+  color: #8a8a8a;
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  html body .st-retail-shop .st-filter-v4__smart-trigger {
+    min-width: 140px;
+  }
+
+  html body .st-retail-shop .st-filter-v4__smart-popover {
+    width: min(300px, calc(100vw - 32px));
+  }
+}
+
+/* ==========================================================
+   SHOP FILTER SEARCHABLE CATEGORY + BRAND — EXACT LIVE V16
+   ========================================================== */
+
+html body .st-retail-shop .st-filter-v4__picker {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-trigger {
+  appearance: none;
+  -webkit-appearance: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: auto;
+  min-width: 138px;
+  max-width: 240px;
+  height: 42px;
+
+  gap: 12px;
+
+  padding: 0 14px 0 16px;
+
+  border: 1px solid rgba(29, 29, 31, 0.12);
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #1d1d1f;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  box-shadow: none;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-trigger > span {
+  min-width: 0;
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-trigger > svg {
+  width: 14px;
+  height: 14px;
+
+  flex: 0 0 auto;
+
+  color: #5f5f64;
+
+  transition:
+    transform 180ms ease,
+    color 180ms ease;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-trigger > svg.is-open {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  html body .st-retail-shop .st-filter-v4__picker-trigger:hover {
+    border-color: rgba(225, 157, 25, 0.66);
+
+    background: #fffaf1;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 7px 21px rgba(197, 131, 8, 0.11);
+  }
+}
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__picker.is-active
+  .st-filter-v4__picker-trigger,
+html body .st-retail-shop .st-filter-v4__picker-trigger[aria-expanded="true"] {
+  border-color: rgba(225, 157, 25, 0.67);
+
+  background: #fff9ee;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.065),
+    0 7px 20px rgba(197, 131, 8, 0.09);
+}
+
+/* POPOVER */
+
+html body .st-retail-shop .st-filter-v4__picker-popover {
+  position: absolute;
+  z-index: 500;
+
+  top: calc(100% + 10px);
+  left: 0;
+
+  width: 310px;
+  max-width: calc(100vw - 32px);
+
+  padding: 13px;
+
+  border: 1px solid rgba(29, 29, 31, 0.09);
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.985);
+
+  box-shadow:
+    0 24px 64px rgba(29, 29, 31, 0.14),
+    0 5px 16px rgba(29, 29, 31, 0.05);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  transform-origin: top left;
+
+  animation: st-filter-picker-v16-in 170ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes st-filter-picker-v16-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* TITLE */
+
+html body .st-retail-shop .st-filter-v4__picker-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  padding: 2px 2px 11px;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-title > div {
+  display: grid;
+  gap: 3px;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-title small {
+  color: #9b670d;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-title strong {
+  color: #1d1d1f;
+
+  font-size: 15px;
+  font-weight: 650;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-title > button {
+  appearance: none;
+
+  display: grid;
+  place-items: center;
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 10px;
+
+  background: #f7f7f8;
+
+  color: #5f5f64;
+
+  cursor: pointer;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-title > button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* SEARCH */
+
+html body .st-retail-shop .st-filter-v4__picker-search {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  height: 42px;
+
+  padding: 0 11px;
+
+  border: 1px solid rgba(29, 29, 31, 0.1);
+  border-radius: 12px;
+
+  background: #f7f7f8;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-search:focus-within {
+  border-color: rgba(225, 157, 25, 0.55);
+
+  background: #fff;
+
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.08);
+}
+
+html body .st-retail-shop .st-filter-v4__picker-search > svg {
+  width: 15px;
+  height: 15px;
+
+  flex: 0 0 auto;
+
+  color: #89898e;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-search input {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  color: #1d1d1f;
+
+  font: inherit;
+  font-size: 13px;
+}
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__picker-search
+  input::-webkit-search-cancel-button {
+  display: none;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-search > button {
+  appearance: none;
+
+  display: grid;
+  place-items: center;
+
+  width: 26px;
+  height: 26px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #737378;
+
+  cursor: pointer;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-search > button svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* OPTIONS */
+
+html body .st-retail-shop .st-filter-v4__picker-list {
+  display: grid;
+
+  max-height: 270px;
+
+  overflow-y: auto;
+
+  margin-top: 9px;
+  padding: 1px;
+
+  overscroll-behavior: contain;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-option {
+  appearance: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 41px;
+
+  gap: 12px;
+
+  padding: 9px 10px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #2b2b2e;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+@media (hover: hover) {
+  html body .st-retail-shop .st-filter-v4__picker-option:hover {
+    border-color: rgba(225, 157, 25, 0.18);
+    background: #fff9ee;
+  }
+}
+
+html body .st-retail-shop .st-filter-v4__picker-option.is-selected {
+  border-color: rgba(225, 157, 25, 0.27);
+  background: #fff5df;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-option strong {
+  color: #9c670a;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-empty {
+  padding: 21px 10px;
+
+  color: #8a8a8f;
+
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  html body .st-retail-shop .st-filter-v4__picker {
+    flex: 1 1 calc(50% - 5px);
+  }
+
+  html body .st-retail-shop .st-filter-v4__picker-trigger {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* ==========================================================
+   SEARCHABLE FILTER INPUT — REMOVE INNER RECTANGLE
+   ========================================================== */
+
+html body .st-retail-shop .st-filter-v4__picker-search input {
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+
+  background: transparent !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  border-radius: 0 !important;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-search input:focus,
+html body .st-retail-shop .st-filter-v4__picker-search input:focus-visible,
+html body .st-retail-shop .st-filter-v4__picker-search input:hover {
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+
+  background: transparent !important;
+}

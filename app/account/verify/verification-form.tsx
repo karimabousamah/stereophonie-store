@@ -9,18 +9,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import {
-  resendCustomerCode,
-  verifyCustomerCode,
-} from "../actions";
+import { resendCustomerCode, verifyCustomerCode } from "../actions";
 
 type VerificationFormProps = {
   email: string;
@@ -38,15 +30,9 @@ function maskEmail(email: string) {
     return email;
   }
 
-  const visibleStart =
-    name.length > 1
-      ? name.slice(0, 2)
-      : name[0];
+  const visibleStart = name.length > 1 ? name.slice(0, 2) : name[0];
 
-  const hiddenLength = Math.max(
-    3,
-    name.length - visibleStart.length,
-  );
+  const hiddenLength = Math.max(3, name.length - visibleStart.length);
 
   return `${visibleStart}${"•".repeat(hiddenLength)}@${domain}`;
 }
@@ -61,39 +47,26 @@ function formatCountdown(seconds: number) {
   )}:${String(remainingSeconds).padStart(2, "0")}`;
 }
 
-function VerifyButton({
-  disabled,
-}: {
-  disabled: boolean;
-}) {
+function VerifyButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
       disabled={disabled || pending}
-      className="st-account-verification__primary"
+      className="st-account-verification__primary border border-[#c58b22]/55 !bg-white !text-[#1d1d1f] shadow-[0_2px_8px_rgba(29,29,31,0.035)] transition-all duration-300 hover:!border-[#c58b22]/80 hover:!bg-[#fffaf0] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.11),0_10px_30px_rgba(196,135,27,0.13)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#f5b335]/15 disabled:opacity-45"
     >
-      <span>
-        {pending
-          ? "Verifying..."
-          : "Verify account"}
-      </span>
+      <span>{pending ? "Verifying..." : "Verify account"}</span>
 
       <ArrowRight aria-hidden="true" />
     </button>
   );
 }
 
-function ResendButton({
-  countdown,
-}: {
-  countdown: number;
-}) {
+function ResendButton({ countdown }: { countdown: number }) {
   const { pending } = useFormStatus();
 
-  const disabled =
-    countdown > 0 || pending;
+  const disabled = countdown > 0 || pending;
 
   return (
     <button
@@ -119,23 +92,15 @@ export default function VerificationForm({
   error,
   message,
 }: VerificationFormProps) {
-  const [digits, setDigits] = useState<string[]>(
-    Array(CODE_LENGTH).fill(""),
-  );
+  const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(""));
 
-  const [countdown, setCountdown] =
-    useState(RESEND_DELAY);
+  const [countdown, setCountdown] = useState(RESEND_DELAY);
 
-  const inputRefs =
-    useRef<Array<HTMLInputElement | null>>([]);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
-  const code = useMemo(
-    () => digits.join(""),
-    [digits],
-  );
+  const code = useMemo(() => digits.join(""), [digits]);
 
-  const isComplete =
-    code.length === CODE_LENGTH;
+  const isComplete = code.length === CODE_LENGTH;
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -147,9 +112,7 @@ export default function VerificationForm({
     }
 
     const timer = window.setInterval(() => {
-      setCountdown((current) =>
-        Math.max(0, current - 1),
-      );
+      setCountdown((current) => Math.max(0, current - 1));
     }, 1000);
 
     return () => {
@@ -157,13 +120,8 @@ export default function VerificationForm({
     };
   }, [countdown]);
 
-  function updateDigit(
-    index: number,
-    value: string,
-  ) {
-    const number = value
-      .replace(/\D/g, "")
-      .slice(-1);
+  function updateDigit(index: number, value: string) {
+    const number = value.replace(/\D/g, "").slice(-1);
 
     setDigits((current) => {
       const next = [...current];
@@ -173,10 +131,7 @@ export default function VerificationForm({
       return next;
     });
 
-    if (
-      number &&
-      index < CODE_LENGTH - 1
-    ) {
+    if (number && index < CODE_LENGTH - 1) {
       inputRefs.current[index + 1]?.focus();
     }
   }
@@ -185,68 +140,46 @@ export default function VerificationForm({
     index: number,
     event: React.KeyboardEvent<HTMLInputElement>,
   ) {
-    if (
-      event.key === "Backspace" &&
-      !digits[index] &&
-      index > 0
-    ) {
+    if (event.key === "Backspace" && !digits[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
 
-    if (
-      event.key === "ArrowLeft" &&
-      index > 0
-    ) {
+    if (event.key === "ArrowLeft" && index > 0) {
       event.preventDefault();
 
       inputRefs.current[index - 1]?.focus();
     }
 
-    if (
-      event.key === "ArrowRight" &&
-      index < CODE_LENGTH - 1
-    ) {
+    if (event.key === "ArrowRight" && index < CODE_LENGTH - 1) {
       event.preventDefault();
 
       inputRefs.current[index + 1]?.focus();
     }
   }
 
-  function handlePaste(
-    event: React.ClipboardEvent<HTMLInputElement>,
-  ) {
+  function handlePaste(event: React.ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
 
-    const pastedCode =
-      event.clipboardData
-        .getData("text")
-        .replace(/\D/g, "")
-        .slice(0, CODE_LENGTH);
+    const pastedCode = event.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, CODE_LENGTH);
 
     if (!pastedCode) {
       return;
     }
 
-    const nextDigits =
-      Array(CODE_LENGTH).fill("");
+    const nextDigits = Array(CODE_LENGTH).fill("");
 
-    pastedCode
-      .split("")
-      .forEach((digit, index) => {
-        nextDigits[index] = digit;
-      });
+    pastedCode.split("").forEach((digit, index) => {
+      nextDigits[index] = digit;
+    });
 
     setDigits(nextDigits);
 
-    const nextFocusIndex =
-      Math.min(
-        pastedCode.length,
-        CODE_LENGTH - 1,
-      );
+    const nextFocusIndex = Math.min(pastedCode.length, CODE_LENGTH - 1);
 
-    inputRefs.current[
-      nextFocusIndex
-    ]?.focus();
+    inputRefs.current[nextFocusIndex]?.focus();
   }
 
   return (
@@ -271,25 +204,18 @@ export default function VerificationForm({
           <Mail aria-hidden="true" />
         </div>
 
-        <p className="st-account-verification__eyebrow">
-          Email verification
-        </p>
+        <p className="st-account-verification__eyebrow">Email verification</p>
 
-        <h1>
-          Check your email
-        </h1>
+        <h1>Check your email</h1>
 
         <p className="st-account-verification__description">
-          Enter the six-digit code we sent to
-          your email address.
+          Enter the six-digit code we sent to your email address.
         </p>
 
         <div className="st-account-verification__email">
           <strong>{maskEmail(email)}</strong>
 
-          <Link href="/account?mode=register">
-            Change email
-          </Link>
+          <Link href="/account?mode=register">Change email</Link>
         </div>
       </div>
 
@@ -320,116 +246,61 @@ export default function VerificationForm({
           if (!isComplete) {
             event.preventDefault();
 
-            const firstEmpty =
-              digits.findIndex(
-                (digit) => !digit,
-              );
+            const firstEmpty = digits.findIndex((digit) => !digit);
 
             if (firstEmpty >= 0) {
-              inputRefs.current[
-                firstEmpty
-              ]?.focus();
+              inputRefs.current[firstEmpty]?.focus();
             }
           }
         }}
       >
-        <input
-          type="hidden"
-          name="email"
-          value={email}
-        />
+        <input type="hidden" name="email" value={email} />
 
-        <input
-          type="hidden"
-          name="code"
-          value={code}
-        />
+        <input type="hidden" name="code" value={code} />
 
         <fieldset>
-          <legend>
-            Verification code
-          </legend>
+          <legend>Verification code</legend>
 
           <div
             className="st-account-verification__digits"
             onPaste={handlePaste}
           >
-            {digits.map(
-              (digit, index) => (
-                <input
-                  key={index}
-                  ref={(element) => {
-                    inputRefs.current[index] =
-                      element;
-                  }}
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={1}
-                  value={digit}
-                  autoComplete={
-                    index === 0
-                      ? "one-time-code"
-                      : "off"
-                  }
-                  aria-label={`Verification digit ${
-                    index + 1
-                  }`}
-                  onChange={(event) =>
-                    updateDigit(
-                      index,
-                      event.target.value,
-                    )
-                  }
-                  onKeyDown={(event) =>
-                    handleKeyDown(
-                      index,
-                      event,
-                    )
-                  }
-                  onFocus={(event) =>
-                    event.currentTarget.select()
-                  }
-                  className={
-                    digit
-                      ? "is-filled"
-                      : ""
-                  }
-                />
-              ),
-            )}
+            {digits.map((digit, index) => (
+              <input
+                key={index}
+                ref={(element) => {
+                  inputRefs.current[index] = element;
+                }}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={1}
+                value={digit}
+                autoComplete={index === 0 ? "one-time-code" : "off"}
+                aria-label={`Verification digit ${index + 1}`}
+                onChange={(event) => updateDigit(index, event.target.value)}
+                onKeyDown={(event) => handleKeyDown(index, event)}
+                onFocus={(event) => event.currentTarget.select()}
+                className={digit ? "is-filled" : ""}
+              />
+            ))}
           </div>
         </fieldset>
 
-        <VerifyButton
-          disabled={!isComplete}
-        />
+        <VerifyButton disabled={!isComplete} />
       </form>
 
       <div className="st-account-verification__resend">
         <div>
-          <strong>
-            Didn&apos;t receive the code?
-          </strong>
+          <strong>Didn&apos;t receive the code?</strong>
 
-          <span>
-            Check your spam folder or request
-            another code.
-          </span>
+          <span>Check your spam folder or request another code.</span>
         </div>
 
-        <form
-          action={resendCustomerCode}
-        >
-          <input
-            type="hidden"
-            name="email"
-            value={email}
-          />
+        <form action={resendCustomerCode}>
+          <input type="hidden" name="email" value={email} />
 
-          <ResendButton
-            countdown={countdown}
-          />
+          <ResendButton countdown={countdown} />
         </form>
       </div>
 
@@ -437,38 +308,35 @@ export default function VerificationForm({
         <ShieldCheck aria-hidden="true" />
 
         <p>
-          Never share this verification code.
-          Stereophonie will not ask you for it
-          by phone, WhatsApp, Instagram or email.
+          Never share this verification code. Stereophonie will not ask you for
+          it by phone, WhatsApp, Instagram or email.
         </p>
       </div>
     </div>
   );
 }
 
-
 <style jsx global>{`
-/* === ST VERIFICATION LEGACY LOGO KILL === */
+  /* === ST VERIFICATION LEGACY LOGO KILL === */
 
-/*
+  /*
  * The storefront header already provides the official
  * Stereophonie identity. Never display a second legacy
  * logo inside the verification card.
  */
 
-.st-verify-card img[alt*="Stereophonie" i],
-.st-verification-card img[alt*="Stereophonie" i],
-.st-account-verify-card img[alt*="Stereophonie" i],
-[class*="verify"][class*="card"] img[alt*="Stereophonie" i],
-[class*="verification"][class*="card"] img[alt*="Stereophonie" i],
+  .st-verify-card img[alt*="Stereophonie" i],
+  .st-verification-card img[alt*="Stereophonie" i],
+  .st-account-verify-card img[alt*="Stereophonie" i],
+  [class*="verify"][class*="card"] img[alt*="Stereophonie" i],
+  [class*="verification"][class*="card"] img[alt*="Stereophonie" i],
+  .st-verify-card [class*="logo"],
+  .st-verification-card [class*="logo"],
+  .st-account-verify-card [class*="logo"],
+  [class*="verify"][class*="card"] [class*="logo"],
+  [class*="verification"][class*="card"] [class*="logo"] {
+    display: none !important;
+  }
 
-.st-verify-card [class*="logo"],
-.st-verification-card [class*="logo"],
-.st-account-verify-card [class*="logo"],
-[class*="verify"][class*="card"] [class*="logo"],
-[class*="verification"][class*="card"] [class*="logo"] {
-  display: none !important;
-}
-
-/* === ST VERIFICATION LEGACY LOGO KILL END === */
-`}</style>
+  /* === ST VERIFICATION LEGACY LOGO KILL END === */
+`}</style>;

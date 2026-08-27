@@ -1,7 +1,5 @@
-import {
-  login,
-  verifyAdminOtp,
-} from "./actions";
+import AdminOtpForm from "./admin-otp-form";
+import { login } from "./actions";
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -10,16 +8,10 @@ type LoginPageProps = {
   }>;
 };
 
-export default async function AdminLoginPage({
-  searchParams,
-}: LoginPageProps) {
-  const {
-    error,
-    step,
-  } = await searchParams;
+export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
+  const { error, step } = await searchParams;
 
-  const otpMode =
-    step === "otp";
+  const otpMode = step === "otp";
 
   return (
     <main className="min-h-screen bg-[#f5f5f7] px-6 py-12 text-[#1d1d1f]">
@@ -35,22 +27,18 @@ export default async function AdminLoginPage({
             </h1>
 
             <p className="mt-7 max-w-2xl text-lg leading-8 text-black/50">
-              Protected administration for products, inventory,
-              customers and orders.
+              Protected administration for products, inventory, customers and
+              orders.
             </p>
           </div>
 
           <div className="rounded-[32px] border border-black/[0.08] bg-white p-8 text-black shadow-[0_28px_80px_rgba(29,29,31,0.08)] sm:p-10">
             <p className="text-xs font-semibold uppercase tracking-[0.26em] text-neutral-500">
-              {otpMode
-                ? "Identity verification"
-                : "Authorized access"}
+              {otpMode ? "Identity verification" : "Authorized access"}
             </p>
 
             <h2 className="mt-4 text-3xl font-semibold tracking-[-0.035em]">
-              {otpMode
-                ? "Enter security code"
-                : "Admin login"}
+              {otpMode ? "Enter security code" : "Admin login"}
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-neutral-600">
@@ -69,52 +57,9 @@ export default async function AdminLoginPage({
             ) : null}
 
             {otpMode ? (
-              <form
-                action={verifyAdminOtp}
-                className="mt-8 space-y-5"
-              >
-                <div>
-                  <label
-                    htmlFor="code"
-                    className="text-xs font-semibold uppercase tracking-[0.16em]"
-                  >
-                    Six-digit code
-                  </label>
-
-                  <input
-                    id="code"
-                    name="code"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]{6}"
-                    maxLength={6}
-                    autoComplete="one-time-code"
-                    required
-                    autoFocus
-                    className="mt-2 w-full rounded-2xl border border-black/[0.12] bg-[#f7f7f8] px-4 py-4 text-center text-2xl font-semibold tracking-[0.28em] outline-none transition focus:border-[#f5b335] focus:ring-4 focus:ring-[#f5b335]/15"
-                    placeholder="000000"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="st3-admin-login-submit w-full px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]"
-                >
-                  Verify and continue
-                </button>
-
-                <a
-                  href="/admin/login"
-                  className="block text-center text-xs font-medium text-black/45 transition hover:text-[#9a6200]"
-                >
-                  Back to sign in
-                </a>
-              </form>
+              <AdminOtpForm />
             ) : (
-              <form
-                action={login}
-                className="mt-8 space-y-5"
-              >
+              <form action={login} className="mt-8 space-y-5">
                 <div>
                   <label
                     htmlFor="email"
@@ -155,7 +100,7 @@ export default async function AdminLoginPage({
 
                 <button
                   type="submit"
-                  className="st3-admin-login-submit w-full px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em]"
+                  className="st3-admin-login-submit w-full rounded-[14px] border border-[#c58b22]/55 !bg-white px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em] !text-[#1d1d1f] shadow-[0_2px_8px_rgba(29,29,31,0.035)] transition-all duration-300 hover:!border-[#c58b22]/80 hover:!bg-[#fffaf0] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.11),0_10px_30px_rgba(196,135,27,0.13)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#f5b335]/15"
                 >
                   Continue securely
                 </button>

@@ -75,6 +75,8 @@ export default function V2CatalogControls({
   const router = useRouter();
   const pathname = usePathname();
   const searchShellRef = useRef<HTMLDivElement>(null);
+  const categoryPickerRef = useRef<HTMLDivElement>(null);
+  const brandPickerRef = useRef<HTMLDivElement>(null);
 
   const [, startTransition] = useTransition();
 
@@ -85,6 +87,11 @@ export default function V2CatalogControls({
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const cleanQuery = query.trim();
+
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [brandOpen, setBrandOpen] = useState(false);
+  const [categoryQuery, setCategoryQuery] = useState("");
+  const [brandQuery, setBrandQuery] = useState("");
 
   const [priceOpen, setPriceOpen] = useState(false);
   const [priceMounted, setPriceMounted] = useState(false);
@@ -160,7 +167,6 @@ export default function V2CatalogControls({
       }
     };
   }, [priceOpen, priceMounted]);
-
 
   useEffect(() => {
     if (!priceOpen) {
@@ -271,11 +277,7 @@ export default function V2CatalogControls({
     const params = new URLSearchParams(window.location.search);
 
     Object.entries(updates).forEach(([key, value]) => {
-      if (
-        value === null ||
-        value === undefined ||
-        value === ""
-      ) {
+      if (value === null || value === undefined || value === "") {
         params.delete(key);
       } else {
         params.set(key, String(value));
@@ -363,15 +365,9 @@ export default function V2CatalogControls({
     setMaximum(realMaximum);
 
     navigate({
-      minPrice:
-        realMinimum <= minimumAvailablePrice
-          ? null
-          : realMinimum,
+      minPrice: realMinimum <= minimumAvailablePrice ? null : realMinimum,
 
-      maxPrice:
-        realMaximum >= maximumAvailablePrice
-          ? null
-          : realMaximum,
+      maxPrice: realMaximum >= maximumAvailablePrice ? null : realMaximum,
     });
 
     setPriceOpen(false);
@@ -389,20 +385,61 @@ export default function V2CatalogControls({
     setPriceOpen(false);
   }
 
-  const hasPriceFilter =
-    selectedMinPrice !== null ||
-    selectedMaxPrice !== null;
+  const hasPriceFilter = selectedMinPrice !== null || selectedMaxPrice !== null;
+
+  const normalizedCategoryQuery = categoryQuery.trim().toLowerCase();
+
+  const normalizedBrandQuery = brandQuery.trim().toLowerCase();
+
+  const filteredCategories = categories.filter((category) =>
+    category.toLowerCase().includes(normalizedCategoryQuery),
+  );
+
+  const filteredBrands = brands.filter((brand) =>
+    brand.toLowerCase().includes(normalizedBrandQuery),
+  );
+
+  useEffect(() => {
+    function handlePickerOutsideClick(event: PointerEvent) {
+      const target = event.target as Node;
+
+      if (categoryOpen && !categoryPickerRef.current?.contains(target)) {
+        setCategoryOpen(false);
+        setCategoryQuery("");
+      }
+
+      if (brandOpen && !brandPickerRef.current?.contains(target)) {
+        setBrandOpen(false);
+        setBrandQuery("");
+      }
+    }
+
+    function handlePickerEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      setCategoryOpen(false);
+      setBrandOpen(false);
+      setCategoryQuery("");
+      setBrandQuery("");
+    }
+
+    document.addEventListener("pointerdown", handlePickerOutsideClick);
+
+    window.addEventListener("keydown", handlePickerEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePickerOutsideClick);
+
+      window.removeEventListener("keydown", handlePickerEscape);
+    };
+  }, [categoryOpen, brandOpen]);
 
   return (
     <div className="st-filter-v4">
-      <div
-        ref={searchShellRef}
-        className="st-filter-v4__search-shell"
-      >
-        <form
-          className="st-filter-v4__search"
-          onSubmit={submitSearch}
-        >
+      <div ref={searchShellRef} className="st-filter-v4__search-shell">
+        <form className="st-filter-v4__search" onSubmit={submitSearch}>
           <Search aria-hidden="true" />
 
           <input
@@ -450,10 +487,7 @@ export default function V2CatalogControls({
             </button>
           ) : null}
 
-          <button
-            type="submit"
-            className="st-filter-v4__search-button"
-          >
+          <button type="submit" className="st-filter-v4__search-button">
             Search
           </button>
         </form>
@@ -548,57 +582,261 @@ export default function V2CatalogControls({
 
       <div className="st-filter-v4__bar">
         <div className="st-filter-v4__filters">
-          <label className="st-filter-v4__select">
-            <span>Category</span>
-
-            <select
-              value={selectedCategory}
-              onChange={(event) =>
-                navigate({
-                  category: event.target.value || null,
-                })
-              }
+          <div
+            ref={categoryPickerRef}
+            className={`st-filter-v4__picker ${
+              selectedCategory ? "is-active" : ""
+            }`}
+          >
+            <button
+              type="button"
+              className="st-filter-v4__picker-trigger"
+              aria-haspopup="listbox"
+              aria-expanded={categoryOpen}
+              onClick={() => {
+                setCategoryOpen((current) => !current);
+                setBrandOpen(false);
+                setBrandQuery("");
+                setPriceOpen(false);
+              }}
             >
-              <option value="">All categories</option>
+              <span>{selectedCategory || "Category"}</span>
 
-              {categories.map((category) => (
-                <option
-                  key={category}
-                  value={category}
+              <ChevronDown className={categoryOpen ? "is-open" : ""} />
+            </button>
+
+            {categoryOpen ? (
+              <div
+                className="st-filter-v4__picker-popover"
+                role="dialog"
+                aria-label="Category filter"
+              >
+                <div className="st-filter-v4__picker-title">
+                  <div>
+                    <small>Category</small>
+                    <strong>Choose category</strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategoryOpen(false);
+                      setCategoryQuery("");
+                    }}
+                    aria-label="Close category filter"
+                  >
+                    <X />
+                  </button>
+                </div>
+
+                <label className="st-filter-v4__picker-search">
+                  <Search aria-hidden="true" />
+
+                  <input
+                    type="search"
+                    value={categoryQuery}
+                    onChange={(event) => setCategoryQuery(event.target.value)}
+                    placeholder="Search categories"
+                    autoComplete="off"
+                    autoFocus
+                  />
+
+                  {categoryQuery ? (
+                    <button
+                      type="button"
+                      onClick={() => setCategoryQuery("")}
+                      aria-label="Clear category search"
+                    >
+                      <X />
+                    </button>
+                  ) : null}
+                </label>
+
+                <div
+                  className="st-filter-v4__picker-list"
+                  role="listbox"
+                  aria-label="Categories"
                 >
-                  {category}
-                </option>
-              ))}
-            </select>
+                  <button
+                    type="button"
+                    className={`st-filter-v4__picker-option ${
+                      !selectedCategory ? "is-selected" : ""
+                    }`}
+                    onClick={() => {
+                      setCategoryOpen(false);
+                      setCategoryQuery("");
 
-            <ChevronDown />
-          </label>
+                      navigate({
+                        category: null,
+                      });
+                    }}
+                  >
+                    <span>All categories</span>
 
-          <label className="st-filter-v4__select">
-            <span>Brand</span>
+                    {!selectedCategory ? <strong>Selected</strong> : null}
+                  </button>
 
-            <select
-              value={selectedBrand}
-              onChange={(event) =>
-                navigate({
-                  brand: event.target.value || null,
-                })
-              }
+                  {filteredCategories.map((category) => (
+                    <button
+                      type="button"
+                      key={category}
+                      className={`st-filter-v4__picker-option ${
+                        selectedCategory === category ? "is-selected" : ""
+                      }`}
+                      onClick={() => {
+                        setCategoryOpen(false);
+                        setCategoryQuery("");
+
+                        navigate({
+                          category,
+                        });
+                      }}
+                    >
+                      <span>{category}</span>
+
+                      {selectedCategory === category ? (
+                        <strong>Selected</strong>
+                      ) : null}
+                    </button>
+                  ))}
+
+                  {filteredCategories.length === 0 ? (
+                    <div className="st-filter-v4__picker-empty">
+                      No matching categories
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div
+            ref={brandPickerRef}
+            className={`st-filter-v4__picker ${
+              selectedBrand ? "is-active" : ""
+            }`}
+          >
+            <button
+              type="button"
+              className="st-filter-v4__picker-trigger"
+              aria-haspopup="listbox"
+              aria-expanded={brandOpen}
+              onClick={() => {
+                setBrandOpen((current) => !current);
+                setCategoryOpen(false);
+                setCategoryQuery("");
+                setPriceOpen(false);
+              }}
             >
-              <option value="">All brands</option>
+              <span>{selectedBrand || "Brand"}</span>
 
-              {brands.map((brand) => (
-                <option
-                  key={brand}
-                  value={brand}
+              <ChevronDown className={brandOpen ? "is-open" : ""} />
+            </button>
+
+            {brandOpen ? (
+              <div
+                className="st-filter-v4__picker-popover"
+                role="dialog"
+                aria-label="Brand filter"
+              >
+                <div className="st-filter-v4__picker-title">
+                  <div>
+                    <small>Brand</small>
+                    <strong>Choose brand</strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBrandOpen(false);
+                      setBrandQuery("");
+                    }}
+                    aria-label="Close brand filter"
+                  >
+                    <X />
+                  </button>
+                </div>
+
+                <label className="st-filter-v4__picker-search">
+                  <Search aria-hidden="true" />
+
+                  <input
+                    type="search"
+                    value={brandQuery}
+                    onChange={(event) => setBrandQuery(event.target.value)}
+                    placeholder="Search brands"
+                    autoComplete="off"
+                    autoFocus
+                  />
+
+                  {brandQuery ? (
+                    <button
+                      type="button"
+                      onClick={() => setBrandQuery("")}
+                      aria-label="Clear brand search"
+                    >
+                      <X />
+                    </button>
+                  ) : null}
+                </label>
+
+                <div
+                  className="st-filter-v4__picker-list"
+                  role="listbox"
+                  aria-label="Brands"
                 >
-                  {brand}
-                </option>
-              ))}
-            </select>
+                  <button
+                    type="button"
+                    className={`st-filter-v4__picker-option ${
+                      !selectedBrand ? "is-selected" : ""
+                    }`}
+                    onClick={() => {
+                      setBrandOpen(false);
+                      setBrandQuery("");
 
-            <ChevronDown />
-          </label>
+                      navigate({
+                        brand: null,
+                      });
+                    }}
+                  >
+                    <span>All brands</span>
+
+                    {!selectedBrand ? <strong>Selected</strong> : null}
+                  </button>
+
+                  {filteredBrands.map((brand) => (
+                    <button
+                      type="button"
+                      key={brand}
+                      className={`st-filter-v4__picker-option ${
+                        selectedBrand === brand ? "is-selected" : ""
+                      }`}
+                      onClick={() => {
+                        setBrandOpen(false);
+                        setBrandQuery("");
+
+                        navigate({
+                          brand,
+                        });
+                      }}
+                    >
+                      <span>{brand}</span>
+
+                      {selectedBrand === brand ? (
+                        <strong>Selected</strong>
+                      ) : null}
+                    </button>
+                  ))}
+
+                  {filteredBrands.length === 0 ? (
+                    <div className="st-filter-v4__picker-empty">
+                      No matching brands
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+          </div>
 
           <div className="st-filter-v4__price-wrap">
             <button
@@ -614,12 +852,8 @@ export default function V2CatalogControls({
               <span>
                 {hasPriceFilter
                   ? `${money(
-                      selectedMinPrice ??
-                        minimumAvailablePrice,
-                    )} – ${money(
-                      selectedMaxPrice ??
-                        maximumAvailablePrice,
-                    )}`
+                      selectedMinPrice ?? minimumAvailablePrice,
+                    )} – ${money(selectedMaxPrice ?? maximumAvailablePrice)}`
                   : "Price"}
               </span>
 
@@ -681,9 +915,7 @@ export default function V2CatalogControls({
                           max={maximum}
                           value={minimum}
                           onChange={(event) =>
-                            setMinimum(
-                              Number(event.target.value),
-                            )
+                            setMinimum(Number(event.target.value))
                           }
                         />
                       </div>
@@ -701,9 +933,7 @@ export default function V2CatalogControls({
                           max={maximumAvailablePrice}
                           value={maximum}
                           onChange={(event) =>
-                            setMaximum(
-                              Number(event.target.value),
-                            )
+                            setMaximum(Number(event.target.value))
                           }
                         />
                       </div>
@@ -711,23 +941,16 @@ export default function V2CatalogControls({
                   </div>
 
                   <div className="st-filter-v4__price-range">
-                    Available range:{" "}
-                    {money(minimumAvailablePrice)} –{" "}
+                    Available range: {money(minimumAvailablePrice)} –{" "}
                     {money(maximumAvailablePrice)}
                   </div>
 
                   <div className="st-filter-v4__price-actions">
-                    <button
-                      type="button"
-                      onClick={resetPrice}
-                    >
+                    <button type="button" onClick={resetPrice}>
                       Reset
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={applyPrice}
-                    >
+                    <button type="button" onClick={applyPrice}>
                       Apply
                     </button>
                   </div>
@@ -739,16 +962,12 @@ export default function V2CatalogControls({
           <button
             type="button"
             className={`st-filter-v4__pill ${
-              selectedAvailability === "in-stock"
-                ? "is-active"
-                : ""
+              selectedAvailability === "in-stock" ? "is-active" : ""
             }`}
             onClick={() =>
               navigate({
                 availability:
-                  selectedAvailability === "in-stock"
-                    ? null
-                    : "in-stock",
+                  selectedAvailability === "in-stock" ? null : "in-stock",
               })
             }
           >
@@ -769,12 +988,8 @@ export default function V2CatalogControls({
             }
           >
             <option value="newest">Newest</option>
-            <option value="price-asc">
-              Price: low to high
-            </option>
-            <option value="price-desc">
-              Price: high to low
-            </option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
           </select>
 
           <ChevronDown />

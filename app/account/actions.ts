@@ -2,8 +2,17 @@
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import {
+  CUSTOMER_OTP_CHALLENGE_COOKIE,
+  CUSTOMER_OTP_TTL_SECONDS,
+  createCustomerOtpChallenge,
+  readCustomerOtpChallenge,
+  verifyCustomerOtpChallenge,
+} from "@/lib/customer-security/otp";
+import { sendCustomerVerificationOtp } from "@/lib/email/send-customer-verification-otp";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -165,36 +174,67 @@ export async function registerCustomer(formData: FormData) {
     redirectToAuthentication("The passwords do not match.", "register");
   }
 
-  const supabase = await createClient();
+  /*
+   * IMPORTANT:
+   * We intentionally create the Supabase Auth user through
+   * the server-side administrator API.
+   *
+   * This prevents Supabase from sending its own confirmation
+   * / magic-link email. Stereophonie sends the six-digit OTP
+   * through Resend instead.
+   */
+  const admin = createAdminClient();
 
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await admin.auth.admin.createUser({
     email,
     password,
-    options: {
-      data: {
-        first_name: firstName,
-        last_name: lastName,
-        phone_country_code: phoneCountryCode,
-        phone: phoneNumber,
-      },
+    email_confirm: false,
+    user_metadata: {
+      first_name: firstName,
+      last_name: lastName,
+      phone_country_code: phoneCountryCode,
+      phone: phoneNumber,
     },
   });
 
-  if (error) {
-    redirectToAuthentication(error.message, "register");
+  if (error || !data.user) {
+    const message = error?.message?.toLowerCase().includes("already")
+      ? "An account already exists with this email address."
+      : "Your account could not be created. Please try again.";
+
+    redirectToAuthentication(message, "register");
   }
 
-  /*
-   * This occurs when email confirmation is disabled
-   * or Supabase immediately creates a session.
-   */
-  if (data.session) {
-    redirect("/?account=created");
+  const { code, token } = createCustomerOtpChallenge(data.user.id, email);
+
+  const delivery = await sendCustomerVerificationOtp(email, code);
+
+  if (!delivery.success) {
+    /*
+     * Do not leave an inaccessible half-created account
+     * behind when the verification email fails.
+     */
+    await admin.auth.admin.deleteUser(data.user.id);
+
+    redirectToAuthentication(
+      delivery.message || "The verification email could not be sent.",
+      "register",
+    );
   }
+
+  const cookieStore = await cookies();
+
+  cookieStore.set(CUSTOMER_OTP_CHALLENGE_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: CUSTOMER_OTP_TTL_SECONDS,
+  });
 
   redirectToVerification(
     email,
-    "We sent a 6-digit verification code to your email address.",
+    "A new 6-digit verification code was sent to your email.",
   );
 }
 
@@ -222,23 +262,76 @@ export async function verifyCustomerCode(formData: FormData) {
     );
   }
 
-  const supabase = await createClient();
+  const cookieStore = await cookies();
 
-  const { error } = await supabase.auth.verifyOtp({
-    email,
-    token: code,
-    type: "signup",
-  });
+  const result = verifyCustomerOtpChallenge(
+    cookieStore.get(CUSTOMER_OTP_CHALLENGE_COOKIE)?.value,
+    code,
+  );
 
-  if (error) {
+  if (!result.ok) {
+    if (result.reason === "incorrect" && result.token) {
+      cookieStore.set(CUSTOMER_OTP_CHALLENGE_COOKIE, result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: CUSTOMER_OTP_TTL_SECONDS,
+      });
+
+      redirectToVerification(
+        email,
+        `Incorrect verification code. ${result.attemptsRemaining} attempt${
+          result.attemptsRemaining === 1 ? "" : "s"
+        } remaining.`,
+        "error",
+      );
+    }
+
+    cookieStore.delete(CUSTOMER_OTP_CHALLENGE_COOKIE);
+
     redirectToVerification(
       email,
-      "The verification code is incorrect or has expired.",
+      result.reason === "expired"
+        ? "This verification code expired. Create the account again to receive a new code."
+        : "The verification session is no longer valid. Please create the account again.",
       "error",
     );
   }
 
-  redirect("/?account=verified");
+  if (result.challenge.email !== email) {
+    cookieStore.delete(CUSTOMER_OTP_CHALLENGE_COOKIE);
+
+    redirectToAuthentication(
+      "The verification session does not match this email address.",
+      "register",
+    );
+  }
+
+  const admin = createAdminClient();
+
+  const { error: confirmError } = await admin.auth.admin.updateUserById(
+    result.challenge.userId,
+    {
+      email_confirm: true,
+    },
+  );
+
+  if (confirmError) {
+    redirectToVerification(
+      email,
+      "Your code was correct, but the account could not be activated. Please try again.",
+      "error",
+    );
+  }
+
+  cookieStore.delete(CUSTOMER_OTP_CHALLENGE_COOKIE);
+
+  redirect(
+    `/account?mode=login&message=${encodeURIComponent(
+      "Your email has been verified. Sign in to continue.",
+    )}`,
+  );
 }
 
 export async function resendCustomerCode(formData: FormData) {
@@ -251,20 +344,42 @@ export async function resendCustomerCode(formData: FormData) {
     );
   }
 
-  const supabase = await createClient();
+  const cookieStore = await cookies();
 
-  const { error } = await supabase.auth.resend({
-    type: "signup",
-    email,
-  });
+  const current = readCustomerOtpChallenge(
+    cookieStore.get(CUSTOMER_OTP_CHALLENGE_COOKIE)?.value,
+  );
 
-  if (error) {
+  if (!current || current.email !== email) {
     redirectToVerification(
       email,
-      "A new code could not be sent yet. Wait briefly and try again.",
+      "Your verification session expired. Please create the account again.",
       "error",
     );
   }
+
+  const { code, token } = createCustomerOtpChallenge(
+    current.userId,
+    current.email,
+  );
+
+  const delivery = await sendCustomerVerificationOtp(current.email, code);
+
+  if (!delivery.success) {
+    redirectToVerification(
+      email,
+      "A new verification code could not be sent. Please try again shortly.",
+      "error",
+    );
+  }
+
+  cookieStore.set(CUSTOMER_OTP_CHALLENGE_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: CUSTOMER_OTP_TTL_SECONDS,
+  });
 
   redirectToVerification(
     email,

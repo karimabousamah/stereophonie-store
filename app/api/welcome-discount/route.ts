@@ -15,22 +15,15 @@ type ClaimResult = {
 };
 
 function cleanEmail(value: unknown) {
-  return typeof value === "string"
-    ? value.trim().toLowerCase()
-    : "";
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
 function validEmail(value: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    value,
-  );
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-export async function POST(
-  request: Request,
-) {
-  const supabase =
-    await createClient();
+export async function POST(request: Request) {
+  const supabase = await createClient();
 
   const {
     data: { user },
@@ -40,8 +33,7 @@ export async function POST(
     return NextResponse.json(
       {
         success: false,
-        message:
-          "This welcome offer is for new guest customers.",
+        message: "This welcome offer is for new guest customers.",
       },
       {
         status: 403,
@@ -54,14 +46,12 @@ export async function POST(
   };
 
   try {
-    body =
-      await request.json();
+    body = await request.json();
   } catch {
     return NextResponse.json(
       {
         success: false,
-        message:
-          "The request could not be read.",
+        message: "The request could not be read.",
       },
       {
         status: 400,
@@ -69,15 +59,13 @@ export async function POST(
     );
   }
 
-  const email =
-    cleanEmail(body.email);
+  const email = cleanEmail(body.email);
 
   if (!validEmail(email)) {
     return NextResponse.json(
       {
         success: false,
-        message:
-          "Enter a valid email address.",
+        message: "Enter a valid email address.",
       },
       {
         status: 400,
@@ -92,8 +80,7 @@ export async function POST(
     return NextResponse.json(
       {
         success: false,
-        message:
-          "Welcome email delivery is not configured yet.",
+        message: "Welcome email delivery is not configured yet.",
       },
       {
         status: 503,
@@ -101,30 +88,19 @@ export async function POST(
     );
   }
 
-  const admin =
-    createAdminClient();
+  const admin = createAdminClient();
 
-  const {
-    data,
-    error,
-  } = await admin.rpc(
-    "claim_welcome_discount",
-    {
-      p_email: email,
-    },
-  );
+  const { data, error } = await admin.rpc("claim_welcome_discount", {
+    p_email: email,
+  });
 
   if (error) {
-    console.error(
-      "Welcome coupon claim error:",
-      error,
-    );
+    console.error("Welcome coupon claim error:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message:
-          "Your welcome offer could not be created. Please try again.",
+        message: "Your welcome offer could not be created. Please try again.",
       },
       {
         status: 500,
@@ -132,39 +108,26 @@ export async function POST(
     );
   }
 
-  const result =
-    data as ClaimResult | null;
+  const result = data as ClaimResult | null;
 
-  if (
-    !result?.success ||
-    !result.code
-  ) {
+  if (!result?.success || !result.code) {
     return NextResponse.json(
       {
         success: false,
-        message:
-          result?.message ||
-          "This welcome offer is not available.",
+        message: result?.message || "This welcome offer is not available.",
       },
       {
-        status:
-          result?.already_customer
-            ? 409
-            : 400,
+        status: result?.already_customer ? 409 : 400,
       },
     );
   }
 
-  const code =
-    result.code
-      .trim()
-      .toUpperCase();
+  const code = result.code.trim().toUpperCase();
 
-  const sent =
-    await sendWelcomeDiscountEmail({
-      email,
-      code,
-    });
+  const sent = await sendWelcomeDiscountEmail({
+    email,
+    code,
+  });
 
   if (!sent.success) {
     /*
@@ -187,15 +150,12 @@ export async function POST(
   await admin
     .from("welcome_discount_claims")
     .update({
-      last_emailed_at:
-        new Date().toISOString(),
+      last_emailed_at: new Date().toISOString(),
     })
     .eq("email", email);
 
   return NextResponse.json({
     success: true,
-    code,
-    message:
-      "Your 10% code has been sent to your email.",
+    message: "Your private 10% code has been sent to your email.",
   });
 }

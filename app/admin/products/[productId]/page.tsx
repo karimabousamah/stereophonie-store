@@ -231,6 +231,9 @@ export default async function EditProductPage({
 
                 <div className="mt-5 flex flex-wrap items-center gap-3">
                   <span
+                    data-admin-product-status={
+                      isLive ? "published" : product.status
+                    }
                     className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] ${
                       isLive
                         ? "border-emerald-400/25 bg-emerald-400/[0.07] text-emerald-300"
@@ -275,8 +278,11 @@ export default async function EditProductPage({
           </header>
 
           {savedStatus && (
-            <div className="mb-7 flex items-start gap-4 rounded-[18px] border border-emerald-400/25 bg-emerald-400/[0.07] p-5">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
+            <div
+              data-admin-product-success="true"
+              className="mb-7 flex items-start gap-4 rounded-[18px] border border-emerald-400/25 bg-emerald-400/[0.07] p-5"
+            >
+              <CheckCircle2 className="h-5 w-5 shrink-0 self-center text-emerald-300" />
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
