@@ -102,6 +102,7 @@ const productColorPalette = [
   { name: "Silver", hex: "#d7d8da" },
   { name: "Arctic White", hex: "#f4f5f3" },
   { name: "White", hex: "#f8f8f8" },
+  { name: "Clear", hex: "transparent" },
 
   // Apple / premium metallic tones
   { name: "Titanium", hex: "#8c8982" },
@@ -1687,7 +1688,18 @@ export default function ElectronicsVariantEditor({
                       >
                         <span
                           className="st-admin-color-option__swatch"
-                          style={{ background: colour.hex }}
+                          style={
+                            colour.hex === "transparent"
+                              ? {
+                                  backgroundColor: "#ffffff",
+                                  backgroundImage:
+                                    "linear-gradient(45deg, #d1d1d6 25%, transparent 25%), linear-gradient(-45deg, #d1d1d6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d1d1d6 75%), linear-gradient(-45deg, transparent 75%, #d1d1d6 75%)",
+                                  backgroundSize: "8px 8px",
+                                  backgroundPosition:
+                                    "0 0, 0 4px, 4px -4px, -4px 0px",
+                                }
+                              : { background: colour.hex }
+                          }
                           aria-hidden="true"
                         />
 

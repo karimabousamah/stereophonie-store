@@ -483,7 +483,11 @@ export default function V2ProductCard({ product }: Props) {
 
                   const hex = String(attributes.color_hex ?? "").trim();
 
-                  return name && /^#[0-9a-fA-F]{6}$/.test(hex)
+                  const validColour =
+                    /^#[0-9a-fA-F]{6}$/.test(hex) ||
+                    hex.toLowerCase() === "transparent";
+
+                  return name && validColour
                     ? [[`${name}-${hex}`, { name, hex }]]
                     : [];
                 }),
@@ -499,7 +503,18 @@ export default function V2ProductCard({ product }: Props) {
                   <span
                     key={`${colour.name}-${colour.hex}`}
                     title={colour.name}
-                    style={{ backgroundColor: colour.hex }}
+                    style={
+                      colour.hex === "transparent"
+                        ? {
+                            backgroundColor: "#ffffff",
+                            backgroundImage:
+                              "linear-gradient(45deg, #c7c7cc 25%, transparent 25%), linear-gradient(-45deg, #c7c7cc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #c7c7cc 75%), linear-gradient(-45deg, transparent 75%, #c7c7cc 75%)",
+                            backgroundSize: "6px 6px",
+                            backgroundPosition:
+                              "0 0, 0 3px, 3px -3px, -3px 0px",
+                          }
+                        : { backgroundColor: colour.hex }
+                    }
                   />
                 ))}
 

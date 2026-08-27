@@ -20,6 +20,7 @@ const presetColors: ConfigurationColorValue[] = [
   { name: "Space Gray", hex: "#6B6B6D" },
   { name: "Silver", hex: "#C9C9C9" },
   { name: "White", hex: "#F7F7F5" },
+  { name: "Clear", hex: "transparent" },
   { name: "Cream", hex: "#EFE7D5" },
   { name: "Beige", hex: "#D8C3A5" },
   { name: "Gold", hex: "#D4AF37" },
@@ -48,10 +49,7 @@ const presetColors: ConfigurationColorValue[] = [
   { name: "Copper", hex: "#B87333" },
 ];
 
-export default function ConfigurationColorPicker({
-  value,
-  onChange,
-}: Props) {
+export default function ConfigurationColorPicker({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [customHex, setCustomHex] = useState("#f5b335");
@@ -96,7 +94,17 @@ export default function ConfigurationColorPicker({
       >
         <span
           className="st-admin-v5-color__selected-swatch"
-          style={{ backgroundColor: value?.hex ?? "#d1d1d6" }}
+          style={
+            value?.hex === "transparent"
+              ? {
+                  backgroundColor: "#ffffff",
+                  backgroundImage:
+                    "linear-gradient(45deg, #d1d1d6 25%, transparent 25%), linear-gradient(-45deg, #d1d1d6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d1d1d6 75%), linear-gradient(-45deg, transparent 75%, #d1d1d6 75%)",
+                  backgroundSize: "8px 8px",
+                  backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
+                }
+              : { backgroundColor: value?.hex ?? "#d1d1d6" }
+          }
         />
 
         <span>
@@ -129,7 +137,8 @@ export default function ConfigurationColorPicker({
 
           <label className="st-admin-v5-color__search">
             <Search />
-            <input id="st-colour-library-search"
+            <input
+              id="st-colour-library-search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search colours..."
@@ -149,7 +158,20 @@ export default function ConfigurationColorPicker({
                   className={selected ? "is-selected" : ""}
                   onClick={() => choose(color)}
                 >
-                  <i style={{ backgroundColor: color.hex }} />
+                  <i
+                    style={
+                      color.hex === "transparent"
+                        ? {
+                            backgroundColor: "#ffffff",
+                            backgroundImage:
+                              "linear-gradient(45deg, #d1d1d6 25%, transparent 25%), linear-gradient(-45deg, #d1d1d6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d1d1d6 75%), linear-gradient(-45deg, transparent 75%, #d1d1d6 75%)",
+                            backgroundSize: "8px 8px",
+                            backgroundPosition:
+                              "0 0, 0 4px, 4px -4px, -4px 0px",
+                          }
+                        : { backgroundColor: color.hex }
+                    }
+                  />
                   <span>{color.name}</span>
                   {selected ? <Check /> : null}
                 </button>
@@ -158,8 +180,6 @@ export default function ConfigurationColorPicker({
           </div>
 
           <div className="st-admin-v5-color__custom">
-            
-
             <div className="st-admin-v5-color__custom-editor">
               <label className="st-admin-v5-color__wheel">
                 <input
@@ -195,7 +215,9 @@ export default function ConfigurationColorPicker({
               <button
                 type="button"
                 onClick={addCustom}
-                disabled={!customName.trim() || !/^#[0-9A-Fa-f]{6}$/.test(customHex)}
+                disabled={
+                  !customName.trim() || !/^#[0-9A-Fa-f]{6}$/.test(customHex)
+                }
               >
                 <Plus />
                 Add colour

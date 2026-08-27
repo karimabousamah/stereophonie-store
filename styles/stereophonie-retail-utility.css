@@ -7777,3 +7777,134 @@
 }
 
 /* === ST MOBILE SALE BADGE + FOOTER STOCK FINAL END === */
+
+/* ============================================================
+   ST MOBILE SALE-AWARE STOCK STATUS FINAL
+   ============================================================ */
+
+@media screen and (max-width: 767px) {
+  /* ==========================================================
+     DEFAULT MOBILE BEHAVIOR
+     Normal-price products KEEP their stock status.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__footer
+    > span,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__footer
+    > span {
+    display: inline-flex !important;
+
+    align-items: center !important;
+
+    flex: 0 0 auto !important;
+
+    font-size: 8px !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+  }
+
+  /* ==========================================================
+     SALE PRODUCT
+     If the card contains a Sale badge, hide the footer stock
+     text completely:
+       - In stock disappears
+       - Low Stock disappears
+
+     The top breathing Low Stock badge still remains.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical:has(.st-retail-card__badge--sale)
+    .st-retail-card__footer
+    > span,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical:has(.st-retail-card__badge--sale)
+    .st-retail-card__footer
+    > span {
+    display: none !important;
+  }
+
+  /* ==========================================================
+     NORMAL PRICE — IN STOCK
+     Keep the existing mustard stock text.
+     ========================================================== */
+
+  html
+    body
+    .st-product-card-canonical:not(:has(.st-retail-card__badge--sale))
+    .st-retail-card__footer
+    > span.is-available {
+    display: inline-flex !important;
+  }
+
+  /* ==========================================================
+     NORMAL PRICE — LOW STOCK
+     Keep the existing mustard Low Stock text.
+     ========================================================== */
+
+  html
+    body
+    .st-product-card-canonical:not(:has(.st-retail-card__badge--sale))
+    .st-retail-card__footer
+    > span.is-low-stock {
+    display: inline-flex !important;
+  }
+
+  /* ==========================================================
+     FOOTER ALIGNMENT
+
+     When stock text exists:
+       price left
+       stock right
+
+     When sale hides stock:
+       price area simply uses the remaining space.
+     ========================================================== */
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__footer,
+  html
+    body
+    .st3-home-shop-products
+    .st-product-card-canonical
+    .st-retail-card__footer {
+    display: flex !important;
+
+    align-items: flex-end !important;
+
+    justify-content: space-between !important;
+
+    gap: 6px !important;
+
+    width: 100% !important;
+  }
+
+  html
+    body
+    .st-product-card-canonical:has(.st-retail-card__badge--sale)
+    .st-retail-card__footer {
+    justify-content: flex-start !important;
+  }
+}
+
+/* === ST MOBILE SALE-AWARE STOCK STATUS FINAL END === */
