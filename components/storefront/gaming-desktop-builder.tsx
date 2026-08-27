@@ -55,6 +55,8 @@ const WHATSAPP_NUMBER = "9613161285";
 const MUSTARD = "#f5b335";
 const MUSTARD_DARK = "#a86f08";
 
+type DesktopTheme = "white" | "dark";
+
 const definitions: {
   key: PcPartKind;
   icon: typeof Cpu;
@@ -1003,7 +1005,14 @@ function GamingTower({ activePart, onSelect, chosenParts }: SceneProps) {
   );
 }
 
-function DesktopScene({ activePart, onSelect, chosenParts }: SceneProps) {
+function DesktopScene({
+  activePart,
+  onSelect,
+  chosenParts,
+  theme,
+}: SceneProps & {
+  theme: DesktopTheme;
+}) {
   const hotspots: {
     part: PcPartKind;
     label: string;
@@ -1085,10 +1094,18 @@ function DesktopScene({ activePart, onSelect, chosenParts }: SceneProps) {
         }}
       >
         <img
-          src="/stereophonie-gaming-desktop.jpeg"
-          alt="Stereophonie custom gaming desktop"
+          src={
+            theme === "dark"
+              ? "/stereophonie-gaming-desktop-dark.jpeg"
+              : "/stereophonie-gaming-desktop.jpeg"
+          }
+          alt={
+            theme === "dark"
+              ? "Stereophonie dark custom gaming desktop"
+              : "Stereophonie white custom gaming desktop"
+          }
           draggable={false}
-          className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain"
+          className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain transition-opacity duration-300"
         />
 
         {hotspots.map(({ part, label, left, top, labelPosition = "right" }) => {
@@ -1189,6 +1206,15 @@ export default function GamingDesktopBuilder() {
   );
 
   const [activePart, setActivePart] = useState<PcPartKind>("gpu");
+
+  /*
+   * Visual case theme only.
+   *
+   * This does not alter, reset or duplicate the customer's
+   * component configuration. The same hotspots and component
+   * picker remain active over either desktop image.
+   */
+  const [desktopTheme, setDesktopTheme] = useState<DesktopTheme>("white");
 
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -1396,6 +1422,7 @@ export default function GamingDesktopBuilder() {
     setChosenParts(new Set());
 
     setActivePart("gpu");
+    setDesktopTheme("white");
     closePicker();
     setSearch("");
     setBrandFilter("All");
@@ -1420,6 +1447,7 @@ export default function GamingDesktopBuilder() {
       "I would like a quotation for this gaming desktop configuration:",
       "",
       `Reference: ${reference}`,
+      `Desktop theme: ${desktopTheme === "dark" ? "Dark" : "White"}`,
       `Confirmed components: ${chosenParts.size}/${definitions.length}`,
       "",
       ...definitions.map(
@@ -1574,7 +1602,7 @@ export default function GamingDesktopBuilder() {
               {/* 3D HERO */}
               <div className="min-w-0">
                 <div className="relative overflow-hidden rounded-[22px] border border-black/[0.07] bg-white shadow-[0_20px_65px_rgba(29,29,31,0.055)]">
-                  <div className="flex flex-wrap items-start justify-between gap-4 border-b border-black/[0.055] px-4 py-3.5 sm:px-5">
+                  <div className="grid gap-4 border-b border-black/[0.055] px-4 py-3.5 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:px-5">
                     <div>
                       <span className="text-[9px] font-semibold uppercase tracking-[0.19em] text-black/30">
                         Custom desktop
@@ -1585,7 +1613,41 @@ export default function GamingDesktopBuilder() {
                       </h2>
                     </div>
 
-                    <div className="rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-[9px] font-medium text-black/40">
+                    <div
+                      className="mx-auto inline-flex rounded-full border border-black/[0.07] bg-[#f5f5f3] p-1 shadow-[inset_0_1px_2px_rgba(29,29,31,0.035)]"
+                      role="group"
+                      aria-label="Desktop case theme"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setDesktopTheme("white")}
+                        aria-pressed={desktopTheme === "white"}
+                        className={[
+                          "min-h-8 rounded-full px-4 text-[9px] font-semibold transition-all duration-300",
+                          desktopTheme === "white"
+                            ? "bg-white text-[#1d1d1f] shadow-[0_3px_12px_rgba(29,29,31,0.10)]"
+                            : "text-black/38 hover:text-black/65",
+                        ].join(" ")}
+                      >
+                        White theme
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setDesktopTheme("dark")}
+                        aria-pressed={desktopTheme === "dark"}
+                        className={[
+                          "min-h-8 rounded-full px-4 text-[9px] font-semibold transition-all duration-300",
+                          desktopTheme === "dark"
+                            ? "bg-[#1d1d1f] text-white shadow-[0_3px_14px_rgba(29,29,31,0.18)]"
+                            : "text-black/38 hover:text-black/65",
+                        ].join(" ")}
+                      >
+                        Dark theme
+                      </button>
+                    </div>
+
+                    <div className="justify-self-start rounded-full border border-black/[0.07] bg-white px-3 py-1.5 text-[9px] font-medium text-black/40 sm:justify-self-end">
                       Select a component on the desktop
                     </div>
                   </div>
@@ -1595,6 +1657,7 @@ export default function GamingDesktopBuilder() {
                       activePart={activePart}
                       onSelect={openPart}
                       chosenParts={Array.from(chosenParts)}
+                      theme={desktopTheme}
                     />
                   </div>
 
