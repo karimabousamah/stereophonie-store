@@ -3,6 +3,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
 
+  /*
+   * Sharp uses platform-specific native packages under @img.
+   *
+   * Vercel's output-file tracing was not including the Linux
+   * libvips package in the production serverless functions.
+   * Explicitly include the native Sharp dependencies.
+   */
+  outputFileTracingIncludes: {
+    "/*": [
+      "./node_modules/@img/sharp-linux-x64/**/*",
+      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
+    ],
+  },
+
   async headers() {
     return [
       {
