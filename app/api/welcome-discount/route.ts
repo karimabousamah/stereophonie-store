@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { sendWelcomeDiscountEmail } from "@/lib/email/send-welcome-discount";
+import { normalizeHomepageSettings } from "@/lib/homepage-settings";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,6 +12,7 @@ type ClaimResult = {
   existing?: boolean;
   already_customer?: boolean;
   code?: string;
+  discount?: number;
   message?: string;
 };
 
@@ -73,6 +75,48 @@ export async function POST(request: Request) {
     );
   }
 
+  const admin = createAdminClient();
+
+  const { data: homepageSettingsRow, error: homepageSettingsError } =
+    await admin
+      .from("homepage_settings")
+      .select("welcome_discount_enabled, welcome_discount_percentage")
+      .eq("id", "default")
+      .maybeSingle();
+
+  if (homepageSettingsError) {
+    console.error(
+      "Welcome discount settings could not load:",
+      homepageSettingsError,
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "The welcome offer is temporarily unavailable.",
+      },
+      {
+        status: 503,
+      },
+    );
+  }
+
+  const homepageSettings = normalizeHomepageSettings(
+    homepageSettingsRow ?? null,
+  );
+
+  if (!homepageSettings.welcome_discount_enabled) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "The first-order welcome offer is currently unavailable.",
+      },
+      {
+        status: 403,
+      },
+    );
+  }
+
   if (
     !process.env.RESEND_API_KEY?.trim() ||
     !process.env.ORDER_EMAIL_FROM?.trim()
@@ -88,10 +132,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const admin = createAdminClient();
-
   const { data, error } = await admin.rpc("claim_welcome_discount", {
     p_email: email,
+    p_discount_percentage: homepageSettings.welcome_discount_percentage,
   });
 
   if (error) {
@@ -124,9 +167,20 @@ export async function POST(request: Request) {
 
   const code = result.code.trim().toUpperCase();
 
+  const discountPercentage = Math.max(
+    1,
+    Math.min(
+      100,
+      Math.trunc(
+        Number(result.discount ?? homepageSettings.welcome_discount_percentage),
+      ),
+    ),
+  );
+
   const sent = await sendWelcomeDiscountEmail({
     email,
     code,
+    discountPercentage,
   });
 
   if (!sent.success) {
@@ -156,6 +210,6 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     success: true,
-    message: "Your private 10% code has been sent to your email.",
+    message: `Your private ${discountPercentage}% code has been sent to your email.`,
   });
 }

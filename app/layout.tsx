@@ -6,6 +6,7 @@ import GlobalStorefrontAssistant from "@/components/storefront/global-storefront
 import StoreAvailabilityGate from "@/components/storefront/store-availability-gate";
 import { StoreSettingsProvider } from "@/components/storefront/store-settings-provider";
 import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
+import { normalizeHomepageSettings } from "@/lib/homepage-settings";
 import { getPublicStoreSettings } from "@/lib/store-settings";
 import { createClient } from "@/lib/supabase/server";
 
@@ -37,9 +38,23 @@ export default async function RootLayout({
 
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [
+    {
+      data: { user },
+    },
+    homepageSettingsResult,
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase
+      .from("homepage_settings")
+      .select("welcome_discount_enabled, welcome_discount_percentage")
+      .eq("id", "default")
+      .maybeSingle(),
+  ]);
+
+  const homepageSettings = normalizeHomepageSettings(
+    homepageSettingsResult.data ?? null,
+  );
 
   return (
     <html lang="en">
@@ -50,7 +65,14 @@ export default async function RootLayout({
               <WishlistProvider>
                 {children}
 
-                <FirstOrderWelcomePopup shouldShow={!user} />
+                <FirstOrderWelcomePopup
+                  shouldShow={
+                    !user && homepageSettings.welcome_discount_enabled
+                  }
+                  discountPercentage={
+                    homepageSettings.welcome_discount_percentage
+                  }
+                />
 
                 <GlobalStorefrontAssistant />
               </WishlistProvider>

@@ -6,13 +6,17 @@ import { usePathname } from "next/navigation";
 
 type Props = {
   shouldShow: boolean;
+  discountPercentage: number;
 };
 
 const SESSION_DISMISSED = "st-welcome-dismissed-session";
 
 const CLAIMED = "st-welcome-claimed";
 
-export default function FirstOrderWelcomePopup({ shouldShow }: Props) {
+export default function FirstOrderWelcomePopup({
+  shouldShow,
+  discountPercentage,
+}: Props) {
   const pathname = usePathname();
 
   const [visible, setVisible] = useState(false);
@@ -171,7 +175,7 @@ export default function FirstOrderWelcomePopup({ shouldShow }: Props) {
           </span>
 
           <h2 className="mt-2 text-[30px] font-semibold leading-[0.98] tracking-[-0.055em]">
-            10% off your
+            {discountPercentage}% off your
             <br />
             first order.
           </h2>
@@ -179,8 +183,8 @@ export default function FirstOrderWelcomePopup({ shouldShow }: Props) {
           {!success ? (
             <>
               <p className="mt-4 text-sm leading-6 text-black/48">
-                Enter your email and we’ll send you a private 10% discount code
-                for your first purchase.
+                Enter your email and we’ll send you a private{" "}
+                {discountPercentage}% discount code for your first purchase.
               </p>
 
               <form onSubmit={submit} className="mt-6">
@@ -206,7 +210,7 @@ export default function FirstOrderWelcomePopup({ shouldShow }: Props) {
                   disabled={loading}
                   className="mt-4 h-12 w-full rounded-[13px] bg-[#f5b335] text-xs font-semibold text-black transition hover:bg-[#eaaa2b] disabled:opacity-50"
                 >
-                  {loading ? "Sending…" : "Get my 10% code"}
+                  {loading ? "Sending…" : `Get my ${discountPercentage}% code`}
                 </button>
               </form>
 
@@ -230,7 +234,8 @@ export default function FirstOrderWelcomePopup({ shouldShow }: Props) {
                 </strong>
 
                 <p className="mt-2 text-xs leading-5 text-black/42">
-                  Your private 10% discount code is waiting in your email.
+                  Your private {discountPercentage}% discount code is waiting in
+                  your email.
                 </p>
               </div>
 

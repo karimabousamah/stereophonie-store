@@ -5,41 +5,38 @@ import { Resend } from "resend";
 type Input = {
   email: string;
   code: string;
+  discountPercentage: number;
 };
 
-export async function sendWelcomeDiscountEmail(
-  input: Input,
-) {
-  const apiKey =
-    process.env.RESEND_API_KEY?.trim();
+export async function sendWelcomeDiscountEmail(input: Input) {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
 
-  const fromAddress =
-    process.env.ORDER_EMAIL_FROM?.trim();
+  const fromAddress = process.env.ORDER_EMAIL_FROM?.trim();
 
   if (!apiKey) {
     return {
       success: false,
-      message:
-        "RESEND_API_KEY is not configured.",
+      message: "RESEND_API_KEY is not configured.",
     };
   }
 
   if (!fromAddress) {
     return {
       success: false,
-      message:
-        "ORDER_EMAIL_FROM is not configured.",
+      message: "ORDER_EMAIL_FROM is not configured.",
     };
   }
 
-  const email =
-    input.email.trim().toLowerCase();
+  const email = input.email.trim().toLowerCase();
 
-  const code =
-    input.code.trim().toUpperCase();
+  const code = input.code.trim().toUpperCase();
 
-  const resend =
-    new Resend(apiKey);
+  const discountPercentage = Math.max(
+    1,
+    Math.min(100, Math.trunc(input.discountPercentage)),
+  );
+
+  const resend = new Resend(apiKey);
 
   const html = `
     <div style="
@@ -73,7 +70,7 @@ export async function sendWelcomeDiscountEmail(
           line-height:1.05;
           letter-spacing:-1.2px;
         ">
-          10% off your first order.
+          ${discountPercentage}% off your first order.
         </h1>
 
         <p style="
@@ -125,25 +122,19 @@ export async function sendWelcomeDiscountEmail(
     </div>
   `;
 
-  const { error } =
-    await resend.emails.send({
-      from: fromAddress,
-      to: [email],
-      subject:
-        "Your 10% Stereophonie welcome code",
-      html,
-    });
+  const { error } = await resend.emails.send({
+    from: fromAddress,
+    to: [email],
+    subject: `Your ${discountPercentage}% Stereophonie welcome code`,
+    html,
+  });
 
   if (error) {
-    console.error(
-      "Welcome discount email error:",
-      error,
-    );
+    console.error("Welcome discount email error:", error);
 
     return {
       success: false,
-      message:
-        "The discount email could not be sent.",
+      message: "The discount email could not be sent.",
     };
   }
 

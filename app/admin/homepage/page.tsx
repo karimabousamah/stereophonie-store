@@ -735,6 +735,77 @@ export default async function AdminHomepagePage({
           <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
             <form action={updateHomepageSettings} className="space-y-5">
               <section className="overflow-hidden rounded-[18px] border border-white/10 bg-[#0d0d0d]">
+                <div className="border-b border-white/10 px-5 py-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#fdb73e]">
+                    Customer acquisition
+                  </p>
+
+                  <h2 className="mt-2 text-xl font-semibold">
+                    First-order welcome offer
+                  </h2>
+
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
+                    Control the welcome popup and the real percentage applied to
+                    newly generated first-order discount codes.
+                  </p>
+                </div>
+
+                <div className="grid gap-5 p-6 md:grid-cols-2">
+                  <label className="flex min-h-[86px] cursor-pointer items-center justify-between gap-5 rounded-[16px] border border-white/10 bg-black px-5 md:col-span-2">
+                    <div>
+                      <FieldLabel>Enable welcome offer</FieldLabel>
+
+                      <p className="mt-1 text-xs leading-5 text-white/35">
+                        When disabled, guests will not see the first-order popup
+                        and new welcome codes cannot be requested.
+                      </p>
+                    </div>
+
+                    <input
+                      name="welcome_discount_enabled"
+                      type="checkbox"
+                      defaultChecked={settings.welcome_discount_enabled}
+                      className="h-5 w-5 shrink-0 cursor-pointer accent-[#fdb73e]"
+                    />
+                  </label>
+
+                  <label>
+                    <FieldLabel>Discount percentage</FieldLabel>
+
+                    <div className="relative mt-3">
+                      <input
+                        name="welcome_discount_percentage"
+                        type="number"
+                        required
+                        min="1"
+                        max="100"
+                        step="1"
+                        defaultValue={settings.welcome_discount_percentage}
+                        className="min-h-11 w-full rounded-[13px] border border-white/10 bg-black px-4 pr-12 text-white outline-none transition focus:border-[#fdb73e]/60 focus:ring-4 focus:ring-[#fdb73e]/10"
+                      />
+
+                      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-white/35">
+                        %
+                      </span>
+                    </div>
+                  </label>
+
+                  <div className="rounded-[16px] border border-[#fdb73e]/20 bg-[#fdb73e]/[0.05] p-5">
+                    <FieldLabel>Storefront preview</FieldLabel>
+
+                    <strong className="mt-3 block text-lg font-semibold text-white">
+                      Enjoy {settings.welcome_discount_percentage}% off your
+                      first order
+                    </strong>
+
+                    <p className="mt-2 text-xs leading-5 text-white/35">
+                      New private codes will use this exact percentage.
+                      Previously issued codes keep their original value.
+                    </p>
+                  </div>
+                </div>
+              </section>
+              <section className="overflow-hidden rounded-[18px] border border-white/10 bg-[#0d0d0d]">
                 <div className="flex items-center gap-4 border-b border-white/10 px-5 py-4">
                   <LayoutTemplate className="h-5 w-5 text-white/40" />
 

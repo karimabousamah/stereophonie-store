@@ -1,6 +1,8 @@
 export type HomepageSettings = {
   announcement_background_mode: "animated" | "still" | "none";
   id: string;
+  welcome_discount_enabled: boolean;
+  welcome_discount_percentage: number;
   hero_eyebrow: string;
   hero_line_one: string;
   hero_line_two: string;
@@ -45,6 +47,8 @@ export type HomepageSettings = {
 export const defaultHomepageSettings: HomepageSettings = {
   announcement_background_mode: "animated",
   id: "default",
+  welcome_discount_enabled: true,
+  welcome_discount_percentage: 10,
 
   hero_image_url: null,
   hero_image_storage_path: null,
@@ -133,6 +137,18 @@ export function normalizeHomepageSettings(
         ? input.announcement_background_mode
         : defaultHomepageSettings.announcement_background_mode,
     id: "default",
+
+    welcome_discount_enabled: readBoolean(
+      input?.welcome_discount_enabled,
+      defaultHomepageSettings.welcome_discount_enabled,
+    ),
+
+    welcome_discount_percentage: readInteger(
+      input?.welcome_discount_percentage,
+      defaultHomepageSettings.welcome_discount_percentage,
+      1,
+      100,
+    ),
 
     hero_eyebrow: readText(
       input?.hero_eyebrow,

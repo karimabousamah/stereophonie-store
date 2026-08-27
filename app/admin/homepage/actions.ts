@@ -243,6 +243,29 @@ export async function updateHomepageSettings(formData: FormData) {
     {
       id: "default",
 
+      welcome_discount_enabled:
+        formData.get("welcome_discount_enabled") === "on",
+
+      welcome_discount_percentage: (() => {
+        const requestedPercentage = Number.parseInt(
+          String(formData.get("welcome_discount_percentage") ?? "10"),
+          10,
+        );
+
+        if (
+          !Number.isFinite(requestedPercentage) ||
+          requestedPercentage < 1 ||
+          requestedPercentage > 100
+        ) {
+          redirectWithMessage(
+            "error",
+            "First-order discount percentage must be between 1% and 100%.",
+          );
+        }
+
+        return requestedPercentage;
+      })(),
+
       hero_eyebrow: readRequiredText(
         formData,
         "hero_eyebrow",
