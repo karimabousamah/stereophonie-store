@@ -111,7 +111,7 @@ export default function WishlistPage() {
               </Link>
             </div>
           ) : (
-            <div className="st-retail-wishlist__grid st-product-grid-canonical">
+            <div className="st-retail-wishlist__grid st3-shop-v4__grid st-product-grid-canonical">
               {products.map((product, index) => (
                 <article key={product.id} className="st-retail-wishlist-card">
                   <StoreProductCard product={product} index={index} />

@@ -9295,143 +9295,117 @@ html
 
 /* ST HOMEPAGE MOBILE CARD CONTROLS — SHOP MATCH V1 END */
 
-/* ST WISHLIST MOBILE EXACT SHOP GRID V1 START */
+/* ST WISHLIST EXACT SHOP CARD INHERITANCE V2 START */
 
 /*
  * ============================================================
- * WISHLIST MOBILE PRODUCT CARDS
+ * WISHLIST PRODUCT CARDS
  * ============================================================
  *
- * The Wishlist uses the exact same canonical V2ProductCard
- * component as /shop and the Homepage.
+ * IMPORTANT:
  *
- * Wishlist-specific historical layout rules were forcing each
- * product wrapper to span almost the entire phone width.
+ * The product itself is NOT redesigned here.
  *
- * On mobile:
- *   - exactly 2 products per row
- *   - same card geometry as /shop
- *   - no artificial card max-width
- *   - no full-width single-column product
+ * Wishlist now uses:
+ *
+ *   .st3-shop-v4__grid
+ *   .st-product-grid-canonical
+ *
+ * which is the same canonical grid system used by /shop.
+ *
+ * These rules only neutralize Wishlist wrapper styles that
+ * could interfere with the shared StoreProductCard.
+ *
+ * Product-card dimensions, image geometry, badge geometry,
+ * wishlist button, typography, price and stock all come from
+ * the canonical Shop product-card system.
  * ============================================================
  */
 
+html
+  body
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/*
+ * The Wishlist article is only a transparent holder around the
+ * canonical StoreProductCard + Wishlist remove action.
+ */
+
+html
+  body
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical
+  > .st-retail-wishlist-card {
+  min-width: 0 !important;
+  max-width: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+/*
+ * NEVER resize the StoreProductCard from Wishlist.
+ *
+ * Let the exact canonical Shop rules control it.
+ */
+
+html
+  body
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical
+  > .st-retail-wishlist-card
+  > .st-product-card-canonical,
+html
+  body
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical
+  > .st-retail-wishlist-card
+  > .st-retail-card {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+}
+
+/*
+ * MOBILE
+ *
+ * Do not invent Wishlist card dimensions.
+ * The grid gets the same two-column geometry as /shop.
+ */
+
 @media (max-width: 767px) {
-  /*
-   * Two-column grid, matching the mobile Shop catalogue.
-   */
-  html body .st-retail-wishlist__grid.st-product-grid-canonical {
+  html
+    body
+    .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical {
     display: grid !important;
 
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 
-    align-items: start !important;
-
-    gap: 14px 12px !important;
-
     width: 100% !important;
-    max-width: none !important;
 
-    margin: 0 !important;
-
-    overflow: visible !important;
+    align-items: start !important;
   }
 
-  /*
-   * Wishlist wrapper must not impose desktop/card sizing.
-   */
   html
     body
-    .st-retail-wishlist__grid.st-product-grid-canonical
+    .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical
     > .st-retail-wishlist-card {
-    display: flex !important;
-    flex-direction: column !important;
-
     width: 100% !important;
     min-width: 0 !important;
-    max-width: none !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
 
     justify-self: stretch !important;
   }
-
-  /*
-   * Canonical product card fills exactly one grid cell.
-   */
-  html
-    body
-    .st-retail-wishlist__grid.st-product-grid-canonical
-    > .st-retail-wishlist-card
-    > .st-product-card-canonical,
-  html
-    body
-    .st-retail-wishlist__grid.st-product-grid-canonical
-    > .st-retail-wishlist-card
-    > .st-retail-card {
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-
-    margin: 0 !important;
-  }
-
-  /*
-   * Remove any historical Wishlist scale/width transformations.
-   */
-  html
-    body
-    .st-retail-wishlist__grid.st-product-grid-canonical
-    .st-product-card-canonical {
-    transform: none !important;
-  }
-
-  /*
-   * Keep image section inside the card cell instead of letting
-   * Wishlist-specific desktop dimensions enlarge it.
-   */
-  html
-    body
-    .st-retail-wishlist__grid.st-product-grid-canonical
-    .st-product-card-canonical
-    .st-retail-card__visual,
-  html
-    body
-    .st-retail-wishlist__grid.st-product-grid-canonical
-    .st-product-card-canonical
-    .st-retail-card__image-link {
-    width: 100% !important;
-    max-width: none !important;
-  }
-
-  /*
-   * Wishlist-only remove action follows the width of its card.
-   * It must never enlarge the product column.
-   */
-  html
-    body
-    .st-retail-wishlist__grid.st-product-grid-canonical
-    .st-retail-wishlist-card
-    > button,
-  html
-    body
-    .st-retail-wishlist__grid.st-product-grid-canonical
-    .st-retail-wishlist-card
-    > a {
-    max-width: 100% !important;
-  }
 }
 
-/*
- * Smaller phones keep two columns, exactly like /shop.
- */
-@media (max-width: 390px) {
-  html body .st-retail-wishlist__grid.st-product-grid-canonical {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-
-    gap: 12px 10px !important;
-  }
-}
-
-/* ST WISHLIST MOBILE EXACT SHOP GRID V1 END */
+/* ST WISHLIST EXACT SHOP CARD INHERITANCE V2 END */

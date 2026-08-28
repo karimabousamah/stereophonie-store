@@ -54064,3 +54064,199 @@ html body .st-retail-shop .st-filter-v4__picker-search input:hover {
 
   background: transparent !important;
 }
+
+/* ST CATEGORY TILE CTA EXACT CENTER V1 START */
+
+/*
+ * ============================================================
+ * HOMEPAGE — SMALL / GRID CATEGORY CTA ALIGNMENT
+ * ============================================================
+ *
+ * Match the visual relationship used by the large Phones and
+ * Smart Watches cards:
+ *
+ *            [ Shop ]   Explore ›
+ *
+ * - Entire CTA pair centered as ONE unit.
+ * - Shop and Explore share the same vertical center.
+ * - No independent positioning/nudging.
+ * - Does not affect Movies & Series.
+ * - Does not affect the large Phones / Smart Watches cards.
+ * ============================================================
+ */
+
+html body .st3-cat-grid .st3-cat-tile .st3-cat-actions {
+  display: flex !important;
+
+  width: fit-content !important;
+  max-width: 100% !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 20px !important;
+
+  text-align: center !important;
+}
+
+/*
+ * Mustard Shop button.
+ * Keep its existing visual design, but make its geometry
+ * participate correctly in the centered flex row.
+ */
+
+html body .st3-cat-grid .st3-cat-tile .st3-cat-actions > .st3-button {
+  position: static !important;
+
+  display: inline-flex !important;
+
+  flex: 0 0 auto !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+
+  vertical-align: middle !important;
+}
+
+/*
+ * Explore link.
+ * Remove any historical offsets so its text baseline does not
+ * appear higher/lower than the Shop button.
+ */
+
+html body .st3-cat-grid .st3-cat-tile .st3-cat-actions > .st3-cat-text-link {
+  position: static !important;
+
+  display: inline-flex !important;
+
+  flex: 0 0 auto !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 4px !important;
+
+  margin: 0 !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  transform: none !important;
+
+  vertical-align: middle !important;
+}
+
+/*
+ * Keep the chevron centered with the Explore text.
+ */
+
+html
+  body
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-actions
+  > .st3-cat-text-link
+  > span {
+  display: inline-flex !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+
+  line-height: inherit !important;
+
+  transform: none !important;
+}
+
+/*
+ * Mobile/tablet uses the exact same centered relationship.
+ */
+
+@media (max-width: 999px) {
+  html body .st3-cat-grid .st3-cat-tile .st3-cat-actions {
+    width: fit-content !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 14px !important;
+  }
+
+  html body .st3-cat-grid .st3-cat-tile .st3-cat-actions > .st3-button,
+  html body .st3-cat-grid .st3-cat-tile .st3-cat-actions > .st3-cat-text-link {
+    margin: 0 !important;
+
+    align-self: center !important;
+
+    transform: none !important;
+  }
+}
+
+/* ST CATEGORY TILE CTA EXACT CENTER V1 END */
+
+/* ST MOVIES SERIES FORMAT SELECTOR V2 START */
+
+/*
+ * CD / USB intentionally reuses the exact Movie / Series
+ * segmented-control system. Only spacing is added here.
+ */
+
+.st-media-request__field--format {
+  margin-top: 20px;
+}
+
+.st-media-request__format {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/*
+ * Preserve the two equal choices at every viewport width.
+ */
+.st-media-request__format > button {
+  min-width: 0;
+}
+
+/* Tablet + mobile */
+@media (max-width: 700px) {
+  .st-media-request__field--format {
+    margin-top: 18px;
+  }
+
+  .st-media-request__format {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .st-media-request__format > button {
+    min-height: 44px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 390px) {
+  .st-media-request__format {
+    gap: 3px;
+    padding: 3px;
+  }
+
+  .st-media-request__format > button {
+    min-height: 43px;
+    padding-inline: 8px;
+  }
+}
+
+/* ST MOVIES SERIES FORMAT SELECTOR V2 END */

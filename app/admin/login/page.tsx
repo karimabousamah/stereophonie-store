@@ -23,7 +23,7 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
             </p>
 
             <h1 className="mt-6 max-w-3xl text-5xl font-semibold leading-[0.96] tracking-[-0.055em] sm:text-7xl">
-              Manage the boutique with confidence.
+              Manage the store with confidence.
             </h1>
 
             <p className="mt-7 max-w-2xl text-lg leading-8 text-black/50">

@@ -80,6 +80,14 @@ function categoryHref(category: V3HomeCategory) {
   return `/shop?category=${encodeURIComponent(category.name)}`;
 }
 
+function categoryExploreHref(category: V3HomeCategory) {
+  if (isMoviesSeriesCategory(category)) {
+    return "/movies-series";
+  }
+
+  return `/shop?category=${encodeURIComponent(category.name)}&sort=newest`;
+}
+
 function CategoryMedia({
   category,
   products,
@@ -119,9 +127,7 @@ function CategoryActions({
 }) {
   return (
     <div className="st3-cat-actions" aria-hidden="true">
-      <span className="st3-button">
-        {isMoviesSeriesCategory(category) ? "Explore" : "Shop"}
-      </span>
+      <span className="st3-button">Shop</span>
 
       <span
         className={
@@ -430,9 +436,7 @@ export default function V3Homepage({
 
                 return (
                   <V3Reveal key={category.id}>
-                    <Link
-                      href={categoryHref(category)}
-                      aria-label={`Explore ${category.name}`}
+                    <article
                       data-category-theme={dark ? "dark" : "light"}
                       className={`st3-cat-tile ${
                         dark ? "st3-cat-tile--dark" : ""
@@ -445,17 +449,28 @@ export default function V3Homepage({
 
                         <p>{categoryDescription(category)}</p>
 
-                        <span
-                          className={
-                            dark
-                              ? "st3-cat-text-link st3-cat-text-link--light"
-                              : "st3-cat-text-link"
-                          }
-                          aria-hidden="true"
-                        >
-                          Explore
-                          <span aria-hidden="true">›</span>
-                        </span>
+                        <div className="st3-cat-actions">
+                          <Link
+                            href={categoryHref(category)}
+                            className="st3-button"
+                            aria-label={`Shop ${category.name}`}
+                          >
+                            Shop
+                          </Link>
+
+                          <Link
+                            href={categoryExploreHref(category)}
+                            className={
+                              dark
+                                ? "st3-cat-text-link st3-cat-text-link--light"
+                                : "st3-cat-text-link"
+                            }
+                            aria-label={`Explore newest ${category.name}`}
+                          >
+                            Explore
+                            <span aria-hidden="true">›</span>
+                          </Link>
+                        </div>
                       </div>
 
                       <CategoryMedia
@@ -463,7 +478,7 @@ export default function V3Homepage({
                         products={catalogProducts}
                         className="st3-cat-media--tile"
                       />
-                    </Link>
+                    </article>
                   </V3Reveal>
                 );
               })}

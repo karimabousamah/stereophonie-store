@@ -5,6 +5,7 @@ import { useStoreSettings } from "@/components/storefront/store-settings-provide
 import { useMemo, useState } from "react";
 
 type RequestType = "movie" | "series";
+type MediaFormat = "cd" | "usb";
 
 function cleanPhone(value: string) {
   return String(value ?? "").replace(/\D/g, "");
@@ -14,6 +15,7 @@ export default function MovieSeriesRequestForm() {
   const { whatsappNumber } = useStoreSettings();
 
   const [requestType, setRequestType] = useState<RequestType>("movie");
+  const [mediaFormat, setMediaFormat] = useState<MediaFormat>("cd");
 
   const [title, setTitle] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -31,6 +33,7 @@ export default function MovieSeriesRequestForm() {
       "I would like to request the following title:",
       "",
       `${typeLabel}: ${cleanTitle || "-"}`,
+      `Format: ${mediaFormat === "cd" ? "CD" : "USB"}`,
       `Quantity: ${Math.max(1, Number(quantity) || 1)}`,
     ];
 
@@ -46,7 +49,7 @@ export default function MovieSeriesRequestForm() {
     );
 
     return lines.join("\n");
-  }, [requestType, cleanTitle, quantity, cleanDetails]);
+  }, [requestType, mediaFormat, cleanTitle, quantity, cleanDetails]);
 
   function openWhatsApp() {
     if (!cleanTitle) {
@@ -109,6 +112,34 @@ export default function MovieSeriesRequestForm() {
               onClick={() => setRequestType("series")}
             >
               Series
+            </button>
+          </div>
+        </div>
+
+        <div className="st-media-request__field st-media-request__field--format">
+          <span className="st-media-request__label">Format</span>
+
+          <div
+            className="st-media-request__type st-media-request__format"
+            role="group"
+            aria-label="Choose CD or USB"
+          >
+            <button
+              type="button"
+              aria-pressed={mediaFormat === "cd"}
+              className={mediaFormat === "cd" ? "is-active" : ""}
+              onClick={() => setMediaFormat("cd")}
+            >
+              CD
+            </button>
+
+            <button
+              type="button"
+              aria-pressed={mediaFormat === "usb"}
+              className={mediaFormat === "usb" ? "is-active" : ""}
+              onClick={() => setMediaFormat("usb")}
+            >
+              USB
             </button>
           </div>
         </div>
