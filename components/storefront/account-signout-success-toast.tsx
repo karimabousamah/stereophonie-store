@@ -6,15 +6,15 @@ import { useEffect, useRef, useState } from "react";
 const DISPLAY_TIME = 4000;
 const EXIT_TIME = 520;
 
-type AccountSigninSuccessToastProps = {
+type AccountSignoutSuccessToastProps = {
   show: boolean;
 };
 
 type ToastPhase = "entering" | "visible" | "leaving";
 
-export default function AccountSigninSuccessToast({
+export default function AccountSignoutSuccessToast({
   show,
-}: AccountSigninSuccessToastProps) {
+}: AccountSignoutSuccessToastProps) {
   const [mounted, setMounted] = useState(false);
   const [phase, setPhase] = useState<ToastPhase>("entering");
 
@@ -117,7 +117,7 @@ export default function AccountSigninSuccessToast({
       aria-live="polite"
       aria-atomic="true"
       data-phase={phase}
-      className={`st-account-signin-toast st-account-signin-toast--${phase}`}
+      className={`st-account-signout-toast st-account-signout-toast--${phase}`}
       onAnimationEnd={(event) => {
         if (phase === "leaving" && event.target === event.currentTarget) {
           if (removeTimerRef.current !== null) {
@@ -129,11 +129,11 @@ export default function AccountSigninSuccessToast({
         }
       }}
     >
-      <div className="st-account-signin-toast__card">
+      <div className="st-account-signout-toast__card">
         <button
           type="button"
           onClick={closeToast}
-          aria-label="Close sign in confirmation"
+          aria-label="Close sign out confirmation"
           className="st-account-toast-close absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-[10px] border border-black/[0.06] bg-[#f7f7f5] text-black/45 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#f5b335]/12"
         >
           <X className="h-4 w-4" />
@@ -150,11 +150,11 @@ export default function AccountSigninSuccessToast({
             </span>
 
             <strong className="mt-1 block text-[17px] font-semibold tracking-[-0.025em] text-[#1d1d1f]">
-              Signed in successfully
+              Signed out successfully
             </strong>
 
             <p className="mt-1 text-[13px] leading-5 text-black/45">
-              Welcome back to Stereophonie.
+              See you again soon.
             </p>
           </div>
         </div>
@@ -163,11 +163,11 @@ export default function AccountSigninSuccessToast({
       <style jsx>{`
         /*
          * =====================================================
-         * STEREOPHONIE — SIGN-IN SUCCESS TOAST
+         * STEREOPHONIE — SIGN-OUT SUCCESS TOAST
          * =====================================================
          */
 
-        .st-account-signin-toast {
+        .st-account-signout-toast {
           position: fixed;
           z-index: 9999;
           top: 92px;
@@ -178,7 +178,7 @@ export default function AccountSigninSuccessToast({
           will-change: transform, opacity, filter;
         }
 
-        .st-account-signin-toast__card {
+        .st-account-signout-toast__card {
           position: relative;
 
           overflow: hidden;
@@ -195,7 +195,7 @@ export default function AccountSigninSuccessToast({
             0 4px 16px rgba(29, 29, 31, 0.05);
         }
 
-        .st-account-signin-toast__top-accent {
+        .st-account-signout-toast__top-accent {
           position: absolute;
           top: 0;
           right: 0;
@@ -215,14 +215,14 @@ export default function AccountSigninSuccessToast({
          * -----------------------------------------------------
          */
 
-        .st-account-signin-toast--entering {
+        .st-account-signout-toast--entering {
           pointer-events: none;
 
-          animation: st-signin-toast-enter 620ms cubic-bezier(0.16, 1, 0.3, 1)
+          animation: st-signout-toast-enter 620ms cubic-bezier(0.16, 1, 0.3, 1)
             both;
         }
 
-        @keyframes st-signin-toast-enter {
+        @keyframes st-signout-toast-enter {
           0% {
             opacity: 0;
             transform: translate3d(72px, -10px, 0) scale(0.96);
@@ -249,7 +249,7 @@ export default function AccountSigninSuccessToast({
          * -----------------------------------------------------
          */
 
-        .st-account-signin-toast--visible {
+        .st-account-signout-toast--visible {
           opacity: 1;
 
           transform: translate3d(0, 0, 0) scale(1);
@@ -263,14 +263,14 @@ export default function AccountSigninSuccessToast({
          * -----------------------------------------------------
          */
 
-        .st-account-signin-toast--leaving {
+        .st-account-signout-toast--leaving {
           pointer-events: none;
 
-          animation: st-signin-toast-exit ${EXIT_TIME}ms
+          animation: st-signout-toast-exit ${EXIT_TIME}ms
             cubic-bezier(0.4, 0, 0.2, 1) both;
         }
 
-        @keyframes st-signin-toast-exit {
+        @keyframes st-signout-toast-exit {
           0% {
             opacity: 1;
 
@@ -294,7 +294,7 @@ export default function AccountSigninSuccessToast({
          * -----------------------------------------------------
          */
 
-        .st-account-signin-toast__progress {
+        .st-account-signout-toast__progress {
           position: absolute;
 
           bottom: 0;
@@ -309,11 +309,11 @@ export default function AccountSigninSuccessToast({
           transform-origin: left center;
         }
 
-        .st-account-signin-toast__progress--running {
-          animation: st-signin-toast-progress ${DISPLAY_TIME}ms linear forwards;
+        .st-account-signout-toast__progress--running {
+          animation: st-signout-toast-progress ${DISPLAY_TIME}ms linear forwards;
         }
 
-        @keyframes st-signin-toast-progress {
+        @keyframes st-signout-toast-progress {
           from {
             transform: scaleX(1);
           }
@@ -330,14 +330,14 @@ export default function AccountSigninSuccessToast({
          */
 
         @media (max-width: 640px) {
-          .st-account-signin-toast {
+          .st-account-signout-toast {
             top: 82px;
             right: 16px;
 
             width: calc(100vw - 32px);
           }
 
-          @keyframes st-signin-toast-enter {
+          @keyframes st-signout-toast-enter {
             0% {
               opacity: 0;
 
@@ -356,7 +356,7 @@ export default function AccountSigninSuccessToast({
           }
         }
 
-        /* ST SIGNIN SUCCESS TOAST FINAL V3 START */
+        /* ST SIGNOUT SUCCESS TOAST FINAL V3 START */
 
         /*
          * Final clean notification treatment.
@@ -365,13 +365,13 @@ export default function AccountSigninSuccessToast({
          * Smooth right-side entrance and exit.
          */
 
-        .st-account-signin-toast {
+        .st-account-signout-toast {
           transform-origin: top right;
           will-change: transform, opacity;
           backface-visibility: hidden;
         }
 
-        .st-account-signin-toast__card {
+        .st-account-signout-toast__card {
           padding: 19px !important;
 
           border: 1px solid rgba(29, 29, 31, 0.08) !important;
@@ -391,9 +391,9 @@ export default function AccountSigninSuccessToast({
          * Kill the old decorative elements defensively too.
          */
 
-        .st-account-signin-toast__top-accent,
-        .st-account-signin-toast__progress,
-        .st-account-signin-toast__progress--running {
+        .st-account-signout-toast__top-accent,
+        .st-account-signout-toast__progress,
+        .st-account-signout-toast__progress--running {
           display: none !important;
           animation: none !important;
         }
@@ -405,14 +405,18 @@ export default function AccountSigninSuccessToast({
          * then glides naturally into its final position.
          */
 
-        .st-account-signin-toast--entering {
+        .st-account-signout-toast--entering {
           pointer-events: none;
 
-          animation: stSigninSuccessEnterFinal 480ms
+          animation: stSignoutSuccessEnterFinal 480ms
             cubic-bezier(0.16, 1, 0.3, 1) both !important;
+
+          will-change: transform, opacity !important;
+          backface-visibility: hidden;
+          transform: translateZ(0);
         }
 
-        @keyframes stSigninSuccessEnterFinal {
+        @keyframes stSignoutSuccessEnterFinal {
           0% {
             opacity: 0;
             transform: translate3d(46px, 0, 0) scale(0.985);
@@ -432,7 +436,7 @@ export default function AccountSigninSuccessToast({
          * VISIBLE
          */
 
-        .st-account-signin-toast--visible {
+        .st-account-signout-toast--visible {
           opacity: 1 !important;
 
           transform: translate3d(0, 0, 0) scale(1) !important;
@@ -449,14 +453,14 @@ export default function AccountSigninSuccessToast({
          * smoothly returns toward the right while fading.
          */
 
-        .st-account-signin-toast--exiting {
+        .st-account-signout-toast--exiting {
           pointer-events: none;
 
-          animation: stSigninSuccessExitFinal 380ms cubic-bezier(0.4, 0, 0.2, 1)
-            both !important;
+          animation: stSignoutSuccessExitFinal 380ms
+            cubic-bezier(0.4, 0, 0.2, 1) both !important;
         }
 
-        @keyframes stSigninSuccessExitFinal {
+        @keyframes stSignoutSuccessExitFinal {
           0% {
             opacity: 1;
             transform: translate3d(0, 0, 0) scale(1);
@@ -473,8 +477,8 @@ export default function AccountSigninSuccessToast({
          * Remove the mustard hover treatment from the old template.
          */
 
-        .st-account-signin-toast__card
-          button[aria-label="Close sign in confirmation"] {
+        .st-account-signout-toast__card
+          button[aria-label="Close sign out confirmation"] {
           border: 1px solid rgba(29, 29, 31, 0.065) !important;
 
           background: #f7f7f8 !important;
@@ -491,8 +495,8 @@ export default function AccountSigninSuccessToast({
         }
 
         @media (hover: hover) {
-          .st-account-signin-toast__card
-            button[aria-label="Close sign in confirmation"]:hover {
+          .st-account-signout-toast__card
+            button[aria-label="Close sign out confirmation"]:hover {
             border-color: rgba(29, 29, 31, 0.1) !important;
 
             background: #efeff1 !important;
@@ -508,19 +512,19 @@ export default function AccountSigninSuccessToast({
          */
 
         @media (max-width: 640px) {
-          .st-account-signin-toast {
+          .st-account-signout-toast {
             top: 80px !important;
             right: 12px !important;
 
             width: calc(100vw - 24px) !important;
           }
 
-          .st-account-signin-toast__card {
+          .st-account-signout-toast__card {
             padding: 17px !important;
             border-radius: 17px !important;
           }
 
-          @keyframes stSigninSuccessEnterFinal {
+          @keyframes stSignoutSuccessEnterFinal {
             0% {
               opacity: 0;
               transform: translate3d(26px, 0, 0) scale(0.99);
@@ -532,7 +536,7 @@ export default function AccountSigninSuccessToast({
             }
           }
 
-          @keyframes stSigninSuccessExitFinal {
+          @keyframes stSignoutSuccessExitFinal {
             0% {
               opacity: 1;
               transform: translate3d(0, 0, 0) scale(1);
@@ -552,16 +556,16 @@ export default function AccountSigninSuccessToast({
          */
 
         @media (prefers-reduced-motion: reduce) {
-          .st-account-signin-toast--entering {
-            animation: stSigninSuccessFadeIn 180ms ease-out both !important;
+          .st-account-signout-toast--entering {
+            animation: stSignoutSuccessFadeIn 180ms ease-out both !important;
           }
 
-          .st-account-signin-toast--exiting {
-            animation: stSigninSuccessFadeOut 160ms ease-in both !important;
+          .st-account-signout-toast--exiting {
+            animation: stSignoutSuccessFadeOut 160ms ease-in both !important;
           }
         }
 
-        @keyframes stSigninSuccessFadeIn {
+        @keyframes stSignoutSuccessFadeIn {
           from {
             opacity: 0;
           }
@@ -571,7 +575,7 @@ export default function AccountSigninSuccessToast({
           }
         }
 
-        @keyframes stSigninSuccessFadeOut {
+        @keyframes stSignoutSuccessFadeOut {
           from {
             opacity: 1;
           }
@@ -581,24 +585,27 @@ export default function AccountSigninSuccessToast({
           }
         }
 
-        /* ST SIGNIN TOAST EXACT REVERSE EXIT V8 START */
+        /* ST SIGNOUT TOAST EXACT REVERSE EXIT V8 START */
 
         /*
-         * Entrance:
-         *   right -> resting position
+         * Exact reverse of the working entrance:
          *
-         * Exit:
-         *   resting position -> right
+         * ENTER:
+         *   46px right + transparent
+         *   -> resting position + opaque
          *
-         * Same distance, same duration, inverse easing.
-         * Only transform + opacity are animated for smooth
-         * compositor-driven motion.
+         * EXIT:
+         *   resting position + opaque
+         *   -> 46px right + transparent
+         *
+         * Only transform + opacity.
+         * No blur.
+         * No intermediate keyframes.
          */
-
-        .st-account-signin-toast--leaving {
+        .st-account-signout-toast--leaving {
           pointer-events: none !important;
 
-          animation: stSigninExactReverseExit 480ms
+          animation: stSignoutExactReverseExit 480ms
             cubic-bezier(0.7, 0, 0.84, 0) both !important;
 
           will-change: transform, opacity !important;
@@ -606,7 +613,7 @@ export default function AccountSigninSuccessToast({
           transform: translateZ(0);
         }
 
-        @keyframes stSigninExactReverseExit {
+        @keyframes stSignoutExactReverseExit {
           from {
             opacity: 1;
             transform: translate3d(0, 0, 0) scale(1);
@@ -619,11 +626,11 @@ export default function AccountSigninSuccessToast({
         }
 
         @media (max-width: 640px) {
-          .st-account-signin-toast--leaving {
+          .st-account-signout-toast--leaving {
             animation-duration: 480ms !important;
           }
 
-          @keyframes stSigninExactReverseExit {
+          @keyframes stSignoutExactReverseExit {
             from {
               opacity: 1;
               transform: translate3d(0, 0, 0) scale(1);
@@ -637,14 +644,14 @@ export default function AccountSigninSuccessToast({
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .st-account-signin-toast--leaving {
-            animation: stSigninSuccessFadeOut 180ms ease-in both !important;
+          .st-account-signout-toast--leaving {
+            animation: stSignoutSuccessFadeOut 180ms ease-in both !important;
           }
         }
 
-        /* ST SIGNIN TOAST EXACT REVERSE EXIT V8 END */
+        /* ST SIGNOUT TOAST EXACT REVERSE EXIT V8 END */
 
-        /* ST SIGNIN SUCCESS TOAST FINAL V3 END */
+        /* ST SIGNOUT SUCCESS TOAST FINAL V3 END */
       `}</style>
     </aside>
   );

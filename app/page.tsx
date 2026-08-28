@@ -9,6 +9,7 @@ import V3AnnouncementBar, {
 } from "@/components/stereophonie-v3/layout/v3-announcement-bar";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import AccountSigninSuccessToast from "@/components/storefront/account-signin-success-toast";
+import AccountSignoutSuccessToast from "@/components/storefront/account-signout-success-toast";
 import {
   isCurrentNewDrop,
   isProductOnOffer,
@@ -102,6 +103,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     : resolvedSearchParams.account;
 
   const showSigninSuccess = accountState === "logged-in";
+  const showSignoutSuccess = accountState === "signed-out";
 
   const supabase = await createClient();
 
@@ -263,6 +265,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <V3Header />
 
       <AccountSigninSuccessToast show={showSigninSuccess} />
+
+      <AccountSignoutSuccessToast show={showSignoutSuccess} />
 
       <V3AnnouncementBar
         announcements={announcements}

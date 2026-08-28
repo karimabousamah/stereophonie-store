@@ -889,5 +889,5 @@ export async function logoutCustomer() {
 
   await supabase.auth.signOut();
 
-  redirect("/?account=logged-out");
+  redirect("/?account=signed-out");
 }

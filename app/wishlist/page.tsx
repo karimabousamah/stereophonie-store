@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Bookmark, PackageSearch, Trash2 } from "lucide-react";
+import { ArrowRight, Bookmark, Trash2 } from "lucide-react";
 
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
@@ -111,7 +111,7 @@ export default function WishlistPage() {
               </Link>
             </div>
           ) : (
-            <div className="st-retail-wishlist__grid">
+            <div className="st-retail-wishlist__grid st-product-grid-canonical">
               {products.map((product, index) => (
                 <article key={product.id} className="st-retail-wishlist-card">
                   <StoreProductCard product={product} index={index} />
@@ -132,7 +132,6 @@ export default function WishlistPage() {
 
         <section className="st-retail-assistance">
           <div>
-            <PackageSearch />
             <div>
               <p className="st-retail-eyebrow">Already placed an order?</p>
               <h2>See where it is now.</h2>
