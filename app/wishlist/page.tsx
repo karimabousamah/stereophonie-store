@@ -18,7 +18,7 @@ export default function WishlistPage() {
       <V3Header />
 
       <main className="st-retail-page st-retail-wishlist">
-        <section className="st-retail-hero st-retail-wishlist__hero">
+        <section className="st-retail-hero st-retail-wishlist__hero st-wishlist-hero-final">
           <div className="st-retail-hero__copy">
             <p className="st-retail-eyebrow">Saved products</p>
             <h1>Your wishlist.</h1>
@@ -45,10 +45,10 @@ export default function WishlistPage() {
           </div>
 
           <div
-            className="st-retail-wishlist__summary"
+            className="st-retail-wishlist__summary st-wishlist-summary-final"
             aria-label="Wishlist summary"
           >
-            <div className="st-retail-wishlist__summary-icon">
+            <div className="st-retail-wishlist__summary-icon st-wishlist-counter-clean-v2">
               <Bookmark />
             </div>
             <p>Products saved</p>

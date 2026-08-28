@@ -389,18 +389,33 @@ export default function V2ProductCard({ product }: Props) {
             )}
           </Link>
 
+          {!available ? (
+            <div
+              className="st-retail-card__out-of-stock-overlay"
+              aria-label="Out of stock"
+            >
+              <span>Out of Stock</span>
+            </div>
+          ) : null}
+
           <div className="st-retail-card__top">
             <div className="st-retail-card__badges">
               {badge ? (
                 <span
                   className={
-                    badge === "New" || badge === "Low Stock"
+                    badge === "New" ||
+                    badge === "Low Stock" ||
+                    badge === "Trending" ||
+                    badge === "Featured"
                       ? "st-retail-card__badge st-retail-card__badge--new"
                       : "st-retail-card__badge"
                   }
                   data-product-card-badge={badge}
                 >
-                  {badge === "New" || badge === "Low Stock" ? (
+                  {badge === "New" ||
+                  badge === "Low Stock" ||
+                  badge === "Trending" ||
+                  badge === "Featured" ? (
                     <i
                       className="st-retail-card__new-pulse"
                       aria-hidden="true"
@@ -420,10 +435,6 @@ export default function V2ProductCard({ product }: Props) {
 
                   <b>Sale</b>
                 </span>
-              ) : null}
-
-              {!available ? (
-                <span className="is-muted">Out of stock</span>
               ) : null}
             </div>
 

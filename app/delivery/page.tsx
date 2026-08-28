@@ -156,10 +156,21 @@ export default async function DeliveryPage() {
               const Icon = step.icon;
               return (
                 <article key={step.title}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <Icon />
-                  <h3>{step.title}</h3>
-                  <p>{step.description}</p>
+                  <span className="st-delivery-page__step-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                  <span
+                    className="st-delivery-page__step-icon"
+                    aria-hidden="true"
+                  >
+                    <Icon />
+                  </span>
+
+                  <div className="st-delivery-page__step-copy">
+                    <h3>{step.title}</h3>
+                    <p>{step.description}</p>
+                  </div>
                 </article>
               );
             })}

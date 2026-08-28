@@ -8,7 +8,6 @@ import {
   MessagesSquare,
   PackageCheck,
   ShieldCheck,
-  ShoppingBag,
   Smartphone,
   Sparkles,
   CheckCircle2,
@@ -114,10 +113,10 @@ export default function AboutPage() {
               accessories into one considered storefront with clearer choices.
             </p>
             <p>
-              Our aim is practical: strong products, honest information, an
-              easy cart and checkout, attentive support, and dependable local
-              delivery. Every part of the experience should help you decide
-              with confidence.
+              Our aim is practical: strong products, honest information, an easy
+              cart and checkout, attentive support, and dependable local
+              delivery. Every part of the experience should help you decide with
+              confidence.
             </p>
           </div>
         </section>
@@ -167,183 +166,132 @@ export default function AboutPage() {
           </div>
         </section>
 
-        
-
-{/* ====================================================
+        {/* ====================================================
           VISIT STEREOPHONIE
           Store location + opening hours
           ==================================================== */}
 
-      <section
-        className="st-about-visit"
-        aria-labelledby="st-about-visit-title"
-      >
-        <div className="st-about-visit__inner">
+        <section
+          className="st-about-visit"
+          aria-labelledby="st-about-visit-title"
+        >
+          <div className="st-about-visit__inner">
+            <header className="st-about-visit__heading">
+              <div>
+                <p className="st-retail-eyebrow">Visit Stereophonie</p>
 
-          <header className="st-about-visit__heading">
-            <div>
-              <p className="st-retail-eyebrow">
-                Visit Stereophonie
+                <h2 id="st-about-visit-title">Find us in Mtaileb.</h2>
+              </div>
+
+              <p className="st-about-visit__intro">
+                Visit our store for personal assistance, product guidance and an
+                in-person look at selected technology.
               </p>
+            </header>
 
-              <h2 id="st-about-visit-title">
-                Find us in Mtaileb.
-              </h2>
-            </div>
-
-            <p className="st-about-visit__intro">
-              Visit our store for personal assistance,
-              product guidance and an in-person look at
-              selected technology.
-            </p>
-          </header>
-
-
-          <div className="st-about-visit__layout">
-
-            {/* ================================
+            <div className="st-about-visit__layout">
+              {/* ================================
                 LOCATION / MAP
                 ================================ */}
 
-            <div className="st-about-visit__map-shell">
+              <div className="st-about-visit__map-shell">
+                <iframe
+                  className="st-about-visit__map"
+                  src="https://www.google.com/maps?q=Stereophonie+Store+Mtaileb+Lebanon&output=embed"
+                  title="Stereophonie Store location in Mtaileb"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
 
-              <iframe
-                className="st-about-visit__map"
-                src="https://www.google.com/maps?q=Stereophonie+Store+Mtaileb+Lebanon&output=embed"
-                title="Stereophonie Store location in Mtaileb"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
+                <div className="st-about-visit__map-label">
+                  <span className="st-about-visit__map-signal">
+                    <MapPin />
+                  </span>
 
-              <div className="st-about-visit__map-label">
-                <span className="st-about-visit__map-signal">
-                  <MapPin />
-                </span>
-
-                <div>
-                  <small>Store location</small>
-                  <strong>Mtaileb, Lebanon</strong>
+                  <div>
+                    <small>Store location</small>
+                    <strong>Mtaileb, Lebanon</strong>
+                  </div>
                 </div>
               </div>
 
-            </div>
-
-
-            {/* ================================
+              {/* ================================
                 STORE DETAILS
                 ================================ */}
 
-            <div className="st-about-visit__details">
-
-              <div className="st-about-visit__location">
-
-                <span className="st-about-visit__detail-icon">
-                  <MapPin />
-                </span>
-
-                <div>
-                  <p className="st-about-visit__label">
-                    Stereophonie Store
-                  </p>
-
-                  <h3>
-                    Mtaileb
-                  </h3>
-
-                  <p>
-                    Mount Lebanon, Lebanon
-                  </p>
-                </div>
-
-              </div>
-
-
-              <div className="st-about-visit__hours">
-
-                <div className="st-about-visit__hours-head">
+              <div className="st-about-visit__details">
+                <div className="st-about-visit__location">
+                  <span className="st-about-visit__detail-icon">
+                    <MapPin />
+                  </span>
 
                   <div>
-                    <p className="st-about-visit__label">
-                      Opening hours
-                    </p>
+                    <p className="st-about-visit__label">Stereophonie Store</p>
 
-                    <h3>
-                      When to visit
-                    </h3>
+                    <h3>Mtaileb</h3>
+
+                    <p>Mount Lebanon, Lebanon</p>
                   </div>
-
-                  <Clock3 />
-
                 </div>
 
+                <div className="st-about-visit__hours">
+                  <div className="st-about-visit__hours-head">
+                    <div>
+                      <p className="st-about-visit__label">Opening hours</p>
 
-                <div className="st-about-visit__schedule">
+                      <h3>When to visit</h3>
+                    </div>
 
-                  <div className="st-about-visit__schedule-row">
-                    <span>
-                      Monday – Saturday
-                    </span>
-
-                    <strong>
-                      10:00 AM – 8:00 PM
-                    </strong>
+                    <Clock3 />
                   </div>
 
+                  <div className="st-about-visit__schedule">
+                    <div className="st-about-visit__schedule-row">
+                      <span>Monday – Saturday</span>
 
-                  <div className="
+                      <strong>10:00 AM – 8:00 PM</strong>
+                    </div>
+
+                    <div
+                      className="
                     st-about-visit__schedule-row
                     st-about-visit__schedule-row--closed
-                  ">
-                    <span>
-                      Sunday
-                    </span>
+                  "
+                    >
+                      <span>Sunday</span>
 
-                    <strong>
-                      Closed
-                    </strong>
+                      <strong>Closed</strong>
+                    </div>
                   </div>
-
                 </div>
 
+                <div className="st-about-visit__notice">
+                  <CalendarDays />
+
+                  <p>
+                    Store hours may vary on public holidays. Contact us before
+                    visiting during holiday periods.
+                  </p>
+                </div>
+
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Stereophonie+Store+Mtaileb+Lebanon"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="st-about-visit__directions"
+                >
+                  <span>Get directions</span>
+
+                  <Navigation />
+                </a>
               </div>
-
-
-              <div className="st-about-visit__notice">
-
-                <CalendarDays />
-
-                <p>
-                  Store hours may vary on public holidays.
-                  Contact us before visiting during holiday periods.
-                </p>
-
-              </div>
-
-
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=Stereophonie+Store+Mtaileb+Lebanon"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="st-about-visit__directions"
-              >
-                <span>
-                  Get directions
-                </span>
-
-                <Navigation />
-              </a>
-
             </div>
-
           </div>
+        </section>
 
-        </div>
-      </section>
-
-<section className="st-retail-assistance st-about-page__cta">
+        <section className="st-retail-assistance st-about-page__cta">
           <div>
-            <ShoppingBag />
             <div>
               <p className="st-retail-eyebrow">Ready to discover more?</p>
               <h2>Find your next everyday upgrade.</h2>
@@ -358,10 +306,6 @@ export default function AboutPage() {
           </Link>
         </section>
       </main>
-
-
-
-      
 
       <V3Footer />
     </div>
