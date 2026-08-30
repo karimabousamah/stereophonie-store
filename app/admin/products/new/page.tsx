@@ -36,22 +36,31 @@ export default async function NewProductPage({
     redirect("/admin/login");
   }
 
-  const [categoriesResult, brandsResult] = await Promise.all([
-    supabase.from("categories").select("id, name").order("name", {
-      ascending: true,
-    }),
+  const [categoriesResult, subcategoriesResult, brandsResult] =
+    await Promise.all([
+      supabase.from("categories").select("id, name").order("name", {
+        ascending: true,
+      }),
 
-    supabase
-      .from("brands")
-      .select("id, name")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true })
-      .order("name", { ascending: true }),
-  ]);
+      supabase
+        .from("subcategories")
+        .select("id, category_id, name")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true }),
+
+      supabase
+        .from("brands")
+        .select("id, name")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true }),
+    ]);
 
   const resolvedSearchParams = await searchParams;
 
-  const loadingError = categoriesResult.error || brandsResult.error;
+  const loadingError =
+    categoriesResult.error || subcategoriesResult.error || brandsResult.error;
 
   const errorMessage =
     resolvedSearchParams.error ??

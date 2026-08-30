@@ -129,20 +129,22 @@ function productAvailability(product: V3Product) {
     return "Unavailable";
   }
 
-  if (
-    variants.some(
-      (variant) =>
-        variant.availability_status === "in_stock" ||
-        variant.availability_status === "low_stock" ||
-        variant.stock_quantity > 0,
-    )
-  ) {
+  const hasPurchasableVariant = variants.some(
+    (variant) =>
+      variant.stock_quantity > 0 &&
+      (variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock"),
+  );
+
+  if (hasPurchasableVariant) {
     return "Available";
   }
 
-  if (
-    variants.some((variant) => variant.availability_status === "coming_soon")
-  ) {
+  const hasComingSoonVariant = variants.some(
+    (variant) => variant.availability_status === "coming_soon",
+  );
+
+  if (hasComingSoonVariant) {
     return "Coming soon";
   }
 

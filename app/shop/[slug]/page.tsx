@@ -45,6 +45,11 @@ type ProductImage = {
   is_variant_primary: boolean | null;
   variant_position: number | null;
   variant_id: string | null;
+  product_image_variants?: {
+    variant_id: string;
+    position: number;
+    is_primary: boolean;
+  }[];
 };
 
 type AvailabilityStatus =
@@ -265,7 +270,12 @@ export default async function ProductPage({
           variant_name,
           variant_id,
           variant_position,
-          is_variant_primary
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
         ),
 
         product_variants (
@@ -348,12 +358,32 @@ export default async function ProductPage({
     categoryName,
   );
 
-  const available = variants.some(
+  const hasPurchasableVariant = variants.some(
     (variant) =>
       variant.stock_quantity > 0 &&
       (variant.availability_status === "in_stock" ||
         variant.availability_status === "low_stock"),
   );
+
+  const hasComingSoonVariant = variants.some(
+    (variant) => variant.availability_status === "coming_soon",
+  );
+
+  /*
+   * Product-level storefront status.
+   *
+   * Priority:
+   * 1. Any purchasable configuration -> available
+   * 2. Otherwise any Coming Soon configuration -> coming soon
+   * 3. Otherwise -> out of stock
+   */
+  const productAvailabilityStatus = hasPurchasableVariant
+    ? "in_stock"
+    : hasComingSoonVariant
+      ? "coming_soon"
+      : "out_of_stock";
+
+  const available = hasPurchasableVariant;
 
   const firstAttributes =
     variants.find(
@@ -1251,11 +1281,13 @@ export default async function ProductPage({
                 }`}
               >
                 <i />
-                {productHasLowStock(variants)
-                  ? "Low Stock"
-                  : available
-                    ? "In stock"
-                    : "Unavailable"}
+                {productAvailabilityStatus === "coming_soon"
+                  ? "Coming soon"
+                  : productHasLowStock(variants)
+                    ? "Low Stock"
+                    : available
+                      ? "In stock"
+                      : "Out of stock"}
               </span>
             </div>
           </header>
@@ -1336,28 +1368,65 @@ export default async function ProductPage({
 
               <h2>Specifications.</h2>
 
-              {Object.keys(firstAttributes).length ? (
-                <dl>
-                  {Object.entries(firstAttributes).map(([key, value]) => (
-                    <div key={key}>
-                      <dt>
-                        {key
-                          .replace(/[_-]+/g, " ")
-                          .replace(/\b\w/g, (character) =>
-                            character.toUpperCase(),
-                          )}
-                      </dt>
+              {(() => {
+                const rawTechnicalSpecs = firstAttributes.__technical_specs;
 
-                      <dd>{String(value)}</dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : (
-                <p>
-                  Technical information will appear when a configuration is
-                  available.
-                </p>
-              )}
+                const technicalSpecs = Array.isArray(rawTechnicalSpecs)
+                  ? rawTechnicalSpecs.filter(
+                      (
+                        spec,
+                      ): spec is {
+                        name: string;
+                        value: string;
+                      } =>
+                        typeof spec === "object" &&
+                        spec !== null &&
+                        typeof (spec as { name?: unknown }).name === "string" &&
+                        typeof (spec as { value?: unknown }).value === "string",
+                    )
+                  : [];
+
+                const configurationSpecs = Object.entries(
+                  firstAttributes,
+                ).filter(([key]) => !key.startsWith("__"));
+
+                if (
+                  technicalSpecs.length === 0 &&
+                  configurationSpecs.length === 0
+                ) {
+                  return (
+                    <p>
+                      Technical information will appear when a configuration is
+                      available.
+                    </p>
+                  );
+                }
+
+                return (
+                  <dl>
+                    {technicalSpecs.map((spec, index) => (
+                      <div key={`technical-${spec.name}-${index}`}>
+                        <dt>{spec.name}</dt>
+                        <dd>{spec.value}</dd>
+                      </div>
+                    ))}
+
+                    {configurationSpecs.map(([key, value]) => (
+                      <div key={`configuration-${key}`}>
+                        <dt>
+                          {key
+                            .replace(/[_-]+/g, " ")
+                            .replace(/\b\w/g, (character) =>
+                              character.toUpperCase(),
+                            )}
+                        </dt>
+
+                        <dd>{String(value)}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                );
+              })()}
             </div>
           </section>
 

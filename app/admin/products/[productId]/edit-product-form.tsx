@@ -117,6 +117,7 @@ type EditProductFormProps = {
     name: string;
     description: string;
     categoryId: string;
+    subcategoryId: string;
     brandId: string;
     status: string;
     availability: string | null;
@@ -131,6 +132,7 @@ type EditProductFormProps = {
     id: string;
     name: string;
   }[];
+
   brands: {
     id: string;
     name: string;
@@ -171,8 +173,16 @@ export default function EditProductForm({
   const initialBrandName =
     brands.find((brand) => brand.id === product.brandId)?.name ?? "";
 
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    product.categoryId,
+  );
+
   const [selectedCategoryName, setSelectedCategoryName] =
     useState(initialCategoryName);
+
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(
+    product.subcategoryId,
+  );
 
   const [selectedBrandName, setSelectedBrandName] = useState(initialBrandName);
 
@@ -326,11 +336,11 @@ export default function EditProductForm({
                   />
                 </div>
 
-                <div className="grid gap-5 md:grid-cols-2">
-                  <div>
+                <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 md:items-start">
+                  <div className="min-w-0">
                     <label
                       htmlFor="category"
-                      className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
+                      className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
                     >
                       Category
                     </label>
@@ -339,25 +349,33 @@ export default function EditProductForm({
                       categories={categories}
                       defaultValue={product.categoryId}
                       onCategoryChange={(category) => {
+                        const nextCategoryId = category?.id ?? "";
+
+                        setSelectedCategoryId(nextCategoryId);
                         setSelectedCategoryName(category?.name ?? "");
+
+                        if (nextCategoryId !== selectedCategoryId) {
+                          setSelectedSubcategoryId("");
+                        }
                       }}
                     />
                   </div>
 
-                  <div>
-                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
+                  <div className="min-w-0">
+                    <label
+                      htmlFor="brand"
+                      className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
+                    >
                       Brand
                     </label>
 
-                    <div className="mt-3">
-                      <ProductBrandPicker
-                        brands={brands}
-                        defaultValue={product.brandId}
-                        onBrandChange={(brand) =>
-                          setSelectedBrandName(brand?.name ?? "")
-                        }
-                      />
-                    </div>
+                    <ProductBrandPicker
+                      brands={brands}
+                      defaultValue={product.brandId}
+                      onBrandChange={(brand) =>
+                        setSelectedBrandName(brand?.name ?? "")
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -687,15 +705,12 @@ export default function EditProductForm({
           <div
             className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6"
             aria-live="polite"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget && !deletePending) {
+                setDeleteConfirmationOpen(false);
+              }
+            }}
           >
-            <button
-              type="button"
-              aria-label="Cancel product deletion"
-              disabled={deletePending}
-              onClick={() => setDeleteConfirmationOpen(false)}
-              className="absolute inset-0 h-full w-full cursor-default bg-black/45 backdrop-blur-[5px]"
-            />
-
             <div
               role="dialog"
               aria-modal="true"

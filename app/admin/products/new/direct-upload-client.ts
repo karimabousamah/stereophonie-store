@@ -11,25 +11,14 @@ export type DirectUploadSelectedImage = {
   file: File;
 
   /**
-   * Stable client-side configuration identity.
+   * Stable browser-side exact configuration identities.
    *
-   * This is deliberately NOT the configuration name because the
-   * name may still change while the administrator edits the product.
+   * Empty array means Shared.
    */
-  configurationId: string;
+  configurationIds: string[];
   altText: string;
   isPrimary: boolean;
   position: number;
-
-  /**
-   * Empty string means the photograph is shared by every
-   * configuration.
-   *
-   * Otherwise it stores the exact configuration name.
-   */
-  variantName: string;
-  variantPosition: number;
-  isVariantPrimary: boolean;
 };
 
 export type DirectUploadProgress = {
@@ -39,22 +28,13 @@ export type DirectUploadProgress = {
 
 export type DirectUploadedImagePayload = {
   storage_path: string;
-
-  /**
-   * Stable configuration identity used only while creating
-   * the product. The server resolves this to the final
-   * product_variants.variant_name before database insertion.
-   */
-  configuration_id: string;
+  configuration_ids: string[];
   original_name: string;
   content_type: string;
   size: number;
   position: number;
   alt_text: string;
   is_primary: boolean;
-  variant_name: string;
-  variant_position: number;
-  is_variant_primary: boolean;
 };
 
 type UploadOptions = {
@@ -109,9 +89,7 @@ function validateProductForm(form: HTMLFormElement) {
 
   for (const item of variants) {
     if (!item || typeof item !== "object") {
-      throw new Error(
-        "A product configuration could not be processed.",
-      );
+      throw new Error("A product configuration could not be processed.");
     }
 
     const variant = item as Record<string, unknown>;
@@ -119,15 +97,12 @@ function validateProductForm(form: HTMLFormElement) {
     const regularPrice = Number(variant.regular_price);
 
     const salePriceText =
-      variant.sale_price === null ||
-      variant.sale_price === undefined
+      variant.sale_price === null || variant.sale_price === undefined
         ? ""
         : String(variant.sale_price).trim();
 
     if (!Number.isFinite(regularPrice) || regularPrice <= 0) {
-      throw new Error(
-        "Every configuration must have a valid regular price.",
-      );
+      throw new Error("Every configuration must have a valid regular price.");
     }
 
     if (salePriceText) {
@@ -207,26 +182,19 @@ export async function uploadImagesBeforeProductSubmission(
 
       payload.push({
         storage_path: storagePath,
-        configuration_id: image.configurationId.trim(),
+        configuration_ids: Array.from(
+          new Set(
+            image.configurationIds
+              .map((configurationId) => configurationId.trim())
+              .filter(Boolean),
+          ),
+        ),
         original_name: image.file.name,
         content_type: image.file.type,
         size: image.file.size,
         position: index,
         alt_text: image.altText.trim(),
         is_primary: image.isPrimary,
-        variant_name: image.variantName.trim(),
-        variant_position:
-          Math.max(
-            0,
-            Number(
-              image.variantPosition ??
-                index,
-            ) || 0,
-          ),
-        is_variant_primary:
-          Boolean(
-            image.isVariantPrimary,
-          ),
       });
     }
 

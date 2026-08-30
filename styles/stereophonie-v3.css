@@ -54260,3 +54260,31 @@ html
 }
 
 /* ST MOVIES SERIES FORMAT SELECTOR V2 END */
+
+/* ST HOMEPAGE CATEGORY FULL CLICK V2 START */
+
+.st3-cat-tile {
+  position: relative;
+}
+
+.st3-cat-tile__full-link {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.st3-cat-tile .st3-cat-tile__copy {
+  position: relative;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.st3-cat-tile .st3-cat-actions {
+  position: relative;
+  z-index: 7;
+  pointer-events: auto;
+}
+
+/* ST HOMEPAGE CATEGORY FULL CLICK V2 END */

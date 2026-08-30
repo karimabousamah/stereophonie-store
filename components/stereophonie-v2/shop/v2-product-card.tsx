@@ -1,5 +1,7 @@
 "use client";
 
+import { calculateProductAvailability } from "@/lib/stereophonie-v2/product-variants";
+
 import Link from "next/link";
 import { Check, Eye, Bookmark, ImageOff, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -238,6 +240,7 @@ export default function V2ProductCard({ product }: Props) {
 
   const price = useMemo(() => getPrice(product), [product]);
   const available = useMemo(() => isAvailable(product), [product]);
+  const productAvailability = calculateProductAvailability(product.variants);
   const lowStock = useMemo(() => isLowStockProduct(product), [product]);
   const [clock, setClock] = useState(() => Date.now());
 
@@ -392,9 +395,17 @@ export default function V2ProductCard({ product }: Props) {
           {!available ? (
             <div
               className="st-retail-card__out-of-stock-overlay"
-              aria-label="Out of stock"
+              aria-label={
+                productAvailability === "coming_soon"
+                  ? "Coming soon"
+                  : "Out of stock"
+              }
             >
-              <span>Out of Stock</span>
+              <span>
+                {productAvailability === "coming_soon"
+                  ? "Coming Soon"
+                  : "Out of Stock"}
+              </span>
             </div>
           ) : null}
 

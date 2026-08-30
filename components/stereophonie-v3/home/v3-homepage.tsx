@@ -442,6 +442,12 @@ export default function V3Homepage({
                         dark ? "st3-cat-tile--dark" : ""
                       } ${wide ? "st3-cat-tile--wide" : ""}`}
                     >
+                      <Link
+                        href={categoryHref(category)}
+                        className="st3-cat-tile__full-link"
+                        aria-label={`Open ${category.name}`}
+                      />
+
                       <div className="st3-cat-tile__copy">
                         <p className="st3-cat-kicker">Stereophonie</p>
 

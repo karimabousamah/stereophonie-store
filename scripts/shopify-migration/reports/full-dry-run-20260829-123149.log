@@ -1,0 +1,6 @@
+(node:44293) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/kimoabousamah/Developer/stereophonie-store/lib/stereophonie-v3/images/process-store-image.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/kimoabousamah/Developer/stereophonie-store/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Full import protection triggered.
+Use: --execute --all --confirm=IMPORT_ALL_284

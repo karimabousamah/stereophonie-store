@@ -34,6 +34,11 @@ type GalleryImage = {
    * Each configuration can have its own main photograph.
    */
   isVariantPrimary: boolean;
+  variantAssignments: {
+    variantId: string;
+    position: number;
+    isPrimary: boolean;
+  }[];
 };
 
 type ProductGalleryProps = {
@@ -46,10 +51,7 @@ type ProductGalleryProps = {
   [key: string]: unknown;
 };
 
-function readString(
-  value: unknown,
-  keys: string[],
-): string | null {
+function readString(value: unknown, keys: string[]): string | null {
   if (typeof value === "string") {
     const text = value.trim();
     return text || null;
@@ -64,10 +66,7 @@ function readString(
   for (const key of keys) {
     const candidate = record[key];
 
-    if (
-      typeof candidate === "string" &&
-      candidate.trim()
-    ) {
+    if (typeof candidate === "string" && candidate.trim()) {
       return candidate.trim();
     }
   }
@@ -75,28 +74,17 @@ function readString(
   return null;
 }
 
-
-function readNumber(
-  value: unknown,
-  keys: string[],
-) {
-  if (
-    !value ||
-    typeof value !== "object"
-  ) {
+function readNumber(value: unknown, keys: string[]) {
+  if (!value || typeof value !== "object") {
     return null;
   }
 
-  const record =
-    value as Record<string, unknown>;
+  const record = value as Record<string, unknown>;
 
   for (const key of keys) {
-    const candidate =
-      Number(record[key]);
+    const candidate = Number(record[key]);
 
-    if (
-      Number.isFinite(candidate)
-    ) {
+    if (Number.isFinite(candidate)) {
       return candidate;
     }
   }
@@ -104,32 +92,21 @@ function readNumber(
   return null;
 }
 
-function readBoolean(
-  value: unknown,
-  keys: string[],
-) {
-  if (
-    !value ||
-    typeof value !== "object"
-  ) {
+function readBoolean(value: unknown, keys: string[]) {
+  if (!value || typeof value !== "object") {
     return null;
   }
 
-  const record =
-    value as Record<string, unknown>;
+  const record = value as Record<string, unknown>;
 
   for (const key of keys) {
-    if (
-      typeof record[key] ===
-      "boolean"
-    ) {
+    if (typeof record[key] === "boolean") {
       return record[key] as boolean;
     }
   }
 
   return null;
 }
-
 
 function normalizeImages(
   images: readonly unknown[] | undefined,
@@ -158,31 +135,18 @@ function normalizeImages(
     seen.add(src);
 
     const alt =
-      readString(image, [
-        "alt",
-        "alt_text",
-        "altText",
-        "caption",
-        "name",
-      ]) ?? productName;
+      readString(image, ["alt", "alt_text", "altText", "caption", "name"]) ??
+      productName;
 
     const variantName =
-      readString(image, [
-        "variant_name",
-        "variantName",
-      ]) ?? "";
+      readString(image, ["variant_name", "variantName"]) ?? "";
 
-    const variantId =
-      readString(image, [
-        "variant_id",
-        "variantId",
-      ]) ?? "";
+    const variantId = readString(image, ["variant_id", "variantId"]) ?? "";
 
-    const variantPositionValue =
-      readNumber(image, [
-        "variant_position",
-        "variantPosition",
-      ]);
+    const variantPositionValue = readNumber(image, [
+      "variant_position",
+      "variantPosition",
+    ]);
 
     const variantPosition =
       typeof variantPositionValue === "number"
@@ -190,25 +154,66 @@ function normalizeImages(
         : normalized.length;
 
     const isVariantPrimary =
-      readBoolean(image, [
-        "is_variant_primary",
-        "isVariantPrimary",
-      ]) ?? false;
+      readBoolean(image, ["is_variant_primary", "isVariantPrimary"]) ?? false;
+
+    const imageRecord =
+      image && typeof image === "object"
+        ? (image as Record<string, unknown>)
+        : {};
+
+    const rawVariantAssignments = Array.isArray(
+      imageRecord.product_image_variants,
+    )
+      ? imageRecord.product_image_variants
+      : [];
+
+    const variantAssignments = rawVariantAssignments
+      .map((assignment) => {
+        if (!assignment || typeof assignment !== "object") {
+          return null;
+        }
+
+        const assignmentRecord = assignment as Record<string, unknown>;
+        const assignmentVariantId = String(
+          assignmentRecord.variant_id ?? "",
+        ).trim();
+
+        if (!assignmentVariantId) {
+          return null;
+        }
+
+        const assignmentPosition = Number(assignmentRecord.position ?? 0);
+
+        return {
+          variantId: assignmentVariantId,
+          position: Number.isFinite(assignmentPosition)
+            ? assignmentPosition
+            : 0,
+          isPrimary: assignmentRecord.is_primary === true,
+        };
+      })
+      .filter(
+        (
+          assignment,
+        ): assignment is {
+          variantId: string;
+          position: number;
+          isPrimary: boolean;
+        } => Boolean(assignment),
+      );
 
     normalized.push({
       src,
       alt,
       variantName,
       variantId,
+      variantAssignments,
       variantPosition,
       isVariantPrimary,
     });
   }
 
-  const fallback =
-    typeof fallbackUrl === "string"
-      ? fallbackUrl.trim()
-      : "";
+  const fallback = typeof fallbackUrl === "string" ? fallbackUrl.trim() : "";
 
   if (fallback && !seen.has(fallback)) {
     normalized.unshift({
@@ -216,6 +221,7 @@ function normalizeImages(
       alt: productName,
       variantName: "",
       variantId: "",
+      variantAssignments: [],
       variantPosition: -1,
       isVariantPrimary: false,
     });
@@ -224,41 +230,23 @@ function normalizeImages(
   return normalized;
 }
 
-function normalizedConfiguration(
-  value: string,
-) {
-  return value
-    .trim()
-    .toLocaleLowerCase();
+function normalizedConfiguration(value: string) {
+  return value.trim().toLocaleLowerCase();
 }
 
-export default function ProductGallery(
-  props: ProductGalleryProps,
-) {
+export default function ProductGallery(props: ProductGalleryProps) {
   const productName =
-    (typeof props.productName === "string" &&
-      props.productName.trim()) ||
-    (typeof props.name === "string" &&
-      props.name.trim()) ||
-    (typeof props.title === "string" &&
-      props.title.trim()) ||
+    (typeof props.productName === "string" && props.productName.trim()) ||
+    (typeof props.name === "string" && props.name.trim()) ||
+    (typeof props.title === "string" && props.title.trim()) ||
     "Product";
 
   const fallback =
-    (typeof props.imageUrl === "string"
-      ? props.imageUrl
-      : null) ??
-    (typeof props.image_url === "string"
-      ? props.image_url
-      : null);
+    (typeof props.imageUrl === "string" ? props.imageUrl : null) ??
+    (typeof props.image_url === "string" ? props.image_url : null);
 
   const allImages = useMemo(
-    () =>
-      normalizeImages(
-        props.images,
-        fallback,
-        productName,
-      ),
+    () => normalizeImages(props.images, fallback, productName),
     [props.images, fallback, productName],
   );
 
@@ -269,38 +257,21 @@ export default function ProductGallery(
    * Configuration-specific images appear only when their exact
    * configuration is active.
    */
-  const [
-    selectedConfiguration,
-    setSelectedConfiguration,
-  ] = useState("");
+  const [selectedConfiguration, setSelectedConfiguration] = useState("");
 
-  const [
-    selectedVariantId,
-    setSelectedVariantId,
-  ] = useState("");
+  const [selectedVariantId, setSelectedVariantId] = useState("");
 
   useEffect(() => {
-    function handleConfigurationChange(
-      event: Event,
-    ) {
-      const customEvent =
-        event as CustomEvent<{
-          variantId?: string;
-          variantName?: string;
-        }>;
+    function handleConfigurationChange(event: Event) {
+      const customEvent = event as CustomEvent<{
+        variantId?: string;
+        variantName?: string;
+      }>;
 
-      setSelectedVariantId(
-        String(
-          customEvent.detail?.variantId ??
-            "",
-        ).trim(),
-      );
+      setSelectedVariantId(String(customEvent.detail?.variantId ?? "").trim());
 
       setSelectedConfiguration(
-        String(
-          customEvent.detail?.variantName ??
-            "",
-        ).trim(),
+        String(customEvent.detail?.variantName ?? "").trim(),
       );
     }
 
@@ -318,118 +289,94 @@ export default function ProductGallery(
   }, []);
 
   const galleryImages = useMemo(() => {
-    const requestedName =
-      normalizedConfiguration(
-        selectedConfiguration,
-      );
+    const requestedName = normalizedConfiguration(selectedConfiguration);
 
-    const requestedId =
-      selectedVariantId.trim();
+    const requestedId = selectedVariantId.trim();
 
-    const shared =
-      allImages.filter(
-        (image) =>
-          !String(
-            image.variantId ?? "",
-          ).trim() &&
-          !String(
-            image.variantName ?? "",
-          ).trim(),
-      );
+    const shared = allImages.filter(
+      (image) =>
+        image.variantAssignments.length === 0 &&
+        !String(image.variantId ?? "").trim() &&
+        !String(image.variantName ?? "").trim(),
+    );
 
-    if (
-      !requestedId &&
-      !requestedName
-    ) {
-      return shared.length
-        ? shared
-        : allImages;
+    if (!requestedId && !requestedName) {
+      return shared.length ? shared : allImages;
     }
 
-    const specific =
-      allImages
-        .filter((image) => {
-          const imageVariantId =
-            String(
-              image.variantId ?? "",
-            ).trim();
-
-          /*
-           * Stable ID is authoritative.
-           */
-          if (
-            requestedId &&
-            imageVariantId
-          ) {
-            return (
-              imageVariantId ===
-              requestedId
-            );
-          }
-
-          /*
-           * Legacy fallback for old products.
-           */
-          return (
-            normalizedConfiguration(
-              String(
-                image.variantName ?? "",
-              ),
-            ) === requestedName
+    const specific = allImages
+      .filter((image) => {
+        /*
+         * New many-to-many assignments are authoritative.
+         */
+        if (requestedId && image.variantAssignments.length > 0) {
+          return image.variantAssignments.some(
+            (assignment) => assignment.variantId === requestedId,
           );
-        })
-        .sort((first, second) => {
-          /*
-           * The selected configuration's Main image ALWAYS comes first.
-           */
-          const primaryDifference =
-            Number(
-              Boolean(
-                second.isVariantPrimary,
-              ),
-            ) -
-            Number(
-              Boolean(
-                first.isVariantPrimary,
-              ),
-            );
+        }
 
-          if (primaryDifference) {
-            return primaryDifference;
-          }
+        /*
+         * Legacy single-variant fallback.
+         */
+        const legacyVariantId = String(image.variantId ?? "").trim();
 
-          return (
-            Number(
-              first.variantPosition ??
-                0,
-            ) -
-            Number(
-              second.variantPosition ??
-                0,
+        if (requestedId && legacyVariantId) {
+          return legacyVariantId === requestedId;
+        }
+
+        /*
+         * Older legacy name fallback.
+         */
+        return (
+          normalizedConfiguration(String(image.variantName ?? "")) ===
+          requestedName
+        );
+      })
+      .sort((first, second) => {
+        const firstAssignment = requestedId
+          ? first.variantAssignments.find(
+              (assignment) => assignment.variantId === requestedId,
             )
-          );
-        });
+          : undefined;
+
+        const secondAssignment = requestedId
+          ? second.variantAssignments.find(
+              (assignment) => assignment.variantId === requestedId,
+            )
+          : undefined;
+
+        const firstPrimary =
+          firstAssignment?.isPrimary ?? first.isVariantPrimary;
+
+        const secondPrimary =
+          secondAssignment?.isPrimary ?? second.isVariantPrimary;
+
+        const primaryDifference =
+          Number(Boolean(secondPrimary)) - Number(Boolean(firstPrimary));
+
+        if (primaryDifference) {
+          return primaryDifference;
+        }
+
+        const firstPosition =
+          firstAssignment?.position ?? first.variantPosition ?? 0;
+
+        const secondPosition =
+          secondAssignment?.position ?? second.variantPosition ?? 0;
+
+        return Number(firstPosition) - Number(secondPosition);
+      });
 
     /*
-     * Selected-configuration photographs first.
-     * Shared photographs remain available afterwards.
+     * Exact configuration media appears first.
+     * Shared media remains available afterwards.
      */
-    const combined = [
-      ...specific,
-      ...shared,
-    ];
+    const combined = [...specific, ...shared];
 
-    return combined.length
-      ? combined
-      : allImages;
-  }, [
-    allImages,
-    selectedConfiguration,
-    selectedVariantId,
-  ]);
+    return combined.length ? combined : allImages;
+  }, [allImages, selectedConfiguration, selectedVariantId]);
 
-  const [activeIndex, setActiveIndex] =
-    useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   /*
    * A different configuration can expose a completely different
@@ -450,63 +397,31 @@ export default function ProductGallery(
     setAutoplayResetKey((current) => current + 1);
   }, [selectedConfiguration, selectedVariantId]);
 
-  const [
-    autoplayResetKey,
-    setAutoplayResetKey,
-  ] = useState(0);
+  const [autoplayResetKey, setAutoplayResetKey] = useState(0);
 
-  const [
-    previousIndex,
-    setPreviousIndex,
-  ] = useState<number | null>(null);
+  const [previousIndex, setPreviousIndex] = useState<number | null>(null);
 
-  const [
-    direction,
-    setDirection,
-  ] = useState<"next" | "previous">(
-    "next",
-  );
+  const [direction, setDirection] = useState<"next" | "previous">("next");
 
-  const [
-    transitioning,
-    setTransitioning,
-  ] = useState(false);
+  const [transitioning, setTransitioning] = useState(false);
 
-  const transitionTimer =
-    useRef<number | null>(null);
+  const transitionTimer = useRef<number | null>(null);
 
-  const touchStart =
-    useRef<number | null>(null);
+  const touchStart = useRef<number | null>(null);
 
-  const wheelLocked =
-    useRef(false);
+  const wheelLocked = useRef(false);
 
-  const total =
-    galleryImages.length;
+  const total = galleryImages.length;
 
-  const safeIndex =
-    total > 0
-      ? Math.min(
-          activeIndex,
-          total - 1,
-        )
-      : 0;
+  const safeIndex = total > 0 ? Math.min(activeIndex, total - 1) : 0;
 
-  const activeImage =
-    galleryImages[safeIndex] ??
-    null;
+  const activeImage = galleryImages[safeIndex] ?? null;
 
   const outgoingImage =
     previousIndex !== null
-      ? galleryImages[
-          Math.min(
-            previousIndex,
-            Math.max(
-              galleryImages.length - 1,
-              0,
-            ),
-          )
-        ] ?? null
+      ? (galleryImages[
+          Math.min(previousIndex, Math.max(galleryImages.length - 1, 0))
+        ] ?? null)
       : null;
 
   /*
@@ -517,166 +432,99 @@ export default function ProductGallery(
     setPreviousIndex(null);
     setActiveIndex(0);
     setTransitioning(false);
-    setAutoplayResetKey(
-      (current) => current + 1,
-    );
+    setAutoplayResetKey((current) => current + 1);
   }, [selectedConfiguration, selectedVariantId]);
 
   useEffect(() => {
     return () => {
-      if (
-        transitionTimer.current !==
-        null
-      ) {
-        window.clearTimeout(
-          transitionTimer.current,
-        );
+      if (transitionTimer.current !== null) {
+        window.clearTimeout(transitionTimer.current);
       }
     };
   }, []);
 
-  function select(
-    requestedIndex: number,
-    manual = true,
-  ) {
-    if (
-      total < 2 ||
-      transitioning
-    ) {
+  function select(requestedIndex: number, manual = true) {
+    if (total < 2 || transitioning) {
       return;
     }
 
-    const nextIndex =
-      (requestedIndex + total) %
-      total;
+    const nextIndex = (requestedIndex + total) % total;
 
-    if (
-      nextIndex === safeIndex
-    ) {
+    if (nextIndex === safeIndex) {
       return;
     }
 
     const nextDirection =
-      requestedIndex > safeIndex ||
-      (
-        safeIndex === total - 1 &&
-        nextIndex === 0
-      )
+      requestedIndex > safeIndex || (safeIndex === total - 1 && nextIndex === 0)
         ? "next"
         : "previous";
 
-    if (
-      safeIndex === 0 &&
-      nextIndex === total - 1
-    ) {
+    if (safeIndex === 0 && nextIndex === total - 1) {
       setDirection("previous");
     } else {
-      setDirection(
-        nextDirection,
-      );
+      setDirection(nextDirection);
     }
 
-    setPreviousIndex(
-      safeIndex,
-    );
+    setPreviousIndex(safeIndex);
 
-    setActiveIndex(
-      nextIndex,
-    );
+    setActiveIndex(nextIndex);
 
     setTransitioning(true);
 
     if (manual) {
-      setAutoplayResetKey(
-        (current) => current + 1,
-      );
+      setAutoplayResetKey((current) => current + 1);
     }
 
-    if (
-      transitionTimer.current !==
-      null
-    ) {
-      window.clearTimeout(
-        transitionTimer.current,
-      );
+    if (transitionTimer.current !== null) {
+      window.clearTimeout(transitionTimer.current);
     }
 
-    transitionTimer.current =
-      window.setTimeout(() => {
-        setTransitioning(false);
-        setPreviousIndex(null);
-      }, 520);
+    transitionTimer.current = window.setTimeout(() => {
+      setTransitioning(false);
+      setPreviousIndex(null);
+    }, 520);
   }
 
   useEffect(() => {
-    if (
-      total < 2 ||
-      transitioning
-    ) {
+    if (total < 2 || transitioning) {
       return;
     }
 
-    const timer =
-      window.setTimeout(() => {
-        select(
-          safeIndex + 1,
-          false,
-        );
-      }, 5000);
+    const timer = window.setTimeout(() => {
+      select(safeIndex + 1, false);
+    }, 5000);
 
     return () => {
       window.clearTimeout(timer);
     };
-  }, [
-    total,
-    safeIndex,
-    autoplayResetKey,
-    transitioning,
-  ]);
+  }, [total, safeIndex, autoplayResetKey, transitioning]);
 
   function previous() {
-    select(
-      safeIndex - 1,
-    );
+    select(safeIndex - 1);
   }
 
   function next() {
-    select(
-      safeIndex + 1,
-    );
+    select(safeIndex + 1);
   }
 
-  function handleKeyDown(
-    event: KeyboardEvent<HTMLElement>,
-  ) {
-    if (
-      event.key === "ArrowLeft"
-    ) {
+  function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === "ArrowLeft") {
       event.preventDefault();
       previous();
     }
 
-    if (
-      event.key === "ArrowRight"
-    ) {
+    if (event.key === "ArrowRight") {
       event.preventDefault();
       next();
     }
   }
 
-  function handleWheel(
-    event: WheelEvent<HTMLElement>,
-  ) {
-    if (
-      total < 2 ||
-      wheelLocked.current
-    ) {
+  function handleWheel(event: WheelEvent<HTMLElement>) {
+    if (total < 2 || wheelLocked.current) {
       return;
     }
 
-    const horizontalIntent =
-      Math.abs(event.deltaX) >
-      Math.abs(event.deltaY);
+    const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY);
 
     if (!horizontalIntent) {
       return;
@@ -697,52 +545,32 @@ export default function ProductGallery(
     }, 420);
   }
 
-  function handleTouchStart(
-    event: TouchEvent<HTMLElement>,
-  ) {
-    touchStart.current =
-      event.touches[0]?.clientX ??
-      null;
+  function handleTouchStart(event: TouchEvent<HTMLElement>) {
+    touchStart.current = event.touches[0]?.clientX ?? null;
   }
 
-  function handleTouchEnd(
-    event: TouchEvent<HTMLElement>,
-  ) {
-    if (
-      touchStart.current === null ||
-      total < 2
-    ) {
+  function handleTouchEnd(event: TouchEvent<HTMLElement>) {
+    if (touchStart.current === null || total < 2) {
       touchStart.current = null;
       return;
     }
 
-    const endX =
-      event.changedTouches[0]
-        ?.clientX;
+    const endX = event.changedTouches[0]?.clientX;
 
-    if (
-      typeof endX !== "number"
-    ) {
+    if (typeof endX !== "number") {
       touchStart.current = null;
       return;
     }
 
-    const difference =
-      touchStart.current -
-      endX;
+    const difference = touchStart.current - endX;
 
     touchStart.current = null;
 
-    if (
-      Math.abs(difference) <
-      42
-    ) {
+    if (Math.abs(difference) < 42) {
       return;
     }
 
-    if (
-      difference > 0
-    ) {
+    if (difference > 0) {
       next();
     } else {
       previous();
@@ -755,9 +583,7 @@ export default function ProductGallery(
         className="st-pg-modern st-pg-modern--empty"
         aria-label={`${productName} image gallery`}
       >
-        <span>
-          Image unavailable
-        </span>
+        <span>Image unavailable</span>
       </section>
     );
   }
@@ -769,32 +595,21 @@ export default function ProductGallery(
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onWheel={handleWheel}
-      onTouchStart={
-        handleTouchStart
-      }
-      onTouchEnd={
-        handleTouchEnd
-      }
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="st-pg-modern__viewport">
         <div
           className={`st-pg-modern__stage ${
-            direction === "next"
-              ? "is-next"
-              : "is-previous"
+            direction === "next" ? "is-next" : "is-previous"
           }`}
         >
           {outgoingImage ? (
             <img
               className={`st-pg-modern__image st-pg-modern__image--outgoing ${
-                direction ===
-                "next"
-                  ? "is-next"
-                  : "is-previous"
+                direction === "next" ? "is-next" : "is-previous"
               }`}
-              src={
-                outgoingImage.src
-              }
+              src={outgoingImage.src}
               alt=""
               aria-hidden="true"
               draggable={false}
@@ -804,14 +619,8 @@ export default function ProductGallery(
           <img
             key={`${activeImage.src}-${safeIndex}-${selectedConfiguration}`}
             className={`st-pg-modern__image st-pg-modern__image--incoming ${
-              transitioning
-                ? "is-transitioning"
-                : ""
-            } ${
-              direction === "next"
-                ? "is-next"
-                : "is-previous"
-            }`}
+              transitioning ? "is-transitioning" : ""
+            } ${direction === "next" ? "is-next" : "is-previous"}`}
             src={activeImage.src}
             alt={activeImage.alt}
             draggable={false}
@@ -823,53 +632,29 @@ export default function ProductGallery(
             className="st-pg-modern__pagination"
             aria-label="Product images"
             style={{
-              [
-                "--st-gallery-index" as string
-              ]:
-                safeIndex,
+              ["--st-gallery-index" as string]: safeIndex,
 
-              [
-                "--st-gallery-count" as string
-              ]:
-                total,
+              ["--st-gallery-count" as string]: total,
             }}
           >
-            <span
-              className="st-pg-modern__active-track"
-              aria-hidden="true"
-            />
+            <span className="st-pg-modern__active-track" aria-hidden="true" />
 
-            {galleryImages.map(
-              (
-                image,
-                index,
-              ) => {
-                const selected =
-                  index ===
-                  safeIndex;
+            {galleryImages.map((image, index) => {
+              const selected = index === safeIndex;
 
-                return (
-                  <button
-                    key={`${image.src}-${index}`}
-                    type="button"
-                    className="st-pg-modern__dot"
-                    aria-label={`View image ${
-                      index + 1
-                    } of ${total}`}
-                    aria-current={
-                      selected
-                        ? "true"
-                        : undefined
-                    }
-                    onClick={() =>
-                      select(index)
-                    }
-                  >
-                    <span />
-                  </button>
-                );
-              },
-            )}
+              return (
+                <button
+                  key={`${image.src}-${index}`}
+                  type="button"
+                  className="st-pg-modern__dot"
+                  aria-label={`View image ${index + 1} of ${total}`}
+                  aria-current={selected ? "true" : undefined}
+                  onClick={() => select(index)}
+                >
+                  <span />
+                </button>
+              );
+            })}
           </nav>
         ) : null}
       </div>

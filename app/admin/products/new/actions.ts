@@ -36,18 +36,20 @@ type DirectUploadedImage = {
   storage_path: string;
 
   /*
-   * Stable browser-side configuration identity.
+   * Empty configuration_ids = Shared photograph.
+   *
+   * configuration_id remains accepted temporarily for an
+   * already-open browser tab using the previous client bundle.
    */
+  configuration_ids?: string[];
   configuration_id?: string;
+
   original_name: string;
   content_type: string;
   size: number;
   position: number;
   alt_text: string;
   is_primary: boolean;
-  variant_name?: string;
-  variant_position?: number;
-  is_variant_primary?: boolean;
 };
 
 const validImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -125,6 +127,7 @@ export async function createProduct(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "").trim();
+  const subcategoryId = String(formData.get("subcategory_id") ?? "").trim();
   const brandId = String(formData.get("brand_id") ?? "").trim();
   const collectionId = String(formData.get("collection_id") ?? "").trim();
 
@@ -377,27 +380,31 @@ export async function createProduct(formData: FormData) {
   );
 
   directUploadedImages = directUploadedImages.map((image) => {
-    const configurationId = String(image.configuration_id ?? "").trim();
+    const submittedIds = Array.isArray(image.configuration_ids)
+      ? image.configuration_ids
+      : image.configuration_id
+        ? [image.configuration_id]
+        : [];
 
-    if (!configurationId) {
-      return {
-        ...image,
-        variant_name: String(image.variant_name ?? "").trim(),
-      };
-    }
+    const configurationIds = Array.from(
+      new Set(
+        submittedIds
+          .map((configurationId) => String(configurationId ?? "").trim())
+          .filter(Boolean),
+      ),
+    );
 
-    const resolvedConfigurationName =
-      configurationNameByClientId.get(configurationId);
-
-    if (!resolvedConfigurationName) {
-      redirectWithError(
-        "A photograph is assigned to a configuration that could not be resolved. Reassign the photograph and try again.",
-      );
+    for (const configurationId of configurationIds) {
+      if (!configurationNameByClientId.has(configurationId)) {
+        redirectWithError(
+          "A photograph is assigned to a configuration that could not be resolved. Reassign the photograph and try again.",
+        );
+      }
     }
 
     return {
       ...image,
-      variant_name: resolvedConfigurationName,
+      configuration_ids: configurationIds,
     };
   });
 
@@ -512,25 +519,6 @@ export async function createProduct(formData: FormData) {
     (first, second) => first.position - second.position,
   );
 
-  const submittedConfigurationNames = new Set(
-    variants
-      .map((variant) => String(variant.variant_name ?? "").trim())
-      .filter(Boolean),
-  );
-
-  for (const image of directUploadedImages) {
-    const imageVariantName = String(image.variant_name ?? "").trim();
-
-    if (
-      imageVariantName &&
-      !submittedConfigurationNames.has(imageVariantName)
-    ) {
-      redirectWithError(
-        `The photograph assigned to "${imageVariantName}" no longer matches a product configuration. Reassign that photograph and try again.`,
-      );
-    }
-  }
-
   const status = publishingIntent === "publish" ? "published" : "draft";
 
   const allComingSoon = variants.every(
@@ -560,6 +548,7 @@ export async function createProduct(formData: FormData) {
       slug: createSlug(name),
       description: description || null,
       category_id: categoryId,
+      subcategory_id: subcategoryId || null,
       brand_id: brandId || null,
       collection_id: collectionId || null,
       status,
@@ -604,62 +593,71 @@ export async function createProduct(formData: FormData) {
           : 0,
 
       sale_price:
-        variant.sale_price === "" ||
-        variant.sale_price === null ||
-        variant.sale_price === undefined
-          ? null
-          : Number(variant.sale_price),
+        Number.isFinite(Number(variant.regular_price)) &&
+        Number(variant.regular_price) > 0 &&
+        variant.sale_price !== "" &&
+        variant.sale_price !== null &&
+        variant.sale_price !== undefined
+          ? Number(variant.sale_price)
+          : null,
       stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
       low_stock_threshold: Number(variant.low_stock_threshold),
       availability_status: variant.availability_status,
     };
   });
 
-  const { error: variantsError } = await supabase
+  const { data: insertedVariants, error: variantsError } = await supabase
     .from("product_variants")
-    .insert(variantsToInsert);
+    .insert(variantsToInsert)
+    .select("id, variant_name");
 
-  if (variantsError) {
+  if (variantsError || !insertedVariants) {
     await supabase.from("products").delete().eq("id", product.id);
 
-    redirectWithError(variantsError.message);
+    redirectWithError(
+      variantsError?.message ??
+        "The product configurations could not be created.",
+    );
   }
 
+  const persistedVariantIdByName = new Map(
+    insertedVariants.map((variant): [string, string] => [
+      String(variant.variant_name ?? "")
+        .trim()
+        .toLowerCase(),
+      String(variant.id),
+    ]),
+  );
+
+  const persistedVariantIdByClientId = new Map(
+    variants
+      .map((variant): [string, string] | null => {
+        const clientId = String(variant.client_id ?? "").trim();
+
+        const configurationName = String(variant.variant_name ?? "")
+          .trim()
+          .toLowerCase();
+
+        const variantId = persistedVariantIdByName.get(configurationName);
+
+        if (!clientId || !variantId) {
+          return null;
+        }
+
+        return [clientId, variantId];
+      })
+      .filter((entry): entry is [string, string] => entry !== null),
+  );
+
   const uploadedStoragePaths: string[] = [];
+  const insertedImageIds: string[] = [];
+
   const temporaryStoragePaths = directUploadedImages.map(
     (image) => image.storage_path,
   );
 
   try {
-    /*
-     * Resolve the administrator-facing configuration name
-     * to the newly-created stable product_variant UUID.
-     *
-     * variant_name remains stored temporarily for backwards
-     * compatibility, but variant_id is now authoritative.
-     */
-    const { data: persistedVariantRows, error: persistedVariantRowsError } =
-      await supabase
-        .from("product_variants")
-        .select("id, variant_name")
-        .eq("product_id", product.id);
-
-    if (persistedVariantRowsError) {
-      redirectWithError(persistedVariantRowsError.message);
-    }
-
-    const persistedVariantIdByName = new Map(
-      (persistedVariantRows ?? [])
-        .map((variant): [string, string] => [
-          String(variant.variant_name ?? "")
-            .trim()
-            .toLowerCase(),
-          String(variant.id),
-        ])
-        .filter(([name]) => Boolean(name)),
-    );
-
-    const imageRows = [];
+    const nextConfigurationPosition = new Map<string, number>();
 
     if (directUploadedImages.length > 0) {
       for (let index = 0; index < directUploadedImages.length; index += 1) {
@@ -698,33 +696,107 @@ export async function createProduct(formData: FormData) {
           .from("product-images")
           .getPublicUrl(destinationPath);
 
-        imageRows.push({
-          product_id: product.id,
-          storage_path: destinationPath,
-          image_url: publicUrlData.publicUrl,
-          alt_text:
-            String(image.alt_text ?? "").trim() ||
-            `${name} photograph ${index + 1}`,
-          position: index,
-          is_primary: image.is_primary,
-          variant_name: String(image.variant_name ?? "").trim() || null,
-
-          variant_id:
-            persistedVariantIdByName.get(
-              String(image.variant_name ?? "")
-                .trim()
-                .toLowerCase(),
-            ) ?? null,
-
-          variant_position: Math.max(
-            0,
-            Number(image.variant_position ?? image.position ?? 0) || 0,
+        const configurationClientIds = Array.from(
+          new Set(
+            (image.configuration_ids ?? [])
+              .map((configurationId) => String(configurationId ?? "").trim())
+              .filter(Boolean),
           ),
+        );
 
-          is_variant_primary: Boolean(image.is_variant_primary),
-        });
+        const configurationVariantIds = configurationClientIds.map(
+          (configurationClientId) => {
+            const variantId = persistedVariantIdByClientId.get(
+              configurationClientId,
+            );
+
+            if (!variantId) {
+              throw new Error(
+                "A photograph configuration could not be resolved after creating the product configurations.",
+              );
+            }
+
+            return variantId;
+          },
+        );
+
+        /*
+         * Legacy columns can truthfully represent only one
+         * exact assignment.
+         */
+        const legacyVariantId =
+          configurationVariantIds.length === 1
+            ? configurationVariantIds[0]
+            : null;
+
+        const legacyVariantName =
+          configurationClientIds.length === 1
+            ? (configurationNameByClientId.get(configurationClientIds[0]) ??
+              null)
+            : null;
+
+        const legacyVariantPosition = legacyVariantId
+          ? (nextConfigurationPosition.get(legacyVariantId) ?? 0)
+          : 0;
+
+        const { data: insertedImage, error: imageInsertError } = await supabase
+          .from("product_images")
+          .insert({
+            product_id: product.id,
+            storage_path: destinationPath,
+            image_url: publicUrlData.publicUrl,
+            alt_text:
+              String(image.alt_text ?? "").trim() ||
+              `${name} photograph ${index + 1}`,
+            position: index,
+            is_primary: Boolean(image.is_primary),
+
+            variant_id: legacyVariantId,
+            variant_name: legacyVariantName,
+            variant_position: legacyVariantPosition,
+            is_variant_primary: Boolean(
+              legacyVariantId && legacyVariantPosition === 0,
+            ),
+          })
+          .select("id")
+          .single();
+
+        if (imageInsertError || !insertedImage) {
+          throw new Error(
+            imageInsertError?.message ?? "The photograph could not be saved.",
+          );
+        }
+
+        insertedImageIds.push(insertedImage.id);
+
+        /*
+         * Zero rows = Shared.
+         * One or more rows = exact configuration assignments.
+         */
+        for (const variantId of configurationVariantIds) {
+          const position = nextConfigurationPosition.get(variantId) ?? 0;
+
+          const { error: junctionError } = await supabase
+            .from("product_image_variants")
+            .insert({
+              image_id: insertedImage.id,
+              variant_id: variantId,
+              position,
+              is_primary: position === 0,
+            });
+
+          if (junctionError) {
+            throw new Error(junctionError.message);
+          }
+
+          nextConfigurationPosition.set(variantId, position + 1);
+        }
       }
     } else {
+      /*
+       * Legacy FormData uploads carry no exact configuration
+       * assignments, therefore they are Shared photographs.
+       */
       for (let index = 0; index < uploadedFiles.length; index += 1) {
         const file = uploadedFiles[index];
         const metadata = imageMetadata[index];
@@ -754,28 +826,43 @@ export async function createProduct(formData: FormData) {
           .from("product-images")
           .getPublicUrl(storagePath);
 
-        imageRows.push({
-          product_id: product.id,
-          storage_path: storagePath,
-          image_url: publicUrlData.publicUrl,
-          alt_text:
-            metadata?.alt_text?.trim() || `${name} photograph ${index + 1}`,
-          position: index,
-          is_primary: metadata?.is_primary ?? index === 0,
-        });
-      }
-    }
+        const { data: insertedImage, error: imageInsertError } = await supabase
+          .from("product_images")
+          .insert({
+            product_id: product.id,
+            storage_path: storagePath,
+            image_url: publicUrlData.publicUrl,
+            alt_text:
+              metadata?.alt_text?.trim() || `${name} photograph ${index + 1}`,
+            position: index,
+            is_primary: metadata?.is_primary ?? index === 0,
 
-    if (imageRows.length > 0) {
-      const { error: imageRowsError } = await supabase
-        .from("product_images")
-        .insert(imageRows);
+            variant_id: null,
+            variant_name: null,
+            variant_position: 0,
+            is_variant_primary: false,
+          })
+          .select("id")
+          .single();
 
-      if (imageRowsError) {
-        throw new Error(imageRowsError.message);
+        if (imageInsertError || !insertedImage) {
+          throw new Error(
+            imageInsertError?.message ?? "The photograph could not be saved.",
+          );
+        }
+
+        insertedImageIds.push(insertedImage.id);
       }
     }
   } catch (error) {
+    /*
+     * Delete database photographs first.
+     * Junction rows cascade automatically.
+     */
+    if (insertedImageIds.length > 0) {
+      await supabase.from("product_images").delete().in("id", insertedImageIds);
+    }
+
     await removeUploadedFiles(supabase, [
       ...uploadedStoragePaths,
       ...temporaryStoragePaths,

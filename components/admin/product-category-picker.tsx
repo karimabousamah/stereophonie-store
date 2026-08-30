@@ -313,6 +313,22 @@ export default function ProductCategoryPicker({
 
         <ChevronDown className="st-admin-category-picker__chevron h-4 w-4" />
       </button>
+      {selectedCategory ? (
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedId("");
+            setQuery("");
+            setOpen(false);
+            setActiveIndex(-1);
+            onCategoryChange?.(null);
+          }}
+          className="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/42 transition hover:border-[#fdb73e]/35 hover:bg-[#fdb73e]/[0.08] hover:text-[#f4bd55] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fdb73e]/25"
+        >
+          <X className="h-3 w-3" />
+          Clear category
+        </button>
+      ) : null}
 
       {dropdown}
     </div>

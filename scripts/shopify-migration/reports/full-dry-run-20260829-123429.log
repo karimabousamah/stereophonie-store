@@ -1,0 +1,2803 @@
+(node:51009) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/kimoabousamah/Developer/stereophonie-store/lib/stereophonie-v3/images/process-store-image.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/kimoabousamah/Developer/stereophonie-store/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+============================================================
+ STEREOPHONIE SHOPIFY MIGRATION
+ MODE: DRY RUN
+============================================================
+Manifest products: 284
+Existing Stereophonie products: 29
+Planned this run: 284
+
+[1/284] Samsung USB-C To USB-C Cable (5 A 1.8M)
+  Shopify: samsung-usb-c-to-usb-c-cable-5-a-1-8m
+  Status: active -> published
+  Category: Accessories
+  Brand: Samsung
+  Variants: 2
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[2/284] Samsung USB-C To USB-C Cable (3 A 1.8M)
+  Shopify: samsung-usb-c-to-usb-c-cable-3-a-1-8m
+  Status: active -> published
+  Category: Accessories
+  Brand: Samsung
+  Variants: 2
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[3/284] Samsung 25W Power Adapter
+  Shopify: samsung-25w-power-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: Samsung
+  Variants: 2
+  Images: 7 -> import 7
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[4/284] Samsung 45W Power Adapter With USB-C Cable (5A/1.8m)
+  Shopify: samsung-45w-power-adapter-with-usb-c-cable-5a-1-8m
+  Status: active -> published
+  Category: Accessories
+  Brand: Samsung
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[5/284] Samsung Galaxy Buds 3
+  Shopify: samsung-galaxy-buds-3
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Samsung
+  Variants: 2
+  Images: 11 -> import 10 (10-image cap)
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[6/284] Samsung Galaxy Buds 3 Pro White
+  Shopify: samsung-galaxy-buds-3-pro-white
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Samsung
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[7/284] Samsung Galaxy Watch 8
+  Shopify: samsung-galaxy-watch-8
+  Status: active -> published
+  Category: Smart Watches
+  Brand: Samsung
+  Variants: 4
+  Images: 4 -> import 4
+  SKIP: existing product name (74845411-9357-427f-9109-7b940ac580ff)
+
+[8/284] Samsung Galaxy Buds 4
+  Shopify: samsung-galaxy-buds-4
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Samsung
+  Variants: 2
+  Images: 11 -> import 10 (10-image cap)
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[9/284] Samsung Galaxy Buds 4 Pro
+  Shopify: samsung-galaxy-buds-4-pro
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Samsung
+  Variants: 2
+  Images: 15 -> import 10 (10-image cap)
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[10/284] Samsung Galaxy Buds 3 Fe Black
+  Shopify: samsung-galaxy-buds-3-fe-black
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Samsung
+  Variants: 1
+  Images: 7 -> import 7
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[11/284] Samsung Galaxy Buds Core White
+  Shopify: samsung-galaxy-buds-core-white
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Samsung
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[12/284] JBL Live 670NC - Wireless On-Ear Headphones - Purple
+  Shopify: jbl-live-670nc-wireless-on-ear-headphones-white-copy
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[13/284] JBL Tune 520BT - Wireless On-Ear Headphones Blue
+  Shopify: jbl-tune-520bt-wireless-on-ear-headphones-black-copy
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[14/284] Promate High-Fidelity Open Ear Wireless Over-Ear Headphones with Detachable Mic Novon Purple
+  Shopify: promate-high-fidelity-open-ear-wireless-over-ear-headphones-with-detachable-mic-novon-purple
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[15/284] Promate High-Fidelity Open Ear Wireless Over-Ear Headphones with Detachable Mic Novon Black
+  Shopify: promate-high-fidelity-open-ear-wireless-over-ear-headphones-with-detachable-mic-novon-black
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[16/284] Promate High Fidelity Over-Ear Wireless Headphones Laboca-Pro White
+  Shopify: promate-high-fidelity-over-ear-wireless-headphones-laboca-pro-black-copy
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[17/284] High-Definition Hybrid ANC Headphones with Detachable Magnetic LCD Touch Screen Controller Vutune Black
+  Shopify: high-definition-hybrid-anc-headphones-with-detachable-magnetic-lcd-touch-screen-controller-vutune-black
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[18/284] Promate High Fidelity Over-Ear Stereo Wireless Headphones Midnight Green
+  Shopify: promate-high-fidelity-over-ear-stereo-wireless-headphones-midnight-green
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[19/284] Amazon Echo (4th Gen) Alexa
+  Shopify: amazon-echo-4th-gen
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Amazon
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[20/284] Xiaomi Android TV Box S 3rd Generation
+  Shopify: xiaomi-android-tv-box
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: Xiaomi
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[21/284] Google Chromecast With Google TV
+  Shopify: google-chromecast-with-google-tv
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: Google
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[22/284] DJI Mic Mini - Wireless Lavalier Microphone
+  Shopify: dji-mic-mini-wireless-lavalier-microphone
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: DJI
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[23/284] Hollyland LARK M2 - Wireless Microphone
+  Shopify: hollyland-lark-m2-wireless-microphone
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[24/284] Promate XWatch-R20 Tough-Built Fitness Tracker Smartwatch With BT Calling Midnight Green
+  Shopify: promate-xwatch-r20-tough-built-fitness-tracker-smartwatch-with-bt-calling-black-copy
+  Status: active -> published
+  Category: Smart Watches
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[25/284] Promate XWatch-R20 Tough-Built Fitness Tracker Smartwatch With BT Calling Gray
+  Shopify: promate-xwatch-r20-tough-built-fitness-tracker-smartwatch-with-bt-calling-gray
+  Status: active -> published
+  Category: Smart Watches
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[26/284] Promate XWatch-R20 Tough-Built Fitness Tracker Smartwatch With BT Calling Black
+  Shopify: promate-xwatch-r20-tough-built-fitness-tracker-smartwatch-with-bt-calling
+  Status: active -> published
+  Category: Smart Watches
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[27/284] Promate Alpha-X - High-Fidelity TWS RGB Speaker with Headphone Stand & USB Hub
+  Shopify: promate-alpha-x-high-fidelity-tws-rgb-speaker-with-headphone-stand-usb-hub
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[28/284] Fujifilm Instax Mini 10 Instant Film, 10-Pack - ISO 800, Color, White Border
+  Shopify: fujifilm-instax-mini-10-instant-film-10-pack-iso-800-color-white-border
+  Status: active -> published
+  Category: Cameras
+  Brand: Fujifilm
+  Variants: 4
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[29/284] HP Smart Tank 581 Wireless All-In-One Printer
+  Shopify: hp-smart-tank-581-wireless-all-in-one-printer
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: HP
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[30/284] Canon PIXMA G3416 Wireless All-in-One Ink Tank Printer
+  Shopify: canon-pixma-g3416-wireless-all-in-one-ink-tank-printer
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: Canon
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[31/284] SKE- Mini DC UPS 8800 MAH
+  Shopify: ske-mini-dc-ups
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[32/284] Tp-link- 4G LTE Mobile Wi-Fi
+  Shopify: tp-link-4g-lte-mobile-wi-fi
+  Status: active -> published
+  Category: Networking
+  Brand: TP-Link
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[33/284] PCE UPS System V8-2500
+  Shopify: pce-ups-system-v8-2500
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[34/284] PCE UPS System V8-1700
+  Shopify: pce-ups-systems-v8-1700
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[35/284] PCE UPS System M8-900
+  Shopify: pce-ups-systems-m8-900-l
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[36/284] PCE UPS System M8-2000
+  Shopify: pce-ups-systems-m8-2000-l
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[37/284] PCE UPS System M8-1500
+  Shopify: pce-ups-systems-m8
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[38/284] Microphone Arm Stand On A Flexible Boom Scissor
+  Shopify: microphone-arm-stand-on-a-flexible-boom-scissor
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 2
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[39/284] Dual Monitor 13–32″ Arm Gas Spring Desk Mount Adjustable Stand with Full Motion & Cable Management Black
+  Shopify: a-dual-monitor-desk-mount
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[40/284] Single Monitor 13–32″ Arm Gas Spring Desk Mount Adjustable Stand with Full Motion & Cable Management Black
+  Shopify: single-monitor-desk-mount
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[41/284] Satechi Slim Monitor Stand
+  Shopify: satechi-aluminium-vertical-laptop-stand-1
+  Status: active -> published
+  Category: Accessories
+  Brand: Satechi
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[42/284] Satechi Aluminium Vertical Laptop Stand
+  Shopify: satechi-aluminium-vertical-laptop-stand
+  Status: active -> published
+  Category: Accessories
+  Brand: Satechi
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[43/284] YeSido C293 Aluminum Alloy Table Holder
+  Shopify: yesido-c293-aluminum-alloy-table-holder
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[44/284] Porodo Foldable 360° Dual-Use Laptop Stand with MagSafe Phone Holde
+  Shopify: porodo-foldable-360-dual-use-laptop-stand-with-magsafe-phone-holde
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[45/284] Promate-Ergonomic Multi-Level Aluminium Laptop Stand
+  Shopify: promate-ergonomic-multi-level-aluminium-laptop-stand
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[46/284] HP DeskJet Ink Advantage 2875 Printer
+  Shopify: hp-printer
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: HP
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[47/284] Canon PIXMA MG2541S Printer
+  Shopify: canon-pixma-1
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: Canon
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[48/284] Canon PIXMA TS3640 Printer
+  Shopify: canon-pixma
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: Canon
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[49/284] Tp-Link- 8-Port Gigabit Desktop Switch
+  Shopify: tp-link-8-port-gigabit-desktop-switch
+  Status: active -> published
+  Category: Networking
+  Brand: TP-Link
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[50/284] Cusy-AC1200 Mesh Wi-Fi Range Extender
+  Shopify: cusy-ac1200-mesh-wi-fi-range-extender
+  Status: active -> published
+  Category: Networking
+  Brand: cudy
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[51/284] Tp-Link AC750 mesh Wi-Fi extender
+  Shopify: tp-link-ac750-mesh-wi-fi-extender
+  Status: active -> published
+  Category: Networking
+  Brand: TP-Link
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[52/284] Tp-Link 300Mbps Wireless N USB VDSL/ADSL+ Modem Router
+  Shopify: tp-link-300mbps-wireless-n-usb-vdsl-adsl-modem-router
+  Status: active -> published
+  Category: Networking
+  Brand: TP-Link
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[53/284] Tp-Link 300Mbps Wireless N ADSL2+ Modem Router
+  Shopify: tp-link-300mbps-wireless-n-adsl2-modem-router
+  Status: active -> published
+  Category: Networking
+  Brand: TP-Link
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[54/284] Tp-Link 300Mbps Wireless N Router
+  Shopify: tp-link-300mbps-wireless-n-router
+  Status: active -> published
+  Category: Networking
+  Brand: TP-Link
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[55/284] Cudy M1300 3-Pack AC1200 Gigabit Whole Mesh WiFi System
+  Shopify: cudy-ac1200-mesh-wi-fi-system
+  Status: active -> published
+  Category: Networking
+  Brand: cudy
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[56/284] Cudy BE3600 GIGABIT-BRAND- Wi-Fi 7 Router
+  Shopify: cudy-be3600-gigabit-brand-wi-fi-7-router
+  Status: active -> published
+  Category: Networking
+  Brand: cudy
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[57/284] Cudy AX3000 Wi-Fi 6 Router
+  Shopify: cudy-ax3000-wi-fi-6-router
+  Status: active -> published
+  Category: Networking
+  Brand: cudy
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[58/284] Promate - Ulra Compact Super Speed Power Bank
+  Shopify: promate-ulra-compact-super-speed-power-bank
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[59/284] Promate - Ultra Compact Fast Charging Power Bank
+  Shopify: promate-ultra-compact-fast-charging-power-bank
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[60/284] Samsung 10000mAh Battery Pack - Dual-Port Power Bank with Super Fast Charging & Recycled Materials
+  Shopify: battery-pack-super-fast-charging
+  Status: active -> published
+  Category: Accessories
+  Brand: Samsung
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[61/284] Promate Smart Charging Power Bank 10000 MAH 20W Power Delivery
+  Shopify: promate-power-bank-dual
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[62/284] Qushini Elephant Wireless Charger
+  Shopify: qushini-elephant-wireless-charger
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[63/284] Belkin Base For Apple Pencil
+  Shopify: belkin-base-for-apple-pencil
+  Status: active -> published
+  Category: Accessories
+  Brand: Belkin
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[64/284] Promate Super-Fast Fabric Braider Apple Watch Charging Cable
+  Shopify: promate-apple-watch-charging
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[65/284] Porodo Universal Pencil For Mobile And Tablet
+  Shopify: porodo-universal-pencil
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 2
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[66/284] Yesido Watch Cable Magnetic Charging For Samsung Galaxy Watch
+  Shopify: yesido-ca162-watch-cable
+  Status: active -> published
+  Category: Accessories
+  Brand: Samsung
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[67/284] Yesido Capacitive Stylus Pen
+  Shopify: yesido-capacitive-stylus-pen-st01
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[68/284] Fujifilm Instax Mini 12 Gift Box Instant Camera + Mini Film + Protective Case + Photo Album
+  Shopify: fujifilm-instax-camera-mini12
+  Status: active -> published
+  Category: Cameras
+  Brand: Fujifilm
+  Variants: 5
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[69/284] Promate Power Pump 150 PSI Portable Air Compressor
+  Shopify: promate-powerpump-150psi-portable-air-compressor
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[70/284] Yesido Mini Portable Vacuum Cleaner
+  Shopify: yesido-mini-portable-vacuum-cleaner
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[71/284] YESIDO Electric Shaver
+  Shopify: yesido-electric-shaver
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[72/284] Porodo Lifestyle Precision Handheld Massager
+  Shopify: porodo-lifestyle-precision-handheld-massager-1
+  Status: unlisted -> draft
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[73/284] JBL PartyBox Club 120 - Portable Bluetooth Speaker
+  Shopify: jbl-partybox-110
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[74/284] Porodo Soundtec Speaker with Wireless Microphone
+  Shopify: porodo-soundtec-speaker-with-wireless-microphone
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[75/284] Porodo Soundtec Speaker with Dual Wireless Microphone
+  Shopify: porodo-soundtec-speaker-with-dual-wireless-microphone
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[76/284] Porodo Soundtec Audiolink Multi-Platform Audio Mixer and Speaker
+  Shopify: porodo-soundtec-audiolink-multi-platform-audio-mixer-and-speaker
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[77/284] Porodo Sountec Portable Soul Speaker
+  Shopify: porodo-portable-soul-speaker
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[78/284] Promate Lumisound True Wireless Bluetooth
+  Shopify: promate-lumisound-true-wireless-bluetooth
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[79/284] Motorola Wireless Portable Speaker & Wireless Charger
+  Shopify: motorola-wireless-portable-speaker
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Motorola
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[80/284] Yesido 8W RGB Mini Portable Outdoor Bluetooth Speaker
+  Shopify: yesido-ysw25-8w-rgb-mini-portable-outdoor-bluetooth-speaker
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[81/284] Yesido RGB Display Fabric Texture Mini Portable Wireless Speaker
+  Shopify: yesido-rgb-display-fabric-texture-mini-portable-wireless-speaker
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[82/284] Yesido Wireless Speaker
+  Shopify: yesido-wireless-speaker
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[83/284] Genius 2.1 Channel Speaker System With Rocket Subwoofer
+  Shopify: genius-2-1ch-speaker-system-with-rocket-subwoofer
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[84/284] Genius SoundBar 200 USB & Bluetooth
+  Shopify: genius-usb-soundbar-200bt
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[85/284] Promate Strike-40 - LumiSound™ HD 40W Portable Bluetooth Speaker
+  Shopify: promate-lumisound-hd
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[86/284] Promate Coddy Hi-Definition SafeAudio Wireless Headphone Blue
+  Shopify: promate-hi-definition-safe-audio
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[87/284] Promate High Fidelity Over-Ear Stereo Wireless Headphones Black
+  Shopify: promate-high-fidelity-over_ear-stereo-wireless-headphones
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[88/284] Promate High Fidelity Over-Ear Wireless Headphones Laboca-Pro Black
+  Shopify: hi
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[89/284] Porodo Deep Sound Wireless Headphones Green
+  Shopify: porodo-deep-sound-wireless-headphones
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[90/284] Porodo Soundtec Eclipse
+  Shopify: porodo-soundtec
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 2
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 2 configuration(s) have an invalid or zero regular price: black-1, red-1
+
+[91/284] JBL Wireless Microphone Set - Dual-Channel Receiver
+  Shopify: wireless-microphone-jbl
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[92/284] Jbl Party Box Wireless Mic
+  Shopify: party-box-wireless-mic
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[93/284] JBL Tune 520BT - Wireless On-Ear Headphones Black
+  Shopify: jbl-tune-77o-nc
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[94/284] JBL Live 670NC - Wireless On-Ear Headphones - White
+  Shopify: jbl-tune-670-nc
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[95/284] JBL Tune 720BT - Wireless Over-Ear Headphones
+  Shopify: jbl-tune-720-bt
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 2
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[96/284] Stanley 40 OZ Recycled Stainless Steel, Leak-Resistant, Car Cup Holder Compatible
+  Shopify: stanley
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[97/284] JBL Flip 7 - Portable Bluetooth Speaker
+  Shopify: jbl-flip6
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: JBL
+  Variants: 7
+  Images: 12 -> import 10 (10-image cap)
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[98/284] The Mind Fulness Card Game
+  Shopify: mindfulness
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[99/284] Box Against Office Card Game
+  Shopify: box-against-office
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[100/284] The Voting Game Card Game
+  Shopify: the-voting-game
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[101/284] Cards Against Humanity Card Game
+  Shopify: cards-against-humanity
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[102/284] Pick Your Poison NSFW Edition Card Game
+  Shopify: pick-your-poison-nsfw-edition
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 7 -> import 7
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[103/284] Pick Your Poison Card Game
+  Shopify: pick-your-poison
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[104/284] Drawing Without Dignity Card Game
+  Shopify: drawing-without-dignity
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[105/284] Incohearent Card Game
+  Shopify: incohearent
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[106/284] Disturbed Friends Card Game
+  Shopify: disturbed-friends
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[107/284] WTF Did You Say?!? Card Game
+  Shopify: wtf-did-you-say
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[108/284] Herd Mentality Card Game
+  Shopify: herd-mentality
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[109/284] Do You Know Me? Card Game
+  Shopify: do-you-know-me
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[110/284] Cards Against Humanity: Family Edition Card Game
+  Shopify: cards-against-humanity-family-edition
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[111/284] Fun Employed Card GAme
+  Shopify: fun-employed
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[112/284] Detective in Spaceship Puzzle
+  Shopify: detective-in-spaceship
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[113/284] Detective in Bakery Puzzle
+  Shopify: detective-in-bakery
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[114/284] Spot it! Dobble Card Game
+  Shopify: spot-it-dobble
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[115/284] Spot it! Camping Card Game
+  Shopify: spot-it-camping
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[116/284] Spot it! Sports Card Game
+  Shopify: spot-it-sports
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[117/284] Spot it! Hip Card Game
+  Shopify: spot-it-hip
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[118/284] Spot it! Card Game
+  Shopify: spot-it
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[119/284] Backgammon Board Game
+  Shopify: backgammon
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[120/284] Chekers Board Game
+  Shopify: chekers
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[121/284] The House On The Hill Widow's Walk Board Game
+  Shopify: the-house-on-the-hill-widows-walk
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[122/284] Betrayal At House On The Hill Board Game
+  Shopify: betrayal-at-house-on-the-hill
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[123/284] Ticket To Ride Board Game
+  Shopify: ticket-to-ride
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[124/284] Ticket to Ride Europe Board Game
+  Shopify: ticket-to-ride-europe
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[125/284] Catan The Base Game Board Game
+  Shopify: catan-the-base-game
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[126/284] Catan Cities & Knights Board Game
+  Shopify: catan-cities-knights
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[127/284] Catan SeaFarers Board Game
+  Shopify: catan-the-game
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[128/284] Polaroid Land Camera Puzzle
+  Shopify: polaroid-land-camera
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: Polaroid
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[129/284] Charades Card Game
+  Shopify: charades
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[130/284] Family Time Board Game
+  Shopify: family-time
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[131/284] Do You Remember? Card Game
+  Shopify: do-you-remember
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[132/284] Truth Or Dare For Couples Crad Game
+  Shopify: truth-or-dare
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[133/284] Twilight Struggle Board Game
+  Shopify: twilight-struggle
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[134/284] Dominion Board Game
+  Shopify: dominion
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[135/284] Root Board Game
+  Shopify: root
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[136/284] Deception Board Game
+  Shopify: deception
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[137/284] Azul Board Game
+  Shopify: azul
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 7 -> import 7
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[138/284] 7 Wonders Board Game
+  Shopify: 7-wonders
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[139/284] Telestrations After Dark Card Game
+  Shopify: telestrations-after-dark
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[140/284] Splendor Board Game
+  Shopify: cities-of-splendor
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[141/284] Risk Board Game
+  Shopify: risk
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[142/284] Ring A Ding Board Game
+  Shopify: ring-a-ding
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: Ring
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[143/284] Hitster Board Game
+  Shopify: hitster
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[144/284] Kluster Board Game
+  Shopify: kluster
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[145/284] 5 Second Rule Card Game
+  Shopify: 5-second-rule
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[146/284] Speak Out Game
+  Shopify: speak-out
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[147/284] Pylos Game
+  Shopify: pylos
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[148/284] Katamino Board Game
+  Shopify: katamino
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[149/284] Pentago Board Game
+  Shopify: pentago
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[150/284] Quoridor Base Game
+  Shopify: quoridor
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[151/284] Ubongo Classic Game
+  Shopify: ubongo
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[152/284] The Big Time Board Game
+  Shopify: the-big-time
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[153/284] 1 2 3 Cups Game
+  Shopify: 1-2-3-cups
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[154/284] Pictures Board Game
+  Shopify: pictures
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[155/284] Speed Cups Game
+  Shopify: speed-cups
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[156/284] Beat That! Board Game
+  Shopify: beat-that
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[157/284] Exit The Game The Polar Station Board Game
+  Shopify: the-polar-station
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: Polar
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[158/284] Exit The Forbidden Castle Board Game
+  Shopify: the-forbidden-castle
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[159/284] Avalon Board Game
+  Shopify: avalon
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[160/284] Organ Attack Card Game
+  Shopify: organ-attack
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[161/284] One Night Ultimate Werewolf Board Game
+  Shopify: one-night-ultimate-werewolf
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[162/284] One Night Alien Card Game
+  Shopify: one-night-alien
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[163/284] Perfect Timing Game
+  Shopify: perfect-timing
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[164/284] Verbal Volley Game
+  Shopify: verbal-volley
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[165/284] Domino Game
+  Shopify: domino
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[166/284] Ludo Game
+  Shopify: ludo
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[167/284] Skyjo Card Game
+  Shopify: skyjo
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[168/284] Magnetic Go Game Classico
+  Shopify: magnetic-go-game-classico
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[169/284] Charades For Kids Card Game
+  Shopify: charades-for-kids
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[170/284] Sequence For Kids Board Game
+  Shopify: sequence-for-kids
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[171/284] Secret Hitler Board Game
+  Shopify: secret-hitler
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[172/284] CoolCats & AssHats Card Game
+  Shopify: coolcats-asshats
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[173/284] Tacocat Spelled Backwards Card Game
+  Shopify: tacocat-spelled-backwards
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[174/284] Unstable Unicorns Card Game
+  Shopify: unstable-unicorns
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[175/284] Things They Don’t Teach You In School Card Game
+  Shopify: things-they-don-t-teach-you-in-school
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[176/284] I Should Have Known That! Card Game
+  Shopify: i-should-have-known-that
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[177/284] Dungeon Mayhem Card Game
+  Shopify: dungeon-mayhem
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[178/284] Love Lingual Card Game
+  Shopify: love-lingual
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[179/284] Quiddler Card Game
+  Shopify: quiddler
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[180/284] Unstable Unicorns Dragons Expansion Pack Card Game
+  Shopify: unstable-unicorns-dragons
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[181/284] Unicorns Of Legend Expansion Pack
+  Shopify: unicorns-of-legend
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[182/284] Unstable Unicorns NSFW Expansion Pack Card Game
+  Shopify: unstable-unicorns-nsfw
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[183/284] Intimacy 150 Prompts Card Game
+  Shopify: intimacy
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[184/284] What Am I ? Hen Edition Card Game
+  Shopify: what-am-i
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[185/284] Icebreaker Deeper Talk Card Game
+  Shopify: icebreaker-deeper-talk
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[186/284] Scenarios Card Game
+  Shopify: s
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 7 -> import 7
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[187/284] Taco Cat Goat Cheese Pizza Card Game
+  Shopify: taco-cat-goat-cheese-pizza
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[188/284] Jeu De Tarot Offrandes Gourmandes Card
+  Shopify: jeu-de-tarot-offrandes-gourmandes
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[189/284] Harry Potter Hogwarts Battle Board Game
+  Shopify: harry-potter-hogwarts-battle
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[190/284] Cards Against Disney Card Game
+  Shopify: cards-against-disney
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[191/284] Cards Against Star Wars Card Game
+  Shopify: cards-against-star-wars
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[192/284] Cards Against Thrones
+  Shopify: cards-against-thrones
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[193/284] Rick and Morty Card Game
+  Shopify: rick-and-morty
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[194/284] Happy Salmon Card Game
+  Shopify: happy-salmon
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[195/284] A Little Wordy Board Game
+  Shopify: a-little-wordy
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[196/284] Relative Insanity Card Game
+  Shopify: relative-insan-ty
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[197/284] Sequence Board Game
+  Shopify: sequence
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[198/284] Imploding Kittens Card Game
+  Shopify: imploding-kittens
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[199/284] Cluedo Board Game
+  Shopify: cluedo
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[200/284] Akropolis Board Game
+  Shopify: akropolis
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[201/284] Codenames Card Game
+  Shopify: codenames
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[202/284] Le3be 3a Krouteh! 3 Card Game
+  Shopify: le3be-3a-krouteh
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[203/284] Zello ma T2ello Card Game
+  Shopify: zello-ma-t2ello
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[204/284] Fhemt 3lek Card Game
+  Shopify: fhemt-3lek
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[205/284] 7zar Shou? Card Game
+  Shopify: 7zar-shou
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[206/284] Libano Poly Board Game
+  Shopify: libano-poly
+  Status: unlisted -> draft
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[207/284] Ring Spotlight Cam Wired
+  Shopify: ring-spotlight-cam-wired
+  Status: active -> published
+  Category: Cameras
+  Brand: Ring
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[208/284] Ring Chime Pro
+  Shopify: ring-chime-pro
+  Status: active -> published
+  Category: Networking
+  Brand: Ring
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[209/284] Xiaomi Smart Camera C200
+  Shopify: xiaomi-smart-camera
+  Status: unlisted -> draft
+  Category: Cameras
+  Brand: Xiaomi
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[210/284] PhotoBee Mobile Photo Printer
+  Shopify: photobee-mobile-photo-printer
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[211/284] Fujifilm instax Wide
+  Shopify: fujifilm-instax-wide
+  Status: active -> published
+  Category: Accessories
+  Brand: Fujifilm
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[212/284] PhotoBee All In one CartRidge
+  Shopify: photobee-all-in-one-carteridge
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[213/284] Fujifilm instax mini
+  Shopify: fujifilm-instax-mini
+  Status: active -> published
+  Category: Cameras
+  Brand: Fujifilm
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[214/284] FeelCare Photo Frame
+  Shopify: feelcare
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[215/284] Porodo Kids Flip Digital Camera
+  Shopify: porodo-kids-flip
+  Status: active -> published
+  Category: Cameras
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[216/284] Havit Prime Sapphire Smart Projector
+  Shopify: havit-prime-sapphire-smart-projector
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[217/284] Porodo UHD Dual Display
+  Shopify: porodo-uhd-dual-display
+  Status: active -> published
+  Category: Cameras
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[218/284] Porodo Kids Instant Camera
+  Shopify: porodo-kids-instant-camera
+  Status: active -> published
+  Category: Cameras
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[219/284] Havit Prime Opal
+  Shopify: havit-prime-opal
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[220/284] Green Lion Digital Weight Scale
+  Shopify: green-lion-digital-weight-scale
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[221/284] Porodo Kids Walkie Talkie
+  Shopify: porodo-kids-walkie-talkie
+  Status: active -> published
+  Category: Fun Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[222/284] Green Lion Pocket Calculator
+  Shopify: green-lion-pocket-calculator
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 2
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 2 configuration(s) have an invalid or zero regular price: lcd-display / BLUE, lcd-display / PURPLE
+
+[223/284] Porodo Precision Handheld Massager
+  Shopify: porodo-lifestyle-precision-handheld-massager
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 3
+  Images: 7 -> import 7
+  Preflight: BLOCKED — BLOCKED: 3 configuration(s) have an invalid or zero regular price: Black, Space Gray, White
+
+[224/284] Night Light Alarm Clock
+  Shopify: night-light-alarm-clock
+  Status: active -> published
+  Category: Home, Living & Office
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[225/284] Porodo Smart Skipping Rope
+  Shopify: porodo-smart-skipping-rope
+  Status: active -> published
+  Category: Fun Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[226/284] Earldom Wireless Wi-Fi Display Dongle W6+
+  Shopify: earldom-wireless-wifi-display-dongle-w6
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[227/284] GameSir GTV100 HDMI Display Adapter
+  Shopify: gamesir-gtv100-hdmi-display-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: GameSir
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[228/284] Kanex USB-C To Gigabit Ethernet Adapter
+  Shopify: kanex-usb-c-to-gigabit-ethernet-adapter
+  Status: active -> published
+  Category: Networking
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[229/284] Kanex USB-C To VGA Adapter
+  Shopify: kanex-usb-c-to-vga-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[230/284] Belkin USB-C To Micro USB Adapter
+  Shopify: belkin-usb-c-to-micro-usb-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: Belkin
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[231/284] Huawei Micro USB To USB-C Adapter
+  Shopify: huawei-usb-type-c-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: Huawei
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[232/284] Kakusiga USB 2.0 Adapter USB Male To Type-C Female
+  Shopify: kakusiga-usb-2-0-adapter-usb-male-to-type-c-female
+  Status: unlisted -> draft
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[233/284] YeSido - HM06 2in1 HDMI Cable Video Adapter
+  Shopify: yesido-hm06-2in1-hdmi-cable-video-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[234/284] YeSido Type-C to HDMI Video Cable
+  Shopify: yesido-hm10-type-c-to-hdmi-video-cable
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[235/284] YeSido Type-C to USB-A OTG Adapter
+  Shopify: yesido-gs06-type-c-to-usb-a-otg-adapter-1
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[236/284] Promate Right Angled 4K HDMI
+  Shopify: promate-right-angled-4k-hdmi
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[237/284] Promate 4K HDMI Audio Video Cable
+  Shopify: promate-4k-hdmi-audio-video-cable
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[238/284] Promate Ultra High Definition Audio Video Cable
+  Shopify: promate-ultra-high-definition-audio-video-cable
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[239/284] Promate MultiPort USB-C Hub 11 In 1
+  Shopify: promate-multiport-usb-c-hub-11in1
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[240/284] Promate MultiPort USB-C Hub 9in1
+  Shopify: promate-multiport-usb-c-hub-9in1
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[241/284] Promate Ultra Compact USB-C Hub 8in1
+  Shopify: promate-ultra-compact-usb-c-hub-8in1
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 7 -> import 7
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[242/284] Promate Slim USB-C Hub 7in1
+  Shopify: promate-slim-usb-c-hub
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[243/284] Promate LumiFlux
+  Shopify: promate-lumiflux
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[244/284] Promate Lumisound Bluetooth Speaker
+  Shopify: promate-lumisound-bluetooth-speaker
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[245/284] Promate Lumi Sound HD Speaker
+  Shopify: promate-lumi-sound-hd-speaker
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[246/284] Promate MagGrip Cradleless
+  Shopify: promate-maggrip-cradleless
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[247/284] Promate Ulra-Fast Dual Port Car charger
+  Shopify: promate-ulra-fast-dual-port-car-charger
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[248/284] Promate RapidCharge
+  Shopify: promate-rapidcharge
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[249/284] Promate  Transparent Car Charger
+  Shopify: promate-transparent-car-charger
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[250/284] Promate Power Delivery Dual Charging Connectors
+  Shopify: promate-power-delivery-dual-charging-connectors
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 7 -> import 7
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[251/284] Promate MagSafe Car Charger
+  Shopify: promate-magsafe-car-charger
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[252/284] Promate MagSafe Wireless Car Charger 1W Built-In Wireless Mono ENC Earphone
+  Shopify: promate-magsafe-wireless-car-charger
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[253/284] Promate  Ultra-Compact USB-C Lighting Ports & Bidirectional Cable 10000MAH Neo 10-Uni
+  Shopify: promate-ultra-compact-usb-c-lighting-ports-bidirectional-cable
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[254/284] Promate Ultra Compact Super Speed Power bank
+  Shopify: promate-ultra-compact-super-speed-power-bank
+  Status: unlisted -> draft
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: BLOCKED — BLOCKED: 1 configuration(s) have an invalid or zero regular price: Standard
+
+[255/284] Promate Rugged EcoLight Solar Power Bank 10000MAH SolarTank-10PDQi
+  Shopify: promate-rugged-ecolight-solar-power-bank
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 10 -> import 10
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[256/284] Promate MagSafe Compatible Wireless Charging Power Bank 10000MAH PowerPack-Fold
+  Shopify: promate-magsafe-compatible-wireless-charging-power-bank
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 11 -> import 10 (10-image cap)
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[257/284] Promate Blade-5 Ultra-Slim Aluminum Crafted MagSafe Compatible Wireless Charging PowerBank
+  Shopify: promate-magsafe-wireless-charging
+  Status: active -> published
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[258/284] Apple Pencil (USB-C)
+  Shopify: apple-pencil-pro-copy
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 3 -> import 3
+  SKIP: existing product name (8546c441-d0df-4140-984a-3cf48c947bbe)
+
+[259/284] Apple Pencil Pro (2024)
+  Shopify: apple-pencil-pro
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[260/284] Apple USB Power Adapter 5W
+  Shopify: apple-usb-power-adapter-5w
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[261/284] Apple AirTag
+  Shopify: apple-airtag
+  Status: active -> published
+  Category: Fun Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[262/284] Apple MagSafe Charger (1M)
+  Shopify: apple-magsafe-charger-1-m
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[263/284] Apple iPhone Clear Case With MagSafe
+  Shopify: iphone-clear-case-with-magsafe
+  Status: active -> published
+  Category: Phone Cases
+  Brand: Apple
+  Variants: 16
+  Images: 17 -> import 10 (10-image cap)
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[264/284] Apple Watch Magnetic Fast Charger To USB-C Cable (1M)
+  Shopify: apple-lightning-to-usb-cable-1-m-copy
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[265/284] Apple Lightning to USB Cable (1M)
+  Shopify: apple-usb-c-to-lightning-cable-2-m-copy
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[266/284] Apple USB-C to Lightning Cable (2M)
+  Shopify: apple-usb-c-to-lightning-cable-1-m-copy
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[267/284] Apple USB-C to Lightning Cable (1M)
+  Shopify: apple-240w-usb-c-charge-cable-2-m-copy
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[268/284] Apple 240W USB-C Charge Cable (2M)
+  Shopify: apple-240w-usb-c-charge-cable-2-m
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[269/284] Apple 60W USB-C Charge Cable (1M)
+  Shopify: apple-60w-usb-c-charge-cable-1-m
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[270/284] Apple Power Adapter Extension Cable (1.8MM)
+  Shopify: apple-power-adapter-extension-cable
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[271/284] Apple Lightning To 3.5mm Headphone Jack Adapter
+  Shopify: apple-lightning-to-3-5mm-headphone-jack-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[272/284] Apple USB-C to 3.5 mm Headphone Jack Adapter
+  Shopify: apple-usb-c-to-3-5-mm-headphone-jack-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 4 -> import 4
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[273/284] Apple AirPods Max 2
+  Shopify: airpods-max
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Apple
+  Variants: 5
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[274/284] Apple EarPods (3.5mm Headphone Plug)
+  Shopify: apple-earpods-3-5mm-headphone-plug
+  Status: unlisted -> draft
+  Category: Audio & Sound
+  Brand: Apple
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[275/284] Apple EarPods (Lightning Connector)
+  Shopify: apple-earpods-lightning-connector
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Apple
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[276/284] Apple EarPods (USB-C)
+  Shopify: apple-earpods-usb-c
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Apple
+  Variants: 1
+  Images: 6 -> import 6
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[277/284] Apple AirPods Pro 3
+  Shopify: airpods-pro-2-magsafe-charging-case-usb-c-1
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Apple
+  Variants: 1
+  Images: 5 -> import 5
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[278/284] AirPods 4 With Charging Case (USB-C)
+  Shopify: airpods-pro-2-magsafe-charging-case-usb-c
+  Status: active -> published
+  Category: Audio & Sound
+  Brand: Apple
+  Variants: 2
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[279/284] Promate 65W GaNFast™ Foldable MagSafe Compatible Wireless Charging Station
+  Shopify: promate-65w-ganfast™-foldable-magsafe-compatible-wireless-charging-station
+  Status: unlisted -> draft
+  Category: Accessories
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 9 -> import 9
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[280/284] Promate MagHalo Ultra-Slim MagSafe Compatible Rechargeable LED Ring Light
+  Shopify: promate-ultra-slim-magsafe-compatible-rechargeable-led-ring-light
+  Status: active -> published
+  Category: Accessories
+  Brand: Ring
+  Variants: 1
+  Images: 8 -> import 8
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[281/284] Catan The Base Game
+  Shopify: catan
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 1 -> import 1
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[282/284] UNO FLIP! Card Game
+  Shopify: uno-flip
+  Status: active -> published
+  Category: Board & Card Games
+  Brand: UNRESOLVED
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[283/284] Sony PlayStation 5 Slim Edition- 2 Years warranty
+  Shopify: playstation-5-slim-console
+  Status: active -> published
+  Category: Gaming
+  Brand: PlayStation
+  Variants: 1
+  Images: 2 -> import 2
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+[284/284] Apple 20W USB-C Power Adapter
+  Shopify: apple-20w-usb-c-power-adapter
+  Status: active -> published
+  Category: Accessories
+  Brand: Apple
+  Variants: 1
+  Images: 3 -> import 3
+  Preflight: PASS
+  DRY RUN: no changes made.
+
+============================================================
+Imported: 0
+Skipped: 2
+Blocked: 56
+Failed: 0
+Dry run only — database and storage were not changed.
+============================================================
+

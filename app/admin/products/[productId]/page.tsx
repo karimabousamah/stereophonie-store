@@ -81,16 +81,18 @@ export default async function EditProductPage({
     redirect("/admin/login");
   }
 
-  const [productResult, categoriesResult, brandsResult] = await Promise.all([
-    supabase
-      .from("products")
-      .select(
-        `
+  const [productResult, categoriesResult, subcategoriesResult, brandsResult] =
+    await Promise.all([
+      supabase
+        .from("products")
+        .select(
+          `
         id,
         name,
         slug,
         description,
         category_id,
+        subcategory_id,
         brand_id,
         status,
         availability,
@@ -122,23 +124,35 @@ export default async function EditProductPage({
           variant_name,
           variant_id,
           variant_position,
-          is_variant_primary
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
         )
       `,
-      )
-      .eq("id", productId)
-      .single(),
+        )
+        .eq("id", productId)
+        .single(),
 
-    supabase.from("categories").select("id, name").order("name", {
-      ascending: true,
-    }),
+      supabase.from("categories").select("id, name").order("name", {
+        ascending: true,
+      }),
 
-    supabase
-      .from("brands")
-      .select("id, name")
-      .order("sort_order", { ascending: true })
-      .order("name", { ascending: true }),
-  ]);
+      supabase
+        .from("subcategories")
+        .select("id, category_id, name")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true }),
+
+      supabase
+        .from("brands")
+        .select("id, name")
+        .order("sort_order", { ascending: true })
+        .order("name", { ascending: true }),
+    ]);
 
   if (productResult.error || !productResult.data) {
     notFound();
@@ -186,7 +200,8 @@ export default async function EditProductPage({
 
   const salePrice = firstVariant?.sale_price ?? null;
 
-  const loadingError = categoriesResult.error || brandsResult.error;
+  const loadingError =
+    categoriesResult.error || subcategoriesResult.error || brandsResult.error;
 
   const errorMessage =
     resolvedSearchParams.error ??
@@ -319,6 +334,7 @@ export default async function EditProductPage({
               name: product.name,
               description: product.description ?? "",
               categoryId: product.category_id ?? "",
+              subcategoryId: product.subcategory_id ?? "",
               brandId: product.brand_id ?? "",
               status: product.status,
               availability: product.availability,

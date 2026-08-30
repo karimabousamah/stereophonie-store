@@ -38,6 +38,7 @@ type Brand = {
 
 type ProductFormProps = {
   categories: Category[];
+
   brands: Brand[];
   errorMessage?: string;
 };
@@ -125,7 +126,9 @@ export default function ProductForm({
     newArrival: false,
   });
 
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState("");
 
   const [selectedBrandName, setSelectedBrandName] = useState("");
 
@@ -180,7 +183,13 @@ export default function ProductForm({
             existing.altText === incoming.altText &&
             existing.isPrimary === incoming.isPrimary &&
             existing.position === incoming.position &&
-            existing.variantName === incoming.variantName
+            existing.configurationIds.length ===
+              incoming.configurationIds.length &&
+            existing.configurationIds.every(
+              (configurationId, configurationIndex) =>
+                configurationId ===
+                incoming.configurationIds[configurationIndex],
+            )
           );
         });
 
@@ -413,11 +422,11 @@ export default function ProductForm({
                 />
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2">
-                <div>
+              <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 md:items-start">
+                <div className="min-w-0">
                   <label
                     htmlFor="category"
-                    className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
+                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
                   >
                     Category
                   </label>
@@ -425,24 +434,27 @@ export default function ProductForm({
                   <ProductCategoryPicker
                     categories={categories}
                     onCategoryChange={(category) => {
+                      setSelectedCategoryId(category?.id ?? "");
                       setSelectedCategoryName(category?.name ?? "");
+                      setSelectedSubcategoryId("");
                     }}
                   />
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
+                <div className="min-w-0">
+                  <label
+                    htmlFor="brand"
+                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
+                  >
                     Brand
                   </label>
 
-                  <div className="mt-3">
-                    <ProductBrandPicker
-                      brands={brands}
-                      onBrandChange={(brand) =>
-                        setSelectedBrandName(brand?.name ?? "")
-                      }
-                    />
-                  </div>
+                  <ProductBrandPicker
+                    brands={brands}
+                    onBrandChange={(brand) =>
+                      setSelectedBrandName(brand?.name ?? "")
+                    }
+                  />
                 </div>
               </div>
             </div>

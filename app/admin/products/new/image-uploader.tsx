@@ -22,12 +22,12 @@ type SelectedImage = {
   altText: string;
 
   /*
-   * Empty string = shared photograph.
+   * Empty array = Shared with all configurations.
    *
-   * Otherwise this is the stable clientId of the exact
-   * configuration, NOT its editable display name.
+   * Otherwise this contains every exact configuration clientId
+   * using this same physical photograph.
    */
-  configurationId: string;
+  configurationIds: string[];
 };
 
 type ImageUploaderConfiguration = {
@@ -135,98 +135,36 @@ export default function ImageUploader({
   }, []);
 
   /*
-   * IMPORTANT
-   * ========================================================
+   * A physical photograph has one order while creating the
+   * product. Each exact configuration derives its initial
+   * gallery by filtering that physical order.
    *
-   * position is calculated INSIDE the photograph's own
-   * configuration.
-   *
-   * Example:
-   *
-   * Black:
-   *   Front  -> position 0 = MAIN
-   *   Back   -> position 1
-   *   Detail -> position 2
-   *
-   * White:
-   *   Angle  -> position 0 = MAIN
-   *   Front  -> position 1
-   *
-   * The configurations therefore have completely independent
-   * galleries even though they are submitted together.
-   *
-   * isPrimary remains exactly ONE product-level primary image
-   * for backward compatibility with cards / old database code.
-   * Configuration main photographs are represented by
-   * position === 0 inside their own group.
-   * ========================================================
+   * After creation, the existing-product image manager provides
+   * fully independent order/Main controls per configuration.
    */
   useEffect(() => {
     if (!onImagesChange) {
       return;
     }
 
-    const groupPositions = new Map<string, number>();
-
     const prepared: DirectUploadSelectedImage[] = images.map(
-      (image, absoluteIndex) => {
-        const groupKey = image.configurationId || "__shared__";
-
-        const groupPosition = groupPositions.get(groupKey) ?? 0;
-
-        groupPositions.set(groupKey, groupPosition + 1);
-
-        const configuration = image.configurationId
-          ? configurationById.get(image.configurationId)
-          : undefined;
-
-        return {
-          file: image.file,
-          configurationId: image.configurationId,
-
-          /*
-           * Keep variantName for compatibility with the
-           * current upload pipeline. The server now also
-           * receives configurationId, which is authoritative.
-           */
-          variantName: configuration
-            ? clean(configuration.variant_name) ||
-              configurationLabel(configuration)
-            : "",
-
-          altText: image.altText,
-
-          /*
-           * Position is independent inside each configuration.
-           * Shared photographs have their own group as well.
-           */
-          variantPosition: groupPosition,
-
-          /*
-           * Exactly one photograph can be marked Main for a
-           * configuration. Shared photographs continue using
-           * the normal product-level primary flag.
-           */
-          isVariantPrimary: Boolean(
-            image.configurationId && groupPosition === 0,
+      (image, absoluteIndex) => ({
+        file: image.file,
+        configurationIds: Array.from(
+          new Set(
+            image.configurationIds
+              .map((configurationId) => clean(configurationId))
+              .filter(Boolean),
           ),
-
-          /*
-           * Keep ONE global primary image because existing
-           * product-card/database logic expects one.
-           */
-          isPrimary: absoluteIndex === 0,
-
-          /*
-           * Per-configuration position.
-           */
-          position: groupPosition,
-        };
-      },
+        ),
+        altText: image.altText,
+        isPrimary: absoluteIndex === 0,
+        position: absoluteIndex,
+      }),
     );
 
     onImagesChange(prepared);
-  }, [images, configurationById, onImagesChange]);
+  }, [images, onImagesChange]);
 
   async function addFiles(selectedFiles: FileList | null) {
     setErrorMessage("");
@@ -288,7 +226,7 @@ export default function ImageUploader({
       file,
       previewUrl: URL.createObjectURL(file),
       altText: "",
-      configurationId: "",
+      configurationIds: [],
     }));
 
     setImages((current) => [...current, ...newImages]);
@@ -323,26 +261,41 @@ export default function ImageUploader({
     );
   }
 
-  function updateConfiguration(imageId: string, configurationId: string) {
+  function toggleConfiguration(imageId: string, configurationId: string) {
+    setImages((current) =>
+      current.map((image) => {
+        if (image.id !== imageId) {
+          return image;
+        }
+
+        const alreadySelected =
+          image.configurationIds.includes(configurationId);
+
+        return {
+          ...image,
+          configurationIds: alreadySelected
+            ? image.configurationIds.filter(
+                (candidateId) => candidateId !== configurationId,
+              )
+            : [...image.configurationIds, configurationId],
+        };
+      }),
+    );
+  }
+
+  function makeShared(imageId: string) {
     setImages((current) =>
       current.map((image) =>
         image.id === imageId
           ? {
               ...image,
-              configurationId,
+              configurationIds: [],
             }
           : image,
       ),
     );
   }
 
-  /*
-   * Reorder ONLY photographs belonging to the same
-   * configuration.
-   *
-   * A Black photograph can therefore never accidentally move
-   * inside the White gallery.
-   */
   function moveImage(imageId: string, direction: "left" | "right") {
     setImages((current) => {
       const currentIndex = current.findIndex((image) => image.id === imageId);
@@ -351,94 +304,20 @@ export default function ImageUploader({
         return current;
       }
 
-      const target = current[currentIndex];
+      const destinationIndex =
+        direction === "left" ? currentIndex - 1 : currentIndex + 1;
 
-      const sameGroupIndices = current
-        .map((image, index) => ({
-          image,
-          index,
-        }))
-        .filter(({ image }) => image.configurationId === target.configurationId)
-        .map(({ index }) => index);
-
-      const groupIndex = sameGroupIndices.indexOf(currentIndex);
-
-      if (groupIndex < 0) {
-        return current;
-      }
-
-      const nextGroupIndex =
-        direction === "left" ? groupIndex - 1 : groupIndex + 1;
-
-      if (nextGroupIndex < 0 || nextGroupIndex >= sameGroupIndices.length) {
-        return current;
-      }
-
-      const swapIndex = sameGroupIndices[nextGroupIndex];
-
-      const next = [...current];
-
-      [next[currentIndex], next[swapIndex]] = [
-        next[swapIndex],
-        next[currentIndex],
-      ];
-
-      return next;
-    });
-  }
-
-  /*
-   * "Main" for a configuration means position 0 in that
-   * configuration's own gallery.
-   *
-   * Move the selected image in front of every image belonging
-   * to the same configuration.
-   */
-  function makeConfigurationMain(imageId: string) {
-    setImages((current) => {
-      const sourceIndex = current.findIndex((image) => image.id === imageId);
-
-      if (sourceIndex < 0) {
-        return current;
-      }
-
-      const source = current[sourceIndex];
-
-      const firstGroupIndex = current.findIndex(
-        (image) => image.configurationId === source.configurationId,
-      );
-
-      if (firstGroupIndex < 0 || firstGroupIndex === sourceIndex) {
+      if (destinationIndex < 0 || destinationIndex >= current.length) {
         return current;
       }
 
       const next = [...current];
+      const [moving] = next.splice(currentIndex, 1);
 
-      const [removed] = next.splice(sourceIndex, 1);
-
-      /*
-       * Recalculate insertion location after removal.
-       */
-      const insertionIndex = next.findIndex(
-        (image) => image.configurationId === source.configurationId,
-      );
-
-      if (insertionIndex < 0) {
-        next.push(removed);
-      } else {
-        next.splice(insertionIndex, 0, removed);
-      }
+      next.splice(destinationIndex, 0, moving);
 
       return next;
     });
-  }
-
-  function groupPosition(image: SelectedImage) {
-    const group = images.filter(
-      (candidate) => candidate.configurationId === image.configurationId,
-    );
-
-    return group.findIndex((candidate) => candidate.id === image.id);
   }
 
   return (
@@ -511,28 +390,30 @@ export default function ImageUploader({
 
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {images.map((image, absoluteIndex) => {
-              const localPosition = groupPosition(image);
+              const isShared = image.configurationIds.length === 0;
 
-              const configuration = image.configurationId
-                ? configurationById.get(image.configurationId)
-                : undefined;
+              const selectedConfigurations = image.configurationIds
+                .map((configurationId) =>
+                  configurationById.get(configurationId),
+                )
+                .filter(
+                  (
+                    configuration,
+                  ): configuration is ImageUploaderConfiguration =>
+                    Boolean(configuration),
+                );
 
-              const isConfigurationMain = localPosition === 0;
-
-              const sameGroupCount = images.filter(
-                (candidate) =>
-                  candidate.configurationId === image.configurationId,
-              ).length;
-
-              const currentLabel = configuration
-                ? configurationLabel(configuration)
-                : "Shared with all configurations";
+              const currentLabel = isShared
+                ? "Shared with all configurations"
+                : selectedConfigurations
+                    .map((configuration) => configurationLabel(configuration))
+                    .join(" · ");
 
               return (
                 <article
                   key={image.id}
                   className={`overflow-hidden rounded-[12px] border bg-[#101010] transition ${
-                    isConfigurationMain
+                    absoluteIndex === 0
                       ? "border-emerald-400/25"
                       : "border-white/10"
                   }`}
@@ -549,13 +430,13 @@ export default function ImageUploader({
 
                     <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
                       <span className="rounded-full border border-black/10 bg-white/90 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-black shadow-sm backdrop-blur">
-                        {String(localPosition + 1).padStart(2, "0")}
+                        {String(absoluteIndex + 1).padStart(2, "0")}
                       </span>
 
-                      {isConfigurationMain ? (
+                      {absoluteIndex === 0 ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/15 bg-emerald-50/95 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.11em] text-emerald-700 shadow-sm">
                           <Star className="h-3 w-3 fill-current" />
-                          Main
+                          Product Main
                         </span>
                       ) : null}
                     </div>
@@ -571,39 +452,72 @@ export default function ImageUploader({
                     </p>
 
                     <div className="mt-4">
-                      <label
-                        htmlFor={`configuration-${image.id}`}
-                        className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35"
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
+                        Photograph usage
+                      </p>
+
+                      <button
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => makeShared(image.id)}
+                        className={`mt-2 w-full rounded-xl border px-3 py-3 text-left text-xs transition ${
+                          isShared
+                            ? "border-emerald-300/35 bg-emerald-300/[0.07] text-emerald-200"
+                            : "border-white/10 bg-black/30 text-white/45 hover:border-white/25 hover:text-white/70"
+                        }`}
                       >
-                        Configuration
-                      </label>
+                        Shared with all configurations
+                      </button>
 
-                      <select
-                        id={`configuration-${image.id}`}
-                        value={image.configurationId}
-                        onChange={(event) =>
-                          updateConfiguration(image.id, event.target.value)
-                        }
-                        className="mt-2 min-h-10 w-full cursor-pointer rounded-xl border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition focus:border-white/35"
-                      >
-                        <option value="">Shared with all configurations</option>
+                      {configurations.length > 0 ? (
+                        <div className="mt-2 max-h-48 space-y-1.5 overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-2">
+                          {configurations.map((configuration, index) => {
+                            const checked = image.configurationIds.includes(
+                              configuration.clientId,
+                            );
 
-                        {configurations.map((configuration, index) => (
-                          <option
-                            key={configuration.clientId}
-                            value={configuration.clientId}
-                          >
-                            {configurationLabel({
-                              ...configuration,
-                              fallbackLabel:
-                                configuration.fallbackLabel ||
-                                `Configuration ${index + 1}`,
-                            })}
-                          </option>
-                        ))}
-                      </select>
+                            return (
+                              <label
+                                key={configuration.clientId}
+                                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition ${
+                                  checked
+                                    ? "border-white/20 bg-white/[0.06]"
+                                    : "border-transparent hover:bg-white/[0.03]"
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  disabled={disabled}
+                                  checked={checked}
+                                  onChange={() =>
+                                    toggleConfiguration(
+                                      image.id,
+                                      configuration.clientId,
+                                    )
+                                  }
+                                  className="h-4 w-4 accent-white"
+                                />
 
-                      <p className="mt-2 text-[10px] leading-4 text-white/25">
+                                <span className="min-w-0 truncate text-xs text-white/65">
+                                  {configurationLabel({
+                                    ...configuration,
+                                    fallbackLabel:
+                                      configuration.fallbackLabel ||
+                                      `Configuration ${index + 1}`,
+                                  })}
+                                </span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="mt-2 text-[10px] leading-4 text-white/25">
+                          Create product configurations to assign this
+                          photograph to specific versions.
+                        </p>
+                      )}
+
+                      <p className="mt-2 line-clamp-2 text-[10px] leading-4 text-white/25">
                         {currentLabel}
                       </p>
                     </div>
@@ -631,9 +545,9 @@ export default function ImageUploader({
                     <div className="mt-4 flex items-center gap-2">
                       <button
                         type="button"
+                        disabled={disabled || absoluteIndex === 0}
                         onClick={() => moveImage(image.id, "left")}
-                        disabled={localPosition === 0}
-                        title="Move earlier in this configuration"
+                        title="Move photograph earlier"
                         className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                       >
                         <ArrowLeft className="h-4 w-4" />
@@ -641,9 +555,11 @@ export default function ImageUploader({
 
                       <button
                         type="button"
+                        disabled={
+                          disabled || absoluteIndex === images.length - 1
+                        }
                         onClick={() => moveImage(image.id, "right")}
-                        disabled={localPosition === sameGroupCount - 1}
-                        title="Move later in this configuration"
+                        title="Move photograph later"
                         className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                       >
                         <ArrowRight className="h-4 w-4" />
@@ -651,23 +567,10 @@ export default function ImageUploader({
 
                       <button
                         type="button"
-                        onClick={() => makeConfigurationMain(image.id)}
-                        disabled={isConfigurationMain}
-                        title="Make main photograph for this configuration"
-                        className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.06] hover:text-emerald-300 disabled:border-emerald-400/20 disabled:bg-emerald-400/[0.05] disabled:text-emerald-300"
-                      >
-                        <Star
-                          className={`h-4 w-4 ${
-                            isConfigurationMain ? "fill-current" : ""
-                          }`}
-                        />
-                      </button>
-
-                      <button
-                        type="button"
+                        disabled={disabled}
                         onClick={() => removeImage(image.id)}
                         title="Remove photograph"
-                        className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-red-400/30 hover:bg-red-400/[0.06] hover:text-red-300"
+                        className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-red-400/30 hover:bg-red-400/[0.06] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-20"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

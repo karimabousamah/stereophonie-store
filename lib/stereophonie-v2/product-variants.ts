@@ -1,8 +1,5 @@
 export type ProductAvailabilityStatus =
-  | "in_stock"
-  | "low_stock"
-  | "out_of_stock"
-  | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
 
 export type ProductVariantAttributes = Record<string, string>;
 
@@ -37,7 +34,9 @@ export const PRODUCT_ATTRIBUTE_PRESETS = [
 ] as const;
 
 export function normalizeVariantName(value: unknown) {
-  return String(value ?? "").trim().replace(/\s+/g, " ");
+  return String(value ?? "")
+    .trim()
+    .replace(/\s+/g, " ");
 }
 
 export function normalizeVariantAttributeKey(value: unknown) {
@@ -101,9 +100,7 @@ export function resolveVariantName({
   return normalizeVariantName(legacySize);
 }
 
-export function createLegacyVariantCompatibilityValue(
-  variantName: string,
-) {
+export function createLegacyVariantCompatibilityValue(variantName: string) {
   return normalizeVariantName(variantName);
 }
 
@@ -123,19 +120,10 @@ export function variantIsPurchasable({
 
 export function calculateProductAvailability(
   variants: Array<{
-    availability_status: ProductAvailabilityStatus;
+    availability_status: ProductAvailabilityStatus | null;
     stock_quantity?: number;
   }>,
 ): "in_stock" | "out_of_stock" | "coming_soon" {
-  if (
-    variants.length > 0 &&
-    variants.every(
-      (variant) => variant.availability_status === "coming_soon",
-    )
-  ) {
-    return "coming_soon";
-  }
-
   const hasAvailableVariant = variants.some(
     (variant) =>
       (variant.availability_status === "in_stock" ||
@@ -143,7 +131,19 @@ export function calculateProductAvailability(
       Number(variant.stock_quantity ?? 0) > 0,
   );
 
-  return hasAvailableVariant ? "in_stock" : "out_of_stock";
+  if (hasAvailableVariant) {
+    return "in_stock";
+  }
+
+  const hasComingSoonVariant = variants.some(
+    (variant) => variant.availability_status === "coming_soon",
+  );
+
+  if (hasComingSoonVariant) {
+    return "coming_soon";
+  }
+
+  return "out_of_stock";
 }
 
 export function validateElectronicsVariants(
@@ -179,11 +179,7 @@ export function validateElectronicsVariants(
 
     usedNames.add(normalizedName);
 
-    if (
-      !PRODUCT_AVAILABILITY_STATUSES.includes(
-        variant.availability_status,
-      )
-    ) {
+    if (!PRODUCT_AVAILABILITY_STATUSES.includes(variant.availability_status)) {
       return {
         valid: false as const,
         message: `Select a valid availability for "${variantName}".`,

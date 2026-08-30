@@ -80,7 +80,11 @@ function calculateProductAvailability(
   return "out_of_stock";
 }
 
-function validateVariants(productId: string, variants: VariantInput[]) {
+function validateVariants(
+  productId: string,
+  variants: VariantInput[],
+  publishingIntent: string,
+) {
   if (!Array.isArray(variants) || variants.length === 0) {
     redirectWithError(productId, "Create at least one product configuration.");
   }
@@ -135,14 +139,21 @@ function validateVariants(productId: string, variants: VariantInput[]) {
         ? ""
         : String(variant.sale_price).trim();
 
-    if (!Number.isFinite(regularPrice) || regularPrice <= 0) {
+    if (
+      publishingIntent === "publish" &&
+      (!Number.isFinite(regularPrice) || regularPrice <= 0)
+    ) {
       redirectWithError(
         productId,
         `Enter a valid regular price for ${configurationName}.`,
       );
     }
 
-    if (salePriceText) {
+    if (
+      salePriceText &&
+      (publishingIntent === "publish" ||
+        (Number.isFinite(regularPrice) && regularPrice > 0))
+    ) {
       const salePrice = Number(salePriceText);
 
       if (
@@ -191,6 +202,8 @@ export async function updateProduct(formData: FormData) {
 
   const categoryId = String(formData.get("category_id") ?? "").trim();
 
+  const subcategoryId = String(formData.get("subcategory_id") ?? "").trim();
+
   const collectionId = String(formData.get("collection_id") ?? "").trim();
 
   const brandId = String(formData.get("brand_id") ?? "").trim();
@@ -224,7 +237,7 @@ export async function updateProduct(formData: FormData) {
     );
   }
 
-  validateVariants(productId, variants);
+  validateVariants(productId, variants, publishingIntent);
 
   const productStatus = publishingIntent === "publish" ? "published" : "draft";
 
@@ -236,6 +249,7 @@ export async function updateProduct(formData: FormData) {
       name,
       description: description || null,
       category_id: categoryId,
+      subcategory_id: subcategoryId || null,
       collection_id: collectionId || null,
       brand_id: brandId || null,
       status: productStatus,
@@ -335,9 +349,17 @@ export async function updateProduct(formData: FormData) {
       attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
 
-      regular_price: configurationRegularPrice,
+      regular_price:
+        Number.isFinite(configurationRegularPrice) &&
+        configurationRegularPrice > 0
+          ? configurationRegularPrice
+          : 0,
 
-      sale_price: configurationSalePrice,
+      sale_price:
+        Number.isFinite(configurationRegularPrice) &&
+        configurationRegularPrice > 0
+          ? configurationSalePrice
+          : null,
 
       stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
 

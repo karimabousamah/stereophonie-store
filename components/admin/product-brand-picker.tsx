@@ -575,21 +575,15 @@ export default function ProductBrandPicker({
           }`}
         />
       </button>
-
       {selectedBrand ? (
-        <div className="mt-2 flex items-center justify-between px-1">
-          <span className="text-[10px] font-medium text-white/30">
-            Selected brand
-          </span>
-
-          <button
-            type="button"
-            onClick={() => chooseBrand(null)}
-            className="text-[10px] font-semibold text-[#d89b28] transition hover:text-[#fdb73e]"
-          >
-            Clear
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => chooseBrand(null)}
+          className="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/42 transition hover:border-[#fdb73e]/35 hover:bg-[#fdb73e]/[0.08] hover:text-[#f4bd55] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fdb73e]/25"
+        >
+          <X className="h-3 w-3" />
+          Clear brand
+        </button>
       ) : null}
 
       {dropdown}

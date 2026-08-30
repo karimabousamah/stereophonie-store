@@ -225,9 +225,7 @@ type DirectUploadedExistingProductImage = {
   size: number;
   position: number;
   alt_text: string;
-  variant_name: string;
-  variant_position?: number;
-  is_variant_primary?: boolean;
+  variant_ids?: string[];
 };
 
 export async function finalizeDirectProductImageUploads(formData: FormData) {
@@ -292,46 +290,25 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     redirectWithError(productId, imagesError.message);
   }
 
-  const {
-    data: productConfigurations,
-    error: productConfigurationsError,
-  } = await supabase
-    .from("product_variants")
-    .select("id, variant_name")
-    .eq("product_id", productId);
+  const { data: productConfigurations, error: productConfigurationsError } =
+    await supabase
+      .from("product_variants")
+      .select("id, variant_name")
+      .eq("product_id", productId);
 
   if (productConfigurationsError) {
-    redirectWithError(
-      productId,
-      productConfigurationsError.message,
-    );
+    redirectWithError(productId, productConfigurationsError.message);
   }
 
-  const validConfigurationNames = new Set(
-    (productConfigurations ?? [])
-      .map((configuration) =>
-        String(configuration.variant_name ?? "").trim(),
-      )
-      .filter(Boolean),
+  const validConfigurationsById = new Map(
+    (productConfigurations ?? []).map((configuration) => [
+      String(configuration.id),
+      {
+        id: String(configuration.id),
+        variant_name: String(configuration.variant_name ?? "").trim(),
+      },
+    ]),
   );
-
-  const validConfigurationIdsByName =
-    new Map(
-      (productConfigurations ?? [])
-        .map(
-          (configuration): [string, string] => [
-            String(
-              configuration.variant_name ?? "",
-            ).trim().toLowerCase(),
-            String(configuration.id),
-          ],
-        )
-        .filter(
-          ([name]) =>
-            Boolean(name),
-        ),
-    );
-
 
   const currentImageCount = existingImages?.length ?? 0;
 
@@ -390,18 +367,24 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       );
     }
 
-    const imageVariantName =
-      String(image.variant_name ?? "").trim();
+    const imageVariantIds = Array.from(
+      new Set(
+        (Array.isArray(image.variant_ids) ? image.variant_ids : [])
+          .map((variantId) => String(variantId ?? "").trim())
+          .filter(Boolean),
+      ),
+    );
 
-    if (
-      imageVariantName &&
-      !validConfigurationNames.has(imageVariantName)
-    ) {
-      redirectWithError(
-        productId,
-        `The photograph assigned to "${imageVariantName}" no longer matches a product configuration.`,
-      );
+    for (const variantId of imageVariantIds) {
+      if (!validConfigurationsById.has(variantId)) {
+        redirectWithError(
+          productId,
+          "A photograph is assigned to a product configuration that no longer exists.",
+        );
+      }
     }
+
+    image.variant_ids = imageVariantIds;
 
     submittedPositions.add(position);
   }
@@ -415,13 +398,24 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
 
   const permanentStoragePaths: string[] = [];
 
+  /*
+   * Keep track of database rows created during this upload batch.
+   *
+   * Storage moves and database inserts cannot share one transaction.
+   * If a later photograph or configuration assignment fails, these
+   * IDs let us remove every product_images row already created by
+   * this batch before removing the corresponding storage objects.
+   *
+   * product_image_variants rows are removed automatically through
+   * their ON DELETE CASCADE foreign key.
+   */
+  const insertedImageIds: string[] = [];
+
   const remainingTemporaryPaths = uploadedImages.map(
     (image) => image.storage_path,
   );
 
   try {
-    const rows = [];
-
     for (let index = 0; index < uploadedImages.length; index += 1) {
       const image = uploadedImages[index];
 
@@ -458,58 +452,107 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
         .from("product-images")
         .getPublicUrl(destinationPath);
 
-      rows.push({
-        product_id: productId,
-        storage_path: destinationPath,
-        image_url: publicUrlData.publicUrl,
-        alt_text:
-          String(image.alt_text ?? "").trim() ||
-          `${product.name} photograph ${nextPosition + index + 1}`,
-        position: nextPosition + index,
-        is_primary: !productHasPrimaryImage && index === 0,
+      const selectedVariantIds = Array.from(
+        new Set(
+          (image.variant_ids ?? [])
+            .map((variantId) => String(variantId ?? "").trim())
+            .filter(Boolean),
+        ),
+      );
 
-        /*
-         * NULL = shared photograph.
-         * Otherwise this photograph belongs to this exact
-         * product configuration.
-         */
-        variant_name:
-          String(image.variant_name ?? "").trim() || null,
+      const legacyConfiguration =
+        selectedVariantIds.length === 1
+          ? (validConfigurationsById.get(selectedVariantIds[0]) ?? null)
+          : null;
 
-        variant_id:
-          validConfigurationIdsByName.get(
-            String(
-              image.variant_name ?? "",
-            )
-              .trim()
-              .toLowerCase(),
-          ) ?? null,
+      const { data: insertedImage, error: insertImageError } = await supabase
+        .from("product_images")
+        .insert({
+          product_id: productId,
+          storage_path: destinationPath,
+          image_url: publicUrlData.publicUrl,
+          alt_text:
+            String(image.alt_text ?? "").trim() ||
+            `${product.name} photograph ${nextPosition + index + 1}`,
+          position: nextPosition + index,
+          is_primary: !productHasPrimaryImage && index === 0,
 
-        variant_position:
-          Math.max(
-            0,
-            Number(
-              image.variant_position ??
-                image.position ??
-                index,
-            ) || 0,
-          ),
+          /*
+           * Legacy compatibility:
+           *
+           * 0 assignments = shared.
+           * 1 assignment  = mirror that exact configuration.
+           * 2+            = NULL because one legacy variant_id cannot
+           *                 truthfully represent multiple configurations.
+           */
+          variant_name: legacyConfiguration?.variant_name || null,
+          variant_id: legacyConfiguration?.id || null,
+          variant_position: 0,
+          is_variant_primary: false,
+        })
+        .select("id")
+        .single();
 
-        is_variant_primary:
-          Boolean(
-            image.is_variant_primary,
-          ),
-      });
-    }
+      if (insertImageError || !insertedImage) {
+        throw new Error(
+          insertImageError?.message ?? "The photograph could not be saved.",
+        );
+      }
 
-    const { error: insertError } = await supabase
-      .from("product_images")
-      .insert(rows);
+      insertedImageIds.push(insertedImage.id);
 
-    if (insertError) {
-      throw new Error(insertError.message);
+      for (const variantId of selectedVariantIds) {
+        const { data: lastAssignment, error: lastAssignmentError } =
+          await supabase
+            .from("product_image_variants")
+            .select("position")
+            .eq("variant_id", variantId)
+            .order("position", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (lastAssignmentError) {
+          throw new Error(lastAssignmentError.message);
+        }
+
+        const nextVariantPosition = Number(lastAssignment?.position ?? -1) + 1;
+
+        const { count: primaryCount, error: primaryCountError } = await supabase
+          .from("product_image_variants")
+          .select("*", { count: "exact", head: true })
+          .eq("variant_id", variantId)
+          .eq("is_primary", true);
+
+        if (primaryCountError) {
+          throw new Error(primaryCountError.message);
+        }
+
+        const { error: assignmentInsertError } = await supabase
+          .from("product_image_variants")
+          .insert({
+            image_id: insertedImage.id,
+            variant_id: variantId,
+            position: Math.max(0, nextVariantPosition),
+            is_primary: (primaryCount ?? 0) === 0,
+          });
+
+        if (assignmentInsertError) {
+          throw new Error(assignmentInsertError.message);
+        }
+      }
     }
   } catch (error) {
+    /*
+     * Roll the database back before removing storage objects.
+     *
+     * Without this cleanup, a failure while inserting a later
+     * product_image_variants assignment could leave product_images
+     * rows pointing at files that were subsequently deleted.
+     */
+    if (insertedImageIds.length > 0) {
+      await supabase.from("product_images").delete().in("id", insertedImageIds);
+    }
+
     const pathsToRemove = [
       ...permanentStoragePaths,
       ...remainingTemporaryPaths,
@@ -537,126 +580,93 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
   );
 }
 
-export async function setPrimaryProductImage(
-  formData: FormData,
-) {
-  const supabase =
-    await requireAdministrator();
+export async function setPrimaryProductImage(formData: FormData) {
+  const supabase = await requireAdministrator();
 
-  const productId =
-    String(
-      formData.get("product_id") ??
-        "",
-    ).trim();
+  const productId = String(formData.get("product_id") ?? "").trim();
+  const imageId = String(formData.get("image_id") ?? "").trim();
+  const variantId = String(formData.get("variant_id") ?? "").trim();
 
-  const imageId =
-    String(
-      formData.get("image_id") ??
-        "",
-    ).trim();
-
-  if (
-    !productId ||
-    !imageId
-  ) {
+  if (!productId || !imageId) {
     redirect("/admin/products");
   }
 
-  const {
-    data: selectedImage,
-    error: selectedImageError,
-  } = await supabase
+  const { data: image, error: imageError } = await supabase
     .from("product_images")
-    .select(
-      "id, variant_id, variant_position, position",
-    )
-    .eq(
-      "product_id",
-      productId,
-    )
-    .eq(
-      "id",
-      imageId,
-    )
-    .single();
+    .select("id")
+    .eq("id", imageId)
+    .eq("product_id", productId)
+    .maybeSingle();
 
-  if (
-    selectedImageError ||
-    !selectedImage
-  ) {
+  if (imageError || !image) {
     redirectWithError(
       productId,
-      selectedImageError?.message ??
-        "The photograph could not be found.",
+      imageError?.message ?? "The photograph could not be found.",
     );
   }
 
   /*
    * ========================================================
-   * CONFIGURATION-SPECIFIC MAIN
+   * EXACT CONFIGURATION MAIN
    * ========================================================
    *
-   * Every sellable configuration has its own Main photograph.
+   * A photograph may belong to multiple exact configurations.
    *
-   * Black  -> one Main
-   * Navy   -> one Main
-   * Orange -> one Main
-   *
-   * Making a photograph Main also moves it to
-   * variant_position 0.
+   * Main therefore belongs to the image/configuration
+   * association, not to product_images itself.
    */
-  if (
-    selectedImage.variant_id
-  ) {
-    const {
-      data: groupImages,
-      error: groupImagesError,
-    } = await supabase
-      .from("product_images")
-      .select(
-        "id, variant_position, position",
-      )
-      .eq(
-        "product_id",
-        productId,
-      )
-      .eq(
-        "variant_id",
-        selectedImage.variant_id,
-      )
-      .order(
-        "variant_position",
-        {
-          ascending: true,
-        },
-      )
-      .order(
-        "position",
-        {
-          ascending: true,
-        },
-      );
+  if (variantId) {
+    const { data: variant, error: variantError } = await supabase
+      .from("product_variants")
+      .select("id")
+      .eq("id", variantId)
+      .eq("product_id", productId)
+      .maybeSingle();
 
-    if (
-      groupImagesError ||
-      !groupImages
-    ) {
+    if (variantError || !variant) {
       redirectWithError(
         productId,
-        groupImagesError?.message ??
+        variantError?.message ??
+          "The selected configuration could not be verified.",
+      );
+    }
+
+    const { data: selectedAssignment, error: selectedAssignmentError } =
+      await supabase
+        .from("product_image_variants")
+        .select("image_id, variant_id")
+        .eq("image_id", imageId)
+        .eq("variant_id", variantId)
+        .maybeSingle();
+
+    if (selectedAssignmentError || !selectedAssignment) {
+      redirectWithError(
+        productId,
+        selectedAssignmentError?.message ??
+          "This photograph is not assigned to that configuration.",
+      );
+    }
+
+    const { data: assignments, error: assignmentsError } = await supabase
+      .from("product_image_variants")
+      .select("image_id, position, is_primary")
+      .eq("variant_id", variantId)
+      .order("position", { ascending: true })
+      .order("image_id", { ascending: true });
+
+    if (assignmentsError || !assignments) {
+      redirectWithError(
+        productId,
+        assignmentsError?.message ??
           "Configuration photographs could not be loaded.",
       );
     }
 
-    const selectedIndex =
-      groupImages.findIndex(
-        (image) =>
-          image.id === imageId,
-      );
+    const selectedIndex = assignments.findIndex(
+      (assignment) => assignment.image_id === imageId,
+    );
 
-    if (
-      selectedIndex < 0
-    ) {
+    if (selectedIndex < 0) {
       redirectWithError(
         productId,
         "The configuration photograph could not be found.",
@@ -664,279 +674,296 @@ export async function setPrimaryProductImage(
     }
 
     /*
-     * Rebuild clean configuration positions with selected image first.
+     * Making an image Main also places it first in that exact
+     * configuration's gallery.
      */
     const reordered = [
-      groupImages[selectedIndex],
-      ...groupImages.filter(
-        (image) =>
-          image.id !== imageId,
-      ),
+      assignments[selectedIndex],
+      ...assignments.filter((assignment) => assignment.image_id !== imageId),
     ];
 
-    /*
-     * Clear old configuration Main flag first.
-     */
-    const {
-      error: clearMainError,
-    } = await supabase
-      .from("product_images")
+    const { error: clearPrimaryError } = await supabase
+      .from("product_image_variants")
       .update({
-        is_variant_primary:
-          false,
+        is_primary: false,
       })
-      .eq(
-        "product_id",
-        productId,
-      )
-      .eq(
-        "variant_id",
-        selectedImage.variant_id,
-      );
+      .eq("variant_id", variantId);
 
-    if (clearMainError) {
-      redirectWithError(
-        productId,
-        clearMainError.message,
-      );
+    if (clearPrimaryError) {
+      redirectWithError(productId, clearPrimaryError.message);
     }
 
-    /*
-     * Store deterministic positions inside this configuration.
-     */
-    for (
-      let index = 0;
-      index <
-      reordered.length;
-      index += 1
-    ) {
-      const image =
-        reordered[index];
+    for (let index = 0; index < reordered.length; index += 1) {
+      const assignment = reordered[index];
 
-      const {
-        error: positionError,
-      } = await supabase
-        .from("product_images")
+      const { error: temporaryUpdateError } = await supabase
+        .from("product_image_variants")
         .update({
-          variant_position:
-            index,
-
-          is_variant_primary:
-            image.id === imageId,
+          position: 100000 + index,
         })
-        .eq(
-          "id",
-          image.id,
-        )
-        .eq(
-          "product_id",
-          productId,
-        );
+        .eq("variant_id", variantId)
+        .eq("image_id", assignment.image_id);
 
-      if (positionError) {
-        redirectWithError(
-          productId,
-          positionError.message,
-        );
+      if (temporaryUpdateError) {
+        redirectWithError(productId, temporaryUpdateError.message);
       }
     }
 
-    await refreshProductPages(
-      productId,
-    );
+    for (let index = 0; index < reordered.length; index += 1) {
+      const assignment = reordered[index];
 
-    redirectWithSuccess(
-      productId,
-      "Configuration Main photograph updated.",
-    );
+      const { error: updateError } = await supabase
+        .from("product_image_variants")
+        .update({
+          position: index,
+          is_primary: assignment.image_id === imageId,
+        })
+        .eq("variant_id", variantId)
+        .eq("image_id", assignment.image_id);
+
+      if (updateError) {
+        redirectWithError(productId, updateError.message);
+      }
+    }
+
+    await refreshProductPages(productId);
+
+    redirectWithSuccess(productId, "Configuration Main photograph updated.");
   }
 
   /*
    * ========================================================
-   * SHARED / LEGACY PRODUCT MAIN
+   * SHARED PRODUCT MAIN
    * ========================================================
    *
-   * Shared photographs continue using the original one-primary
-   * product behaviour for backwards compatibility.
+   * No variant_id means this action is for a photograph shared
+   * with every configuration.
    */
-  const {
-    error: clearPrimaryError,
-  } = await supabase
+  const { count: assignmentCount, error: assignmentCountError } = await supabase
+    .from("product_image_variants")
+    .select("*", {
+      count: "exact",
+      head: true,
+    })
+    .eq("image_id", imageId);
+
+  if (assignmentCountError) {
+    redirectWithError(productId, assignmentCountError.message);
+  }
+
+  if ((assignmentCount ?? 0) > 0) {
+    redirectWithError(
+      productId,
+      "Choose an exact configuration before changing this photograph's Main state.",
+    );
+  }
+
+  const { error: clearPrimaryError } = await supabase
     .from("product_images")
     .update({
       is_primary: false,
     })
-    .eq(
-      "product_id",
-      productId,
-    );
+    .eq("product_id", productId);
 
   if (clearPrimaryError) {
-    redirectWithError(
-      productId,
-      clearPrimaryError.message,
-    );
+    redirectWithError(productId, clearPrimaryError.message);
   }
 
-  const {
-    error: primaryError,
-  } = await supabase
+  const { error: primaryError } = await supabase
     .from("product_images")
     .update({
       is_primary: true,
     })
-    .eq(
-      "id",
-      imageId,
-    )
-    .eq(
-      "product_id",
-      productId,
-    );
+    .eq("id", imageId)
+    .eq("product_id", productId);
 
   if (primaryError) {
-    redirectWithError(
-      productId,
-      primaryError.message,
-    );
+    redirectWithError(productId, primaryError.message);
   }
 
-  await refreshProductPages(
-    productId,
-  );
+  await refreshProductPages(productId);
 
-  redirectWithSuccess(
-    productId,
-    "Main photograph updated.",
-  );
+  redirectWithSuccess(productId, "Main photograph updated.");
 }
 
-
-export async function updateProductImageVariantName(
-  formData: FormData,
-) {
+export async function updateProductImageVariantName(formData: FormData) {
   const supabase = await requireAdministrator();
 
-  const productId =
-    String(formData.get("product_id") ?? "").trim();
+  const productId = String(formData.get("product_id") ?? "").trim();
+  const imageId = String(formData.get("image_id") ?? "").trim();
 
-  const imageId =
-    String(formData.get("image_id") ?? "").trim();
-
-  const variantName =
-    String(formData.get("variant_name") ?? "").trim();
+  const requestedVariantIds = Array.from(
+    new Set(
+      formData
+        .getAll("variant_ids")
+        .map((value) => String(value ?? "").trim())
+        .filter(Boolean),
+    ),
+  );
 
   if (!productId || !imageId) {
     redirect("/admin/products");
   }
 
-  /*
-   * Empty variantName intentionally means:
-   * Shared with every product configuration.
-   */
-  if (variantName) {
-    const {
-      data: matchingConfiguration,
-      error: matchingConfigurationError,
-    } = await supabase
-      .from("product_variants")
-      .select("id")
-      .eq("product_id", productId)
-      .eq("variant_name", variantName)
-      .maybeSingle();
+  const { data: image, error: imageError } = await supabase
+    .from("product_images")
+    .select("id")
+    .eq("id", imageId)
+    .eq("product_id", productId)
+    .maybeSingle();
 
-    if (
-      matchingConfigurationError ||
-      !matchingConfiguration
-    ) {
+  if (imageError || !image) {
+    redirectWithError(
+      productId,
+      imageError?.message ?? "The photograph could not be found.",
+    );
+  }
+
+  let selectedVariants: {
+    id: string;
+    variant_name: string | null;
+  }[] = [];
+
+  if (requestedVariantIds.length > 0) {
+    const { data, error } = await supabase
+      .from("product_variants")
+      .select("id, variant_name")
+      .eq("product_id", productId)
+      .in("id", requestedVariantIds);
+
+    if (error) {
+      redirectWithError(productId, error.message);
+    }
+
+    selectedVariants = data ?? [];
+
+    if (selectedVariants.length !== requestedVariantIds.length) {
       redirectWithError(
         productId,
-        "That product configuration no longer exists. Choose another photograph usage.",
+        "One or more selected configurations no longer exist.",
       );
     }
   }
 
-  let selectedVariantId: string | null =
-    null;
+  /*
+   * Preserve the existing per-configuration order/primary data
+   * for assignments that remain selected.
+   */
+  const { data: previousAssignments, error: previousAssignmentsError } =
+    await supabase
+      .from("product_image_variants")
+      .select("variant_id, position, is_primary")
+      .eq("image_id", imageId);
 
-  if (variantName) {
-    const {
-      data: selectedVariant,
-      error: selectedVariantError,
-    } = await supabase
-      .from("product_variants")
-      .select("id")
-      .eq("product_id", productId)
-      .eq("variant_name", variantName)
-      .maybeSingle();
+  if (previousAssignmentsError) {
+    redirectWithError(productId, previousAssignmentsError.message);
+  }
 
-    if (
-      selectedVariantError ||
-      !selectedVariant
-    ) {
-      redirectWithError(
-        productId,
-        "That product configuration no longer exists.",
-      );
+  const previousByVariant = new Map(
+    (previousAssignments ?? []).map((assignment) => [
+      assignment.variant_id,
+      assignment,
+    ]),
+  );
+
+  const rows: {
+    image_id: string;
+    variant_id: string;
+    position: number;
+    is_primary: boolean;
+  }[] = [];
+
+  for (const variant of selectedVariants) {
+    const previous = previousByVariant.get(variant.id);
+
+    if (previous) {
+      rows.push({
+        image_id: imageId,
+        variant_id: variant.id,
+        position: previous.position,
+        is_primary: previous.is_primary,
+      });
+
+      continue;
     }
 
-    selectedVariantId =
-      selectedVariant.id;
+    const { data: existingForVariant, error: existingForVariantError } =
+      await supabase
+        .from("product_image_variants")
+        .select("position")
+        .eq("variant_id", variant.id)
+        .order("position", { ascending: false })
+        .limit(1);
+
+    if (existingForVariantError) {
+      redirectWithError(productId, existingForVariantError.message);
+    }
+
+    const highestPosition = Number(existingForVariant?.[0]?.position ?? -1);
+
+    rows.push({
+      image_id: imageId,
+      variant_id: variant.id,
+      position: highestPosition + 1,
+      is_primary: false,
+    });
+  }
+
+  const { error: clearError } = await supabase
+    .from("product_image_variants")
+    .delete()
+    .eq("image_id", imageId);
+
+  if (clearError) {
+    redirectWithError(productId, clearError.message);
+  }
+
+  if (rows.length > 0) {
+    const { error: insertError } = await supabase
+      .from("product_image_variants")
+      .insert(rows);
+
+    if (insertError) {
+      redirectWithError(productId, insertError.message);
+    }
   }
 
   /*
-   * Put the photograph at the end of the selected configuration.
+   * Legacy fields are mirrored only for exactly one assignment.
+   * For shared/multi-assignment images they stay null so they
+   * cannot falsely describe the photograph.
    */
-  let nextVariantPosition = 0;
+  const singleVariant =
+    selectedVariants.length === 1 ? selectedVariants[0] : null;
 
-  if (selectedVariantId) {
-    const {
-      data: configurationImages,
-    } = await supabase
-      .from("product_images")
-      .select("variant_position")
-      .eq("product_id", productId)
-      .eq(
-        "variant_id",
-        selectedVariantId,
-      );
+  const singleAssignment = rows.length === 1 ? rows[0] : null;
 
-    nextVariantPosition =
-      configurationImages?.length ?? 0;
-  }
-
-  const { error } = await supabase
+  const { error: legacyError } = await supabase
     .from("product_images")
     .update({
-      variant_name:
-        variantName || null,
-      variant_id:
-        selectedVariantId,
-      variant_position:
-        nextVariantPosition,
-      is_variant_primary:
-        false,
+      variant_id: singleVariant?.id ?? null,
+      variant_name: singleVariant?.variant_name ?? null,
+      variant_position: singleAssignment?.position ?? 0,
+      is_variant_primary: singleAssignment?.is_primary ?? false,
     })
     .eq("id", imageId)
     .eq("product_id", productId);
 
-  if (error) {
-    redirectWithError(
-      productId,
-      error.message,
-    );
+  if (legacyError) {
+    redirectWithError(productId, legacyError.message);
   }
 
   await refreshProductPages(productId);
 
   redirectWithSuccess(
     productId,
-    variantName
-      ? `Photograph assigned to ${variantName}.`
-      : "Photograph shared with all configurations.",
+    selectedVariants.length === 0
+      ? "Photograph shared with all configurations."
+      : `Photograph assigned to ${selectedVariants.length} configuration${
+          selectedVariants.length === 1 ? "" : "s"
+        }.`,
   );
 }
-
 
 export async function updateProductImageAltText(formData: FormData) {
   const supabase = await requireAdministrator();
@@ -968,103 +995,221 @@ export async function updateProductImageAltText(formData: FormData) {
   redirectWithSuccess(productId, "Image description updated.");
 }
 
-export async function moveProductImage(
-  formData: FormData,
-) {
-  const supabase =
-    await requireAdministrator();
+export async function moveProductImage(formData: FormData) {
+  const supabase = await requireAdministrator();
 
-  const productId =
-    String(
-      formData.get("product_id") ??
-        "",
-    ).trim();
+  const productId = String(formData.get("product_id") ?? "").trim();
+  const imageId = String(formData.get("image_id") ?? "").trim();
+  const variantId = String(formData.get("variant_id") ?? "").trim();
+  const direction = String(formData.get("direction") ?? "").trim();
 
-  const imageId =
-    String(
-      formData.get("image_id") ??
-        "",
-    ).trim();
-
-  const direction =
-    String(
-      formData.get("direction") ??
-        "",
-    ).trim();
-
-  if (
-    !productId ||
-    !imageId
-  ) {
+  if (!productId || !imageId) {
     redirect("/admin/products");
   }
 
-  if (
-    direction !== "left" &&
-    direction !== "right"
-  ) {
-    redirectWithError(
-      productId,
-      "Invalid photograph direction.",
-    );
+  if (direction !== "left" && direction !== "right") {
+    redirectWithError(productId, "Invalid photograph direction.");
   }
 
   /*
-   * The database function performs the complete move atomically.
+   * ========================================================
+   * EXACT CONFIGURATION ORDER
+   * ========================================================
    *
-   * IMPORTANT:
-   *
-   * Configuration photographs move by `variant_position`.
-   * They DO NOT move by the old global `position`.
-   *
-   * Therefore:
-   *
-   * Black photo 1 -> Black photo 2
-   * Navy photo 1  -> Navy photo 2
-   *
-   * are completely independent galleries.
+   * Each image/configuration relationship has its own position.
    */
-  const {
-    data,
-    error,
-  } = await supabase.rpc(
-    "admin_move_product_configuration_image",
-    {
-      requested_product_id:
+  if (variantId) {
+    const { data: variant, error: variantError } = await supabase
+      .from("product_variants")
+      .select("id")
+      .eq("id", variantId)
+      .eq("product_id", productId)
+      .maybeSingle();
+
+    if (variantError || !variant) {
+      redirectWithError(
         productId,
+        variantError?.message ??
+          "The selected configuration could not be verified.",
+      );
+    }
 
-      requested_image_id:
-        imageId,
+    const { data: assignments, error: assignmentsError } = await supabase
+      .from("product_image_variants")
+      .select("image_id, position, is_primary")
+      .eq("variant_id", variantId)
+      .order("position", { ascending: true })
+      .order("image_id", { ascending: true });
 
-      requested_direction:
-        direction,
-    },
-  );
+    if (assignmentsError || !assignments) {
+      redirectWithError(
+        productId,
+        assignmentsError?.message ??
+          "Configuration photographs could not be loaded.",
+      );
+    }
 
-  if (error) {
+    const currentIndex = assignments.findIndex(
+      (assignment) => assignment.image_id === imageId,
+    );
+
+    if (currentIndex < 0) {
+      redirectWithError(
+        productId,
+        "This photograph is not assigned to that configuration.",
+      );
+    }
+
+    const targetIndex =
+      direction === "left" ? currentIndex - 1 : currentIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= assignments.length) {
+      await refreshProductPages(productId);
+
+      redirectWithSuccess(
+        productId,
+        "This photograph is already at the edge of its configuration.",
+      );
+    }
+
+    const reordered = [...assignments];
+
+    const [moving] = reordered.splice(currentIndex, 1);
+
+    reordered.splice(targetIndex, 0, moving);
+
+    /*
+     * First move every assignment into a temporary position range.
+     * Then write the final positions.
+     *
+     * This prevents adjacent photographs from colliding while they
+     * exchange positions.
+     */
+    for (let index = 0; index < reordered.length; index += 1) {
+      const assignment = reordered[index];
+
+      const { error: temporaryUpdateError } = await supabase
+        .from("product_image_variants")
+        .update({
+          position: 100000 + index,
+        })
+        .eq("variant_id", variantId)
+        .eq("image_id", assignment.image_id);
+
+      if (temporaryUpdateError) {
+        redirectWithError(productId, temporaryUpdateError.message);
+      }
+    }
+
+    for (let index = 0; index < reordered.length; index += 1) {
+      const assignment = reordered[index];
+
+      const { error: updateError } = await supabase
+        .from("product_image_variants")
+        .update({
+          position: index,
+        })
+        .eq("variant_id", variantId)
+        .eq("image_id", assignment.image_id);
+
+      if (updateError) {
+        redirectWithError(productId, updateError.message);
+      }
+    }
+
+    await refreshProductPages(productId);
+
+    redirectWithSuccess(productId, "Configuration photograph order updated.");
+  }
+
+  /*
+   * ========================================================
+   * SHARED PHOTO ORDER
+   * ========================================================
+   *
+   * Shared means the photograph has zero junction rows.
+   *
+   * Only other shared photographs participate in this ordering.
+   */
+  const { data: productImages, error: productImagesError } = await supabase
+    .from("product_images")
+    .select(
+      `
+          id,
+          position,
+          product_image_variants (
+            variant_id
+          )
+        `,
+    )
+    .eq("product_id", productId)
+    .order("position", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (productImagesError || !productImages) {
     redirectWithError(
       productId,
-      error.message,
+      productImagesError?.message ?? "Product photographs could not be loaded.",
     );
   }
 
-  const result =
-    Array.isArray(data)
-      ? data[0]
-      : data;
-
-  await refreshProductPages(
-    productId,
+  const sharedImages = productImages.filter(
+    (image) =>
+      !Array.isArray(image.product_image_variants) ||
+      image.product_image_variants.length === 0,
   );
 
-  redirectWithSuccess(
-    productId,
-    result?.moved
-      ? "Configuration photograph order updated."
-      : "This photograph is already at the edge of its configuration.",
-  );
+  const currentIndex = sharedImages.findIndex((image) => image.id === imageId);
+
+  if (currentIndex < 0) {
+    redirectWithError(
+      productId,
+      "Choose an exact configuration before moving this photograph.",
+    );
+  }
+
+  const targetIndex =
+    direction === "left" ? currentIndex - 1 : currentIndex + 1;
+
+  if (targetIndex < 0 || targetIndex >= sharedImages.length) {
+    await refreshProductPages(productId);
+
+    redirectWithSuccess(
+      productId,
+      "This photograph is already at the edge of the shared gallery.",
+    );
+  }
+
+  const reordered = [...sharedImages];
+
+  const [moving] = reordered.splice(currentIndex, 1);
+
+  reordered.splice(targetIndex, 0, moving);
+
+  /*
+   * Keep shared photographs in deterministic order without
+   * changing configuration-specific junction positions.
+   */
+  for (let index = 0; index < reordered.length; index += 1) {
+    const image = reordered[index];
+
+    const { error: updateError } = await supabase
+      .from("product_images")
+      .update({
+        position: index,
+      })
+      .eq("product_id", productId)
+      .eq("id", image.id);
+
+    if (updateError) {
+      redirectWithError(productId, updateError.message);
+    }
+  }
+
+  await refreshProductPages(productId);
+
+  redirectWithSuccess(productId, "Shared photograph order updated.");
 }
-
 
 export async function deleteProductImage(formData: FormData) {
   const supabase = await requireAdministrator();
