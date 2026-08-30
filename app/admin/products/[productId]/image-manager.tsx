@@ -69,7 +69,7 @@ type ImageManagerProps = {
   successMessage?: string;
 };
 
-const maximumImages = 10;
+const maximumImagesPerConfiguration = 10;
 const maximumFileSize = 10 * 1024 * 1024;
 
 const acceptedTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -87,6 +87,40 @@ export default function ImageManager({
   const allowServerSubmissionRef = useRef(false);
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  /*
+   * Image operations have their own authoritative state.
+   *
+   * This keeps the surrounding product editor mounted so unsaved technical
+   * specs, pricing, stock and configuration edits are never destroyed by a
+   * Main/order/usage operation.
+   */
+  const [managedImages, setManagedImages] = useState<ProductImage[]>(images);
+  const [pendingImageOperation, setPendingImageOperation] = useState("");
+  const [imageOperationErrorMessage, setImageOperationErrorMessage] =
+    useState("");
+
+  const [photoUsageSavedMessage, setPhotoUsageSavedMessage] = useState("");
+
+  /*
+   * One exact configuration at a time keeps the media manager simple:
+   * choose configuration → upload → arrange → choose Main.
+   */
+  const [selectedGalleryConfigurationId, setSelectedGalleryConfigurationId] =
+    useState(() => configurations[0]?.id ?? "");
+
+  /*
+   * When an administrator is arranging one exact configuration, keep that
+   * configuration authoritative for the visual card order.
+   *
+   * This fixes the old mismatch where the label changed from e.g. 3 of 6
+   * to 2 of 6 but the physical card stayed in its global product position.
+   */
+  const [visualConfigurationId, setVisualConfigurationId] = useState("");
+
+  useEffect(() => {
+    setManagedImages(images);
+  }, [images]);
 
   /*
    * Initial values are the configurations already stored in the
@@ -159,6 +193,24 @@ export default function ImageManager({
     };
   }, []);
 
+  useEffect(() => {
+    if (liveConfigurations.length === 0) {
+      if (selectedGalleryConfigurationId) {
+        setSelectedGalleryConfigurationId("");
+      }
+
+      return;
+    }
+
+    const stillExists = liveConfigurations.some(
+      (configuration) => configuration.id === selectedGalleryConfigurationId,
+    );
+
+    if (!stillExists) {
+      setSelectedGalleryConfigurationId(liveConfigurations[0].id);
+    }
+  }, [liveConfigurations, selectedGalleryConfigurationId]);
+
   /*
    * Each new photograph can belong to zero, one or many exact
    * saved product configurations.
@@ -201,7 +253,39 @@ export default function ImageManager({
    * from product_image_variants rather than pretending that the
    * product_images row itself belongs to one configuration.
    */
-  const orderedImages = [...images].sort((first, second) => {
+  const orderedImages = [...managedImages].sort((first, second) => {
+    /*
+     * If the administrator just interacted with one exact configuration,
+     * its product_image_variants.position becomes the visual card order.
+     */
+    if (visualConfigurationId) {
+      const firstAssignment = first.product_image_variants?.find(
+        (assignment) => assignment.variant_id === visualConfigurationId,
+      );
+
+      const secondAssignment = second.product_image_variants?.find(
+        (assignment) => assignment.variant_id === visualConfigurationId,
+      );
+
+      if (firstAssignment && secondAssignment) {
+        const positionDifference =
+          Number(firstAssignment.position ?? 0) -
+          Number(secondAssignment.position ?? 0);
+
+        if (positionDifference !== 0) {
+          return positionDifference;
+        }
+      } else if (firstAssignment) {
+        return -1;
+      } else if (secondAssignment) {
+        return 1;
+      }
+    }
+
+    /*
+     * Shared photographs and the initial untouched gallery retain their
+     * stable product-level fallback ordering.
+     */
     const firstPosition = Number(first.position ?? 0);
     const secondPosition = Number(second.position ?? 0);
 
@@ -212,9 +296,484 @@ export default function ImageManager({
     return first.id.localeCompare(second.id);
   });
 
+  const selectedConfigurationImages = selectedGalleryConfigurationId
+    ? [...orderedImages]
+        .filter((image) => {
+          const assignments = image.product_image_variants ?? [];
+
+          return (
+            assignments.length === 0 ||
+            assignments.some(
+              (assignment) =>
+                assignment.variant_id === selectedGalleryConfigurationId,
+            )
+          );
+        })
+        .sort((first, second) => {
+          const firstAssignment = first.product_image_variants?.find(
+            (assignment) =>
+              assignment.variant_id === selectedGalleryConfigurationId,
+          );
+
+          const secondAssignment = second.product_image_variants?.find(
+            (assignment) =>
+              assignment.variant_id === selectedGalleryConfigurationId,
+          );
+
+          if (firstAssignment && secondAssignment) {
+            if (firstAssignment.is_primary !== secondAssignment.is_primary) {
+              return firstAssignment.is_primary ? -1 : 1;
+            }
+
+            const difference =
+              Number(firstAssignment.position ?? 0) -
+              Number(secondAssignment.position ?? 0);
+
+            if (difference !== 0) {
+              return difference;
+            }
+          } else if (firstAssignment) {
+            return -1;
+          } else if (secondAssignment) {
+            return 1;
+          }
+
+          return Number(first.position ?? 0) - Number(second.position ?? 0);
+        })
+    : orderedImages;
+
   const sharedImages = orderedImages.filter(
     (image) => (image.product_image_variants ?? []).length === 0,
   );
+
+  async function handleImageOperation(
+    event: FormEvent<HTMLFormElement>,
+    operation: "usage" | "move" | "primary",
+  ) {
+    event.preventDefault();
+
+    if (pendingImageOperation) {
+      return;
+    }
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    formData.set("_client_image_operation", "1");
+
+    const imageId = String(formData.get("image_id") ?? "").trim();
+    const variantId = String(formData.get("variant_id") ?? "").trim();
+    const direction = String(formData.get("direction") ?? "").trim();
+
+    if (variantId) {
+      setVisualConfigurationId(variantId);
+    }
+
+    const operationLabel =
+      operation === "usage"
+        ? "Saving photograph usage…"
+        : operation === "move"
+          ? "Updating photograph order…"
+          : "Updating Main photograph…";
+
+    setPendingImageOperation(operationLabel);
+    setImageOperationErrorMessage("");
+
+    /*
+     * Snapshot current image-manager state so a failed server mutation can
+     * roll back instantly without disturbing the surrounding product editor.
+     */
+    const previousImages = managedImages;
+
+    /*
+     * ========================================================
+     * OPTIMISTIC EXACT-CONFIGURATION MOVEMENT
+     * ========================================================
+     *
+     * The card swaps immediately in the browser. The server/database then
+     * confirms the same order in the background.
+     */
+    if (operation === "move" && imageId) {
+      if (variantId) {
+        setManagedImages((currentImages) => {
+          const configurationImages = currentImages
+            .map((image) => ({
+              image,
+              assignment: image.product_image_variants?.find(
+                (assignment) => assignment.variant_id === variantId,
+              ),
+            }))
+            .filter(
+              (
+                item,
+              ): item is {
+                image: ProductImage;
+                assignment: {
+                  variant_id: string;
+                  position: number;
+                  is_primary: boolean;
+                };
+              } => Boolean(item.assignment),
+            )
+            .sort(
+              (first, second) =>
+                Number(first.assignment.position ?? 0) -
+                Number(second.assignment.position ?? 0),
+            );
+
+          const currentIndex = configurationImages.findIndex(
+            (item) => item.image.id === imageId,
+          );
+
+          if (currentIndex < 0) {
+            return currentImages;
+          }
+
+          const targetIndex =
+            direction === "left" ? currentIndex - 1 : currentIndex + 1;
+
+          if (targetIndex < 0 || targetIndex >= configurationImages.length) {
+            return currentImages;
+          }
+
+          const reordered = [...configurationImages];
+          const [moving] = reordered.splice(currentIndex, 1);
+
+          reordered.splice(targetIndex, 0, moving);
+
+          const nextPositionByImageId = new Map(
+            reordered.map((item, index) => [item.image.id, index]),
+          );
+
+          return currentImages.map((image) => ({
+            ...image,
+            product_image_variants: image.product_image_variants?.map(
+              (assignment) =>
+                assignment.variant_id === variantId &&
+                nextPositionByImageId.has(image.id)
+                  ? {
+                      ...assignment,
+                      position: nextPositionByImageId.get(image.id) ?? 0,
+                    }
+                  : assignment,
+            ),
+          }));
+        });
+      } else {
+        /*
+         * Shared gallery movement uses product_images.position.
+         */
+        setManagedImages((currentImages) => {
+          const shared = currentImages
+            .filter(
+              (image) =>
+                !image.product_image_variants ||
+                image.product_image_variants.length === 0,
+            )
+            .sort(
+              (first, second) =>
+                Number(first.position ?? 0) - Number(second.position ?? 0),
+            );
+
+          const currentIndex = shared.findIndex(
+            (image) => image.id === imageId,
+          );
+
+          if (currentIndex < 0) {
+            return currentImages;
+          }
+
+          const targetIndex =
+            direction === "left" ? currentIndex - 1 : currentIndex + 1;
+
+          if (targetIndex < 0 || targetIndex >= shared.length) {
+            return currentImages;
+          }
+
+          const reordered = [...shared];
+          const [moving] = reordered.splice(currentIndex, 1);
+
+          reordered.splice(targetIndex, 0, moving);
+
+          const nextPositionByImageId = new Map(
+            reordered.map((image, index) => [image.id, index]),
+          );
+
+          return currentImages.map((image) =>
+            nextPositionByImageId.has(image.id)
+              ? {
+                  ...image,
+                  position: nextPositionByImageId.get(image.id) ?? 0,
+                }
+              : image,
+          );
+        });
+      }
+    }
+
+    /*
+     * ========================================================
+     * OPTIMISTIC MAIN
+     * ========================================================
+     *
+     * Selecting Main immediately promotes that photograph to position 1
+     * in the exact configuration gallery.
+     */
+    if (operation === "primary" && imageId) {
+      if (variantId) {
+        setManagedImages((currentImages) => {
+          const configurationImages = currentImages
+            .map((image) => ({
+              image,
+              assignment: image.product_image_variants?.find(
+                (assignment) => assignment.variant_id === variantId,
+              ),
+            }))
+            .filter(
+              (
+                item,
+              ): item is {
+                image: ProductImage;
+                assignment: {
+                  variant_id: string;
+                  position: number;
+                  is_primary: boolean;
+                };
+              } => Boolean(item.assignment),
+            )
+            .sort(
+              (first, second) =>
+                Number(first.assignment.position ?? 0) -
+                Number(second.assignment.position ?? 0),
+            );
+
+          const selected = configurationImages.find(
+            (item) => item.image.id === imageId,
+          );
+
+          if (!selected) {
+            return currentImages;
+          }
+
+          const reordered = [
+            selected,
+            ...configurationImages.filter((item) => item.image.id !== imageId),
+          ];
+
+          const nextPositionByImageId = new Map(
+            reordered.map((item, index) => [item.image.id, index]),
+          );
+
+          return currentImages.map((image) => ({
+            ...image,
+            product_image_variants: image.product_image_variants?.map(
+              (assignment) =>
+                assignment.variant_id === variantId
+                  ? {
+                      ...assignment,
+                      position:
+                        nextPositionByImageId.get(image.id) ??
+                        assignment.position,
+                      is_primary: image.id === imageId,
+                    }
+                  : assignment,
+            ),
+          }));
+        });
+      } else {
+        setManagedImages((currentImages) => {
+          const shared = currentImages
+            .filter(
+              (image) =>
+                !image.product_image_variants ||
+                image.product_image_variants.length === 0,
+            )
+            .sort(
+              (first, second) =>
+                Number(first.position ?? 0) - Number(second.position ?? 0),
+            );
+
+          const selected = shared.find((image) => image.id === imageId);
+
+          if (!selected) {
+            return currentImages;
+          }
+
+          const reordered = [
+            selected,
+            ...shared.filter((image) => image.id !== imageId),
+          ];
+
+          const nextPositionByImageId = new Map(
+            reordered.map((image, index) => [image.id, index]),
+          );
+
+          return currentImages.map((image) =>
+            nextPositionByImageId.has(image.id)
+              ? {
+                  ...image,
+                  position: nextPositionByImageId.get(image.id) ?? 0,
+                  is_primary: image.id === imageId,
+                }
+              : {
+                  ...image,
+                  is_primary: false,
+                },
+          );
+        });
+      }
+    }
+
+    const controls = Array.from(form.elements).filter(
+      (
+        element,
+      ): element is
+        | HTMLButtonElement
+        | HTMLInputElement
+        | HTMLSelectElement
+        | HTMLTextAreaElement =>
+        element instanceof HTMLButtonElement ||
+        element instanceof HTMLInputElement ||
+        element instanceof HTMLSelectElement ||
+        element instanceof HTMLTextAreaElement,
+    );
+
+    const previousDisabledState = controls.map((control) => control.disabled);
+
+    controls.forEach((control) => {
+      control.disabled = true;
+    });
+
+    try {
+      const result =
+        operation === "usage"
+          ? await updateProductImageVariantName(formData)
+          : operation === "move"
+            ? await moveProductImage(formData)
+            : await setPrimaryProductImage(formData);
+
+      if (
+        !result ||
+        typeof result !== "object" ||
+        !("images" in result) ||
+        !Array.isArray(result.images)
+      ) {
+        throw new Error(
+          "The photograph changed, but the refreshed gallery could not be loaded.",
+        );
+      }
+
+      /*
+       * Database remains authoritative.
+       *
+       * Once the mutation finishes, reconcile the optimistic image state with
+       * the exact rows returned by the server.
+       */
+      setManagedImages(result.images as ProductImage[]);
+    } catch (error) {
+      /*
+       * Server failed: put the image manager exactly back where it was.
+       */
+      setManagedImages(previousImages);
+
+      setImageOperationErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "The photograph could not be updated. Please try again.",
+      );
+    } finally {
+      controls.forEach((control, index) => {
+        control.disabled = previousDisabledState[index];
+      });
+
+      setPendingImageOperation("");
+    }
+  }
+
+  async function handleSaveConfigurationPhotoUsage() {
+    if (pendingImageOperation) {
+      return;
+    }
+
+    /*
+     * selectedConfigurationImages is the gallery currently rendered.
+     * Therefore these are exactly the usage forms belonging to the
+     * configuration the administrator is currently managing.
+     */
+    const usageForms = Array.from(
+      document.querySelectorAll<HTMLFormElement>(
+        'form[data-photo-usage-form="true"]',
+      ),
+    );
+
+    if (usageForms.length === 0) {
+      setImageOperationErrorMessage(
+        "There are no photograph usage settings to save.",
+      );
+      return;
+    }
+
+    setPendingImageOperation("Saving photo usage…");
+    setImageOperationErrorMessage("");
+    setPhotoUsageSavedMessage("");
+
+    const previousImages = managedImages;
+
+    let latestAuthoritativeImages: ProductImage[] | null = null;
+
+    try {
+      /*
+       * Reuse the existing authoritative per-photo server action.
+       *
+       * The administrator still makes individual usage choices per photo,
+       * but only needs to press Save once for the complete gallery.
+       */
+      for (const form of usageForms) {
+        const formData = new FormData(form);
+
+        formData.set("_client_image_operation", "1");
+
+        const result = await updateProductImageVariantName(formData);
+
+        if (
+          !result ||
+          typeof result !== "object" ||
+          !("images" in result) ||
+          !Array.isArray(result.images)
+        ) {
+          throw new Error(
+            "Photo usage changed, but the refreshed gallery could not be loaded.",
+          );
+        }
+
+        latestAuthoritativeImages = result.images as ProductImage[];
+      }
+
+      if (latestAuthoritativeImages) {
+        setManagedImages(latestAuthoritativeImages);
+      }
+
+      setPhotoUsageSavedMessage(
+        usageForms.length === 1
+          ? "Photo usage saved."
+          : `Photo usage saved for ${usageForms.length} photographs.`,
+      );
+    } catch (error) {
+      /*
+       * If an earlier image was already successfully persisted, keep the
+       * latest authoritative response rather than pretending it was undone.
+       */
+      setManagedImages(latestAuthoritativeImages ?? previousImages);
+
+      setImageOperationErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Photo usage could not be saved. Please try again.",
+      );
+    } finally {
+      setPendingImageOperation("");
+    }
+  }
 
   function clearSelectedFiles() {
     previewUrls.forEach((previewUrl) => {
@@ -370,14 +929,6 @@ export default function ImageManager({
 
     const selected = Array.from(files);
 
-    if (orderedImages.length + selected.length > maximumImages) {
-      setUploadError(
-        `This product can have a maximum of ${maximumImages} photographs.`,
-      );
-
-      return;
-    }
-
     const invalidType = selected.find(
       (file) => !acceptedTypes.includes(file.type),
     );
@@ -469,12 +1020,79 @@ export default function ImageManager({
             </p>
 
             <p className="mt-1 text-sm font-semibold">
-              {orderedImages.length} / {maximumImages}
+              {maximumImagesPerConfiguration} max / configuration
             </p>
           </div>
         </div>
 
         <div className="p-5">
+          {liveConfigurations.length > 0 ? (
+            <section className="mb-5 border border-white/10 bg-black/20 p-4 sm:p-5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
+                    Photograph configuration
+                  </p>
+
+                  <p className="mt-1 text-sm font-semibold text-white">
+                    Choose the configuration gallery you want to manage.
+                  </p>
+                </div>
+
+                {liveConfigurations.length > 1 ? (
+                  <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
+                    {liveConfigurations.map((configuration, index) => {
+                      const active =
+                        configuration.id === selectedGalleryConfigurationId;
+
+                      const count = managedImages.filter((image) =>
+                        image.product_image_variants?.some(
+                          (assignment) =>
+                            assignment.variant_id === configuration.id,
+                        ),
+                      ).length;
+
+                      return (
+                        <button
+                          key={configuration.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedGalleryConfigurationId(configuration.id);
+                            setVisualConfigurationId(configuration.id);
+                            setImageOperationErrorMessage("");
+                          }}
+                          className={`shrink-0 border px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.11em] transition ${
+                            active
+                              ? "border-[#e2a128] bg-[#fdb73e] text-black"
+                              : "border-white/10 bg-black/30 text-white/45 hover:border-white/30 hover:text-white"
+                          }`}
+                        >
+                          {configuration.variant_name ||
+                            configuration.fallbackLabel ||
+                            `Configuration ${index + 1}`}
+                          <span className="ml-2 opacity-55">{count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+
+              {selectedGalleryConfigurationId ? (
+                <p className="mt-4 border border-[#fdb73e]/25 bg-[#fdb73e]/[0.05] px-4 py-3 text-xs leading-5 text-white/50">
+                  Uploads and ordering below are focused on{" "}
+                  <strong className="text-white">
+                    {liveConfigurations.find(
+                      (configuration) =>
+                        configuration.id === selectedGalleryConfigurationId,
+                    )?.variant_name || "this configuration"}
+                  </strong>
+                  .
+                </p>
+              ) : null}
+            </section>
+          ) : null}
+
           <form
             ref={uploadFormRef}
             action={finalizeDirectProductImageUploads}
@@ -740,6 +1358,66 @@ export default function ImageManager({
         </div>
       </section>
 
+      {selectedGalleryConfigurationId &&
+      selectedConfigurationImages.length > 0 ? (
+        <section className="mb-5 overflow-hidden border border-white/10 bg-[#0d0d0d]">
+          <div className="flex flex-col gap-5 p-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
+                Photo usage
+              </p>
+
+              <h3 className="mt-2 text-lg font-semibold text-white">
+                Save photo usage for this gallery
+              </h3>
+
+              <p className="mt-2 text-sm leading-6 text-white/40">
+                Choose which configurations can use each photograph below. You
+                can make changes to several photographs first, then save every
+                photo usage setting together with this one button.
+              </p>
+
+              <p className="mt-2 text-xs leading-5 text-white/30">
+                Selected gallery:{" "}
+                <strong className="font-semibold text-white/60">
+                  {liveConfigurations.find(
+                    (configuration) =>
+                      configuration.id === selectedGalleryConfigurationId,
+                  )?.variant_name || "Current configuration"}
+                </strong>
+                {" · "}
+                {selectedConfigurationImages.length}{" "}
+                {selectedConfigurationImages.length === 1
+                  ? "photograph"
+                  : "photographs"}
+              </p>
+
+              {photoUsageSavedMessage ? (
+                <p className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-emerald-300">
+                  <CheckCircle2 className="h-4 w-4" />
+                  {photoUsageSavedMessage}
+                </p>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              disabled={Boolean(pendingImageOperation)}
+              onClick={() => {
+                void handleSaveConfigurationPhotoUsage();
+              }}
+              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 border border-[#e2a128] bg-[#fdb73e] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <Save className="h-4 w-4" />
+
+              {pendingImageOperation === "Saving photo usage…"
+                ? "Saving photo usage…"
+                : "Save photo usage"}
+            </button>
+          </div>
+        </section>
+      ) : null}
+
       <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
         <div className="border-b border-white/10 px-5 py-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
@@ -768,7 +1446,27 @@ export default function ImageManager({
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {orderedImages.map((image, index) => {
+              {pendingImageOperation ? (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="pointer-events-none fixed bottom-6 right-6 z-[100] inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-2 text-[10px] font-semibold text-black shadow-lg"
+                >
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#fdb73e]" />
+                  {pendingImageOperation}
+                </div>
+              ) : null}
+
+              {imageOperationErrorMessage ? (
+                <div
+                  role="alert"
+                  className="fixed bottom-6 right-6 z-[101] max-w-sm rounded-xl border border-red-500/20 bg-white px-4 py-3 text-xs font-medium text-red-600 shadow-lg"
+                >
+                  {imageOperationErrorMessage}
+                </div>
+              ) : null}
+
+              {selectedConfigurationImages.map((image, index) => {
                 const assignments = [
                   ...(image.product_image_variants ?? []),
                 ].sort((first, second) => {
@@ -844,7 +1542,10 @@ export default function ImageManager({
 
                     <div className="space-y-4 p-4">
                       <form
-                        action={updateProductImageVariantName}
+                        data-photo-usage-form="true"
+                        onSubmit={(event) =>
+                          void handleImageOperation(event, "usage")
+                        }
                         className="border border-white/10 bg-black/20 p-3"
                       >
                         <input
@@ -925,13 +1626,6 @@ export default function ImageManager({
                                     ? "Used by every configuration"
                                     : `${assignedVariantIds.size} selected`}
                                 </span>
-
-                                <button
-                                  type="submit"
-                                  className="shrink-0 border border-white/10 px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-white/50 transition hover:border-white hover:bg-white hover:text-black"
-                                >
-                                  Save usage
-                                </button>
                               </div>
                             </>
                           );
@@ -995,7 +1689,11 @@ export default function ImageManager({
                           </div>
 
                           <div className="grid grid-cols-3 gap-2">
-                            <form action={moveProductImage}>
+                            <form
+                              onSubmit={(event) =>
+                                void handleImageOperation(event, "move")
+                              }
+                            >
                               <input
                                 type="hidden"
                                 name="product_id"
@@ -1024,7 +1722,11 @@ export default function ImageManager({
                               </button>
                             </form>
 
-                            <form action={moveProductImage}>
+                            <form
+                              onSubmit={(event) =>
+                                void handleImageOperation(event, "move")
+                              }
+                            >
                               <input
                                 type="hidden"
                                 name="product_id"
@@ -1055,7 +1757,11 @@ export default function ImageManager({
                               </button>
                             </form>
 
-                            <form action={setPrimaryProductImage}>
+                            <form
+                              onSubmit={(event) =>
+                                void handleImageOperation(event, "primary")
+                              }
+                            >
                               <input
                                 type="hidden"
                                 name="product_id"
@@ -1160,7 +1866,11 @@ export default function ImageManager({
                                 </div>
 
                                 <div className="mt-3 grid grid-cols-3 gap-2">
-                                  <form action={moveProductImage}>
+                                  <form
+                                    onSubmit={(event) =>
+                                      void handleImageOperation(event, "move")
+                                    }
+                                  >
                                     <input
                                       type="hidden"
                                       name="product_id"
@@ -1195,7 +1905,11 @@ export default function ImageManager({
                                     </button>
                                   </form>
 
-                                  <form action={moveProductImage}>
+                                  <form
+                                    onSubmit={(event) =>
+                                      void handleImageOperation(event, "move")
+                                    }
+                                  >
                                     <input
                                       type="hidden"
                                       name="product_id"
@@ -1233,7 +1947,14 @@ export default function ImageManager({
                                     </button>
                                   </form>
 
-                                  <form action={setPrimaryProductImage}>
+                                  <form
+                                    onSubmit={(event) =>
+                                      void handleImageOperation(
+                                        event,
+                                        "primary",
+                                      )
+                                    }
+                                  >
                                     <input
                                       type="hidden"
                                       name="product_id"

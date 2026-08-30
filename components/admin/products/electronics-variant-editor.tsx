@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 
 import ConfigurationColorPicker from "@/components/admin/products/configuration-color-picker";
+import { canonicalizeProductColorwayName } from "@/lib/product-colorways";
 
 type AvailabilityStatus =
   "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
@@ -1304,6 +1305,7 @@ export default function ElectronicsVariantEditor({
   const [customSpecName, setCustomSpecName] = useState("");
 
   const [customSpecError, setCustomSpecError] = useState("");
+  const [technicalSpecsMessage, setTechnicalSpecsMessage] = useState("");
   const orderedVariants = useMemo(
     () =>
       [...variants].sort(
@@ -1813,10 +1815,88 @@ export default function ElectronicsVariantEditor({
     emit(next);
   }
 
+  function applyTechnicalSpecificationsToAll() {
+    if (!activeVariant || orderedVariants.length <= 1) {
+      return;
+    }
+
+    /*
+     * Selector values such as Color, Size, Storage and RAM belong
+     * to the exact configuration and must NEVER be copied.
+     *
+     * Everything else in attributes, excluding the reserved
+     * hierarchy metadata, is technical metadata.
+     */
+    const selectorKeys = new Set(levels.map((level) => level.key));
+
+    const isTechnicalKey = (key: string) =>
+      key !== configurationHierarchyKey && !selectorKeys.has(key);
+
+    const sourceTechnicalEntries = Object.entries(
+      activeVariant.attributes ?? {},
+    ).filter(([key]) => isTechnicalKey(key));
+
+    if (sourceTechnicalEntries.length === 0) {
+      setTechnicalSpecsMessage("");
+      setCustomSpecError(
+        "Add at least one technical specification before applying specs to all configurations.",
+      );
+      return;
+    }
+
+    /*
+     * Remove existing technical metadata from every configuration
+     * first, then copy the active configuration's complete technical
+     * specification set.
+     *
+     * Configuration hierarchy, selector values, prices, SKU, stock,
+     * availability and every other variant field remain untouched.
+     */
+    const allTechnicalKeys = new Set(
+      orderedVariants.flatMap((variant) =>
+        Object.keys(variant.attributes ?? {}).filter(isTechnicalKey),
+      ),
+    );
+
+    const sourceTechnicalAttributes = Object.fromEntries(
+      sourceTechnicalEntries,
+    );
+
+    emit(
+      orderedVariants.map((variant) => {
+        const attributes = {
+          ...(variant.attributes ?? {}),
+        };
+
+        for (const key of allTechnicalKeys) {
+          delete attributes[key];
+        }
+
+        Object.assign(attributes, sourceTechnicalAttributes);
+
+        return {
+          ...variant,
+          attributes,
+        };
+      }),
+    );
+
+    setCustomSpecError("");
+    setTechnicalSpecsMessage(
+      `Applied ${sourceTechnicalEntries.length} ${
+        sourceTechnicalEntries.length === 1
+          ? "technical specification"
+          : "technical specifications"
+      } to all ${orderedVariants.length} configurations.`,
+    );
+  }
+
   function addCustomSpecification() {
     if (!activeVariant) {
       return;
     }
+
+    setTechnicalSpecsMessage("");
 
     const label = clean(customSpecName);
     const key = normalizeKey(label);
@@ -1988,7 +2068,7 @@ export default function ElectronicsVariantEditor({
                                     key={value}
                                     className="inline-flex min-h-9 items-center gap-2 rounded-full border border-black/10 bg-white px-3 text-xs font-medium text-black"
                                   >
-                                    {value}
+                                    {canonicalizeProductColorwayName(value)}
 
                                     <button
                                       type="button"
@@ -2001,7 +2081,9 @@ export default function ElectronicsVariantEditor({
                                         )
                                       }
                                       className="grid h-5 w-5 place-items-center rounded-full text-black/35 transition hover:bg-black/[0.06] hover:text-black"
-                                      aria-label={`Remove ${value}`}
+                                      aria-label={`Remove ${canonicalizeProductColorwayName(
+                                        value,
+                                      )}`}
                                     >
                                       ×
                                     </button>
@@ -2014,20 +2096,40 @@ export default function ElectronicsVariantEditor({
                               </p>
                             )}
 
+                            <div className="mb-3 rounded-xl border border-[#fdb73e]/25 bg-[#fff9ec] px-3 py-2.5">
+                              <p className="text-[11px] leading-5 text-black/60">
+                                <strong className="font-semibold text-black/75">
+                                  Colorway rule:
+                                </strong>{" "}
+                                Every color name must start with a capital
+                                letter. For Apple, Samsung, Huawei, Xiaomi,
+                                Google and other branded products, use the
+                                manufacturer&apos;s exact official colorway
+                                name. The customer-facing color swatch will use
+                                the matching Stereophonie manufacturer-reference
+                                palette.
+                              </p>
+                            </div>
+
                             <ConfigurationColorPicker
                               value={null}
                               onChange={(color) => {
+                                const canonicalColorName =
+                                  canonicalizeProductColorwayName(color.name);
+
                                 const alreadySelected = level.values.some(
                                   (value) =>
-                                    value.toLowerCase() ===
-                                    color.name.toLowerCase(),
+                                    canonicalizeProductColorwayName(
+                                      value,
+                                    ).toLocaleLowerCase() ===
+                                    canonicalColorName.toLocaleLowerCase(),
                                 );
 
                                 if (alreadySelected) return;
 
                                 updateLevelValues(level.id, [
                                   ...level.values,
-                                  color.name,
+                                  canonicalColorName,
                                 ]);
                               }}
                             />
@@ -2509,7 +2611,7 @@ export default function ElectronicsVariantEditor({
               </section>
 
               <section className="mt-7 border-t border-white/10 pt-6">
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                   <input
                     value={customSpecName}
                     onChange={(event) => {
@@ -2520,18 +2622,45 @@ export default function ElectronicsVariantEditor({
                     className="min-h-11 flex-1 border border-white/10 bg-black/30 px-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/45"
                   />
 
-                  <button
-                    type="button"
-                    onClick={addCustomSpecification}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.11em] text-white hover:bg-white hover:text-black"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add technical spec
-                  </button>
+                  <div className="flex w-full shrink-0 flex-col gap-0 sm:w-[181px]">
+                    <button
+                      type="button"
+                      onClick={addCustomSpecification}
+                      className="inline-flex min-h-11 w-full items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.11em] text-white transition hover:bg-white hover:text-black"
+                    >
+                      <Plus className="h-4 w-4 shrink-0" />
+                      <span>Add technical spec</span>
+                    </button>
+
+                    {orderedVariants.length > 1 ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={applyTechnicalSpecificationsToAll}
+                          className="inline-flex h-8 w-full items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap border border-[#e3a32d] bg-[#fdb73e] px-2 !text-[9px] font-semibold uppercase !tracking-[0.035em] leading-none text-black transition hover:bg-[#ffc45b] active:scale-[0.99] mt-2"
+                        >
+                          <Copy className="h-3.5 w-3.5 shrink-0" />
+                          <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
+                            Apply specs to all
+                          </span>
+                        </button>
+                      </>
+                    ) : null}
+                  </div>
                 </div>
+
                 {customSpecError ? (
                   <p className="mt-2 text-xs font-medium text-red-500">
                     {customSpecError}
+                  </p>
+                ) : null}
+
+                {technicalSpecsMessage ? (
+                  <p
+                    role="status"
+                    className="mt-2 text-right text-[10px] font-semibold text-[#d99a24]"
+                  >
+                    {technicalSpecsMessage}
                   </p>
                 ) : null}
 

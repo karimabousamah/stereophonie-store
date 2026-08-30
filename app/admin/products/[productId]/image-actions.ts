@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const maximumImageSize = 10 * 1024 * 1024;
-const maximumImagesPerProduct = 10;
+const maximumImagesPerConfiguration = 10;
 
 async function requireAdministrator() {
   const supabase = await createClient();
@@ -107,13 +107,6 @@ export async function uploadProductImages(formData: FormData) {
   }
 
   const currentCount = existingImageCount ?? 0;
-
-  if (currentCount + files.length > maximumImagesPerProduct) {
-    redirectWithError(
-      productId,
-      `A product can have a maximum of ${maximumImagesPerProduct} photographs.`,
-    );
-  }
 
   for (const file of files) {
     if (!allowedImageTypes.has(file.type)) {
@@ -258,13 +251,6 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     redirectWithError(productId, "Select at least one photograph.");
   }
 
-  if (uploadedImages.length > maximumImagesPerProduct) {
-    redirectWithError(
-      productId,
-      `A product can have a maximum of ${maximumImagesPerProduct} photographs.`,
-    );
-  }
-
   const { data: product, error: productError } = await supabase
     .from("products")
     .select("id, name")
@@ -311,13 +297,6 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
   );
 
   const currentImageCount = existingImages?.length ?? 0;
-
-  if (currentImageCount + uploadedImages.length > maximumImagesPerProduct) {
-    redirectWithError(
-      productId,
-      `A product can have a maximum of ${maximumImagesPerProduct} photographs.`,
-    );
-  }
 
   const submittedPositions = new Set<number>();
 
@@ -387,6 +366,91 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     image.variant_ids = imageVariantIds;
 
     submittedPositions.add(position);
+  }
+
+  /*
+   * ==========================================================
+   * MAXIMUM 10 PHOTOGRAPHS PER EXACT CONFIGURATION
+   * ==========================================================
+   *
+   * Existing Shared photographs count toward every configuration.
+   * Existing assigned photographs count only toward their linked
+   * configurations. Incoming photographs are evaluated using the
+   * exact same rule before any permanent database/storage changes.
+   */
+  const { data: existingImageAssignments, error: assignmentCountError } =
+    await supabase
+      .from("product_images")
+      .select(
+        `
+          id,
+          product_image_variants (
+            variant_id
+          )
+        `,
+      )
+      .eq("product_id", productId);
+
+  if (assignmentCountError) {
+    redirectWithError(productId, assignmentCountError.message);
+  }
+
+  const photographCountByConfiguration = new Map(
+    (productConfigurations ?? []).map((configuration) => [
+      String(configuration.id),
+      0,
+    ]),
+  );
+
+  for (const existingImage of existingImageAssignments ?? []) {
+    const assignments = Array.isArray(existingImage.product_image_variants)
+      ? existingImage.product_image_variants
+      : [];
+
+    const affectedConfigurationIds =
+      assignments.length > 0
+        ? assignments
+            .map((assignment) => String(assignment.variant_id ?? "").trim())
+            .filter(Boolean)
+        : Array.from(photographCountByConfiguration.keys());
+
+    for (const configurationId of affectedConfigurationIds) {
+      if (!photographCountByConfiguration.has(configurationId)) {
+        continue;
+      }
+
+      photographCountByConfiguration.set(
+        configurationId,
+        (photographCountByConfiguration.get(configurationId) ?? 0) + 1,
+      );
+    }
+  }
+
+  for (const image of uploadedImages) {
+    const assignedConfigurationIds = Array.isArray(image.variant_ids)
+      ? image.variant_ids
+      : [];
+
+    const affectedConfigurationIds =
+      assignedConfigurationIds.length > 0
+        ? assignedConfigurationIds
+        : Array.from(photographCountByConfiguration.keys());
+
+    for (const configurationId of affectedConfigurationIds) {
+      const nextCount =
+        (photographCountByConfiguration.get(configurationId) ?? 0) + 1;
+
+      photographCountByConfiguration.set(configurationId, nextCount);
+
+      if (nextCount > maximumImagesPerConfiguration) {
+        const configuration = validConfigurationsById.get(configurationId);
+
+        redirectWithError(
+          productId,
+          `${configuration?.variant_name || "This configuration"} can have a maximum of ${maximumImagesPerConfiguration} photographs. Shared photographs count toward every configuration.`,
+        );
+      }
+    }
   }
 
   uploadedImages.sort((first, second) => first.position - second.position);
@@ -580,6 +644,235 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
   );
 }
 
+type ClientImageOperationResult = {
+  ok: true;
+  message: string;
+  images: {
+    id: string;
+    image_url: string | null;
+    storage_path: string | null;
+    alt_text: string | null;
+    position: number;
+    is_primary: boolean;
+    variant_name: string | null;
+    variant_id: string | null;
+    variant_position: number;
+    is_variant_primary: boolean;
+    product_image_variants: {
+      variant_id: string;
+      position: number;
+      is_primary: boolean;
+    }[];
+  }[];
+};
+
+function isClientImageOperation(formData: FormData) {
+  return String(formData.get("_client_image_operation") ?? "") === "1";
+}
+
+function imageOperationError(
+  formData: FormData,
+  productId: string,
+  message: string,
+): never {
+  if (isClientImageOperation(formData)) {
+    throw new Error(message);
+  }
+
+  redirectWithError(productId, message);
+}
+
+async function loadAuthoritativeProductImageState(
+  supabase: Awaited<ReturnType<typeof requireAdministrator>>,
+  productId: string,
+): Promise<ClientImageOperationResult["images"]> {
+  const { data, error } = await supabase
+    .from("product_images")
+    .select(
+      `
+        id,
+        image_url,
+        storage_path,
+        alt_text,
+        position,
+        is_primary,
+        variant_name,
+        variant_id,
+        variant_position,
+        is_variant_primary,
+        product_image_variants (
+          variant_id,
+          position,
+          is_primary
+        )
+      `,
+    )
+    .eq("product_id", productId)
+    .order("position", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data ?? []).map((image) => ({
+    ...image,
+    product_image_variants: Array.isArray(image.product_image_variants)
+      ? [...image.product_image_variants].sort((first, second) => {
+          const positionDifference =
+            Number(first.position ?? 0) - Number(second.position ?? 0);
+
+          if (positionDifference !== 0) {
+            return positionDifference;
+          }
+
+          return String(first.variant_id).localeCompare(
+            String(second.variant_id),
+          );
+        })
+      : [],
+  }));
+}
+
+async function finishImageOperation(
+  formData: FormData,
+  supabase: Awaited<ReturnType<typeof requireAdministrator>>,
+  productId: string,
+  message: string,
+): Promise<ClientImageOperationResult> {
+  if (!isClientImageOperation(formData)) {
+    redirectWithSuccess(productId, message);
+  }
+
+  return {
+    ok: true,
+    message,
+    images: await loadAuthoritativeProductImageState(supabase, productId),
+  };
+}
+
+/*
+ * Rebuild every exact-configuration gallery into a clean contiguous sequence.
+ *
+ * Database positions remain zero-based:
+ *   0, 1, 2, 3...
+ *
+ * Admin displays those as:
+ *   Position 1 of N, Position 2 of N...
+ *
+ * Existing Main stays first. If a gallery somehow has no Main, the first
+ * photograph becomes Main automatically.
+ */
+async function normalizeProductImageVariantGalleries(
+  supabase: Awaited<ReturnType<typeof requireAdministrator>>,
+  productId: string,
+) {
+  const { data: productImages, error: productImagesError } = await supabase
+    .from("product_images")
+    .select("id")
+    .eq("product_id", productId);
+
+  if (productImagesError) {
+    throw new Error(productImagesError.message);
+  }
+
+  const imageIds = (productImages ?? []).map((image) => image.id);
+
+  if (imageIds.length === 0) {
+    return;
+  }
+
+  const { data: assignments, error: assignmentsError } = await supabase
+    .from("product_image_variants")
+    .select("image_id, variant_id, position, is_primary")
+    .in("image_id", imageIds)
+    .order("position", { ascending: true })
+    .order("image_id", { ascending: true });
+
+  if (assignmentsError) {
+    throw new Error(assignmentsError.message);
+  }
+
+  const grouped = new Map<
+    string,
+    {
+      image_id: string;
+      variant_id: string;
+      position: number;
+      is_primary: boolean;
+    }[]
+  >();
+
+  for (const assignment of assignments ?? []) {
+    const rows = grouped.get(assignment.variant_id) ?? [];
+
+    rows.push({
+      image_id: assignment.image_id,
+      variant_id: assignment.variant_id,
+      position: Number(assignment.position ?? 0),
+      is_primary: Boolean(assignment.is_primary),
+    });
+
+    grouped.set(assignment.variant_id, rows);
+  }
+
+  for (const [variantId, rows] of grouped) {
+    if (rows.length === 0) {
+      continue;
+    }
+
+    const ordered = [...rows].sort((first, second) => {
+      if (first.is_primary !== second.is_primary) {
+        return first.is_primary ? -1 : 1;
+      }
+
+      if (first.position !== second.position) {
+        return first.position - second.position;
+      }
+
+      return first.image_id.localeCompare(second.image_id);
+    });
+
+    /*
+     * Temporary high positions prevent uniqueness collisions while two
+     * neighbouring images exchange positions.
+     */
+    for (let index = 0; index < ordered.length; index += 1) {
+      const assignment = ordered[index];
+
+      const { error } = await supabase
+        .from("product_image_variants")
+        .update({
+          position: 100000 + index,
+          is_primary: false,
+        })
+        .eq("variant_id", variantId)
+        .eq("image_id", assignment.image_id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    }
+
+    for (let index = 0; index < ordered.length; index += 1) {
+      const assignment = ordered[index];
+
+      const { error } = await supabase
+        .from("product_image_variants")
+        .update({
+          position: index,
+          is_primary: index === 0,
+        })
+        .eq("variant_id", variantId)
+        .eq("image_id", assignment.image_id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    }
+  }
+}
+
 export async function setPrimaryProductImage(formData: FormData) {
   const supabase = await requireAdministrator();
 
@@ -588,7 +881,11 @@ export async function setPrimaryProductImage(formData: FormData) {
   const variantId = String(formData.get("variant_id") ?? "").trim();
 
   if (!productId || !imageId) {
-    redirect("/admin/products");
+    imageOperationError(
+      formData,
+      productId,
+      "The photograph operation is missing required information.",
+    );
   }
 
   const { data: image, error: imageError } = await supabase
@@ -599,7 +896,8 @@ export async function setPrimaryProductImage(formData: FormData) {
     .maybeSingle();
 
   if (imageError || !image) {
-    redirectWithError(
+    imageOperationError(
+      formData,
       productId,
       imageError?.message ?? "The photograph could not be found.",
     );
@@ -624,7 +922,8 @@ export async function setPrimaryProductImage(formData: FormData) {
       .maybeSingle();
 
     if (variantError || !variant) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         variantError?.message ??
           "The selected configuration could not be verified.",
@@ -640,7 +939,8 @@ export async function setPrimaryProductImage(formData: FormData) {
         .maybeSingle();
 
     if (selectedAssignmentError || !selectedAssignment) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         selectedAssignmentError?.message ??
           "This photograph is not assigned to that configuration.",
@@ -655,7 +955,8 @@ export async function setPrimaryProductImage(formData: FormData) {
       .order("image_id", { ascending: true });
 
     if (assignmentsError || !assignments) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         assignmentsError?.message ??
           "Configuration photographs could not be loaded.",
@@ -667,7 +968,8 @@ export async function setPrimaryProductImage(formData: FormData) {
     );
 
     if (selectedIndex < 0) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         "The configuration photograph could not be found.",
       );
@@ -690,7 +992,7 @@ export async function setPrimaryProductImage(formData: FormData) {
       .eq("variant_id", variantId);
 
     if (clearPrimaryError) {
-      redirectWithError(productId, clearPrimaryError.message);
+      imageOperationError(formData, productId, clearPrimaryError.message);
     }
 
     for (let index = 0; index < reordered.length; index += 1) {
@@ -705,7 +1007,7 @@ export async function setPrimaryProductImage(formData: FormData) {
         .eq("image_id", assignment.image_id);
 
       if (temporaryUpdateError) {
-        redirectWithError(productId, temporaryUpdateError.message);
+        imageOperationError(formData, productId, temporaryUpdateError.message);
       }
     }
 
@@ -722,13 +1024,20 @@ export async function setPrimaryProductImage(formData: FormData) {
         .eq("image_id", assignment.image_id);
 
       if (updateError) {
-        redirectWithError(productId, updateError.message);
+        imageOperationError(formData, productId, updateError.message);
       }
     }
 
-    await refreshProductPages(productId);
+    if (!isClientImageOperation(formData)) {
+      await refreshProductPages(productId);
+    }
 
-    redirectWithSuccess(productId, "Configuration Main photograph updated.");
+    return finishImageOperation(
+      formData,
+      supabase,
+      productId,
+      "Configuration Main photograph updated.",
+    );
   }
 
   /*
@@ -748,11 +1057,12 @@ export async function setPrimaryProductImage(formData: FormData) {
     .eq("image_id", imageId);
 
   if (assignmentCountError) {
-    redirectWithError(productId, assignmentCountError.message);
+    imageOperationError(formData, productId, assignmentCountError.message);
   }
 
   if ((assignmentCount ?? 0) > 0) {
-    redirectWithError(
+    imageOperationError(
+      formData,
       productId,
       "Choose an exact configuration before changing this photograph's Main state.",
     );
@@ -766,7 +1076,7 @@ export async function setPrimaryProductImage(formData: FormData) {
     .eq("product_id", productId);
 
   if (clearPrimaryError) {
-    redirectWithError(productId, clearPrimaryError.message);
+    imageOperationError(formData, productId, clearPrimaryError.message);
   }
 
   const { error: primaryError } = await supabase
@@ -778,12 +1088,19 @@ export async function setPrimaryProductImage(formData: FormData) {
     .eq("product_id", productId);
 
   if (primaryError) {
-    redirectWithError(productId, primaryError.message);
+    imageOperationError(formData, productId, primaryError.message);
   }
 
-  await refreshProductPages(productId);
+  if (!isClientImageOperation(formData)) {
+    await refreshProductPages(productId);
+  }
 
-  redirectWithSuccess(productId, "Main photograph updated.");
+  return finishImageOperation(
+    formData,
+    supabase,
+    productId,
+    "Main photograph updated.",
+  );
 }
 
 export async function updateProductImageVariantName(formData: FormData) {
@@ -802,7 +1119,11 @@ export async function updateProductImageVariantName(formData: FormData) {
   );
 
   if (!productId || !imageId) {
-    redirect("/admin/products");
+    imageOperationError(
+      formData,
+      productId,
+      "The photograph operation is missing required information.",
+    );
   }
 
   const { data: image, error: imageError } = await supabase
@@ -813,7 +1134,8 @@ export async function updateProductImageVariantName(formData: FormData) {
     .maybeSingle();
 
   if (imageError || !image) {
-    redirectWithError(
+    imageOperationError(
+      formData,
       productId,
       imageError?.message ?? "The photograph could not be found.",
     );
@@ -832,13 +1154,14 @@ export async function updateProductImageVariantName(formData: FormData) {
       .in("id", requestedVariantIds);
 
     if (error) {
-      redirectWithError(productId, error.message);
+      imageOperationError(formData, productId, error.message);
     }
 
     selectedVariants = data ?? [];
 
     if (selectedVariants.length !== requestedVariantIds.length) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         "One or more selected configurations no longer exist.",
       );
@@ -856,7 +1179,7 @@ export async function updateProductImageVariantName(formData: FormData) {
       .eq("image_id", imageId);
 
   if (previousAssignmentsError) {
-    redirectWithError(productId, previousAssignmentsError.message);
+    imageOperationError(formData, productId, previousAssignmentsError.message);
   }
 
   const previousByVariant = new Map(
@@ -896,7 +1219,7 @@ export async function updateProductImageVariantName(formData: FormData) {
         .limit(1);
 
     if (existingForVariantError) {
-      redirectWithError(productId, existingForVariantError.message);
+      imageOperationError(formData, productId, existingForVariantError.message);
     }
 
     const highestPosition = Number(existingForVariant?.[0]?.position ?? -1);
@@ -915,7 +1238,7 @@ export async function updateProductImageVariantName(formData: FormData) {
     .eq("image_id", imageId);
 
   if (clearError) {
-    redirectWithError(productId, clearError.message);
+    imageOperationError(formData, productId, clearError.message);
   }
 
   if (rows.length > 0) {
@@ -924,7 +1247,7 @@ export async function updateProductImageVariantName(formData: FormData) {
       .insert(rows);
 
     if (insertError) {
-      redirectWithError(productId, insertError.message);
+      imageOperationError(formData, productId, insertError.message);
     }
   }
 
@@ -950,12 +1273,28 @@ export async function updateProductImageVariantName(formData: FormData) {
     .eq("product_id", productId);
 
   if (legacyError) {
-    redirectWithError(productId, legacyError.message);
+    imageOperationError(formData, productId, legacyError.message);
   }
 
-  await refreshProductPages(productId);
+  try {
+    await normalizeProductImageVariantGalleries(supabase, productId);
+  } catch (error) {
+    imageOperationError(
+      formData,
+      productId,
+      error instanceof Error
+        ? error.message
+        : "The configuration photograph order could not be normalized.",
+    );
+  }
 
-  redirectWithSuccess(
+  if (!isClientImageOperation(formData)) {
+    await refreshProductPages(productId);
+  }
+
+  return finishImageOperation(
+    formData,
+    supabase,
     productId,
     selectedVariants.length === 0
       ? "Photograph shared with all configurations."
@@ -1004,11 +1343,15 @@ export async function moveProductImage(formData: FormData) {
   const direction = String(formData.get("direction") ?? "").trim();
 
   if (!productId || !imageId) {
-    redirect("/admin/products");
+    imageOperationError(
+      formData,
+      productId,
+      "The photograph operation is missing required information.",
+    );
   }
 
   if (direction !== "left" && direction !== "right") {
-    redirectWithError(productId, "Invalid photograph direction.");
+    imageOperationError(formData, productId, "Invalid photograph direction.");
   }
 
   /*
@@ -1027,7 +1370,8 @@ export async function moveProductImage(formData: FormData) {
       .maybeSingle();
 
     if (variantError || !variant) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         variantError?.message ??
           "The selected configuration could not be verified.",
@@ -1042,7 +1386,8 @@ export async function moveProductImage(formData: FormData) {
       .order("image_id", { ascending: true });
 
     if (assignmentsError || !assignments) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         assignmentsError?.message ??
           "Configuration photographs could not be loaded.",
@@ -1054,7 +1399,8 @@ export async function moveProductImage(formData: FormData) {
     );
 
     if (currentIndex < 0) {
-      redirectWithError(
+      imageOperationError(
+        formData,
         productId,
         "This photograph is not assigned to that configuration.",
       );
@@ -1064,9 +1410,13 @@ export async function moveProductImage(formData: FormData) {
       direction === "left" ? currentIndex - 1 : currentIndex + 1;
 
     if (targetIndex < 0 || targetIndex >= assignments.length) {
-      await refreshProductPages(productId);
+      if (!isClientImageOperation(formData)) {
+        await refreshProductPages(productId);
+      }
 
-      redirectWithSuccess(
+      return finishImageOperation(
+        formData,
+        supabase,
         productId,
         "This photograph is already at the edge of its configuration.",
       );
@@ -1097,7 +1447,7 @@ export async function moveProductImage(formData: FormData) {
         .eq("image_id", assignment.image_id);
 
       if (temporaryUpdateError) {
-        redirectWithError(productId, temporaryUpdateError.message);
+        imageOperationError(formData, productId, temporaryUpdateError.message);
       }
     }
 
@@ -1113,13 +1463,20 @@ export async function moveProductImage(formData: FormData) {
         .eq("image_id", assignment.image_id);
 
       if (updateError) {
-        redirectWithError(productId, updateError.message);
+        imageOperationError(formData, productId, updateError.message);
       }
     }
 
-    await refreshProductPages(productId);
+    if (!isClientImageOperation(formData)) {
+      await refreshProductPages(productId);
+    }
 
-    redirectWithSuccess(productId, "Configuration photograph order updated.");
+    return finishImageOperation(
+      formData,
+      supabase,
+      productId,
+      "Configuration photograph order updated.",
+    );
   }
 
   /*
@@ -1147,7 +1504,8 @@ export async function moveProductImage(formData: FormData) {
     .order("id", { ascending: true });
 
   if (productImagesError || !productImages) {
-    redirectWithError(
+    imageOperationError(
+      formData,
       productId,
       productImagesError?.message ?? "Product photographs could not be loaded.",
     );
@@ -1162,7 +1520,8 @@ export async function moveProductImage(formData: FormData) {
   const currentIndex = sharedImages.findIndex((image) => image.id === imageId);
 
   if (currentIndex < 0) {
-    redirectWithError(
+    imageOperationError(
+      formData,
       productId,
       "Choose an exact configuration before moving this photograph.",
     );
@@ -1172,9 +1531,13 @@ export async function moveProductImage(formData: FormData) {
     direction === "left" ? currentIndex - 1 : currentIndex + 1;
 
   if (targetIndex < 0 || targetIndex >= sharedImages.length) {
-    await refreshProductPages(productId);
+    if (!isClientImageOperation(formData)) {
+      await refreshProductPages(productId);
+    }
 
-    redirectWithSuccess(
+    return finishImageOperation(
+      formData,
+      supabase,
       productId,
       "This photograph is already at the edge of the shared gallery.",
     );
@@ -1202,13 +1565,20 @@ export async function moveProductImage(formData: FormData) {
       .eq("id", image.id);
 
     if (updateError) {
-      redirectWithError(productId, updateError.message);
+      imageOperationError(formData, productId, updateError.message);
     }
   }
 
-  await refreshProductPages(productId);
+  if (!isClientImageOperation(formData)) {
+    await refreshProductPages(productId);
+  }
 
-  redirectWithSuccess(productId, "Shared photograph order updated.");
+  return finishImageOperation(
+    formData,
+    supabase,
+    productId,
+    "Shared photograph order updated.",
+  );
 }
 
 export async function deleteProductImage(formData: FormData) {

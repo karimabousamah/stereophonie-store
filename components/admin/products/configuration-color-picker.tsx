@@ -3,6 +3,12 @@
 import { Check, ChevronDown, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import {
+  canonicalizeProductColorwayName,
+  normalizeProductColorway,
+  productColorwayHex,
+} from "@/lib/product-colorways";
+
 export type ConfigurationColorValue = {
   name: string;
   hex: string;
@@ -13,7 +19,7 @@ type Props = {
   onChange: (value: ConfigurationColorValue) => void;
 };
 
-const presetColors: ConfigurationColorValue[] = [
+const rawPresetColors: ConfigurationColorValue[] = [
   // Essentials
   { name: "Black", hex: "#111111" },
   { name: "Jet Black", hex: "#0A0A0A" },
@@ -279,6 +285,16 @@ const presetColors: ConfigurationColorValue[] = [
   { name: "Frost White", hex: "#E8E9E8" },
 ];
 
+const presetColors = Array.from(
+  new Map(
+    rawPresetColors.map((colorway) => {
+      const normalized = normalizeProductColorway(colorway);
+
+      return [normalized.name.toLocaleLowerCase(), normalized] as const;
+    }),
+  ).values(),
+);
+
 function swatchStyle(hex: string) {
   if (hex !== "transparent") {
     return { backgroundColor: hex };
@@ -310,7 +326,13 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
   }, [query]);
 
   function chooseColor(color: ConfigurationColorValue) {
-    onChange(color);
+    const name = canonicalizeProductColorwayName(color.name);
+
+    onChange({
+      name,
+      hex: productColorwayHex(name) ?? color.hex,
+    });
+
     setOpen(false);
     setQuery("");
   }

@@ -55,7 +55,7 @@ type DirectUploadedImage = {
 const validImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const maximumImageSize = 10 * 1024 * 1024;
-const maximumImages = 10;
+const maximumImagesPerConfiguration = 10;
 
 function redirectWithError(message: string): never {
   redirect(`/admin/products/new?error=${encodeURIComponent(message)}`);
@@ -408,6 +408,55 @@ export async function createProduct(formData: FormData) {
     };
   });
 
+  /*
+   * ==========================================================
+   * MAXIMUM 10 PHOTOGRAPHS PER EXACT CONFIGURATION
+   * ==========================================================
+   *
+   * There is intentionally no product-wide photograph limit.
+   *
+   * A photograph with no configuration_ids is Shared and is
+   * therefore visible in every exact configuration gallery.
+   * Shared photographs consequently count against every
+   * configuration's 10-photograph allowance.
+   *
+   * A physical photograph assigned to several configurations
+   * counts once in each of those galleries.
+   */
+  if (variants.length > 0 && directUploadedImages.length > 0) {
+    const photographCountByConfiguration = new Map(
+      variants.map((variant) => [String(variant.client_id ?? "").trim(), 0]),
+    );
+
+    for (const image of directUploadedImages) {
+      const assignedConfigurationIds = Array.isArray(image.configuration_ids)
+        ? image.configuration_ids
+        : [];
+
+      const affectedConfigurationIds =
+        assignedConfigurationIds.length > 0
+          ? assignedConfigurationIds
+          : Array.from(photographCountByConfiguration.keys());
+
+      for (const configurationId of affectedConfigurationIds) {
+        const nextCount =
+          (photographCountByConfiguration.get(configurationId) ?? 0) + 1;
+
+        photographCountByConfiguration.set(configurationId, nextCount);
+
+        if (nextCount > maximumImagesPerConfiguration) {
+          const configurationName =
+            configurationNameByClientId.get(configurationId) ||
+            "this configuration";
+
+          redirectWithError(
+            `${configurationName} can have a maximum of ${maximumImagesPerConfiguration} photographs. Shared photographs count toward every configuration.`,
+          );
+        }
+      }
+    }
+  }
+
   if (uploadedFiles.length > 0 && directUploadedImages.length > 0) {
     redirectWithError(
       "The photographs were submitted using two different upload methods. Please reload the page and try again.",
@@ -418,10 +467,6 @@ export async function createProduct(formData: FormData) {
     directUploadedImages.length > 0
       ? directUploadedImages.length
       : uploadedFiles.length;
-
-  if (submittedImageCount > maximumImages) {
-    redirectWithError(`Upload no more than ${maximumImages} photographs.`);
-  }
 
   for (const file of uploadedFiles) {
     if (!validImageTypes.has(file.type)) {

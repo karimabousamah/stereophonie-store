@@ -1,6 +1,11 @@
 "use client";
 
 import {
+  canonicalizeProductColorwayName,
+  productColorwayHex,
+} from "@/lib/product-colorways";
+
+import {
   Check,
   CheckCircle2,
   Bookmark,
@@ -329,60 +334,7 @@ function validEmail(value: string) {
  * a narrow stripe inside a white circle.
  */
 function storefrontColourHex(value: string) {
-  const normalized = String(value ?? "")
-    .trim()
-    .toLowerCase();
-
-  const colours: Record<string, string> = {
-    black: "#111111",
-    midnight: "#283544",
-    "space black": "#2f3032",
-    graphite: "#55565a",
-    charcoal: "#4c4c4e",
-
-    gray: "#8e8e93",
-    grey: "#8e8e93",
-    silver: "#d7d8da",
-    white: "#f5f5f7",
-
-    titanium: "#8c8982",
-    "natural titanium": "#aaa69d",
-    "desert titanium": "#c8a88d",
-
-    gold: "#d5b174",
-    "rose gold": "#d9a49a",
-    bronze: "#98694c",
-
-    red: "#d52f36",
-    "product red": "#bf0013",
-    burgundy: "#681c2c",
-    pink: "#e5a5b7",
-
-    purple: "#735b99",
-    lavender: "#b5a8d7",
-
-    navy: "#26364f",
-    blue: "#3478c7",
-    "sierra blue": "#9bb6cf",
-    "sky blue": "#a8c7e7",
-    cyan: "#55b8c8",
-    teal: "#318789",
-
-    green: "#47885e",
-    "alpine green": "#536b5c",
-    mint: "#a8d5bd",
-    olive: "#777957",
-
-    yellow: "#e3c353",
-    orange: "#e87932",
-    coral: "#e78778",
-
-    brown: "#76584b",
-    beige: "#d7c5a7",
-    cream: "#eee4d2",
-  };
-
-  return colours[normalized] ?? "#8e8e93";
+  return productColorwayHex(value) ?? "#8e8e93";
 }
 
 export default function ProductPurchaseControls({
@@ -953,7 +905,13 @@ export default function ProductPurchaseControls({
                           {selectedValue ? (
                             <>
                               <span aria-hidden="true"> – </span>
-                              <em>{selectedValue}</em>
+                              <em>
+                                {isColour
+                                  ? canonicalizeProductColorwayName(
+                                      selectedValue,
+                                    )
+                                  : selectedValue}
+                              </em>
                             </>
                           ) : null}
                         </strong>
@@ -972,10 +930,18 @@ export default function ProductPurchaseControls({
                               aria-pressed={active}
                               aria-label={
                                 isColour
-                                  ? `${formatLabel(attributeKey)} ${option.value}`
+                                  ? `${formatLabel(attributeKey)} ${canonicalizeProductColorwayName(
+                                      option.value,
+                                    )}`
                                   : undefined
                               }
-                              title={isColour ? option.value : undefined}
+                              title={
+                                isColour
+                                  ? canonicalizeProductColorwayName(
+                                      option.value,
+                                    )
+                                  : undefined
+                              }
                               className={`st-purchase-apple__option ${
                                 isColour ? "is-colour" : "is-value"
                               } ${active ? "is-active" : ""} ${
@@ -989,7 +955,9 @@ export default function ProductPurchaseControls({
                                 <span className="st-purchase-apple__colour-shell">
                                   <i
                                     className="st-purchase-v7__colour-dot st-purchase-apple__colour"
-                                    data-colour-name={option.value}
+                                    data-colour-name={canonicalizeProductColorwayName(
+                                      option.value,
+                                    )}
                                     style={{
                                       backgroundColor: storefrontColourHex(
                                         option.value,

@@ -3,6 +3,7 @@ import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
 import type { Metadata } from "next";
 
 import MovieSeriesRequestForm from "@/components/movies-series/movie-series-request-form";
+import MoviesSeriesScrollReset from "@/components/movies-series/movies-series-scroll-reset";
 
 export const metadata: Metadata = {
   title: "Movies & Series | Stereophonie",
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
 export default function MoviesSeriesPage() {
   return (
     <main className="st-media-request-shell">
+      <MoviesSeriesScrollReset />
+
       <V3Header />
 
       <div className="st-media-request-page">

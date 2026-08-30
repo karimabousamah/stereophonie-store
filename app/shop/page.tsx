@@ -24,6 +24,17 @@ type NamedRelation =
     }[]
   | null;
 
+type ShopProductImage = StoreProductImage & {
+  id: string;
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
+};
+
 type ProductRow = {
   id: string;
   name: string;
@@ -36,7 +47,7 @@ type ProductRow = {
   created_at: string | null;
   categories: NamedRelation;
   brands: NamedRelation;
-  product_images: StoreProductImage[] | null;
+  product_images: ShopProductImage[] | null;
   product_variants: StoreProductVariant[] | null;
 };
 
@@ -286,6 +297,137 @@ function sortCatalog(products: ProductRow[], sort: SortOption) {
   );
 }
 
+function storefrontConfigurationImages(
+  product: ProductRow,
+): StoreProductImage[] {
+  const images = [...(product.product_images ?? [])];
+
+  if (images.length <= 1) {
+    return images;
+  }
+
+  /*
+   * The administrator's FIRST configuration controls the shop card.
+   *
+   * Configuration 1:
+   *   Position 1 = normal card image
+   *   Position 2 = hover image
+   */
+  const firstConfiguration = [...(product.product_variants ?? [])]
+    .filter((variant) => variant.is_active !== false)
+    .sort((first, second) => {
+      const difference =
+        Number(first.display_position ?? 0) -
+        Number(second.display_position ?? 0);
+
+      if (difference !== 0) {
+        return difference;
+      }
+
+      /*
+       * Match Admin configuration ordering exactly.
+       *
+       * A database UUID must never decide which customer-facing
+       * configuration controls the shop-card photographs.
+       *
+       * Admin uses the configuration name as its deterministic
+       * fallback when display positions are tied, so /shop must
+       * do the same.
+       */
+      return String(first.variant_name ?? first.size ?? "").localeCompare(
+        String(second.variant_name ?? second.size ?? ""),
+        undefined,
+        {
+          numeric: true,
+        },
+      );
+    })[0];
+
+  if (!firstConfiguration?.id) {
+    return images
+      .sort(
+        (first, second) =>
+          Number(first.position ?? 0) - Number(second.position ?? 0),
+      )
+      .map((image, index) => ({
+        ...image,
+        position: index,
+        is_primary: index === 0,
+      }));
+  }
+
+  const gallery = images
+    .map((image) => ({
+      image,
+      assignment: Array.isArray(image.product_image_variants)
+        ? image.product_image_variants.find(
+            (assignment) => assignment.variant_id === firstConfiguration.id,
+          )
+        : undefined,
+    }))
+    .filter(
+      (
+        entry,
+      ): entry is {
+        image: ShopProductImage;
+        assignment: {
+          variant_id: string;
+          position: number;
+          is_primary: boolean;
+        };
+      } => Boolean(entry.assignment),
+    )
+    .sort((first, second) => {
+      /*
+       * The administrator's Main photograph is authoritative.
+       *
+       * Even if older configuration-position metadata is imperfect,
+       * Main must always become:
+       *
+       *   images[0] = normal shop-card photograph
+       *
+       * Every remaining photograph then follows the exact
+       * configuration-specific position saved by the photo manager:
+       *
+       *   images[1] = hover photograph
+       *   images[2] = third photograph
+       *   ...
+       */
+      if (first.assignment.is_primary !== second.assignment.is_primary) {
+        return first.assignment.is_primary ? -1 : 1;
+      }
+
+      const difference =
+        Number(first.assignment.position ?? 0) -
+        Number(second.assignment.position ?? 0);
+
+      if (difference !== 0) {
+        return difference;
+      }
+
+      return first.image.id.localeCompare(second.image.id);
+    });
+
+  if (gallery.length === 0) {
+    return images
+      .sort(
+        (first, second) =>
+          Number(first.position ?? 0) - Number(second.position ?? 0),
+      )
+      .map((image, index) => ({
+        ...image,
+        position: index,
+        is_primary: index === 0,
+      }));
+  }
+
+  return gallery.map(({ image }, index) => ({
+    ...image,
+    position: index,
+    is_primary: index === 0,
+  }));
+}
+
 function normalizeProduct(product: ProductRow): StoreProductCardProduct {
   return {
     id: product.id,
@@ -297,7 +439,7 @@ function normalizeProduct(product: ProductRow): StoreProductCardProduct {
     is_trending: product.is_trending,
     is_new_arrival: product.is_new_arrival,
     new_drop_started_at: product.new_drop_started_at,
-    images: product.product_images ?? [],
+    images: storefrontConfigurationImages(product),
     variants: product.product_variants ?? [],
   };
 }
@@ -375,13 +517,19 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           ),
 
           product_images (
+            id,
             image_url,
             alt_text,
             position,
             is_primary,
             variant_id,
             variant_position,
-            is_variant_primary
+            is_variant_primary,
+            product_image_variants (
+              variant_id,
+              position,
+              is_primary
+            )
           ),
 
           product_variants (

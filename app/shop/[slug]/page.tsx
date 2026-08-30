@@ -1355,11 +1355,6 @@ export default async function ProductPage({
                   <dt>Category</dt>
                   <dd>{categoryName}</dd>
                 </div>
-
-                <div>
-                  <dt>Collection</dt>
-                  <dd>{collectionName}</dd>
-                </div>
               </dl>
             </div>
 

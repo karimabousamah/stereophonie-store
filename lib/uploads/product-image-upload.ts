@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase/client";
 
 const bucketName = "product-images";
 
-export const maximumProductImages = 10;
 export const maximumProductImageSize = 10 * 1024 * 1024;
 
 export const acceptedProductImageTypes = [
@@ -98,14 +97,19 @@ export function createExistingProductImagePath(
 
 export function validateProductImageFiles(
   files: File[],
-  existingImageCount = 0,
+  _existingImageCount = 0,
 ) {
-  if (existingImageCount + files.length > maximumProductImages) {
-    throw new Error(
-      `A product can have a maximum of ${maximumProductImages} photographs.`,
-    );
-  }
-
+  /*
+   * Physical file validation only.
+   *
+   * Photograph quantity is NOT a product-wide rule anymore.
+   * The Admin supports up to 10 photographs per exact product
+   * configuration, and that rule is validated using configuration
+   * assignments in the Add/Edit Product flows.
+   *
+   * Keep the second argument temporarily for compatibility with
+   * existing callers while deliberately ignoring it here.
+   */
   for (const file of files) {
     if (
       !acceptedProductImageTypes.includes(

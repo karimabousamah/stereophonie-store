@@ -71,5 +71,43 @@ export default function StoreProductCard({
   product: StoreProductCardProduct;
   index?: number;
 }) {
-  return <V2ProductCard product={product} index={index} />;
+  /*
+   * ============================================================
+   * AUTHORITATIVE STOREFRONT MEDIA ORDER
+   * ============================================================
+   *
+   * app/shop/page.tsx has already selected and ordered the gallery
+   * belonging to the administrator's first configuration.
+   *
+   * At this point the array itself is authoritative:
+   *
+   *   images[0] = Configuration 1 / Position 1 / Main
+   *   images[1] = Configuration 1 / Position 2 / Hover
+   *
+   * V2ProductCard predates product_image_variants and still understands
+   * legacy variant image fields. Normalize those legacy fields here so
+   * it cannot reinterpret the already-correct gallery and accidentally
+   * choose another photograph.
+   */
+  const authoritativeImages = product.images.map((image, imageIndex) => ({
+    ...image,
+
+    position: imageIndex,
+    is_primary: imageIndex === 0,
+
+    /*
+     * Configuration selection has already happened upstream.
+     * Do not allow the legacy card to perform it a second time.
+     */
+    variant_id: null,
+    variant_position: imageIndex,
+    is_variant_primary: imageIndex === 0,
+  }));
+
+  const authoritativeProduct: StoreProductCardProduct = {
+    ...product,
+    images: authoritativeImages,
+  };
+
+  return <V2ProductCard product={authoritativeProduct} index={index} />;
 }

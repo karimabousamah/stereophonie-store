@@ -45,7 +45,7 @@ type ImageUploaderProps = {
 
 const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
-const maximumImages = 10;
+const maximumImagesPerConfiguration = 10;
 const maximumFileSize = 10 * 1024 * 1024;
 
 function clean(value: unknown) {
@@ -111,6 +111,18 @@ export default function ImageUploader({
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  /*
+   * ========================================================
+   * CONFIGURATION-FIRST PHOTOGRAPH WORKSPACE
+   * ========================================================
+   *
+   * The administrator selects one configuration, then uploads and
+   * arranges only that configuration's gallery.
+   */
+  const [activeConfigurationId, setActiveConfigurationId] = useState(
+    () => configurations[0]?.clientId ?? "",
+  );
+
   const configurationById = useMemo(
     () =>
       new Map(
@@ -121,6 +133,24 @@ export default function ImageUploader({
       ),
     [configurations],
   );
+
+  useEffect(() => {
+    if (configurations.length === 0) {
+      if (activeConfigurationId) {
+        setActiveConfigurationId("");
+      }
+
+      return;
+    }
+
+    const activeStillExists = configurations.some(
+      (configuration) => configuration.clientId === activeConfigurationId,
+    );
+
+    if (!activeStillExists) {
+      setActiveConfigurationId(configurations[0].clientId);
+    }
+  }, [activeConfigurationId, configurations]);
 
   useEffect(() => {
     imagesRef.current = images;
@@ -175,14 +205,6 @@ export default function ImageUploader({
 
     const files = Array.from(selectedFiles);
 
-    if (images.length + files.length > maximumImages) {
-      setErrorMessage(
-        `You can upload a maximum of ${maximumImages} photographs.`,
-      );
-
-      return;
-    }
-
     const invalidType = files.find((file) => !allowedTypes.includes(file.type));
 
     if (invalidType) {
@@ -226,7 +248,7 @@ export default function ImageUploader({
       file,
       previewUrl: URL.createObjectURL(file),
       altText: "",
-      configurationIds: [],
+      configurationIds: activeConfigurationId ? [activeConfigurationId] : [],
     }));
 
     setImages((current) => [...current, ...newImages]);
@@ -298,30 +320,156 @@ export default function ImageUploader({
 
   function moveImage(imageId: string, direction: "left" | "right") {
     setImages((current) => {
-      const currentIndex = current.findIndex((image) => image.id === imageId);
+      /*
+       * Configuration-first ordering:
+       *
+       * Moving Midnight photograph 2 only changes Midnight's relative order.
+       * Starlight/Blue/etc. keep their own relative sequence.
+       */
+      const visibleImages = activeConfigurationId
+        ? current.filter(
+            (image) =>
+              image.configurationIds.length === 0 ||
+              image.configurationIds.includes(activeConfigurationId),
+          )
+        : current;
 
-      if (currentIndex < 0) {
+      const currentVisibleIndex = visibleImages.findIndex(
+        (image) => image.id === imageId,
+      );
+
+      if (currentVisibleIndex < 0) {
         return current;
       }
 
-      const destinationIndex =
-        direction === "left" ? currentIndex - 1 : currentIndex + 1;
+      const destinationVisibleIndex =
+        direction === "left"
+          ? currentVisibleIndex - 1
+          : currentVisibleIndex + 1;
 
-      if (destinationIndex < 0 || destinationIndex >= current.length) {
+      if (
+        destinationVisibleIndex < 0 ||
+        destinationVisibleIndex >= visibleImages.length
+      ) {
+        return current;
+      }
+
+      const targetImage = visibleImages[destinationVisibleIndex];
+
+      const sourceAbsoluteIndex = current.findIndex(
+        (image) => image.id === imageId,
+      );
+
+      const targetAbsoluteIndex = current.findIndex(
+        (image) => image.id === targetImage.id,
+      );
+
+      if (sourceAbsoluteIndex < 0 || targetAbsoluteIndex < 0) {
         return current;
       }
 
       const next = [...current];
-      const [moving] = next.splice(currentIndex, 1);
 
-      next.splice(destinationIndex, 0, moving);
+      [next[sourceAbsoluteIndex], next[targetAbsoluteIndex]] = [
+        next[targetAbsoluteIndex],
+        next[sourceAbsoluteIndex],
+      ];
 
       return next;
     });
   }
 
+  const activeConfiguration = configurations.find(
+    (configuration) => configuration.clientId === activeConfigurationId,
+  );
+
+  const visibleImages = activeConfigurationId
+    ? images.filter(
+        (image) =>
+          image.configurationIds.length === 0 ||
+          image.configurationIds.includes(activeConfigurationId),
+      )
+    : images;
+
+  function visiblePosition(imageId: string) {
+    return visibleImages.findIndex((image) => image.id === imageId);
+  }
+
+  function configurationImageCount(configurationId: string) {
+    return images.filter(
+      (image) =>
+        image.configurationIds.length === 0 ||
+        image.configurationIds.includes(configurationId),
+    ).length;
+  }
+
   return (
     <div>
+      {configurations.length > 0 ? (
+        <section className="mb-5 rounded-[18px] border border-white/10 bg-black/20 p-4 sm:p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
+                Photograph configuration
+              </p>
+
+              <p className="mt-1 text-sm font-semibold text-white">
+                Choose a configuration, then upload its photographs.
+              </p>
+            </div>
+
+            {configurations.length > 1 ? (
+              <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
+                {configurations.map((configuration, index) => {
+                  const active =
+                    configuration.clientId === activeConfigurationId;
+
+                  return (
+                    <button
+                      key={configuration.clientId}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => {
+                        setActiveConfigurationId(configuration.clientId);
+                        setErrorMessage("");
+                      }}
+                      className={`shrink-0 rounded-full border px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.11em] transition ${
+                        active
+                          ? "border-[#e2a128] bg-[#fdb73e] text-black"
+                          : "border-white/10 bg-black/25 text-white/45 hover:border-white/30 hover:text-white"
+                      }`}
+                    >
+                      {configurationLabel({
+                        ...configuration,
+                        fallbackLabel:
+                          configuration.fallbackLabel ||
+                          `Configuration ${index + 1}`,
+                      })}
+                      <span className="ml-2 opacity-55">
+                        {configurationImageCount(configuration.clientId)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+
+          {activeConfiguration ? (
+            <div className="mt-4 rounded-xl border border-[#fdb73e]/25 bg-[#fdb73e]/[0.06] px-4 py-3">
+              <p className="text-xs leading-5 text-white/55">
+                New photographs will automatically be added to{" "}
+                <strong className="font-semibold text-white">
+                  {configurationLabel(activeConfiguration)}
+                </strong>
+                . Their initial order will be exactly the order in which you
+                selected them from your computer.
+              </p>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
       <input
         ref={inputRef}
         id="product-images"
@@ -355,8 +503,9 @@ export default function ImageUploader({
           </p>
 
           <p className="mt-2 max-w-lg text-sm leading-6 text-white/40">
-            Upload the photographs for every configuration. You can assign,
-            order and choose the main photograph after upload.
+            {activeConfiguration
+              ? `Upload photographs for ${configurationLabel(activeConfiguration)}. They will keep the exact order in which you select them.`
+              : "Upload product photographs in the exact order customers should see them."}
           </p>
 
           <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65">
@@ -374,8 +523,9 @@ export default function ImageUploader({
               </p>
 
               <p className="mt-1 text-xs leading-5 text-white/35">
-                Assign every photograph to its configuration. The first
-                photograph in each configuration is its main photograph.
+                {activeConfiguration
+                  ? `${configurationLabel(activeConfiguration)} gallery · ${visibleImages.length} photograph${visibleImages.length === 1 ? "" : "s"}. The first photograph is Main.`
+                  : "Arrange the photographs in the order customers should see them."}
               </p>
             </div>
 
@@ -389,7 +539,11 @@ export default function ImageUploader({
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {images.map((image, absoluteIndex) => {
+            {visibleImages.map((image, visibleIndex) => {
+              const absoluteIndex = images.findIndex(
+                (candidate) => candidate.id === image.id,
+              );
+
               const isShared = image.configurationIds.length === 0;
 
               const selectedConfigurations = image.configurationIds
@@ -423,20 +577,20 @@ export default function ImageUploader({
                       src={image.previewUrl}
                       alt={
                         image.altText ||
-                        `Product photograph ${absoluteIndex + 1}`
+                        `Product photograph ${visibleIndex + 1}`
                       }
                       className="h-full w-full object-contain"
                     />
 
                     <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
                       <span className="rounded-full border border-black/10 bg-white/90 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-black shadow-sm backdrop-blur">
-                        {String(absoluteIndex + 1).padStart(2, "0")}
+                        {String(visibleIndex + 1).padStart(2, "0")}
                       </span>
 
-                      {absoluteIndex === 0 ? (
+                      {visibleIndex === 0 ? (
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/15 bg-emerald-50/95 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.11em] text-emerald-700 shadow-sm">
                           <Star className="h-3 w-3 fill-current" />
-                          Product Main
+                          Main
                         </span>
                       ) : null}
                     </div>
@@ -545,7 +699,7 @@ export default function ImageUploader({
                     <div className="mt-4 flex items-center gap-2">
                       <button
                         type="button"
-                        disabled={disabled || absoluteIndex === 0}
+                        disabled={disabled || visibleIndex === 0}
                         onClick={() => moveImage(image.id, "left")}
                         title="Move photograph earlier"
                         className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
@@ -556,7 +710,7 @@ export default function ImageUploader({
                       <button
                         type="button"
                         disabled={
-                          disabled || absoluteIndex === images.length - 1
+                          disabled || visibleIndex === visibleImages.length - 1
                         }
                         onClick={() => moveImage(image.id, "right")}
                         title="Move photograph later"
