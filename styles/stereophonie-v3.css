@@ -57277,3 +57277,202 @@ html
 }
 
 /* === ST OOS EXCLUSIVE + MOBILE STICKER ROW END === */
+
+/* === ST V3 HOMEPAGE EXACT SHOP PRODUCT GRID START === */
+
+/*
+ * =========================================================
+ * HOMEPAGE PRODUCT CARDS = SHOP PRODUCT CARDS
+ * =========================================================
+ *
+ * V2ProductCard is already the exact same component used on
+ * /shop.
+ *
+ * The old homepage shelf geometry was the problem:
+ *
+ * - horizontal overflow
+ * - partial third card
+ * - stretched card heights
+ * - excessive blank space underneath short product titles
+ *
+ * This block changes ONLY the homepage PRODUCT CONTAINER.
+ * The card component itself remains the authoritative Shop
+ * card.
+ * =========================================================
+ */
+
+html body .st3-home-shop-product-grid {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  margin: 0 !important;
+
+  display: grid !important;
+
+  align-items: start !important;
+  align-content: start !important;
+
+  overflow: visible !important;
+
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+
+  scroll-snap-type: none !important;
+
+  transform: none !important;
+}
+
+/* =========================================================
+   DESKTOP
+   Same four-card architecture used by the canonical Shop grid.
+   ========================================================= */
+
+@media (min-width: 1100px) {
+  html body .st3-home-shop-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+
+    column-gap: 18px !important;
+    row-gap: 28px !important;
+  }
+}
+
+/* =========================================================
+   LAPTOP
+   ========================================================= */
+
+@media (min-width: 1000px) and (max-width: 1099px) {
+  html body .st3-home-shop-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+
+    gap: 14px !important;
+  }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (min-width: 640px) and (max-width: 999px) {
+  html body .st3-home-shop-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+    gap: 18px !important;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   Match the LIVE /shop appearance shown on the phone:
+   TWO clean columns, no carousel, no partial third card.
+   ========================================================= */
+
+@media (max-width: 639px) {
+  html body .st3-home-shop-product-grid {
+    display: grid !important;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+    column-gap: 10px !important;
+    row-gap: 12px !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    padding: 0 !important;
+
+    overflow: visible !important;
+    overflow-x: visible !important;
+
+    overscroll-behavior: auto !important;
+
+    scroll-snap-type: none !important;
+  }
+
+  /*
+   * Absolutely critical:
+   *
+   * Never let homepage rows stretch a short card to the height
+   * of a neighbouring card with a longer product title.
+   */
+  html body .st3-home-shop-product-grid > .st-retail-card {
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+
+    align-self: start !important;
+
+    flex: none !important;
+
+    scroll-snap-align: none !important;
+  }
+
+  /*
+   * Do not let an older homepage shelf rule force the inside
+   * of the product card to fill artificial vertical space.
+   */
+  html body .st3-home-shop-product-grid .st-retail-card__content {
+    height: auto !important;
+    min-height: 0 !important;
+
+    flex: none !important;
+  }
+
+  html body .st3-home-shop-product-grid .st-retail-card__body {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /*
+   * Footer follows the product information naturally,
+   * exactly like the compact Shop cards.
+   */
+  html body .st3-home-shop-product-grid .st-retail-card__footer {
+    position: relative !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    margin-top: 10px !important;
+
+    transform: none !important;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+   Keep the same two-column Shop structure.
+   ========================================================= */
+
+@media (max-width: 390px) {
+  html body .st3-home-shop-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+    column-gap: 8px !important;
+    row-gap: 10px !important;
+  }
+}
+
+/* =========================================================
+   IMPORTANT:
+   Never re-introduce homepage carousel geometry.
+   ========================================================= */
+
+@media (max-width: 999px) {
+  html body .st3-home-shop-product-grid > .st-retail-card {
+    flex-basis: auto !important;
+  }
+}
+
+/* === ST V3 HOMEPAGE EXACT SHOP PRODUCT GRID END === */
