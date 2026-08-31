@@ -8,38 +8,22 @@ import type {
   RankedAssistantProduct,
 } from "./product-ranking";
 
-import type {
-  AssistantConversationMemory,
-} from "./conversation-memory";
+import type { AssistantConversationMemory } from "./conversation-memory";
 
-
-function money(
-  value: number | null,
-) {
+function money(value: number | null) {
   if (value === null) {
     return null;
   }
 
-  return `$${value.toFixed(
-    Number.isInteger(value) ? 0 : 2,
-  )}`;
+  return `$${value.toFixed(Number.isInteger(value) ? 0 : 2)}`;
 }
 
-
-function productNames(
-  products: RankedProductResult[],
-) {
-  return products
-    .map((item) => item.product.name)
-    .filter(Boolean);
+function productNames(products: RankedProductResult[]) {
+  return products.map((item) => item.product.name).filter(Boolean);
 }
 
-
-function sentenceJoin(
-  values: string[],
-) {
-  const clean =
-    values.filter(Boolean);
+function sentenceJoin(values: string[]) {
+  const clean = values.filter(Boolean);
 
   if (clean.length === 0) {
     return "";
@@ -53,15 +37,10 @@ function sentenceJoin(
     return `${clean[0]} and ${clean[1]}`;
   }
 
-  return `${clean
-    .slice(0, -1)
-    .join(", ")}, and ${clean.at(-1)}`;
+  return `${clean.slice(0, -1).join(", ")}, and ${clean.at(-1)}`;
 }
 
-
-function strongestReason(
-  item: RankedProductResult,
-) {
+function strongestReason(item: RankedProductResult) {
   const priority = [
     "category match",
     "brand match",
@@ -79,18 +58,13 @@ function strongestReason(
   ];
 
   return (
-    priority.find((reason) =>
-      item.reasons.includes(reason),
-    ) ??
+    priority.find((reason) => item.reasons.includes(reason)) ??
     item.reasons[0] ??
     null
   );
 }
 
-
-function EnglishRecommendationIntro(
-  request: ParsedAssistantRequest,
-) {
+function EnglishRecommendationIntro(request: ParsedAssistantRequest) {
   if (request.intent === "gift") {
     return choosePhrase(
       [
@@ -102,9 +76,7 @@ function EnglishRecommendationIntro(
     );
   }
 
-  if (
-    request.budgetMax !== null
-  ) {
+  if (request.budgetMax !== null) {
     return choosePhrase(
       [
         `I found a few strong options within your budget of ${money(
@@ -130,10 +102,7 @@ function EnglishRecommendationIntro(
   );
 }
 
-
-function FrenchRecommendationIntro(
-  request: ParsedAssistantRequest,
-) {
+function FrenchRecommendationIntro(request: ParsedAssistantRequest) {
   if (request.intent === "gift") {
     return choosePhrase(
       [
@@ -155,10 +124,7 @@ function FrenchRecommendationIntro(
   );
 }
 
-
-function ArabicRecommendationIntro(
-  request: ParsedAssistantRequest,
-) {
+function ArabicRecommendationIntro(request: ParsedAssistantRequest) {
   if (request.intent === "gift") {
     return choosePhrase(
       [
@@ -180,7 +146,6 @@ function ArabicRecommendationIntro(
   );
 }
 
-
 export function composeRecommendationResponse(
   request: ParsedAssistantRequest,
   ranked: RankedProductResult[],
@@ -197,7 +162,6 @@ export function composeRecommendationResponse(
     return "I couldn’t find a currently available product that matches those requirements exactly. Try widening the budget, brand, or category.";
   }
 
-
   const intro =
     request.language === "fr"
       ? FrenchRecommendationIntro(request)
@@ -205,72 +169,57 @@ export function composeRecommendationResponse(
         ? ArabicRecommendationIntro(request)
         : EnglishRecommendationIntro(request);
 
+  const first = ranked[0];
 
-  const first =
-    ranked[0];
+  const reason = strongestReason(first);
 
-  const reason =
-    strongestReason(first);
-
-  const firstPrice =
-    money(first.product.price);
-
+  const firstPrice = money(first.product.price);
 
   if (request.language === "fr") {
-    const detail =
-      firstPrice
-        ? `${first.product.name} commence à ${firstPrice}.`
-        : `${first.product.name} est l’une des options les plus pertinentes.`;
+    const detail = firstPrice
+      ? `${first.product.name} commence à ${firstPrice}.`
+      : `${first.product.name} est l’une des options les plus pertinentes.`;
 
     return `${intro} ${detail}`;
   }
-
 
   if (request.language === "ar") {
-    const detail =
-      firstPrice
-        ? `يبدأ سعر ${first.product.name} من ${firstPrice}.`
-        : `${first.product.name} من أكثر الخيارات المناسبة.`;
+    const detail = firstPrice
+      ? `يبدأ سعر ${first.product.name} من ${firstPrice}.`
+      : `${first.product.name} من أكثر الخيارات المناسبة.`;
 
     return `${intro} ${detail}`;
   }
-
 
   let detail = "";
 
   if (firstPrice) {
-    detail =
-      `${first.product.name} starts at ${firstPrice}`;
+    detail = `${first.product.name} starts at ${firstPrice}`;
   } else {
-    detail =
-      `${first.product.name} is one of the strongest matches`;
+    detail = `${first.product.name} is one of the strongest matches`;
   }
 
-
   if (reason) {
-    const readableReason =
-      reason
-        .replace("category match", "it matches the category you asked for")
-        .replace("brand match", "it matches your preferred brand")
-        .replace("within budget", "it stays within your budget")
-        .replace("fits budget", "it fits your budget")
-        .replace("on sale", "it is currently on offer")
-        .replace("gaming fit", "it fits a gaming setup well")
-        .replace("work fit", "it fits a work setup well")
-        .replace("school fit", "it suits study and school use")
-        .replace("audio fit", "it matches your audio needs")
-        .replace("photography fit", "it fits photography use")
-        .replace("fitness fit", "it matches fitness use")
-        .replace("travel fit", "it is a good fit for travel")
-        .replace("available", "it is currently available");
+    const readableReason = reason
+      .replace("category match", "it matches the category you asked for")
+      .replace("brand match", "it matches your preferred brand")
+      .replace("within budget", "it stays within your budget")
+      .replace("fits budget", "it fits your budget")
+      .replace("on sale", "it is currently on offer")
+      .replace("gaming fit", "it fits a gaming setup well")
+      .replace("work fit", "it fits a work setup well")
+      .replace("school fit", "it suits study and school use")
+      .replace("audio fit", "it matches your audio needs")
+      .replace("photography fit", "it fits photography use")
+      .replace("fitness fit", "it matches fitness use")
+      .replace("travel fit", "it is a good fit for travel")
+      .replace("available", "it is currently available");
 
     detail += `, and ${readableReason}`;
   }
 
-
   return `${intro} ${detail}.`;
 }
-
 
 export function composeComparisonResponse(
   products: RankedAssistantProduct[],
@@ -288,28 +237,18 @@ export function composeComparisonResponse(
     return "I need at least two specific products to make a useful comparison.";
   }
 
+  const first = products[0];
 
-  const first =
-    products[0];
+  const second = products[1];
 
-  const second =
-    products[1];
+  const firstPrice = first.price;
 
-  const firstPrice =
-    first.price;
-
-  const secondPrice =
-    second.price;
-
+  const secondPrice = second.price;
 
   if (request.language === "fr") {
-    let response =
-      `Entre ${first.name} et ${second.name}, `;
+    let response = `Entre ${first.name} et ${second.name}, `;
 
-    if (
-      firstPrice !== null &&
-      secondPrice !== null
-    ) {
+    if (firstPrice !== null && secondPrice !== null) {
       if (firstPrice < secondPrice) {
         response += `${first.name} est l’option la moins chère.`;
       } else if (secondPrice < firstPrice) {
@@ -324,15 +263,10 @@ export function composeComparisonResponse(
     return response;
   }
 
-
   if (request.language === "ar") {
-    let response =
-      `بين ${first.name} و ${second.name}، `;
+    let response = `بين ${first.name} و ${second.name}، `;
 
-    if (
-      firstPrice !== null &&
-      secondPrice !== null
-    ) {
+    if (firstPrice !== null && secondPrice !== null) {
       if (firstPrice < secondPrice) {
         response += `${first.name} هو الخيار الأرخص.`;
       } else if (secondPrice < firstPrice) {
@@ -347,36 +281,24 @@ export function composeComparisonResponse(
     return response;
   }
 
+  let response = `Between ${first.name} and ${second.name}, `;
 
-  let response =
-    `Between ${first.name} and ${second.name}, `;
-
-  if (
-    firstPrice !== null &&
-    secondPrice !== null
-  ) {
+  if (firstPrice !== null && secondPrice !== null) {
     if (firstPrice < secondPrice) {
-      response +=
-        `${first.name} is the cheaper option at ${money(firstPrice)}, compared with ${money(secondPrice)} for ${second.name}.`;
+      response += `${first.name} is the cheaper option at ${money(firstPrice)}, compared with ${money(secondPrice)} for ${second.name}.`;
     } else if (secondPrice < firstPrice) {
-      response +=
-        `${second.name} is the cheaper option at ${money(secondPrice)}, compared with ${money(firstPrice)} for ${first.name}.`;
+      response += `${second.name} is the cheaper option at ${money(secondPrice)}, compared with ${money(firstPrice)} for ${first.name}.`;
     } else {
-      response +=
-        `both currently start at ${money(firstPrice)}.`;
+      response += `both currently start at ${money(firstPrice)}.`;
     }
   } else {
-    response +=
-      "the better choice depends mainly on how you plan to use it.";
+    response += "the better choice depends mainly on how you plan to use it.";
   }
 
   return response;
 }
 
-
-export function composeGreeting(
-  request: ParsedAssistantRequest,
-) {
+export function composeGreeting(request: ParsedAssistantRequest) {
   if (request.language === "fr") {
     return choosePhrase(
       [
@@ -407,10 +329,7 @@ export function composeGreeting(
   );
 }
 
-
-export function composeStoreInfo(
-  request: ParsedAssistantRequest,
-) {
+export function composeStoreInfo(request: ParsedAssistantRequest) {
   if (request.language === "fr") {
     return "Stereophonie se trouve à Mtaileb, au Liban. Le magasin est ouvert du lundi au samedi de 10h00 à 20h00 et fermé le dimanche.";
   }
@@ -421,7 +340,6 @@ export function composeStoreInfo(
 
   return "Stereophonie is located in Mtaileb, Lebanon. The store is open Monday through Saturday from 10:00 AM to 8:00 PM and closed on Sunday.";
 }
-
 
 export function composeOfferResponse(
   ranked: RankedProductResult[],
@@ -439,8 +357,7 @@ export function composeOfferResponse(
     return "I couldn’t find a matching available offer right now.";
   }
 
-  const names =
-    productNames(ranked.slice(0, 3));
+  const names = productNames(ranked.slice(0, 3));
 
   if (request.language === "fr") {
     return `J’ai trouvé des offres intéressantes sur ${sentenceJoin(names)}.`;
@@ -453,10 +370,7 @@ export function composeOfferResponse(
   return `I found current offers worth checking on ${sentenceJoin(names)}.`;
 }
 
-
-export function composeHelpResponse(
-  request: ParsedAssistantRequest,
-) {
+export function composeHelpResponse(request: ParsedAssistantRequest) {
   if (request.language === "fr") {
     return "Je peux rechercher les produits disponibles, vous aider à choisir selon votre budget, comparer des options, vérifier les offres, vous guider vers le panier ou le suivi de commande.";
   }
@@ -467,7 +381,6 @@ export function composeHelpResponse(
 
   return "I can search the live catalog, recommend products based on your budget or needs, compare options, check offers, help with the cart or wishlist, and guide you to order tracking.";
 }
-
 
 export function composeFallbackResponse(
   request: ParsedAssistantRequest,

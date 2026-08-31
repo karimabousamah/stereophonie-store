@@ -94,9 +94,7 @@ export default async function AdminCustomersPage() {
         perPage: 1000,
       }),
 
-      adminClient
-        .from("admin_users")
-        .select("user_id, role, is_active"),
+      adminClient.from("admin_users").select("user_id, role, is_active"),
 
       adminClient.from("customer_profiles").select(`
           user_id,
@@ -161,12 +159,10 @@ export default async function AdminCustomersPage() {
     }
 
     const adminByUserId = new Map(
-      ((adminUsersResponse.data ?? []) as AdminRow[]).map(
-        (row) => [
-          row.user_id,
-          row,
-        ],
-      ),
+      ((adminUsersResponse.data ?? []) as AdminRow[]).map((row) => [
+        row.user_id,
+        row,
+      ]),
     );
 
     const profiles = (profilesResponse.data ?? []) as ProfileRow[];
@@ -201,29 +197,13 @@ export default async function AdminCustomersPage() {
     const authUsers = usersResponse.data?.users ?? [];
 
     customers = authUsers
-      .filter(
-        (user) =>
-          Boolean(
-            normalizeEmail(
-              user.email,
-            ),
-          ),
-      )
+      .filter((user) => Boolean(normalizeEmail(user.email)))
       .map((user) => {
-        const email =
-          normalizeEmail(
-            user.email,
-          );
+        const email = normalizeEmail(user.email);
 
-        const adminRecord =
-          adminByUserId.get(
-            user.id,
-          );
+        const adminRecord = adminByUserId.get(user.id);
 
-        const isAdmin =
-          Boolean(
-            adminRecord?.is_active,
-          );
+        const isAdmin = Boolean(adminRecord?.is_active);
 
         const profile = profileByUserId.get(user.id);
 
@@ -288,12 +268,8 @@ export default async function AdminCustomersPage() {
            * The customer remains visible even when promoted.
            */
           isAdmin,
-          adminRole:
-            isAdmin
-              ? adminRecord?.role ?? "admin"
-              : null,
-          isCurrentUser:
-            user.id === userId,
+          adminRole: isAdmin ? (adminRecord?.role ?? "admin") : null,
+          isCurrentUser: user.id === userId,
           firstName,
           lastName,
           phone,

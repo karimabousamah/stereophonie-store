@@ -27331,8 +27331,6 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
     opacity: 0;
 
     transform: translate3d(44px, 0, 0) scale(0.985);
-
-    filter: blur(2px);
   }
 
   55% {
@@ -27343,8 +27341,6 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
     opacity: 1;
 
     transform: translate3d(0, 0, 0) scale(1);
-
-    filter: blur(0);
   }
 }
 
@@ -27367,8 +27363,6 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
     opacity: 0;
 
     transform: translate3d(-44px, 0, 0) scale(0.985);
-
-    filter: blur(2px);
   }
 
   55% {
@@ -27379,8 +27373,6 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
     opacity: 1;
 
     transform: translate3d(0, 0, 0) scale(1);
-
-    filter: blur(0);
   }
 }
 
@@ -54288,3 +54280,3000 @@ html
 }
 
 /* ST HOMEPAGE CATEGORY FULL CLICK V2 END */
+
+/* ==========================================================
+   PRODUCT PAGE — BALANCED RESPONSIVE PRODUCT TITLE
+   ========================================================== */
+
+.st-product-v5__intro h1 {
+  max-width: 760px !important;
+  font-size: clamp(32px, 2.65vw, 40px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.042em !important;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .st-product-v5__intro h1 {
+    font-size: clamp(31px, 3.8vw, 36px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .st-product-v5__intro h1 {
+    max-width: 100% !important;
+    font-size: clamp(28px, 8.2vw, 34px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -0.038em !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .st-product-v5__intro h1 {
+    font-size: clamp(27px, 7.8vw, 31px) !important;
+  }
+}
+
+/* === ST PRODUCT CARD STICKERS CLEAN SYSTEM START === */
+
+/*
+ * =========================================================
+ * TOP BAR
+ * =========================================================
+ *
+ * Explicitly restore the intended card geometry:
+ *
+ * stickers = top-left
+ * wishlist = top-right
+ *
+ * This prevents any old Out-of-Stock rule from centering the
+ * badge over the photograph.
+ */
+
+html body .st-retail-card .st-retail-card__top {
+  position: absolute !important;
+
+  top: 14px !important;
+  right: 14px !important;
+  bottom: auto !important;
+  left: 14px !important;
+
+  inset-inline: 14px !important;
+
+  z-index: 8 !important;
+
+  display: flex !important;
+
+  align-items: flex-start !important;
+
+  justify-content: space-between !important;
+
+  gap: 10px !important;
+
+  width: auto !important;
+
+  height: auto !important;
+
+  pointer-events: none !important;
+
+  transform: none !important;
+}
+
+/*
+ * Normal top-left sticker row.
+ */
+
+html body .st-retail-card .st-retail-card__top > .st-card-sticker-row {
+  position: relative !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  inset: auto !important;
+
+  z-index: 1 !important;
+
+  display: flex !important;
+
+  align-items: flex-start !important;
+
+  justify-content: flex-start !important;
+
+  flex-flow: row wrap !important;
+
+  gap: 6px !important;
+
+  width: auto !important;
+
+  max-width: calc(100% - 52px) !important;
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+
+  transform: none !important;
+
+  pointer-events: none !important;
+}
+
+/*
+ * Wishlist remains independently anchored on the right side of
+ * exactly the same top bar.
+ */
+
+html body .st-retail-card .st-retail-card__top > .st-retail-card__wishlist {
+  position: relative !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  inset: auto !important;
+
+  z-index: 3 !important;
+
+  flex: 0 0 auto !important;
+
+  margin: 0 0 0 auto !important;
+
+  transform: none !important;
+
+  pointer-events: auto !important;
+}
+
+/*
+ * =========================================================
+ * ONE STICKER TEMPLATE
+ * =========================================================
+ *
+ * New
+ * Trending
+ * Featured
+ * Low Stock
+ * Sale
+ * Out of Stock
+ *
+ * all physically render this exact same component.
+ */
+
+html body .st-retail-card .st-card-sticker-row > .st-card-sticker {
+  position: relative !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  inset: auto !important;
+
+  isolation: isolate !important;
+
+  overflow: visible !important;
+
+  box-sizing: border-box !important;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+
+  justify-content: center !important;
+
+  width: auto !important;
+
+  min-width: 72px !important;
+
+  max-width: none !important;
+
+  height: 30px !important;
+
+  min-height: 30px !important;
+
+  max-height: 30px !important;
+
+  flex: 0 0 auto !important;
+
+  margin: 0 !important;
+
+  padding: 0 11px !important;
+
+  border: 1px solid rgba(253, 183, 62, 0.68) !important;
+
+  border-radius: 999px !important;
+
+  background: rgba(255, 255, 255, 0.96) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 7px 22px rgba(29, 29, 31, 0.035) !important;
+
+  font-family: inherit !important;
+
+  font-size: 11px !important;
+
+  font-style: normal !important;
+
+  font-weight: 600 !important;
+
+  line-height: 1 !important;
+
+  letter-spacing: -0.01em !important;
+
+  text-transform: none !important;
+
+  white-space: nowrap !important;
+
+  transform: translateZ(0) !important;
+}
+
+html body .st-retail-card .st-card-sticker-row > .st-card-sticker > b {
+  position: relative !important;
+
+  z-index: 2 !important;
+
+  display: inline-flex !important;
+
+  align-items: center !important;
+
+  justify-content: center !important;
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+
+  color: inherit !important;
+
+  font: inherit !important;
+
+  line-height: 1 !important;
+
+  white-space: nowrap !important;
+}
+
+/*
+ * =========================================================
+ * ONE REAL BREATHING ELEMENT
+ * =========================================================
+ *
+ * All six use the same DOM node.
+ * No ::before animation.
+ * No NEW pulse.
+ * No SALE pulse.
+ *
+ * There is literally one animation declaration.
+ */
+
+html
+  body
+  .st-retail-card
+  .st-card-sticker-row
+  > .st-card-sticker
+  > .st-card-sticker__breath {
+  position: absolute !important;
+
+  inset: -5px !important;
+
+  z-index: -1 !important;
+
+  display: block !important;
+
+  visibility: visible !important;
+
+  pointer-events: none !important;
+
+  border-radius: inherit !important;
+
+  background: rgba(253, 183, 62, 0.62) !important;
+
+  filter: blur(6px) !important;
+
+  opacity: 0.13;
+
+  transform: scale(0.93);
+
+  transform-origin: center center !important;
+
+  will-change: opacity, transform !important;
+
+  animation-name: stCardStickerUnifiedBreathing !important;
+
+  animation-duration: 2.5s !important;
+
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+  animation-delay: 0s !important;
+
+  animation-iteration-count: infinite !important;
+
+  animation-direction: normal !important;
+
+  animation-fill-mode: both !important;
+
+  animation-play-state: running !important;
+}
+
+@keyframes stCardStickerUnifiedBreathing {
+  0%,
+  100% {
+    opacity: 0.13;
+
+    transform: scale(0.93);
+  }
+
+  50% {
+    opacity: 0.46;
+
+    transform: scale(1.09);
+  }
+}
+
+/*
+ * =========================================================
+ * OUT OF STOCK = SAME TEMPLATE, GRAY PALETTE ONLY
+ * =========================================================
+ */
+
+html
+  body
+  .st-retail-card
+  .st-card-sticker-row
+  > .st-card-sticker.st-card-sticker--gray {
+  border-color: rgba(142, 142, 147, 0.72) !important;
+
+  background: rgba(255, 255, 255, 0.96) !important;
+
+  color: #59595e !important;
+
+  box-shadow: 0 7px 22px rgba(99, 99, 102, 0.045) !important;
+}
+
+html
+  body
+  .st-retail-card
+  .st-card-sticker-row
+  > .st-card-sticker.st-card-sticker--gray
+  > .st-card-sticker__breath {
+  background: rgba(142, 142, 147, 0.62) !important;
+}
+
+/*
+ * Historical centered stock overlay can never render.
+ */
+
+html body .st-retail-card .st-retail-card__out-of-stock-overlay {
+  display: none !important;
+
+  visibility: hidden !important;
+
+  pointer-events: none !important;
+}
+
+/*
+ * =========================================================
+ * REDUCED MOTION
+ * =========================================================
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  html
+    body
+    .st-retail-card
+    .st-card-sticker-row
+    > .st-card-sticker
+    > .st-card-sticker__breath {
+    animation: none !important;
+
+    opacity: 0.22 !important;
+
+    transform: scale(1) !important;
+  }
+}
+
+/* === ST PRODUCT CARD STICKERS CLEAN SYSTEM END === */
+
+/* === ST MOBILE HEADER CATEGORY MENU START === */
+
+/*
+ * =========================================================
+ * DESKTOP
+ * =========================================================
+ *
+ * The new mobile control is completely absent visually on
+ * desktop/laptop. Existing department rail is untouched.
+ */
+
+.st-v2-header__mobile-menu-trigger,
+.st-mobile-category-menu {
+  display: none;
+}
+
+/*
+ * =========================================================
+ * MOBILE
+ * =========================================================
+ */
+
+@media (max-width: 767px) {
+  /*
+   * Mobile trigger follows the visual language of the other
+   * existing header utility icons.
+   */
+
+  html body .st-v2-header__mobile-menu-trigger {
+    appearance: none;
+    -webkit-appearance: none;
+
+    position: relative;
+
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    padding: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 999px;
+
+    background: transparent;
+
+    color: #1d1d1f;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      transform 180ms ease;
+  }
+
+  html body .st-v2-header__mobile-menu-trigger svg {
+    width: 20px;
+    height: 20px;
+
+    stroke-width: 1.8;
+  }
+
+  html body .st-v2-header__mobile-menu-trigger:active {
+    transform: scale(0.94);
+  }
+
+  html body .st-v2-header__mobile-menu-trigger.is-open {
+    background: #f5f5f7;
+  }
+
+  /*
+   * The desktop categories remain hidden on mobile.
+   */
+
+  html body .st-v2-header__departments {
+    display: none !important;
+  }
+
+  /*
+   * =======================================================
+   * EXPANDING HEADER NAVIGATION
+   * =======================================================
+   *
+   * Fixed from the measured bottom edge of the live header.
+   * This makes the navigation feel like the header itself
+   * unfolds downward.
+   */
+
+  html body .st-mobile-category-menu {
+    position: fixed;
+
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    z-index: 99980;
+
+    display: block;
+
+    pointer-events: none;
+
+    visibility: hidden;
+  }
+
+  html body .st-mobile-category-menu.is-open {
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  /*
+   * Backdrop stays very restrained — this should feel like
+   * header navigation, not a dialog box.
+   */
+
+  html body .st-mobile-category-menu__backdrop {
+    appearance: none;
+    -webkit-appearance: none;
+
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 0;
+
+    border: 0;
+
+    background: rgba(0, 0, 0, 0.12);
+
+    opacity: 0;
+
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+
+    transition:
+      opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      backdrop-filter 320ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    cursor: default;
+  }
+
+  html
+    body
+    .st-mobile-category-menu.is-open
+    .st-mobile-category-menu__backdrop {
+    opacity: 1;
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+  }
+
+  /*
+   * Actual menu surface.
+   *
+   * Starts at the header and grows downward.
+   */
+
+  html body .st-mobile-category-menu__surface {
+    position: relative;
+
+    z-index: 2;
+
+    width: 100%;
+    height: 100%;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    padding: 22px max(22px, env(safe-area-inset-right))
+      max(32px, calc(20px + env(safe-area-inset-bottom)))
+      max(22px, env(safe-area-inset-left));
+
+    background: rgba(255, 255, 255, 0.985);
+
+    color: #1d1d1f;
+
+    opacity: 0;
+
+    transform: translate3d(0, -18px, 0);
+
+    transform-origin: top center;
+
+    transition:
+      opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html body .st-mobile-category-menu.is-open .st-mobile-category-menu__surface {
+    opacity: 1;
+
+    transform: translate3d(0, 0, 0);
+  }
+
+  /*
+   * Heading.
+   */
+
+  html body .st-mobile-category-menu__heading {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin: 0 0 20px;
+  }
+
+  html body .st-mobile-category-menu__heading > span {
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #86868b;
+  }
+
+  html body .st-mobile-category-menu__heading > button {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 38px;
+    height: 38px;
+
+    padding: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 999px;
+
+    background: #f5f5f7;
+
+    color: #1d1d1f;
+  }
+
+  html body .st-mobile-category-menu__heading > button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /*
+   * =======================================================
+   * CATEGORY LINKS
+   * =======================================================
+   *
+   * Large, calm typography similar to a premium mobile global
+   * navigation rather than desktop pills.
+   */
+
+  html body .st-mobile-category-menu__links {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  html body .st-mobile-category-menu__links > a {
+    position: relative;
+
+    min-height: 53px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 0 4px;
+
+    border-bottom: 1px solid rgba(29, 29, 31, 0.07);
+
+    color: #1d1d1f;
+
+    text-decoration: none;
+
+    opacity: 0;
+
+    transform: translate3d(0, -8px, 0);
+
+    transition:
+      color 180ms ease,
+      opacity 340ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html
+    body
+    .st-mobile-category-menu.is-open
+    .st-mobile-category-menu__links
+    > a {
+    opacity: 1;
+
+    transform: translate3d(0, 0, 0);
+
+    transition-delay: calc(min(var(--st-mobile-nav-index, 0), 14) * 20ms);
+  }
+
+  html body .st-mobile-category-menu__links > a span {
+    min-width: 0;
+
+    overflow: hidden;
+
+    font-size: clamp(23px, 6.7vw, 30px);
+
+    font-weight: 600;
+
+    line-height: 1.05;
+
+    letter-spacing: -0.035em;
+
+    text-overflow: ellipsis;
+  }
+
+  html body .st-mobile-category-menu__links > a svg {
+    width: 18px;
+    height: 18px;
+
+    flex: 0 0 auto;
+
+    color: #86868b;
+
+    stroke-width: 1.7;
+  }
+
+  /*
+   * Active category.
+   */
+
+  html body .st-mobile-category-menu__links > a.is-active {
+    color: #9a6500;
+  }
+
+  html body .st-mobile-category-menu__links > a.is-active svg {
+    color: #c18417;
+  }
+
+  /*
+   * Offers keeps a subtle promotional identity.
+   */
+
+  html body .st-mobile-category-menu__links > a.is-offer {
+    color: #b4232a;
+  }
+
+  /*
+   * Utility links at the bottom.
+   */
+
+  html body .st-mobile-category-menu__utility {
+    padding: 24px 4px 0;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px 22px;
+  }
+
+  html body .st-mobile-category-menu__utility > a {
+    color: #6e6e73;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    text-decoration: none;
+  }
+
+  /*
+   * Slightly tighter layout for narrow phones.
+   */
+
+  @media (max-width: 390px) {
+    html body .st-mobile-category-menu__surface {
+      padding-inline: 18px;
+    }
+
+    html body .st-mobile-category-menu__links > a {
+      min-height: 49px;
+    }
+
+    html body .st-mobile-category-menu__links > a span {
+      font-size: clamp(21px, 6.4vw, 27px);
+    }
+
+    html body .st-v2-header__mobile-menu-trigger {
+      width: 36px;
+      height: 36px;
+
+      flex-basis: 36px;
+    }
+  }
+}
+
+/*
+ * Reduced-motion retains the full navigation experience
+ * without movement.
+ */
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  html body .st-mobile-category-menu__backdrop,
+  html body .st-mobile-category-menu__surface,
+  html body .st-mobile-category-menu__links > a {
+    transition: none !important;
+  }
+
+  html body .st-mobile-category-menu__surface,
+  html body .st-mobile-category-menu__links > a {
+    transform: none !important;
+  }
+}
+
+/* === ST MOBILE HEADER CATEGORY MENU END === */
+
+/* === ST MOBILE HEADER MENU TRIGGER VISIBILITY FIX START === */
+
+@media (max-width: 767px) {
+  /*
+   * The existing mobile header already uses its available
+   * utility slots.
+   *
+   * Track Order remains available INSIDE the new mobile menu,
+   * so its cube icon is replaced by the category-menu trigger
+   * in the compact header only.
+   */
+
+  html body .st-v2-header .st-v2-header__track-main {
+    display: none !important;
+  }
+
+  /*
+   * Force the mobile category button to occupy a real visible
+   * header-action slot regardless of older button rules.
+   */
+
+  html
+    body
+    .st-v2-header
+    .st-v2-header__actions
+    > button.st-v2-header__mobile-menu-trigger {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+
+    position: relative !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    z-index: 20 !important;
+
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    flex: 0 0 38px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    border: 0 !important;
+    border-radius: 999px !important;
+
+    background: transparent !important;
+
+    color: #1d1d1f !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    overflow: visible !important;
+
+    pointer-events: auto !important;
+
+    cursor: pointer !important;
+
+    transform: none !important;
+
+    box-shadow: none !important;
+
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  html
+    body
+    .st-v2-header
+    .st-v2-header__actions
+    > button.st-v2-header__mobile-menu-trigger
+    > svg {
+    display: block !important;
+
+    width: 21px !important;
+    height: 21px !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    color: currentColor !important;
+    stroke: currentColor !important;
+
+    stroke-width: 1.8 !important;
+
+    pointer-events: none !important;
+  }
+
+  /*
+   * Open state stays subtle and Apple-like.
+   */
+
+  html
+    body
+    .st-v2-header
+    .st-v2-header__actions
+    > button.st-v2-header__mobile-menu-trigger.is-open {
+    background: #f5f5f7 !important;
+  }
+
+  html
+    body
+    .st-v2-header
+    .st-v2-header__actions
+    > button.st-v2-header__mobile-menu-trigger:active {
+    transform: scale(0.94) !important;
+  }
+
+  /*
+   * Keep the action rail from clipping the replacement button.
+   */
+
+  html body .st-v2-header .st-v2-header__actions {
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 390px) {
+  html
+    body
+    .st-v2-header
+    .st-v2-header__actions
+    > button.st-v2-header__mobile-menu-trigger {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+
+    flex-basis: 36px !important;
+  }
+}
+
+/* === ST MOBILE HEADER MENU TRIGGER VISIBILITY FIX END === */
+
+/* === ST V3 AUTHORITATIVE MOBILE HEADER + CATEGORY NAV START === */
+
+/*
+ * ============================================================
+ * STEREOPHONIE V3 — MOBILE HEADER
+ * ============================================================
+ *
+ * One authoritative mobile system for:
+ *
+ *   LOGO
+ *   SEARCH
+ *   WISHLIST
+ *   ACCOUNT
+ *   CART
+ *   TRACK ORDER
+ *   CATEGORY MENU
+ *
+ * No utility is removed.
+ *
+ * Desktop / laptop navigation is untouched.
+ * ============================================================
+ */
+
+@media (max-width: 900px) {
+  html body .st3-header {
+    --st3-mobile-header-side: clamp(10px, 3vw, 15px);
+    --st3-mobile-control: clamp(31px, 8.25vw, 35px);
+    --st3-mobile-icon: clamp(17px, 4.7vw, 19px);
+    --st3-mobile-action-gap: clamp(1px, 0.65vw, 4px);
+  }
+
+  html body .st3-header__bar {
+    height: var(--st3-header-height, 58px) !important;
+
+    background: rgba(250, 250, 252, 0.94) !important;
+
+    border-bottom: 1px solid rgba(29, 29, 31, 0.055) !important;
+
+    -webkit-backdrop-filter: saturate(180%) blur(22px) !important;
+    backdrop-filter: saturate(180%) blur(22px) !important;
+  }
+
+  html body .st3-header__inner {
+    width: 100% !important;
+    max-width: none !important;
+
+    height: 100% !important;
+
+    margin: 0 !important;
+
+    padding-right: var(--st3-mobile-header-side) !important;
+    padding-left: var(--st3-mobile-header-side) !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    gap: 0 !important;
+  }
+
+  /*
+   * Compact brand lockup.
+   *
+   * It remains completely recognizable while giving all six
+   * utilities enough room to breathe.
+   */
+
+  html body .st3-header__logo {
+    width: clamp(88px, 25.5vw, 106px) !important;
+    min-width: clamp(88px, 25.5vw, 106px) !important;
+    max-width: clamp(88px, 25.5vw, 106px) !important;
+
+    height: 36px !important;
+
+    margin: 0 clamp(5px, 1.5vw, 9px) 0 0 !important;
+
+    padding: 0 !important;
+
+    flex: 0 0 clamp(88px, 25.5vw, 106px) !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+
+    overflow: visible !important;
+  }
+
+  html body .st3-header__logo .st3-brand-logo {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  html body .st3-header__logo .st3-brand-logo__image {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 29px !important;
+
+    object-fit: contain !important;
+    object-position: left center !important;
+  }
+
+  /*
+   * Desktop category navigation and desktop decorative zones
+   * remain absent from the compact header.
+   */
+
+  html body .st3-header__nav,
+  html body .st3-header__visit-us,
+  html body .st3-header__visit-divider,
+  html body .st3-header__utility-divider,
+  html body .st3-header__socials {
+    display: none !important;
+  }
+
+  html body .st3-header__right-zone {
+    min-width: 0 !important;
+
+    margin: 0 0 0 auto !important;
+    padding: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    flex: 0 0 auto !important;
+  }
+
+  /*
+   * ========================================================
+   * SIX-UTILITY ACTION RAIL
+   * ========================================================
+   */
+
+  html body .st3-header__actions {
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    gap: var(--st3-mobile-action-gap) !important;
+
+    flex: 0 0 auto !important;
+
+    overflow: visible !important;
+  }
+
+  /*
+   * IMPORTANT:
+   *
+   * Existing `desktop-only` utilities remain visible here.
+   * The user should keep:
+   *
+   * Search
+   * Wishlist
+   * Account
+   * Cart
+   * Track Order
+   * Menu
+   */
+
+  html body .st3-header__actions > .st3-header__icon,
+  html body .st3-header__actions > .st3-header__desktop-only,
+  html body .st3-header__actions > .st3-header__track-icon,
+  html body .st3-header__actions > .st3-header__cart-icon,
+  html body .st3-header__actions > .st3-header__menu-button {
+    position: relative !important;
+
+    isolation: isolate !important;
+
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+
+    width: var(--st3-mobile-control) !important;
+    min-width: var(--st3-mobile-control) !important;
+    max-width: var(--st3-mobile-control) !important;
+
+    height: var(--st3-mobile-control) !important;
+    min-height: var(--st3-mobile-control) !important;
+    max-height: var(--st3-mobile-control) !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    flex: 0 0 var(--st3-mobile-control) !important;
+
+    border: 1px solid transparent !important;
+
+    border-radius: 10px !important;
+
+    background: transparent !important;
+    background-image: none !important;
+
+    color: rgba(29, 29, 31, 0.78) !important;
+
+    box-shadow: none !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    overflow: visible !important;
+
+    text-decoration: none !important;
+
+    line-height: 1 !important;
+
+    cursor: pointer !important;
+
+    transform: translate3d(0, 0, 0) !important;
+
+    -webkit-tap-highlight-color: transparent !important;
+
+    transition:
+      color 170ms ease,
+      background-color 170ms ease,
+      border-color 170ms ease,
+      transform 170ms ease !important;
+  }
+
+  html body .st3-header__actions > .st3-header__icon > svg {
+    display: block !important;
+
+    width: var(--st3-mobile-icon) !important;
+    min-width: var(--st3-mobile-icon) !important;
+    max-width: var(--st3-mobile-icon) !important;
+
+    height: var(--st3-mobile-icon) !important;
+    min-height: var(--st3-mobile-icon) !important;
+    max-height: var(--st3-mobile-icon) !important;
+
+    flex: none !important;
+
+    stroke-width: 1.7 !important;
+
+    pointer-events: none !important;
+  }
+
+  html body .st3-header__actions > .st3-header__icon:active {
+    background: rgba(29, 29, 31, 0.045) !important;
+
+    transform: scale(0.93) !important;
+  }
+
+  html body .st3-header__actions > .st3-header__icon.is-active {
+    border-color: rgba(190, 132, 29, 0.17) !important;
+
+    background: rgba(253, 183, 62, 0.075) !important;
+
+    color: #1d1d1f !important;
+  }
+
+  /*
+   * Cart counter stays attached to the bag rather than
+   * changing the width of the utility rail.
+   */
+
+  html body .st3-header__cart-count {
+    position: absolute !important;
+
+    top: 2px !important;
+    right: 1px !important;
+
+    z-index: 4 !important;
+
+    min-width: 14px !important;
+    height: 14px !important;
+
+    padding: 0 3px !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    border: 2px solid rgba(250, 250, 252, 0.98) !important;
+
+    border-radius: 999px !important;
+
+    font-size: 8px !important;
+    font-weight: 700 !important;
+
+    line-height: 1 !important;
+  }
+
+  /*
+   * ========================================================
+   * CATEGORY / MENU GLYPH
+   * ========================================================
+   */
+
+  html body .st3-header__menu-button {
+    display: inline-flex !important;
+  }
+
+  html body .st3-header__menu-glyph {
+    position: relative !important;
+
+    width: var(--st3-mobile-icon) !important;
+    height: 14px !important;
+
+    display: block !important;
+
+    flex: none !important;
+
+    pointer-events: none !important;
+  }
+
+  html body .st3-header__menu-glyph > span {
+    position: absolute !important;
+
+    right: 0 !important;
+    left: 0 !important;
+
+    height: 1.5px !important;
+
+    border-radius: 999px !important;
+
+    background: currentColor !important;
+
+    transform-origin: center !important;
+
+    transition:
+      top 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 120ms ease,
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  html body .st3-header__menu-glyph > span:nth-child(1) {
+    top: 1px !important;
+  }
+
+  html body .st3-header__menu-glyph > span:nth-child(2) {
+    top: 6px !important;
+  }
+
+  html body .st3-header__menu-glyph > span:nth-child(3) {
+    top: 11px !important;
+  }
+
+  html
+    body
+    .st3-header__menu-button.is-active
+    .st3-header__menu-glyph
+    > span:nth-child(1) {
+    top: 6px !important;
+
+    transform: rotate(45deg) !important;
+  }
+
+  html
+    body
+    .st3-header__menu-button.is-active
+    .st3-header__menu-glyph
+    > span:nth-child(2) {
+    opacity: 0 !important;
+  }
+
+  html
+    body
+    .st3-header__menu-button.is-active
+    .st3-header__menu-glyph
+    > span:nth-child(3) {
+    top: 6px !important;
+
+    transform: rotate(-45deg) !important;
+  }
+
+  /*
+   * ========================================================
+   * FULL MOBILE CATEGORY NAVIGATION
+   * ========================================================
+   *
+   * Starts exactly underneath the V3 header and continues to
+   * the bottom of the viewport.
+   */
+
+  html body .st3-mobile--category-navigation {
+    position: fixed !important;
+
+    top: var(--st3-header-height, 58px) !important;
+
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+
+    z-index: 9999 !important;
+
+    width: 100% !important;
+
+    display: block !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    overscroll-behavior: contain !important;
+
+    background: linear-gradient(
+      180deg,
+      rgba(250, 250, 252, 0.995) 0%,
+      rgba(255, 255, 255, 0.995) 100%
+    ) !important;
+
+    border-top: 1px solid rgba(29, 29, 31, 0.045) !important;
+
+    -webkit-overflow-scrolling: touch !important;
+
+    transform-origin: top center !important;
+
+    animation: st3MobileCategoryNavigationIn 300ms
+      cubic-bezier(0.22, 1, 0.36, 1) both !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__inner {
+    width: min(calc(100% - 42px), 620px) !important;
+
+    margin: 0 auto !important;
+
+    padding: 26px 0 max(48px, calc(28px + env(safe-area-inset-bottom))) !important;
+  }
+
+  html body .st3-mobile__top {
+    width: 100% !important;
+
+    margin: 0 0 22px !important;
+
+    display: flex !important;
+
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+
+    gap: 20px !important;
+  }
+
+  html body .st3-mobile__heading {
+    min-width: 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    gap: 3px !important;
+  }
+
+  html body .st3-mobile__heading > span {
+    color: rgba(29, 29, 31, 0.43) !important;
+
+    font-size: 11px !important;
+    font-weight: 600 !important;
+
+    line-height: 1.2 !important;
+
+    letter-spacing: 0.035em !important;
+
+    text-transform: uppercase !important;
+  }
+
+  html body .st3-mobile__heading > strong {
+    color: #1d1d1f !important;
+
+    font-size: clamp(25px, 7vw, 31px) !important;
+    font-weight: 650 !important;
+
+    line-height: 1 !important;
+
+    letter-spacing: -0.042em !important;
+  }
+
+  html body .st3-mobile__close {
+    position: relative !important;
+
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+
+    margin: -3px -5px 0 0 !important;
+    padding: 0 !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    border: 0 !important;
+
+    border-radius: 50% !important;
+
+    background: rgba(29, 29, 31, 0.045) !important;
+
+    color: #1d1d1f !important;
+
+    cursor: pointer !important;
+
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  html body .st3-mobile__close > span {
+    position: absolute !important;
+
+    width: 15px !important;
+    height: 1.5px !important;
+
+    border-radius: 999px !important;
+
+    background: currentColor !important;
+  }
+
+  html body .st3-mobile__close > span:first-child {
+    transform: rotate(45deg) !important;
+  }
+
+  html body .st3-mobile__close > span:last-child {
+    transform: rotate(-45deg) !important;
+  }
+
+  html body .st3-mobile__links {
+    width: 100% !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    gap: 0 !important;
+  }
+
+  html body .st3-mobile__link {
+    position: relative !important;
+
+    width: 100% !important;
+
+    min-height: 54px !important;
+
+    padding: 8px 1px !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 18px !important;
+
+    border-bottom: 1px solid rgba(29, 29, 31, 0.065) !important;
+
+    color: #1d1d1f !important;
+
+    text-decoration: none !important;
+
+    font-size: clamp(21px, 6vw, 28px) !important;
+    font-weight: 600 !important;
+
+    line-height: 1.08 !important;
+
+    letter-spacing: -0.035em !important;
+
+    opacity: 0 !important;
+
+    transform: translateY(-8px) !important;
+
+    animation: st3MobileCategoryLinkIn 360ms cubic-bezier(0.22, 1, 0.36, 1)
+      forwards !important;
+  }
+
+  html body .st3-mobile__link:nth-child(1) {
+    animation-delay: 35ms !important;
+  }
+
+  html body .st3-mobile__link:nth-child(2) {
+    animation-delay: 60ms !important;
+  }
+
+  html body .st3-mobile__link:nth-child(3) {
+    animation-delay: 85ms !important;
+  }
+
+  html body .st3-mobile__link:nth-child(4) {
+    animation-delay: 110ms !important;
+  }
+
+  html body .st3-mobile__link:nth-child(5) {
+    animation-delay: 135ms !important;
+  }
+
+  html body .st3-mobile__link:nth-child(6) {
+    animation-delay: 160ms !important;
+  }
+
+  html body .st3-mobile__link:nth-child(n + 7) {
+    animation-delay: 185ms !important;
+  }
+
+  html body .st3-mobile__link--primary {
+    font-weight: 675 !important;
+  }
+
+  html body .st3-mobile__link--offer {
+    color: #b31319 !important;
+  }
+
+  html body .st3-mobile__link-arrow {
+    flex: none !important;
+
+    color: rgba(29, 29, 31, 0.27) !important;
+
+    font-size: 30px !important;
+    font-weight: 300 !important;
+
+    line-height: 1 !important;
+
+    transform: translateY(-1px) !important;
+  }
+
+  html body .st3-mobile__link--offer .st3-mobile__link-arrow {
+    color: rgba(179, 19, 25, 0.35) !important;
+  }
+
+  html body .st3-mobile__utility {
+    margin: 28px 0 0 !important;
+
+    padding: 22px 0 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    gap: 13px !important;
+
+    border-top: 0 !important;
+  }
+
+  html body .st3-mobile__utility > a {
+    width: fit-content !important;
+
+    color: rgba(29, 29, 31, 0.58) !important;
+
+    text-decoration: none !important;
+
+    font-size: 13px !important;
+    font-weight: 550 !important;
+
+    line-height: 1.35 !important;
+  }
+}
+
+/*
+ * Smaller iPhones receive slightly tighter geometry while
+ * retaining all six utilities.
+ */
+
+@media (max-width: 390px) {
+  html body .st3-header {
+    --st3-mobile-header-side: 9px;
+    --st3-mobile-control: 31px;
+    --st3-mobile-icon: 17px;
+    --st3-mobile-action-gap: 1px;
+  }
+
+  html body .st3-header__logo {
+    width: 91px !important;
+    min-width: 91px !important;
+    max-width: 91px !important;
+
+    flex-basis: 91px !important;
+
+    margin-right: 4px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  html body .st3-header {
+    --st3-mobile-header-side: 7px;
+    --st3-mobile-control: 29px;
+    --st3-mobile-icon: 16px;
+    --st3-mobile-action-gap: 0px;
+  }
+
+  html body .st3-header__logo {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+
+    flex-basis: 82px !important;
+
+    margin-right: 2px !important;
+  }
+}
+
+@keyframes st3MobileCategoryNavigationIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(-14px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+@keyframes st3MobileCategoryLinkIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  html body .st3-mobile--category-navigation,
+  html body .st3-mobile__link,
+  html body .st3-header__menu-glyph > span {
+    animation: none !important;
+
+    transition: none !important;
+  }
+
+  html body .st3-mobile__link {
+    opacity: 1 !important;
+
+    transform: none !important;
+  }
+}
+
+/* === ST V3 AUTHORITATIVE MOBILE HEADER + CATEGORY NAV END === */
+/* === ST V3 MOBILE CATEGORY NAVIGATION FINAL LIFECYCLE START === */
+
+/*
+ * ==========================================================
+ * ONE HEADER UTILITY LANGUAGE
+ * ==========================================================
+ *
+ * Search / Wishlist / Account / Cart / Track / Menu all use
+ * the same hover and active treatment.
+ * ==========================================================
+ */
+
+html body .st3-header__actions > .st3-header__icon.is-active {
+  background: rgba(253, 183, 62, 0.055) !important;
+  background-color: rgba(253, 183, 62, 0.055) !important;
+  background-image: none !important;
+
+  border-color: rgba(190, 132, 29, 0.25) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-header__actions > .st3-header__icon:hover {
+    background: #fffdf8 !important;
+    background-color: #fffdf8 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    border-color: rgba(190, 132, 29, 0.55) !important;
+
+    box-shadow:
+      0 2px 4px rgba(29, 29, 31, 0.025),
+      0 8px 24px rgba(189, 116, 0, 0.09) !important;
+
+    transform: translate3d(0, -1px, 0) !important;
+  }
+
+  html body .st3-header__actions > .st3-header__icon:hover::before {
+    opacity: 1 !important;
+
+    transform: scale(1.045) !important;
+  }
+}
+
+/*
+ * ==========================================================
+ * MOBILE CATEGORY SURFACE
+ * ==========================================================
+ */
+
+@media (max-width: 900px) {
+  html body .st3-mobile--category-navigation {
+    position: fixed !important;
+
+    top: var(--st3-header-height, 58px) !important;
+
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+
+    z-index: 10020 !important;
+
+    width: 100vw !important;
+    height: calc(100dvh - var(--st3-header-height, 58px)) !important;
+    min-height: calc(100dvh - var(--st3-header-height, 58px)) !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: block !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    overscroll-behavior: contain !important;
+
+    background: linear-gradient(
+      180deg,
+      rgba(250, 250, 252, 0.998) 0%,
+      rgba(255, 255, 255, 0.998) 100%
+    ) !important;
+
+    border-top: 1px solid rgba(29, 29, 31, 0.05) !important;
+
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.075) !important;
+
+    -webkit-overflow-scrolling: touch !important;
+
+    transform-origin: top center !important;
+
+    will-change: transform, opacity !important;
+
+    animation: none !important;
+
+    transition:
+      transform 470ms cubic-bezier(0.32, 0.72, 0, 1),
+      opacity 300ms ease !important;
+  }
+
+  /*
+   * Before opening.
+   */
+  html body .st3-mobile--category-navigation.is-preparing {
+    opacity: 0 !important;
+
+    transform: translate3d(
+      0,
+      calc(-100% - var(--st3-header-height, 58px)),
+      0
+    ) !important;
+
+    pointer-events: none !important;
+  }
+
+  /*
+   * Open.
+   */
+  html body .st3-mobile--category-navigation.is-open {
+    opacity: 1 !important;
+
+    transform: translate3d(0, 0, 0) !important;
+
+    pointer-events: auto !important;
+  }
+
+  /*
+   * Closing is deliberately slower so the user can perceive
+   * the sheet retracting from the bottom back into the header.
+   */
+  html body .st3-mobile--category-navigation.is-closing {
+    opacity: 0 !important;
+
+    transform: translate3d(
+      0,
+      calc(-100% - var(--st3-header-height, 58px)),
+      0
+    ) !important;
+
+    pointer-events: none !important;
+
+    transition:
+      transform 640ms cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 430ms ease !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__inner {
+    position: relative !important;
+
+    z-index: 2 !important;
+
+    width: min(calc(100% - 42px), 620px) !important;
+
+    margin: 0 auto !important;
+
+    padding: 28px 0 max(52px, calc(30px + env(safe-area-inset-bottom))) !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__top {
+    width: 100% !important;
+
+    margin: 0 0 24px !important;
+
+    display: block !important;
+  }
+
+  /*
+   * Header X is the only close control.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__close {
+    display: none !important;
+  }
+
+  /*
+   * ========================================================
+   * CATEGORY LINKS
+   * ========================================================
+   *
+   * These selectors deliberately override the older V3
+   * mobile link entrance rules which were leaving the rows at
+   * opacity: 0.
+   *
+   * Shop All
+   * Offers
+   * Admin-created categories
+   * are therefore all visible.
+   * ========================================================
+   */
+
+  html body .st3-mobile--category-navigation .st3-mobile__links {
+    width: 100% !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+
+    transform: none !important;
+
+    animation: none !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__link {
+    width: 100% !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+
+    opacity: 1 !important;
+
+    transform: translate3d(0, 0, 0) !important;
+
+    animation: none !important;
+  }
+
+  /*
+   * While the sheet is preparing, links are staged slightly
+   * upward and transparent.
+   */
+  html body .st3-mobile--category-navigation.is-preparing .st3-mobile__link {
+    opacity: 0 !important;
+
+    transform: translate3d(0, -14px, 0) !important;
+  }
+
+  /*
+   * During closing the content softly disappears before the
+   * entire sheet completes its upward movement.
+   */
+  html body .st3-mobile--category-navigation.is-closing .st3-mobile__link {
+    opacity: 0 !important;
+
+    transform: translate3d(0, -8px, 0) !important;
+
+    transition:
+      opacity 150ms ease,
+      transform 180ms ease !important;
+  }
+
+  /*
+   * ========================================================
+   * APPLE-LIKE STAGGERED CATEGORY ENTRANCE
+   * ========================================================
+   */
+
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__link {
+    animation: st3MobileCategoryRowReveal 500ms cubic-bezier(0.22, 1, 0.36, 1)
+      both !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(1) {
+    animation-delay: 70ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(2) {
+    animation-delay: 105ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(3) {
+    animation-delay: 140ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(4) {
+    animation-delay: 175ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(5) {
+    animation-delay: 210ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(6) {
+    animation-delay: 245ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(7) {
+    animation-delay: 280ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(8) {
+    animation-delay: 315ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(9) {
+    animation-delay: 350ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(10) {
+    animation-delay: 385ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(n + 11) {
+    animation-delay: 420ms !important;
+  }
+
+  /*
+   * Heading has its own subtle entrance.
+   */
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__heading {
+    animation: st3MobileCategoryHeadingReveal 420ms
+      cubic-bezier(0.22, 1, 0.36, 1) 35ms both !important;
+  }
+
+  /*
+   * Utility links come in after the catalogue.
+   */
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__utility {
+    animation: st3MobileCategoryUtilityReveal 440ms
+      cubic-bezier(0.22, 1, 0.36, 1) 300ms both !important;
+  }
+
+  html body .st3-header {
+    z-index: 10030 !important;
+  }
+
+  html body .st3-header__bar {
+    z-index: 10031 !important;
+  }
+}
+
+@keyframes st3MobileCategoryRowReveal {
+  from {
+    opacity: 0;
+
+    transform: translate3d(0, -13px, 0);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes st3MobileCategoryHeadingReveal {
+  from {
+    opacity: 0;
+
+    transform: translate3d(0, -8px, 0);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes st3MobileCategoryUtilityReveal {
+  from {
+    opacity: 0;
+
+    transform: translate3d(0, -7px, 0);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  html body .st3-mobile--category-navigation {
+    transition: none !important;
+  }
+
+  html body .st3-mobile--category-navigation.is-preparing,
+  html body .st3-mobile--category-navigation.is-closing {
+    opacity: 0 !important;
+
+    transform: none !important;
+  }
+
+  html body .st3-mobile--category-navigation.is-open {
+    opacity: 1 !important;
+
+    transform: none !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__link,
+  html body .st3-mobile--category-navigation .st3-mobile__heading,
+  html body .st3-mobile--category-navigation .st3-mobile__utility,
+  html body .st3-header__menu-glyph > span {
+    animation: none !important;
+
+    transition: none !important;
+
+    transform: none !important;
+  }
+
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__link,
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__heading,
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__utility {
+    opacity: 1 !important;
+  }
+}
+
+/* === ST V3 MOBILE CATEGORY NAVIGATION FINAL LIFECYCLE END === */
+
+/* === ST V3 ONE TRUE HEADER ACTIVE INDICATOR START === */
+
+/*
+ * Every active utility in the V3 header uses ONE identical
+ * visual treatment:
+ *
+ * Search
+ * Wishlist
+ * Account
+ * Cart
+ * Track Order
+ * Menu
+ *
+ * This intentionally overrides any older Wishlist-specific
+ * active styling.
+ */
+
+html body .st3-header__actions > .st3-header__icon.is-active,
+html body .st3-header__actions > a.st3-header__icon[href="/wishlist"].is-active,
+html body .st3-header__actions > a.st3-header__icon[href="/account"].is-active,
+html
+  body
+  .st3-header__actions
+  > a.st3-header__icon[href="/track-order"].is-active,
+html body .st3-header__actions > .st3-header__cart-icon.is-active,
+html body .st3-header__actions > .st3-header__menu-button.is-active {
+  background: #fffdf8 !important;
+  background-color: #fffdf8 !important;
+  background-image: none !important;
+
+  border: 1px solid rgba(190, 132, 29, 0.28) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.025),
+    0 4px 12px rgba(189, 116, 0, 0.035) !important;
+}
+
+/*
+ * Kill any legacy Wishlist-only pseudo-element fill/glow
+ * while it is merely active.
+ *
+ * Hover is still handled by the normal shared hover engine.
+ */
+
+html
+  body
+  .st3-header__actions
+  > a.st3-header__icon[href="/wishlist"].is-active::after {
+  content: none !important;
+
+  display: none !important;
+
+  opacity: 0 !important;
+}
+
+/*
+ * The standard shared mustard aura remains available on hover.
+ * Being on Wishlist does not make the bookmark permanently
+ * stronger than the other active controls.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st3-header__actions
+    > a.st3-header__icon[href="/wishlist"].is-active:hover {
+    background: #fffdf8 !important;
+    background-color: #fffdf8 !important;
+
+    border-color: rgba(190, 132, 29, 0.55) !important;
+
+    box-shadow:
+      0 2px 4px rgba(29, 29, 31, 0.025),
+      0 8px 24px rgba(189, 116, 0, 0.09) !important;
+
+    transform: translate3d(0, -1px, 0) !important;
+  }
+}
+
+/* === ST V3 ONE TRUE HEADER ACTIVE INDICATOR END === */
+
+/* === ST V3 CATEGORY SELECTOR STAGGER ANIMATION START === */
+
+/*
+ * ==========================================================
+ * CATEGORY SELECTORS — RELIABLE APPLE-LIKE STAGGER
+ * ==========================================================
+ *
+ * This block ONLY controls the rows inside the mobile
+ * Categories sheet.
+ *
+ * It does NOT modify:
+ * - the sheet opening movement
+ * - the sheet closing movement
+ * - Wishlist active state
+ * - header hover
+ * - Menu/X animation
+ * - category data
+ * ==========================================================
+ */
+
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  /*
+   * PREPARING
+   *
+   * The panel has just mounted but has not yet entered its
+   * open state. Stage each selector slightly upward.
+   */
+
+  html body .st3-mobile--category-navigation.is-preparing .st3-mobile__link {
+    opacity: 0 !important;
+
+    transform: translate3d(0, -13px, 0) !important;
+
+    transition: none !important;
+
+    animation: none !important;
+  }
+
+  /*
+   * OPEN
+   *
+   * This explicit final state guarantees the category rows
+   * can NEVER remain invisible.
+   */
+
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__link {
+    opacity: 1 !important;
+
+    transform: translate3d(0, 0, 0) !important;
+
+    animation: none !important;
+
+    transition:
+      opacity 430ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  /*
+   * SHOP ALL
+   */
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(1) {
+    transition-delay: 80ms !important;
+  }
+
+  /*
+   * OFFERS
+   */
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(2) {
+    transition-delay: 120ms !important;
+  }
+
+  /*
+   * ADMIN CATEGORIES
+   */
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(3) {
+    transition-delay: 160ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(4) {
+    transition-delay: 200ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(5) {
+    transition-delay: 240ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(6) {
+    transition-delay: 280ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(7) {
+    transition-delay: 320ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(8) {
+    transition-delay: 360ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(9) {
+    transition-delay: 400ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(10) {
+    transition-delay: 440ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(11) {
+    transition-delay: 480ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(12) {
+    transition-delay: 520ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(13) {
+    transition-delay: 560ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(14) {
+    transition-delay: 600ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(15) {
+    transition-delay: 640ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(16) {
+    transition-delay: 680ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(17) {
+    transition-delay: 720ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(18) {
+    transition-delay: 760ms !important;
+  }
+
+  html
+    body
+    .st3-mobile--category-navigation.is-open
+    .st3-mobile__link:nth-child(n + 19) {
+    transition-delay: 800ms !important;
+  }
+
+  /*
+   * CLOSING
+   *
+   * Categories disappear softly while the existing sheet
+   * retract animation continues independently.
+   */
+
+  html body .st3-mobile--category-navigation.is-closing .st3-mobile__link {
+    opacity: 0 !important;
+
+    transform: translate3d(0, -5px, 0) !important;
+
+    animation: none !important;
+
+    transition:
+      opacity 170ms ease,
+      transform 210ms ease !important;
+
+    transition-delay: 0ms !important;
+  }
+}
+
+/*
+ * ==========================================================
+ * ABSOLUTE VISIBILITY SAFETY
+ * ==========================================================
+ *
+ * Older V3 CSS contains previous entrance rules. This makes
+ * the OPEN state authoritative so no legacy animation can
+ * leave Shop All / Offers / categories at opacity 0.
+ * ==========================================================
+ */
+
+@media (max-width: 900px) {
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__links {
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+
+    transform: none !important;
+
+    animation: none !important;
+  }
+
+  html body .st3-mobile--category-navigation.is-open .st3-mobile__link {
+    display: flex !important;
+
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+  }
+}
+
+/*
+ * Reduced motion:
+ * show everything immediately.
+ */
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  html body .st3-mobile--category-navigation .st3-mobile__link {
+    opacity: 1 !important;
+
+    transform: none !important;
+
+    animation: none !important;
+
+    transition: none !important;
+  }
+}
+
+/* === ST V3 CATEGORY SELECTOR STAGGER ANIMATION END === */
+
+/* === ST V3 APPLE STYLE MOBILE CATEGORY LIST START === */
+
+/*
+ * Apple-inspired visual treatment for the mobile category list.
+ *
+ * This changes ONLY the inner category presentation.
+ * It does NOT modify:
+ * - header active indicators
+ * - Wishlist styling
+ * - panel opening mechanics
+ * - panel closing mechanics
+ * - category data/loading
+ */
+
+@media (max-width: 900px) {
+  /*
+   * Give the content column the same calm, narrow,
+   * left-aligned feeling as Apple's mobile navigation.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__inner {
+    width: min(calc(100% - 48px), 560px) !important;
+
+    margin: 0 auto !important;
+
+    padding-top: 34px !important;
+  }
+
+  /*
+   * Slightly reduce the heading emphasis so the categories
+   * themselves become the main visual focus.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__top {
+    margin-bottom: 30px !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__heading {
+    gap: 4px !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__heading > span {
+    color: rgba(29, 29, 31, 0.42) !important;
+
+    font-size: 11px !important;
+    font-weight: 600 !important;
+
+    letter-spacing: 0.055em !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__heading > strong {
+    color: #1d1d1f !important;
+
+    font-size: clamp(28px, 7.2vw, 34px) !important;
+
+    line-height: 1 !important;
+
+    font-weight: 650 !important;
+
+    letter-spacing: -0.045em !important;
+  }
+
+  /*
+   * Main category list:
+   * no cards
+   * no pills
+   * no separators
+   * no boxed backgrounds
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__links {
+    gap: 0 !important;
+
+    border: 0 !important;
+
+    background: transparent !important;
+  }
+
+  /*
+   * Apple-like category typography.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__link {
+    min-height: 0 !important;
+
+    margin: 0 !important;
+
+    padding: 11px 0 !important;
+
+    border: 0 !important;
+
+    border-radius: 0 !important;
+
+    background: transparent !important;
+    background-image: none !important;
+
+    box-shadow: none !important;
+
+    color: #1d1d1f !important;
+
+    text-decoration: none !important;
+
+    font-size: clamp(29px, 8vw, 38px) !important;
+
+    font-weight: 650 !important;
+
+    line-height: 1.06 !important;
+
+    letter-spacing: -0.045em !important;
+  }
+
+  /*
+   * Shop All gets the same premium neutral treatment.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__link--primary {
+    color: #1d1d1f !important;
+
+    background: transparent !important;
+
+    border: 0 !important;
+  }
+
+  /*
+   * OFFERS:
+   * mustard, not red.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__link--offer {
+    color: #bd841d !important;
+
+    background: transparent !important;
+
+    border: 0 !important;
+  }
+
+  /*
+   * Remove the visible chevron from every category.
+   * Apple's list reads as pure typography.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__link-arrow {
+    display: none !important;
+  }
+
+  /*
+   * Keep tap targets comfortable even though the visual
+   * presentation is minimal.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__link {
+    cursor: pointer !important;
+
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  /*
+   * Subtle interaction, without turning rows into buttons.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__link:active {
+    opacity: 0.56 !important;
+
+    transform: scale(0.985) !important;
+  }
+
+  /*
+   * Keep the utility links visually separated from the large
+   * category list.
+   */
+  html body .st3-mobile--category-navigation .st3-mobile__utility {
+    margin-top: 34px !important;
+
+    padding-top: 24px !important;
+
+    border-top: 1px solid rgba(29, 29, 31, 0.09) !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__utility a {
+    font-size: 14px !important;
+
+    font-weight: 550 !important;
+
+    letter-spacing: -0.01em !important;
+  }
+}
+
+/*
+ * Fine-pointer devices at the tablet breakpoint can still
+ * receive an elegant text-only hover.
+ */
+@media (max-width: 900px) and (hover: hover) and (pointer: fine) {
+  html body .st3-mobile--category-navigation .st3-mobile__link:hover {
+    background: transparent !important;
+
+    color: rgba(29, 29, 31, 0.58) !important;
+  }
+
+  html body .st3-mobile--category-navigation .st3-mobile__link--offer:hover {
+    color: #a56f12 !important;
+  }
+}
+
+/* === ST V3 APPLE STYLE MOBILE CATEGORY LIST END === */
+
+/* === ST V3 REAL MOBILE SEARCH MOTION START === */
+
+/*
+ * ==========================================================
+ * MOBILE / TABLET SEARCH — AUTHORITATIVE MOTION
+ * ==========================================================
+ *
+ * The V3 header's real panel animation is driven by clip-path.
+ * These selectors deliberately outrank the older global
+ * .st3-header .st3-mega state rules.
+ *
+ * Desktop remains untouched.
+ * ==========================================================
+ */
+
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  /*
+   * CLOSED / PRE-OPEN POSITION
+   */
+  html body .st3-header .st3-mega.st3-mega--search.st3-mega--closed {
+    opacity: 0 !important;
+
+    visibility: hidden !important;
+
+    pointer-events: none !important;
+
+    clip-path: inset(0 0 100% 0) !important;
+
+    transform: translate3d(0, -14px, 0) !important;
+  }
+
+  /*
+   * OPEN:
+   * visibly unfolds downward from underneath the header.
+   */
+  html body .st3-header .st3-mega.st3-mega--search.st3-mega--open {
+    opacity: 1 !important;
+
+    visibility: visible !important;
+
+    pointer-events: auto !important;
+
+    clip-path: inset(0 0 0 0) !important;
+
+    transform: translate3d(0, 0, 0) !important;
+
+    transition:
+      clip-path 850ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 850ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 520ms ease,
+      visibility 0ms linear 0ms !important;
+  }
+
+  /*
+   * CLOSE:
+   * reverse the complete surface back into the header.
+   *
+   * JavaScript now keeps Search mounted for 950ms, so this
+   * 900ms animation is allowed to complete.
+   */
+  html body .st3-header .st3-mega.st3-mega--search.st3-mega--closing {
+    opacity: 0 !important;
+
+    visibility: visible !important;
+
+    pointer-events: none !important;
+
+    clip-path: inset(0 0 100% 0) !important;
+
+    transform: translate3d(0, -14px, 0) !important;
+
+    transition:
+      clip-path 900ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 900ms cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 600ms ease,
+      visibility 0ms linear 900ms !important;
+  }
+
+  /*
+   * Search content follows the surface instead of popping in
+   * immediately.
+   */
+  html
+    body
+    .st3-header
+    .st3-mega.st3-mega--search.st3-mega--open
+    .st3-mega__inner {
+    animation: st3MobileSearchContentEnter 720ms 120ms
+      cubic-bezier(0.16, 1, 0.3, 1) both !important;
+
+    transition: none !important;
+  }
+
+  html
+    body
+    .st3-header
+    .st3-mega.st3-mega--search.st3-mega--closing
+    .st3-mega__inner {
+    animation: none !important;
+
+    opacity: 0.5 !important;
+
+    transform: translate3d(0, -8px, 0) !important;
+
+    transition:
+      opacity 430ms ease,
+      transform 650ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+}
+
+@keyframes st3MobileSearchContentEnter {
+  from {
+    opacity: 0;
+
+    transform: translate3d(0, -12px, 0);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  html body .st3-header .st3-mega.st3-mega--search,
+  html body .st3-header .st3-mega.st3-mega--search .st3-mega__inner {
+    animation: none !important;
+
+    transition: none !important;
+  }
+}
+
+/* === ST V3 REAL MOBILE SEARCH MOTION END === */
+
+/* === ST EXACT MOBILE PRODUCT STICKER SIZE START === */
+
+/*
+ * MOBILE SIZE ONLY.
+ *
+ * The existing clean sticker system remains authoritative for:
+ * - sticker mechanism
+ * - breathing animation
+ * - colors
+ * - borders
+ * - glow
+ * - stock logic
+ * - badge priority
+ * - positioning
+ *
+ * Only physical dimensions are reduced below.
+ */
+
+@media (max-width: 600px) {
+  html body .st-retail-card .st-retail-card__top > .st-card-sticker-row {
+    gap: 4px !important;
+
+    max-width: calc(100% - 44px) !important;
+  }
+
+  html body .st-retail-card .st-card-sticker-row > .st-card-sticker {
+    width: auto !important;
+
+    min-width: 54px !important;
+    max-width: none !important;
+
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+
+    padding: 0 8px !important;
+
+    font-size: 10px !important;
+    line-height: 1 !important;
+
+    flex: 0 0 auto !important;
+
+    white-space: nowrap !important;
+  }
+
+  html body .st-retail-card .st-card-sticker-row > .st-card-sticker > b {
+    font-size: 10px !important;
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+  }
+}
+
+/*
+ * Very narrow phones/cards.
+ */
+@media (max-width: 390px) {
+  html body .st-retail-card .st-retail-card__top > .st-card-sticker-row {
+    gap: 3px !important;
+
+    max-width: calc(100% - 42px) !important;
+  }
+
+  html body .st-retail-card .st-card-sticker-row > .st-card-sticker {
+    min-width: 50px !important;
+
+    height: 23px !important;
+    min-height: 23px !important;
+    max-height: 23px !important;
+
+    padding: 0 7px !important;
+
+    font-size: 9.5px !important;
+  }
+
+  html body .st-retail-card .st-card-sticker-row > .st-card-sticker > b {
+    font-size: 9.5px !important;
+  }
+}
+
+/* === ST EXACT MOBILE PRODUCT STICKER SIZE END === */
+
+/* === ST OOS EXCLUSIVE + MOBILE STICKER ROW START === */
+
+/*
+ * Mobile sticker geometry only.
+ *
+ * Existing dimensions, palette, breathing animation and glow are
+ * untouched.
+ *
+ * Because Out of Stock is now exclusive, normal cards have at
+ * most the merchandising sticker + Sale, so they can stay on one
+ * horizontal line.
+ */
+@media (max-width: 600px) {
+  html body .st-retail-card .st-retail-card__top > .st-card-sticker-row {
+    display: flex !important;
+
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    flex-flow: row nowrap !important;
+
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+
+    gap: 4px !important;
+
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    white-space: nowrap !important;
+  }
+
+  html body .st-retail-card .st-card-sticker-row > .st-card-sticker {
+    flex: 0 0 auto !important;
+  }
+}
+
+/*
+ * Disabled placement controls clearly communicate that
+ * Out-of-Stock products cannot receive merchandising placement.
+ */
+html
+  body
+  .st-admin-placement-card:has(input:disabled)
+  .st-admin-placement-card__surface {
+  opacity: 0.32 !important;
+
+  cursor: not-allowed !important;
+
+  filter: grayscale(0.35) !important;
+
+  box-shadow: none !important;
+}
+
+html
+  body
+  .st-admin-placement-card:has(input:disabled)
+  .st-admin-placement-card__surface.is-selected {
+  opacity: 0.32 !important;
+}
+
+/* === ST OOS EXCLUSIVE + MOBILE STICKER ROW END === */

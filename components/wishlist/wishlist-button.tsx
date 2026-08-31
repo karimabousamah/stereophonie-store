@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Bookmark,
-} from "lucide-react";
+import { Bookmark } from "lucide-react";
 
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 

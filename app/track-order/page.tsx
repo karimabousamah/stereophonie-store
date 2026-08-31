@@ -153,7 +153,10 @@ export default function TrackOrderPage() {
 
         setOrder(result.order);
         window.setTimeout(() => {
-          resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          resultRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
         }, 80);
       } catch {
         setError("We could not retrieve the order. Please try again.");
@@ -182,7 +185,6 @@ export default function TrackOrderPage() {
               checkout email to see the latest status.
             </p>
           </div>
-
         </section>
 
         <section className="st-retail-track__lookup">
@@ -279,7 +281,9 @@ export default function TrackOrderPage() {
                 <span>03</span>
                 <div>
                   <strong>Need personal help?</strong>
-                  <p>Our support team can assist if the details do not match.</p>
+                  <p>
+                    Our support team can assist if the details do not match.
+                  </p>
                 </div>
               </li>
             </ol>
@@ -400,7 +404,9 @@ export default function TrackOrderPage() {
                   ) : null}
                   <div>
                     <dt>Delivery</dt>
-                    <dd>{order.delivery_fee ? money(order.delivery_fee) : "Free"}</dd>
+                    <dd>
+                      {order.delivery_fee ? money(order.delivery_fee) : "Free"}
+                    </dd>
                   </div>
                   <div className="is-total">
                     <dt>Total</dt>

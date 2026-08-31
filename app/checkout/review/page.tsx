@@ -313,10 +313,7 @@ export default function CheckoutReviewPage() {
             <p>Confirm your details, products and payment method.</p>
           </div>
 
-          <Link
-            href="/checkout"
-            className="st-checkout-compact-head__action"
-          >
+          <Link href="/checkout" className="st-checkout-compact-head__action">
             <ArrowLeft className="h-4 w-4" />
             <span>Edit details</span>
           </Link>
@@ -325,511 +322,512 @@ export default function CheckoutReviewPage() {
         <CheckoutProgress currentStep={2} />
 
         <section className="st-checkout-content mx-auto max-w-[1180px] px-4 py-6 sm:px-6 sm:py-8">
-
-        {errorMessage ? (
-          <div
-            role="alert"
-            className="mb-8 border border-red-200 bg-red-50 px-5 py-4 text-sm leading-6 text-red-700"
-          >
-            {errorMessage}
-          </div>
-        ) : null}
-
-        {!checkoutDetails || !customer ? (
-          <div className="flex min-h-[440px] flex-col items-center justify-center border border-dashed border-black/15 bg-white px-6 text-center">
-            <ShoppingBag className="h-9 w-9 text-black/25" />
-
-            <h2 className="mt-6 text-2xl font-semibold">
-              Checkout details unavailable
-            </h2>
-
-            <p className="mt-3 max-w-md text-sm leading-6 text-black/45">
-              Return to checkout and enter your contact and delivery information
-              again.
-            </p>
-
-            <Link
-              href="/checkout"
-              className="mt-7 border border-black bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.17em] !text-white transition hover:bg-white hover:!text-black"
+          {errorMessage ? (
+            <div
+              role="alert"
+              className="mb-8 border border-red-200 bg-red-50 px-5 py-4 text-sm leading-6 text-red-700"
             >
-              Return to checkout
-            </Link>
-          </div>
-        ) : (
-          <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_430px] xl:gap-10">
-            <div className="min-w-0 space-y-6 sm:space-y-8">
-              {customerAccount?.signedIn ? (
-                <section className="border border-emerald-200 bg-emerald-50/50">
-                  <div className="flex items-start gap-4 px-5 py-5 sm:px-6">
-                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-white">
-                      <UserRound className="h-5 w-5" />
-                    </div>
+              {errorMessage}
+            </div>
+          ) : null}
 
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-emerald-700">
-                        Customer account linked
+          {!checkoutDetails || !customer ? (
+            <div className="flex min-h-[440px] flex-col items-center justify-center border border-dashed border-black/15 bg-white px-6 text-center">
+              <ShoppingBag className="h-9 w-9 text-black/25" />
+
+              <h2 className="mt-6 text-2xl font-semibold">
+                Checkout details unavailable
+              </h2>
+
+              <p className="mt-3 max-w-md text-sm leading-6 text-black/45">
+                Return to checkout and enter your contact and delivery
+                information again.
+              </p>
+
+              <Link
+                href="/checkout"
+                className="mt-7 border border-black bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.17em] !text-white transition hover:bg-white hover:!text-black"
+              >
+                Return to checkout
+              </Link>
+            </div>
+          ) : (
+            <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_430px] xl:gap-10">
+              <div className="min-w-0 space-y-6 sm:space-y-8">
+                {customerAccount?.signedIn ? (
+                  <section className="border border-emerald-200 bg-emerald-50/50">
+                    <div className="flex items-start gap-4 px-5 py-5 sm:px-6">
+                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-white">
+                        <UserRound className="h-5 w-5" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                          Customer account linked
+                        </p>
+
+                        <h2 className="mt-2 text-lg font-semibold">
+                          This order will be connected to your account
+                        </h2>
+
+                        <p className="mt-2 break-all text-sm text-emerald-900/60">
+                          {customerAccount.email || customer.email}
+                        </p>
+                      </div>
+
+                      <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
+                    </div>
+                  </section>
+                ) : (
+                  <section className="border border-black/10 bg-white">
+                    <div className="px-5 py-5 sm:px-6">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                        Guest order
                       </p>
 
-                      <h2 className="mt-2 text-lg font-semibold">
-                        This order will be connected to your account
-                      </h2>
-
-                      <p className="mt-2 break-all text-sm text-emerald-900/60">
-                        {customerAccount.email || customer.email}
+                      <p className="mt-2 text-sm leading-6 text-black/55">
+                        This order is being submitted without a signed-in
+                        customer account.
                       </p>
                     </div>
+                  </section>
+                )}
 
-                    <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
-                  </div>
-                </section>
-              ) : (
                 <section className="border border-black/10 bg-white">
-                  <div className="px-5 py-5 sm:px-6">
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                      Guest order
-                    </p>
+                  <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                        Customer
+                      </p>
 
-                    <p className="mt-2 text-sm leading-6 text-black/55">
-                      This order is being submitted without a signed-in customer
-                      account.
-                    </p>
+                      <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
+                        Contact information
+                      </h2>
+                    </div>
+
+                    <User className="h-5 w-5 text-black/35" />
+                  </div>
+
+                  <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
+                    <div className="border border-black/10 p-4">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
+                        Full name
+                      </p>
+
+                      <p className="mt-3 font-semibold">
+                        {customer.firstName} {customer.lastName}
+                      </p>
+                    </div>
+
+                    <div className="border border-black/10 p-4">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-black/35" />
+
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
+                          Email address
+                        </p>
+                      </div>
+
+                      <p className="mt-3 break-all text-sm font-semibold">
+                        {customer.email}
+                      </p>
+                    </div>
+
+                    <div className="border border-black/10 p-4 sm:col-span-2">
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-black/35" />
+
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
+                          Phone number
+                        </p>
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                        <p className="font-semibold">{customer.phone}</p>
+
+                        {checkoutDetails.phoneCountry ? (
+                          <span className="border border-black/10 bg-black/[0.025] px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/45">
+                            {checkoutDetails.phoneCountry.flag}{" "}
+                            {checkoutDetails.phoneCountry.country}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
                   </div>
                 </section>
-              )}
 
-              <section className="border border-black/10 bg-white">
-                <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                      Customer
-                    </p>
-
-                    <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                      Contact information
-                    </h2>
-                  </div>
-
-                  <User className="h-5 w-5 text-black/35" />
-                </div>
-
-                <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
-                  <div className="border border-black/10 p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
-                      Full name
-                    </p>
-
-                    <p className="mt-3 font-semibold">
-                      {customer.firstName} {customer.lastName}
-                    </p>
-                  </div>
-
-                  <div className="border border-black/10 p-4">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-black/35" />
-
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
-                        Email address
+                <section className="border border-black/10 bg-white">
+                  <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                        Delivery
                       </p>
+
+                      <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
+                        Delivery address
+                      </h2>
                     </div>
 
-                    <p className="mt-3 break-all text-sm font-semibold">
-                      {customer.email}
-                    </p>
+                    <MapPin className="h-5 w-5 text-black/35" />
                   </div>
 
-                  <div className="border border-black/10 p-4 sm:col-span-2">
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-black/35" />
+                  <div className="space-y-5 p-5 sm:p-6">
+                    <div
+                      className={`border p-5 ${
+                        isSavedAddress ? "border-black" : "border-black/10"
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-sm font-semibold">
+                          {customer.address}
+                        </p>
 
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
-                        Phone number
-                      </p>
-                    </div>
-
-                    <div className="mt-3 flex flex-wrap items-center gap-3">
-                      <p className="font-semibold">{customer.phone}</p>
-
-                      {checkoutDetails.phoneCountry ? (
-                        <span className="border border-black/10 bg-black/[0.025] px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/45">
-                          {checkoutDetails.phoneCountry.flag}{" "}
-                          {checkoutDetails.phoneCountry.country}
+                        <span
+                          className={`px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] ${
+                            isSavedAddress
+                              ? "bg-black text-white"
+                              : "border border-black/10 bg-black/[0.025] text-black/45"
+                          }`}
+                        >
+                          {isSavedAddress
+                            ? "Saved account address"
+                            : "Order-only address"}
                         </span>
+                      </div>
+
+                      <p className="mt-3 text-sm leading-6 text-black/55">
+                        {formatDeliveryLocation(customer)}
+                      </p>
+
+                      {customer.building || customer.floor ? (
+                        <p className="mt-3 text-sm leading-6 text-black/55">
+                          {customer.building ? (
+                            <>Building: {customer.building}</>
+                          ) : null}
+
+                          {customer.building && customer.floor ? " · " : null}
+
+                          {customer.floor ? (
+                            <>Floor or apartment: {customer.floor}</>
+                          ) : null}
+                        </p>
                       ) : null}
                     </div>
-                  </div>
-                </div>
-              </section>
 
-              <section className="border border-black/10 bg-white">
-                <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
-                  <div>
+                    {customer.deliveryNotes ? (
+                      <div className="border border-black/10 bg-black/[0.02] p-5">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                          Delivery notes
+                        </p>
+
+                        <p className="mt-3 whitespace-pre-line text-sm leading-6 text-black/60">
+                          {customer.deliveryNotes}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    <Link
+                      href="/checkout"
+                      className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-black/45 transition hover:text-black"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Edit delivery details
+                    </Link>
+                  </div>
+                </section>
+
+                <section
+                  id="payment-methods"
+                  className="scroll-mt-8 border border-black/10 bg-white"
+                >
+                  <div className="border-b border-black/10 px-5 py-5 sm:px-6">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                      Delivery
+                      Payment
                     </p>
 
                     <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                      Delivery address
+                      Choose a payment method
                     </h2>
+
+                    <p className="mt-2 text-sm leading-6 text-black/45">
+                      Select how you want to pay for this order.
+                    </p>
                   </div>
 
-                  <MapPin className="h-5 w-5 text-black/35" />
-                </div>
-
-                <div className="space-y-5 p-5 sm:p-6">
-                  <div
-                    className={`border p-5 ${
-                      isSavedAddress ? "border-black" : "border-black/10"
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-sm font-semibold">
-                        {customer.address}
-                      </p>
-
+                  <div className="space-y-3 p-5 sm:p-6">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPaymentMethod("cash_on_delivery");
+                        setErrorMessage("");
+                      }}
+                      aria-pressed={
+                        selectedPaymentMethod === "cash_on_delivery"
+                      }
+                      className={`flex w-full items-center gap-4 border p-4 text-left transition sm:p-5 ${
+                        selectedPaymentMethod === "cash_on_delivery"
+                          ? "border-black bg-black/[0.025]"
+                          : "border-black/15 hover:border-black/40"
+                      }`}
+                    >
                       <span
-                        className={`px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] ${
-                          isSavedAddress
-                            ? "bg-black text-white"
-                            : "border border-black/10 bg-black/[0.025] text-black/45"
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                          selectedPaymentMethod === "cash_on_delivery"
+                            ? "border-black"
+                            : "border-black/25"
                         }`}
                       >
-                        {isSavedAddress
-                          ? "Saved account address"
-                          : "Order-only address"}
+                        {selectedPaymentMethod === "cash_on_delivery" ? (
+                          <span className="h-2.5 w-2.5 rounded-full bg-black" />
+                        ) : null}
+                      </span>
+
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-black text-white">
+                        <Banknote className="h-5 w-5" />
+                      </span>
+
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-semibold">
+                          Cash on delivery
+                        </span>
+
+                        <span className="mt-1 block text-xs leading-5 text-black/45">
+                          Pay in cash when your order is delivered.
+                        </span>
+                      </span>
+
+                      <span className="hidden shrink-0 bg-black px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-white sm:block">
+                        Available
+                      </span>
+                    </button>
+
+                    <div
+                      aria-disabled="true"
+                      className="flex cursor-not-allowed items-center gap-4 border border-black/10 bg-black/[0.02] p-4 opacity-60 sm:p-5"
+                    >
+                      <span className="h-5 w-5 shrink-0 rounded-full border border-black/25" />
+
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-black/10 bg-white">
+                        <WalletCards className="h-5 w-5" />
+                      </span>
+
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-semibold">
+                          Whish Money
+                        </span>
+
+                        <span className="mt-1 block text-xs leading-5 text-black/45">
+                          Pay through your Whish Money wallet.
+                        </span>
+                      </span>
+
+                      <span className="hidden shrink-0 border border-black/10 bg-white px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-black/45 sm:block">
+                        Coming soon
                       </span>
                     </div>
 
-                    <p className="mt-3 text-sm leading-6 text-black/55">
-                      {formatDeliveryLocation(customer)}
-                    </p>
+                    <div
+                      aria-disabled="true"
+                      className="flex cursor-not-allowed items-center gap-4 border border-black/10 bg-black/[0.02] p-4 opacity-60 sm:p-5"
+                    >
+                      <span className="h-5 w-5 shrink-0 rounded-full border border-black/25" />
 
-                    {customer.building || customer.floor ? (
-                      <p className="mt-3 text-sm leading-6 text-black/55">
-                        {customer.building ? (
-                          <>Building: {customer.building}</>
-                        ) : null}
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-black/10 bg-white">
+                        <CreditCard className="h-5 w-5" />
+                      </span>
 
-                        {customer.building && customer.floor ? " · " : null}
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-sm font-semibold">
+                          Credit or Debit Card
+                        </span>
 
-                        {customer.floor ? (
-                          <>Floor or apartment: {customer.floor}</>
-                        ) : null}
+                        <span className="mt-1 block text-xs leading-5 text-black/45">
+                          Online Visa and Mastercard payments.
+                        </span>
+                      </span>
+
+                      <span className="hidden shrink-0 border border-black/10 bg-white px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-black/45 sm:block">
+                        Coming soon
+                      </span>
+                    </div>
+
+                    {!selectedPaymentMethod ? (
+                      <p className="text-xs font-medium text-amber-700">
+                        Select cash on delivery to continue.
                       </p>
                     ) : null}
                   </div>
+                </section>
 
-                  {customer.deliveryNotes ? (
-                    <div className="border border-black/10 bg-black/[0.02] p-5">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                        Delivery notes
-                      </p>
-
-                      <p className="mt-3 whitespace-pre-line text-sm leading-6 text-black/60">
-                        {customer.deliveryNotes}
-                      </p>
-                    </div>
-                  ) : null}
-
-                  <Link
-                    href="/checkout"
-                    className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-black/45 transition hover:text-black"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Edit delivery details
-                  </Link>
-                </div>
-              </section>
-
-              <section
-                id="payment-methods"
-                className="scroll-mt-8 border border-black/10 bg-white"
-              >
-                <div className="border-b border-black/10 px-5 py-5 sm:px-6">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    Payment
-                  </p>
-
-                  <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                    Choose a payment method
-                  </h2>
-
-                  <p className="mt-2 text-sm leading-6 text-black/45">
-                    Select how you want to pay for this order.
-                  </p>
-                </div>
-
-                <div className="space-y-3 p-5 sm:p-6">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedPaymentMethod("cash_on_delivery");
-                      setErrorMessage("");
-                    }}
-                    aria-pressed={selectedPaymentMethod === "cash_on_delivery"}
-                    className={`flex w-full items-center gap-4 border p-4 text-left transition sm:p-5 ${
-                      selectedPaymentMethod === "cash_on_delivery"
-                        ? "border-black bg-black/[0.025]"
-                        : "border-black/15 hover:border-black/40"
-                    }`}
-                  >
-                    <span
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                        selectedPaymentMethod === "cash_on_delivery"
-                          ? "border-black"
-                          : "border-black/25"
-                      }`}
-                    >
-                      {selectedPaymentMethod === "cash_on_delivery" ? (
-                        <span className="h-2.5 w-2.5 rounded-full bg-black" />
-                      ) : null}
-                    </span>
-
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-black text-white">
-                      <Banknote className="h-5 w-5" />
-                    </span>
-
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold">
-                        Cash on delivery
-                      </span>
-
-                      <span className="mt-1 block text-xs leading-5 text-black/45">
-                        Pay in cash when your order is delivered.
-                      </span>
-                    </span>
-
-                    <span className="hidden shrink-0 bg-black px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-white sm:block">
-                      Available
-                    </span>
-                  </button>
-
-                  <div
-                    aria-disabled="true"
-                    className="flex cursor-not-allowed items-center gap-4 border border-black/10 bg-black/[0.02] p-4 opacity-60 sm:p-5"
-                  >
-                    <span className="h-5 w-5 shrink-0 rounded-full border border-black/25" />
-
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-black/10 bg-white">
-                      <WalletCards className="h-5 w-5" />
-                    </span>
-
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold">
-                        Whish Money
-                      </span>
-
-                      <span className="mt-1 block text-xs leading-5 text-black/45">
-                        Pay through your Whish Money wallet.
-                      </span>
-                    </span>
-
-                    <span className="hidden shrink-0 border border-black/10 bg-white px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-black/45 sm:block">
-                      Coming soon
-                    </span>
-                  </div>
-
-                  <div
-                    aria-disabled="true"
-                    className="flex cursor-not-allowed items-center gap-4 border border-black/10 bg-black/[0.02] p-4 opacity-60 sm:p-5"
-                  >
-                    <span className="h-5 w-5 shrink-0 rounded-full border border-black/25" />
-
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-black/10 bg-white">
-                      <CreditCard className="h-5 w-5" />
-                    </span>
-
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold">
-                        Credit or Debit Card
-                      </span>
-
-                      <span className="mt-1 block text-xs leading-5 text-black/45">
-                        Online Visa and Mastercard payments.
-                      </span>
-                    </span>
-
-                    <span className="hidden shrink-0 border border-black/10 bg-white px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-black/45 sm:block">
-                      Coming soon
-                    </span>
-                  </div>
-
-                  {!selectedPaymentMethod ? (
-                    <p className="text-xs font-medium text-amber-700">
-                      Select cash on delivery to continue.
+                <section className="border border-black/10 bg-white">
+                  <div className="border-b border-black/10 px-5 py-5 sm:px-6">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                      Products
                     </p>
-                  ) : null}
-                </div>
-              </section>
 
-              <section className="border border-black/10 bg-white">
-                <div className="border-b border-black/10 px-5 py-5 sm:px-6">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    Products
-                  </p>
+                    <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
+                      Order items
+                    </h2>
+                  </div>
 
-                  <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                    Order items
-                  </h2>
-                </div>
-
-                <div className="divide-y divide-black/10">
-                  {reviewItems.map((item) => (
-                    <article
-                      key={item.cartItemId}
-                      className="grid grid-cols-[90px_minmax(0,1fr)] gap-5 p-5 sm:grid-cols-[110px_minmax(0,1fr)] sm:p-6"
-                    >
-                      <Link
-                        href={`/shop/${item.slug}`}
-                        className="aspect-[4/5] overflow-hidden bg-neutral-100"
+                  <div className="divide-y divide-black/10">
+                    {reviewItems.map((item) => (
+                      <article
+                        key={item.cartItemId}
+                        className="grid grid-cols-[90px_minmax(0,1fr)] gap-5 p-5 sm:grid-cols-[110px_minmax(0,1fr)] sm:p-6"
                       >
-                        {item.imageUrl ? (
-                          <img
-                            src={item.imageUrl}
-                            alt={item.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center">
-                            <ShoppingBag className="h-6 w-6 text-black/20" />
+                        <Link
+                          href={`/shop/${item.slug}`}
+                          className="aspect-[4/5] overflow-hidden bg-neutral-100"
+                        >
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center">
+                              <ShoppingBag className="h-6 w-6 text-black/20" />
+                            </div>
+                          )}
+                        </Link>
+
+                        <div className="flex min-w-0 flex-col justify-between gap-4">
+                          <div>
+                            <Link
+                              href={`/shop/${item.slug}`}
+                              className="text-base font-semibold transition hover:opacity-60"
+                            >
+                              {item.name}
+                            </Link>
+
+                            <p className="mt-2 text-sm text-black/45">
+                              Configuration {item.size}
+                            </p>
+
+                            <p className="mt-1 text-sm text-black/45">
+                              Quantity {item.quantity}
+                            </p>
                           </div>
-                        )}
-                      </Link>
 
-                      <div className="flex min-w-0 flex-col justify-between gap-4">
-                        <div>
-                          <Link
-                            href={`/shop/${item.slug}`}
-                            className="text-base font-semibold transition hover:opacity-60"
-                          >
-                            {item.name}
-                          </Link>
+                          <div className="flex items-end justify-between gap-4">
+                            <p className="text-xs text-black/40">
+                              ${item.unitPrice.toFixed(2)} each
+                            </p>
 
-                          <p className="mt-2 text-sm text-black/45">
-                            Configuration {item.size}
-                          </p>
-
-                          <p className="mt-1 text-sm text-black/45">
-                            Quantity {item.quantity}
-                          </p>
+                            <p className="text-base font-semibold">
+                              ${(item.unitPrice * item.quantity).toFixed(2)}
+                            </p>
+                          </div>
                         </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              </div>
 
-                        <div className="flex items-end justify-between gap-4">
-                          <p className="text-xs text-black/40">
-                            ${item.unitPrice.toFixed(2)} each
-                          </p>
+              <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
+                <section className="overflow-hidden border border-black/10 bg-white">
+                  <div className="border-b border-black/10 px-5 py-5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                      Order summary
+                    </p>
 
-                          <p className="text-base font-semibold">
-                            ${(item.unitPrice * item.quantity).toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
-              <section className="overflow-hidden border border-black/10 bg-white">
-                <div className="border-b border-black/10 px-5 py-5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    Order summary
-                  </p>
-
-                  <h2 className="mt-2 text-2xl font-semibold">
-                    Your total
-                  </h2>
-                </div>
-
-                <div className="space-y-4 p-5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-black/50">Items</span>
-
-                    <span className="font-semibold">{reviewItemCount}</span>
+                    <h2 className="mt-2 text-2xl font-semibold">Your total</h2>
                   </div>
 
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-black/50">Subtotal</span>
+                  <div className="space-y-4 p-5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-black/50">Items</span>
 
-                    <span className="font-semibold">
-                      ${reviewSubtotal.toFixed(2)}
-                    </span>
-                  </div>
+                      <span className="font-semibold">{reviewItemCount}</span>
+                    </div>
 
-                  {reviewCoupon && reviewDiscountAmount > 0 ? (
-                    <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
-                      <span>
-                        Coupon{" "}
-                        <span className="font-mono font-semibold uppercase tracking-[0.08em]">
-                          {reviewCoupon.code}
-                        </span>
-                      </span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-black/50">Subtotal</span>
 
                       <span className="font-semibold">
-                        −$
-                        {reviewDiscountAmount.toFixed(2)}
+                        ${reviewSubtotal.toFixed(2)}
                       </span>
                     </div>
-                  ) : null}
 
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-black/50">Delivery</span>
+                    {reviewCoupon && reviewDiscountAmount > 0 ? (
+                      <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
+                        <span>
+                          Coupon{" "}
+                          <span className="font-mono font-semibold uppercase tracking-[0.08em]">
+                            {reviewCoupon.code}
+                          </span>
+                        </span>
 
-                    <span className="text-right text-black/45">
-                      Confirmed later
-                    </span>
-                  </div>
+                        <span className="font-semibold">
+                          −$
+                          {reviewDiscountAmount.toFixed(2)}
+                        </span>
+                      </div>
+                    ) : null}
 
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-black/50">Payment method</span>
+                    <div className="flex items-center justify-between gap-4 text-sm">
+                      <span className="text-black/50">Delivery</span>
 
-                    <span className="text-right font-medium">
-                      {selectedPaymentMethod === "cash_on_delivery"
-                        ? "Cash on delivery"
-                        : "Not selected"}
-                    </span>
-                  </div>
+                      <span className="text-right text-black/45">
+                        Confirmed later
+                      </span>
+                    </div>
 
-                  <div className="flex items-center justify-between border-t border-black/10 pt-4">
-                    <span className="font-semibold">Order total</span>
+                    <div className="flex items-center justify-between gap-4 text-sm">
+                      <span className="text-black/50">Payment method</span>
 
-                    <span className="text-xl font-semibold">
-                      ${reviewTotal.toFixed(2)}
-                    </span>
-                  </div>
+                      <span className="text-right font-medium">
+                        {selectedPaymentMethod === "cash_on_delivery"
+                          ? "Cash on delivery"
+                          : "Not selected"}
+                      </span>
+                    </div>
 
-                  <div className="border border-emerald-200 bg-emerald-50 p-4">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+                    <div className="flex items-center justify-between border-t border-black/10 pt-4">
+                      <span className="font-semibold">Order total</span>
 
-                      <p className="text-xs leading-5 text-emerald-800">
-                        Your contact information, delivery address, and products
-                        are ready for submission.
+                      <span className="text-xl font-semibold">
+                        ${reviewTotal.toFixed(2)}
+                      </span>
+                    </div>
+
+                    <div className="border border-emerald-200 bg-emerald-50 p-4">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+
+                        <p className="text-xs leading-5 text-emerald-800">
+                          Your contact information, delivery address, and
+                          products are ready for submission.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={continueToOrderSubmission}
+                      disabled={!selectedPaymentMethod}
+                      className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424] disabled:cursor-not-allowed disabled:bg-black/25"
+                    >
+                      Continue to place order
+                      <CheckCircle2 className="h-4 w-4" />
+                    </button>
+
+                    <div className="flex items-start justify-center gap-2 text-center text-[11px] leading-5 text-black/40">
+                      <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+
+                      <p>
+                        Cash will be collected when your order is delivered.
                       </p>
                     </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={continueToOrderSubmission}
-                    disabled={!selectedPaymentMethod}
-                    className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424] disabled:cursor-not-allowed disabled:bg-black/25"
-                  >
-                    Continue to place order
-                    <CheckCircle2 className="h-4 w-4" />
-                  </button>
-
-                  <div className="flex items-start justify-center gap-2 text-center text-[11px] leading-5 text-black/40">
-                    <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-
-                    <p>Cash will be collected when your order is delivered.</p>
-                  </div>
-                </div>
-              </section>
-            </aside>
-          </div>
-        )}
-      </section>
+                </section>
+              </aside>
+            </div>
+          )}
+        </section>
       </main>
     </>
   );

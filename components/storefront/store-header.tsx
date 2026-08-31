@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   MapPin,
   Menu,
@@ -16,12 +15,7 @@ import { FormEvent, useState } from "react";
 
 import BrandLogo from "@/components/storefront/brand-logo";
 
-
-function HeaderSaveIcon({
-  className,
-}: {
-  className?: string;
-}) {
+function HeaderSaveIcon({ className }: { className?: string }) {
   return (
     <svg
       data-st-header-save

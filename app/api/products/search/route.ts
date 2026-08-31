@@ -67,9 +67,7 @@ function getProductPrices(variants: ProductVariant[]) {
       const salePrice = toNumber(variant.sale_price);
 
       const onSale =
-        salePrice > 0 &&
-        regularPrice > 0 &&
-        salePrice < regularPrice;
+        salePrice > 0 && regularPrice > 0 && salePrice < regularPrice;
 
       return {
         price: onSale ? salePrice : regularPrice,
@@ -121,9 +119,7 @@ function getAvailability(variants: ProductVariant[]) {
 
   if (
     normalized.some(
-      (variant) =>
-        variant.status === "in_stock" &&
-        variant.stock > 0,
+      (variant) => variant.status === "in_stock" && variant.stock > 0,
     )
   ) {
     return {
@@ -134,9 +130,7 @@ function getAvailability(variants: ProductVariant[]) {
 
   if (
     normalized.some(
-      (variant) =>
-        variant.status === "low_stock" ||
-        variant.stock > 0,
+      (variant) => variant.status === "low_stock" || variant.stock > 0,
     )
   ) {
     return {
@@ -145,11 +139,7 @@ function getAvailability(variants: ProductVariant[]) {
     };
   }
 
-  if (
-    normalized.some(
-      (variant) => variant.status === "coming_soon",
-    )
-  ) {
+  if (normalized.some((variant) => variant.status === "coming_soon")) {
     return {
       label: "Coming soon",
       status: "coming_soon",
@@ -163,15 +153,17 @@ function getAvailability(variants: ProductVariant[]) {
 }
 
 function getPrimaryImage(images: ProductImage[]) {
-  return [...images]
-    .sort((a, b) => {
-      if (Boolean(a.is_primary) !== Boolean(b.is_primary)) {
-        return a.is_primary ? -1 : 1;
-      }
+  return (
+    [...images]
+      .sort((a, b) => {
+        if (Boolean(a.is_primary) !== Boolean(b.is_primary)) {
+          return a.is_primary ? -1 : 1;
+        }
 
-      return (a.position ?? 999) - (b.position ?? 999);
-    })
-    .find((image) => image.image_url) ?? null;
+        return (a.position ?? 999) - (b.position ?? 999);
+      })
+      .find((image) => image.image_url) ?? null
+  );
 }
 
 function searchableValues(product: ProductRow) {
@@ -217,10 +209,7 @@ function ranking(product: ProductRow, query: string) {
 
 export async function GET(request: NextRequest) {
   const searchQuery =
-    request.nextUrl.searchParams
-      .get("q")
-      ?.trim()
-      .slice(0, 80) ?? "";
+    request.nextUrl.searchParams.get("q")?.trim().slice(0, 80) ?? "";
 
   if (searchQuery.length < 1) {
     return NextResponse.json({
@@ -292,13 +281,9 @@ export async function GET(request: NextRequest) {
   }
 
   const matchingProducts = ((data ?? []) as ProductRow[])
-    .filter((product) =>
-      matchesProduct(product, normalizedQuery),
-    )
+    .filter((product) => matchesProduct(product, normalizedQuery))
     .sort((a, b) => {
-      const score =
-        ranking(a, normalizedQuery) -
-        ranking(b, normalizedQuery);
+      const score = ranking(a, normalizedQuery) - ranking(b, normalizedQuery);
 
       if (score !== 0) {
         return score;
@@ -307,80 +292,52 @@ export async function GET(request: NextRequest) {
       return a.name.localeCompare(b.name);
     });
 
-  const results = matchingProducts
-    .slice(0, 8)
-    .map((product) => {
-      const image = getPrimaryImage(
-        product.product_images ?? [],
-      );
+  const results = matchingProducts.slice(0, 8).map((product) => {
+    const image = getPrimaryImage(product.product_images ?? []);
 
-      const prices = getProductPrices(
-        product.product_variants ?? [],
-      );
+    const prices = getProductPrices(product.product_variants ?? []);
 
-      const availability = getAvailability(
-        product.product_variants ?? [],
-      );
+    const availability = getAvailability(product.product_variants ?? []);
 
-      return {
-        id: product.id,
-        name: product.name,
-        slug: product.slug ?? product.id,
+    return {
+      id: product.id,
+      name: product.name,
+      slug: product.slug ?? product.id,
 
-        description: product.description,
+      description: product.description,
 
-        brand: relationName(
-          product.brands,
-          "",
-        ),
+      brand: relationName(product.brands, ""),
 
-        category: relationName(
-          product.categories,
-          "Technology",
-        ),
+      category: relationName(product.categories, "Technology"),
 
-        imageUrl: image?.image_url ?? null,
+      imageUrl: image?.image_url ?? null,
 
-        imageAlt:
-          image?.alt_text ??
-          product.name,
+      imageAlt: image?.alt_text ?? product.name,
 
-        price: prices.price,
-        regularPrice: prices.regularPrice,
-        onSale: prices.onSale,
+      price: prices.price,
+      regularPrice: prices.regularPrice,
+      onSale: prices.onSale,
 
-        availability: availability.label,
-        availabilityStatus: availability.status,
-      };
-    });
+      availability: availability.label,
+      availabilityStatus: availability.status,
+    };
+  });
 
   const brands = Array.from(
     new Set(
       matchingProducts
-        .map((product) =>
-          relationName(product.brands),
-        )
+        .map((product) => relationName(product.brands))
         .filter(Boolean)
-        .filter((brand) =>
-          brand
-            .toLowerCase()
-            .includes(normalizedQuery),
-        ),
+        .filter((brand) => brand.toLowerCase().includes(normalizedQuery)),
     ),
   ).slice(0, 5);
 
   const categories = Array.from(
     new Set(
       matchingProducts
-        .map((product) =>
-          relationName(product.categories),
-        )
+        .map((product) => relationName(product.categories))
         .filter(Boolean)
-        .filter((category) =>
-          category
-            .toLowerCase()
-            .includes(normalizedQuery),
-        ),
+        .filter((category) => category.toLowerCase().includes(normalizedQuery)),
     ),
   ).slice(0, 5);
 

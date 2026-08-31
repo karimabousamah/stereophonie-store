@@ -234,12 +234,32 @@ function normalizedConfiguration(value: string) {
   return value.trim().toLocaleLowerCase();
 }
 
+function productPageImageScale(productName: string) {
+  /*
+   * Product-page-only image scaling.
+   *
+   * Strip punctuation/spaces so names such as:
+   * "Apple Pencil (USB-C)"
+   * "Apple Pencil USB-C"
+   * "Apple Pencil USB C"
+   *
+   * all resolve to the same key.
+   */
+  const productKey = productName.toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
+
+  const enlargedProducts = new Set(["applepencilpro", "applepencilusbc"]);
+
+  return enlargedProducts.has(productKey) ? 1.55 : 1;
+}
+
 export default function ProductGallery(props: ProductGalleryProps) {
   const productName =
     (typeof props.productName === "string" && props.productName.trim()) ||
     (typeof props.name === "string" && props.name.trim()) ||
     (typeof props.title === "string" && props.title.trim()) ||
     "Product";
+
+  const imageScale = productPageImageScale(productName);
 
   const fallback =
     (typeof props.imageUrl === "string" ? props.imageUrl : null) ??
@@ -612,6 +632,7 @@ export default function ProductGallery(props: ProductGalleryProps) {
               src={outgoingImage.src}
               alt=""
               aria-hidden="true"
+              style={{ scale: imageScale }}
               draggable={false}
             />
           ) : null}
@@ -624,6 +645,7 @@ export default function ProductGallery(props: ProductGalleryProps) {
             src={activeImage.src}
             alt={activeImage.alt}
             draggable={false}
+            style={{ scale: imageScale }}
           />
         </div>
 

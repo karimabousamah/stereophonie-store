@@ -3,9 +3,7 @@ export const NEW_DROP_DURATION_DAYS = 7;
 export const NEW_DROP_DURATION_MS =
   NEW_DROP_DURATION_DAYS * 24 * 60 * 60 * 1000;
 
-export function newDropExpiration(
-  startedAt: string | null | undefined,
-) {
+export function newDropExpiration(startedAt: string | null | undefined) {
   if (!startedAt) {
     return null;
   }

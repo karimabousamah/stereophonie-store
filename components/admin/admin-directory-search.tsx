@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  Search,
-  X,
-} from "lucide-react";
+import { Search, X } from "lucide-react";
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Props = {
   total: number;
@@ -39,84 +31,48 @@ export default function AdminDirectorySearch({
   singular,
   plural,
 }: Props) {
-  const [query, setQuery] =
-    useState("");
+  const [query, setQuery] = useState("");
 
-  const [visibleCount, setVisibleCount] =
-    useState(total);
+  const [visibleCount, setVisibleCount] = useState(total);
 
-  const inputRef =
-    useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const normalizedQuery =
-    useMemo(
-      () =>
-        query
-          .trim()
-          .toLocaleLowerCase(),
-      [query],
-    );
+  const normalizedQuery = useMemo(
+    () => query.trim().toLocaleLowerCase(),
+    [query],
+  );
 
   useEffect(() => {
-    const cards =
-      Array.from(
-        document.querySelectorAll<HTMLElement>(
-          selector,
-        ),
-      );
+    const cards = Array.from(document.querySelectorAll<HTMLElement>(selector));
 
     let visible = 0;
 
-    cards.forEach(
-      (card) => {
-        const searchable =
-          String(
-            card.dataset[
-              datasetKey
-            ] ?? "",
-          ).toLocaleLowerCase();
+    cards.forEach((card) => {
+      const searchable = String(
+        card.dataset[datasetKey] ?? "",
+      ).toLocaleLowerCase();
 
-        const matches =
-          !normalizedQuery ||
-          searchable.includes(
-            normalizedQuery,
-          );
+      const matches = !normalizedQuery || searchable.includes(normalizedQuery);
 
-        card.hidden =
-          !matches;
+      card.hidden = !matches;
 
-        if (matches) {
-          visible += 1;
-        }
-      },
-    );
+      if (matches) {
+        visible += 1;
+      }
+    });
 
-    setVisibleCount(
-      visible,
-    );
-  }, [
-    normalizedQuery,
-    total,
-    selector,
-    datasetKey,
-  ]);
+    setVisibleCount(visible);
+  }, [normalizedQuery, total, selector, datasetKey]);
 
   function clearSearch() {
     setQuery("");
 
-    requestAnimationFrame(
-      () => {
-        inputRef
-          .current
-          ?.focus();
-      },
-    );
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
   }
 
-  const displayedCount =
-    normalizedQuery
-      ? visibleCount
-      : total;
+  const displayedCount = normalizedQuery ? visibleCount : total;
 
   return (
     <section
@@ -126,19 +82,13 @@ export default function AdminDirectorySearch({
     >
       <div className="st-admin-directory-search__heading">
         <div>
-          <span>
-            {eyebrow}
-          </span>
+          <span>{eyebrow}</span>
 
-          <strong>
-            {title}
-          </strong>
+          <strong>{title}</strong>
         </div>
 
         <div className="st-admin-directory-search__count">
-          <strong>
-            {displayedCount}
-          </strong>
+          <strong>{displayedCount}</strong>
 
           <span>
             {normalizedQuery
@@ -152,13 +102,8 @@ export default function AdminDirectorySearch({
         </div>
       </div>
 
-      <label
-        className="st-admin-directory-search__field"
-      >
-        <span
-          className="st-admin-directory-search__icon"
-          aria-hidden="true"
-        >
+      <label className="st-admin-directory-search__field">
+        <span className="st-admin-directory-search__icon" aria-hidden="true">
           <Search />
         </span>
 
@@ -166,12 +111,7 @@ export default function AdminDirectorySearch({
           ref={inputRef}
           type="search"
           value={query}
-          onChange={
-            (event) =>
-              setQuery(
-                event.target.value,
-              )
-          }
+          onChange={(event) => setQuery(event.target.value)}
           placeholder={placeholder}
           aria-label={title}
           autoComplete="off"
@@ -193,9 +133,7 @@ export default function AdminDirectorySearch({
         <p className="st-admin-directory-search__status">
           {visibleCount > 0
             ? `${visibleCount} ${
-                visibleCount === 1
-                  ? singular
-                  : plural
+                visibleCount === 1 ? singular : plural
               } match “${query.trim()}”.`
             : `No ${singular} matches “${query.trim()}”.`}
         </p>

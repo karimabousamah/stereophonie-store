@@ -659,8 +659,10 @@ export default function AccountSettingsClient({
   const [activeSection, setActiveSection] =
     useState<SettingsSection>("profile");
 
-  const [optimisticStockNotificationsEnabled, setOptimisticStockNotificationsEnabled] =
-    useOptimistic(stockNotificationsEnabled);
+  const [
+    optimisticStockNotificationsEnabled,
+    setOptimisticStockNotificationsEnabled,
+  ] = useOptimistic(stockNotificationsEnabled);
 
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
 
@@ -679,9 +681,7 @@ export default function AccountSettingsClient({
   }
 
   async function saveStockNotificationPreference(formData: FormData) {
-    setOptimisticStockNotificationsEnabled(
-      formData.get("enabled") === "true",
-    );
+    setOptimisticStockNotificationsEnabled(formData.get("enabled") === "true");
 
     await updateStockNotificationPreference(formData);
   }
@@ -971,7 +971,9 @@ export default function AccountSettingsClient({
                       <input
                         type="hidden"
                         name="enabled"
-                        value={optimisticStockNotificationsEnabled ? "false" : "true"}
+                        value={
+                          optimisticStockNotificationsEnabled ? "false" : "true"
+                        }
                       />
 
                       <button
@@ -1217,10 +1219,7 @@ export default function AccountSettingsClient({
             </button>
 
             <form action={logoutCustomer}>
-              <button
-                type="submit"
-                className="st-retail-signout__confirm"
-              >
+              <button type="submit" className="st-retail-signout__confirm">
                 Sign out
               </button>
             </form>

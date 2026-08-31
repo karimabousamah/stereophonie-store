@@ -258,6 +258,22 @@ export default function ImageUploader({
     }
   }
 
+  function clearAllImages() {
+    setImages((current) => {
+      current.forEach((image) => {
+        URL.revokeObjectURL(image.previewUrl);
+      });
+
+      return [];
+    });
+
+    setErrorMessage("");
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }
+
   function removeImage(imageId: string) {
     setImages((current) => {
       const target = current.find((image) => image.id === imageId);
@@ -474,7 +490,7 @@ export default function ImageUploader({
         ref={inputRef}
         id="product-images"
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/*"
         multiple
         disabled={disabled}
         className="sr-only"
@@ -529,13 +545,35 @@ export default function ImageUploader({
               </p>
             </div>
 
-            <label
-              htmlFor="product-images"
-              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65 transition hover:bg-white hover:text-black"
-            >
-              <ImagePlus className="h-4 w-4" />
-              Add photographs
-            </label>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                disabled={disabled || images.length === 0}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      `Clear all ${images.length} selected photograph${
+                        images.length === 1 ? "" : "s"
+                      }?`,
+                    )
+                  ) {
+                    clearAllImages();
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-red-400/20 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.07] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                <Trash2 className="h-4 w-4" />
+                Clear all photographs
+              </button>
+
+              <label
+                htmlFor="product-images"
+                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65 transition hover:bg-white hover:text-black"
+              >
+                <ImagePlus className="h-4 w-4" />
+                Add photographs
+              </label>
+            </div>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

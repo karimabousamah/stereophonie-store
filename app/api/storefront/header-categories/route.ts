@@ -16,10 +16,7 @@ export async function GET() {
     .order("name", { ascending: true });
 
   if (error) {
-    console.error(
-      "Header categories could not load:",
-      error,
-    );
+    console.error("Header categories could not load:", error);
 
     return NextResponse.json(
       {
@@ -41,8 +38,7 @@ export async function GET() {
     },
     {
       headers: {
-        "Cache-Control":
-          "no-store, no-cache, must-revalidate",
+        "Cache-Control": "no-store, no-cache, must-revalidate",
       },
     },
   );

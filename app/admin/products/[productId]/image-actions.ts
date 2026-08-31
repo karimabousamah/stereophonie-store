@@ -1103,6 +1103,352 @@ export async function setPrimaryProductImage(formData: FormData) {
   );
 }
 
+export async function updateProductImageVariantUsageBulk(formData: FormData) {
+  const supabase = await requireAdministrator();
+
+  const productId = String(formData.get("product_id") ?? "").trim();
+  const usageJson = String(formData.get("usage_json") ?? "[]");
+
+  if (!productId) {
+    throw new Error("The product is missing.");
+  }
+
+  let requestedUsage: {
+    image_id: string;
+    variant_ids: string[];
+  }[];
+
+  try {
+    requestedUsage = JSON.parse(usageJson);
+  } catch {
+    throw new Error("The photograph usage could not be processed.");
+  }
+
+  if (!Array.isArray(requestedUsage)) {
+    throw new Error("The photograph usage could not be processed.");
+  }
+
+  const usage = requestedUsage
+    .map((entry) => ({
+      image_id: String(entry?.image_id ?? "").trim(),
+      variant_ids: Array.from(
+        new Set(
+          Array.isArray(entry?.variant_ids)
+            ? entry.variant_ids
+                .map((value) => String(value ?? "").trim())
+                .filter(Boolean)
+            : [],
+        ),
+      ),
+    }))
+    .filter((entry) => entry.image_id);
+
+  if (usage.length === 0) {
+    return {
+      success: true,
+      images: await loadAuthoritativeProductImageState(supabase, productId),
+    };
+  }
+
+  const imageIds = Array.from(new Set(usage.map((entry) => entry.image_id)));
+  const requestedVariantIds = Array.from(
+    new Set(usage.flatMap((entry) => entry.variant_ids)),
+  );
+
+  const [imagesResult, variantsResult, assignmentsResult] = await Promise.all([
+    supabase
+      .from("product_images")
+      .select("id")
+      .eq("product_id", productId)
+      .in("id", imageIds),
+
+    requestedVariantIds.length > 0
+      ? supabase
+          .from("product_variants")
+          .select("id, variant_name")
+          .eq("product_id", productId)
+          .in("id", requestedVariantIds)
+      : Promise.resolve({
+          data: [] as { id: string; variant_name: string | null }[],
+          error: null,
+        }),
+
+    supabase
+      .from("product_image_variants")
+      .select("image_id, variant_id, position, is_primary")
+      .in("image_id", imageIds),
+  ]);
+
+  if (imagesResult.error) {
+    throw new Error(imagesResult.error.message);
+  }
+
+  if (variantsResult.error) {
+    throw new Error(variantsResult.error.message);
+  }
+
+  if (assignmentsResult.error) {
+    throw new Error(assignmentsResult.error.message);
+  }
+
+  if ((imagesResult.data ?? []).length !== imageIds.length) {
+    throw new Error("One or more photographs could not be verified.");
+  }
+
+  if (
+    requestedVariantIds.length > 0 &&
+    (variantsResult.data ?? []).length !== requestedVariantIds.length
+  ) {
+    throw new Error("One or more selected configurations no longer exist.");
+  }
+
+  const variantById = new Map(
+    (variantsResult.data ?? []).map((variant) => [variant.id, variant]),
+  );
+
+  const previousByImageVariant = new Map(
+    (assignmentsResult.data ?? []).map((assignment) => [
+      `${assignment.image_id}:${assignment.variant_id}`,
+      assignment,
+    ]),
+  );
+
+  /*
+   * Read the current tail position once for every configuration.
+   * This replaces the old one-query-per-image-per-configuration path.
+   */
+  const allVariantIds = Array.from(
+    new Set([
+      ...requestedVariantIds,
+      ...(assignmentsResult.data ?? []).map(
+        (assignment) => assignment.variant_id,
+      ),
+    ]),
+  );
+
+  let existingVariantAssignments: {
+    image_id: string;
+    variant_id: string;
+    position: number;
+    is_primary: boolean;
+  }[] = [];
+
+  if (allVariantIds.length > 0) {
+    const { data, error } = await supabase
+      .from("product_image_variants")
+      .select("image_id, variant_id, position, is_primary")
+      .in("variant_id", allVariantIds);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    existingVariantAssignments = data ?? [];
+  }
+
+  const nextPositionByVariant = new Map<string, number>();
+
+  for (const variantId of allVariantIds) {
+    const highest = existingVariantAssignments
+      .filter((assignment) => assignment.variant_id === variantId)
+      .reduce(
+        (highestPosition, assignment) =>
+          Math.max(highestPosition, Number(assignment.position ?? -1)),
+        -1,
+      );
+
+    nextPositionByVariant.set(variantId, highest + 1);
+  }
+
+  const rows: {
+    image_id: string;
+    variant_id: string;
+    position: number;
+    is_primary: boolean;
+  }[] = [];
+
+  const legacyUpdates: {
+    id: string;
+    variant_id: string | null;
+    variant_name: string | null;
+    variant_position: number;
+    is_variant_primary: boolean;
+  }[] = [];
+
+  for (const entry of usage) {
+    const imageRows: typeof rows = [];
+
+    for (const variantId of entry.variant_ids) {
+      const previous = previousByImageVariant.get(
+        `${entry.image_id}:${variantId}`,
+      );
+
+      if (previous) {
+        imageRows.push({
+          image_id: entry.image_id,
+          variant_id: variantId,
+          position: Number(previous.position ?? 0),
+          is_primary: Boolean(previous.is_primary),
+        });
+      } else {
+        const nextPosition = nextPositionByVariant.get(variantId) ?? 0;
+
+        imageRows.push({
+          image_id: entry.image_id,
+          variant_id: variantId,
+          position: nextPosition,
+          is_primary: false,
+        });
+
+        nextPositionByVariant.set(variantId, nextPosition + 1);
+      }
+    }
+
+    rows.push(...imageRows);
+
+    const single =
+      entry.variant_ids.length === 1 && imageRows.length === 1
+        ? imageRows[0]
+        : null;
+
+    const singleVariant = single
+      ? variantById.get(single.variant_id)
+      : undefined;
+
+    legacyUpdates.push({
+      id: entry.image_id,
+      variant_id: single?.variant_id ?? null,
+      variant_name: singleVariant?.variant_name ?? null,
+      variant_position: single?.position ?? 0,
+      is_variant_primary: single?.is_primary ?? false,
+    });
+  }
+
+  /*
+   * One delete clears the usage rows for every photograph being saved.
+   */
+  const { error: clearError } = await supabase
+    .from("product_image_variants")
+    .delete()
+    .in("image_id", imageIds);
+
+  if (clearError) {
+    throw new Error(clearError.message);
+  }
+
+  /*
+   * One insert restores all requested configuration assignments.
+   */
+  if (rows.length > 0) {
+    const { error: insertError } = await supabase
+      .from("product_image_variants")
+      .insert(rows);
+
+    if (insertError) {
+      throw new Error(insertError.message);
+    }
+  }
+
+  /*
+   * Legacy compatibility updates are independent, so they can run together.
+   */
+  const legacyResults = await Promise.all(
+    legacyUpdates.map((legacy) =>
+      supabase
+        .from("product_images")
+        .update({
+          variant_id: legacy.variant_id,
+          variant_name: legacy.variant_name,
+          variant_position: legacy.variant_position,
+          is_variant_primary: legacy.is_variant_primary,
+        })
+        .eq("id", legacy.id)
+        .eq("product_id", productId),
+    ),
+  );
+
+  const legacyFailure = legacyResults.find((result) => result.error);
+
+  if (legacyFailure?.error) {
+    throw new Error(legacyFailure.error.message);
+  }
+
+  await normalizeProductImageVariantGalleries(supabase, productId);
+
+  return {
+    success: true,
+    images: await loadAuthoritativeProductImageState(supabase, productId),
+  };
+}
+
+export async function deleteAllProductImages(formData: FormData) {
+  const supabase = await requireAdministrator();
+
+  const productId = String(formData.get("product_id") ?? "").trim();
+
+  if (!productId) {
+    throw new Error("The product is missing.");
+  }
+
+  const { data: productImages, error: imageError } = await supabase
+    .from("product_images")
+    .select("id, storage_path")
+    .eq("product_id", productId);
+
+  if (imageError) {
+    throw new Error(imageError.message);
+  }
+
+  const storagePaths = Array.from(
+    new Set(
+      (productImages ?? [])
+        .map((image) => image.storage_path)
+        .filter(
+          (storagePath): storagePath is string =>
+            typeof storagePath === "string" && storagePath.length > 0,
+        ),
+    ),
+  );
+
+  /*
+   * Delete database rows in one statement. Assignment rows should follow
+   * their existing FK/cascade behaviour, exactly as individual deletion does.
+   */
+  const { error: deleteError } = await supabase
+    .from("product_images")
+    .delete()
+    .eq("product_id", productId);
+
+  if (deleteError) {
+    throw new Error(deleteError.message);
+  }
+
+  /*
+   * Storage cleanup is one bulk storage request instead of one request/photo.
+   */
+  if (storagePaths.length > 0) {
+    const { error: storageError } = await supabase.storage
+      .from("product-images")
+      .remove(storagePaths);
+
+    if (storageError) {
+      console.error(
+        `Product ${productId} images were deleted from the database, but storage cleanup failed:`,
+        storageError.message,
+      );
+    }
+  }
+
+  await refreshProductPages(productId);
+
+  return {
+    success: true,
+    images: [] as Awaited<
+      ReturnType<typeof loadAuthoritativeProductImageState>
+    >,
+  };
+}
+
 export async function updateProductImageVariantName(formData: FormData) {
   const supabase = await requireAdministrator();
 

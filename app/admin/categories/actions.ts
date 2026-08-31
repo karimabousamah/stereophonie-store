@@ -4,9 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import {
-  processStoreImage,
-} from "@/lib/stereophonie-v3/images/process-store-image";
+import { processStoreImage } from "@/lib/stereophonie-v3/images/process-store-image";
 
 const categoriesPath = "/admin/categories";
 
@@ -234,7 +232,6 @@ export async function deleteCategory(formData: FormData) {
   redirectWithMessage("success", "Category deleted successfully.");
 }
 
-
 function safeImageExtension(file: File) {
   const mimeMap: Record<string, string> = {
     "image/jpeg": "jpg",
@@ -259,29 +256,19 @@ function storagePathFromPublicUrl(value: string | null) {
     return null;
   }
 
-  return decodeURIComponent(
-    value.slice(markerIndex + marker.length),
-  );
+  return decodeURIComponent(value.slice(markerIndex + marker.length));
 }
 
-export async function updateCategoryHomepagePresentation(
-  formData: FormData,
-) {
+export async function updateCategoryHomepagePresentation(formData: FormData) {
   const supabase = await requireAdministrator();
 
-  const categoryId = String(
-    formData.get("category_id") ?? "",
-  ).trim();
+  const categoryId = String(formData.get("category_id") ?? "").trim();
 
   if (!categoryId) {
-    redirectWithMessage(
-      "error",
-      "Category could not be identified.",
-    );
+    redirectWithMessage("error", "Category could not be identified.");
   }
 
-  const showOnHomepage =
-    formData.get("show_on_homepage") === "on";
+  const showOnHomepage = formData.get("show_on_homepage") === "on";
 
   const requestedHomepageTheme = String(
     formData.get("homepage_theme") ?? "light",
@@ -289,33 +276,23 @@ export async function updateCategoryHomepagePresentation(
     .trim()
     .toLowerCase();
 
-  const homepageTheme =
-    requestedHomepageTheme === "dark"
-      ? "dark"
-      : "light";
+  const homepageTheme = requestedHomepageTheme === "dark" ? "dark" : "light";
 
-  const { data: currentCategory, error: currentError } =
-    await supabase
-      .from("categories")
-      .select("id, slug, image_url")
-      .eq("id", categoryId)
-      .single();
+  const { data: currentCategory, error: currentError } = await supabase
+    .from("categories")
+    .select("id, slug, image_url")
+    .eq("id", categoryId)
+    .single();
 
   if (currentError || !currentCategory) {
-    redirectWithMessage(
-      "error",
-      "Category could not be loaded.",
-    );
+    redirectWithMessage("error", "Category could not be loaded.");
   }
 
   let nextImageUrl = currentCategory.image_url ?? null;
 
   const image = formData.get("wallpaper");
 
-  if (
-    image instanceof File &&
-    image.size > 0
-  ) {
+  if (image instanceof File && image.size > 0) {
     if (image.size > 10 * 1024 * 1024) {
       redirectWithMessage(
         "error",
@@ -323,39 +300,27 @@ export async function updateCategoryHomepagePresentation(
       );
     }
 
-    const extension =
-      safeImageExtension(image);
+    const extension = safeImageExtension(image);
 
     if (!extension) {
-      redirectWithMessage(
-        "error",
-        "Upload a JPG, PNG, WEBP or AVIF image.",
-      );
+      redirectWithMessage("error", "Upload a JPG, PNG, WEBP or AVIF image.");
     }
 
-    const safeSlug =
-      String(currentCategory.slug || categoryId)
-        .replace(/[^a-z0-9-]/gi, "-")
-        .toLowerCase();
+    const safeSlug = String(currentCategory.slug || categoryId)
+      .replace(/[^a-z0-9-]/gi, "-")
+      .toLowerCase();
 
-    const objectPath =
-      `${safeSlug}/${Date.now()}-${crypto.randomUUID()}.webp`;
+    const objectPath = `${safeSlug}/${Date.now()}-${crypto.randomUUID()}.webp`;
 
     let processedImage: Buffer;
 
     try {
-      processedImage =
-        await processStoreImage({
-          input: Buffer.from(
-            await image.arrayBuffer(),
-          ),
-          kind: "category",
-        });
+      processedImage = await processStoreImage({
+        input: Buffer.from(await image.arrayBuffer()),
+        kind: "category",
+      });
     } catch (error) {
-      console.error(
-        "Category image processing failed:",
-        error,
-      );
+      console.error("Category image processing failed:", error);
 
       redirectWithMessage(
         "error",
@@ -363,25 +328,15 @@ export async function updateCategoryHomepagePresentation(
       );
     }
 
-    const bytes =
-      new Uint8Array(
-        processedImage,
-      );
+    const bytes = new Uint8Array(processedImage);
 
-    const { error: uploadError } =
-      await supabase.storage
-        .from("category-images")
-        .upload(
-          objectPath,
-          bytes,
-          {
-            contentType:
-              "image/webp",
-            cacheControl:
-              "31536000",
-            upsert: false,
-          },
-        );
+    const { error: uploadError } = await supabase.storage
+      .from("category-images")
+      .upload(objectPath, bytes, {
+        contentType: "image/webp",
+        cacheControl: "31536000",
+        upsert: false,
+      });
 
     if (uploadError) {
       redirectWithMessage(
@@ -390,22 +345,18 @@ export async function updateCategoryHomepagePresentation(
       );
     }
 
-    const { data: publicUrlData } =
-      supabase.storage
-        .from("category-images")
-        .getPublicUrl(objectPath);
+    const { data: publicUrlData } = supabase.storage
+      .from("category-images")
+      .getPublicUrl(objectPath);
 
     nextImageUrl = publicUrlData.publicUrl;
 
-    const oldStoragePath =
-      storagePathFromPublicUrl(
-        currentCategory.image_url ?? null,
-      );
+    const oldStoragePath = storagePathFromPublicUrl(
+      currentCategory.image_url ?? null,
+    );
 
     if (oldStoragePath) {
-      await supabase.storage
-        .from("category-images")
-        .remove([oldStoragePath]);
+      await supabase.storage.from("category-images").remove([oldStoragePath]);
     }
   }
 
@@ -420,61 +371,39 @@ export async function updateCategoryHomepagePresentation(
     .eq("id", categoryId);
 
   if (error) {
-    redirectWithMessage(
-      "error",
-      friendlyDatabaseError(error.message),
-    );
+    redirectWithMessage("error", friendlyDatabaseError(error.message));
   }
 
   revalidatePath(categoriesPath);
   revalidatePath("/");
   revalidatePath("/shop");
 
-  redirectWithMessage(
-    "success",
-    "Homepage category presentation updated.",
-  );
+  redirectWithMessage("success", "Homepage category presentation updated.");
 }
 
-export async function removeCategoryWallpaper(
-  formData: FormData,
-) {
+export async function removeCategoryWallpaper(formData: FormData) {
   const supabase = await requireAdministrator();
 
-  const categoryId = String(
-    formData.get("category_id") ?? "",
-  ).trim();
+  const categoryId = String(formData.get("category_id") ?? "").trim();
 
   if (!categoryId) {
-    redirectWithMessage(
-      "error",
-      "Category could not be identified.",
-    );
+    redirectWithMessage("error", "Category could not be identified.");
   }
 
-  const { data: category, error: categoryError } =
-    await supabase
-      .from("categories")
-      .select("image_url")
-      .eq("id", categoryId)
-      .single();
+  const { data: category, error: categoryError } = await supabase
+    .from("categories")
+    .select("image_url")
+    .eq("id", categoryId)
+    .single();
 
   if (categoryError || !category) {
-    redirectWithMessage(
-      "error",
-      "Category could not be loaded.",
-    );
+    redirectWithMessage("error", "Category could not be loaded.");
   }
 
-  const storagePath =
-    storagePathFromPublicUrl(
-      category.image_url ?? null,
-    );
+  const storagePath = storagePathFromPublicUrl(category.image_url ?? null);
 
   if (storagePath) {
-    await supabase.storage
-      .from("category-images")
-      .remove([storagePath]);
+    await supabase.storage.from("category-images").remove([storagePath]);
   }
 
   const { error } = await supabase
@@ -486,39 +415,24 @@ export async function removeCategoryWallpaper(
     .eq("id", categoryId);
 
   if (error) {
-    redirectWithMessage(
-      "error",
-      error.message,
-    );
+    redirectWithMessage("error", error.message);
   }
 
   revalidatePath(categoriesPath);
   revalidatePath("/");
 
-  redirectWithMessage(
-    "success",
-    "Category wallpaper removed.",
-  );
+  redirectWithMessage("success", "Category wallpaper removed.");
 }
-
 
 // STEREOPHONIE MOVIES SERIES CATEGORY ACTION START
 
-export async function createMoviesSeriesCategory(
-  formData: FormData,
-) {
-  const supabase =
-    await requireAdministrator();
+export async function createMoviesSeriesCategory(formData: FormData) {
+  const supabase = await requireAdministrator();
 
-  const requestedOrder =
-    Number(
-      formData.get("sort_order") ??
-      20,
-    );
+  const requestedOrder = Number(formData.get("sort_order") ?? 20);
 
   const sortOrder =
-    Number.isInteger(requestedOrder) &&
-    requestedOrder >= 0
+    Number.isInteger(requestedOrder) && requestedOrder >= 0
       ? requestedOrder
       : 20;
 
@@ -526,26 +440,22 @@ export async function createMoviesSeriesCategory(
    * Search for any existing version first.
    * This makes the action safe to run multiple times.
    */
-  const { data: existingRows, error: lookupError } =
-    await supabase
-      .from("categories")
-      .select(
-        `
+  const { data: existingRows, error: lookupError } = await supabase
+    .from("categories")
+    .select(
+      `
           id,
           name,
           slug
         `,
-      )
-      .in(
-        "slug",
-        [
-          "movies-series",
-          "movies-and-series",
-          "films-series",
-          "films-and-series",
-        ],
-      )
-      .limit(1);
+    )
+    .in("slug", [
+      "movies-series",
+      "movies-and-series",
+      "films-series",
+      "films-and-series",
+    ])
+    .limit(1);
 
   if (lookupError) {
     redirectWithMessage(
@@ -554,8 +464,7 @@ export async function createMoviesSeriesCategory(
     );
   }
 
-  const existing =
-    existingRows?.[0] ?? null;
+  const existing = existingRows?.[0] ?? null;
 
   /*
    * IMPORTANT:
@@ -563,71 +472,43 @@ export async function createMoviesSeriesCategory(
    * Stereophonie database.
    */
   const categoryData = {
-    name:
-      "Movies & Series",
+    name: "Movies & Series",
 
-    slug:
-      "movies-series",
+    slug: "movies-series",
 
     description:
       "Movies and series sourcing through Stereophonie. Browse featured entertainment, preview trailers and request availability and pricing directly through WhatsApp.",
 
-    sort_order:
-      sortOrder,
+    sort_order: sortOrder,
 
-    is_active:
-      true,
+    is_active: true,
 
-    show_on_homepage:
-      true,
+    show_on_homepage: true,
 
-    homepage_theme:
-      "dark",
+    homepage_theme: "dark",
   };
 
-  const result =
-    existing?.id
-      ? await supabase
-          .from("categories")
-          .update({
-            ...categoryData,
-            updated_at:
-              new Date().toISOString(),
-          })
-          .eq(
-            "id",
-            existing.id,
-          )
-      : await supabase
-          .from("categories")
-          .insert(
-            categoryData,
-          );
+  const result = existing?.id
+    ? await supabase
+        .from("categories")
+        .update({
+          ...categoryData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", existing.id)
+    : await supabase.from("categories").insert(categoryData);
 
   if (result.error) {
-    redirectWithMessage(
-      "error",
-      friendlyDatabaseError(
-        result.error.message,
-      ),
-    );
+    redirectWithMessage("error", friendlyDatabaseError(result.error.message));
   }
 
-  revalidatePath(
-    "/admin/categories",
-  );
+  revalidatePath("/admin/categories");
 
-  revalidatePath(
-    "/",
-  );
+  revalidatePath("/");
 
-  revalidatePath(
-    "/movies-series",
-  );
+  revalidatePath("/movies-series");
 
-  revalidatePath(
-    "/api/storefront/header-categories",
-  );
+  revalidatePath("/api/storefront/header-categories");
 
   redirectWithMessage(
     "success",
@@ -638,4 +519,3 @@ export async function createMoviesSeriesCategory(
 }
 
 // STEREOPHONIE MOVIES SERIES CATEGORY ACTION END
-

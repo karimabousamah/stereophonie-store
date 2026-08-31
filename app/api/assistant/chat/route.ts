@@ -1569,34 +1569,22 @@ function localNormalize(value: string) {
 }
 
 function extractRequestedSize(value: string) {
-  const match = value.match(
-    /\b(xxs|xs|s|m|l|xl|xxl|xxxl|one size)\b/i,
-  );
+  const match = value.match(/\b(xxs|xs|s|m|l|xl|xxl|xxxl|one size)\b/i);
 
   return match?.[1]?.trim() ?? "";
 }
 
 function extractRequestedQuantity(value: string) {
-  const direct = value.match(
-    /\b(?:qty|quantity|x)\s*(\d{1,2})\b/i,
-  );
+  const direct = value.match(/\b(?:qty|quantity|x)\s*(\d{1,2})\b/i);
 
   if (direct) {
-    return Math.max(
-      1,
-      Math.min(10, Number(direct[1]) || 1),
-    );
+    return Math.max(1, Math.min(10, Number(direct[1]) || 1));
   }
 
-  const items = value.match(
-    /\b(\d{1,2})\s+(?:items?|pieces?|units?)\b/i,
-  );
+  const items = value.match(/\b(\d{1,2})\s+(?:items?|pieces?|units?)\b/i);
 
   if (items) {
-    return Math.max(
-      1,
-      Math.min(10, Number(items[1]) || 1),
-    );
+    return Math.max(1, Math.min(10, Number(items[1]) || 1));
   }
 
   return 1;
@@ -1630,26 +1618,19 @@ function detectLocalAction(value: string) {
 
     addWishlist:
       /\b(add|save|put)\b/.test(normalized) &&
-      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(
-        normalized,
-      ),
+      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(normalized),
 
     removeWishlist:
       /\b(remove|delete)\b/.test(normalized) &&
-      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(
-        normalized,
-      ),
+      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(normalized),
 
     clearWishlist:
       /\b(clear|empty)\b/.test(normalized) &&
-      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(
-        normalized,
-      ),
+      /\b(wishlist|favorite|favourite|favorites|favourites)\b/.test(normalized),
 
-    checkout:
-      /\b(checkout|go to checkout|proceed to checkout)\b/.test(
-        normalized,
-      ),
+    checkout: /\b(checkout|go to checkout|proceed to checkout)\b/.test(
+      normalized,
+    ),
 
     tracking:
       /\b(track my order|track order|order tracking|where is my order)\b/.test(
@@ -1658,9 +1639,7 @@ function detectLocalAction(value: string) {
   };
 }
 
-function toRankedProduct(
-  product: AssistantProduct,
-): RankedAssistantProduct {
+function toRankedProduct(product: AssistantProduct): RankedAssistantProduct {
   return {
     id: product.id,
     name: product.name,
@@ -1687,16 +1666,13 @@ function findComparisonProducts(
   products: AssistantProduct[],
   conversationText: string,
 ) {
-  const normalizedMessage =
-    normalizeProductReference(conversationText);
+  const normalizedMessage = normalizeProductReference(conversationText);
 
   const directMatches = products.filter((product) => {
-    const normalizedName =
-      normalizeProductReference(product.name);
+    const normalizedName = normalizeProductReference(product.name);
 
     return (
-      normalizedName.length >= 3 &&
-      normalizedMessage.includes(normalizedName)
+      normalizedName.length >= 3 && normalizedMessage.includes(normalizedName)
     );
   });
 
@@ -1706,10 +1682,9 @@ function findComparisonProducts(
 
   const scored = products
     .map((product) => {
-      const nameWords =
-        normalizeProductReference(product.name)
-          .split(" ")
-          .filter((word) => word.length >= 3);
+      const nameWords = normalizeProductReference(product.name)
+        .split(" ")
+        .filter((word) => word.length >= 3);
 
       const score = nameWords.filter((word) =>
         normalizedMessage.includes(word),
@@ -1723,15 +1698,10 @@ function findComparisonProducts(
     .filter((entry) => entry.score > 0)
     .sort((first, second) => second.score - first.score);
 
-  return scored
-    .slice(0, 4)
-    .map((entry) => entry.product);
+  return scored.slice(0, 4).map((entry) => entry.product);
 }
 
-function priceResponse(
-  product: AssistantProduct,
-  language: Language,
-) {
+function priceResponse(product: AssistantProduct, language: Language) {
   if (product.price === null) {
     if (language === "fr") {
       return `Le prix de ${product.name} n’est pas disponible actuellement.`;
@@ -1757,14 +1727,9 @@ function priceResponse(
   return `${product.name} currently starts at $${product.price.toFixed(2)}.`;
 }
 
-function availabilityResponse(
-  product: AssistantProduct,
-  language: Language,
-) {
+function availabilityResponse(product: AssistantProduct, language: Language) {
   const available = product.variants.some(
-    (variant) =>
-      variant.purchasable &&
-      variant.stockQuantity > 0,
+    (variant) => variant.purchasable && variant.stockQuantity > 0,
   );
 
   if (language === "fr") {
@@ -1784,7 +1749,6 @@ function availabilityResponse(
     : `${product.name} is currently unavailable.`;
 }
 
-
 type AssistantLatestOrder = {
   order_number: string;
   status:
@@ -1794,10 +1758,7 @@ type AssistantLatestOrder = {
     | "out_for_delivery"
     | "completed"
     | "cancelled";
-  payment_status:
-    | "unpaid"
-    | "paid"
-    | "refunded";
+  payment_status: "unpaid" | "paid" | "refunded";
   delivery_city: string | null;
   delivery_area: string | null;
   total: number | null;
@@ -1819,8 +1780,7 @@ async function getLatestSignedInAssistantOrder() {
     };
   }
 
-  const email =
-    user.email?.trim().toLowerCase() ?? "";
+  const email = user.email?.trim().toLowerCase() ?? "";
 
   if (!email) {
     return {
@@ -1843,24 +1803,15 @@ async function getLatestSignedInAssistantOrder() {
         status_updated_at
       `,
     )
-    .ilike(
-      "customer_email",
-      email,
-    )
-    .order(
-      "created_at",
-      {
-        ascending: false,
-      },
-    )
+    .ilike("customer_email", email)
+    .order("created_at", {
+      ascending: false,
+    })
     .limit(1)
     .maybeSingle();
 
   if (error) {
-    console.error(
-      "Assistant latest-order lookup failed:",
-      error,
-    );
+    console.error("Assistant latest-order lookup failed:", error);
 
     return {
       signedIn: true,
@@ -1870,9 +1821,7 @@ async function getLatestSignedInAssistantOrder() {
 
   return {
     signedIn: true,
-    order:
-      (data as AssistantLatestOrder | null) ??
-      null,
+    order: (data as AssistantLatestOrder | null) ?? null,
   };
 }
 
@@ -1880,10 +1829,7 @@ function humanOrderStatus(
   status: AssistantLatestOrder["status"],
   language: Language,
 ) {
-  const english: Record<
-    AssistantLatestOrder["status"],
-    string
-  > = {
+  const english: Record<AssistantLatestOrder["status"], string> = {
     pending: "pending confirmation",
     confirmed: "confirmed",
     preparing: "being prepared",
@@ -1892,10 +1838,7 @@ function humanOrderStatus(
     cancelled: "cancelled",
   };
 
-  const french: Record<
-    AssistantLatestOrder["status"],
-    string
-  > = {
+  const french: Record<AssistantLatestOrder["status"], string> = {
     pending: "en attente de confirmation",
     confirmed: "confirmée",
     preparing: "en préparation",
@@ -1904,10 +1847,7 @@ function humanOrderStatus(
     cancelled: "annulée",
   };
 
-  const arabic: Record<
-    AssistantLatestOrder["status"],
-    string
-  > = {
+  const arabic: Record<AssistantLatestOrder["status"], string> = {
     pending: "بانتظار التأكيد",
     confirmed: "مؤكد",
     preparing: "قيد التحضير",
@@ -1927,15 +1867,8 @@ function humanOrderStatus(
   return english[status];
 }
 
-function latestOrderResponse(
-  order: AssistantLatestOrder,
-  language: Language,
-) {
-  const status =
-    humanOrderStatus(
-      order.status,
-      language,
-    );
+function latestOrderResponse(order: AssistantLatestOrder, language: Language) {
+  const status = humanOrderStatus(order.status, language);
 
   if (language === "fr") {
     return `Votre dernière commande #${order.order_number} est actuellement ${status}.`;
@@ -1945,10 +1878,9 @@ function latestOrderResponse(
     return `طلبك الأخير رقم ${order.order_number} حالته حالياً: ${status}.`;
   }
 
-  const destination =
-    [order.delivery_area, order.delivery_city]
-      .filter(Boolean)
-      .join(", ");
+  const destination = [order.delivery_area, order.delivery_city]
+    .filter(Boolean)
+    .join(", ");
 
   const payment =
     order.payment_status === "paid"
@@ -1957,10 +1889,7 @@ function latestOrderResponse(
         ? "The payment has been refunded."
         : "Payment is currently marked as unpaid.";
 
-  const delivery =
-    destination
-      ? ` Delivery destination: ${destination}.`
-      : "";
+  const delivery = destination ? ` Delivery destination: ${destination}.` : "";
 
   const total =
     order.total !== null
@@ -1975,10 +1904,7 @@ function unavailableCatalogResponse(
   language: Language,
 ) {
   const requested =
-    parsed.productQuery ||
-    parsed.category ||
-    parsed.brand ||
-    "that product";
+    parsed.productQuery || parsed.category || parsed.brand || "that product";
 
   if (language === "fr") {
     return `Je n’ai trouvé aucun produit publié correspondant à « ${requested} » dans notre boutique pour le moment. Gardez un œil sur le shop — de nouveaux produits peuvent être ajoutés.`;
@@ -2003,16 +1929,11 @@ export async function POST(request: Request) {
       wishlist?: unknown;
     };
 
-    const incomingMessages =
-      normalizeMessages(body.messages);
+    const incomingMessages = normalizeMessages(body.messages);
 
-    const latest =
-      incomingMessages.at(-1);
+    const latest = incomingMessages.at(-1);
 
-    if (
-      !latest ||
-      latest.role !== "user"
-    ) {
+    if (!latest || latest.role !== "user") {
       return NextResponse.json(
         {
           message: "A customer message is required.",
@@ -2024,26 +1945,22 @@ export async function POST(request: Request) {
       );
     }
 
-    const rawMessage =
-      latest.content;
+    const rawMessage = latest.content;
 
     /*
      * Detect language from our local parser.
      * Explicit browser language remains supported.
      */
-    const firstParse =
-      parseAssistantRequest(rawMessage);
+    const firstParse = parseAssistantRequest(rawMessage);
 
     language =
       normalizeLanguage(body.language) !== "en"
         ? normalizeLanguage(body.language)
         : firstParse.language;
 
-    const cart =
-      normalizeCart(body.cart);
+    const cart = normalizeCart(body.cart);
 
-    const wishlist =
-      normalizeWishlist(body.wishlist);
+    const wishlist = normalizeWishlist(body.wishlist);
 
     /*
      * Reconstruct lightweight conversational memory
@@ -2058,18 +1975,12 @@ export async function POST(request: Request) {
         continue;
       }
 
-      const historicalRequest =
-        parseAssistantRequest(message.content);
+      const historicalRequest = parseAssistantRequest(message.content);
 
-      memory =
-        mergeAssistantMemory(
-          memory,
-          historicalRequest,
-        );
+      memory = mergeAssistantMemory(memory, historicalRequest);
     }
 
-    let parsed =
-      parseAssistantRequest(rawMessage);
+    let parsed = parseAssistantRequest(rawMessage);
 
     /*
      * Explicit high-priority intents must NEVER inherit an old
@@ -2081,8 +1992,7 @@ export async function POST(request: Request) {
      *
      * The second message must leave the phone context entirely.
      */
-    const explicitIntentBeforeMemory =
-      parsed.intent;
+    const explicitIntentBeforeMemory = parsed.intent;
 
     if (
       explicitIntentBeforeMemory !== "order_tracking" &&
@@ -2090,15 +2000,10 @@ export async function POST(request: Request) {
       explicitIntentBeforeMemory !== "greeting" &&
       explicitIntentBeforeMemory !== "help"
     ) {
-      parsed =
-        applyMemoryToRequest(
-          parsed,
-          memory,
-        );
+      parsed = applyMemoryToRequest(parsed, memory);
     }
 
-    const actions =
-      detectLocalAction(rawMessage);
+    const actions = detectLocalAction(rawMessage);
 
     const cartActions: AssistantCartAction[] = [];
     const wishlistActions: AssistantWishlistAction[] = [];
@@ -2110,37 +2015,22 @@ export async function POST(request: Request) {
      * --------------------------------------------------------
      */
 
-    if (
-      actions.tracking ||
-      parsed.intent === "order_tracking"
-    ) {
-      const latestOrder =
-        await getLatestSignedInAssistantOrder();
+    if (actions.tracking || parsed.intent === "order_tracking") {
+      const latestOrder = await getLatestSignedInAssistantOrder();
 
-      if (
-        latestOrder.signedIn &&
-        latestOrder.order
-      ) {
+      if (latestOrder.signedIn && latestOrder.order) {
         return NextResponse.json({
-          message:
-            latestOrderResponse(
-              latestOrder.order,
-              language,
-            ),
+          message: latestOrderResponse(latestOrder.order, language),
           products: [],
           cartActions,
           wishlistActions,
           navigationActions,
           language,
-          engine:
-            "stereophonie-local-v2",
+          engine: "stereophonie-local-v2",
         });
       }
 
-      if (
-        latestOrder.signedIn &&
-        !latestOrder.order
-      ) {
+      if (latestOrder.signedIn && !latestOrder.order) {
         return NextResponse.json({
           message:
             language === "fr"
@@ -2153,8 +2043,7 @@ export async function POST(request: Request) {
           wishlistActions,
           navigationActions,
           language,
-          engine:
-            "stereophonie-local-v2",
+          engine: "stereophonie-local-v2",
         });
       }
 
@@ -2176,8 +2065,7 @@ export async function POST(request: Request) {
         wishlistActions,
         navigationActions,
         language,
-        engine:
-          "stereophonie-local-v2",
+        engine: "stereophonie-local-v2",
       });
     }
 
@@ -2211,17 +2099,16 @@ export async function POST(request: Request) {
      */
 
     if (actions.clearCart) {
-      const result =
-        prepareCartManagementAction(
-          {
-            operation: "clear",
-            product_reference: "",
-            size: "",
-            position: 0,
-            quantity: 0,
-          },
-          cart,
-        );
+      const result = prepareCartManagementAction(
+        {
+          operation: "clear",
+          product_reference: "",
+          size: "",
+          position: 0,
+          quantity: 0,
+        },
+        cart,
+      );
 
       if (result.action) {
         cartActions.push(result.action);
@@ -2239,22 +2126,20 @@ export async function POST(request: Request) {
     }
 
     if (actions.removeCart) {
-      const reference =
-        cleanProductReferenceFromAction(
-          localNormalize(rawMessage),
-        );
+      const reference = cleanProductReferenceFromAction(
+        localNormalize(rawMessage),
+      );
 
-      const result =
-        prepareCartManagementAction(
-          {
-            operation: "remove",
-            product_reference: reference,
-            size: extractRequestedSize(rawMessage),
-            position: parsed.ordinal ?? 0,
-            quantity: 0,
-          },
-          cart,
-        );
+      const result = prepareCartManagementAction(
+        {
+          operation: "remove",
+          product_reference: reference,
+          size: extractRequestedSize(rawMessage),
+          position: parsed.ordinal ?? 0,
+          quantity: 0,
+        },
+        cart,
+      );
 
       if (result.action) {
         cartActions.push(result.action);
@@ -2273,18 +2158,15 @@ export async function POST(request: Request) {
 
     if (actions.addCart) {
       const reference =
-        cleanProductReferenceFromAction(
-          localNormalize(rawMessage),
-        ) ||
+        cleanProductReferenceFromAction(localNormalize(rawMessage)) ||
         parsed.productQuery ||
         "";
 
-      const result =
-        await prepareAddToCart({
-          product_reference: reference,
-          size: extractRequestedSize(rawMessage),
-          quantity: extractRequestedQuantity(rawMessage),
-        });
+      const result = await prepareAddToCart({
+        product_reference: reference,
+        size: extractRequestedSize(rawMessage),
+        quantity: extractRequestedQuantity(rawMessage),
+      });
 
       if (result.action) {
         cartActions.push(result.action);
@@ -2308,15 +2190,14 @@ export async function POST(request: Request) {
      */
 
     if (actions.clearWishlist) {
-      const result =
-        await prepareWishlistAction(
-          {
-            operation: "clear",
-            product_reference: "",
-            position: 0,
-          },
-          wishlist,
-        );
+      const result = await prepareWishlistAction(
+        {
+          operation: "clear",
+          product_reference: "",
+          position: 0,
+        },
+        wishlist,
+      );
 
       if (result.action) {
         wishlistActions.push(result.action);
@@ -2334,18 +2215,16 @@ export async function POST(request: Request) {
     }
 
     if (actions.removeWishlist) {
-      const result =
-        await prepareWishlistAction(
-          {
-            operation: "remove",
-            product_reference:
-              cleanProductReferenceFromAction(
-                localNormalize(rawMessage),
-              ),
-            position: parsed.ordinal ?? 0,
-          },
-          wishlist,
-        );
+      const result = await prepareWishlistAction(
+        {
+          operation: "remove",
+          product_reference: cleanProductReferenceFromAction(
+            localNormalize(rawMessage),
+          ),
+          position: parsed.ordinal ?? 0,
+        },
+        wishlist,
+      );
 
       if (result.action) {
         wishlistActions.push(result.action);
@@ -2363,20 +2242,17 @@ export async function POST(request: Request) {
     }
 
     if (actions.addWishlist) {
-      const result =
-        await prepareWishlistAction(
-          {
-            operation: "add",
-            product_reference:
-              cleanProductReferenceFromAction(
-                localNormalize(rawMessage),
-              ) ||
-              parsed.productQuery ||
-              "",
-            position: parsed.ordinal ?? 0,
-          },
-          wishlist,
-        );
+      const result = await prepareWishlistAction(
+        {
+          operation: "add",
+          product_reference:
+            cleanProductReferenceFromAction(localNormalize(rawMessage)) ||
+            parsed.productQuery ||
+            "",
+          position: parsed.ordinal ?? 0,
+        },
+        wishlist,
+      );
 
       if (result.action) {
         wishlistActions.push(result.action);
@@ -2441,17 +2317,15 @@ export async function POST(request: Request) {
      * --------------------------------------------------------
      */
 
-    const catalog =
-      await searchProducts({
-        query: "",
-        category: "",
-        size: "",
-        maximum_price: 0,
-        limit: 100,
-      });
+    const catalog = await searchProducts({
+      query: "",
+      category: "",
+      size: "",
+      maximum_price: 0,
+      limit: 100,
+    });
 
-    const rankedCatalog =
-      catalog.map(toRankedProduct);
+    const rankedCatalog = catalog.map(toRankedProduct);
 
     /*
      * --------------------------------------------------------
@@ -2460,27 +2334,23 @@ export async function POST(request: Request) {
      */
 
     if (parsed.intent === "comparison") {
-      const conversationText =
-        incomingMessages
-          .slice(-6)
-          .map((message) => message.content)
-          .join(" ");
+      const conversationText = incomingMessages
+        .slice(-6)
+        .map((message) => message.content)
+        .join(" ");
 
-      const comparisonProducts =
-        findComparisonProducts(
-          catalog,
-          conversationText,
-        );
+      const comparisonProducts = findComparisonProducts(
+        catalog,
+        conversationText,
+      );
 
       return NextResponse.json({
-        message:
-          composeComparisonResponse(
-            comparisonProducts.map(toRankedProduct),
-            parsed,
-          ),
+        message: composeComparisonResponse(
+          comparisonProducts.map(toRankedProduct),
+          parsed,
+        ),
 
-        products:
-          comparisonProducts.slice(0, 4),
+        products: comparisonProducts.slice(0, 4),
 
         cartActions,
         wishlistActions,
@@ -2496,42 +2366,29 @@ export async function POST(request: Request) {
      * --------------------------------------------------------
      */
 
-    const ranked =
-      topAssistantProducts(
-        rankedCatalog,
-        parsed,
-        4,
-      );
+    const ranked = topAssistantProducts(rankedCatalog, parsed, 4);
 
-    const selectedProducts =
-      ranked.map((entry) => {
-        const match =
-          catalog.find(
-            (product) =>
-              product.id === entry.product.id,
-          );
+    const selectedProducts = ranked
+      .map((entry) => {
+        const match = catalog.find(
+          (product) => product.id === entry.product.id,
+        );
 
         return match;
-      }).filter(
-        (product): product is AssistantProduct =>
-          Boolean(product),
-      );
+      })
+      .filter((product): product is AssistantProduct => Boolean(product));
 
-    const explicitCatalogRequest =
-      Boolean(
-        parsed.category ||
-        parsed.productQuery ||
-        parsed.brand,
-      );
+    const explicitCatalogRequest = Boolean(
+      parsed.category || parsed.productQuery || parsed.brand,
+    );
 
-    const productSensitiveIntent =
-      [
-        "product_search",
-        "recommendation",
-        "gift",
-        "price_question",
-        "availability",
-      ].includes(parsed.intent);
+    const productSensitiveIntent = [
+      "product_search",
+      "recommendation",
+      "gift",
+      "price_question",
+      "availability",
+    ].includes(parsed.intent);
 
     if (
       explicitCatalogRequest &&
@@ -2539,39 +2396,8 @@ export async function POST(request: Request) {
       selectedProducts.length === 0
     ) {
       return NextResponse.json({
-        message:
-          unavailableCatalogResponse(
-            parsed,
-            language,
-          ),
+        message: unavailableCatalogResponse(parsed, language),
         products: [],
-        cartActions,
-        wishlistActions,
-        navigationActions,
-        language,
-        engine:
-          "stereophonie-local-v2",
-      });
-    }
-
-
-    /*
-     * Price / stock questions become precise
-     * when we have an obvious top match.
-     */
-
-    if (
-      parsed.intent === "price_question" &&
-      selectedProducts.length > 0
-    ) {
-      return NextResponse.json({
-        message:
-          priceResponse(
-            selectedProducts[0],
-            language,
-          ),
-        products:
-          selectedProducts.slice(0, 4),
         cartActions,
         wishlistActions,
         navigationActions,
@@ -2580,18 +2406,27 @@ export async function POST(request: Request) {
       });
     }
 
-    if (
-      parsed.intent === "availability" &&
-      selectedProducts.length > 0
-    ) {
+    /*
+     * Price / stock questions become precise
+     * when we have an obvious top match.
+     */
+
+    if (parsed.intent === "price_question" && selectedProducts.length > 0) {
       return NextResponse.json({
-        message:
-          availabilityResponse(
-            selectedProducts[0],
-            language,
-          ),
-        products:
-          selectedProducts.slice(0, 4),
+        message: priceResponse(selectedProducts[0], language),
+        products: selectedProducts.slice(0, 4),
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v2",
+      });
+    }
+
+    if (parsed.intent === "availability" && selectedProducts.length > 0) {
+      return NextResponse.json({
+        message: availabilityResponse(selectedProducts[0], language),
+        products: selectedProducts.slice(0, 4),
         cartActions,
         wishlistActions,
         navigationActions,
@@ -2602,13 +2437,8 @@ export async function POST(request: Request) {
 
     if (parsed.intent === "offers") {
       return NextResponse.json({
-        message:
-          composeOfferResponse(
-            ranked,
-            parsed,
-          ),
-        products:
-          selectedProducts.slice(0, 4),
+        message: composeOfferResponse(ranked, parsed),
+        products: selectedProducts.slice(0, 4),
         cartActions,
         wishlistActions,
         navigationActions,
@@ -2622,13 +2452,9 @@ export async function POST(request: Request) {
       parsed.intent === "recommendation" ||
       parsed.intent === "gift"
     ) {
-      if (
-        parsed.needsClarification &&
-        selectedProducts.length === 0
-      ) {
+      if (parsed.needsClarification && selectedProducts.length === 0) {
         return NextResponse.json({
-          message:
-            buildClarification(parsed),
+          message: buildClarification(parsed),
           products: [],
           cartActions,
           wishlistActions,
@@ -2639,14 +2465,9 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.json({
-        message:
-          composeRecommendationResponse(
-            parsed,
-            ranked,
-          ),
+        message: composeRecommendationResponse(parsed, ranked),
 
-        products:
-          selectedProducts.slice(0, 4),
+        products: selectedProducts.slice(0, 4),
 
         cartActions,
         wishlistActions,
@@ -2661,11 +2482,7 @@ export async function POST(request: Request) {
      * stay useful instead of hallucinating.
      */
     return NextResponse.json({
-      message:
-        composeFallbackResponse(
-          parsed,
-          memory,
-        ),
+      message: composeFallbackResponse(parsed, memory),
 
       products: [],
       cartActions,
@@ -2675,10 +2492,7 @@ export async function POST(request: Request) {
       engine: "stereophonie-local-v2",
     });
   } catch (error) {
-    console.error(
-      "Stereophonie local assistant failed:",
-      error,
-    );
+    console.error("Stereophonie local assistant failed:", error);
 
     return NextResponse.json(
       {

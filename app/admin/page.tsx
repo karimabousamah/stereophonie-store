@@ -66,19 +66,11 @@ export default async function AdminDashboardPage() {
   const now = new Date();
 
   const currentPeriodStart = startOfDay(
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - 29,
-    ),
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29),
   );
 
   const previousPeriodStart = startOfDay(
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - 59,
-    ),
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() - 59),
   );
 
   const forgottenDraftBoundary = new Date(
@@ -145,10 +137,7 @@ export default async function AdminDashboardPage() {
         count: "exact",
         head: true,
       })
-      .in("availability_status", [
-        "low_stock",
-        "out_of_stock",
-      ]),
+      .in("availability_status", ["low_stock", "out_of_stock"]),
 
     supabase
       .from("stock_alerts")
@@ -200,85 +189,60 @@ export default async function AdminDashboardPage() {
       .select("id, total, created_at")
       .eq("payment_status", "paid")
       .neq("status", "cancelled")
-      .gte(
-        "created_at",
-        previousPeriodStart.toISOString(),
-      )
+      .gte("created_at", previousPeriodStart.toISOString())
       .order("created_at", {
         ascending: true,
       }),
   ]);
 
-  const liveProducts =
-    liveProductsResult.count ?? 0;
+  const liveProducts = liveProductsResult.count ?? 0;
 
-  const draftProducts =
-    draftProductsResult.count ?? 0;
+  const draftProducts = draftProductsResult.count ?? 0;
 
-  const pendingOrders =
-    pendingOrdersResult.count ?? 0;
+  const pendingOrders = pendingOrdersResult.count ?? 0;
 
-  const completedOrders =
-    completedOrdersResult.count ?? 0;
+  const completedOrders = completedOrdersResult.count ?? 0;
 
-  const lowStockVariants =
-    lowStockVariantsResult.count ?? 0;
+  const lowStockVariants = lowStockVariantsResult.count ?? 0;
 
-  const pendingStockAlerts =
-    pendingStockAlertsResult.count ?? 0;
+  const pendingStockAlerts = pendingStockAlertsResult.count ?? 0;
 
-  const revenue = (
-    allPaidOrdersResult.data ?? []
-  ).reduce(
-    (total, order) =>
-      total + Number(order.total ?? 0),
+  const revenue = (allPaidOrdersResult.data ?? []).reduce(
+    (total, order) => total + Number(order.total ?? 0),
     0,
   );
 
-  const missingCategory =
-    missingCategoryResult.count ?? 0;
+  const missingCategory = missingCategoryResult.count ?? 0;
 
-  const missingBrand =
-    missingBrandResult.count ?? 0;
+  const missingBrand = missingBrandResult.count ?? 0;
 
   const productsWithoutImages = (
     (publishedMediaResult.data ?? []) as ProductWithImages[]
   ).filter(
-    (product) =>
-      !product.product_images ||
-      product.product_images.length === 0,
+    (product) => !product.product_images || product.product_images.length === 0,
   ).length;
 
-  const oldDrafts = (
-    (oldDraftsResult.data ?? []) as DraftProduct[]
-  ).length;
+  const oldDrafts = ((oldDraftsResult.data ?? []) as DraftProduct[]).length;
 
-  const paidOrders =
-    (recentPaidOrdersResult.data ?? []) as RevenueOrder[];
+  const paidOrders = (recentPaidOrdersResult.data ?? []) as RevenueOrder[];
 
   const currentOrders = paidOrders.filter(
-    (order) =>
-      new Date(order.created_at) >= currentPeriodStart,
+    (order) => new Date(order.created_at) >= currentPeriodStart,
   );
 
   const previousOrders = paidOrders.filter((order) => {
     const createdAt = new Date(order.created_at);
 
-    return (
-      createdAt >= previousPeriodStart &&
-      createdAt < currentPeriodStart
-    );
+    return createdAt >= previousPeriodStart && createdAt < currentPeriodStart;
   });
 
   const currentRevenue = currentOrders.reduce(
-    (total, order) =>
-      total + Number(order.total ?? 0),
+    (total, order) => total + Number(order.total ?? 0),
     0,
   );
 
   const previousRevenue = previousOrders.reduce(
-    (total, order) =>
-      total + Number(order.total ?? 0),
+    (total, order) => total + Number(order.total ?? 0),
     0,
   );
 
@@ -286,38 +250,28 @@ export default async function AdminDashboardPage() {
   const previousOrderCount = previousOrders.length;
 
   const averageOrderValue =
-    currentOrderCount > 0
-      ? currentRevenue / currentOrderCount
-      : 0;
+    currentOrderCount > 0 ? currentRevenue / currentOrderCount : 0;
 
   const previousAverageOrderValue =
-    previousOrderCount > 0
-      ? previousRevenue / previousOrderCount
-      : 0;
+    previousOrderCount > 0 ? previousRevenue / previousOrderCount : 0;
 
   const revenueChange =
     previousRevenue > 0
-      ? ((currentRevenue - previousRevenue) /
-          previousRevenue) *
-        100
+      ? ((currentRevenue - previousRevenue) / previousRevenue) * 100
       : currentRevenue > 0
         ? 100
         : 0;
 
   const orderChange =
     previousOrderCount > 0
-      ? ((currentOrderCount -
-          previousOrderCount) /
-          previousOrderCount) *
-        100
+      ? ((currentOrderCount - previousOrderCount) / previousOrderCount) * 100
       : currentOrderCount > 0
         ? 100
         : 0;
 
   const averageOrderChange =
     previousAverageOrderValue > 0
-      ? ((averageOrderValue -
-          previousAverageOrderValue) /
+      ? ((averageOrderValue - previousAverageOrderValue) /
           previousAverageOrderValue) *
         100
       : averageOrderValue > 0
@@ -339,39 +293,32 @@ export default async function AdminDashboardPage() {
       now.getDate() - offset,
     );
 
-    dailyRevenueMap.set(
-      isoDateKey(date),
-      {
-        revenue: 0,
-        orders: 0,
-      },
-    );
+    dailyRevenueMap.set(isoDateKey(date), {
+      revenue: 0,
+      orders: 0,
+    });
   }
 
   for (const order of currentOrders) {
     const key = isoDateKey(order.created_at);
-    const existing =
-      dailyRevenueMap.get(key);
+    const existing = dailyRevenueMap.get(key);
 
     if (!existing) {
       continue;
     }
 
-    existing.revenue +=
-      Number(order.total ?? 0);
+    existing.revenue += Number(order.total ?? 0);
 
     existing.orders += 1;
   }
 
-  const dailyPerformance = Array.from(
-    dailyRevenueMap.entries(),
-  ).map(([date, values]) => ({
-    date,
-    revenue: Number(
-      values.revenue.toFixed(2),
-    ),
-    orders: values.orders,
-  }));
+  const dailyPerformance = Array.from(dailyRevenueMap.entries()).map(
+    ([date, values]) => ({
+      date,
+      revenue: Number(values.revenue.toFixed(2)),
+      orders: values.orders,
+    }),
+  );
 
   return (
     <DashboardClient

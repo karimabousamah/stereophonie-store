@@ -6,9 +6,7 @@ type Props = {
   total: number;
 };
 
-export default function CategorySearch({
-  total,
-}: Props) {
+export default function CategorySearch({ total }: Props) {
   return (
     <AdminDirectorySearch
       total={total}

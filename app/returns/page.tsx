@@ -21,8 +21,8 @@ const sections = [
 
         <p>
           Customers are responsible for reviewing the product description,
-          photographs, price, compatibility, specifications, and selected options carefully
-          before confirming an order.
+          photographs, price, compatibility, specifications, and selected
+          options carefully before confirming an order.
         </p>
       </>
     ),
@@ -33,9 +33,9 @@ const sections = [
       <>
         <p>
           A product cannot normally be returned because it is incompatible with
-          another device or does not match a customer&apos;s preferred configuration.
-          Please review the available specifications or contact us before
-          ordering when assistance is needed.
+          another device or does not match a customer&apos;s preferred
+          configuration. Please review the available specifications or contact
+          us before ordering when assistance is needed.
         </p>
 
         <p>

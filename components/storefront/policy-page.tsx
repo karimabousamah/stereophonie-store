@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, CircleHelp, PackageSearch, RotateCcw, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  CircleHelp,
+  PackageSearch,
+  RotateCcw,
+  Truck,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
@@ -81,7 +87,9 @@ export default function PolicyPage({
                 </span>
                 <div>
                   <h2>{section.title}</h2>
-                  <div className="st-support-page__content">{section.content}</div>
+                  <div className="st-support-page__content">
+                    {section.content}
+                  </div>
                 </div>
               </section>
             ))}

@@ -1,18 +1,9 @@
 "use client";
 
-import {
-  LoaderCircle,
-  ShieldCheck,
-  UserRound,
-} from "lucide-react";
-import {
-  useState,
-  useTransition,
-} from "react";
+import { LoaderCircle, ShieldCheck, UserRound } from "lucide-react";
+import { useState, useTransition } from "react";
 
-import {
-  setCustomerAdminAccess,
-} from "./actions";
+import { setCustomerAdminAccess } from "./actions";
 
 type AdminAccessControlProps = {
   userId: string;
@@ -27,31 +18,24 @@ export default function AdminAccessControl({
   adminRole,
   isCurrentUser = false,
 }: AdminAccessControlProps) {
-  const [isAdmin, setIsAdmin] =
-    useState(initialIsAdmin);
+  const [isAdmin, setIsAdmin] = useState(initialIsAdmin);
 
-  const [message, setMessage] =
-    useState("");
+  const [message, setMessage] = useState("");
 
-  const [messageType, setMessageType] =
-    useState<"success" | "error" | "">("");
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
-  const [pending, startTransition] =
-    useTransition();
+  const [pending, startTransition] = useTransition();
 
   function changeAccess() {
     if (pending || isCurrentUser) {
       return;
     }
 
-    const makeAdmin =
-      !isAdmin;
+    const makeAdmin = !isAdmin;
 
     if (
       !makeAdmin &&
-      !window.confirm(
-        "Remove administrator access from this account?",
-      )
+      !window.confirm("Remove administrator access from this account?")
     ) {
       return;
     }
@@ -60,37 +44,21 @@ export default function AdminAccessControl({
     setMessageType("");
 
     startTransition(async () => {
-      const result =
-        await setCustomerAdminAccess(
-          userId,
-          makeAdmin,
-        );
+      const result = await setCustomerAdminAccess(userId, makeAdmin);
 
       if (!result.ok) {
-        setMessage(
-          result.message,
-        );
+        setMessage(result.message);
 
-        setMessageType(
-          "error",
-        );
+        setMessageType("error");
 
         return;
       }
 
-      setIsAdmin(
-        Boolean(
-          result.isAdmin,
-        ),
-      );
+      setIsAdmin(Boolean(result.isAdmin));
 
-      setMessage(
-        result.message,
-      );
+      setMessage(result.message);
 
-      setMessageType(
-        "success",
-      );
+      setMessageType("success");
     });
   }
 
@@ -110,10 +78,7 @@ export default function AdminAccessControl({
             <UserRound className="h-3.5 w-3.5" />
           )}
 
-          {isAdmin
-            ? adminRole?.trim() ||
-              "Administrator"
-            : "Customer"}
+          {isAdmin ? adminRole?.trim() || "Administrator" : "Customer"}
         </span>
 
         {isCurrentUser ? (
@@ -145,20 +110,14 @@ export default function AdminAccessControl({
               <ShieldCheck className="h-3.5 w-3.5" />
             )}
 
-            {pending
-              ? "Updating"
-              : isAdmin
-                ? "Remove admin"
-                : "Make admin"}
+            {pending ? "Updating" : isAdmin ? "Remove admin" : "Make admin"}
           </button>
         )}
 
         {message ? (
           <p
             className={`max-w-[190px] text-[10px] leading-4 ${
-              messageType === "error"
-                ? "text-red-300"
-                : "text-emerald-300"
+              messageType === "error" ? "text-red-300" : "text-emerald-300"
             }`}
           >
             {message}

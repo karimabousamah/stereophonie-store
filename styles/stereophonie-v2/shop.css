@@ -7331,7 +7331,6 @@
 
 /* STEREOPHONIE — V17 SECOND IMAGE HOVER END */
 
-
 /* ===== COMPACT PRODUCT CARDS / SHOP START ===== */
 
 /*
@@ -7346,11 +7345,7 @@
 
 @media (min-width: 1101px) {
   .st-v2-product-grid {
-    grid-template-columns:
-      repeat(
-        auto-fill,
-        minmax(255px, 285px)
-      ) !important;
+    grid-template-columns: repeat(auto-fill, minmax(255px, 285px)) !important;
 
     justify-content: start !important;
     align-items: start !important;
@@ -7371,11 +7366,7 @@
  */
 @media (min-width: 701px) and (max-width: 1100px) {
   .st-v2-product-grid {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      ) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 
     gap: 12px !important;
   }
@@ -7402,7 +7393,6 @@
 
 /* ===== COMPACT PRODUCT CARDS / SHOP END ===== */
 
-
 /* ===== PRODUCT CARD COMPACT HEIGHT START ===== */
 
 /*
@@ -7423,7 +7413,6 @@
  * - product page
  */
 
-
 /* ----------------------------------------------------------
    1. Never force catalog cards to fill the height of the
       surrounding product-grid row.
@@ -7434,7 +7423,6 @@
 .st-v2-home-product-grid--canonical {
   align-items: start !important;
 }
-
 
 /* ----------------------------------------------------------
    2. Product card should use its CONTENT height.
@@ -7447,7 +7435,6 @@
   min-height: 0 !important;
   align-self: start !important;
 }
-
 
 /* ----------------------------------------------------------
    3. Remove forced stretching from the information/footer
@@ -7465,7 +7452,6 @@
   height: auto !important;
 }
 
-
 /* ----------------------------------------------------------
    4. Prevent flex layouts inside the information area from
       pushing the price/footer to an artificial card bottom.
@@ -7477,7 +7463,6 @@
 .st-card17__details {
   flex-grow: 0 !important;
 }
-
 
 /* ----------------------------------------------------------
    5. Compact bottom breathing room.
@@ -7491,7 +7476,6 @@
   margin-bottom: 0 !important;
 }
 
-
 /* ----------------------------------------------------------
    6. If the price is the final element, don't let it create
       additional bottom margin.
@@ -7501,6 +7485,5 @@
 .st-card17__footer > *:last-child {
   margin-bottom: 0 !important;
 }
-
 
 /* ===== PRODUCT CARD COMPACT HEIGHT END ===== */

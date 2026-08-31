@@ -1,36 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import {
-  usePathname,
-  useRouter,
-  useSearchParams,
-  } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   ChevronRight,
   LoaderCircle,
+  Menu,
   PackageSearch,
   Search,
   ShoppingCart,
   UserRound,
   X,
 } from "lucide-react";
-import { FormEvent,
-  KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 
 import BrandLogo from "@/components/storefront/brand-logo";
 import { useCart } from "@/components/cart/cart-provider";
 
-
-function HeaderSaveIcon({
-  className,
-}: {
-  className?: string;
-}) {
+function HeaderSaveIcon({ className }: { className?: string }) {
   return (
     <svg
       data-st-header-save
@@ -55,8 +42,7 @@ function HeaderSaveIcon({
   );
 }
 
-const SEARCH_HISTORY_STORAGE_KEY =
-  "stereophonie-v2-search-history";
+const SEARCH_HISTORY_STORAGE_KEY = "stereophonie-v2-search-history";
 
 const MAX_SEARCH_HISTORY = 7;
 
@@ -114,22 +100,14 @@ function availabilityClass(status: string) {
   return "is-out";
 }
 
-function HighlightMatch({
-  text,
-  query,
-}: {
-  text: string;
-  query: string;
-}) {
+function HighlightMatch({ text, query }: { text: string; query: string }) {
   const clean = query.trim();
 
   if (!clean) {
     return <>{text}</>;
   }
 
-  const index = text
-    .toLowerCase()
-    .indexOf(clean.toLowerCase());
+  const index = text.toLowerCase().indexOf(clean.toLowerCase());
 
   if (index < 0) {
     return <>{text}</>;
@@ -138,14 +116,11 @@ function HighlightMatch({
   return (
     <>
       {text.slice(0, index)}
-      <mark>
-        {text.slice(index, index + clean.length)}
-      </mark>
+      <mark>{text.slice(index, index + clean.length)}</mark>
       {text.slice(index + clean.length)}
     </>
   );
 }
-
 
 type HeaderCategory = {
   id: string;
@@ -163,9 +138,7 @@ export default function V2Header() {
     searchParams.get("category")?.trim().toLowerCase() ?? "";
 
   const isOffersActive =
-    pathname === "/shop" &&
-    searchParams.get("offers") === "true";
-
+    pathname === "/shop" && searchParams.get("offers") === "true";
 
   const isAllProductsActive =
     pathname === "/shop" &&
@@ -176,68 +149,111 @@ export default function V2Header() {
     return (
       pathname === "/shop" &&
       !isOffersActive &&
-      selectedHeaderCategory ===
-        categoryName.trim().toLowerCase()
+      selectedHeaderCategory === categoryName.trim().toLowerCase()
     );
   }
 
-
   const isTrackOrderPage =
-    pathname === "/track-order" ||
-    pathname.startsWith("/track-order/");
+    pathname === "/track-order" || pathname.startsWith("/track-order/");
 
-  const {
-    totalItems,
-    isCartReady,
-    openCart,
-  } = useCart();
+  const { totalItems, isCartReady, openCart } = useCart();
 
-  const categoryStripRef =
-    useRef<HTMLDivElement>(null);
+  const categoryStripRef = useRef<HTMLDivElement>(null);
 
   const [query, setQuery] = useState("");
 
-  const [headerCategories, setHeaderCategories] =
-    useState<HeaderCategory[]>([]);
+  const [headerCategories, setHeaderCategories] = useState<HeaderCategory[]>(
+    [],
+  );
 
+  const [mobileCategoryMenuOpen, setMobileCategoryMenuOpen] = useState(false);
 
+  const headerRef = useRef<HTMLElement | null>(null);
 
-  const [searchOpen, setSearchOpen] =
-    useState(false);
+  const [mobileCategoryMenuTop, setMobileCategoryMenuTop] = useState(72);
 
-  const [searchLoading, setSearchLoading] =
-    useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  const [searchError, setSearchError] =
-    useState<string | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
 
-  const [searchResults, setSearchResults] =
-    useState<SearchResult[]>([]);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
-  const [brandSuggestions, setBrandSuggestions] =
-    useState<string[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
 
-  const [
-    categorySuggestions,
-    setCategorySuggestions,
-  ] = useState<string[]>([]);
+  const [brandSuggestions, setBrandSuggestions] = useState<string[]>([]);
 
-  const [activeResult, setActiveResult] =
-    useState(-1);
+  const [categorySuggestions, setCategorySuggestions] = useState<string[]>([]);
 
-  const [recentSearches, setRecentSearches] =
-    useState<string[]>([]);
+  const [activeResult, setActiveResult] = useState(-1);
 
-  const searchRootRef =
-    useRef<HTMLDivElement | null>(null);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  const searchRootRef = useRef<HTMLDivElement | null>(null);
 
   const cleanQuery = query.trim();
 
+  function closeMobileCategoryMenu() {
+    setMobileCategoryMenuOpen(false);
+  }
+
+  function toggleMobileCategoryMenu() {
+    const headerBottom =
+      headerRef.current?.getBoundingClientRect().bottom ?? 72;
+
+    setMobileCategoryMenuTop(Math.max(0, Math.round(headerBottom)));
+
+    setSearchOpen(false);
+
+    setMobileCategoryMenuOpen((current) => !current);
+  }
+
+  useEffect(() => {
+    closeMobileCategoryMenu();
+  }, [pathname, searchParams]);
+
+  useEffect(() => {
+    if (!mobileCategoryMenuOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const previousOverscroll = document.body.style.overscrollBehavior;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+
+    function handleEscape(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMobileCategoryMenuOpen(false);
+      }
+    }
+
+    function refreshMenuPosition() {
+      const headerBottom =
+        headerRef.current?.getBoundingClientRect().bottom ?? 72;
+
+      setMobileCategoryMenuTop(Math.max(0, Math.round(headerBottom)));
+    }
+
+    refreshMenuPosition();
+
+    window.addEventListener("resize", refreshMenuPosition);
+    window.addEventListener("orientationchange", refreshMenuPosition);
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.overscrollBehavior = previousOverscroll;
+
+      window.removeEventListener("resize", refreshMenuPosition);
+      window.removeEventListener("orientationchange", refreshMenuPosition);
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [mobileCategoryMenuOpen]);
+
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem(
-        SEARCH_HISTORY_STORAGE_KEY,
-      );
+      const saved = window.localStorage.getItem(SEARCH_HISTORY_STORAGE_KEY);
 
       if (!saved) {
         return;
@@ -253,15 +269,12 @@ export default function V2Header() {
         parsed
           .filter(
             (item): item is string =>
-              typeof item === "string" &&
-              item.trim().length > 0,
+              typeof item === "string" && item.trim().length > 0,
           )
           .slice(0, MAX_SEARCH_HISTORY),
       );
     } catch {
-      window.localStorage.removeItem(
-        SEARCH_HISTORY_STORAGE_KEY,
-      );
+      window.localStorage.removeItem(SEARCH_HISTORY_STORAGE_KEY);
     }
   }, []);
 
@@ -277,75 +290,56 @@ export default function V2Header() {
       return;
     }
 
-    const controller =
-      new AbortController();
+    const controller = new AbortController();
 
-    const timer = window.setTimeout(
-      async () => {
-        setSearchLoading(true);
-        setSearchError(null);
+    const timer = window.setTimeout(async () => {
+      setSearchLoading(true);
+      setSearchError(null);
 
-        try {
-          const response = await fetch(
-            `/api/products/search?q=${encodeURIComponent(
-              cleanQuery,
-            )}`,
-            {
-              signal: controller.signal,
-              headers: {
-                Accept: "application/json",
-              },
+      try {
+        const response = await fetch(
+          `/api/products/search?q=${encodeURIComponent(cleanQuery)}`,
+          {
+            signal: controller.signal,
+            headers: {
+              Accept: "application/json",
             },
-          );
+          },
+        );
 
-          const data =
-            (await response.json()) as SearchResponse;
+        const data = (await response.json()) as SearchResponse;
 
-          if (!response.ok) {
-            throw new Error(
-              data.error ??
-                "Search database unavailable.",
-            );
-          }
-
-          setSearchResults(
-            data.results ?? [],
-          );
-
-          setBrandSuggestions(
-            data.brands ?? [],
-          );
-
-          setCategorySuggestions(
-            data.categories ?? [],
-          );
-
-          setActiveResult(-1);
-        } catch (error) {
-          if (
-            error instanceof DOMException &&
-            error.name === "AbortError"
-          ) {
-            return;
-          }
-
-          setSearchResults([]);
-          setBrandSuggestions([]);
-          setCategorySuggestions([]);
-
-          setSearchError(
-            error instanceof Error
-              ? error.message
-              : "Search database unavailable.",
-          );
-        } finally {
-          if (!controller.signal.aborted) {
-            setSearchLoading(false);
-          }
+        if (!response.ok) {
+          throw new Error(data.error ?? "Search database unavailable.");
         }
-      },
-      220,
-    );
+
+        setSearchResults(data.results ?? []);
+
+        setBrandSuggestions(data.brands ?? []);
+
+        setCategorySuggestions(data.categories ?? []);
+
+        setActiveResult(-1);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        setSearchResults([]);
+        setBrandSuggestions([]);
+        setCategorySuggestions([]);
+
+        setSearchError(
+          error instanceof Error
+            ? error.message
+            : "Search database unavailable.",
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setSearchLoading(false);
+        }
+      }
+    }, 220);
 
     return () => {
       window.clearTimeout(timer);
@@ -354,30 +348,20 @@ export default function V2Header() {
   }, [cleanQuery]);
 
   useEffect(() => {
-    function handleOutside(
-      event: MouseEvent,
-    ) {
+    function handleOutside(event: MouseEvent) {
       if (
         searchRootRef.current &&
-        !searchRootRef.current.contains(
-          event.target as Node,
-        )
+        !searchRootRef.current.contains(event.target as Node)
       ) {
         setSearchOpen(false);
         setActiveResult(-1);
       }
     }
 
-    document.addEventListener(
-      "mousedown",
-      handleOutside,
-    );
+    document.addEventListener("mousedown", handleOutside);
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleOutside,
-      );
+      document.removeEventListener("mousedown", handleOutside);
     };
   }, []);
 
@@ -386,15 +370,11 @@ export default function V2Header() {
     setActiveResult(-1);
   }, [pathname]);
 
-  function saveSearchHistory(
-    searches: string[],
-  ) {
+  function saveSearchHistory(searches: string[]) {
     setRecentSearches(searches);
 
     if (searches.length === 0) {
-      window.localStorage.removeItem(
-        SEARCH_HISTORY_STORAGE_KEY,
-      );
+      window.localStorage.removeItem(SEARCH_HISTORY_STORAGE_KEY);
 
       return;
     }
@@ -415,9 +395,7 @@ export default function V2Header() {
     const next = [
       cleaned,
       ...recentSearches.filter(
-        (search) =>
-          search.toLowerCase() !==
-          cleaned.toLowerCase(),
+        (search) => search.toLowerCase() !== cleaned.toLowerCase(),
       ),
     ].slice(0, MAX_SEARCH_HISTORY);
 
@@ -428,36 +406,24 @@ export default function V2Header() {
     saveSearchHistory([]);
   }
 
-  function removeSearchHistoryItem(
-    value: string,
-  ) {
-    saveSearchHistory(
-      recentSearches.filter(
-        (search) => search !== value,
-      ),
-    );
+  function removeSearchHistoryItem(value: string) {
+    saveSearchHistory(recentSearches.filter((search) => search !== value));
   }
 
-  function reuseSearchHistory(
-    value: string,
-  ) {
+  function reuseSearchHistory(value: string) {
     setQuery(value);
     setSearchOpen(true);
     setActiveResult(-1);
   }
-
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadHeaderCategories() {
       try {
-        const response = await fetch(
-          "/api/storefront/header-categories",
-          {
-            cache: "no-store",
-          },
-        );
+        const response = await fetch("/api/storefront/header-categories", {
+          cache: "no-store",
+        });
 
         if (!response.ok) {
           throw new Error(
@@ -476,17 +442,13 @@ export default function V2Header() {
         const categories = Array.isArray(payload.categories)
           ? payload.categories.filter(
               (category) =>
-                Boolean(category?.id) &&
-                Boolean(category?.name?.trim()),
+                Boolean(category?.id) && Boolean(category?.name?.trim()),
             )
           : [];
 
         setHeaderCategories(categories);
       } catch (error) {
-        console.error(
-          "Stereophonie header categories could not load:",
-          error,
-        );
+        console.error("Stereophonie header categories could not load:", error);
 
         if (!cancelled) {
           setHeaderCategories([]);
@@ -501,24 +463,17 @@ export default function V2Header() {
     };
   }, []);
 
-  
   /* HEADER CATEGORY AUTO-SCROLL EFFECT START */
   useEffect(() => {
-    const currentRail =
-      categoryStripRef.current;
+    const currentRail = categoryStripRef.current;
 
     if (!currentRail) {
       return;
     }
 
-    const railElement: HTMLDivElement =
-      currentRail;
+    const railElement: HTMLDivElement = currentRail;
 
-    if (
-      window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches
-    ) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
@@ -526,41 +481,30 @@ export default function V2Header() {
 
     let direction: 1 | -1 = 1;
 
-    let previousTime =
-      performance.now();
+    let previousTime = performance.now();
 
     /*
      * Smooth, clearly visible speed.
      */
     const speed = 120;
 
-    let pauseUntil =
-      performance.now() + 350;
+    let pauseUntil = performance.now() + 350;
 
     let pointerInside = false;
 
-    let virtualScroll =
-      railElement.scrollLeft;
+    let virtualScroll = railElement.scrollLeft;
 
-    function pauseFor(
-      milliseconds: number,
-    ) {
-      pauseUntil =
-        performance.now() +
-        milliseconds;
+    function pauseFor(milliseconds: number) {
+      pauseUntil = performance.now() + milliseconds;
     }
 
     function syncVirtualPosition() {
-      virtualScroll =
-        railElement.scrollLeft;
+      virtualScroll = railElement.scrollLeft;
     }
 
     function animate(now: number) {
       const deltaSeconds = Math.min(
-        Math.max(
-          (now - previousTime) / 1000,
-          0,
-        ),
+        Math.max((now - previousTime) / 1000, 0),
         0.04,
       );
 
@@ -568,40 +512,27 @@ export default function V2Header() {
 
       const maxScroll = Math.max(
         0,
-        railElement.scrollWidth -
-          railElement.clientWidth,
+        railElement.scrollWidth - railElement.clientWidth,
       );
 
       if (maxScroll <= 1) {
         virtualScroll = 0;
         railElement.scrollLeft = 0;
 
-        animationFrame =
-          window.requestAnimationFrame(
-            animate,
-          );
+        animationFrame = window.requestAnimationFrame(animate);
 
         return;
       }
 
-      if (
-        pointerInside ||
-        now < pauseUntil
-      ) {
+      if (pointerInside || now < pauseUntil) {
         syncVirtualPosition();
 
-        animationFrame =
-          window.requestAnimationFrame(
-            animate,
-          );
+        animationFrame = window.requestAnimationFrame(animate);
 
         return;
       }
 
-      virtualScroll +=
-        speed *
-        deltaSeconds *
-        direction;
+      virtualScroll += speed * deltaSeconds * direction;
 
       /*
        * RIGHT EDGE:
@@ -623,13 +554,9 @@ export default function V2Header() {
         pauseUntil = now + 220;
       }
 
-      railElement.scrollLeft =
-        virtualScroll;
+      railElement.scrollLeft = virtualScroll;
 
-      animationFrame =
-        window.requestAnimationFrame(
-          animate,
-        );
+      animationFrame = window.requestAnimationFrame(animate);
     }
 
     function handlePointerEnter() {
@@ -649,102 +576,52 @@ export default function V2Header() {
     }
 
     function handleScroll() {
-      if (
-        pointerInside ||
-        performance.now() < pauseUntil
-      ) {
+      if (pointerInside || performance.now() < pauseUntil) {
         syncVirtualPosition();
       }
     }
 
-    railElement.addEventListener(
-      "pointerenter",
-      handlePointerEnter,
-    );
+    railElement.addEventListener("pointerenter", handlePointerEnter);
 
-    railElement.addEventListener(
-      "pointerleave",
-      handlePointerLeave,
-    );
+    railElement.addEventListener("pointerleave", handlePointerLeave);
 
-    railElement.addEventListener(
-      "pointerdown",
-      handleManualInteraction,
-      {
-        passive: true,
-      },
-    );
+    railElement.addEventListener("pointerdown", handleManualInteraction, {
+      passive: true,
+    });
 
-    railElement.addEventListener(
-      "touchstart",
-      handleManualInteraction,
-      {
-        passive: true,
-      },
-    );
+    railElement.addEventListener("touchstart", handleManualInteraction, {
+      passive: true,
+    });
 
-    railElement.addEventListener(
-      "wheel",
-      handleManualInteraction,
-      {
-        passive: true,
-      },
-    );
+    railElement.addEventListener("wheel", handleManualInteraction, {
+      passive: true,
+    });
 
-    railElement.addEventListener(
-      "scroll",
-      handleScroll,
-      {
-        passive: true,
-      },
-    );
+    railElement.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
 
-    animationFrame =
-      window.requestAnimationFrame(
-        animate,
-      );
+    animationFrame = window.requestAnimationFrame(animate);
 
     return () => {
-      window.cancelAnimationFrame(
-        animationFrame,
-      );
+      window.cancelAnimationFrame(animationFrame);
 
-      railElement.removeEventListener(
-        "pointerenter",
-        handlePointerEnter,
-      );
+      railElement.removeEventListener("pointerenter", handlePointerEnter);
 
-      railElement.removeEventListener(
-        "pointerleave",
-        handlePointerLeave,
-      );
+      railElement.removeEventListener("pointerleave", handlePointerLeave);
 
-      railElement.removeEventListener(
-        "pointerdown",
-        handleManualInteraction,
-      );
+      railElement.removeEventListener("pointerdown", handleManualInteraction);
 
-      railElement.removeEventListener(
-        "touchstart",
-        handleManualInteraction,
-      );
+      railElement.removeEventListener("touchstart", handleManualInteraction);
 
-      railElement.removeEventListener(
-        "wheel",
-        handleManualInteraction,
-      );
+      railElement.removeEventListener("wheel", handleManualInteraction);
 
-      railElement.removeEventListener(
-        "scroll",
-        handleScroll,
-      );
+      railElement.removeEventListener("scroll", handleScroll);
     };
   }, [headerCategories.length]);
   /* HEADER CATEGORY AUTO-SCROLL EFFECT END */
 
-function submitSearch(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const value = query.trim();
@@ -755,18 +632,10 @@ function submitSearch(
 
     setSearchOpen(false);
 
-    router.push(
-      value
-        ? `/shop?search=${encodeURIComponent(
-            value,
-          )}`
-        : "/shop",
-    );
+    router.push(value ? `/shop?search=${encodeURIComponent(value)}` : "/shop");
   }
 
-  function openProduct(
-    product: SearchResult,
-  ) {
+  function openProduct(product: SearchResult) {
     if (cleanQuery) {
       rememberSearch(cleanQuery);
     }
@@ -774,38 +643,22 @@ function submitSearch(
     setSearchOpen(false);
     setActiveResult(-1);
 
-    router.push(
-      `/shop/${encodeURIComponent(
-        product.slug,
-      )}`,
-    );
+    router.push(`/shop/${encodeURIComponent(product.slug)}`);
   }
 
   function searchBrand(brand: string) {
     setSearchOpen(false);
 
-    router.push(
-      `/shop?brand=${encodeURIComponent(
-        brand,
-      )}`,
-    );
+    router.push(`/shop?brand=${encodeURIComponent(brand)}`);
   }
 
-  function searchCategory(
-    category: string,
-  ) {
+  function searchCategory(category: string) {
     setSearchOpen(false);
 
-    router.push(
-      `/shop?category=${encodeURIComponent(
-        category,
-      )}`,
-    );
+    router.push(`/shop?category=${encodeURIComponent(category)}`);
   }
 
-  function handleSearchKeyboard(
-    event: KeyboardEvent<HTMLInputElement>,
-  ) {
+  function handleSearchKeyboard(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
       event.preventDefault();
       setSearchOpen(false);
@@ -813,19 +666,13 @@ function submitSearch(
       return;
     }
 
-    if (
-      event.key === "ArrowDown" &&
-      searchResults.length > 0
-    ) {
+    if (event.key === "ArrowDown" && searchResults.length > 0) {
       event.preventDefault();
 
       setSearchOpen(true);
 
       setActiveResult((current) => {
-        if (
-          current >=
-          searchResults.length - 1
-        ) {
+        if (current >= searchResults.length - 1) {
           return 0;
         }
 
@@ -835,19 +682,14 @@ function submitSearch(
       return;
     }
 
-    if (
-      event.key === "ArrowUp" &&
-      searchResults.length > 0
-    ) {
+    if (event.key === "ArrowUp" && searchResults.length > 0) {
       event.preventDefault();
 
       setSearchOpen(true);
 
       setActiveResult((current) => {
         if (current <= 0) {
-          return (
-            searchResults.length - 1
-          );
+          return searchResults.length - 1;
         }
 
         return current - 1;
@@ -863,22 +705,18 @@ function submitSearch(
     ) {
       event.preventDefault();
 
-      openProduct(
-        searchResults[activeResult],
-      );
+      openProduct(searchResults[activeResult]);
     }
   }
 
   const hasSuggestions =
-    brandSuggestions.length > 0 ||
-    categorySuggestions.length > 0;
+    brandSuggestions.length > 0 || categorySuggestions.length > 0;
 
-  const hasResults =
-    searchResults.length > 0;
+  const hasResults = searchResults.length > 0;
 
   return (
     <>
-      <header className="st-v2-header">
+      <header ref={headerRef} className="st-v2-header">
         <div className="st-v2-header__signal">
           <div className="st-v2-container st-v2-header__signal-inner">
             <div>
@@ -896,33 +734,20 @@ function submitSearch(
                 TRACK ORDER
               </Link>
 
-              <span>
-                DELIVERY / LEBANON
-              </span>
+              <span>DELIVERY / LEBANON</span>
 
-              <span>
-                STORE PICKUP / AVAILABLE
-              </span>
+              <span>STORE PICKUP / AVAILABLE</span>
             </div>
           </div>
         </div>
 
         <div className="st-v2-header__main">
           <div className="st-v2-container st-v2-header__main-inner">
-            <Link
-              href="/"
-              className="st-v2-header__logo"
-            >
-              <BrandLogo
-                className="w-[190px] md:w-[225px]"
-                priority
-              />
+            <Link href="/" className="st-v2-header__logo">
+              <BrandLogo className="w-[190px] md:w-[225px]" priority />
             </Link>
 
-            <div
-              ref={searchRootRef}
-              className="st-v2-live-search"
-            >
+            <div ref={searchRootRef} className="st-v2-live-search">
               <form
                 className={`st-v2-header__search st-v2-live-search__form ${
                   searchOpen ? "is-live-search-open" : ""
@@ -989,9 +814,7 @@ function submitSearch(
               <div
                 id="st-v2-search-results"
                 className={`st-v2-live-search__panel ${
-                  searchOpen
-                    ? "is-open"
-                    : ""
+                  searchOpen ? "is-open" : ""
                 }`}
               >
                 {cleanQuery.length === 0 ? (
@@ -1009,55 +832,40 @@ function submitSearch(
                             <strong>RECENT SEARCHES</strong>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={clearSearchHistory}
-                          >
+                          <button type="button" onClick={clearSearchHistory}>
                             CLEAR ALL
                           </button>
                         </div>
 
                         <div className="st-v2-live-search__history-list">
-                          {recentSearches.map(
-                            (search, index) => (
-                              <div
-                                key={`${search}-${index}`}
-                                className="st-v2-live-search__history-row"
+                          {recentSearches.map((search, index) => (
+                            <div
+                              key={`${search}-${index}`}
+                              className="st-v2-live-search__history-row"
+                            >
+                              <button
+                                type="button"
+                                className="st-v2-live-search__history-reuse"
+                                onClick={() => reuseSearchHistory(search)}
                               >
-                                <button
-                                  type="button"
-                                  className="st-v2-live-search__history-reuse"
-                                  onClick={() =>
-                                    reuseSearchHistory(
-                                      search,
-                                    )
-                                  }
-                                >
-                                  <Search />
+                                <Search />
 
-                                  <span>
-                                    {search}
-                                  </span>
+                                <span>{search}</span>
 
-                                  <ChevronRight />
-                                </button>
+                                <ChevronRight />
+                              </button>
 
-                                <button
-                                  type="button"
-                                  className="st-v2-live-search__history-remove"
-                                  aria-label={`Remove ${search} from search history`}
-                                  title="Remove this search"
-                                  onClick={() =>
-                                    removeSearchHistoryItem(
-                                      search,
-                                    )
-                                  }
-                                >
-                                  <X />
-                                </button>
-                              </div>
-                            ),
-                          )}
+                              <button
+                                type="button"
+                                className="st-v2-live-search__history-remove"
+                                aria-label={`Remove ${search} from search history`}
+                                title="Remove this search"
+                                onClick={() => removeSearchHistoryItem(search)}
+                              >
+                                <X />
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       </section>
                     ) : (
@@ -1076,15 +884,18 @@ function submitSearch(
 
                           <p>
                             Search the complete Stereophonie catalog instantly.
-                            Find products, brands, categories and models as you type.
+                            Find products, brands, categories and models as you
+                            type.
                           </p>
 
                           <div className="st-search-welcome-v3__ready">
-                          <span>INPUT STATUS</span>
-                          <b className="st-search-welcome-v3__ready-slash">/</b>
-                          <strong>READY</strong>
-                          <i />
-                        </div>
+                            <span>INPUT STATUS</span>
+                            <b className="st-search-welcome-v3__ready-slash">
+                              /
+                            </b>
+                            <strong>READY</strong>
+                            <i />
+                          </div>
                         </section>
 
                         <section className="st-search-welcome-v3__database">
@@ -1128,135 +939,82 @@ function submitSearch(
                   </div>
                 ) : null}
 
-                {cleanQuery.length >
-                  0 &&
-                searchLoading &&
-                !hasResults ? (
+                {cleanQuery.length > 0 && searchLoading && !hasResults ? (
                   <div className="st-v2-live-search__state">
                     <LoaderCircle />
-                    <span>
-                      SCANNING CATALOG...
-                    </span>
+                    <span>SCANNING CATALOG...</span>
                   </div>
                 ) : null}
 
                 {searchError ? (
                   <div className="st-v2-live-search__state is-error">
-                    <span>
-                      SEARCH SYSTEM ERROR
-                    </span>
+                    <span>SEARCH SYSTEM ERROR</span>
 
-                    <small>
-                      {searchError}
-                    </small>
+                    <small>{searchError}</small>
                   </div>
                 ) : null}
 
                 {!searchError &&
                 !searchLoading &&
-                cleanQuery.length >
-                  0 &&
+                cleanQuery.length > 0 &&
                 !hasResults &&
                 !hasSuggestions ? (
                   <div className="st-v2-live-search__empty">
                     <Search />
 
-                    <span>
-                      RESULT / 000
-                    </span>
+                    <span>RESULT / 000</span>
 
-                    <strong>
-                      NO HARDWARE FOUND.
-                    </strong>
+                    <strong>NO HARDWARE FOUND.</strong>
 
-                    <p>
-                      Try another product,
-                      brand or model.
-                    </p>
+                    <p>Try another product, brand or model.</p>
                   </div>
                 ) : null}
 
-                {!searchError &&
-                cleanQuery.length >
-                  0 &&
-                hasSuggestions ? (
+                {!searchError && cleanQuery.length > 0 && hasSuggestions ? (
                   <div className="st-v2-live-search__suggestions">
-                    {brandSuggestions.length >
-                    0 ? (
+                    {brandSuggestions.length > 0 ? (
                       <section>
-                        <span>
-                          BRANDS
-                        </span>
+                        <span>BRANDS</span>
 
                         <div>
-                          {brandSuggestions.map(
-                            (brand) => (
-                              <button
-                                key={
-                                  brand
-                                }
-                                type="button"
-                                onClick={() =>
-                                  searchBrand(
-                                    brand,
-                                  )
-                                }
-                              >
-                                <span>
-                                  {
-                                    brand
-                                  }
-                                </span>
+                          {brandSuggestions.map((brand) => (
+                            <button
+                              key={brand}
+                              type="button"
+                              onClick={() => searchBrand(brand)}
+                            >
+                              <span>{brand}</span>
 
-                                <ChevronRight />
-                              </button>
-                            ),
-                          )}
+                              <ChevronRight />
+                            </button>
+                          ))}
                         </div>
                       </section>
                     ) : null}
 
-                    {categorySuggestions.length >
-                    0 ? (
+                    {categorySuggestions.length > 0 ? (
                       <section>
-                        <span>
-                          CATEGORIES
-                        </span>
+                        <span>CATEGORIES</span>
 
                         <div>
-                          {categorySuggestions.map(
-                            (
-                              category,
-                            ) => (
-                              <button
-                                key={
-                                  category
-                                }
-                                type="button"
-                                onClick={() =>
-                                  searchCategory(
-                                    category,
-                                  )
-                                }
-                              >
-                                <span>
-                                  {
-                                    category
-                                  }
-                                </span>
+                          {categorySuggestions.map((category) => (
+                            <button
+                              key={category}
+                              type="button"
+                              onClick={() => searchCategory(category)}
+                            >
+                              <span>{category}</span>
 
-                                <ChevronRight />
-                              </button>
-                            ),
-                          )}
+                              <ChevronRight />
+                            </button>
+                          ))}
                         </div>
                       </section>
                     ) : null}
                   </div>
                 ) : null}
 
-                {!searchError &&
-                hasResults ? (
+                {!searchError && hasResults ? (
                   <section className="st-v2-live-search__products">
                     <header>
                       <div>
@@ -1265,115 +1023,64 @@ function submitSearch(
                       </div>
 
                       <strong>
-                        {String(
-                          searchResults.length,
-                        ).padStart(
-                          2,
-                          "0",
-                        )}
+                        {String(searchResults.length).padStart(2, "0")}
                       </strong>
                     </header>
 
                     <div className="st-v2-live-search__product-list">
-                      {searchResults.map(
-                        (
-                          product,
-                          index,
-                        ) => (
-                          <button
-                            key={
-                              product.id
-                            }
-                            type="button"
-                            className={
-                              activeResult ===
-                              index
-                                ? "is-active"
-                                : ""
-                            }
-                            onMouseEnter={() =>
-                              setActiveResult(
-                                index,
-                              )
-                            }
-                            onClick={() =>
-                              openProduct(
-                                product,
-                              )
-                            }
-                          >
-                            <div className="st-v2-live-search__image">
-                              {product.imageUrl ? (
-                                <img
-                                  src={
-                                    product.imageUrl
-                                  }
-                                  alt={
-                                    product.imageAlt
-                                  }
-                                />
-                              ) : (
-                                <span>
-                                  NO IMAGE
-                                </span>
-                              )}
-                            </div>
+                      {searchResults.map((product, index) => (
+                        <button
+                          key={product.id}
+                          type="button"
+                          className={activeResult === index ? "is-active" : ""}
+                          onMouseEnter={() => setActiveResult(index)}
+                          onClick={() => openProduct(product)}
+                        >
+                          <div className="st-v2-live-search__image">
+                            {product.imageUrl ? (
+                              <img
+                                src={product.imageUrl}
+                                alt={product.imageAlt}
+                              />
+                            ) : (
+                              <span>NO IMAGE</span>
+                            )}
+                          </div>
 
-                            <div className="st-v2-live-search__product-info">
-                              <small>
-                                {product.brand
-                                  ? `${product.brand} / `
-                                  : ""}
-                                {
-                                  product.category
-                                }
-                              </small>
+                          <div className="st-v2-live-search__product-info">
+                            <small>
+                              {product.brand ? `${product.brand} / ` : ""}
+                              {product.category}
+                            </small>
 
-                              <strong>
-                                <HighlightMatch
-                                  text={
-                                    product.name
-                                  }
-                                  query={
-                                    cleanQuery
-                                  }
-                                />
-                              </strong>
+                            <strong>
+                              <HighlightMatch
+                                text={product.name}
+                                query={cleanQuery}
+                              />
+                            </strong>
 
-                              <span
-                                className={`st-v2-live-search__availability ${availabilityClass(
-                                  product.availabilityStatus,
-                                )}`}
-                              >
-                                <i />
-                                {
-                                  product.availability
-                                }
-                              </span>
-                            </div>
+                            <span
+                              className={`st-v2-live-search__availability ${availabilityClass(
+                                product.availabilityStatus,
+                              )}`}
+                            >
+                              <i />
+                              {product.availability}
+                            </span>
+                          </div>
 
-                            <div className="st-v2-live-search__price">
-                              <strong>
-                                {formatPrice(
-                                  product.price,
-                                )}
-                              </strong>
+                          <div className="st-v2-live-search__price">
+                            <strong>{formatPrice(product.price)}</strong>
 
-                              {product.onSale &&
-                              product.regularPrice !==
-                                null ? (
-                                <del>
-                                  {formatPrice(
-                                    product.regularPrice,
-                                  )}
-                                </del>
-                              ) : null}
+                            {product.onSale && product.regularPrice !== null ? (
+                              <del>{formatPrice(product.regularPrice)}</del>
+                            ) : null}
 
-                              <ChevronRight />
-                            </div>
-                          </button>
-                        ),
-                      )}
+                            <ChevronRight />
+                          </div>
+                        </button>
+                      ))}
                     </div>
 
                     <button
@@ -1381,26 +1088,17 @@ function submitSearch(
                       className="st-v2-live-search__all"
                       onClick={() => {
                         if (cleanQuery) {
-                          rememberSearch(
-                            cleanQuery,
-                          );
+                          rememberSearch(cleanQuery);
                         }
 
-                        setSearchOpen(
-                          false,
-                        );
+                        setSearchOpen(false);
 
                         router.push(
-                          `/shop?search=${encodeURIComponent(
-                            cleanQuery,
-                          )}`,
+                          `/shop?search=${encodeURIComponent(cleanQuery)}`,
                         );
                       }}
                     >
-                      <span>
-                        VIEW ALL RESULTS FOR
-                        “{cleanQuery}”
-                      </span>
+                      <span>VIEW ALL RESULTS FOR “{cleanQuery}”</span>
 
                       <ChevronRight />
                     </button>
@@ -1408,33 +1106,38 @@ function submitSearch(
                 ) : null}
 
                 <div className="st-v2-live-search__keys">
-                  <span>
-                    ↑ ↓ NAVIGATE
-                  </span>
+                  <span>↑ ↓ NAVIGATE</span>
 
-                  <span>
-                    ENTER SELECT
-                  </span>
+                  <span>ENTER SELECT</span>
 
-                  <span>
-                    ESC CLOSE
-                  </span>
+                  <span>ESC CLOSE</span>
                 </div>
               </div>
             </div>
 
             <div className="st-v2-header__actions">
-              <Link
-                href="/account"
-                aria-label="Account"
+              <button
+                type="button"
+                className={`st-v2-header__mobile-menu-trigger ${
+                  mobileCategoryMenuOpen ? "is-open" : ""
+                }`}
+                onClick={toggleMobileCategoryMenu}
+                aria-expanded={mobileCategoryMenuOpen}
+                aria-controls="st-mobile-category-menu"
+                aria-label={
+                  mobileCategoryMenuOpen
+                    ? "Close category menu"
+                    : "Open category menu"
+                }
               >
+                {mobileCategoryMenuOpen ? <X /> : <Menu />}
+              </button>
+
+              <Link href="/account" aria-label="Account">
                 <UserRound />
               </Link>
 
-              <Link
-                href="/wishlist"
-                aria-label="Wishlist"
-              >
+              <Link href="/wishlist" aria-label="Wishlist">
                 <HeaderSaveIcon />
               </Link>
 
@@ -1443,20 +1146,14 @@ function submitSearch(
                 onClick={openCart}
                 className="st-v2-header__cart-trigger"
                 aria-label={`Open cart terminal with ${totalItems} ${
-                  totalItems === 1
-                    ? "item"
-                    : "items"
+                  totalItems === 1 ? "item" : "items"
                 }`}
               >
                 <ShoppingCart />
 
-                {isCartReady &&
-                totalItems > 0 ? (
+                {isCartReady && totalItems > 0 ? (
                   <span className="st-v2-header__cart-count">
-                    {totalItems >
-                    99
-                      ? "99+"
-                      : totalItems}
+                    {totalItems > 99 ? "99+" : totalItems}
                   </span>
                 ) : null}
               </button>
@@ -1464,15 +1161,9 @@ function submitSearch(
               <Link
                 href="/track-order"
                 className={`st-v2-header__track-main ${
-                  isTrackOrderPage
-                    ? "is-track-order-active"
-                    : ""
+                  isTrackOrderPage ? "is-track-order-active" : ""
                 }`}
-                aria-current={
-                  isTrackOrderPage
-                    ? "page"
-                    : undefined
-                }
+                aria-current={isTrackOrderPage ? "page" : undefined}
                 aria-label="Track your order"
               >
                 <PackageSearch />
@@ -1483,29 +1174,22 @@ function submitSearch(
         </div>
 
         <div className="st-v2-header__departments">
-          <div className="st-v2-container st-v2-header__departments-inner"
+          <div
+            className="st-v2-container st-v2-header__departments-inner"
             ref={categoryStripRef}
           >
-<Link
+            <Link
               href="/shop?offers=true"
-              className={`is-offer ${
-                isOffersActive ? "is-active" : ""
-              }`}
-              aria-current={
-                isOffersActive ? "page" : undefined
-              }
+              className={`is-offer ${isOffersActive ? "is-active" : ""}`}
+              aria-current={isOffersActive ? "page" : undefined}
             >
               OFFERS
             </Link>
             <Link
               href="/shop"
-            
-              className={`is-primary ${
-                isAllProductsActive ? "is-active" : ""
-              }`}
-              aria-current={
-                isAllProductsActive ? "page" : undefined
-              }
+
+              className={`is-primary ${isAllProductsActive ? "is-active" : ""}`}
+              aria-current={isAllProductsActive ? "page" : undefined}
             >
               ALL PRODUCTS
             </Link>
@@ -1513,26 +1197,109 @@ function submitSearch(
             {headerCategories.map((category) => (
               <Link
                 key={category.id}
-                href={`/shop?category=${encodeURIComponent(
-                  category.name,
-                )}`}
+                href={`/shop?category=${encodeURIComponent(category.name)}`}
                 title={category.name}
-              
+
                 className={
                   isHeaderCategoryActive(category.name)
                     ? "is-active"
                     : undefined
                 }
                 aria-current={
-                  isHeaderCategoryActive(category.name)
-                    ? "page"
-                    : undefined
+                  isHeaderCategoryActive(category.name) ? "page" : undefined
                 }
               >
                 {category.name.toUpperCase()}
               </Link>
             ))}
+          </div>
+        </div>
+
+        <div
+          id="st-mobile-category-menu"
+          className={`st-mobile-category-menu ${
+            mobileCategoryMenuOpen ? "is-open" : ""
+          }`}
+          style={{
+            top: `${mobileCategoryMenuTop}px`,
+          }}
+          aria-hidden={!mobileCategoryMenuOpen}
+        >
+          <button
+            type="button"
+            className="st-mobile-category-menu__backdrop"
+            aria-label="Close category menu"
+            tabIndex={mobileCategoryMenuOpen ? 0 : -1}
+            onClick={closeMobileCategoryMenu}
+          />
+
+          <nav
+            className="st-mobile-category-menu__surface"
+            aria-label="Mobile category navigation"
+          >
+            <div className="st-mobile-category-menu__heading">
+              <span>Explore</span>
+
+              <button
+                type="button"
+                onClick={closeMobileCategoryMenu}
+                aria-label="Close category menu"
+              >
+                <X />
+              </button>
             </div>
+
+            <div className="st-mobile-category-menu__links">
+              <Link
+                href="/shop"
+                className={isAllProductsActive ? "is-active" : undefined}
+                onClick={closeMobileCategoryMenu}
+              >
+                <span>Shop All</span>
+                <ChevronRight />
+              </Link>
+
+              <Link
+                href="/shop?offers=true"
+                className={`is-offer ${isOffersActive ? "is-active" : ""}`}
+                onClick={closeMobileCategoryMenu}
+              >
+                <span>Offers</span>
+                <ChevronRight />
+              </Link>
+
+              {headerCategories.map((category, index) => (
+                <Link
+                  key={category.id}
+                  href={`/shop?category=${encodeURIComponent(category.name)}`}
+                  className={
+                    isHeaderCategoryActive(category.name)
+                      ? "is-active"
+                      : undefined
+                  }
+                  style={
+                    {
+                      "--st-mobile-nav-index": index + 2,
+                    } as React.CSSProperties
+                  }
+                  onClick={closeMobileCategoryMenu}
+                >
+                  <span>{category.name}</span>
+                  <ChevronRight />
+                </Link>
+              ))}
+            </div>
+
+            <div className="st-mobile-category-menu__utility">
+              <Link href="/track-order" onClick={closeMobileCategoryMenu}>
+                Track your order
+              </Link>
+
+              <Link href="/account" onClick={closeMobileCategoryMenu}>
+                Your account
+              </Link>
+            </div>
+          </nav>
         </div>
       </header>
 
@@ -1543,24 +1310,20 @@ function submitSearch(
           min-width: 0;
         }
 
-        .st-v2-live-search
-          :global(.st-v2-header__search) {
+        .st-v2-live-search :global(.st-v2-header__search) {
           position: relative;
           z-index: 2;
         }
 
-        .st-v2-live-search
-          :global(.st-v2-header__search.is-live-search-open) {
+        .st-v2-live-search :global(.st-v2-header__search.is-live-search-open) {
           border-color: #111;
         }
-
 
         @keyframes stSearchSpin {
           to {
             transform: rotate(360deg);
           }
         }
-
 
         /*
          * SEARCH INPUT V2
@@ -1600,8 +1363,7 @@ function submitSearch(
         .st-v2-live-search__form.is-live-search-open {
           border-color: rgba(0, 0, 0, 0.72) !important;
 
-          box-shadow:
-            inset 0 -2px 0 rgba(237, 28, 36, 0.9);
+          box-shadow: inset 0 -2px 0 rgba(237, 28, 36, 0.9);
         }
 
         .st-v2-live-search__search-icon {
@@ -1638,19 +1400,12 @@ function submitSearch(
           border: 0 !important;
           outline: 0 !important;
 
-          padding:
-            0
-            82px
-            0
-            0 !important;
+          padding: 0 82px 0 0 !important;
 
           background: transparent !important;
           color: #111 !important;
 
-          font-family:
-            Arial,
-            Helvetica,
-            sans-serif !important;
+          font-family: Arial, Helvetica, sans-serif !important;
 
           font-size: 14px !important;
           font-weight: 500 !important;
@@ -1773,9 +1528,7 @@ function submitSearch(
           margin: 0 !important;
 
           border: 0 !important;
-          border-left:
-            1px solid
-            rgba(255, 255, 255, 0.08) !important;
+          border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
 
           border-radius: 0 !important;
 
@@ -1815,8 +1568,7 @@ function submitSearch(
           transform: scaleX(0);
           transform-origin: left;
 
-          transition:
-            transform 180ms ease;
+          transition: transform 180ms ease;
         }
 
         .st-v2-live-search__go:hover {
@@ -1863,7 +1615,6 @@ function submitSearch(
           }
         }
 
-
         /*
          * =====================================================
          * STEREOPHONIE LIVE SEARCH — PRECISION CONTROL PASS
@@ -1893,8 +1644,7 @@ function submitSearch(
         .st-v2-live-search__form.is-live-search-open {
           border-color: rgba(0, 0, 0, 0.72) !important;
 
-          box-shadow:
-            inset 0 -2px 0 #ed1c24 !important;
+          box-shadow: inset 0 -2px 0 #ed1c24 !important;
         }
 
         /*
@@ -1911,11 +1661,7 @@ function submitSearch(
 
           align-self: center !important;
 
-          margin:
-            0
-            17px
-            0
-            17px !important;
+          margin: 0 17px 0 17px !important;
 
           color: rgba(0, 0, 0, 0.48) !important;
 
@@ -1955,11 +1701,7 @@ function submitSearch(
           border: 0 !important;
           outline: 0 !important;
 
-          padding:
-            0
-            78px
-            0
-            0 !important;
+          padding: 0 78px 0 0 !important;
 
           background: transparent !important;
 
@@ -2100,9 +1842,7 @@ function submitSearch(
           margin: 0 !important;
 
           border: 0 !important;
-          border-left:
-            1px solid
-            rgba(255, 255, 255, 0.08) !important;
+          border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
 
           padding: 0 !important;
 
@@ -2167,8 +1907,7 @@ function submitSearch(
 
           transform-origin: left center;
 
-          transition:
-            transform 180ms ease;
+          transition: transform 180ms ease;
         }
 
         .st-v2-live-search__go:hover,
@@ -2203,11 +1942,7 @@ function submitSearch(
           }
 
           .st-v2-live-search__search-icon {
-            margin:
-              0
-              14px
-              0
-              14px !important;
+            margin: 0 14px 0 14px !important;
           }
 
           .st-v2-live-search__go {
@@ -2218,7 +1953,6 @@ function submitSearch(
           }
         }
 
-
         /*
          * =====================================================
          * SEARCH INPUT — FINAL SPACING / BASELINE PASS
@@ -2226,19 +1960,11 @@ function submitSearch(
          */
 
         .st-v2-live-search__search-icon {
-          margin:
-            0
-            15px
-            0
-            17px !important;
+          margin: 0 15px 0 17px !important;
         }
 
         .st-v2-live-search__input-shell input {
-          padding:
-            1px
-            78px
-            0
-            8px !important;
+          padding: 1px 78px 0 8px !important;
 
           line-height: normal !important;
         }
@@ -2265,19 +1991,11 @@ function submitSearch(
 
           padding: 0 18px;
 
-          border-bottom:
-            1px solid
-            rgba(0, 0, 0, 0.1);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
           background: #0a0a0a;
 
-          color:
-            rgba(
-              255,
-              255,
-              255,
-              0.55
-            );
+          color: rgba(255, 255, 255, 0.55);
 
           font-size: 7px;
           font-weight: 900;
@@ -2288,8 +2006,7 @@ function submitSearch(
           padding: 28px 30px 31px;
         }
 
-        .st-v2-live-search__start
-          strong {
+        .st-v2-live-search__start strong {
           display: block;
 
           font-size: 22px;
@@ -2303,26 +2020,14 @@ function submitSearch(
 
           margin: 8px 0 0;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.45
-            );
+          color: rgba(0, 0, 0, 0.45);
 
           font-size: 12px;
           line-height: 1.65;
         }
 
         .st-v2-live-search__history {
-          background:
-            rgba(
-              255,
-              255,
-              255,
-              0.98
-            );
+          background: rgba(255, 255, 255, 0.98);
         }
 
         .st-v2-live-search__history-head {
@@ -2336,97 +2041,57 @@ function submitSearch(
 
           padding: 0 20px;
 
-          border-bottom:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.095
-            );
+          border-bottom: 1px solid rgba(0, 0, 0, 0.095);
 
-          background:
-            #f5f5f2;
+          background: #f5f5f2;
         }
 
-        .st-v2-live-search__history-head
-          > div {
+        .st-v2-live-search__history-head > div {
           display: grid;
           gap: 5px;
         }
 
-        .st-v2-live-search__history-head
-          span {
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.36
-            );
+        .st-v2-live-search__history-head span {
+          color: rgba(0, 0, 0, 0.36);
 
           font-size: 7px;
           font-weight: 900;
 
-          letter-spacing:
-            0.18em;
+          letter-spacing: 0.18em;
         }
 
-        .st-v2-live-search__history-head
-          strong {
+        .st-v2-live-search__history-head strong {
           font-size: 11px;
           font-weight: 950;
 
-          letter-spacing:
-            0.08em;
+          letter-spacing: 0.08em;
         }
 
-        .st-v2-live-search__history-head
-          > button {
+        .st-v2-live-search__history-head > button {
           min-height: 34px;
 
-          border:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.14
-            );
+          border: 1px solid rgba(0, 0, 0, 0.14);
 
           padding: 0 13px;
 
           background: #fff;
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.55
-            );
+          color: rgba(0, 0, 0, 0.55);
 
           font-size: 7px;
           font-weight: 900;
 
-          letter-spacing:
-            0.14em;
+          letter-spacing: 0.14em;
 
           transition:
-            background
-              160ms ease,
-            color
-              160ms ease,
-            border-color
-              160ms ease;
+            background 160ms ease,
+            color 160ms ease,
+            border-color 160ms ease;
         }
 
-        .st-v2-live-search__history-head
-          > button:hover {
-          border-color:
-            #ed1c24;
+        .st-v2-live-search__history-head > button:hover {
+          border-color: #ed1c24;
 
-          background:
-            #ed1c24;
+          background: #ed1c24;
 
           color: #fff;
         }
@@ -2446,14 +2111,7 @@ function submitSearch(
 
           min-height: 52px;
 
-          border-bottom:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.075
-            );
+          border-bottom: 1px solid rgba(0, 0, 0, 0.075);
 
           background: #fff;
         }
@@ -2476,76 +2134,50 @@ function submitSearch(
 
           border: 0;
 
-          padding:
-            0
-            15px
-            0
-            18px;
+          padding: 0 15px 0 18px;
 
-          background:
-            transparent;
+          background: transparent;
 
           color: #111;
 
           text-align: left;
 
           transition:
-            background
-              150ms ease,
-            padding
-              180ms ease;
+            background 150ms ease,
+            padding 180ms ease;
         }
 
         .st-v2-live-search__history-reuse:hover {
-          background:
-            #f4f4f1;
+          background: #f4f4f1;
 
-          padding-left:
-            22px;
+          padding-left: 22px;
         }
 
-        .st-v2-live-search__history-reuse
-          > svg:first-child {
+        .st-v2-live-search__history-reuse > svg:first-child {
           width: 14px;
           height: 14px;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.32
-            );
+          color: rgba(0, 0, 0, 0.32);
 
           stroke-width: 1.8;
         }
 
-        .st-v2-live-search__history-reuse
-          span {
+        .st-v2-live-search__history-reuse span {
           overflow: hidden;
 
           font-size: 11px;
           font-weight: 750;
 
-          text-overflow:
-            ellipsis;
+          text-overflow: ellipsis;
 
-          white-space:
-            nowrap;
+          white-space: nowrap;
         }
 
-        .st-v2-live-search__history-reuse
-          > svg:last-child {
+        .st-v2-live-search__history-reuse > svg:last-child {
           width: 13px;
           height: 13px;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.25
-            );
+          color: rgba(0, 0, 0, 0.25);
         }
 
         .st-v2-live-search__history-remove {
@@ -2555,49 +2187,26 @@ function submitSearch(
           justify-content: center;
 
           border: 0;
-          border-left:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.075
-            );
+          border-left: 1px solid rgba(0, 0, 0, 0.075);
 
           padding: 0;
 
           background: #fff;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.3
-            );
+          color: rgba(0, 0, 0, 0.3);
 
           transition:
-            background
-              150ms ease,
-            color
-              150ms ease;
+            background 150ms ease,
+            color 150ms ease;
         }
 
         .st-v2-live-search__history-remove:hover {
-          background:
-            rgba(
-              237,
-              28,
-              36,
-              0.07
-            );
+          background: rgba(237, 28, 36, 0.07);
 
-          color:
-            #ed1c24;
+          color: #ed1c24;
         }
 
-        .st-v2-live-search__history-remove
-          svg {
+        .st-v2-live-search__history-remove svg {
           width: 13px;
           height: 13px;
 
@@ -2606,36 +2215,25 @@ function submitSearch(
 
         @media (max-width: 767px) {
           .st-v2-live-search__input-shell input {
-            padding-left:
-              6px !important;
+            padding-left: 6px !important;
           }
 
           .st-v2-live-search__history-head {
             min-height: 62px;
 
-            padding:
-              0
-              14px;
+            padding: 0 14px;
           }
 
           .st-v2-live-search__history-row {
             grid-template-columns:
-              minmax(
-                0,
-                1fr
-              )
+              minmax(0, 1fr)
               44px;
           }
 
           .st-v2-live-search__history-reuse {
-            padding:
-              0
-              12px
-              0
-              14px;
+            padding: 0 12px 0 14px;
           }
         }
-
 
         /*
          * =====================================================
@@ -2648,17 +2246,10 @@ function submitSearch(
 
           overflow: hidden;
 
-          padding:
-            30px
-            30px
-            0 !important;
+          padding: 30px 30px 0 !important;
 
           background:
-            linear-gradient(
-              90deg,
-              rgba(237, 28, 36, 0.025),
-              transparent 34%
-            ),
+            linear-gradient(90deg, rgba(237, 28, 36, 0.025), transparent 34%),
             transparent;
         }
 
@@ -2673,12 +2264,11 @@ function submitSearch(
 
           pointer-events: none;
 
-          background:
-            radial-gradient(
-              circle,
-              rgba(237, 28, 36, 0.065),
-              transparent 67%
-            );
+          background: radial-gradient(
+            circle,
+            rgba(237, 28, 36, 0.065),
+            transparent 67%
+          );
 
           content: "";
         }
@@ -2718,8 +2308,7 @@ function submitSearch(
           font-weight: 950 !important;
           line-height: 1 !important;
 
-          letter-spacing:
-            0.19em !important;
+          letter-spacing: 0.19em !important;
 
           text-transform: uppercase;
         }
@@ -2742,43 +2331,26 @@ function submitSearch(
 
           color: #111;
 
-          font-size:
-            clamp(
-              24px,
-              2.15vw,
-              34px
-            ) !important;
+          font-size: clamp(24px, 2.15vw, 34px) !important;
 
           font-weight: 950 !important;
           line-height: 0.96 !important;
 
-          letter-spacing:
-            -0.05em !important;
+          letter-spacing: -0.05em !important;
 
           text-transform: uppercase;
         }
 
-        .st-v2-live-search__start-copy
-          > strong
-          > span {
+        .st-v2-live-search__start-copy > strong > span {
           color: #ed1c24;
         }
 
         .st-v2-live-search__start-copy p {
           max-width: 520px;
 
-          margin:
-            13px
-            0
-            0 !important;
+          margin: 13px 0 0 !important;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.48
-            ) !important;
+          color: rgba(0, 0, 0, 0.48) !important;
 
           font-size: 11px !important;
           font-weight: 500;
@@ -2805,47 +2377,23 @@ function submitSearch(
 
           min-height: 38px;
 
-          border:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.1
-            );
+          border: 1px solid rgba(0, 0, 0, 0.1);
 
-          padding:
-            0
-            12px;
+          padding: 0 12px;
 
-          background:
-            rgba(
-              255,
-              255,
-              255,
-              0.72
-            );
+          background: rgba(255, 255, 255, 0.72);
         }
 
-        .st-v2-live-search__start-status
-          > span {
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.3
-            ) !important;
+        .st-v2-live-search__start-status > span {
+          color: rgba(0, 0, 0, 0.3) !important;
 
           font-size: 6px !important;
           font-weight: 900 !important;
 
-          letter-spacing:
-            0.16em !important;
+          letter-spacing: 0.16em !important;
         }
 
-        .st-v2-live-search__start-status
-          > strong {
+        .st-v2-live-search__start-status > strong {
           margin: 0 !important;
 
           color: #111;
@@ -2853,12 +2401,10 @@ function submitSearch(
           font-size: 7px !important;
           font-weight: 950 !important;
 
-          letter-spacing:
-            0.13em !important;
+          letter-spacing: 0.13em !important;
         }
 
-        .st-v2-live-search__start-status
-          .st-v2-led {
+        .st-v2-live-search__start-status .st-v2-led {
           width: 6px;
           height: 6px;
         }
@@ -2873,33 +2419,14 @@ function submitSearch(
 
           display: grid;
 
-          grid-template-columns:
-            repeat(
-              4,
-              minmax(0, 1fr)
-            );
+          grid-template-columns: repeat(4, minmax(0, 1fr));
 
-          border-top:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.09
-            );
+          border-top: 1px solid rgba(0, 0, 0, 0.09);
 
-          border-bottom:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.09
-            );
+          border-bottom: 1px solid rgba(0, 0, 0, 0.09);
         }
 
-        .st-v2-live-search__capabilities
-          > div {
+        .st-v2-live-search__capabilities > div {
           display: flex;
 
           min-width: 0;
@@ -2909,31 +2436,18 @@ function submitSearch(
 
           gap: 10px;
 
-          padding:
-            0
-            15px;
+          padding: 0 15px;
         }
 
-        .st-v2-live-search__capabilities
-          > div:first-child {
+        .st-v2-live-search__capabilities > div:first-child {
           padding-left: 0;
         }
 
-        .st-v2-live-search__capabilities
-          > div
-          + div {
-          border-left:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.08
-            );
+        .st-v2-live-search__capabilities > div + div {
+          border-left: 1px solid rgba(0, 0, 0, 0.08);
         }
 
-        .st-v2-live-search__capabilities
-          span {
+        .st-v2-live-search__capabilities span {
           flex: 0 0 auto;
 
           color: #ed1c24 !important;
@@ -2941,29 +2455,20 @@ function submitSearch(
           font-size: 6px !important;
           font-weight: 950 !important;
 
-          letter-spacing:
-            0.12em !important;
+          letter-spacing: 0.12em !important;
         }
 
-        .st-v2-live-search__capabilities
-          strong {
+        .st-v2-live-search__capabilities strong {
           overflow: hidden;
 
           margin: 0 !important;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.67
-            );
+          color: rgba(0, 0, 0, 0.67);
 
           font-size: 7px !important;
           font-weight: 900 !important;
 
-          letter-spacing:
-            0.14em !important;
+          letter-spacing: 0.14em !important;
 
           text-overflow: ellipsis;
 
@@ -2987,19 +2492,12 @@ function submitSearch(
 
           gap: 20px;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.25
-            );
+          color: rgba(0, 0, 0, 0.25);
 
           font-size: 6px;
           font-weight: 900;
 
-          letter-spacing:
-            0.15em;
+          letter-spacing: 0.15em;
 
           text-transform: uppercase;
         }
@@ -3009,36 +2507,23 @@ function submitSearch(
          * compact height instead of a large empty void.
          */
 
-        .st-v2-live-search__idle
-          .st-v2-live-search__start
-          + * {
+        .st-v2-live-search__idle .st-v2-live-search__start + * {
           margin-top: 0;
         }
 
         @media (hover: hover) {
-          .st-v2-live-search__capabilities
-            > div {
-            transition:
-              background
-                160ms ease;
+          .st-v2-live-search__capabilities > div {
+            transition: background 160ms ease;
           }
 
-          .st-v2-live-search__capabilities
-            > div:hover {
-            background:
-              rgba(
-                0,
-                0,
-                0,
-                0.025
-              );
+          .st-v2-live-search__capabilities > div:hover {
+            background: rgba(0, 0, 0, 0.025);
           }
         }
 
         @media (max-width: 860px) {
           .st-v2-live-search__start-command {
-            grid-template-columns:
-              1fr;
+            grid-template-columns: 1fr;
 
             gap: 18px;
           }
@@ -3048,79 +2533,44 @@ function submitSearch(
           }
 
           .st-v2-live-search__capabilities {
-            grid-template-columns:
-              repeat(
-                2,
-                minmax(
-                  0,
-                  1fr
-                )
-              );
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
 
-          .st-v2-live-search__capabilities
-            > div:nth-child(3) {
+          .st-v2-live-search__capabilities > div:nth-child(3) {
             border-left: 0;
 
-            border-top:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.08
-              );
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
           }
 
-          .st-v2-live-search__capabilities
-            > div:nth-child(4) {
-            border-top:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.08
-              );
+          .st-v2-live-search__capabilities > div:nth-child(4) {
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
           }
 
-          .st-v2-live-search__capabilities
-            > div:first-child,
-          .st-v2-live-search__capabilities
-            > div:nth-child(3) {
-            padding-left:
-              0;
+          .st-v2-live-search__capabilities > div:first-child,
+          .st-v2-live-search__capabilities > div:nth-child(3) {
+            padding-left: 0;
           }
         }
 
         @media (max-width: 600px) {
           .st-v2-live-search__start {
-            padding:
-              24px
-              18px
-              0 !important;
+            padding: 24px 18px 0 !important;
           }
 
-          .st-v2-live-search__start-copy
-            > strong {
-            font-size:
-              26px !important;
+          .st-v2-live-search__start-copy > strong {
+            font-size: 26px !important;
           }
 
           .st-v2-live-search__start-copy p {
             max-width: 390px;
 
-            font-size:
-              10px !important;
+            font-size: 10px !important;
           }
 
-          .st-v2-live-search__capabilities
-            > div {
+          .st-v2-live-search__capabilities > div {
             min-height: 48px;
 
-            padding:
-              0
-              10px;
+            padding: 0 10px;
           }
 
           .st-v2-live-search__start-foot {
@@ -3129,12 +2579,10 @@ function submitSearch(
             font-size: 5px;
           }
 
-          .st-v2-live-search__start-foot
-            span:last-child {
+          .st-v2-live-search__start-foot span:last-child {
             display: none;
           }
         }
-
 
         /*
          * =====================================================
@@ -3148,31 +2596,11 @@ function submitSearch(
 
           margin-top: 4px;
 
-          border-top:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.09
-            );
+          border-top: 1px solid rgba(0, 0, 0, 0.09);
 
-          border-bottom:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.09
-            );
+          border-bottom: 1px solid rgba(0, 0, 0, 0.09);
 
-          background:
-            rgba(
-              255,
-              255,
-              255,
-              0.56
-            );
+          background: rgba(255, 255, 255, 0.56);
         }
 
         .st-v2-live-search__capabilities-label {
@@ -3182,54 +2610,29 @@ function submitSearch(
 
           align-items: center;
 
-          padding:
-            0
-            15px;
+          padding: 0 15px;
 
-          border-bottom:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.07
-            );
+          border-bottom: 1px solid rgba(0, 0, 0, 0.07);
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.28
-            );
+          color: rgba(0, 0, 0, 0.28);
 
           font-size: 6px;
           font-weight: 900;
 
-          letter-spacing:
-            0.18em;
+          letter-spacing: 0.18em;
 
-          text-transform:
-            uppercase;
+          text-transform: uppercase;
         }
 
         .st-v2-live-search__capabilities {
           display: grid !important;
 
-          grid-template-columns:
-            repeat(
-              4,
-              minmax(
-                0,
-                1fr
-              )
-            ) !important;
+          grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
 
           border: 0 !important;
         }
 
-        .st-v2-live-search__capabilities
-          > div {
+        .st-v2-live-search__capabilities > div {
           display: flex !important;
 
           min-width: 0;
@@ -3242,41 +2645,24 @@ function submitSearch(
 
           gap: 11px !important;
 
-          padding:
-            0
-            18px !important;
+          padding: 0 18px !important;
 
           border: 0 !important;
 
-          background:
-            transparent;
+          background: transparent;
 
-          transition:
-            background
-              150ms ease;
+          transition: background 150ms ease;
         }
 
-        .st-v2-live-search__capabilities
-          > div
-          + div {
-          border-left:
-            1px solid
-            rgba(
-              0,
-              0,
-              0,
-              0.08
-            ) !important;
+        .st-v2-live-search__capabilities > div + div {
+          border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
         }
 
-        .st-v2-live-search__capabilities
-          > div:first-child {
-          padding-left:
-            18px !important;
+        .st-v2-live-search__capabilities > div:first-child {
+          padding-left: 18px !important;
         }
 
-        .st-v2-live-search__capabilities
-          span {
+        .st-v2-live-search__capabilities span {
           flex: 0 0 auto;
 
           color: #ed1c24 !important;
@@ -3286,15 +2672,12 @@ function submitSearch(
 
           line-height: 1 !important;
 
-          letter-spacing:
-            0.12em !important;
+          letter-spacing: 0.12em !important;
 
-          white-space:
-            nowrap;
+          white-space: nowrap;
         }
 
-        .st-v2-live-search__capabilities
-          strong {
+        .st-v2-live-search__capabilities strong {
           display: block !important;
 
           min-width: 0;
@@ -3303,119 +2686,62 @@ function submitSearch(
 
           margin: 0 !important;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.72
-            ) !important;
+          color: rgba(0, 0, 0, 0.72) !important;
 
           font-size: 8px !important;
           font-weight: 950 !important;
 
           line-height: 1 !important;
 
-          letter-spacing:
-            0.13em !important;
+          letter-spacing: 0.13em !important;
 
-          text-overflow:
-            clip !important;
+          text-overflow: clip !important;
 
-          white-space:
-            nowrap !important;
+          white-space: nowrap !important;
         }
 
         @media (hover: hover) {
-          .st-v2-live-search__capabilities
-            > div:hover {
-            background:
-              rgba(
-                237,
-                28,
-                36,
-                0.035
-              );
+          .st-v2-live-search__capabilities > div:hover {
+            background: rgba(237, 28, 36, 0.035);
           }
         }
 
         @media (max-width: 920px) {
           .st-v2-live-search__capabilities {
-            grid-template-columns:
-              repeat(
-                2,
-                minmax(
-                  0,
-                  1fr
-                )
-              ) !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
           }
 
-          .st-v2-live-search__capabilities
-            > div:nth-child(3) {
-            border-top:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.08
-              ) !important;
+          .st-v2-live-search__capabilities > div:nth-child(3) {
+            border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 
-            border-left:
-              0 !important;
+            border-left: 0 !important;
           }
 
-          .st-v2-live-search__capabilities
-            > div:nth-child(4) {
-            border-top:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.08
-              ) !important;
+          .st-v2-live-search__capabilities > div:nth-child(4) {
+            border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
           }
         }
 
         @media (max-width: 540px) {
           .st-v2-live-search__capabilities {
-            grid-template-columns:
-              1fr !important;
+            grid-template-columns: 1fr !important;
           }
 
-          .st-v2-live-search__capabilities
-            > div {
-            min-height:
-              48px !important;
+          .st-v2-live-search__capabilities > div {
+            min-height: 48px !important;
           }
 
-          .st-v2-live-search__capabilities
-            > div
-            + div {
-            border-top:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.08
-              ) !important;
+          .st-v2-live-search__capabilities > div + div {
+            border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 
-            border-left:
-              0 !important;
+            border-left: 0 !important;
           }
 
-          .st-v2-live-search__capabilities
-            > div:nth-child(3),
-          .st-v2-live-search__capabilities
-            > div:nth-child(4) {
-            border-left:
-              0 !important;
+          .st-v2-live-search__capabilities > div:nth-child(3),
+          .st-v2-live-search__capabilities > div:nth-child(4) {
+            border-left: 0 !important;
           }
         }
-
 
         /*
          * =====================================================
@@ -3435,11 +2761,7 @@ function submitSearch(
           min-height: 250px;
 
           background:
-            linear-gradient(
-              90deg,
-              rgba(237, 28, 36, 0.025),
-              transparent 38%
-            ),
+            linear-gradient(90deg, rgba(237, 28, 36, 0.025), transparent 38%),
             #fff;
         }
 
@@ -3454,13 +2776,9 @@ function submitSearch(
 
           min-width: 0;
 
-          padding:
-            34px
-            38px;
+          padding: 34px 38px;
 
-          border-right:
-            1px solid
-            rgba(0, 0, 0, 0.09);
+          border-right: 1px solid rgba(0, 0, 0, 0.09);
         }
 
         .st-search-welcome-v3__eyebrow {
@@ -3469,67 +2787,47 @@ function submitSearch(
 
           gap: 9px;
 
-          color:
-            rgba(0, 0, 0, 0.4);
+          color: rgba(0, 0, 0, 0.4);
 
           font-size: 7px;
           font-weight: 900;
 
-          letter-spacing:
-            0.18em;
+          letter-spacing: 0.18em;
 
-          text-transform:
-            uppercase;
+          text-transform: uppercase;
         }
 
-        .st-search-welcome-v3__eyebrow
-          .st-v2-led {
+        .st-search-welcome-v3__eyebrow .st-v2-led {
           width: 6px;
           height: 6px;
         }
 
         .st-search-welcome-v3__intro h3 {
-          margin:
-            18px
-            0
-            0;
+          margin: 18px 0 0;
 
           color: #0a0a0a;
 
-          font-size:
-            clamp(
-              31px,
-              3vw,
-              44px
-            );
+          font-size: clamp(31px, 3vw, 44px);
 
           font-weight: 950;
 
           line-height: 0.83;
 
-          letter-spacing:
-            -0.065em;
+          letter-spacing: -0.065em;
 
-          text-transform:
-            uppercase;
+          text-transform: uppercase;
         }
 
-        .st-search-welcome-v3__intro
-          h3
-          span {
+        .st-search-welcome-v3__intro h3 span {
           color: #ed1c24;
         }
 
         .st-search-welcome-v3__intro p {
           max-width: 380px;
 
-          margin:
-            18px
-            0
-            0;
+          margin: 18px 0 0;
 
-          color:
-            rgba(0, 0, 0, 0.47);
+          color: rgba(0, 0, 0, 0.47);
 
           font-size: 11px;
 
@@ -3553,50 +2851,34 @@ function submitSearch(
 
           margin-top: 22px;
 
-          border:
-            1px solid
-            rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(0, 0, 0, 0.1);
 
-          padding:
-            0
-            11px;
+          padding: 0 11px;
 
-          background:
-            rgba(
-              250,
-              250,
-              248,
-              0.9
-            );
+          background: rgba(250, 250, 248, 0.9);
         }
 
-        .st-search-welcome-v3__ready
-          span {
-          color:
-            rgba(0, 0, 0, 0.3);
+        .st-search-welcome-v3__ready span {
+          color: rgba(0, 0, 0, 0.3);
 
           font-size: 6px;
 
           font-weight: 900;
 
-          letter-spacing:
-            0.15em;
+          letter-spacing: 0.15em;
         }
 
-        .st-search-welcome-v3__ready
-          strong {
+        .st-search-welcome-v3__ready strong {
           color: #111;
 
           font-size: 7px;
 
           font-weight: 950;
 
-          letter-spacing:
-            0.13em;
+          letter-spacing: 0.13em;
         }
 
-        .st-search-welcome-v3__ready
-          i {
+        .st-search-welcome-v3__ready i {
           width: 6px;
           height: 6px;
 
@@ -3604,14 +2886,7 @@ function submitSearch(
 
           background: #48e167;
 
-          box-shadow:
-            0 0 9px
-            rgba(
-              72,
-              225,
-              103,
-              0.6
-            );
+          box-shadow: 0 0 9px rgba(72, 225, 103, 0.6);
         }
 
         /*
@@ -3625,14 +2900,10 @@ function submitSearch(
 
           flex-direction: column;
 
-          padding:
-            29px
-            30px
-            30px;
+          padding: 29px 30px 30px;
         }
 
-        .st-search-welcome-v3__database
-          > header {
+        .st-search-welcome-v3__database > header {
           display: flex;
 
           min-height: 43px;
@@ -3644,57 +2915,43 @@ function submitSearch(
 
           padding-bottom: 16px;
 
-          border-bottom:
-            1px solid
-            rgba(0, 0, 0, 0.1);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .st-search-welcome-v3__database
-          > header
-          div {
+        .st-search-welcome-v3__database > header div {
           display: grid;
 
           gap: 5px;
         }
 
-        .st-search-welcome-v3__database
-          > header
-          span {
+        .st-search-welcome-v3__database > header span {
           color: #ed1c24;
 
           font-size: 6px;
 
           font-weight: 950;
 
-          letter-spacing:
-            0.18em;
+          letter-spacing: 0.18em;
         }
 
-        .st-search-welcome-v3__database
-          > header
-          strong {
+        .st-search-welcome-v3__database > header strong {
           color: #111;
 
           font-size: 11px;
 
           font-weight: 950;
 
-          letter-spacing:
-            0.1em;
+          letter-spacing: 0.1em;
         }
 
-        .st-search-welcome-v3__database
-          > header
-          small {
-          color:
-            rgba(0, 0, 0, 0.3);
+        .st-search-welcome-v3__database > header small {
+          color: rgba(0, 0, 0, 0.3);
 
           font-size: 6px;
 
           font-weight: 900;
 
-          letter-spacing:
-            0.14em;
+          letter-spacing: 0.14em;
         }
 
         .st-search-welcome-v3__grid {
@@ -3702,21 +2959,14 @@ function submitSearch(
 
           flex: 1;
 
-          grid-template-columns:
-            repeat(
-              2,
-              minmax(0, 1fr)
-            );
+          grid-template-columns: repeat(2, minmax(0, 1fr));
 
           margin-top: 15px;
 
-          border:
-            1px solid
-            rgba(0, 0, 0, 0.09);
+          border: 1px solid rgba(0, 0, 0, 0.09);
         }
 
-        .st-search-welcome-v3__grid
-          > div {
+        .st-search-welcome-v3__grid > div {
           display: flex;
 
           min-width: 0;
@@ -3727,53 +2977,32 @@ function submitSearch(
 
           justify-content: center;
 
-          padding:
-            14px
-            17px;
+          padding: 14px 17px;
 
-          background:
-            rgba(
-              255,
-              255,
-              255,
-              0.82
-            );
+          background: rgba(255, 255, 255, 0.82);
         }
 
-        .st-search-welcome-v3__grid
-          > div:nth-child(2),
-        .st-search-welcome-v3__grid
-          > div:nth-child(4) {
-          border-left:
-            1px solid
-            rgba(0, 0, 0, 0.08);
+        .st-search-welcome-v3__grid > div:nth-child(2),
+        .st-search-welcome-v3__grid > div:nth-child(4) {
+          border-left: 1px solid rgba(0, 0, 0, 0.08);
         }
 
-        .st-search-welcome-v3__grid
-          > div:nth-child(3),
-        .st-search-welcome-v3__grid
-          > div:nth-child(4) {
-          border-top:
-            1px solid
-            rgba(0, 0, 0, 0.08);
+        .st-search-welcome-v3__grid > div:nth-child(3),
+        .st-search-welcome-v3__grid > div:nth-child(4) {
+          border-top: 1px solid rgba(0, 0, 0, 0.08);
         }
 
-        .st-search-welcome-v3__grid
-          > div
-          > span {
+        .st-search-welcome-v3__grid > div > span {
           color: #ed1c24;
 
           font-size: 6px;
 
           font-weight: 950;
 
-          letter-spacing:
-            0.13em;
+          letter-spacing: 0.13em;
         }
 
-        .st-search-welcome-v3__grid
-          > div
-          > strong {
+        .st-search-welcome-v3__grid > div > strong {
           display: block;
 
           margin-top: 6px;
@@ -3786,21 +3015,17 @@ function submitSearch(
 
           line-height: 1;
 
-          letter-spacing:
-            0.12em;
+          letter-spacing: 0.12em;
 
           white-space: nowrap;
         }
 
-        .st-search-welcome-v3__grid
-          > div
-          > small {
+        .st-search-welcome-v3__grid > div > small {
           display: block;
 
           margin-top: 7px;
 
-          color:
-            rgba(0, 0, 0, 0.32);
+          color: rgba(0, 0, 0, 0.32);
 
           font-size: 6px;
 
@@ -3808,28 +3033,18 @@ function submitSearch(
 
           line-height: 1;
 
-          letter-spacing:
-            0.11em;
+          letter-spacing: 0.11em;
 
           white-space: nowrap;
         }
 
         @media (hover: hover) {
-          .st-search-welcome-v3__grid
-            > div {
-            transition:
-              background 160ms ease;
+          .st-search-welcome-v3__grid > div {
+            transition: background 160ms ease;
           }
 
-          .st-search-welcome-v3__grid
-            > div:hover {
-            background:
-              rgba(
-                237,
-                28,
-                36,
-                0.035
-              );
+          .st-search-welcome-v3__grid > div:hover {
+            background: rgba(237, 28, 36, 0.035);
           }
         }
 
@@ -3839,34 +3054,21 @@ function submitSearch(
 
         @media (max-width: 900px) {
           .st-search-welcome-v3 {
-            grid-template-columns:
-              1fr;
+            grid-template-columns: 1fr;
 
             min-height: 0;
           }
 
           .st-search-welcome-v3__intro {
-            padding:
-              28px
-              28px;
+            padding: 28px 28px;
 
             border-right: 0;
 
-            border-bottom:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.09
-              );
+            border-bottom: 1px solid rgba(0, 0, 0, 0.09);
           }
 
           .st-search-welcome-v3__database {
-            padding:
-              24px
-              28px
-              27px;
+            padding: 24px 28px 27px;
           }
         }
 
@@ -3876,52 +3078,33 @@ function submitSearch(
 
         @media (max-width: 560px) {
           .st-search-welcome-v3__intro {
-            padding:
-              24px
-              20px;
+            padding: 24px 20px;
           }
 
-          .st-search-welcome-v3__intro
-            h3 {
+          .st-search-welcome-v3__intro h3 {
             font-size: 34px;
           }
 
           .st-search-welcome-v3__database {
-            padding:
-              21px
-              20px
-              23px;
+            padding: 21px 20px 23px;
           }
 
           .st-search-welcome-v3__grid {
-            grid-template-columns:
-              1fr;
+            grid-template-columns: 1fr;
           }
 
-          .st-search-welcome-v3__grid
-            > div:nth-child(2),
-          .st-search-welcome-v3__grid
-            > div:nth-child(3),
-          .st-search-welcome-v3__grid
-            > div:nth-child(4) {
-            border-top:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.08
-              );
+          .st-search-welcome-v3__grid > div:nth-child(2),
+          .st-search-welcome-v3__grid > div:nth-child(3),
+          .st-search-welcome-v3__grid > div:nth-child(4) {
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
 
             border-left: 0;
           }
 
-          .st-search-welcome-v3__grid
-            > div {
+          .st-search-welcome-v3__grid > div {
             min-height: 62px;
           }
         }
-
 
         /*
          * =====================================================
@@ -3948,63 +3131,37 @@ function submitSearch(
 
           margin-top: 22px !important;
 
-          border:
-            1px solid
-            rgba(0, 0, 0, 0.1) !important;
+          border: 1px solid rgba(0, 0, 0, 0.1) !important;
 
-          padding:
-            0
-            14px !important;
+          padding: 0 14px !important;
 
-          background:
-            rgba(
-              255,
-              255,
-              255,
-              0.82
-            ) !important;
+          background: rgba(255, 255, 255, 0.82) !important;
 
-          box-shadow:
-            inset 0 0 0 1px
-            rgba(
-              255,
-              255,
-              255,
-              0.4
-            );
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 
           line-height: 1 !important;
         }
 
-        .st-search-welcome-v3__ready
-          > span {
+        .st-search-welcome-v3__ready > span {
           display: block;
 
           margin: 0 !important;
 
-          color:
-            rgba(
-              0,
-              0,
-              0,
-              0.34
-            ) !important;
+          color: rgba(0, 0, 0, 0.34) !important;
 
           font-size: 6px !important;
           font-weight: 900 !important;
 
           line-height: 1 !important;
 
-          letter-spacing:
-            0.16em !important;
+          letter-spacing: 0.16em !important;
 
           white-space: nowrap;
 
           text-transform: uppercase;
         }
 
-        .st-search-welcome-v3__ready
-          > strong {
+        .st-search-welcome-v3__ready > strong {
           display: block;
 
           margin: 0 !important;
@@ -4016,16 +3173,14 @@ function submitSearch(
 
           line-height: 1 !important;
 
-          letter-spacing:
-            0.1em !important;
+          letter-spacing: 0.1em !important;
 
           white-space: nowrap;
 
           transform: none !important;
         }
 
-        .st-search-welcome-v3__ready
-          > i {
+        .st-search-welcome-v3__ready > i {
           display: block;
 
           width: 7px !important;
@@ -4035,24 +3190,11 @@ function submitSearch(
 
           border-radius: 50%;
 
-          background:
-            #57e872 !important;
+          background: #57e872 !important;
 
           box-shadow:
-            0 0 7px
-              rgba(
-                87,
-                232,
-                114,
-                0.62
-              ),
-            0 0 14px
-              rgba(
-                87,
-                232,
-                114,
-                0.2
-              ) !important;
+            0 0 7px rgba(87, 232, 114, 0.62),
+            0 0 14px rgba(87, 232, 114, 0.2) !important;
 
           transform: none !important;
         }
@@ -4065,13 +3207,10 @@ function submitSearch(
 
             column-gap: 10px !important;
 
-            padding:
-              0
-              12px !important;
+            padding: 0 12px !important;
           }
 
-          .st-search-welcome-v3__ready
-            > strong {
+          .st-search-welcome-v3__ready > strong {
             font-size: 9px !important;
           }
         }
@@ -4088,15 +3227,8 @@ function submitSearch(
           border: 1px solid #111;
 
           background:
-            linear-gradient(
-              rgba(0, 0, 0, 0.025) 1px,
-              transparent 1px
-            ),
-            linear-gradient(
-              90deg,
-              rgba(0, 0, 0, 0.025) 1px,
-              transparent 1px
-            ),
+            linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
             #fff;
 
           background-size:
@@ -4112,39 +3244,28 @@ function submitSearch(
           visibility: hidden;
           pointer-events: none;
 
-          transform:
-            translateY(-8px)
-            scaleY(0.985);
+          transform: translateY(-8px) scaleY(0.985);
 
           transform-origin: top;
 
           transition:
             opacity 180ms ease,
             visibility 180ms ease,
-            transform 260ms
-              cubic-bezier(
-                0.16,
-                1,
-                0.3,
-                1
-              );
+            transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .st-v2-live-search__panel.is-open {
           opacity: 1;
           visibility: visible;
           pointer-events: auto;
-          transform:
-            translateY(0)
-            scaleY(1);
+          transform: translateY(0) scaleY(1);
         }
 
         .st-v2-live-search__idle {
           padding: 30px 32px 32px;
         }
 
-        .st-v2-live-search__idle
-          > div {
+        .st-v2-live-search__idle > div {
           display: flex;
           align-items: center;
           gap: 9px;
@@ -4156,8 +3277,7 @@ function submitSearch(
           letter-spacing: 0.18em;
         }
 
-        .st-v2-live-search__idle
-          strong {
+        .st-v2-live-search__idle strong {
           display: block;
           margin-top: 18px;
 
@@ -4190,12 +3310,10 @@ function submitSearch(
           letter-spacing: 0.16em;
         }
 
-        .st-v2-live-search__state
-          svg {
+        .st-v2-live-search__state svg {
           width: 17px;
           height: 17px;
-          animation: stSearchSpin
-            0.8s linear infinite;
+          animation: stSearchSpin 0.8s linear infinite;
         }
 
         .st-v2-live-search__state.is-error {
@@ -4203,8 +3321,7 @@ function submitSearch(
           color: #ed1c24;
         }
 
-        .st-v2-live-search__state
-          small {
+        .st-v2-live-search__state small {
           color: rgba(0, 0, 0, 0.46);
           font-size: 10px;
           letter-spacing: 0;
@@ -4222,15 +3339,13 @@ function submitSearch(
           text-align: center;
         }
 
-        .st-v2-live-search__empty
-          > svg {
+        .st-v2-live-search__empty > svg {
           width: 25px;
           height: 25px;
           color: rgba(0, 0, 0, 0.22);
         }
 
-        .st-v2-live-search__empty
-          span {
+        .st-v2-live-search__empty span {
           margin-top: 15px;
 
           color: #ed1c24;
@@ -4240,8 +3355,7 @@ function submitSearch(
           letter-spacing: 0.18em;
         }
 
-        .st-v2-live-search__empty
-          strong {
+        .st-v2-live-search__empty strong {
           margin-top: 8px;
 
           font-size: 17px;
@@ -4258,40 +3372,22 @@ function submitSearch(
 
         .st-v2-live-search__suggestions {
           display: grid;
-          grid-template-columns:
-            repeat(
-              2,
-              minmax(0, 1fr)
-            );
+          grid-template-columns: repeat(2, minmax(0, 1fr));
 
-          border-bottom:
-            1px solid rgba(0, 0, 0, 0.11);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.11);
 
-          background:
-            rgba(
-              247,
-              247,
-              245,
-              0.96
-            );
+          background: rgba(247, 247, 245, 0.96);
         }
 
-        .st-v2-live-search__suggestions
-          section {
+        .st-v2-live-search__suggestions section {
           padding: 17px 20px;
         }
 
-        .st-v2-live-search__suggestions
-          section
-          + section {
-          border-left:
-            1px solid
-            rgba(0, 0, 0, 0.1);
+        .st-v2-live-search__suggestions section + section {
+          border-left: 1px solid rgba(0, 0, 0, 0.1);
         }
 
-        .st-v2-live-search__suggestions
-          section
-          > span {
+        .st-v2-live-search__suggestions section > span {
           color: rgba(0, 0, 0, 0.38);
 
           font-size: 7px;
@@ -4299,9 +3395,7 @@ function submitSearch(
           letter-spacing: 0.19em;
         }
 
-        .st-v2-live-search__suggestions
-          section
-          > div {
+        .st-v2-live-search__suggestions section > div {
           display: flex;
           flex-wrap: wrap;
           gap: 6px;
@@ -4309,15 +3403,13 @@ function submitSearch(
           margin-top: 10px;
         }
 
-        .st-v2-live-search__suggestions
-          button {
+        .st-v2-live-search__suggestions button {
           display: flex;
           min-height: 34px;
           align-items: center;
           gap: 8px;
 
-          border: 1px solid
-            rgba(0, 0, 0, 0.12);
+          border: 1px solid rgba(0, 0, 0, 0.12);
 
           padding: 0 11px;
 
@@ -4330,29 +3422,24 @@ function submitSearch(
           text-transform: uppercase;
         }
 
-        .st-v2-live-search__suggestions
-          button:hover {
+        .st-v2-live-search__suggestions button:hover {
           border-color: #111;
           background: #111;
           color: #fff;
         }
 
-        .st-v2-live-search__suggestions
-          svg {
+        .st-v2-live-search__suggestions svg {
           width: 11px;
           height: 11px;
         }
 
-        .st-v2-live-search__products
-          > header {
+        .st-v2-live-search__products > header {
           display: flex;
           min-height: 42px;
           align-items: center;
           justify-content: space-between;
 
-          border-bottom:
-            1px solid
-            rgba(0, 0, 0, 0.11);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.11);
 
           padding: 0 18px;
 
@@ -4360,9 +3447,7 @@ function submitSearch(
           color: #fff;
         }
 
-        .st-v2-live-search__products
-          > header
-          div {
+        .st-v2-live-search__products > header div {
           display: flex;
           align-items: center;
           gap: 8px;
@@ -4372,33 +3457,22 @@ function submitSearch(
           letter-spacing: 0.17em;
         }
 
-        .st-v2-live-search__products
-          > header
-          strong {
-          color: rgba(
-            255,
-            255,
-            255,
-            0.45
-          );
+        .st-v2-live-search__products > header strong {
+          color: rgba(255, 255, 255, 0.45);
 
           font-size: 8px;
           letter-spacing: 0.12em;
         }
 
         .st-v2-live-search__product-list {
-          max-height: min(
-            448px,
-            calc(100vh - 260px)
-          );
+          max-height: min(448px, calc(100vh - 260px));
 
           overflow-y: auto;
 
           background: white;
         }
 
-        .st-v2-live-search__product-list
-          > button {
+        .st-v2-live-search__product-list > button {
           display: grid;
           width: 100%;
 
@@ -4411,9 +3485,7 @@ function submitSearch(
           gap: 16px;
 
           border: 0;
-          border-bottom:
-            1px solid
-            rgba(0, 0, 0, 0.095);
+          border-bottom: 1px solid rgba(0, 0, 0, 0.095);
 
           padding: 10px 14px;
 
@@ -4427,17 +3499,13 @@ function submitSearch(
             transform 140ms ease;
         }
 
-        .st-v2-live-search__product-list
-          > button:hover,
-        .st-v2-live-search__product-list
-          > button.is-active {
+        .st-v2-live-search__product-list > button:hover,
+        .st-v2-live-search__product-list > button.is-active {
           background: #f4f4f1;
         }
 
-        .st-v2-live-search__product-list
-          > button.is-active {
-          box-shadow:
-            inset 4px 0 0 #ed1c24;
+        .st-v2-live-search__product-list > button.is-active {
+          box-shadow: inset 4px 0 0 #ed1c24;
         }
 
         .st-v2-live-search__image {
@@ -4448,22 +3516,19 @@ function submitSearch(
 
           overflow: hidden;
 
-          border: 1px solid
-            rgba(0, 0, 0, 0.08);
+          border: 1px solid rgba(0, 0, 0, 0.08);
 
           background: #f3f3f0;
         }
 
-        .st-v2-live-search__image
-          img {
+        .st-v2-live-search__image img {
           width: 100%;
           height: 100%;
           object-fit: contain;
           padding: 4px;
         }
 
-        .st-v2-live-search__image
-          span {
+        .st-v2-live-search__image span {
           color: rgba(0, 0, 0, 0.25);
 
           font-size: 6px;
@@ -4475,8 +3540,7 @@ function submitSearch(
           min-width: 0;
         }
 
-        .st-v2-live-search__product-info
-          small {
+        .st-v2-live-search__product-info small {
           display: block;
 
           overflow: hidden;
@@ -4490,8 +3554,7 @@ function submitSearch(
           white-space: nowrap;
         }
 
-        .st-v2-live-search__product-info
-          > strong {
+        .st-v2-live-search__product-info > strong {
           display: block;
 
           overflow: hidden;
@@ -4506,8 +3569,7 @@ function submitSearch(
           white-space: nowrap;
         }
 
-        .st-v2-live-search__product-info
-          mark {
+        .st-v2-live-search__product-info mark {
           padding: 0 1px;
           background: #ed1c24;
           color: #fff;
@@ -4528,8 +3590,7 @@ function submitSearch(
           text-transform: uppercase;
         }
 
-        .st-v2-live-search__availability
-          i {
+        .st-v2-live-search__availability i {
           width: 5px;
           height: 5px;
           flex: 0 0 auto;
@@ -4538,31 +3599,20 @@ function submitSearch(
           background: #777;
         }
 
-        .st-v2-live-search__availability.is-stock
-          i {
+        .st-v2-live-search__availability.is-stock i {
           background: #23b64b;
-          box-shadow:
-            0 0 7px
-            rgba(
-              35,
-              182,
-              75,
-              0.45
-            );
+          box-shadow: 0 0 7px rgba(35, 182, 75, 0.45);
         }
 
-        .st-v2-live-search__availability.is-low
-          i {
+        .st-v2-live-search__availability.is-low i {
           background: #eaa317;
         }
 
-        .st-v2-live-search__availability.is-coming
-          i {
+        .st-v2-live-search__availability.is-coming i {
           background: #2b69ff;
         }
 
-        .st-v2-live-search__availability.is-out
-          i {
+        .st-v2-live-search__availability.is-out i {
           background: #999;
         }
 
@@ -4573,14 +3623,12 @@ function submitSearch(
           align-items: flex-end;
         }
 
-        .st-v2-live-search__price
-          strong {
+        .st-v2-live-search__price strong {
           font-size: 11px;
           font-weight: 950;
         }
 
-        .st-v2-live-search__price
-          del {
+        .st-v2-live-search__price del {
           margin-top: 3px;
 
           color: rgba(0, 0, 0, 0.34);
@@ -4588,8 +3636,7 @@ function submitSearch(
           font-size: 8px;
         }
 
-        .st-v2-live-search__price
-          svg {
+        .st-v2-live-search__price svg {
           width: 14px;
           height: 14px;
 
@@ -4606,9 +3653,7 @@ function submitSearch(
           justify-content: space-between;
 
           border: 0;
-          border-top:
-            1px solid
-            rgba(0, 0, 0, 0.1);
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
 
           padding: 0 18px;
 
@@ -4626,8 +3671,7 @@ function submitSearch(
           color: #fff;
         }
 
-        .st-v2-live-search__all
-          svg {
+        .st-v2-live-search__all svg {
           width: 14px;
           height: 14px;
         }
@@ -4638,9 +3682,7 @@ function submitSearch(
           align-items: center;
           gap: 20px;
 
-          border-top:
-            1px solid
-            rgba(0, 0, 0, 0.1);
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
 
           padding: 0 16px;
 
@@ -4653,20 +3695,13 @@ function submitSearch(
           letter-spacing: 0.13em;
         }
 
-        @media (
-          max-width: 1050px
-        ) {
+        @media (max-width: 1050px) {
           .st-v2-live-search__panel {
-            min-width: min(
-              620px,
-              calc(100vw - 32px)
-            );
+            min-width: min(620px, calc(100vw - 32px));
           }
         }
 
-        @media (
-          max-width: 767px
-        ) {
+        @media (max-width: 767px) {
           .st-v2-live-search {
             position: static;
           }
@@ -4681,44 +3716,26 @@ function submitSearch(
             width: auto;
             min-width: 0;
 
-            max-height:
-              calc(100dvh - 132px);
+            max-height: calc(100dvh - 132px);
 
             overflow-y: auto;
 
             box-shadow:
               5px 5px 0 #ed1c24,
-              0 24px 60px
-                rgba(
-                  0,
-                  0,
-                  0,
-                  0.22
-                );
+              0 24px 60px rgba(0, 0, 0, 0.22);
           }
 
           .st-v2-live-search__suggestions {
-            grid-template-columns:
-              1fr;
+            grid-template-columns: 1fr;
           }
 
-          .st-v2-live-search__suggestions
-            section
-            + section {
-            border-top:
-              1px solid
-              rgba(
-                0,
-                0,
-                0,
-                0.1
-              );
+          .st-v2-live-search__suggestions section + section {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
 
             border-left: 0;
           }
 
-          .st-v2-live-search__product-list
-            > button {
+          .st-v2-live-search__product-list > button {
             grid-template-columns:
               58px
               minmax(0, 1fr)
@@ -4739,10 +3756,7 @@ function submitSearch(
           }
         }
 
-        @media (
-          prefers-reduced-motion:
-            reduce
-        ) {
+        @media (prefers-reduced-motion: reduce) {
           .st-v2-live-search__panel {
             transition: none;
           }
@@ -4793,8 +3807,7 @@ function submitSearch(
 
           -webkit-text-fill-color: #ffffff !important;
 
-          text-shadow:
-            0 1px 0 rgba(0, 0, 0, 0.55) !important;
+          text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55) !important;
         }
 
         /*
@@ -4858,11 +3871,7 @@ function submitSearch(
 
           opacity: 1 !important;
 
-          animation:
-            stFinalLiveLedPulse
-            1.55s
-            ease-in-out
-            infinite !important;
+          animation: stFinalLiveLedPulse 1.55s ease-in-out infinite !important;
 
           transform-origin: center !important;
         }
@@ -4887,11 +3896,7 @@ function submitSearch(
 
           opacity: 1 !important;
 
-          animation:
-            stFinalLiveLedPulse
-            1.55s
-            ease-in-out
-            infinite !important;
+          animation: stFinalLiveLedPulse 1.55s ease-in-out infinite !important;
 
           animation-delay: -0.42s !important;
 
@@ -4920,12 +3925,9 @@ function submitSearch(
 
           padding: 0 14px !important;
 
-          border:
-            1px solid
-            rgba(0, 0, 0, 0.10) !important;
+          border: 1px solid rgba(0, 0, 0, 0.1) !important;
 
-          background:
-            rgba(255, 255, 255, 0.88) !important;
+          background: rgba(255, 255, 255, 0.88) !important;
 
           line-height: 1 !important;
         }
@@ -4982,7 +3984,7 @@ function submitSearch(
           font-weight: 950 !important;
           line-height: 1 !important;
 
-          letter-spacing: 0.10em !important;
+          letter-spacing: 0.1em !important;
 
           white-space: nowrap !important;
 
@@ -5001,11 +4003,7 @@ function submitSearch(
 
           flex: 0 0 7px !important;
 
-          margin:
-            0
-            0
-            0
-            auto !important;
+          margin: 0 0 0 auto !important;
 
           border-radius: 999px !important;
 
@@ -5013,11 +4011,7 @@ function submitSearch(
 
           opacity: 1 !important;
 
-          animation:
-            stFinalLiveLedPulse
-            1.55s
-            ease-in-out
-            infinite !important;
+          animation: stFinalLiveLedPulse 1.55s ease-in-out infinite !important;
 
           animation-delay: -0.84s !important;
 
@@ -5060,11 +4054,9 @@ function submitSearch(
 
             transform: none !important;
 
-            box-shadow:
-              0 0 7px rgba(89, 244, 112, 0.65) !important;
+            box-shadow: 0 0 7px rgba(89, 244, 112, 0.65) !important;
           }
         }
-
 
         /*
          * =====================================================
@@ -5088,16 +4080,11 @@ function submitSearch(
 
           margin-top: 22px !important;
 
-          padding:
-            0
-            13px !important;
+          padding: 0 13px !important;
 
-          border:
-            1px solid
-            rgba(0, 0, 0, 0.10) !important;
+          border: 1px solid rgba(0, 0, 0, 0.1) !important;
 
-          background:
-            rgba(255, 255, 255, 0.9) !important;
+          background: rgba(255, 255, 255, 0.9) !important;
 
           line-height: 1 !important;
         }
@@ -5109,15 +4096,13 @@ function submitSearch(
 
           margin: 0 !important;
 
-          color:
-            rgba(0, 0, 0, 0.38) !important;
+          color: rgba(0, 0, 0, 0.38) !important;
 
           font-size: 6px !important;
           font-weight: 900 !important;
           line-height: 1 !important;
 
-          letter-spacing:
-            0.15em !important;
+          letter-spacing: 0.15em !important;
 
           white-space: nowrap !important;
         }
@@ -5152,8 +4137,7 @@ function submitSearch(
           font-weight: 950 !important;
           line-height: 1 !important;
 
-          letter-spacing:
-            0.10em !important;
+          letter-spacing: 0.1em !important;
 
           white-space: nowrap !important;
 
@@ -5168,21 +4152,13 @@ function submitSearch(
 
           flex: 0 0 7px !important;
 
-          margin:
-            0
-            0
-            0
-            2px !important;
+          margin: 0 0 0 2px !important;
 
           border-radius: 999px !important;
 
           background: #59f470 !important;
 
-          animation:
-            stFinalLiveLedPulse
-            1.55s
-            ease-in-out
-            infinite !important;
+          animation: stFinalLiveLedPulse 1.55s ease-in-out infinite !important;
 
           animation-delay: -0.84s !important;
 
@@ -5196,9 +4172,7 @@ function submitSearch(
 
             gap: 7px !important;
 
-            padding:
-              0
-              11px !important;
+            padding: 0 11px !important;
           }
 
           .st-search-welcome-v3__ready > strong {
@@ -5206,9 +4180,7 @@ function submitSearch(
           }
         }
 
-
         /* ===== SEARCH STATUS FINAL FIX END ===== */
-
 
         /* ===== INPUT STATUS SLASH — HARD FIX ===== */
 
@@ -5253,7 +4225,6 @@ function submitSearch(
         .st-search-welcome-v3__ready > i {
           margin-left: 2px !important;
         }
-
       `}</style>
     </>
   );

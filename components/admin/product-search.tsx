@@ -1,91 +1,68 @@
 "use client";
 
-import {
-  Search,
-  X,
-} from "lucide-react";
+import { Search, X } from "lucide-react";
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Props = {
   total: number;
   liveTotal: number;
   draftTotal: number;
   outOfStockTotal: number;
+  archivedTotal: number;
+  initialFilter?: ProductStatusFilter;
 };
 
 type ProductStatusFilter =
-  | "all"
-  | "published"
-  | "draft"
-  | "out_of_stock";
+  "all" | "published" | "draft" | "out_of_stock" | "archived";
 
 export default function ProductSearch({
   total,
   liveTotal,
   draftTotal,
   outOfStockTotal,
+  archivedTotal,
+  initialFilter = "all",
 }: Props) {
   const [query, setQuery] = useState("");
-  const [status, setStatus] =
-    useState<ProductStatusFilter>("all");
+  const [status, setStatus] = useState<ProductStatusFilter>(initialFilter);
 
-  const [visibleCount, setVisibleCount] =
-    useState(total);
+  const [visibleCount, setVisibleCount] = useState(total);
 
-  const inputRef =
-    useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const normalizedQuery =
-    useMemo(
-      () =>
-        query
-          .trim()
-          .toLocaleLowerCase(),
-      [query],
-    );
+  const normalizedQuery = useMemo(
+    () => query.trim().toLocaleLowerCase(),
+    [query],
+  );
 
   useEffect(() => {
-    const cards =
-      Array.from(
-        document.querySelectorAll<HTMLElement>(
-          '[data-admin-product-search-card="true"]',
-        ),
-      );
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[data-admin-product-search-card="true"]',
+      ),
+    );
 
     let visible = 0;
 
     cards.forEach((card) => {
       const searchable =
-        card.dataset
-          .adminProductSearch
-          ?.toLocaleLowerCase() ?? "";
+        card.dataset.adminProductSearch?.toLocaleLowerCase() ?? "";
 
-      const productStatus =
-        card.dataset.adminProductStatus ?? "";
+      const productStatus = card.dataset.adminProductStatus ?? "";
 
       const matchesQuery =
-        !normalizedQuery ||
-        searchable.includes(normalizedQuery);
+        !normalizedQuery || searchable.includes(normalizedQuery);
 
-      const productOutOfStock =
-        card.dataset.adminProductOutOfStock === "true";
+      const productOutOfStock = card.dataset.adminProductOutOfStock === "true";
 
       const matchesStatus =
         status === "all" ||
-        (
-          status === "out_of_stock"
-            ? productOutOfStock
-            : productStatus === status
-        );
+        (status === "out_of_stock"
+          ? productOutOfStock
+          : productStatus === status);
 
-      const matches =
-        matchesQuery && matchesStatus;
+      const matches = matchesQuery && matchesStatus;
 
       card.hidden = !matches;
 
@@ -95,10 +72,7 @@ export default function ProductSearch({
     });
 
     setVisibleCount(visible);
-  }, [
-    normalizedQuery,
-    status,
-  ]);
+  }, [normalizedQuery, status]);
 
   function clearSearch() {
     setQuery("");
@@ -115,7 +89,9 @@ export default function ProductSearch({
         ? draftTotal
         : status === "out_of_stock"
           ? outOfStockTotal
-          : total;
+          : status === "archived"
+            ? archivedTotal
+            : total;
 
   return (
     <section
@@ -130,16 +106,10 @@ export default function ProductSearch({
         </div>
 
         <div className="st-admin-directory-search__count">
-          <strong>
-            {normalizedQuery
-              ? visibleCount
-              : directoryTotal}
-          </strong>
+          <strong>{normalizedQuery ? visibleCount : directoryTotal}</strong>
 
           <span>
-            {(normalizedQuery
-              ? visibleCount
-              : directoryTotal) === 1
+            {(normalizedQuery ? visibleCount : directoryTotal) === 1
               ? "product"
               : "products"}
           </span>
@@ -152,11 +122,7 @@ export default function ProductSearch({
       >
         <button
           type="button"
-          className={
-            status === "all"
-              ? "is-active"
-              : ""
-          }
+          className={status === "all" ? "is-active" : ""}
           onClick={() => setStatus("all")}
         >
           <span>All products</span>
@@ -165,11 +131,7 @@ export default function ProductSearch({
 
         <button
           type="button"
-          className={
-            status === "published"
-              ? "is-active"
-              : ""
-          }
+          className={status === "published" ? "is-active" : ""}
           onClick={() => setStatus("published")}
         >
           <span>Live</span>
@@ -178,11 +140,7 @@ export default function ProductSearch({
 
         <button
           type="button"
-          className={
-            status === "draft"
-              ? "is-active"
-              : ""
-          }
+          className={status === "draft" ? "is-active" : ""}
           onClick={() => setStatus("draft")}
         >
           <span>Drafts</span>
@@ -191,23 +149,25 @@ export default function ProductSearch({
 
         <button
           type="button"
-          className={
-            status === "out_of_stock"
-              ? "is-active"
-              : ""
-          }
+          className={status === "out_of_stock" ? "is-active" : ""}
           onClick={() => setStatus("out_of_stock")}
         >
           <span>Out of stock</span>
           <strong>{outOfStockTotal}</strong>
         </button>
+
+        <button
+          type="button"
+          className={status === "archived" ? "is-active" : ""}
+          onClick={() => setStatus("archived")}
+        >
+          <span>Archived</span>
+          <strong>{archivedTotal}</strong>
+        </button>
       </div>
 
       <label className="st-admin-directory-search__field">
-        <span
-          className="st-admin-directory-search__icon"
-          aria-hidden="true"
-        >
+        <span className="st-admin-directory-search__icon" aria-hidden="true">
           <Search />
         </span>
 
@@ -215,9 +175,7 @@ export default function ProductSearch({
           ref={inputRef}
           type="search"
           value={query}
-          onChange={(event) =>
-            setQuery(event.target.value)
-          }
+          onChange={(event) => setQuery(event.target.value)}
           placeholder="Search iPhone, Samsung, headphones, gaming..."
           aria-label="Search products"
           autoComplete="off"
@@ -239,9 +197,7 @@ export default function ProductSearch({
         <p className="st-admin-directory-search__status">
           {visibleCount > 0
             ? `${visibleCount} ${
-                visibleCount === 1
-                  ? "product matches"
-                  : "products match"
+                visibleCount === 1 ? "product matches" : "products match"
               } “${query.trim()}”.`
             : `No product matches “${query.trim()}” in this section.`}
         </p>

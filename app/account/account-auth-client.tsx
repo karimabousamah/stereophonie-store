@@ -10,16 +10,10 @@ import {
   LockKeyhole,
   ShieldCheck,
 } from "lucide-react";
-import {
-  useMemo,
-  useState,
-} from "react";
+import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import {
-  loginCustomer,
-  registerCustomer,
-} from "./actions";
+import { loginCustomer, registerCustomer } from "./actions";
 
 type Props = {
   mode: "login" | "register";
@@ -97,26 +91,14 @@ const phoneRules: PhoneRule[] = [
   },
 ];
 
-function SubmitButton({
-  idle,
-  pending,
-}: {
-  idle: string;
-  pending: string;
-}) {
+function SubmitButton({ idle, pending }: { idle: string; pending: string }) {
   const { pending: isPending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={isPending}
-      className="st-auth-clean-submit"
-    >
+    <button type="submit" disabled={isPending} className="st-auth-clean-submit">
       <span>{isPending ? pending : idle}</span>
 
-      <ArrowRight
-        aria-hidden="true"
-      />
+      <ArrowRight aria-hidden="true" />
     </button>
   );
 }
@@ -131,86 +113,44 @@ function AuthMessage({
   return (
     <div
       className={`st-auth-clean-message ${
-        type === "error"
-          ? "is-error"
-          : "is-success"
+        type === "error" ? "is-error" : "is-success"
       }`}
-      role={
-        type === "error"
-          ? "alert"
-          : "status"
-      }
+      role={type === "error" ? "alert" : "status"}
     >
-      <span>
-        {type === "error"
-          ? "!"
-          : "✓"}
-      </span>
+      <span>{type === "error" ? "!" : "✓"}</span>
 
       <p>{children}</p>
     </div>
   );
 }
 
-export default function AccountAuthClient({
-  mode,
-  error,
-  message,
-}: Props) {
-  const isRegister =
-    mode === "register";
+export default function AccountAuthClient({ mode, error, message }: Props) {
+  const isRegister = mode === "register";
 
-  const [
-    showLoginPassword,
-    setShowLoginPassword,
-  ] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  const [
-    showRegisterPassword,
-    setShowRegisterPassword,
-  ] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
-  const [
-    showConfirmPassword,
-    setShowConfirmPassword,
-  ] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [
-    phoneCountryCode,
-    setPhoneCountryCode,
-  ] = useState("+961");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+961");
 
-  const [
-    phone,
-    setPhone,
-  ] = useState("");
+  const [phone, setPhone] = useState("");
 
   const phoneRule = useMemo(
     () =>
-      phoneRules.find(
-        (rule) =>
-          rule.code ===
-          phoneCountryCode,
-      ) ?? phoneRules[0],
+      phoneRules.find((rule) => rule.code === phoneCountryCode) ??
+      phoneRules[0],
     [phoneCountryCode],
   );
 
-  function updatePhone(
-    value: string,
-  ) {
-    const digits = value
-      .replace(/\D/g, "")
-      .slice(
-        0,
-        phoneRule.digits,
-      );
+  function updatePhone(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, phoneRule.digits);
 
     setPhone(digits);
   }
 
-  function changeCountry(
-    value: string,
-  ) {
+  function changeCountry(value: string) {
     setPhoneCountryCode(value);
     setPhone("");
   }
@@ -224,8 +164,7 @@ export default function AccountAuthClient({
               href="/"
               className="st-auth-clean-logo"
               aria-label="Stereophonie Store home"
-            >
-</Link>
+            ></Link>
 
             <div className="st-auth-clean-security">
               <ShieldCheck />
@@ -236,11 +175,7 @@ export default function AccountAuthClient({
           <div className="st-auth-clean-heading">
             <span>My account</span>
 
-            <h1>
-              {isRegister
-                ? "Create your account"
-                : "Welcome back"}
-            </h1>
+            <h1>{isRegister ? "Create your account" : "Welcome back"}</h1>
 
             <p>
               {isRegister
@@ -249,54 +184,30 @@ export default function AccountAuthClient({
             </p>
           </div>
 
-          <nav
-            className="st-auth-clean-tabs"
-            aria-label="Account access"
-          >
+          <nav className="st-auth-clean-tabs" aria-label="Account access">
             <Link
               href="/account?mode=login"
-              className={
-                !isRegister
-                  ? "is-active"
-                  : undefined
-              }
+              className={!isRegister ? "is-active" : undefined}
             >
               Sign in
             </Link>
 
             <Link
               href="/account?mode=register"
-              className={
-                isRegister
-                  ? "is-active"
-                  : undefined
-              }
+              className={isRegister ? "is-active" : undefined}
             >
               Create account
             </Link>
           </nav>
 
-          {error ? (
-            <AuthMessage type="error">
-              {error}
-            </AuthMessage>
-          ) : null}
+          {error ? <AuthMessage type="error">{error}</AuthMessage> : null}
 
-          {message ? (
-            <AuthMessage type="success">
-              {message}
-            </AuthMessage>
-          ) : null}
+          {message ? <AuthMessage type="success">{message}</AuthMessage> : null}
 
           {!isRegister ? (
-            <form
-              action={loginCustomer}
-              className="st-auth-clean-form"
-            >
+            <form action={loginCustomer} className="st-auth-clean-form">
               <label className="st-auth-clean-field">
-                <span>
-                  Email address
-                </span>
+                <span>Email address</span>
 
                 <input
                   type="email"
@@ -313,30 +224,17 @@ export default function AccountAuthClient({
 
                   <button
                     type="button"
-                    onClick={() =>
-                      setShowLoginPassword(
-                        (current) =>
-                          !current,
-                      )
-                    }
+                    onClick={() => setShowLoginPassword((current) => !current)}
                   >
-                    {showLoginPassword
-                      ? <EyeOff />
-                      : <Eye />}
+                    {showLoginPassword ? <EyeOff /> : <Eye />}
 
-                    {showLoginPassword
-                      ? "Hide"
-                      : "Show"}
+                    {showLoginPassword ? "Hide" : "Show"}
                   </button>
                 </span>
 
                 <span className="st-auth-clean-password">
                   <input
-                    type={
-                      showLoginPassword
-                        ? "text"
-                        : "password"
-                    }
+                    type={showLoginPassword ? "text" : "password"}
                     name="password"
                     autoComplete="current-password"
                     placeholder="Enter your password"
@@ -347,30 +245,19 @@ export default function AccountAuthClient({
                 </span>
               </label>
 
-              <SubmitButton
-                idle="Sign in"
-                pending="Signing in..."
-              />
+              <SubmitButton idle="Sign in" pending="Signing in..." />
 
               <div className="st-auth-clean-note">
                 <Check />
 
-                <span>
-                  Your account details are
-                  securely protected.
-                </span>
+                <span>Your account details are securely protected.</span>
               </div>
             </form>
           ) : (
-            <form
-              action={registerCustomer}
-              className="st-auth-clean-form"
-            >
+            <form action={registerCustomer} className="st-auth-clean-form">
               <div className="st-auth-clean-two">
                 <label className="st-auth-clean-field">
-                  <span>
-                    First name
-                  </span>
+                  <span>First name</span>
 
                   <input
                     type="text"
@@ -382,9 +269,7 @@ export default function AccountAuthClient({
                 </label>
 
                 <label className="st-auth-clean-field">
-                  <span>
-                    Last name
-                  </span>
+                  <span>Last name</span>
 
                   <input
                     type="text"
@@ -397,9 +282,7 @@ export default function AccountAuthClient({
               </div>
 
               <label className="st-auth-clean-field">
-                <span>
-                  Email address
-                </span>
+                <span>Email address</span>
 
                 <input
                   type="email"
@@ -411,32 +294,20 @@ export default function AccountAuthClient({
               </label>
 
               <label className="st-auth-clean-field">
-                <span>
-                  Telephone number
-                </span>
+                <span>Telephone number</span>
 
                 <div className="st-auth-clean-phone">
                   <select
                     name="phoneCountryCode"
                     value={phoneCountryCode}
-                    onChange={(event) =>
-                      changeCountry(
-                        event.target.value,
-                      )
-                    }
+                    onChange={(event) => changeCountry(event.target.value)}
                     aria-label="Country calling code"
                   >
-                    {phoneRules.map(
-                      (rule) => (
-                        <option
-                          key={rule.code}
-                          value={rule.code}
-                        >
-                          {rule.code}{" "}
-                          {rule.country}
-                        </option>
-                      ),
-                    )}
+                    {phoneRules.map((rule) => (
+                      <option key={rule.code} value={rule.code}>
+                        {rule.code} {rule.country}
+                      </option>
+                    ))}
                   </select>
 
                   <input
@@ -444,17 +315,9 @@ export default function AccountAuthClient({
                     name="phone"
                     inputMode="numeric"
                     value={phone}
-                    maxLength={
-                      phoneRule.digits
-                    }
-                    onChange={(event) =>
-                      updatePhone(
-                        event.target.value,
-                      )
-                    }
-                    placeholder={
-                      phoneRule.placeholder
-                    }
+                    maxLength={phoneRule.digits}
+                    onChange={(event) => updatePhone(event.target.value)}
+                    placeholder={phoneRule.placeholder}
                     required
                   />
                 </div>
@@ -468,8 +331,7 @@ export default function AccountAuthClient({
                   </span>
 
                   <strong>
-                    {phone.length}/
-                    {phoneRule.digits}
+                    {phone.length}/{phoneRule.digits}
                   </strong>
                 </small>
               </label>
@@ -477,36 +339,23 @@ export default function AccountAuthClient({
               <div className="st-auth-clean-two">
                 <label className="st-auth-clean-field">
                   <span className="st-auth-clean-label-row">
-                    <span>
-                      Create password
-                    </span>
+                    <span>Create password</span>
 
                     <button
                       type="button"
                       onClick={() =>
-                        setShowRegisterPassword(
-                          (current) =>
-                            !current,
-                        )
+                        setShowRegisterPassword((current) => !current)
                       }
                     >
-                      {showRegisterPassword
-                        ? <EyeOff />
-                        : <Eye />}
+                      {showRegisterPassword ? <EyeOff /> : <Eye />}
 
-                      {showRegisterPassword
-                        ? "Hide"
-                        : "Show"}
+                      {showRegisterPassword ? "Hide" : "Show"}
                     </button>
                   </span>
 
                   <span className="st-auth-clean-password">
                     <input
-                      type={
-                        showRegisterPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showRegisterPassword ? "text" : "password"}
                       name="password"
                       autoComplete="new-password"
                       placeholder="Minimum 8 characters"
@@ -520,36 +369,23 @@ export default function AccountAuthClient({
 
                 <label className="st-auth-clean-field">
                   <span className="st-auth-clean-label-row">
-                    <span>
-                      Confirm password
-                    </span>
+                    <span>Confirm password</span>
 
                     <button
                       type="button"
                       onClick={() =>
-                        setShowConfirmPassword(
-                          (current) =>
-                            !current,
-                        )
+                        setShowConfirmPassword((current) => !current)
                       }
                     >
-                      {showConfirmPassword
-                        ? <EyeOff />
-                        : <Eye />}
+                      {showConfirmPassword ? <EyeOff /> : <Eye />}
 
-                      {showConfirmPassword
-                        ? "Hide"
-                        : "Show"}
+                      {showConfirmPassword ? "Hide" : "Show"}
                     </button>
                   </span>
 
                   <span className="st-auth-clean-password">
                     <input
-                      type={
-                        showConfirmPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       autoComplete="new-password"
                       placeholder="Repeat password"
@@ -566,13 +402,11 @@ export default function AccountAuthClient({
                 <ShieldCheck />
 
                 <div>
-                  <strong>
-                    Email verification
-                  </strong>
+                  <strong>Email verification</strong>
 
                   <p>
-                    A six-digit confirmation code
-                    will be sent after registration.
+                    A six-digit confirmation code will be sent after
+                    registration.
                   </p>
                 </div>
               </div>
@@ -586,21 +420,15 @@ export default function AccountAuthClient({
 
           <footer className="st-auth-clean-footer">
             <span>
-              {isRegister
-                ? "Already have an account?"
-                : "New to Stereophonie?"}
+              {isRegister ? "Already have an account?" : "New to Stereophonie?"}
             </span>
 
             <Link
               href={
-                isRegister
-                  ? "/account?mode=login"
-                  : "/account?mode=register"
+                isRegister ? "/account?mode=login" : "/account?mode=register"
               }
             >
-              {isRegister
-                ? "Sign in"
-                : "Create account"}
+              {isRegister ? "Sign in" : "Create account"}
 
               <ArrowRight />
             </Link>

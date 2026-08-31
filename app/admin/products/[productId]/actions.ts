@@ -212,11 +212,11 @@ export async function updateProduct(formData: FormData) {
 
   const variantsJson = String(formData.get("variants_json") ?? "[]");
 
-  const isFeatured = formData.get("is_featured") === "on";
+  let isFeatured = formData.get("is_featured") === "on";
 
-  const isTrending = formData.get("is_trending") === "on";
+  let isTrending = formData.get("is_trending") === "on";
 
-  const isNewArrival = formData.get("is_new_arrival") === "on";
+  let isNewArrival = formData.get("is_new_arrival") === "on";
 
   if (!name) {
     redirectWithError(productId, "Product name is required.");
@@ -237,11 +237,32 @@ export async function updateProduct(formData: FormData) {
     );
   }
 
-  validateVariants(productId, variants, publishingIntent);
+  validateVariants(
+    productId,
+    variants,
+    publishingIntent === "archive" ? "draft" : publishingIntent,
+  );
 
-  const productStatus = publishingIntent === "publish" ? "published" : "draft";
+  const productStatus =
+    publishingIntent === "publish"
+      ? "published"
+      : publishingIntent === "archive"
+        ? "archived"
+        : "draft";
 
   const productAvailability = calculateProductAvailability(variants);
+
+  /*
+   * Out of Stock is exclusive.
+   *
+   * Never preserve or accept merchandising flags when the
+   * aggregate product availability is Out of Stock.
+   */
+  if (productAvailability === "out_of_stock") {
+    isFeatured = false;
+    isTrending = false;
+    isNewArrival = false;
+  }
 
   const { error: productUpdateError } = await supabase
     .from("products")
@@ -322,76 +343,78 @@ export async function updateProduct(formData: FormData) {
     }
   }
 
-  for (const variant of variants) {
-    const unavailable =
-      variant.availability_status === "out_of_stock" ||
-      variant.availability_status === "coming_soon";
+  const variantSaveResults = await Promise.all(
+    variants.map(async (variant) => {
+      const unavailable =
+        variant.availability_status === "out_of_stock" ||
+        variant.availability_status === "coming_soon";
 
-    const configurationName = variant.variant_name.trim();
+      const configurationName = variant.variant_name.trim();
 
-    const configurationRegularPrice = Number(variant.regular_price);
+      const configurationRegularPrice = Number(variant.regular_price);
 
-    const configurationSalePrice =
-      variant.sale_price === "" ||
-      variant.sale_price === null ||
-      variant.sale_price === undefined
-        ? null
-        : Number(variant.sale_price);
+      const configurationSalePrice =
+        variant.sale_price === "" ||
+        variant.sale_price === null ||
+        variant.sale_price === undefined
+          ? null
+          : Number(variant.sale_price);
 
-    const variantValues = {
-      // Legacy compatibility for checkout/order code.
-      size: configurationName,
+      const variantValues = {
+        // Legacy compatibility for checkout/order code.
+        size: configurationName,
 
-      variant_name: configurationName,
-      display_position: Number.isFinite(Number(variant.display_position))
-        ? Math.max(0, Math.trunc(Number(variant.display_position)))
-        : 0,
-      attributes: variant.attributes ?? {},
-      sku: variant.sku.trim() || null,
-
-      regular_price:
-        Number.isFinite(configurationRegularPrice) &&
-        configurationRegularPrice > 0
-          ? configurationRegularPrice
+        variant_name: configurationName,
+        display_position: Number.isFinite(Number(variant.display_position))
+          ? Math.max(0, Math.trunc(Number(variant.display_position)))
           : 0,
+        attributes: variant.attributes ?? {},
+        sku: variant.sku.trim() || null,
 
-      sale_price:
-        Number.isFinite(configurationRegularPrice) &&
-        configurationRegularPrice > 0
-          ? configurationSalePrice
-          : null,
+        regular_price:
+          Number.isFinite(configurationRegularPrice) &&
+          configurationRegularPrice > 0
+            ? configurationRegularPrice
+            : 0,
 
-      stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
+        sale_price:
+          Number.isFinite(configurationRegularPrice) &&
+          configurationRegularPrice > 0
+            ? configurationSalePrice
+            : null,
 
-      low_stock_threshold: Number(variant.low_stock_threshold),
+        stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
 
-      availability_status: variant.availability_status,
-    };
+        low_stock_threshold: Number(variant.low_stock_threshold),
 
-    if (variant.id) {
-      const { error: updateVariantError } = await supabase
-        .from("product_variants")
-        .update(variantValues)
-        .eq("id", variant.id)
-        .eq("product_id", productId);
+        availability_status: variant.availability_status,
+      };
 
-      if (updateVariantError) {
-        redirectWithError(productId, updateVariantError.message);
+      if (variant.id) {
+        const { error: updateVariantError } = await supabase
+          .from("product_variants")
+          .update(variantValues)
+          .eq("id", variant.id)
+          .eq("product_id", productId);
+
+        return updateVariantError?.message ?? null;
       }
 
-      continue;
-    }
+      const { error: insertVariantError } = await supabase
+        .from("product_variants")
+        .insert({
+          product_id: productId,
+          ...variantValues,
+        });
 
-    const { error: insertVariantError } = await supabase
-      .from("product_variants")
-      .insert({
-        product_id: productId,
-        ...variantValues,
-      });
+      return insertVariantError?.message ?? null;
+    }),
+  );
 
-    if (insertVariantError) {
-      redirectWithError(productId, insertVariantError.message);
-    }
+  const variantSaveError = variantSaveResults.find(Boolean);
+
+  if (variantSaveError) {
+    redirectWithError(productId, variantSaveError);
   }
 
   try {
@@ -423,6 +446,10 @@ export async function updateProduct(formData: FormData) {
   revalidatePath("/shop");
   revalidatePath(`/shop/${productId}`);
 
+  if (productStatus === "archived") {
+    redirect("/admin/products?filter=archived");
+  }
+
   redirect(
     `/admin/products/${productId}?saved=${encodeURIComponent(productStatus)}`,
   );
@@ -453,7 +480,7 @@ export async function archiveProduct(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/");
 
-  redirect("/admin/products?archived=true");
+  redirect("/admin/products?filter=archived");
 }
 
 export async function deleteProduct(formData: FormData) {

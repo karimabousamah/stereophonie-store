@@ -92,13 +92,7 @@ function liveTime(date: Date) {
   }).format(date);
 }
 
-function Trend({
-  value,
-  period,
-}: {
-  value: number;
-  period: number;
-}) {
+function Trend({ value, period }: { value: number; period: number }) {
   const positive = value >= 0;
   const Icon = positive ? ArrowUpRight : ArrowDownRight;
 
@@ -111,9 +105,7 @@ function Trend({
   );
 }
 
-export default function DashboardLivePerformance({
-  orders,
-}: Props) {
+export default function DashboardLivePerformance({ orders }: Props) {
   const [period, setPeriod] = useState<Period>(30);
   const [now, setNow] = useState<Date | null>(null);
 
@@ -147,15 +139,11 @@ export default function DashboardLivePerformance({
       .filter((order) => !Number.isNaN(order.date.getTime()));
 
     const current = paidOrders.filter(
-      (order) =>
-        order.date >= currentStart &&
-        order.date < currentEnd,
+      (order) => order.date >= currentStart && order.date < currentEnd,
     );
 
     const previous = paidOrders.filter(
-      (order) =>
-        order.date >= previousStart &&
-        order.date < previousEnd,
+      (order) => order.date >= previousStart && order.date < previousEnd,
     );
 
     const currentRevenue = current.reduce(
@@ -172,14 +160,10 @@ export default function DashboardLivePerformance({
     const previousPaidOrders = previous.length;
 
     const currentAverage =
-      currentPaidOrders > 0
-        ? currentRevenue / currentPaidOrders
-        : 0;
+      currentPaidOrders > 0 ? currentRevenue / currentPaidOrders : 0;
 
     const previousAverage =
-      previousPaidOrders > 0
-        ? previousRevenue / previousPaidOrders
-        : 0;
+      previousPaidOrders > 0 ? previousRevenue / previousPaidOrders : 0;
 
     const daily = Array.from({ length: period }, (_, index) => {
       const date = addDays(currentStart, index);
@@ -201,20 +185,11 @@ export default function DashboardLivePerformance({
       currentPaidOrders,
       currentAverage,
 
-      revenueChange: percentChange(
-        currentRevenue,
-        previousRevenue,
-      ),
+      revenueChange: percentChange(currentRevenue, previousRevenue),
 
-      paidOrdersChange: percentChange(
-        currentPaidOrders,
-        previousPaidOrders,
-      ),
+      paidOrdersChange: percentChange(currentPaidOrders, previousPaidOrders),
 
-      averageChange: percentChange(
-        currentAverage,
-        previousAverage,
-      ),
+      averageChange: percentChange(currentAverage, previousAverage),
 
       daily,
     };
@@ -224,9 +199,7 @@ export default function DashboardLivePerformance({
     const width = 1000;
     const height = 250;
 
-    const values = analysis.daily.map(
-      (entry) => entry.revenue,
-    );
+    const values = analysis.daily.map((entry) => entry.revenue);
 
     const actualMax = Math.max(...values, 0);
 
@@ -235,10 +208,7 @@ export default function DashboardLivePerformance({
      * A visual range of $0–$100 prevents the chart from
      * collapsing into an empty canvas.
      */
-    const scaleMax =
-      actualMax <= 0
-        ? 100
-        : actualMax * 1.12;
+    const scaleMax = actualMax <= 0 ? 100 : actualMax * 1.12;
 
     const points = analysis.daily.map((entry, index) => {
       const x =
@@ -246,9 +216,7 @@ export default function DashboardLivePerformance({
           ? 0
           : (index / (analysis.daily.length - 1)) * width;
 
-      const y =
-        height -
-        (entry.revenue / scaleMax) * (height - 18);
+      const y = height - (entry.revenue / scaleMax) * (height - 18);
 
       return {
         ...entry,
@@ -257,14 +225,10 @@ export default function DashboardLivePerformance({
       };
     });
 
-    const polyline = points
-      .map((point) => `${point.x},${point.y}`)
-      .join(" ");
+    const polyline = points.map((point) => `${point.x},${point.y}`).join(" ");
 
     const area =
-      points.length > 0
-        ? `0,${height} ${polyline} ${width},${height}`
-        : "";
+      points.length > 0 ? `0,${height} ${polyline} ${width},${height}` : "";
 
     return {
       width,
@@ -300,22 +264,17 @@ export default function DashboardLivePerformance({
           <h2>Last {period} days</h2>
 
           <p>
-            Paid, non-cancelled orders only. Changes are
-            compared with the previous {period}-day period.
+            Paid, non-cancelled orders only. Changes are compared with the
+            previous {period}-day period.
           </p>
         </div>
 
         <div className="st-dash-live-performance__right">
-          <div
-            className="st-dash-live-clock"
-            suppressHydrationWarning
-          >
+          <div className="st-dash-live-clock" suppressHydrationWarning>
             <CalendarDays />
 
             <div>
-              <strong>
-                {now ? fullDate(now) : "Loading current date…"}
-              </strong>
+              <strong>{now ? fullDate(now) : "Loading current date…"}</strong>
 
               <span>
                 <Clock3 />
@@ -332,9 +291,7 @@ export default function DashboardLivePerformance({
               <button
                 key={days}
                 type="button"
-                className={
-                  period === days ? "is-active" : ""
-                }
+                className={period === days ? "is-active" : ""}
                 onClick={() => setPeriod(days)}
               >
                 {days}D
@@ -348,38 +305,23 @@ export default function DashboardLivePerformance({
         <div className="st-dash-performance__stats">
           <div className="st-dash-performance-stat">
             <span>Revenue</span>
-            <strong>
-              {money(analysis.currentRevenue)}
-            </strong>
+            <strong>{money(analysis.currentRevenue)}</strong>
 
-            <Trend
-              value={analysis.revenueChange}
-              period={period}
-            />
+            <Trend value={analysis.revenueChange} period={period} />
           </div>
 
           <div className="st-dash-performance-stat">
             <span>Paid orders</span>
-            <strong>
-              {analysis.currentPaidOrders}
-            </strong>
+            <strong>{analysis.currentPaidOrders}</strong>
 
-            <Trend
-              value={analysis.paidOrdersChange}
-              period={period}
-            />
+            <Trend value={analysis.paidOrdersChange} period={period} />
           </div>
 
           <div className="st-dash-performance-stat">
             <span>Average order</span>
-            <strong>
-              {money(analysis.currentAverage)}
-            </strong>
+            <strong>{money(analysis.currentAverage)}</strong>
 
-            <Trend
-              value={analysis.averageChange}
-              period={period}
-            />
+            <Trend value={analysis.averageChange} period={period} />
           </div>
         </div>
 
@@ -399,14 +341,9 @@ export default function DashboardLivePerformance({
           <div className="st-dash-chart-shell">
             <div className="st-dash-chart-y-axis">
               {[100, 75, 50, 25, 0].map((percentage) => {
-                const value =
-                  chart.scaleMax * (percentage / 100);
+                const value = chart.scaleMax * (percentage / 100);
 
-                return (
-                  <span key={percentage}>
-                    {money(value)}
-                  </span>
-                );
+                return <span key={percentage}>{money(value)}</span>;
               })}
             </div>
 
@@ -427,11 +364,7 @@ export default function DashboardLivePerformance({
                     x2="0"
                     y2="1"
                   >
-                    <stop
-                      offset="0%"
-                      stopColor="#f5b335"
-                      stopOpacity=".22"
-                    />
+                    <stop offset="0%" stopColor="#f5b335" stopOpacity=".22" />
                     <stop
                       offset="100%"
                       stopColor="#f5b335"
@@ -441,10 +374,7 @@ export default function DashboardLivePerformance({
                 </defs>
 
                 {chart.area && (
-                  <polygon
-                    points={chart.area}
-                    fill="url(#stRevenueArea)"
-                  />
+                  <polygon points={chart.area} fill="url(#stRevenueArea)" />
                 )}
 
                 <polyline
@@ -482,9 +412,7 @@ export default function DashboardLivePerformance({
                 <div className="st-dash-chart-zero-note">
                   <BarChart3 />
 
-                  <span>
-                    No paid revenue in this period yet
-                  </span>
+                  <span>No paid revenue in this period yet</span>
                 </div>
               )}
             </div>
@@ -496,11 +424,7 @@ export default function DashboardLivePerformance({
 
               if (!entry) return null;
 
-              return (
-                <span key={entry.key}>
-                  {shortDate(entry.date)}
-                </span>
-              );
+              return <span key={entry.key}>{shortDate(entry.date)}</span>;
             })}
           </div>
         </div>

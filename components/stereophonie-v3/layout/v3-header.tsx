@@ -87,6 +87,103 @@ export function V3Header() {
 
   const pathname = usePathname();
   const [categories, setCategories] = useState<HeaderCategory[]>([]);
+
+  const [mobileCategoryMenuOpen, setMobileCategoryMenuOpen] = useState(false);
+  const [mobileCategoryMenuRendered, setMobileCategoryMenuRendered] =
+    useState(false);
+  const [mobileCategoryMenuClosing, setMobileCategoryMenuClosing] =
+    useState(false);
+  const mobileCategoryCloseTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!mobileCategoryMenuOpen) {
+      return;
+    }
+
+    const body = document.body;
+    const previousOverflow = body.style.overflow;
+    const previousOverscrollBehavior = body.style.overscrollBehavior;
+
+    body.dataset.stV3MobileCategoryScrollLock = "true";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+
+    function handleKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMobileCategoryMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      delete body.dataset.stV3MobileCategoryScrollLock;
+      body.style.overflow = previousOverflow;
+      body.style.overscrollBehavior = previousOverscrollBehavior;
+
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileCategoryMenuOpen]);
+
+  const openMobileCategoryMenu = useCallback(() => {
+    if (mobileCategoryCloseTimerRef.current) {
+      window.clearTimeout(mobileCategoryCloseTimerRef.current);
+      mobileCategoryCloseTimerRef.current = null;
+    }
+
+    setMobileCategoryMenuClosing(false);
+    setMobileCategoryMenuRendered(true);
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        setMobileCategoryMenuOpen(true);
+      });
+    });
+  }, []);
+
+  const closeMobileCategoryMenu = useCallback(() => {
+    if (mobileCategoryCloseTimerRef.current) {
+      window.clearTimeout(mobileCategoryCloseTimerRef.current);
+    }
+
+    setMobileCategoryMenuOpen(false);
+    setMobileCategoryMenuClosing(true);
+
+    mobileCategoryCloseTimerRef.current = window.setTimeout(() => {
+      setMobileCategoryMenuRendered(false);
+      setMobileCategoryMenuClosing(false);
+      mobileCategoryCloseTimerRef.current = null;
+    }, 680);
+  }, []);
+
+  const toggleMobileCategoryMenu = useCallback(() => {
+    if (mobileCategoryMenuOpen || mobileCategoryMenuClosing) {
+      closeMobileCategoryMenu();
+      return;
+    }
+
+    openMobileCategoryMenu();
+  }, [
+    closeMobileCategoryMenu,
+    mobileCategoryMenuClosing,
+    mobileCategoryMenuOpen,
+    openMobileCategoryMenu,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      if (mobileCategoryCloseTimerRef.current) {
+        window.clearTimeout(mobileCategoryCloseTimerRef.current);
+      }
+    };
+  }, []);
+
+  /*
+   * st-v3-mobile-category-scroll-lock
+   *
+   * Marker intentionally kept beside the menu controller so
+   * this mobile navigation remains easy to locate later.
+   */
   const [activePanel, setActivePanel] = useState<HeaderPanel>(null);
   const [renderedPanel, setRenderedPanel] = useState<HeaderPanel>(null);
   const [panelClosing, setPanelClosing] = useState(false);
@@ -161,11 +258,17 @@ export function V3Header() {
     setActivePanel(null);
     closeCart();
 
+    const closeDuration =
+      currentPanel === "search" &&
+      window.matchMedia("(max-width: 900px)").matches
+        ? 950
+        : 430;
+
     closeTimer.current = window.setTimeout(() => {
       setRenderedPanel(null);
       setPanelClosing(false);
       closeTimer.current = null;
-    }, 430);
+    }, closeDuration);
   }, [activePanel, cancelClose, closeCart, isCartOpen, renderedPanel]);
 
   const scheduleClose = useCallback(() => {
@@ -399,6 +502,27 @@ export function V3Header() {
                 >
                   <TrackOrderIcon />
                 </Link>
+
+                <button
+                  type="button"
+                  className={`st3-header__icon st3-header__menu-button ${
+                    mobileCategoryMenuOpen ? "is-active" : ""
+                  }`}
+                  onClick={toggleMobileCategoryMenu}
+                  aria-expanded={mobileCategoryMenuOpen}
+                  aria-controls="st3-mobile-category-navigation"
+                  aria-label={
+                    mobileCategoryMenuOpen
+                      ? "Close category navigation"
+                      : "Open category navigation"
+                  }
+                >
+                  <span className="st3-header__menu-glyph" aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </span>
+                </button>
               </div>
 
               <div
@@ -652,6 +776,84 @@ export function V3Header() {
           ) : null}
         </div>
       </header>
+
+      {mobileCategoryMenuRendered ? (
+        <div
+          id="st3-mobile-category-navigation"
+          className={`st3-mobile st3-mobile--category-navigation ${
+            mobileCategoryMenuOpen
+              ? "is-open"
+              : mobileCategoryMenuClosing
+                ? "is-closing"
+                : "is-preparing"
+          }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Category navigation"
+          aria-hidden={!mobileCategoryMenuOpen}
+        >
+          <div className="st3-mobile__inner">
+            <div className="st3-mobile__top">
+              <div className="st3-mobile__heading">
+                <span>Explore</span>
+                <strong>Categories</strong>
+              </div>
+            </div>
+
+            <nav className="st3-mobile__links" aria-label="Store categories">
+              <Link
+                href="/shop"
+                className="st3-mobile__link st3-mobile__link--primary"
+                onClick={closeMobileCategoryMenu}
+              >
+                <span>Shop All</span>
+                <span className="st3-mobile__link-arrow" aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+
+              <Link
+                href="/shop?offers=true"
+                className="st3-mobile__link st3-mobile__link--offer"
+                onClick={closeMobileCategoryMenu}
+              >
+                <span>Offers</span>
+                <span className="st3-mobile__link-arrow" aria-hidden="true">
+                  ›
+                </span>
+              </Link>
+
+              {categories.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/shop?category=${encodeURIComponent(category.name)}`}
+                  className="st3-mobile__link"
+                  onClick={closeMobileCategoryMenu}
+                >
+                  <span>{category.name}</span>
+                  <span className="st3-mobile__link-arrow" aria-hidden="true">
+                    ›
+                  </span>
+                </Link>
+              ))}
+            </nav>
+
+            <div className="st3-mobile__utility">
+              <Link href="/track-order" onClick={closeMobileCategoryMenu}>
+                Track your order
+              </Link>
+
+              <Link href="/account" onClick={closeMobileCategoryMenu}>
+                Your account
+              </Link>
+
+              <Link href="/wishlist" onClick={closeMobileCategoryMenu}>
+                Saved products
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {(panelIsOpen || panelClosing) && (
         <button

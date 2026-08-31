@@ -2,33 +2,25 @@ import "server-only";
 
 import { Resend } from "resend";
 
-export async function sendAdminLoginOtp(
-  email: string,
-  code: string,
-) {
-  const apiKey =
-    process.env.RESEND_API_KEY?.trim();
+export async function sendAdminLoginOtp(email: string, code: string) {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
 
-  const fromAddress =
-    process.env.ORDER_EMAIL_FROM?.trim();
+  const fromAddress = process.env.ORDER_EMAIL_FROM?.trim();
 
   if (!apiKey || !fromAddress) {
     return {
       success: false,
-      message:
-        "Administrator security email is not configured.",
+      message: "Administrator security email is not configured.",
     };
   }
 
   const resend = new Resend(apiKey);
 
-  const { error } =
-    await resend.emails.send({
-      from: fromAddress,
-      to: [email],
-      subject:
-        "Your Stereophonie administrator verification code",
-      html: `
+  const { error } = await resend.emails.send({
+    from: fromAddress,
+    to: [email],
+    subject: "Your Stereophonie administrator verification code",
+    html: `
         <div style="margin:0;padding:40px 18px;background:#f5f5f7;font-family:Arial,Helvetica,sans-serif;color:#1d1d1f">
           <div style="max-width:520px;margin:auto;background:white;border:1px solid #e8e8ea;border-radius:24px;padding:36px">
             <div style="font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8a5b00">
@@ -55,18 +47,14 @@ export async function sendAdminLoginOtp(
           </div>
         </div>
       `,
-    });
+  });
 
   if (error) {
-    console.error(
-      "Admin OTP email error:",
-      error,
-    );
+    console.error("Admin OTP email error:", error);
 
     return {
       success: false,
-      message:
-        "The verification email could not be sent.",
+      message: "The verification email could not be sent.",
     };
   }
 

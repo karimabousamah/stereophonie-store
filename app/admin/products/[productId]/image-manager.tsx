@@ -14,11 +14,13 @@ import {
 } from "lucide-react";
 
 import {
+  deleteAllProductImages,
   deleteProductImage,
   moveProductImage,
   setPrimaryProductImage,
   updateProductImageAltText,
   updateProductImageVariantName,
+  updateProductImageVariantUsageBulk,
   finalizeDirectProductImageUploads,
 } from "./image-actions";
 
@@ -72,7 +74,9 @@ type ImageManagerProps = {
 const maximumImagesPerConfiguration = 10;
 const maximumFileSize = 10 * 1024 * 1024;
 
-const acceptedTypes = ["image/jpeg", "image/png", "image/webp"];
+function isAcceptedImageFile(file: File) {
+  return file.type.startsWith("image/");
+}
 
 export default function ImageManager({
   productId,
@@ -692,14 +696,9 @@ export default function ImageManager({
 
   async function handleSaveConfigurationPhotoUsage() {
     if (pendingImageOperation) {
-      return;
+      return false;
     }
 
-    /*
-     * selectedConfigurationImages is the gallery currently rendered.
-     * Therefore these are exactly the usage forms belonging to the
-     * configuration the administrator is currently managing.
-     */
     const usageForms = Array.from(
       document.querySelectorAll<HTMLFormElement>(
         'form[data-photo-usage-form="true"]',
@@ -707,68 +706,131 @@ export default function ImageManager({
     );
 
     if (usageForms.length === 0) {
-      setImageOperationErrorMessage(
-        "There are no photograph usage settings to save.",
-      );
-      return;
+      return true;
     }
 
     setPendingImageOperation("Saving photo usage…");
     setImageOperationErrorMessage("");
     setPhotoUsageSavedMessage("");
 
-    const previousImages = managedImages;
-
-    let latestAuthoritativeImages: ProductImage[] | null = null;
-
     try {
-      /*
-       * Reuse the existing authoritative per-photo server action.
-       *
-       * The administrator still makes individual usage choices per photo,
-       * but only needs to press Save once for the complete gallery.
-       */
-      for (const form of usageForms) {
+      const usage = usageForms.map((form) => {
         const formData = new FormData(form);
 
-        formData.set("_client_image_operation", "1");
+        return {
+          image_id: String(formData.get("image_id") ?? "").trim(),
+          variant_ids: Array.from(
+            new Set(
+              formData
+                .getAll("variant_ids")
+                .map((value) => String(value ?? "").trim())
+                .filter(Boolean),
+            ),
+          ),
+        };
+      });
 
-        const result = await updateProductImageVariantName(formData);
+      const formData = new FormData();
+      formData.set("product_id", productId);
+      formData.set("usage_json", JSON.stringify(usage));
 
-        if (
-          !result ||
-          typeof result !== "object" ||
-          !("images" in result) ||
-          !Array.isArray(result.images)
-        ) {
-          throw new Error(
-            "Photo usage changed, but the refreshed gallery could not be loaded.",
-          );
-        }
+      const result = await updateProductImageVariantUsageBulk(formData);
 
-        latestAuthoritativeImages = result.images as ProductImage[];
+      if (!result?.success || !Array.isArray(result.images)) {
+        throw new Error("The photograph usage could not be saved.");
       }
 
-      if (latestAuthoritativeImages) {
-        setManagedImages(latestAuthoritativeImages);
-      }
+      setManagedImages(result.images as ProductImage[]);
 
       setPhotoUsageSavedMessage(
-        usageForms.length === 1
+        usage.length === 1
           ? "Photo usage saved."
-          : `Photo usage saved for ${usageForms.length} photographs.`,
+          : `Photo usage saved for ${usage.length} photographs.`,
       );
-    } catch (error) {
-      /*
-       * If an earlier image was already successfully persisted, keep the
-       * latest authoritative response rather than pretending it was undone.
-       */
-      setManagedImages(latestAuthoritativeImages ?? previousImages);
 
+      return true;
+    } catch (error) {
       setImageOperationErrorMessage(
         error instanceof Error
           ? error.message
           : "Photo usage could not be saved. Please try again.",
+      );
+
+      return false;
+    } finally {
+      setPendingImageOperation("");
+    }
+  }
+
+  useEffect(() => {
+    function handleMasterPhotoUsageSave(event: Event) {
+      const customEvent = event as CustomEvent<{
+        handled?: boolean;
+        resolve?: (saved: boolean) => void;
+      }>;
+
+      if (customEvent.detail) {
+        customEvent.detail.handled = true;
+      }
+
+      void handleSaveConfigurationPhotoUsage()
+        .then((saved) => {
+          customEvent.detail?.resolve?.(saved);
+        })
+        .catch(() => {
+          customEvent.detail?.resolve?.(false);
+        });
+    }
+
+    window.addEventListener(
+      "stereophonie:admin-save-photo-usage",
+      handleMasterPhotoUsageSave,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "stereophonie:admin-save-photo-usage",
+        handleMasterPhotoUsageSave,
+      );
+    };
+  });
+
+  async function handleClearAllPhotographs() {
+    if (pendingImageOperation || managedImages.length === 0) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete all ${managedImages.length} uploaded photograph${
+        managedImages.length === 1 ? "" : "s"
+      } from this product? This cannot be undone.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setPendingImageOperation("Clearing photographs…");
+    setImageOperationErrorMessage("");
+    setPhotoUsageSavedMessage("");
+
+    try {
+      const formData = new FormData();
+      formData.set("product_id", productId);
+
+      const result = await deleteAllProductImages(formData);
+
+      if (!result?.success) {
+        throw new Error("The photographs could not be cleared.");
+      }
+
+      setManagedImages([]);
+      setPhotoUsageSavedMessage("All photographs cleared.");
+    } catch (error) {
+      setImageOperationErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "The photographs could not be cleared. Please try again.",
       );
     } finally {
       setPendingImageOperation("");
@@ -929,9 +991,7 @@ export default function ImageManager({
 
     const selected = Array.from(files);
 
-    const invalidType = selected.find(
-      (file) => !acceptedTypes.includes(file.type),
-    );
+    const invalidType = selected.find((file) => !isAcceptedImageFile(file));
 
     if (invalidType) {
       setUploadError(
@@ -1112,7 +1172,7 @@ export default function ImageManager({
               ref={fileInputRef}
               id="new-product-images"
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/*"
               multiple
               className="sr-only"
               onChange={(event) => {
@@ -1131,7 +1191,8 @@ export default function ImageManager({
                 </div>
 
                 <p className="mt-2 text-sm leading-6 text-white/35">
-                  Upload JPEG, PNG, or WebP files. Each file can be up to 10 MB.
+                  Upload any supported image format. Each file can be up to 10
+                  MB.
                 </p>
               </div>
 
@@ -1175,8 +1236,9 @@ export default function ImageManager({
                     type="button"
                     onClick={clearSelectedFiles}
                     disabled={isUploading}
-                    className="text-xs font-semibold uppercase tracking-[0.15em] text-white/40 transition hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-transparent px-5 text-[10px] font-semibold uppercase tracking-[0.13em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.06] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-35"
                   >
+                    <Trash2 className="h-3.5 w-3.5" />
                     Clear selection
                   </button>
                 </div>
@@ -1424,7 +1486,20 @@ export default function ImageManager({
             Existing media
           </p>
 
-          <h2 className="mt-2 text-xl font-semibold">Current photographs</h2>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="mt-2 text-xl font-semibold">Current photographs</h2>
+            {managedImages.length > 0 ? (
+              <button
+                type="button"
+                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-transparent px-5 text-[10px] font-semibold uppercase tracking-[0.13em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.06] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-35"
+                disabled={Boolean(pendingImageOperation)}
+                onClick={() => void handleClearAllPhotographs()}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Clear all photographs
+              </button>
+            ) : null}
+          </div>
 
           <p className="mt-2 text-sm leading-6 text-white/35">
             The photograph marked Main appears first on product cards and

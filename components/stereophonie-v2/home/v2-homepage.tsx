@@ -72,10 +72,38 @@ export default function V2Homepage({ products, categories }: V2HomepageProps) {
   const departments = categories.length
     ? categories
     : [
-        { id: "phones", name: "Phones", slug: "phones", description: null, image_url: null, sort_order: 10 },
-        { id: "laptops", name: "Laptops", slug: "laptops", description: null, image_url: null, sort_order: 20 },
-        { id: "gaming", name: "Gaming", slug: "gaming", description: null, image_url: null, sort_order: 30 },
-        { id: "audio", name: "Audio", slug: "audio", description: null, image_url: null, sort_order: 40 },
+        {
+          id: "phones",
+          name: "Phones",
+          slug: "phones",
+          description: null,
+          image_url: null,
+          sort_order: 10,
+        },
+        {
+          id: "laptops",
+          name: "Laptops",
+          slug: "laptops",
+          description: null,
+          image_url: null,
+          sort_order: 20,
+        },
+        {
+          id: "gaming",
+          name: "Gaming",
+          slug: "gaming",
+          description: null,
+          image_url: null,
+          sort_order: 30,
+        },
+        {
+          id: "audio",
+          name: "Audio",
+          slug: "audio",
+          description: null,
+          image_url: null,
+          sort_order: 40,
+        },
       ];
 
   return (
@@ -102,7 +130,7 @@ export default function V2Homepage({ products, categories }: V2HomepageProps) {
                 className="st-v2-home-start-button"
                 aria-label="Start shopping"
               >
-<span className="st-v2-home-start-button__label">START</span>
+                <span className="st-v2-home-start-button__label">START</span>
                 <span className="st-v2-home-start-button__prompt">PRESS</span>
               </Link>
               <br />

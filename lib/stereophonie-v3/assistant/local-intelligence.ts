@@ -58,14 +58,7 @@ const categoryDictionary: Record<string, string[]> = {
     "موبايل",
   ],
 
-  tablets: [
-    "tablet",
-    "tablets",
-    "ipad",
-    "galaxy tab",
-    "tablette",
-    "تابلت",
-  ],
+  tablets: ["tablet", "tablets", "ipad", "galaxy tab", "tablette", "تابلت"],
 
   gaming: [
     "gaming",
@@ -129,14 +122,7 @@ const categoryDictionary: Record<string, string[]> = {
     "لابتوب",
   ],
 
-  monitors: [
-    "monitor",
-    "monitors",
-    "screen",
-    "display",
-    "écran",
-    "شاشة",
-  ],
+  monitors: ["monitor", "monitors", "screen", "display", "écran", "شاشة"],
 
   accessories: [
     "accessory",
@@ -188,70 +174,21 @@ const brandDictionary = [
 ];
 
 const useCaseDictionary: Record<string, string[]> = {
-  gaming: [
-    "gaming",
-    "game",
-    "gamer",
-    "fps",
-    "play games",
-  ],
+  gaming: ["gaming", "game", "gamer", "fps", "play games"],
 
-  work: [
-    "work",
-    "office",
-    "professional",
-    "business",
-    "bureau",
-  ],
+  work: ["work", "office", "professional", "business", "bureau"],
 
-  school: [
-    "school",
-    "university",
-    "college",
-    "student",
-    "study",
-    "étudiant",
-  ],
+  school: ["school", "university", "college", "student", "study", "étudiant"],
 
-  travel: [
-    "travel",
-    "trip",
-    "vacation",
-    "voyage",
-  ],
+  travel: ["travel", "trip", "vacation", "voyage"],
 
-  fitness: [
-    "fitness",
-    "gym",
-    "sport",
-    "running",
-    "workout",
-  ],
+  fitness: ["fitness", "gym", "sport", "running", "workout"],
 
-  photography: [
-    "photo",
-    "photography",
-    "video",
-    "vlogging",
-    "creator",
-  ],
+  photography: ["photo", "photography", "video", "vlogging", "creator"],
 
-  gift: [
-    "gift",
-    "present",
-    "birthday",
-    "christmas",
-    "cadeau",
-    "هدية",
-  ],
+  gift: ["gift", "present", "birthday", "christmas", "cadeau", "هدية"],
 
-  music: [
-    "music",
-    "audio",
-    "listen",
-    "sound",
-    "musique",
-  ],
+  music: ["music", "audio", "listen", "sound", "musique"],
 };
 
 function clean(value: string) {
@@ -297,9 +234,7 @@ function detectLanguage(raw: string): AssistantLanguage {
 
 function extractMoney(text: string) {
   const numbers = Array.from(
-    text.matchAll(
-      /(?:\$|usd|dollars?|€|eur)?\s*(\d+(?:\.\d+)?)/gi,
-    ),
+    text.matchAll(/(?:\$|usd|dollars?|€|eur)?\s*(\d+(?:\.\d+)?)/gi),
   ).map((match) => Number(match[1]));
 
   let min: number | null = null;
@@ -364,11 +299,7 @@ function detectCategory(text: string) {
 }
 
 function detectBrand(text: string) {
-  return (
-    brandDictionary.find((brand) =>
-      text.includes(brand),
-    ) ?? null
-  );
+  return brandDictionary.find((brand) => text.includes(brand)) ?? null;
 }
 
 function detectUseCases(text: string) {
@@ -510,15 +441,7 @@ function detectIntent(text: string): AssistantIntent {
     return "comparison";
   }
 
-  if (
-    containsAny(text, [
-      "gift",
-      "present",
-      "birthday",
-      "cadeau",
-      "هدية",
-    ])
-  ) {
+  if (containsAny(text, ["gift", "present", "birthday", "cadeau", "هدية"])) {
     return "gift";
   }
 
@@ -537,26 +460,11 @@ function detectIntent(text: string): AssistantIntent {
     return "recommendation";
   }
 
-  if (
-    containsAny(text, [
-      "in stock",
-      "available",
-      "availability",
-      "stock",
-    ])
-  ) {
+  if (containsAny(text, ["in stock", "available", "availability", "stock"])) {
     return "availability";
   }
 
-  if (
-    containsAny(text, [
-      "offer",
-      "offers",
-      "sale",
-      "discount",
-      "promotion",
-    ])
-  ) {
+  if (containsAny(text, ["offer", "offers", "sale", "discount", "promotion"])) {
     return "offers";
   }
 
@@ -571,25 +479,11 @@ function detectIntent(text: string): AssistantIntent {
     return "cart";
   }
 
-  if (
-    containsAny(text, [
-      "wishlist",
-      "favorites",
-      "favourites",
-      "save this",
-    ])
-  ) {
+  if (containsAny(text, ["wishlist", "favorites", "favourites", "save this"])) {
     return "wishlist";
   }
 
-  if (
-    containsAny(text, [
-      "price",
-      "cost",
-      "how much",
-      "combien",
-    ])
-  ) {
+  if (containsAny(text, ["price", "cost", "how much", "combien"])) {
     return "price_question";
   }
 
@@ -608,13 +502,7 @@ function detectIntent(text: string): AssistantIntent {
     return "product_search";
   }
 
-  if (
-    containsAny(text, [
-      "help",
-      "what can you do",
-      "assist",
-    ])
-  ) {
+  if (containsAny(text, ["help", "what can you do", "assist"])) {
     return "help";
   }
 
@@ -660,9 +548,7 @@ function buildProductQuery(
   return brand ?? category;
 }
 
-export function parseAssistantRequest(
-  raw: string,
-): ParsedAssistantRequest {
+export function parseAssistantRequest(raw: string): ParsedAssistantRequest {
   const normalized = clean(raw);
 
   const language = detectLanguage(raw);
@@ -715,12 +601,10 @@ export function parseAssistantRequest(
 
   const needsClarification =
     intent === "unknown" ||
-    (
-      ["recommendation", "gift"].includes(intent) &&
+    (["recommendation", "gift"].includes(intent) &&
       !category &&
       !brand &&
-      useCases.length === 0
-    );
+      useCases.length === 0);
 
   return {
     raw,
@@ -734,11 +618,7 @@ export function parseAssistantRequest(
     category,
     brand,
 
-    productQuery: buildProductQuery(
-      normalized,
-      category,
-      brand,
-    ),
+    productQuery: buildProductQuery(normalized, category, brand),
 
     useCases,
     recipient,
@@ -755,10 +635,7 @@ export function parseAssistantRequest(
   };
 }
 
-export function choosePhrase(
-  values: readonly string[],
-  seed: string,
-) {
+export function choosePhrase(values: readonly string[], seed: string) {
   if (values.length === 0) {
     return "";
   }
@@ -766,16 +643,13 @@ export function choosePhrase(
   let hash = 0;
 
   for (const character of seed) {
-    hash =
-      (hash * 31 + character.charCodeAt(0)) >>> 0;
+    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
   }
 
   return values[hash % values.length];
 }
 
-export function buildClarification(
-  request: ParsedAssistantRequest,
-) {
+export function buildClarification(request: ParsedAssistantRequest) {
   if (request.language === "fr") {
     return choosePhrase(
       [

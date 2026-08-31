@@ -1,10 +1,6 @@
-import type {
-  ParsedAssistantRequest,
-} from "./local-intelligence";
+import type { ParsedAssistantRequest } from "./local-intelligence";
 
-import type {
-  RankedAssistantProduct,
-} from "./product-ranking";
+import type { RankedAssistantProduct } from "./product-ranking";
 
 export type MemoryMessage = {
   role: "assistant" | "user";
@@ -41,7 +37,6 @@ export const emptyAssistantMemory: AssistantConversationMemory = {
   lastUserMessage: null,
 };
 
-
 function normalize(value: string) {
   return value
     .toLowerCase()
@@ -51,59 +46,37 @@ function normalize(value: string) {
     .trim();
 }
 
-
 function unique(values: string[]) {
   return Array.from(
-    new Set(
-      values
-        .map((value) => value.trim())
-        .filter(Boolean),
-    ),
+    new Set(values.map((value) => value.trim()).filter(Boolean)),
   );
 }
-
 
 export function mergeAssistantMemory(
   memory: AssistantConversationMemory,
   request: ParsedAssistantRequest,
 ): AssistantConversationMemory {
   return {
-    category:
-      request.category ??
-      memory.category,
+    category: request.category ?? memory.category,
 
-    brand:
-      request.brand ??
-      memory.brand,
+    brand: request.brand ?? memory.brand,
 
-    budgetMin:
-      request.budgetMin ??
-      memory.budgetMin,
+    budgetMin: request.budgetMin ?? memory.budgetMin,
 
-    budgetMax:
-      request.budgetMax ??
-      memory.budgetMax,
+    budgetMax: request.budgetMax ?? memory.budgetMax,
 
     useCases:
       request.useCases.length > 0
-        ? unique([
-            ...memory.useCases,
-            ...request.useCases,
-          ])
+        ? unique([...memory.useCases, ...request.useCases])
         : memory.useCases,
 
-    recipient:
-      request.recipient ??
-      memory.recipient,
+    recipient: request.recipient ?? memory.recipient,
 
-    displayedProducts:
-      memory.displayedProducts,
+    displayedProducts: memory.displayedProducts,
 
-    lastUserMessage:
-      request.raw,
+    lastUserMessage: request.raw,
   };
 }
-
 
 export function withDisplayedProducts(
   memory: AssistantConversationMemory,
@@ -111,15 +84,11 @@ export function withDisplayedProducts(
 ) {
   return {
     ...memory,
-    displayedProducts:
-      products.slice(0, 8),
+    displayedProducts: products.slice(0, 8),
   };
 }
 
-
-function extractOrdinalFromLooseLanguage(
-  text: string,
-) {
+function extractOrdinalFromLooseLanguage(text: string) {
   const normalized = normalize(text);
 
   const mappings: [RegExp, number][] = [
@@ -139,25 +108,19 @@ function extractOrdinalFromLooseLanguage(
   return null;
 }
 
-
 export function resolveReferencedProduct(
   raw: string,
   memory: AssistantConversationMemory,
 ) {
-  const products =
-    memory.displayedProducts;
+  const products = memory.displayedProducts;
 
   if (products.length === 0) {
     return null;
   }
 
-  const normalized =
-    normalize(raw);
+  const normalized = normalize(raw);
 
-  const ordinal =
-    extractOrdinalFromLooseLanguage(
-      normalized,
-    );
+  const ordinal = extractOrdinalFromLooseLanguage(normalized);
 
   if (ordinal !== null) {
     if (ordinal === -1) {
@@ -167,172 +130,108 @@ export function resolveReferencedProduct(
     return products[ordinal - 1] ?? null;
   }
 
-
-  if (
-    /\b(that one|this one|it|the one)\b/.test(
-      normalized,
-    )
-  ) {
+  if (/\b(that one|this one|it|the one)\b/.test(normalized)) {
     return products.at(-1) ?? null;
   }
 
-
   for (const product of products) {
-    const productName =
-      normalize(product.name);
+    const productName = normalize(product.name);
 
-    if (
-      normalized.includes(productName) ||
-      productName.includes(normalized)
-    ) {
+    if (normalized.includes(productName) || productName.includes(normalized)) {
       return product;
     }
   }
 
+  const words = normalized.split(" ").filter((word) => word.length >= 4);
 
-  const words =
-    normalized
-      .split(" ")
-      .filter((word) => word.length >= 4);
-
-  const scored =
-    products
-      .map((product) => {
-        const text = normalize(
-          [
-            product.name,
-            product.category,
-            product.description ?? "",
-          ].join(" "),
-        );
-
-        const matches =
-          words.filter((word) =>
-            text.includes(word),
-          ).length;
-
-        return {
-          product,
-          matches,
-        };
-      })
-      .sort(
-        (first, second) =>
-          second.matches - first.matches,
+  const scored = products
+    .map((product) => {
+      const text = normalize(
+        [product.name, product.category, product.description ?? ""].join(" "),
       );
 
+      const matches = words.filter((word) => text.includes(word)).length;
 
-  if (
-    scored.length > 0 &&
-    scored[0].matches > 0
-  ) {
+      return {
+        product,
+        matches,
+      };
+    })
+    .sort((first, second) => second.matches - first.matches);
+
+  if (scored.length > 0 && scored[0].matches > 0) {
     return scored[0].product;
   }
-
 
   return null;
 }
 
-
 export function resolveCheapestDisplayedProduct(
   memory: AssistantConversationMemory,
 ) {
-  const products =
-    memory.displayedProducts.filter(
-      (product) =>
-        product.price !== null,
-    );
+  const products = memory.displayedProducts.filter(
+    (product) => product.price !== null,
+  );
 
   if (products.length === 0) {
     return null;
   }
 
   return [...products].sort(
-    (first, second) =>
-      (first.price ?? Infinity) -
-      (second.price ?? Infinity),
+    (first, second) => (first.price ?? Infinity) - (second.price ?? Infinity),
   )[0];
 }
-
 
 export function resolveMostExpensiveDisplayedProduct(
   memory: AssistantConversationMemory,
 ) {
-  const products =
-    memory.displayedProducts.filter(
-      (product) =>
-        product.price !== null,
-    );
+  const products = memory.displayedProducts.filter(
+    (product) => product.price !== null,
+  );
 
   if (products.length === 0) {
     return null;
   }
 
   return [...products].sort(
-    (first, second) =>
-      (second.price ?? -Infinity) -
-      (first.price ?? -Infinity),
+    (first, second) => (second.price ?? -Infinity) - (first.price ?? -Infinity),
   )[0];
 }
-
 
 export function applyMemoryToRequest(
   request: ParsedAssistantRequest,
   memory: AssistantConversationMemory,
 ): ParsedAssistantRequest {
-  const normalized =
-    normalize(request.raw);
+  const normalized = normalize(request.raw);
 
   const followUp =
     /\b(cheaper|cheaper one|less expensive|another|another one|similar|something else|more premium|better one|same brand|same category|encore|moins cher|autre)\b/.test(
       normalized,
     );
 
-
   if (!followUp) {
     return request;
   }
 
-
   return {
     ...request,
 
-    category:
-      request.category ??
-      memory.category,
+    category: request.category ?? memory.category,
 
     brand:
       request.brand ??
-      (
-        normalized.includes("same brand")
-          ? memory.brand
-          : null
-      ),
+      (normalized.includes("same brand") ? memory.brand : null),
 
-    budgetMin:
-      request.budgetMin ??
-      memory.budgetMin,
+    budgetMin: request.budgetMin ?? memory.budgetMin,
 
-    budgetMax:
-      request.budgetMax ??
-      memory.budgetMax,
+    budgetMax: request.budgetMax ?? memory.budgetMax,
 
-    useCases:
-      request.useCases.length > 0
-        ? request.useCases
-        : memory.useCases,
+    useCases: request.useCases.length > 0 ? request.useCases : memory.useCases,
 
-    recipient:
-      request.recipient ??
-      memory.recipient,
+    recipient: request.recipient ?? memory.recipient,
 
-    confidence:
-      Math.min(
-        0.98,
-        request.confidence + 0.12,
-      ),
+    confidence: Math.min(0.98, request.confidence + 0.12),
 
-    needsClarification:
-      false,
+    needsClarification: false,
   };
 }

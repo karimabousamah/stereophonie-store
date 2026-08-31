@@ -6,8 +6,7 @@ import {
   type PcPartKind,
 } from "@/lib/gaming-desktop/catalog";
 
-export type PcBuildSelection =
-  Record<PcPartKind, PcPart>;
+export type PcBuildSelection = Record<PcPartKind, PcPart>;
 
 export type CompatibilityResult = {
   compatible: boolean;
@@ -22,12 +21,7 @@ function normalize(value: unknown) {
 }
 
 function text(part: PcPart) {
-  return [
-    part.brand,
-    part.model,
-    part.detail,
-    ...(part.tags ?? []),
-  ]
+  return [part.brand, part.model, part.detail, ...(part.tags ?? [])]
     .join(" ")
     .toUpperCase();
 }
@@ -36,9 +30,7 @@ function text(part: PcPart) {
    PLATFORM / SOCKET INFERENCE
 ============================================================ */
 
-export function getCpuSocket(
-  part: PcPart,
-): string | null {
+export function getCpuSocket(part: PcPart): string | null {
   if (part.socket) {
     return normalize(part.socket);
   }
@@ -63,10 +55,7 @@ export function getCpuSocket(
     return "AM4";
   }
 
-  if (
-    value.includes("CORE ULTRA") ||
-    value.includes("LGA1851")
-  ) {
+  if (value.includes("CORE ULTRA") || value.includes("LGA1851")) {
     return "LGA1851";
   }
 
@@ -82,9 +71,7 @@ export function getCpuSocket(
   return null;
 }
 
-export function getMotherboardSocket(
-  part: PcPart,
-): string | null {
+export function getMotherboardSocket(part: PcPart): string | null {
   if (part.socket) {
     return normalize(part.socket);
   }
@@ -152,19 +139,14 @@ export function getMotherboardSocket(
    MEMORY
 ============================================================ */
 
-export function getMemoryType(
-  part: PcPart,
-): PcMemoryType | null {
+export function getMemoryType(part: PcPart): PcMemoryType | null {
   if (part.memory) {
     return part.memory;
   }
 
   const value = text(part);
 
-  if (
-    value.includes("DDR4") &&
-    value.includes("DDR5")
-  ) {
+  if (value.includes("DDR4") && value.includes("DDR5")) {
     return "DDR4 / DDR5";
   }
 
@@ -196,9 +178,7 @@ export function getMemoryType(
   return null;
 }
 
-export function getRamCapacityGb(
-  part: PcPart,
-): number | null {
+export function getRamCapacityGb(part: PcPart): number | null {
   const value = text(part);
 
   /*
@@ -207,15 +187,10 @@ export function getRamCapacityGb(
    * 2 x 32 GB
    * 4x32GB
    */
-  const kitMatch = value.match(
-    /(\d+)\s*[X×]\s*(\d+)\s*GB/,
-  );
+  const kitMatch = value.match(/(\d+)\s*[X×]\s*(\d+)\s*GB/);
 
   if (kitMatch) {
-    return (
-      Number(kitMatch[1]) *
-      Number(kitMatch[2])
-    );
+    return Number(kitMatch[1]) * Number(kitMatch[2]);
   }
 
   /*
@@ -224,30 +199,20 @@ export function getRamCapacityGb(
    * 64 GB DDR5
    * 128GB KIT
    */
-  const directMatches = [
-    ...value.matchAll(
-      /(\d+)\s*GB/g,
-    ),
-  ];
+  const directMatches = [...value.matchAll(/(\d+)\s*GB/g)];
 
   if (!directMatches.length) {
     return null;
   }
 
-  return Math.max(
-    ...directMatches.map(
-      (match) => Number(match[1]),
-    ),
-  );
+  return Math.max(...directMatches.map((match) => Number(match[1])));
 }
 
 /* ============================================================
    MOTHERBOARD FORM FACTOR
 ============================================================ */
 
-export function getFormFactor(
-  part: PcPart,
-): PcMotherboardFormFactor | null {
+export function getFormFactor(part: PcPart): PcMotherboardFormFactor | null {
   if (part.formFactor) {
     return part.formFactor;
   }
@@ -271,10 +236,7 @@ export function getFormFactor(
     return "Micro-ATX";
   }
 
-  if (
-    value.includes("E-ATX") ||
-    value.includes("EATX")
-  ) {
+  if (value.includes("E-ATX") || value.includes("EATX")) {
     return "E-ATX";
   }
 
@@ -285,13 +247,8 @@ export function getFormFactor(
   return null;
 }
 
-function formFactorRank(
-  formFactor: PcMotherboardFormFactor,
-) {
-  const ranks: Record<
-    PcMotherboardFormFactor,
-    number
-  > = {
+function formFactorRank(formFactor: PcMotherboardFormFactor) {
+  const ranks: Record<PcMotherboardFormFactor, number> = {
     "Mini-ITX": 1,
     "Micro-ATX": 2,
     ATX: 3,
@@ -301,23 +258,15 @@ function formFactorRank(
   return ranks[formFactor];
 }
 
-function caseSupportsMotherboard(
-  pcCase: PcPart,
-  motherboard: PcPart,
-) {
-  const board =
-    getFormFactor(motherboard);
+function caseSupportsMotherboard(pcCase: PcPart, motherboard: PcPart) {
+  const board = getFormFactor(motherboard);
 
   if (!board) {
     return true;
   }
 
-  if (
-    pcCase.supportedFormFactors?.length
-  ) {
-    return pcCase.supportedFormFactors.includes(
-      board,
-    );
+  if (pcCase.supportedFormFactors?.length) {
+    return pcCase.supportedFormFactors.includes(board);
   }
 
   const value = text(pcCase);
@@ -328,21 +277,12 @@ function caseSupportsMotherboard(
    *
    * Explicit compact Mini-ITX cases are handled separately.
    */
-  if (
-    value.includes("MINI-ITX") ||
-    value.includes("MINI ITX")
-  ) {
+  if (value.includes("MINI-ITX") || value.includes("MINI ITX")) {
     return board === "Mini-ITX";
   }
 
-  if (
-    value.includes("MICRO-ATX") ||
-    value.includes("MICRO ATX")
-  ) {
-    return (
-      formFactorRank(board) <=
-      formFactorRank("Micro-ATX")
-    );
+  if (value.includes("MICRO-ATX") || value.includes("MICRO ATX")) {
+    return formFactorRank(board) <= formFactorRank("Micro-ATX");
   }
 
   /*
@@ -366,28 +306,21 @@ function caseSupportsMotherboard(
    * Normal mid-tower/dual-chamber default:
    * Mini-ITX, Micro-ATX and ATX.
    */
-  return (
-    formFactorRank(board) <=
-    formFactorRank("ATX")
-  );
+  return formFactorRank(board) <= formFactorRank("ATX");
 }
 
 /* ============================================================
    GPU POWER
 ============================================================ */
 
-export function getGpuRecommendedPsuW(
-  gpu: PcPart,
-): number {
+export function getGpuRecommendedPsuW(gpu: PcPart): number {
   if (gpu.recommendedPsuW) {
     return gpu.recommendedPsuW;
   }
 
   const value = text(gpu);
 
-  const rules: Array<
-    [RegExp, number]
-  > = [
+  const rules: Array<[RegExp, number]> = [
     [/RTX\s*5090/, 1000],
     [/RTX\s*5080/, 850],
     [/RTX\s*5070\s*TI/, 750],
@@ -421,10 +354,7 @@ export function getGpuRecommendedPsuW(
     [/ARC\s*A750/, 600],
   ];
 
-  for (const [
-    pattern,
-    watts,
-  ] of rules) {
+  for (const [pattern, watts] of rules) {
     if (pattern.test(value)) {
       return watts;
     }
@@ -437,9 +367,7 @@ export function getGpuRecommendedPsuW(
   return 650;
 }
 
-function cpuPowerAdjustment(
-  cpu: PcPart,
-) {
+function cpuPowerAdjustment(cpu: PcPart) {
   const value = text(cpu);
 
   if (
@@ -474,36 +402,17 @@ export function getBuildRecommendedPsuW(
   let recommendation = 0;
 
   if (chosenParts.has("gpu")) {
-    recommendation =
-      getGpuRecommendedPsuW(
-        selection.gpu,
-      );
+    recommendation = getGpuRecommendedPsuW(selection.gpu);
   }
 
-  if (
-    recommendation > 0 &&
-    chosenParts.has("cpu")
-  ) {
-    recommendation +=
-      cpuPowerAdjustment(
-        selection.cpu,
-      );
+  if (recommendation > 0 && chosenParts.has("cpu")) {
+    recommendation += cpuPowerAdjustment(selection.cpu);
   }
 
   /*
    * Round upward to standard PSU classes.
    */
-  const standardSteps = [
-    550,
-    650,
-    750,
-    850,
-    1000,
-    1200,
-    1300,
-    1500,
-    1600,
-  ];
+  const standardSteps = [550, 650, 750, 850, 1000, 1200, 1300, 1500, 1600];
 
   for (const step of standardSteps) {
     if (recommendation <= step) {
@@ -518,16 +427,9 @@ export function getBuildRecommendedPsuW(
    COOLING
 ============================================================ */
 
-function coolerSupportsSocket(
-  cooler: PcPart,
-  socket: string,
-) {
-  if (
-    cooler.supportedSockets?.length
-  ) {
-    return cooler.supportedSockets
-      .map(normalize)
-      .includes(normalize(socket));
+function coolerSupportsSocket(cooler: PcPart, socket: string) {
+  if (cooler.supportedSockets?.length) {
+    return cooler.supportedSockets.map(normalize).includes(normalize(socket));
   }
 
   /*
@@ -592,21 +494,11 @@ export function getPartCompatibility(
    */
   if (item.kind === "motherboard") {
     if (chosenParts.has("cpu")) {
-      const cpuSocket =
-        getCpuSocket(
-          selection.cpu,
-        );
+      const cpuSocket = getCpuSocket(selection.cpu);
 
-      const boardSocket =
-        getMotherboardSocket(
-          item,
-        );
+      const boardSocket = getMotherboardSocket(item);
 
-      if (
-        cpuSocket &&
-        boardSocket &&
-        cpuSocket !== boardSocket
-      ) {
+      if (cpuSocket && boardSocket && cpuSocket !== boardSocket) {
         reasons.push(
           `Requires ${cpuSocket} motherboard for selected processor.`,
         );
@@ -614,12 +506,7 @@ export function getPartCompatibility(
     }
 
     if (chosenParts.has("case")) {
-      if (
-        !caseSupportsMotherboard(
-          selection.case,
-          item,
-        )
-      ) {
+      if (!caseSupportsMotherboard(selection.case, item)) {
         reasons.push(
           "This motherboard form factor does not fit the selected case.",
         );
@@ -633,46 +520,26 @@ export function getPartCompatibility(
    * ----------------------------------------------------------
    */
   if (item.kind === "ram") {
-    if (
-      chosenParts.has(
-        "motherboard",
-      )
-    ) {
-      const boardMemory =
-        getMemoryType(
-          selection.motherboard,
-        );
+    if (chosenParts.has("motherboard")) {
+      const boardMemory = getMemoryType(selection.motherboard);
 
-      const ramMemory =
-        getMemoryType(item);
+      const ramMemory = getMemoryType(item);
 
       if (
         boardMemory &&
         ramMemory &&
-        boardMemory !==
-          "DDR4 / DDR5" &&
-        ramMemory !==
-          "DDR4 / DDR5" &&
-        boardMemory !==
-          ramMemory
+        boardMemory !== "DDR4 / DDR5" &&
+        ramMemory !== "DDR4 / DDR5" &&
+        boardMemory !== ramMemory
       ) {
-        reasons.push(
-          `Selected motherboard requires ${boardMemory} memory.`,
-        );
+        reasons.push(`Selected motherboard requires ${boardMemory} memory.`);
       }
 
-      const capacity =
-        getRamCapacityGb(item);
+      const capacity = getRamCapacityGb(item);
 
-      const maxMemory =
-        selection.motherboard
-          .maxMemoryGb;
+      const maxMemory = selection.motherboard.maxMemoryGb;
 
-      if (
-        capacity &&
-        maxMemory &&
-        capacity > maxMemory
-      ) {
+      if (capacity && maxMemory && capacity > maxMemory) {
         reasons.push(
           `Selected motherboard supports up to ${maxMemory}GB of memory.`,
         );
@@ -691,17 +558,11 @@ export function getPartCompatibility(
    */
   if (item.kind === "storage") {
     if (
-      item.storageInterface ===
-        "NVMe" &&
-      chosenParts.has(
-        "motherboard",
-      ) &&
-      selection.motherboard
-        .m2Slots === 0
+      item.storageInterface === "NVMe" &&
+      chosenParts.has("motherboard") &&
+      selection.motherboard.m2Slots === 0
     ) {
-      reasons.push(
-        "Selected motherboard does not provide an M.2 NVMe slot.",
-      );
+      reasons.push("Selected motherboard does not provide an M.2 NVMe slot.");
     }
   }
 
@@ -712,35 +573,18 @@ export function getPartCompatibility(
    */
   if (item.kind === "cooling") {
     if (chosenParts.has("cpu")) {
-      const socket =
-        getCpuSocket(
-          selection.cpu,
-        );
+      const socket = getCpuSocket(selection.cpu);
 
-      if (
-        socket &&
-        !coolerSupportsSocket(
-          item,
-          socket,
-        )
-      ) {
-        reasons.push(
-          `Cooler does not support ${socket}.`,
-        );
+      if (socket && !coolerSupportsSocket(item, socket)) {
+        reasons.push(`Cooler does not support ${socket}.`);
       }
     }
 
     if (
       chosenParts.has("case") &&
       item.radiatorSizeMm &&
-      selection.case
-        .supportedRadiatorSizes
-        ?.length &&
-      !selection.case
-        .supportedRadiatorSizes
-        .includes(
-          item.radiatorSizeMm,
-        )
+      selection.case.supportedRadiatorSizes?.length &&
+      !selection.case.supportedRadiatorSizes.includes(item.radiatorSizeMm)
     ) {
       reasons.push(
         `${item.radiatorSizeMm}mm radiator does not fit the selected case.`,
@@ -754,17 +598,9 @@ export function getPartCompatibility(
    * ----------------------------------------------------------
    */
   if (item.kind === "psu") {
-    const required =
-      getBuildRecommendedPsuW(
-        selection,
-        chosenParts,
-      );
+    const required = getBuildRecommendedPsuW(selection, chosenParts);
 
-    if (
-      required > 0 &&
-      item.wattage &&
-      item.wattage < required
-    ) {
+    if (required > 0 && item.wattage && item.wattage < required) {
       reasons.push(
         `Selected CPU/GPU configuration requires approximately ${required}W or greater.`,
       );
@@ -778,30 +614,19 @@ export function getPartCompatibility(
    */
   if (item.kind === "case") {
     if (
-      chosenParts.has(
-        "motherboard",
-      ) &&
-      !caseSupportsMotherboard(
-        item,
-        selection.motherboard,
-      )
+      chosenParts.has("motherboard") &&
+      !caseSupportsMotherboard(item, selection.motherboard)
     ) {
-      reasons.push(
-        "Selected motherboard does not fit this case.",
-      );
+      reasons.push("Selected motherboard does not fit this case.");
     }
 
     if (
       chosenParts.has("gpu") &&
       item.maxGpuLengthMm &&
-      selection.gpu
-        .gpuLengthMm &&
-      selection.gpu.gpuLengthMm >
-        item.maxGpuLengthMm
+      selection.gpu.gpuLengthMm &&
+      selection.gpu.gpuLengthMm > item.maxGpuLengthMm
     ) {
-      reasons.push(
-        `Selected graphics card is too long for this case.`,
-      );
+      reasons.push(`Selected graphics card is too long for this case.`);
     }
   }
 
@@ -814,14 +639,8 @@ export function getPartCompatibility(
     if (
       chosenParts.has("case") &&
       item.fanSizeMm &&
-      selection.case
-        .supportedFanSizes
-        ?.length &&
-      !selection.case
-        .supportedFanSizes
-        .includes(
-          item.fanSizeMm,
-        )
+      selection.case.supportedFanSizes?.length &&
+      !selection.case.supportedFanSizes.includes(item.fanSizeMm)
     ) {
       reasons.push(
         `${item.fanSizeMm}mm fans are not supported by the selected case.`,
@@ -830,8 +649,7 @@ export function getPartCompatibility(
   }
 
   return {
-    compatible:
-      reasons.length === 0,
+    compatible: reasons.length === 0,
     reasons,
   };
 }
@@ -846,12 +664,7 @@ export function getCompatibleCatalogItems(
   chosenParts: Set<PcPartKind>,
 ) {
   return pcCatalog[kind].filter(
-    (item) =>
-      getPartCompatibility(
-        item,
-        selection,
-        chosenParts,
-      ).compatible,
+    (item) => getPartCompatibility(item, selection, chosenParts).compatible,
   );
 }
 
@@ -864,11 +677,8 @@ function selectedPartIsCompatible(
   selection: PcBuildSelection,
   chosenParts: Set<PcPartKind>,
 ) {
-  return getPartCompatibility(
-    selection[kind],
-    selection,
-    chosenParts,
-  ).compatible;
+  return getPartCompatibility(selection[kind], selection, chosenParts)
+    .compatible;
 }
 
 /*
@@ -885,8 +695,7 @@ export function sanitizeChosenParts(
   chosenParts: Set<PcPartKind>,
   changedPart: PcPartKind,
 ) {
-  const next =
-    new Set(chosenParts);
+  const next = new Set(chosenParts);
 
   next.add(changedPart);
 
@@ -898,30 +707,15 @@ export function sanitizeChosenParts(
    * Board is removed.
    * RAM that depended on that board is then also unconfirmed.
    */
-  for (
-    let pass = 0;
-    pass < 4;
-    pass += 1
-  ) {
+  for (let pass = 0; pass < 4; pass += 1) {
     let changed = false;
 
-    for (
-      const kind of
-        Array.from(next)
-    ) {
-      if (
-        kind === changedPart
-      ) {
+    for (const kind of Array.from(next)) {
+      if (kind === changedPart) {
         continue;
       }
 
-      if (
-        !selectedPartIsCompatible(
-          kind,
-          selection,
-          next,
-        )
-      ) {
+      if (!selectedPartIsCompatible(kind, selection, next)) {
         next.delete(kind);
         changed = true;
       }
@@ -930,11 +724,7 @@ export function sanitizeChosenParts(
     /*
      * RAM configuration is motherboard-dependent.
      */
-    if (
-      next.has("ram") &&
-      !next.has("motherboard") &&
-      changedPart === "cpu"
-    ) {
+    if (next.has("ram") && !next.has("motherboard") && changedPart === "cpu") {
       next.delete("ram");
       changed = true;
     }
@@ -960,34 +750,24 @@ export function getCompatibilitySummary(
     reasons: string[];
   }> = [];
 
-  for (
-    const kind of
-      Array.from(chosenParts)
-  ) {
-    const result =
-      getPartCompatibility(
-        selection[kind],
-        selection,
-        chosenParts,
-      );
+  for (const kind of Array.from(chosenParts)) {
+    const result = getPartCompatibility(
+      selection[kind],
+      selection,
+      chosenParts,
+    );
 
     if (!result.compatible) {
       issues.push({
         kind,
-        reasons:
-          result.reasons,
+        reasons: result.reasons,
       });
     }
   }
 
   return {
-    compatible:
-      issues.length === 0,
+    compatible: issues.length === 0,
     issues,
-    recommendedPsuW:
-      getBuildRecommendedPsuW(
-        selection,
-        chosenParts,
-      ),
+    recommendedPsuW: getBuildRecommendedPsuW(selection, chosenParts),
   };
 }

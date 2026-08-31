@@ -1269,7 +1269,8 @@ export default function ShopFilterBar({
               Availability
             </p>
 
-            <button data-in-stock-filter="true"
+            <button
+              data-in-stock-filter="true"
               type="button"
               disabled={isPending}
               onClick={() =>

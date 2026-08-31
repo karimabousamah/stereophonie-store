@@ -3,6 +3,7 @@
 This directory contains the fresh Stereophonie customer-facing UI.
 
 IMPORTANT:
+
 - Do not copy Nita Style page layouts.
 - Existing Supabase/backend/business logic may be reused.
 - Storefront presentation must be developed independently.
@@ -11,6 +12,7 @@ Design direction:
 Premium electronics retail + modern arcade/console interface.
 
 Principles:
+
 1. Extremely clear commerce UX.
 2. Electronics-first visual hierarchy.
 3. Arcade influence without becoming childish.

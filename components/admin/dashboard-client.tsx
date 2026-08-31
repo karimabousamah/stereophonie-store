@@ -57,7 +57,11 @@ type Performance = {
 };
 
 type Props = {
-  paidOrders: Array<{ id?: string; total: number | string | null; created_at: string }>;
+  paidOrders: Array<{
+    id?: string;
+    total: number | string | null;
+    created_at: string;
+  }>;
   role: string;
   statistics: Statistics;
   catalogueHealth: CatalogueHealth;
@@ -65,19 +69,15 @@ type Props = {
 };
 
 function money(value: number) {
-  return new Intl.NumberFormat(
-    "en-US",
-    {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 2,
-    },
-  ).format(value);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 function changeText(value: number) {
-  const absolute =
-    Math.abs(value);
+  const absolute = Math.abs(value);
 
   return `${value >= 0 ? "+" : "-"}${absolute.toFixed(1)}%`;
 }
@@ -95,17 +95,10 @@ function MetricCard({
   label: string;
   value: string;
   description: string;
-  tone:
-    | "green"
-    | "blue"
-    | "orange"
-    | "rose"
-    | "violet";
+  tone: "green" | "blue" | "orange" | "rose" | "violet";
 }) {
   return (
-    <article
-      className={`st-dash-intel-metric is-${tone}`}
-    >
+    <article className={`st-dash-intel-metric is-${tone}`}>
       <div className="st-dash-intel-metric__icon">
         <Icon />
       </div>
@@ -128,13 +121,9 @@ function PerformanceStat({
   value: string;
   change: number;
 }) {
-  const positive =
-    change >= 0;
+  const positive = change >= 0;
 
-  const ChangeIcon =
-    positive
-      ? TrendingUp
-      : TrendingDown;
+  const ChangeIcon = positive ? TrendingUp : TrendingDown;
 
   return (
     <div className="st-dash-performance-stat">
@@ -142,13 +131,7 @@ function PerformanceStat({
 
       <strong>{value}</strong>
 
-      <small
-        className={
-          positive
-            ? "is-positive"
-            : "is-negative"
-        }
-      >
+      <small className={positive ? "is-positive" : "is-negative"}>
         <ChangeIcon />
         {changeText(change)}
         <em>vs previous 30 days</em>
@@ -157,77 +140,44 @@ function PerformanceStat({
   );
 }
 
-function RevenueChart({
-  points,
-}: {
-  points: PerformancePoint[];
-}) {
+function RevenueChart({ points }: { points: PerformancePoint[] }) {
   const width = 900;
   const height = 260;
   const paddingX = 8;
   const paddingY = 18;
 
-  const maximum = Math.max(
-    1,
-    ...points.map(
-      (point) =>
-        point.revenue,
-    ),
-  );
+  const maximum = Math.max(1, ...points.map((point) => point.revenue));
 
-  const usableWidth =
-    width - paddingX * 2;
+  const usableWidth = width - paddingX * 2;
 
-  const usableHeight =
-    height - paddingY * 2;
+  const usableHeight = height - paddingY * 2;
 
-  const coordinates =
-    points.map(
-      (point, index) => {
-        const x =
-          points.length <= 1
-            ? paddingX
-            : paddingX +
-              (index /
-                (points.length - 1)) *
-                usableWidth;
+  const coordinates = points.map((point, index) => {
+    const x =
+      points.length <= 1
+        ? paddingX
+        : paddingX + (index / (points.length - 1)) * usableWidth;
 
-        const y =
-          height -
-          paddingY -
-          (point.revenue / maximum) *
-            usableHeight;
+    const y = height - paddingY - (point.revenue / maximum) * usableHeight;
 
-        return {
-          x,
-          y,
-          point,
-        };
-      },
-    );
+    return {
+      x,
+      y,
+      point,
+    };
+  });
 
-  const linePoints =
-    coordinates
-      .map(
-        ({ x, y }) =>
-          `${x.toFixed(2)},${y.toFixed(2)}`,
-      )
-      .join(" ");
+  const linePoints = coordinates
+    .map(({ x, y }) => `${x.toFixed(2)},${y.toFixed(2)}`)
+    .join(" ");
 
   const areaPoints = [
     `${paddingX},${height - paddingY}`,
-    ...coordinates.map(
-      ({ x, y }) =>
-        `${x.toFixed(2)},${y.toFixed(2)}`,
-    ),
+    ...coordinates.map(({ x, y }) => `${x.toFixed(2)},${y.toFixed(2)}`),
     `${width - paddingX},${height - paddingY}`,
   ].join(" ");
 
-  const hasRevenue =
-    points.some(
-      (point) =>
-        point.revenue > 0,
-    );
+  const hasRevenue = points.some((point) => point.revenue > 0);
 
   return (
     <div className="st-dash-chart">
@@ -244,10 +194,7 @@ function RevenueChart({
       </div>
 
       <div className="st-dash-chart__canvas">
-        <div
-          className="st-dash-chart__grid"
-          aria-hidden="true"
-        />
+        <div className="st-dash-chart__grid" aria-hidden="true" />
 
         {hasRevenue ? (
           <svg
@@ -264,16 +211,8 @@ function RevenueChart({
                 x2="0"
                 y2="1"
               >
-                <stop
-                  offset="0%"
-                  stopColor="#f5b335"
-                  stopOpacity="0.22"
-                />
-                <stop
-                  offset="100%"
-                  stopColor="#f5b335"
-                  stopOpacity="0"
-                />
+                <stop offset="0%" stopColor="#f5b335" stopOpacity="0.22" />
+                <stop offset="100%" stopColor="#f5b335" stopOpacity="0" />
               </linearGradient>
             </defs>
 
@@ -292,44 +231,34 @@ function RevenueChart({
               strokeLinejoin="round"
             />
 
-            {coordinates.map(
-              ({
-                x,
-                y,
-                point,
-              }) =>
-                point.revenue > 0 ? (
-                  <circle
-                    key={point.date}
-                    cx={x}
-                    cy={y}
-                    r="4"
-                    fill="#ffffff"
-                    stroke="#d88d00"
-                    strokeWidth="2"
-                    vectorEffect="non-scaling-stroke"
-                  >
-                    <title>
-                      {point.date}:{" "}
-                      {money(
-                        point.revenue,
-                      )}
-                    </title>
-                  </circle>
-                ) : null,
+            {coordinates.map(({ x, y, point }) =>
+              point.revenue > 0 ? (
+                <circle
+                  key={point.date}
+                  cx={x}
+                  cy={y}
+                  r="4"
+                  fill="#ffffff"
+                  stroke="#d88d00"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                >
+                  <title>
+                    {point.date}: {money(point.revenue)}
+                  </title>
+                </circle>
+              ) : null,
             )}
           </svg>
         ) : (
           <div className="st-dash-chart__empty">
             <BarChart3 />
 
-            <strong>
-              No paid sales yet
-            </strong>
+            <strong>No paid sales yet</strong>
 
             <span>
-              Revenue history will appear here as soon
-              as paid orders are recorded.
+              Revenue history will appear here as soon as paid orders are
+              recorded.
             </span>
           </div>
         )}
@@ -338,15 +267,10 @@ function RevenueChart({
       <div className="st-dash-chart__axis">
         <span>
           {points[0]?.date
-            ? new Date(
-                `${points[0].date}T12:00:00`,
-              ).toLocaleDateString(
-                "en",
-                {
-                  month: "short",
-                  day: "numeric",
-                },
-              )
+            ? new Date(`${points[0].date}T12:00:00`).toLocaleDateString("en", {
+                month: "short",
+                day: "numeric",
+              })
             : ""}
         </span>
 
@@ -368,8 +292,7 @@ export default function DashboardClient({
       title: "Missing category",
       description:
         "Published products should belong to a clear storefront category.",
-      count:
-        catalogueHealth.missingCategory,
+      count: catalogueHealth.missingCategory,
       icon: Layers3,
       href: "/admin/products",
     },
@@ -377,8 +300,7 @@ export default function DashboardClient({
       title: "Missing brand",
       description:
         "Add a manufacturer where applicable so products are easier to find.",
-      count:
-        catalogueHealth.missingBrand,
+      count: catalogueHealth.missingBrand,
       icon: Tag,
       href: "/admin/products",
     },
@@ -386,8 +308,7 @@ export default function DashboardClient({
       title: "Missing photographs",
       description:
         "Published products without imagery can look incomplete to customers.",
-      count:
-        catalogueHealth.productsWithoutImages,
+      count: catalogueHealth.productsWithoutImages,
       icon: ImageOff,
       href: "/admin/products",
     },
@@ -395,19 +316,16 @@ export default function DashboardClient({
       title: "Old drafts",
       description:
         "Drafts untouched for more than 14 days may need completion or cleanup.",
-      count:
-        catalogueHealth.oldDrafts,
+      count: catalogueHealth.oldDrafts,
       icon: Boxes,
       href: "/admin/products",
     },
   ];
 
-  const attentionCount =
-    attentionItems.reduce(
-      (total, item) =>
-        total + item.count,
-      0,
-    );
+  const attentionCount = attentionItems.reduce(
+    (total, item) => total + item.count,
+    0,
+  );
 
   return (
     <AdminShell
@@ -418,17 +336,13 @@ export default function DashboardClient({
       <main className="st-dash-intel">
         <section className="st-dash-intel-hero">
           <div>
-            <span>
-              Commerce overview
-            </span>
+            <span>Commerce overview</span>
 
-            <h1>
-              Store dashboard
-            </h1>
+            <h1>Store dashboard</h1>
 
             <p>
-              A focused overview of your catalogue
-              quality and recent commercial performance.
+              A focused overview of your catalogue quality and recent commercial
+              performance.
             </p>
           </div>
 
@@ -450,9 +364,7 @@ export default function DashboardClient({
             <MetricCard
               icon={Eye}
               label="Live products"
-              value={String(
-                statistics.liveProducts,
-              )}
+              value={String(statistics.liveProducts)}
               description="Visible on the storefront"
               tone="green"
             />
@@ -460,9 +372,7 @@ export default function DashboardClient({
             <MetricCard
               icon={Package}
               label="Draft products"
-              value={String(
-                statistics.draftProducts,
-              )}
+              value={String(statistics.draftProducts)}
               description="Hidden from customers"
               tone="blue"
             />
@@ -470,9 +380,7 @@ export default function DashboardClient({
             <MetricCard
               icon={ReceiptText}
               label="Orders"
-              value={String(
-                statistics.pendingOrders,
-              )}
+              value={String(statistics.pendingOrders)}
               description="Awaiting admin action"
               tone="orange"
             />
@@ -480,9 +388,7 @@ export default function DashboardClient({
             <MetricCard
               icon={AlertTriangle}
               label="Stock alerts"
-              value={String(
-                statistics.pendingStockAlerts,
-              )}
+              value={String(statistics.pendingStockAlerts)}
               description="Customers waiting for stock"
               tone="rose"
             />
@@ -490,9 +396,7 @@ export default function DashboardClient({
             <MetricCard
               icon={CircleDollarSign}
               label="Revenue"
-              value={money(
-                statistics.revenue,
-              )}
+              value={money(statistics.revenue)}
               description="Recorded paid revenue"
               tone="violet"
             />
@@ -502,42 +406,30 @@ export default function DashboardClient({
         <section className="st-dash-intel-section">
           <div className="st-dash-intel-section__heading st-dash-intel-section__heading--split">
             <div>
-              <span>
-                Catalogue intelligence
-              </span>
+              <span>Catalogue intelligence</span>
 
-              <h2>
-                What needs attention
-              </h2>
+              <h2>What needs attention</h2>
 
               <p>
-                Only catalogue-quality issues are shown
-                here. Orders, stock alerts, customers and
-                coupons remain in their dedicated sections.
+                Only catalogue-quality issues are shown here. Orders, stock
+                alerts, customers and coupons remain in their dedicated
+                sections.
               </p>
             </div>
 
             <div
               className={`st-dash-health-score ${
-                attentionCount === 0
-                  ? "is-clear"
-                  : ""
+                attentionCount === 0 ? "is-clear" : ""
               }`}
             >
-              {attentionCount === 0 ? (
-                <CheckCircle2 />
-              ) : (
-                <Sparkles />
-              )}
+              {attentionCount === 0 ? <CheckCircle2 /> : <Sparkles />}
 
               <div>
                 <strong>
                   {attentionCount === 0
                     ? "Catalogue clear"
                     : `${attentionCount} ${
-                        attentionCount === 1
-                          ? "item"
-                          : "items"
+                        attentionCount === 1 ? "item" : "items"
                       }`}
                 </strong>
 
@@ -556,67 +448,50 @@ export default function DashboardClient({
                 <CheckCircle2 />
               </div>
 
-              <strong>
-                Everything looks organised.
-              </strong>
+              <strong>Everything looks organised.</strong>
 
               <p>
-                Published products have the essential
-                catalogue information we currently check.
+                Published products have the essential catalogue information we
+                currently check.
               </p>
             </div>
           ) : (
             <div className="st-dash-attention-grid">
-              {attentionItems.map(
-                (item) => {
-                  const Icon =
-                    item.icon;
+              {attentionItems.map((item) => {
+                const Icon = item.icon;
 
-                  return (
-                    <Link
-                      href={item.href}
-                      key={item.title}
-                      className={`st-dash-attention-card ${
-                        item.count === 0
-                          ? "is-clear"
-                          : ""
-                      }`}
-                    >
-                      <div className="st-dash-attention-card__top">
-                        <div className="st-dash-attention-card__icon">
-                          <Icon />
-                        </div>
-
-                        <strong>
-                          {item.count}
-                        </strong>
+                return (
+                  <Link
+                    href={item.href}
+                    key={item.title}
+                    className={`st-dash-attention-card ${
+                      item.count === 0 ? "is-clear" : ""
+                    }`}
+                  >
+                    <div className="st-dash-attention-card__top">
+                      <div className="st-dash-attention-card__icon">
+                        <Icon />
                       </div>
 
-                      <h3>
-                        {item.title}
-                      </h3>
+                      <strong>{item.count}</strong>
+                    </div>
 
-                      <p>
-                        {item.count === 0
-                          ? "No issue detected."
-                          : item.description}
-                      </p>
+                    <h3>{item.title}</h3>
 
-                      <span>
-                        {item.count === 0
-                          ? "All clear"
-                          : "Review products"}
+                    <p>
+                      {item.count === 0
+                        ? "No issue detected."
+                        : item.description}
+                    </p>
 
-                        {item.count > 0 ? (
-                          <ArrowRight />
-                        ) : (
-                          <CheckCircle2 />
-                        )}
-                      </span>
-                    </Link>
-                  );
-                },
-              )}
+                    <span>
+                      {item.count === 0 ? "All clear" : "Review products"}
+
+                      {item.count > 0 ? <ArrowRight /> : <CheckCircle2 />}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </section>

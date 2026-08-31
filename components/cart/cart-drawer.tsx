@@ -169,7 +169,10 @@ export default function CartDrawer() {
                   item.regularPrice > item.unitPrice;
 
                 return (
-                  <article key={item.cartItemId} className="st-retail-cart-item">
+                  <article
+                    key={item.cartItemId}
+                    className="st-retail-cart-item"
+                  >
                     <Link
                       href={`/shop/${item.slug}`}
                       onClick={closeCart}
@@ -243,9 +246,13 @@ export default function CartDrawer() {
 
                         <div className="st-retail-cart-item__price">
                           {isOnSale ? (
-                            <del>{money(item.regularPrice! * item.quantity)}</del>
+                            <del>
+                              {money(item.regularPrice! * item.quantity)}
+                            </del>
                           ) : null}
-                          <strong>{money(item.unitPrice * item.quantity)}</strong>
+                          <strong>
+                            {money(item.unitPrice * item.quantity)}
+                          </strong>
                         </div>
                       </div>
 

@@ -35,7 +35,10 @@ export default function V3HeaderCartPanel({
 
   if (!isCartReady) {
     return (
-      <section className="st3-utility-cart st3-utility-cart--loading" role="status">
+      <section
+        className="st3-utility-cart st3-utility-cart--loading"
+        role="status"
+      >
         <span className="st3-utility-cart__loader" />
         <p>Preparing your bag…</p>
       </section>
@@ -48,7 +51,9 @@ export default function V3HeaderCartPanel({
         <div className="st3-utility-cart__empty-copy">
           <p className="st3-utility-label">Your bag</p>
           <h2>Your bag is empty.</h2>
-          <p>Save products to your wishlist or explore the store to get started.</p>
+          <p>
+            Save products to your wishlist or explore the store to get started.
+          </p>
           <Link href="/shop" onClick={onClose}>
             Start shopping
             <ArrowRight />
@@ -86,7 +91,9 @@ export default function V3HeaderCartPanel({
               {totalItems} {totalItems === 1 ? "item" : "items"} in your bag.
             </h2>
           </div>
-          <button type="button" onClick={clearCart}>Clear bag</button>
+          <button type="button" onClick={clearCart}>
+            Clear bag
+          </button>
         </div>
 
         <div className="st3-utility-cart__items">

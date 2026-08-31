@@ -1558,7 +1558,6 @@
   display: none !important;
 }
 
-
 /* STEREOPHONIE HERO START BUTTON */
 .st-v2-home-start-button {
   position: relative;
@@ -1578,13 +1577,7 @@
   border: 0.025em solid rgba(255, 255, 255, 0.16);
   border-radius: 0.08em;
 
-  background:
-    linear-gradient(
-      180deg,
-      #ff4148 0%,
-      #f5222b 42%,
-      #d90f18 100%
-    );
+  background: linear-gradient(180deg, #ff4148 0%, #f5222b 42%, #d90f18 100%);
 
   color: #fff;
 
@@ -1684,7 +1677,8 @@
 }
 
 @keyframes st-v2-start-led {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.48;
     transform: scale(0.88);
   }
@@ -1710,8 +1704,8 @@
    ========================================================= */
 
 .st-v2-home-start-button {
-  margin-top: 0.10em !important;
-  margin-bottom: 0.20em !important;
+  margin-top: 0.1em !important;
+  margin-bottom: 0.2em !important;
 }
 
 /*
@@ -1748,8 +1742,6 @@
   }
 }
 
-
-
 /* ===== COMPACT PRODUCT CARDS / HOME START ===== */
 
 /*
@@ -1760,11 +1752,7 @@
 @media (min-width: 1101px) {
   .st-v2-home-product-grid,
   .st-v2-home-product-grid--canonical {
-    grid-template-columns:
-      repeat(
-        auto-fill,
-        minmax(255px, 285px)
-      ) !important;
+    grid-template-columns: repeat(auto-fill, minmax(255px, 285px)) !important;
 
     justify-content: start !important;
     align-items: start !important;
@@ -1783,11 +1771,7 @@
 @media (min-width: 701px) and (max-width: 1100px) {
   .st-v2-home-product-grid,
   .st-v2-home-product-grid--canonical {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      ) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 
     gap: 12px !important;
   }
@@ -1814,13 +1798,11 @@
 
 /* ===== COMPACT PRODUCT CARDS / HOME END ===== */
 
-
 /* ===== START BUTTON LED REMOVAL ===== */
 .st-v2-home-start-button__light {
   display: none !important;
 }
 /* ===== START BUTTON LED REMOVAL END ===== */
-
 
 /* ===== ADMIN SYNC HEADER CATEGORIES START ===== */
 

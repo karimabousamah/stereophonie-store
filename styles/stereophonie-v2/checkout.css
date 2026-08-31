@@ -1564,8 +1564,9 @@
   background: var(--st-checkout-bg) !important;
   background-image: none !important;
   color: var(--st-checkout-text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -2046,8 +2047,14 @@
   box-shadow: none;
 }
 
-.st-checkout-review-v2 section[class*="border"] > div[class*="grid"] > div[class*="border"],
-.st-checkout-review-v2 section[class*="border"] > div[class*="space-y"] > div[class*="border"],
+.st-checkout-review-v2
+  section[class*="border"]
+  > div[class*="grid"]
+  > div[class*="border"],
+.st-checkout-review-v2
+  section[class*="border"]
+  > div[class*="space-y"]
+  > div[class*="border"],
 .st-order-success-v2 div[class*="border"] {
   border-color: var(--st-checkout-line) !important;
   border-radius: 18px;
@@ -2414,7 +2421,9 @@
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
-  transition: border-color 160ms ease, background-color 160ms ease;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
 }
 
 .st-checkout-compact-head__action:hover {
@@ -2476,7 +2485,9 @@
   border-radius: 15px;
   padding: 8px 11px;
   color: rgba(29, 29, 31, 0.42);
-  transition: background-color 160ms ease, color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
 }
 
 .st-checkout-progress__step.is-active {
@@ -2655,7 +2666,9 @@
 }
 
 @keyframes st-checkout-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .st-order-transmission {

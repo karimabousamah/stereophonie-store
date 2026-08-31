@@ -55,28 +55,16 @@ export async function GET() {
     lowStockVariantsResult,
     pendingStockAlertsResult,
   ] = await Promise.all([
-    supabase
-      .from("orders")
-      .select("id")
-      .eq("status", "pending"),
+    supabase.from("orders").select("id").eq("status", "pending"),
 
-    supabase
-      .from("products")
-      .select("id")
-      .eq("status", "draft"),
+    supabase.from("products").select("id").eq("status", "draft"),
 
     supabase
       .from("product_variants")
       .select("id")
-      .in(
-        "availability_status",
-        ["low_stock", "out_of_stock"],
-      ),
+      .in("availability_status", ["low_stock", "out_of_stock"]),
 
-    supabase
-      .from("stock_alerts")
-      .select("id")
-      .eq("status", "pending"),
+    supabase.from("stock_alerts").select("id").eq("status", "pending"),
   ]);
 
   const databaseError =
@@ -86,10 +74,7 @@ export async function GET() {
     pendingStockAlertsResult.error;
 
   if (databaseError) {
-    console.error(
-      "Admin notification query failed:",
-      databaseError,
-    );
+    console.error("Admin notification query failed:", databaseError);
 
     return NextResponse.json(
       {
@@ -103,29 +88,20 @@ export async function GET() {
   }
 
   const itemIds = {
-    pendingOrders: ids(
-      pendingOrdersResult.data as IdRow[] | null,
-    ),
+    pendingOrders: ids(pendingOrdersResult.data as IdRow[] | null),
 
-    draftProducts: ids(
-      draftProductsResult.data as IdRow[] | null,
-    ),
+    draftProducts: ids(draftProductsResult.data as IdRow[] | null),
 
-    lowStockVariants: ids(
-      lowStockVariantsResult.data as IdRow[] | null,
-    ),
+    lowStockVariants: ids(lowStockVariantsResult.data as IdRow[] | null),
 
-    pendingStockAlerts: ids(
-      pendingStockAlertsResult.data as IdRow[] | null,
-    ),
+    pendingStockAlerts: ids(pendingStockAlertsResult.data as IdRow[] | null),
   };
 
   const counts = {
     pendingOrders: itemIds.pendingOrders.length,
     draftProducts: itemIds.draftProducts.length,
     lowStockVariants: itemIds.lowStockVariants.length,
-    pendingStockAlerts:
-      itemIds.pendingStockAlerts.length,
+    pendingStockAlerts: itemIds.pendingStockAlerts.length,
   };
 
   return NextResponse.json(

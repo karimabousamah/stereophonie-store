@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  Gamepad2,
-  Bookmark,
-  Trash2,
-} from "lucide-react";
+import { ArrowRight, Gamepad2, Bookmark, Trash2 } from "lucide-react";
 
 import StoreFooter from "@/components/storefront/store-footer";
 import StoreHeader from "@/components/storefront/store-header";

@@ -12,9 +12,7 @@ import {
 import Link from "next/link";
 import type { MouseEvent } from "react";
 
-import AccountClient, {
-  type CustomerOrder,
-} from "./account-client";
+import AccountClient, { type CustomerOrder } from "./account-client";
 import AccountSettingsClient, {
   type CustomerAddress,
   type CustomerProfile,
@@ -51,12 +49,10 @@ export default function AccountCommandCenter({
   ) {
     event.preventDefault();
 
-    document
-      .getElementById(targetId)
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    document.getElementById(targetId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
 
   const addressLabel =
@@ -65,14 +61,11 @@ export default function AccountCommandCenter({
       : `${addresses.length} saved addresses`;
 
   const orderLabel =
-    orders.length === 1
-      ? "1 order"
-      : `${orders.length} orders`;
+    orders.length === 1 ? "1 order" : `${orders.length} orders`;
 
   return (
     <main className="st-account-retail">
       <div className="st-account-retail__shell">
-
         <section className="st-account-retail__intro">
           <div className="st-account-retail__identity">
             <div className="st-account-retail__avatar">
@@ -80,17 +73,13 @@ export default function AccountCommandCenter({
             </div>
 
             <div>
-              <span className="st-account-retail__eyebrow">
-                My account
-              </span>
+              <span className="st-account-retail__eyebrow">My account</span>
 
-              <h1>
-                Hello, {firstName}.
-              </h1>
+              <h1>Hello, {firstName}.</h1>
 
               <p>
-                Everything related to your Stereophonie account,
-                saved products, deliveries and purchases.
+                Everything related to your Stereophonie account, saved products,
+                deliveries and purchases.
               </p>
             </div>
           </div>
@@ -128,16 +117,12 @@ export default function AccountCommandCenter({
           </div>
         </section>
 
-
-        {(error ||
-          message ||
-          hasAccountDataError ||
-          hasOrderError ||
-          hasStockPreferenceError) ? (
-          <section
-            className="st-account-retail__messages"
-            aria-live="polite"
-          >
+        {error ||
+        message ||
+        hasAccountDataError ||
+        hasOrderError ||
+        hasStockPreferenceError ? (
+          <section className="st-account-retail__messages" aria-live="polite">
             {error ? (
               <div className="is-error">
                 <strong>Something needs attention</strong>
@@ -156,8 +141,8 @@ export default function AccountCommandCenter({
               <div className="is-warning">
                 <strong>Profile synchronization</strong>
                 <span>
-                  Some profile or saved-address information
-                  could not be synchronized.
+                  Some profile or saved-address information could not be
+                  synchronized.
                 </span>
               </div>
             ) : null}
@@ -166,8 +151,8 @@ export default function AccountCommandCenter({
               <div className="is-warning">
                 <strong>Orders unavailable</strong>
                 <span>
-                  Your profile loaded, but your order history
-                  could not be retrieved.
+                  Your profile loaded, but your order history could not be
+                  retrieved.
                 </span>
               </div>
             ) : null}
@@ -175,24 +160,17 @@ export default function AccountCommandCenter({
             {hasStockPreferenceError ? (
               <div className="is-warning">
                 <strong>Notification preference</strong>
-                <span>
-                  Stock-notification preferences could not
-                  be loaded.
-                </span>
+                <span>Stock-notification preferences could not be loaded.</span>
               </div>
             ) : null}
           </section>
         ) : null}
 
-
         <section
           className="st-account-retail__quick"
           aria-label="Account shortcuts"
         >
-          <Link
-            href="/wishlist"
-            className="st-account-retail__quick-card"
-          >
+          <Link href="/wishlist" className="st-account-retail__quick-card">
             <span className="st-account-retail__quick-icon">
               <Bookmark aria-hidden="true" />
             </span>
@@ -205,10 +183,7 @@ export default function AccountCommandCenter({
             <ChevronRight aria-hidden="true" />
           </Link>
 
-          <Link
-            href="/track-order"
-            className="st-account-retail__quick-card"
-          >
+          <Link href="/track-order" className="st-account-retail__quick-card">
             <span className="st-account-retail__quick-icon">
               <Package aria-hidden="true" />
             </span>
@@ -224,9 +199,7 @@ export default function AccountCommandCenter({
           <button
             type="button"
             className="st-account-retail__quick-card"
-            onClick={(event) =>
-              scrollToSection(event, "account-settings")
-            }
+            onClick={(event) => scrollToSection(event, "account-settings")}
           >
             <span className="st-account-retail__quick-icon">
               <Settings2 aria-hidden="true" />
@@ -243,9 +216,7 @@ export default function AccountCommandCenter({
           <button
             type="button"
             className="st-account-retail__quick-card"
-            onClick={(event) =>
-              scrollToSection(event, "customer-orders")
-            }
+            onClick={(event) => scrollToSection(event, "customer-orders")}
           >
             <span className="st-account-retail__quick-icon">
               <Package aria-hidden="true" />
@@ -260,18 +231,14 @@ export default function AccountCommandCenter({
           </button>
         </section>
 
-
-        <section
-          id="account-settings"
-          className="st-account-retail__module"
-        >
+        <section id="account-settings" className="st-account-retail__module">
           <header className="st-account-retail__module-head">
             <div>
               <span>Account details</span>
               <h2>Profile & delivery.</h2>
               <p>
-                Keep your personal details, saved addresses
-                and notification preferences up to date.
+                Keep your personal details, saved addresses and notification
+                preferences up to date.
               </p>
             </div>
 
@@ -284,25 +251,18 @@ export default function AccountCommandCenter({
             <AccountSettingsClient
               profile={profile}
               addresses={addresses}
-              stockNotificationsEnabled={
-                stockNotificationsEnabled
-              }
+              stockNotificationsEnabled={stockNotificationsEnabled}
             />
           </div>
         </section>
 
-
-        <section
-          id="customer-orders"
-          className="st-account-retail__module"
-        >
+        <section id="customer-orders" className="st-account-retail__module">
           <header className="st-account-retail__module-head">
             <div>
               <span>Purchase history</span>
               <h2>Your orders.</h2>
               <p>
-                Review your current and previous purchases
-                from Stereophonie.
+                Review your current and previous purchases from Stereophonie.
               </p>
             </div>
 
@@ -315,7 +275,6 @@ export default function AccountCommandCenter({
             <AccountClient orders={orders} />
           </div>
         </section>
-
       </div>
     </main>
   );

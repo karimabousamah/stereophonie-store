@@ -33,15 +33,15 @@ const sections = [
       <>
         <p>
           We aim to present product descriptions, photographs, prices, colours,
-          specifications, and availability as accurately as reasonably possible. Minor
-          differences may occur because of photography, lighting, screen
+          specifications, and availability as accurately as reasonably possible.
+          Minor differences may occur because of photography, lighting, screen
           settings, production variation, or manual error.
         </p>
 
         <p>
-          Products and configurations are subject to availability. Adding an item to a
-          cart does not reserve it. We may correct an error, update information,
-          limit quantities, or cancel an unavailable item.
+          Products and configurations are subject to availability. Adding an
+          item to a cart does not reserve it. We may correct an error, update
+          information, limit quantities, or cancel an unavailable item.
         </p>
       </>
     ),
@@ -107,8 +107,8 @@ const sections = [
       <>
         <p>
           Purchases are generally final and are subject to the separate No
-          Returns Policy. Change-of-mind returns, refunds, and configuration exchanges
-          are not normally accepted.
+          Returns Policy. Change-of-mind returns, refunds, and configuration
+          exchanges are not normally accepted.
         </p>
 
         <p>
@@ -182,7 +182,8 @@ const sections = [
         </p>
 
         <p>
-          Contact us at thenitastyle@gmail.com or through WhatsApp at +961 3 161 285.
+          Contact us at thenitastyle@gmail.com or through WhatsApp at +961 3 161
+          285.
         </p>
       </>
     ),

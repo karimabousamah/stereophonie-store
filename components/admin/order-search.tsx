@@ -6,9 +6,7 @@ type Props = {
   total: number;
 };
 
-export default function OrderSearch({
-  total,
-}: Props) {
+export default function OrderSearch({ total }: Props) {
   return (
     <AdminDirectorySearch
       total={total}

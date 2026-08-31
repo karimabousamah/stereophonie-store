@@ -1,6 +1,4 @@
-import type {
-  ParsedAssistantRequest,
-} from "./local-intelligence";
+import type { ParsedAssistantRequest } from "./local-intelligence";
 
 export type RankedAssistantVariant = {
   id: string;
@@ -44,43 +42,31 @@ function contains(haystack: string, needle: string | null) {
   return normalize(haystack).includes(normalize(needle));
 }
 
-function purchasableVariants(
-  product: RankedAssistantProduct,
-) {
+function purchasableVariants(product: RankedAssistantProduct) {
   return product.variants.filter((variant) => {
     if (variant.stockQuantity <= 0) {
       return false;
     }
 
-    const status = normalize(
-      variant.availabilityStatus,
-    );
+    const status = normalize(variant.availabilityStatus);
 
     return (
-      status === "in_stock" ||
-      status === "low_stock" ||
-      status === "available"
+      status === "in_stock" || status === "low_stock" || status === "available"
     );
   });
 }
 
-function productMinimumPrice(
-  product: RankedAssistantProduct,
-) {
+function productMinimumPrice(product: RankedAssistantProduct) {
   const variants = purchasableVariants(product);
 
   if (variants.length === 0) {
     return product.price;
   }
 
-  return Math.min(
-    ...variants.map((variant) => variant.currentPrice),
-  );
+  return Math.min(...variants.map((variant) => variant.currentPrice));
 }
 
-function productHasSale(
-  product: RankedAssistantProduct,
-) {
+function productHasSale(product: RankedAssistantProduct) {
   return product.variants.some(
     (variant) =>
       variant.salePrice !== null &&
@@ -89,10 +75,7 @@ function productHasSale(
   );
 }
 
-function scoreBudget(
-  price: number | null,
-  request: ParsedAssistantRequest,
-) {
+function scoreBudget(price: number | null, request: ParsedAssistantRequest) {
   let score = 0;
   const reasons: string[] = [];
 
@@ -100,17 +83,11 @@ function scoreBudget(
     return { score, reasons };
   }
 
-  if (
-    request.budgetMin !== null &&
-    price < request.budgetMin
-  ) {
+  if (request.budgetMin !== null && price < request.budgetMin) {
     score -= 8;
   }
 
-  if (
-    request.budgetMax !== null &&
-    price > request.budgetMax
-  ) {
+  if (request.budgetMax !== null && price > request.budgetMax) {
     score -= 40;
     reasons.push("above budget");
   }
@@ -123,10 +100,7 @@ function scoreBudget(
   ) {
     score += 28;
     reasons.push("fits budget");
-  } else if (
-    request.budgetMax !== null &&
-    price <= request.budgetMax
-  ) {
+  } else if (request.budgetMax !== null && price <= request.budgetMax) {
     score += 24;
     reasons.push("within budget");
   }
@@ -145,11 +119,7 @@ function scoreUseCases(
   const reasons: string[] = [];
 
   const text = normalize(
-    [
-      product.name,
-      product.category,
-      product.description ?? "",
-    ].join(" "),
+    [product.name, product.category, product.description ?? ""].join(" "),
   );
 
   for (const useCase of request.useCases) {
@@ -227,136 +197,92 @@ export function rankAssistantProducts(
   products: RankedAssistantProduct[],
   request: ParsedAssistantRequest,
 ) {
-  const ranked: RankedProductResult[] =
-    products.map((product) => {
-      let score = 0;
-      const reasons: string[] = [];
+  const ranked: RankedProductResult[] = products.map((product) => {
+    let score = 0;
+    const reasons: string[] = [];
 
-      const price = productMinimumPrice(product);
-      const available =
-        purchasableVariants(product).length > 0;
+    const price = productMinimumPrice(product);
+    const available = purchasableVariants(product).length > 0;
 
-      if (available) {
-        score += 20;
-        reasons.push("available");
-      } else {
-        score -= 100;
-      }
+    if (available) {
+      score += 20;
+      reasons.push("available");
+    } else {
+      score -= 100;
+    }
 
-      if (
-        request.category &&
-        contains(product.category, request.category)
-      ) {
-        score += 36;
-        reasons.push("category match");
-      }
+    if (request.category && contains(product.category, request.category)) {
+      score += 36;
+      reasons.push("category match");
+    }
 
-      if (
-        request.brand &&
-        contains(product.name, request.brand)
-      ) {
-        score += 34;
-        reasons.push("brand match");
-      }
+    if (request.brand && contains(product.name, request.brand)) {
+      score += 34;
+      reasons.push("brand match");
+    }
 
-      if (
-        request.productQuery &&
-        (
-          contains(product.name, request.productQuery) ||
-          contains(product.description ?? "", request.productQuery)
-        )
-      ) {
-        score += 30;
-        reasons.push("query match");
-      }
+    if (
+      request.productQuery &&
+      (contains(product.name, request.productQuery) ||
+        contains(product.description ?? "", request.productQuery))
+    ) {
+      score += 30;
+      reasons.push("query match");
+    }
 
-      const budget = scoreBudget(
-        price,
-        request,
-      );
+    const budget = scoreBudget(price, request);
 
-      score += budget.score;
-      reasons.push(...budget.reasons);
+    score += budget.score;
+    reasons.push(...budget.reasons);
 
-      const useCases = scoreUseCases(
-        product,
-        request,
-      );
+    const useCases = scoreUseCases(product, request);
 
-      score += useCases.score;
-      reasons.push(...useCases.reasons);
+    score += useCases.score;
+    reasons.push(...useCases.reasons);
 
-      if (
-        request.wantsAvailableOnly &&
-        available
-      ) {
-        score += 12;
-      }
+    if (request.wantsAvailableOnly && available) {
+      score += 12;
+    }
 
-      if (
-        request.wantsBestValue &&
-        productHasSale(product)
-      ) {
-        score += 16;
-        reasons.push("on sale");
-      }
+    if (request.wantsBestValue && productHasSale(product)) {
+      score += 16;
+      reasons.push("on sale");
+    }
 
-      if (
-        request.wantsPremium &&
-        price !== null
-      ) {
-        score += Math.min(
-          14,
-          price / 100,
-        );
-      }
+    if (request.wantsPremium && price !== null) {
+      score += Math.min(14, price / 100);
+    }
 
-      if (
-        request.wantsCheapest &&
-        price !== null
-      ) {
-        score += Math.max(
-          0,
-          25 - price / 20,
-        );
-      }
+    if (request.wantsCheapest && price !== null) {
+      score += Math.max(0, 25 - price / 20);
+    }
 
-      if (
-        request.intent === "gift" &&
-        available
-      ) {
-        score += 5;
-        reasons.push("gift-ready");
-      }
+    if (request.intent === "gift" && available) {
+      score += 5;
+      reasons.push("gift-ready");
+    }
 
-      return {
-        product,
-        score,
-        reasons: Array.from(
-          new Set(reasons),
-        ),
-      };
-    });
+    return {
+      product,
+      score,
+      reasons: Array.from(new Set(reasons)),
+    };
+  });
 
   ranked.sort((a, b) => {
     if (b.score !== a.score) {
       return b.score - a.score;
     }
 
-    const aPrice =
-      productMinimumPrice(a.product) ??
-      Number.POSITIVE_INFINITY;
+    const aPrice = productMinimumPrice(a.product) ?? Number.POSITIVE_INFINITY;
 
-    const bPrice =
-      productMinimumPrice(b.product) ??
-      Number.POSITIVE_INFINITY;
+    const bPrice = productMinimumPrice(b.product) ?? Number.POSITIVE_INFINITY;
 
     return aPrice - bPrice;
   });
 
   return ranked;
 }
-
 
 function normalizeCatalogMatch(value: string) {
   return value
@@ -369,21 +295,9 @@ function normalizeCatalogMatch(value: string) {
 }
 
 const strictCategoryFamilies: Record<string, string[]> = {
-  phones: [
-    "phone",
-    "phones",
-    "smartphone",
-    "smartphones",
-    "iphone",
-    "mobile",
-  ],
+  phones: ["phone", "phones", "smartphone", "smartphones", "iphone", "mobile"],
 
-  tablets: [
-    "tablet",
-    "tablets",
-    "ipad",
-    "galaxy tab",
-  ],
+  tablets: ["tablet", "tablets", "ipad", "galaxy tab"],
 
   watches: [
     "watch",
@@ -433,22 +347,9 @@ const strictCategoryFamilies: Record<string, string[]> = {
     "microphone",
   ],
 
-  cameras: [
-    "camera",
-    "cameras",
-    "gopro",
-    "instax",
-    "polaroid",
-    "photography",
-  ],
+  cameras: ["camera", "cameras", "gopro", "instax", "polaroid", "photography"],
 
-  monitors: [
-    "monitor",
-    "monitors",
-    "screen",
-    "screens",
-    "display",
-  ],
+  monitors: ["monitor", "monitors", "screen", "screens", "display"],
 
   accessories: [
     "accessory",
@@ -481,34 +382,19 @@ function explicitCategoryMatches(
   const category = normalizeCatalogMatch(requestedCategory);
 
   const searchable = normalizeCatalogMatch(
-    [
-      product.name,
-      product.category,
-      product.description ?? "",
-    ].join(" "),
+    [product.name, product.category, product.description ?? ""].join(" "),
   );
 
-  const family =
-    strictCategoryFamilies[category] ??
-    [category];
+  const family = strictCategoryFamilies[category] ?? [category];
 
   return family.some((term) =>
-    searchable.includes(
-      normalizeCatalogMatch(term),
-    ),
+    searchable.includes(normalizeCatalogMatch(term)),
   );
 }
 
-function explicitQueryMatches(
-  product: RankedAssistantProduct,
-  query: string,
-) {
+function explicitQueryMatches(product: RankedAssistantProduct, query: string) {
   const searchable = normalizeCatalogMatch(
-    [
-      product.name,
-      product.category,
-      product.description ?? "",
-    ].join(" "),
+    [product.name, product.category, product.description ?? ""].join(" "),
   );
 
   const words = normalizeCatalogMatch(query)
@@ -537,9 +423,7 @@ function explicitQueryMatches(
     return true;
   }
 
-  return words.some((word) =>
-    searchable.includes(word),
-  );
+  return words.some((word) => searchable.includes(word));
 }
 
 function passesExplicitCatalogGate(
@@ -547,17 +431,11 @@ function passesExplicitCatalogGate(
   request: ParsedAssistantRequest,
 ) {
   if (request.category) {
-    return explicitCategoryMatches(
-      item.product,
-      request.category,
-    );
+    return explicitCategoryMatches(item.product, request.category);
   }
 
   if (request.productQuery) {
-    return explicitQueryMatches(
-      item.product,
-      request.productQuery,
-    );
+    return explicitQueryMatches(item.product, request.productQuery);
   }
 
   return true;
@@ -568,22 +446,8 @@ export function topAssistantProducts(
   request: ParsedAssistantRequest,
   limit = 4,
 ) {
-  return rankAssistantProducts(
-    products,
-    request,
-  )
-    .filter((item) =>
-      passesExplicitCatalogGate(
-        item,
-        request,
-      ),
-    )
+  return rankAssistantProducts(products, request)
+    .filter((item) => passesExplicitCatalogGate(item, request))
     .filter((item) => item.score > -50)
-    .slice(
-      0,
-      Math.max(
-        1,
-        Math.min(limit, 8),
-      ),
-    );
+    .slice(0, Math.max(1, Math.min(limit, 8)));
 }

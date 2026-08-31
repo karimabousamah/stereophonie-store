@@ -59,7 +59,8 @@ function readSearchHistory() {
       if (
         cleanItem &&
         !uniqueHistory.some(
-          (historyItem) => historyItem.toLowerCase() === cleanItem.toLowerCase(),
+          (historyItem) =>
+            historyItem.toLowerCase() === cleanItem.toLowerCase(),
         )
       ) {
         uniqueHistory.push(cleanItem);
@@ -91,7 +92,8 @@ export default function V3HeaderSearchPanel({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searchHistory, setSearchHistory] = useState<string[]>(readSearchHistory);
+  const [searchHistory, setSearchHistory] =
+    useState<string[]>(readSearchHistory);
   const cleanQuery = query.trim();
 
   useEffect(() => {
@@ -194,9 +196,7 @@ export default function V3HeaderSearchPanel({
   }
 
   function removeHistoryItem(historyItem: string) {
-    persistSearchHistory(
-      searchHistory.filter((item) => item !== historyItem),
-    );
+    persistSearchHistory(searchHistory.filter((item) => item !== historyItem));
   }
 
   function submitSearch(event: FormEvent<HTMLFormElement>) {
@@ -349,7 +349,9 @@ export default function V3HeaderSearchPanel({
                   <p>{result.brand || result.category}</p>
                   <h3>{result.name}</h3>
                   <span>
-                    {result.price !== null ? money(result.price) : "View details"}
+                    {result.price !== null
+                      ? money(result.price)
+                      : "View details"}
                   </span>
                 </div>
               </Link>

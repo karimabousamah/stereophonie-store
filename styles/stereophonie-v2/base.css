@@ -846,7 +846,6 @@
    STEREOPHONIE — HEADER ACTIONS UNIFIED HOVER END
    ========================================================= */
 
-
 /* CHOOSE YOUR MODE — ADMIN CATEGORY DETAILS */
 
 .st-v2-home-department__copy {
@@ -895,8 +894,7 @@
 }
 
 @media (hover: hover) {
-  .st-v2-home-department:hover
-    .st-v2-home-department__visual img {
+  .st-v2-home-department:hover .st-v2-home-department__visual img {
     transform: scale(1.025);
   }
 }

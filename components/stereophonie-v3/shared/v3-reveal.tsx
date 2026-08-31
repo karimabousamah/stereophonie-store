@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  type ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 export default function V3Reveal({
   children,
@@ -26,11 +21,7 @@ export default function V3Reveal({
       return;
     }
 
-    if (
-      window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches
-    ) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setVisible(true);
       return;
     }
@@ -58,18 +49,11 @@ export default function V3Reveal({
   return (
     <div
       ref={ref}
-      className={[
-        "st3-reveal",
-        visible ? "st3-reveal--visible" : "",
-        className,
-      ]
+      className={["st3-reveal", visible ? "st3-reveal--visible" : "", className]
         .filter(Boolean)
         .join(" ")}
       style={{
-        transitionDelay: `${Math.max(
-          0,
-          delay,
-        )}ms`,
+        transitionDelay: `${Math.max(0, delay)}ms`,
       }}
     >
       {children}

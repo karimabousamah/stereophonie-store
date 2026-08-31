@@ -149,20 +149,9 @@ export async function createProduct(formData: FormData) {
     .getAll("product_images")
     .filter((entry): entry is File => entry instanceof File && entry.size > 0);
 
-  const isFeatured = formData.get("is_featured") === "on";
-  const isTrending = formData.get("is_trending") === "on";
-  const isNewArrival = formData.get("is_new_arrival") === "on";
-
-  if (
-    publishingIntent === "publish" &&
-    !isFeatured &&
-    !isTrending &&
-    !isNewArrival
-  ) {
-    redirectWithError(
-      "Select at least one store placement before publishing: Featured, Trending or New arrival.",
-    );
-  }
+  let isFeatured = formData.get("is_featured") === "on";
+  let isTrending = formData.get("is_trending") === "on";
+  let isNewArrival = formData.get("is_new_arrival") === "on";
 
   if (!name) {
     redirectWithError("Product name is required.");
@@ -584,6 +573,38 @@ export async function createProduct(formData: FormData) {
     availability = "in_stock";
   } else {
     availability = "out_of_stock";
+  }
+
+  /*
+   * Out of Stock is an exclusive storefront state.
+   *
+   * Even if a stale browser form submits merchandising flags,
+   * never persist Featured / Trending / New arrival on an
+   * aggregate Out-of-Stock product.
+   */
+  if (availability === "out_of_stock") {
+    isFeatured = false;
+    isTrending = false;
+    isNewArrival = false;
+  }
+
+  /*
+   * Available live products still require at least one normal
+   * store-placement choice.
+   *
+   * Out-of-Stock products are intentionally exempt because their
+   * only storefront badge is Out of Stock.
+   */
+  if (
+    publishingIntent === "publish" &&
+    availability !== "out_of_stock" &&
+    !isFeatured &&
+    !isTrending &&
+    !isNewArrival
+  ) {
+    redirectWithError(
+      "Select at least one store placement before publishing: Featured, Trending or New arrival.",
+    );
   }
 
   const { data: product, error: productError } = await supabase

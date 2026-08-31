@@ -1,20 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Volume2,
-  VolumeX,
-} from "lucide-react";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Volume2, VolumeX } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-import type {
-  StereophonieEntertainmentItem,
-} from "@/lib/stereophonie-entertainment";
+import type { StereophonieEntertainmentItem } from "@/lib/stereophonie-entertainment";
 
 type Props = {
   title: string;
@@ -31,12 +21,12 @@ export default function V3EntertainmentCategory({
   const [trailerReady, setTrailerReady] = useState(false);
   const [trailerLoaded, setTrailerLoaded] = useState(false);
   const [trailerPlaying, setTrailerPlaying] = useState(false);
-  const [posterMinimumElapsed, setPosterMinimumElapsed] =
-    useState(false);
+  const [posterMinimumElapsed, setPosterMinimumElapsed] = useState(false);
   const [muted, setMuted] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] =
-    useState<"next" | "previous">("next");
+  const [transitionDirection, setTransitionDirection] = useState<
+    "next" | "previous"
+  >("next");
 
   const railRef = useRef<HTMLDivElement>(null);
   const trailerTimer = useRef<number | null>(null);
@@ -99,21 +89,16 @@ export default function V3EntertainmentCategory({
     setPosterMinimumElapsed(false);
 
     if (trailerTimer.current !== null) {
-      window.clearTimeout(
-        trailerTimer.current,
-      );
+      window.clearTimeout(trailerTimer.current);
     }
 
-    trailerTimer.current =
-      window.setTimeout(() => {
-        setPosterMinimumElapsed(true);
-      }, 4300);
+    trailerTimer.current = window.setTimeout(() => {
+      setPosterMinimumElapsed(true);
+    }, 4300);
 
     return () => {
       if (trailerTimer.current !== null) {
-        window.clearTimeout(
-          trailerTimer.current,
-        );
+        window.clearTimeout(trailerTimer.current);
       }
     };
   }, [activeIndex]);
@@ -128,48 +113,32 @@ export default function V3EntertainmentCategory({
      *
      * Normal reveal: approximately five seconds.
      */
-    if (
-      !trailerLoaded ||
-      !posterMinimumElapsed
-    ) {
+    if (!trailerLoaded || !posterMinimumElapsed) {
       return;
     }
 
-    const revealTimer =
-      window.setTimeout(() => {
-        setTrailerReady(true);
-      }, 700);
+    const revealTimer = window.setTimeout(() => {
+      setTrailerReady(true);
+    }, 700);
 
     return () => {
-      window.clearTimeout(
-        revealTimer,
-      );
+      window.clearTimeout(revealTimer);
     };
-  }, [
-    trailerLoaded,
-    posterMinimumElapsed,
-  ]);
-
+  }, [trailerLoaded, posterMinimumElapsed]);
 
   function select(index: number) {
     if (!items.length || transitioning) {
       return;
     }
 
-    const safe =
-      (index + items.length) %
-      items.length;
+    const safe = (index + items.length) % items.length;
 
     if (safe === activeIndex) {
       return;
     }
 
     const direction =
-      safe > activeIndex ||
-      (
-        activeIndex === items.length - 1 &&
-        safe === 0
-      )
+      safe > activeIndex || (activeIndex === items.length - 1 && safe === 0)
         ? "next"
         : "previous";
 
@@ -180,29 +149,27 @@ export default function V3EntertainmentCategory({
       window.clearTimeout(transitionTimer.current);
     }
 
-    transitionTimer.current =
+    transitionTimer.current = window.setTimeout(() => {
+      setActiveIndex(safe);
+
+      const rail = railRef.current;
+
+      if (rail) {
+        const target = rail.querySelector<HTMLElement>(
+          `[data-entertainment-index="${safe}"]`,
+        );
+
+        target?.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
+      }
+
       window.setTimeout(() => {
-        setActiveIndex(safe);
-
-        const rail = railRef.current;
-
-        if (rail) {
-          const target =
-            rail.querySelector<HTMLElement>(
-              `[data-entertainment-index="${safe}"]`,
-            );
-
-          target?.scrollIntoView({
-            behavior: "smooth",
-            inline: "center",
-            block: "nearest",
-          });
-        }
-
-        window.setTimeout(() => {
-          setTransitioning(false);
-        }, 40);
-      }, 240);
+        setTransitioning(false);
+      }, 40);
+    }, 240);
   }
 
   if (!active || !items.length) {
@@ -222,10 +189,7 @@ export default function V3EntertainmentCategory({
             CINEMATIC BACKGROUND / TRAILER
             ================================================== */}
 
-        <div
-          className="st-entertainment-cinema__media"
-          aria-hidden="true"
-        >
+        <div className="st-entertainment-cinema__media" aria-hidden="true">
           <img
             key={`cinema-poster-${active.id}`}
             src={active.backdropUrl}
@@ -249,8 +213,6 @@ export default function V3EntertainmentCategory({
           />
 
           <div className="st-entertainment-cinema__media-shade" />
-
-
         </div>
 
         {/* ==================================================
@@ -269,14 +231,12 @@ export default function V3EntertainmentCategory({
 
             <div
               key={`trailer-status-${active.id}`}
-            className={`st-entertainment-cinema__trailer-status ${
+              className={`st-entertainment-cinema__trailer-status ${
                 trailerReady ? "is-finished" : ""
               }`}
               aria-live="polite"
             >
               <div className="st-entertainment-cinema__trailer-status-copy">
-                
-
                 <span>
                   {trailerPlaying
                     ? "Trailer ready"
@@ -291,9 +251,7 @@ export default function V3EntertainmentCategory({
               </div>
             </div>
 
-            <h2 key={`cinema-title-${active.id}`}>
-              {active.title}
-            </h2>
+            <h2 key={`cinema-title-${active.id}`}>{active.title}</h2>
 
             <p
               key={`cinema-tagline-${active.id}`}
@@ -315,14 +273,8 @@ export default function V3EntertainmentCategory({
                 <button
                   type="button"
                   className="st-entertainment-cinema__sound"
-                  onClick={() =>
-                    setMuted((value) => !value)
-                  }
-                  aria-label={
-                    muted
-                      ? "Turn trailer sound on"
-                      : "Mute trailer"
-                  }
+                  onClick={() => setMuted((value) => !value)}
+                  aria-label={muted ? "Turn trailer sound on" : "Mute trailer"}
                 >
                   {muted ? <VolumeX /> : <Volume2 />}
                 </button>
@@ -345,23 +297,14 @@ export default function V3EntertainmentCategory({
                     type="button"
                     role="tab"
                     aria-label={`Show ${item.title}`}
-                    aria-selected={
-                      index === activeIndex
-                    }
-                    className={
-                      index === activeIndex
-                        ? "is-active"
-                        : ""
-                    }
-                    onClick={() =>
-                      select(index)
-                    }
+                    aria-selected={index === activeIndex}
+                    className={index === activeIndex ? "is-active" : ""}
+                    onClick={() => select(index)}
                   >
                     <span />
                   </button>
                 ))}
               </div>
-
             </div>
           </div>
         </div>
@@ -371,9 +314,7 @@ export default function V3EntertainmentCategory({
             ================================================== */}
 
         <Link
-          href={`/movies-series?title=${encodeURIComponent(
-            active.title,
-          )}`}
+          href={`/movies-series?title=${encodeURIComponent(active.title)}`}
           className="st-entertainment-cinema__request"
         >
           Ask about this title

@@ -1,15 +1,5 @@
-import type {
-  ReactNode,
-} from "react";
+import type { ReactNode } from "react";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  return (
-    <div className="st3-admin">
-      {children}
-    </div>
-  );
+export default function AdminLayout({ children }: { children: ReactNode }) {
+  return <div className="st3-admin">{children}</div>;
 }

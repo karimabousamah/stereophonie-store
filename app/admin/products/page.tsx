@@ -17,6 +17,10 @@ export default async function AdminProductsPage({
   const resolvedSearchParams = (await searchParams) ?? {};
 
   const savedState = resolvedSearchParams.saved ?? "";
+
+  const initialProductFilter =
+    resolvedSearchParams.filter === "archived" ? "archived" : "all";
+
   const supabase = await createClient();
 
   const { data: claimsData } = await supabase.auth.getClaims();
@@ -181,6 +185,11 @@ export default async function AdminProductsPage({
                     products.filter((product) => product.status === "draft")
                       .length
                   }
+                  archivedTotal={
+                    products.filter((product) => product.status === "archived")
+                      .length
+                  }
+                  initialFilter={initialProductFilter}
                   outOfStockTotal={
                     products.filter((product) => {
                       /*
@@ -271,13 +280,17 @@ export default async function AdminProductsPage({
 
                           <span
                             className={`st-admin-product-status-badge ${
-                              product.status === "draft"
-                                ? "is-draft"
-                                : "is-live"
+                              product.status === "published"
+                                ? "is-live"
+                                : "is-draft"
                             }`}
                           >
                             <i aria-hidden="true" />
-                            {product.status === "published" ? "Live" : "Draft"}
+                            {product.status === "published"
+                              ? "Live"
+                              : product.status === "archived"
+                                ? "Archived"
+                                : "Draft"}
                           </span>
                         </div>
 

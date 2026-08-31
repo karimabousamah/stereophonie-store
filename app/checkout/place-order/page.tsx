@@ -483,7 +483,9 @@ export default function PlaceOrderPage() {
               <CheckCircle2 />
             </div>
             <div>
-              <p className="st-checkout-success-head__eyebrow">Order confirmed</p>
+              <p className="st-checkout-success-head__eyebrow">
+                Order confirmed
+              </p>
               <h1>Thank you, {customer.firstName}.</h1>
               <p>
                 Your order is safely recorded. The Stereophonie team will
@@ -535,237 +537,237 @@ export default function PlaceOrderPage() {
         </section>
 
         <section className="st-checkout-content mx-auto max-w-[1180px] px-5 py-8 sm:px-6 sm:py-10">
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
-          <div className="min-w-0 space-y-8">
-            <section className="border border-black/10 bg-white">
-              <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    Purchased products
-                  </p>
+          <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
+            <div className="min-w-0 space-y-8">
+              <section className="border border-black/10 bg-white">
+                <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                      Purchased products
+                    </p>
 
-                  <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                    {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
-                  </h2>
+                    <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
+                      {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
+                    </h2>
+                  </div>
+
+                  <ShoppingBag className="h-5 w-5 text-black/35" />
                 </div>
 
-                <ShoppingBag className="h-5 w-5 text-black/35" />
-              </div>
-
-              <div className="divide-y divide-black/10">
-                {cart.map((item) => (
-                  <article
-                    key={item.cartItemId}
-                    className="grid grid-cols-[86px_minmax(0,1fr)] gap-4 p-5 sm:grid-cols-[105px_minmax(0,1fr)_auto] sm:items-center sm:px-6"
-                  >
-                    <Link
-                      href={`/shop/${item.slug}`}
-                      className="aspect-[4/5] overflow-hidden bg-neutral-100"
+                <div className="divide-y divide-black/10">
+                  {cart.map((item) => (
+                    <article
+                      key={item.cartItemId}
+                      className="grid grid-cols-[86px_minmax(0,1fr)] gap-4 p-5 sm:grid-cols-[105px_minmax(0,1fr)_auto] sm:items-center sm:px-6"
                     >
-                      {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <ShoppingBag className="h-5 w-5 text-black/20" />
-                        </div>
-                      )}
-                    </Link>
-
-                    <div className="min-w-0">
                       <Link
                         href={`/shop/${item.slug}`}
-                        className="block truncate font-semibold transition hover:text-black/55"
+                        className="aspect-[4/5] overflow-hidden bg-neutral-100"
                       >
-                        {item.name}
+                        {item.imageUrl ? (
+                          <img
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center">
+                            <ShoppingBag className="h-5 w-5 text-black/20" />
+                          </div>
+                        )}
                       </Link>
 
-                      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/45">
-                        <span>Configuration {item.size}</span>
+                      <div className="min-w-0">
+                        <Link
+                          href={`/shop/${item.slug}`}
+                          className="block truncate font-semibold transition hover:text-black/55"
+                        >
+                          {item.name}
+                        </Link>
 
-                        <span>Quantity {item.quantity}</span>
-                      </div>
+                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/45">
+                          <span>Configuration {item.size}</span>
 
-                      <p className="mt-3 text-sm font-semibold sm:hidden">
-                        {money(item.unitPrice * item.quantity)}
-                      </p>
-                    </div>
+                          <span>Quantity {item.quantity}</span>
+                        </div>
 
-                    <p className="hidden text-base font-semibold sm:block">
-                      {money(item.unitPrice * item.quantity)}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className="grid gap-5 md:grid-cols-2">
-              <div className="border border-black/10 bg-white p-5 sm:p-6">
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-black/35" />
-
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                    Contact
-                  </p>
-                </div>
-
-                <h2 className="mt-6 text-2xl font-semibold">
-                  {customer.firstName} {customer.lastName}
-                </h2>
-
-                <p className="mt-4 break-all text-sm text-black/50">
-                  {customer.email}
-                </p>
-
-                <div className="mt-3 flex items-center gap-2 text-sm text-black/50">
-                  <Phone className="h-4 w-4 shrink-0" />
-
-                  <span>{customer.phone}</span>
-                </div>
-
-                {phoneCountry ? (
-                  <p className="mt-3 text-xs text-black/40">
-                    {phoneCountry.flag} {phoneCountry.country}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="border border-black/10 bg-white p-5 sm:p-6">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-black/35" />
-
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                    Delivery address
-                  </p>
-                </div>
-
-                <div className="mt-6 space-y-2">
-                  {fullAddress.map((line, index) => (
-                    <p
-                      key={`${line}-${index}`}
-                      className={
-                        index === 0 ? "font-semibold" : "text-sm text-black/50"
-                      }
-                    >
-                      {line}
-                    </p>
-                  ))}
-                </div>
-
-                {customer.deliveryNotes ? (
-                  <div className="mt-5 border-t border-black/10 pt-4">
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/35">
-                      Delivery notes
-                    </p>
-
-                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-black/50">
-                      {customer.deliveryNotes}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            </section>
-          </div>
-
-          <aside className="xl:sticky xl:top-6 xl:self-start">
-            <section className="border border-black/10 bg-white">
-              <div className="border-b border-black/10 px-5 py-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                  Payment summary
-                </p>
-
-                <h2 className="mt-2 text-2xl font-semibold">
-                  Order total
-                </h2>
-              </div>
-
-              <div className="space-y-4 p-5">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-black/50">Subtotal</span>
-
-                  <span className="font-semibold">
-                    {money(result.subtotal)}
-                  </span>
-                </div>
-
-                {Number(result.discount_amount ?? 0) > 0 ? (
-                  <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
-                    <span>
-                      Discount
-                      {result.coupon_code ? ` (${result.coupon_code})` : ""}
-                    </span>
-
-                    <span className="font-semibold">
-                      −{money(Number(result.discount_amount))}
-                    </span>
-                  </div>
-                ) : null}
-
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-black/50">Delivery</span>
-
-                  <span className="text-right text-black/45">
-                    Confirmed later
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-t border-black/10 pt-4">
-                  <span className="font-semibold">Current total</span>
-
-                  <span className="text-2xl font-semibold">
-                    {money(result.total)}
-                  </span>
-                </div>
-
-                <div className="border border-black/10 bg-[#f7f7f5] p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                    What happens next?
-                  </p>
-
-                  <div className="mt-4 space-y-4">
-                    {[
-                      "Stereophonie reviews your order.",
-                      "You are contacted to confirm delivery.",
-                      "Payment arrangements are confirmed.",
-                    ].map((step, index) => (
-                      <div key={step} className="flex gap-3">
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black text-[9px] font-semibold text-white">
-                          {index + 1}
-                        </span>
-
-                        <p className="text-xs leading-6 text-black/50">
-                          {step}
+                        <p className="mt-3 text-sm font-semibold sm:hidden">
+                          {money(item.unitPrice * item.quantity)}
                         </p>
                       </div>
-                    ))}
+
+                      <p className="hidden text-base font-semibold sm:block">
+                        {money(item.unitPrice * item.quantity)}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section className="grid gap-5 md:grid-cols-2">
+                <div className="border border-black/10 bg-white p-5 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <Mail className="h-5 w-5 text-black/35" />
+
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
+                      Contact
+                    </p>
                   </div>
+
+                  <h2 className="mt-6 text-2xl font-semibold">
+                    {customer.firstName} {customer.lastName}
+                  </h2>
+
+                  <p className="mt-4 break-all text-sm text-black/50">
+                    {customer.email}
+                  </p>
+
+                  <div className="mt-3 flex items-center gap-2 text-sm text-black/50">
+                    <Phone className="h-4 w-4 shrink-0" />
+
+                    <span>{customer.phone}</span>
+                  </div>
+
+                  {phoneCountry ? (
+                    <p className="mt-3 text-xs text-black/40">
+                      {phoneCountry.flag} {phoneCountry.country}
+                    </p>
+                  ) : null}
                 </div>
 
-                {accountLinked ? (
+                <div className="border border-black/10 bg-white p-5 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-black/35" />
+
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
+                      Delivery address
+                    </p>
+                  </div>
+
+                  <div className="mt-6 space-y-2">
+                    {fullAddress.map((line, index) => (
+                      <p
+                        key={`${line}-${index}`}
+                        className={
+                          index === 0
+                            ? "font-semibold"
+                            : "text-sm text-black/50"
+                        }
+                      >
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+
+                  {customer.deliveryNotes ? (
+                    <div className="mt-5 border-t border-black/10 pt-4">
+                      <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/35">
+                        Delivery notes
+                      </p>
+
+                      <p className="mt-2 whitespace-pre-line text-sm leading-6 text-black/50">
+                        {customer.deliveryNotes}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              </section>
+            </div>
+
+            <aside className="xl:sticky xl:top-6 xl:self-start">
+              <section className="border border-black/10 bg-white">
+                <div className="border-b border-black/10 px-5 py-5">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                    Payment summary
+                  </p>
+
+                  <h2 className="mt-2 text-2xl font-semibold">Order total</h2>
+                </div>
+
+                <div className="space-y-4 p-5">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-black/50">Subtotal</span>
+
+                    <span className="font-semibold">
+                      {money(result.subtotal)}
+                    </span>
+                  </div>
+
+                  {Number(result.discount_amount ?? 0) > 0 ? (
+                    <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
+                      <span>
+                        Discount
+                        {result.coupon_code ? ` (${result.coupon_code})` : ""}
+                      </span>
+
+                      <span className="font-semibold">
+                        −{money(Number(result.discount_amount))}
+                      </span>
+                    </div>
+                  ) : null}
+
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className="text-black/50">Delivery</span>
+
+                    <span className="text-right text-black/45">
+                      Confirmed later
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-black/10 pt-4">
+                    <span className="font-semibold">Current total</span>
+
+                    <span className="text-2xl font-semibold">
+                      {money(result.total)}
+                    </span>
+                  </div>
+
+                  <div className="border border-black/10 bg-[#f7f7f5] p-4">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                      What happens next?
+                    </p>
+
+                    <div className="mt-4 space-y-4">
+                      {[
+                        "Stereophonie reviews your order.",
+                        "You are contacted to confirm delivery.",
+                        "Payment arrangements are confirmed.",
+                      ].map((step, index) => (
+                        <div key={step} className="flex gap-3">
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black text-[9px] font-semibold text-white">
+                            {index + 1}
+                          </span>
+
+                          <p className="text-xs leading-6 text-black/50">
+                            {step}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {accountLinked ? (
+                    <Link
+                      href="/account"
+                      className="flex min-h-14 w-full items-center justify-center gap-3 border border-black bg-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-black hover:text-white"
+                    >
+                      View my orders
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : null}
+
                   <Link
-                    href="/account"
-                    className="flex min-h-14 w-full items-center justify-center gap-3 border border-black bg-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-black hover:text-white"
+                    href="/shop"
+                    className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424]"
                   >
-                    View my orders
+                    Continue shopping
                     <ArrowRight className="h-4 w-4" />
                   </Link>
-                ) : null}
-
-                <Link
-                  href="/shop"
-                  className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424]"
-                >
-                  Continue shopping
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </section>
-          </aside>
-        </div>
-      </section>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
       </main>
     </>
   );

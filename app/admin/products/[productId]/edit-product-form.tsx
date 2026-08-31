@@ -20,7 +20,7 @@ import ElectronicsVariantEditor, {
   type AdminElectronicsVariant,
 } from "@/components/admin/products/electronics-variant-editor";
 
-import { archiveProduct, deleteProduct, updateProduct } from "./actions";
+import { deleteProduct, updateProduct } from "./actions";
 
 type AvailabilityStatus =
   "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
@@ -240,9 +240,97 @@ export default function EditProductForm({
     [variants],
   );
 
+  /*
+   * Store placement cannot be selected for an aggregate
+   * Out-of-Stock product.
+   */
+  const productOutOfStock = useMemo(() => {
+    if (variants.length === 0) {
+      return false;
+    }
+
+    const allComingSoon = variants.every(
+      (variant) => variant.availability_status === "coming_soon",
+    );
+
+    const hasAvailableConfiguration = variants.some(
+      (variant) =>
+        variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock",
+    );
+
+    return !allComingSoon && !hasAvailableConfiguration;
+  }, [variants]);
   return (
     <div>
-      <form action={updateProduct}>
+      <form
+        id="st-edit-product-form"
+        action={updateProduct}
+        onSubmit={(event) => {
+          const form = event.currentTarget;
+          const nativeEvent = event.nativeEvent as SubmitEvent;
+          const submitter = nativeEvent.submitter as HTMLButtonElement | null;
+
+          if (form.dataset.photoUsageFlushed === "true") {
+            delete form.dataset.photoUsageFlushed;
+            return;
+          }
+
+          if (
+            !submitter ||
+            (submitter.value !== "publish" &&
+              submitter.value !== "draft" &&
+              submitter.value !== "archive")
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+
+          const intent = submitter.value;
+
+          void new Promise<boolean>((resolve) => {
+            const detail = {
+              handled: false,
+              resolve,
+            };
+
+            window.dispatchEvent(
+              new CustomEvent("stereophonie:admin-save-photo-usage", {
+                detail,
+              }),
+            );
+
+            /*
+             * A product can legitimately have no mounted photograph manager.
+             * In that case there is nothing to flush and the product save
+             * must continue immediately instead of hanging forever.
+             */
+            if (!detail.handled) {
+              resolve(true);
+            }
+          }).then((saved) => {
+            if (!saved) {
+              return;
+            }
+
+            form.dataset.photoUsageFlushed = "true";
+
+            const authoritativeSubmitter =
+              document.querySelector<HTMLButtonElement>(
+                intent === "publish"
+                  ? "#st-save-existing-product-publish"
+                  : intent === "archive"
+                    ? "#st-archive-existing-product"
+                    : "#st-save-existing-product-draft",
+              );
+
+            if (authoritativeSubmitter) {
+              form.requestSubmit(authoritativeSubmitter);
+            }
+          });
+        }}
+      >
         <input type="hidden" name="product_id" value={product.id} />
 
         <input
@@ -414,8 +502,12 @@ export default function EditProductForm({
                 <label className="st-admin-placement-card">
                   <input
                     type="checkbox"
+                    key={`featured-${productOutOfStock}`}
                     name="is_featured"
-                    defaultChecked={product.isFeatured}
+                    disabled={productOutOfStock}
+                    defaultChecked={
+                      productOutOfStock ? false : product.isFeatured
+                    }
                     className="sr-only"
                   />
 
@@ -436,8 +528,12 @@ export default function EditProductForm({
                 <label className="st-admin-placement-card">
                   <input
                     type="checkbox"
+                    key={`trending-${productOutOfStock}`}
                     name="is_trending"
-                    defaultChecked={product.isTrending}
+                    disabled={productOutOfStock}
+                    defaultChecked={
+                      productOutOfStock ? false : product.isTrending
+                    }
                     className="sr-only"
                   />
 
@@ -459,8 +555,12 @@ export default function EditProductForm({
                 <label className="st-admin-placement-card">
                   <input
                     type="checkbox"
+                    key={`new-arrival-${productOutOfStock}`}
                     name="is_new_arrival"
-                    defaultChecked={product.isNewArrival}
+                    disabled={productOutOfStock}
+                    defaultChecked={
+                      productOutOfStock ? false : product.isNewArrival
+                    }
                     className="sr-only"
                   />
 
@@ -646,31 +746,30 @@ export default function EditProductForm({
               </p>
             </div>
 
-            <form
-              action={archiveProduct}
-              className="mt-4"
-              onSubmit={(event) => {
-                const confirmed = window.confirm(
-                  "Archive this product? It will become hidden from customers.",
-                );
-
-                if (!confirmed) {
-                  event.preventDefault();
-                }
-              }}
-            >
-              <input type="hidden" name="product_id" value={product.id} />
-
+            <div className="mt-4">
               <button
+                id="st-archive-existing-product"
                 type="submit"
+                form="st-edit-product-form"
+                name="intent"
+                value="archive"
                 data-secondary-action="true"
                 data-admin-archive-action="true"
+                onClick={(event) => {
+                  const confirmed = window.confirm(
+                    "Archive this product? Your current edits will be saved first, then the product will be hidden from customers.",
+                  );
+
+                  if (!confirmed) {
+                    event.preventDefault();
+                  }
+                }}
                 className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[12px] border border-[#dca02d] bg-white px-4 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] transition-all duration-200 hover:-translate-y-px hover:border-[#e0a126] hover:bg-[#fffdf8] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.12),0_8px_24px_rgba(190,127,12,0.13)] focus-visible:outline-none focus-visible:shadow-[0_0_0_4px_rgba(245,179,53,0.14)]"
               >
                 <Archive className="h-3.5 w-3.5" />
                 Archive product
               </button>
-            </form>
+            </div>
           </div>
 
           <div className="flex min-h-[132px] flex-col justify-between rounded-[16px] border border-red-200 bg-[#fff7f7] p-5">

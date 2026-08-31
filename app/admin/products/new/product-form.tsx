@@ -92,6 +92,8 @@ export default function ProductForm({
   errorMessage,
 }: ProductFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
+  const allowServerSubmissionRef = useRef(false);
+  const directUploadedImagesInputRef = useRef<HTMLInputElement>(null);
 
   /*
    * Preserve exactly which publishing action the administrator
@@ -153,6 +155,35 @@ export default function ProductForm({
     [variants],
   );
 
+  /*
+   * Store-placement badges are irrelevant when the complete
+   * product is unavailable.
+   *
+   * This mirrors the aggregate availability calculation used by
+   * the server:
+   *
+   * - any in-stock / low-stock configuration -> available
+   * - every configuration coming soon -> coming soon
+   * - otherwise -> out of stock
+   */
+  const productOutOfStock = useMemo(() => {
+    if (variants.length === 0) {
+      return false;
+    }
+
+    const allComingSoon = variants.every(
+      (variant) => variant.availability_status === "coming_soon",
+    );
+
+    const hasAvailableConfiguration = variants.some(
+      (variant) =>
+        variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock",
+    );
+
+    return !allComingSoon && !hasAvailableConfiguration;
+  }, [variants]);
+
   const handleImagesChange = useCallback(
     (images: DirectUploadSelectedImage[]) => {
       /*
@@ -201,6 +232,11 @@ export default function ProductForm({
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     const form = event.currentTarget;
+
+    if (allowServerSubmissionRef.current) {
+      allowServerSubmissionRef.current = false;
+      return;
+    }
 
     const nativeEvent = event.nativeEvent as SubmitEvent;
 
@@ -270,27 +306,24 @@ export default function ProductForm({
 
       setDirectUploadedImagesJson(uploadedImagesJson);
 
-      /*
-       * Build the exact FormData ourselves.
-       *
-       * This avoids requestSubmit(), browser revalidation,
-       * duplicate submit events and submitter-loss entirely.
-       */
-      const formData = new FormData(form);
+      if (directUploadedImagesInputRef.current) {
+        directUploadedImagesInputRef.current.value = uploadedImagesJson;
+      }
 
-      formData.set("resolved_intent", submissionIntent);
-
-      formData.set("intent", submissionIntent);
-
-      formData.set("direct_uploaded_images", uploadedImagesJson);
+      if (resolvedIntentInputRef.current) {
+        resolvedIntentInputRef.current.value = submissionIntent;
+      }
 
       /*
-       * Call the Server Action directly.
+       * The preparation phase is complete.
        *
-       * createProduct performs the database insert and redirects
-       * after success.
+       * Allow exactly one real browser/Next.js Server Action submission.
+       * Reusing the original submitter preserves Draft's formNoValidate
+       * behavior and Publish's normal browser validation.
        */
-      await createProduct(formData);
+      allowServerSubmissionRef.current = true;
+
+      form.requestSubmit(submitter ?? undefined);
     } catch (error) {
       /*
        * Next.js Server Actions implement redirect() by throwing
@@ -333,6 +366,7 @@ export default function ProductForm({
       />
 
       <input
+        ref={directUploadedImagesInputRef}
         type="hidden"
         name="direct_uploaded_images"
         value={directUploadedImagesJson}
@@ -510,7 +544,10 @@ export default function ProductForm({
                 <input
                   type="checkbox"
                   name="is_featured"
-                  checked={placementSelection.featured}
+                  disabled={productOutOfStock}
+                  checked={
+                    productOutOfStock ? false : placementSelection.featured
+                  }
                   onChange={(event) =>
                     setPlacementSelection((current) => ({
                       ...current,
@@ -521,7 +558,11 @@ export default function ProductForm({
                 />
 
                 <span
-                  className={`st-admin-placement-card__surface ${placementSelection.featured ? "is-selected" : ""}`}
+                  className={`st-admin-placement-card__surface ${
+                    !productOutOfStock && placementSelection.featured
+                      ? "is-selected"
+                      : ""
+                  }`}
                 >
                   <span className="st-admin-placement-card__icon">
                     <Star className="h-5 w-5" />
@@ -540,7 +581,10 @@ export default function ProductForm({
                 <input
                   type="checkbox"
                   name="is_trending"
-                  checked={placementSelection.trending}
+                  disabled={productOutOfStock}
+                  checked={
+                    productOutOfStock ? false : placementSelection.trending
+                  }
                   onChange={(event) =>
                     setPlacementSelection((current) => ({
                       ...current,
@@ -551,7 +595,11 @@ export default function ProductForm({
                 />
 
                 <span
-                  className={`st-admin-placement-card__surface ${placementSelection.trending ? "is-selected" : ""}`}
+                  className={`st-admin-placement-card__surface ${
+                    !productOutOfStock && placementSelection.trending
+                      ? "is-selected"
+                      : ""
+                  }`}
                 >
                   <span className="st-admin-placement-card__icon">
                     <TrendingUp className="h-5 w-5" />
@@ -571,7 +619,10 @@ export default function ProductForm({
                 <input
                   type="checkbox"
                   name="is_new_arrival"
-                  checked={placementSelection.newArrival}
+                  disabled={productOutOfStock}
+                  checked={
+                    productOutOfStock ? false : placementSelection.newArrival
+                  }
                   onChange={(event) =>
                     setPlacementSelection((current) => ({
                       ...current,
@@ -582,7 +633,11 @@ export default function ProductForm({
                 />
 
                 <span
-                  className={`st-admin-placement-card__surface ${placementSelection.newArrival ? "is-selected" : ""}`}
+                  className={`st-admin-placement-card__surface ${
+                    !productOutOfStock && placementSelection.newArrival
+                      ? "is-selected"
+                      : ""
+                  }`}
                 >
                   <span className="st-admin-placement-card__icon">
                     <Diamond className="h-5 w-5" />

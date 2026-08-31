@@ -214,6 +214,51 @@ function badgeFor(product: StoreProductCardProduct, now: number) {
   return null;
 }
 
+/*
+ * Product cards deliberately communicate ONE status only.
+ *
+ * Customer-facing priority:
+ *
+ * 1. Out of Stock
+ * 2. Coming Soon
+ * 3. Low Stock
+ * 4. Sale
+ * 5. New
+ * 6. Trending
+ * 7. Featured
+ *
+ * Admin merchandising data is preserved. This resolver only decides
+ * which single message is most useful to show on the storefront card.
+ */
+function resolveProductCardSticker({
+  productAvailability,
+  badge,
+  onSale,
+}: {
+  productAvailability:
+    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  badge: string | null;
+  onSale: boolean;
+}) {
+  if (productAvailability === "out_of_stock") {
+    return "Out of Stock";
+  }
+
+  if (productAvailability === "coming_soon") {
+    return "Coming Soon";
+  }
+
+  if (badge === "Low Stock") {
+    return "Low Stock";
+  }
+
+  if (onSale) {
+    return "Sale";
+  }
+
+  return badge;
+}
+
 function productCardBadgeClass(badge: string | null) {
   const classes = ["st-retail-card__badge", "nita-merch-badge"];
 
@@ -241,6 +286,7 @@ export default function V2ProductCard({ product }: Props) {
   const price = useMemo(() => getPrice(product), [product]);
   const available = useMemo(() => isAvailable(product), [product]);
   const productAvailability = calculateProductAvailability(product.variants);
+  const outOfStock = !available && productAvailability !== "coming_soon";
   const lowStock = useMemo(() => isLowStockProduct(product), [product]);
   const [clock, setClock] = useState(() => Date.now());
 
@@ -263,6 +309,12 @@ export default function V2ProductCard({ product }: Props) {
   }, [product.is_new_arrival, product.new_drop_started_at]);
 
   const badge = badgeFor(product, clock);
+
+  const cardSticker = resolveProductCardSticker({
+    productAvailability,
+    badge,
+    onSale: Boolean(price?.sale),
+  });
 
   const href = product.slug ? `/shop/${product.slug}` : "/shop";
 
@@ -392,59 +444,27 @@ export default function V2ProductCard({ product }: Props) {
             )}
           </Link>
 
-          {!available ? (
-            <div
-              className="st-retail-card__out-of-stock-overlay"
-              aria-label={
-                productAvailability === "coming_soon"
-                  ? "Coming soon"
-                  : "Out of stock"
-              }
-            >
-              <span>
-                {productAvailability === "coming_soon"
-                  ? "Coming Soon"
-                  : "Out of Stock"}
-              </span>
-            </div>
-          ) : null}
-
           <div className="st-retail-card__top">
-            <div className="st-retail-card__badges">
-              {badge ? (
+            <div className="st-retail-card__badges st-card-sticker-row">
+              {cardSticker ? (
                 <span
-                  className={
-                    badge === "New" ||
-                    badge === "Low Stock" ||
-                    badge === "Trending" ||
-                    badge === "Featured"
-                      ? "st-retail-card__badge st-retail-card__badge--new"
-                      : "st-retail-card__badge"
+                  className={`st-card-sticker ${
+                    cardSticker === "Out of Stock"
+                      ? "st-card-sticker--gray"
+                      : ""
+                  }`}
+                  data-st-card-sticker={cardSticker}
+                  aria-label={
+                    cardSticker === "Out of Stock"
+                      ? "Out of stock"
+                      : cardSticker
                   }
-                  data-product-card-badge={badge}
                 >
-                  {badge === "New" ||
-                  badge === "Low Stock" ||
-                  badge === "Trending" ||
-                  badge === "Featured" ? (
-                    <i
-                      className="st-retail-card__new-pulse"
-                      aria-hidden="true"
-                    />
-                  ) : null}
-
-                  <b>{badge}</b>
-                </span>
-              ) : null}
-
-              {price?.sale ? (
-                <span className="st-retail-card__badge st-retail-card__badge--sale">
-                  <i
-                    className="st-retail-card__sale-pulse"
+                  <span
+                    className="st-card-sticker__breath"
                     aria-hidden="true"
                   />
-
-                  <b>Sale</b>
+                  <b>{cardSticker}</b>
                 </span>
               ) : null}
             </div>
