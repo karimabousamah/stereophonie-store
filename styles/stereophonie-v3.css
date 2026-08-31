@@ -49957,8 +49957,7 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1100px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
+  html body .st3-shop-card-context .st3-shop-v4__grid {
     display: grid !important;
 
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -49979,8 +49978,7 @@ html body .st3-header__socials > a:focus-visible {
    * Nothing inside the card is changed.
    */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid > .st-retail-card {
+  html body .st3-shop-card-context .st3-shop-v4__grid > .st-retail-card {
     width: 100% !important;
 
     min-width: 0 !important;
@@ -49997,8 +49995,7 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1000px) and (max-width: 1099px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
+  html body .st3-shop-card-context .st3-shop-v4__grid {
     display: grid !important;
 
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -50006,8 +50003,7 @@ html body .st3-header__socials > a:focus-visible {
     gap: 14px !important;
   }
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid > .st-retail-card {
+  html body .st3-shop-card-context .st3-shop-v4__grid > .st-retail-card {
     width: 100% !important;
 
     min-width: 0 !important;
@@ -50019,8 +50015,7 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 640px) and (max-width: 999px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
+  html body .st3-shop-card-context .st3-shop-v4__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
@@ -50030,8 +50025,7 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (max-width: 639px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
+  html body .st3-shop-card-context .st3-shop-v4__grid {
     grid-template-columns: 1fr !important;
   }
 }
@@ -50069,8 +50063,7 @@ html body .st3-header__socials > a:focus-visible {
      CARD
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid > .st-retail-card {
+  html body .st3-shop-card-context .st3-shop-v4__grid > .st-retail-card {
     min-height: 0 !important;
 
     height: auto !important;
@@ -50092,12 +50085,7 @@ html body .st3-header__socials > a:focus-visible {
      compact 225px product stage
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__visual {
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__visual {
     position: relative !important;
 
     height: 225px !important;
@@ -50109,10 +50097,9 @@ html body .st3-header__socials > a:focus-visible {
     overflow: visible !important;
   }
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link {
     position: relative !important;
@@ -50138,17 +50125,15 @@ html body .st3-header__socials > a:focus-visible {
      PRODUCT PHOTO — MAKE IT MUCH MORE VISIBLE
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link
     img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     img.st-retail-card__image {
     width: 82% !important;
@@ -50177,7 +50162,7 @@ html body .st3-header__socials > a:focus-visible {
 
   html
     body
-    main.st3-shop-v4
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link
     > span {
@@ -50192,17 +50177,15 @@ html body .st3-header__socials > a:focus-visible {
      BODY
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html body .st3-home-shop-card-scope .st3-shop-v4__grid .st-retail-card__body {
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__body {
     padding: 12px 13px 13px !important;
   }
 
   /* category */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__category {
     margin-bottom: 6px !important;
@@ -50210,12 +50193,7 @@ html body .st3-header__socials > a:focus-visible {
 
   /* title */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__title {
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__title {
     margin-top: 0 !important;
 
     margin-bottom: 0 !important;
@@ -50227,12 +50205,7 @@ html body .st3-header__socials > a:focus-visible {
      FOOTER
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__footer {
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__footer {
     margin-top: 10px !important;
 
     padding-top: 0 !important;
@@ -50246,12 +50219,7 @@ html body .st3-header__socials > a:focus-visible {
      Keep them physically above the image and unchanged.
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__badges {
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__badges {
     z-index: 5 !important;
   }
 
@@ -50259,10 +50227,9 @@ html body .st3-header__socials > a:focus-visible {
      WISHLIST
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__wishlist {
     z-index: 6 !important;
@@ -50273,12 +50240,7 @@ html body .st3-header__socials > a:focus-visible {
      Keep it inside the shorter image stage.
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__quick {
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__quick {
     bottom: 12px !important;
   }
 }
@@ -50289,16 +50251,10 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1600px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__visual,
   html
     body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__visual,
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link {
     height: 235px !important;
@@ -50315,16 +50271,10 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (max-width: 999px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__visual,
   html
     body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__visual,
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link {
     max-height: none;
@@ -50350,10 +50300,9 @@ html body .st3-header__socials > a:focus-visible {
      IMAGE CONTAINER
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link {
     display: flex !important;
@@ -50369,17 +50318,15 @@ html body .st3-header__socials > a:focus-visible {
      PRODUCT IMAGE — STRONGER ZOOM
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link
     img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     img.st-retail-card__image {
     width: 100% !important;
@@ -50409,14 +50356,14 @@ html body .st3-header__socials > a:focus-visible {
   @media (hover: hover) and (pointer: fine) {
     html
       body
-      main.st3-shop-v4
+      .st3-shop-card-context
       .st3-shop-v4__grid
       .st-retail-card:hover
       .st-retail-card__image-link
       img,
     html
       body
-      main.st3-shop-v4
+      .st3-shop-card-context
       .st3-shop-v4__grid
       .st-retail-card:hover
       img.st-retail-card__image {
@@ -50431,17 +50378,15 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1500px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link
     img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     img.st-retail-card__image {
     transform: scale(1.48) !important;
@@ -50450,14 +50395,14 @@ html body .st3-header__socials > a:focus-visible {
   @media (hover: hover) and (pointer: fine) {
     html
       body
-      main.st3-shop-v4
+      .st3-shop-card-context
       .st3-shop-v4__grid
       .st-retail-card:hover
       .st-retail-card__image-link
       img,
     html
       body
-      main.st3-shop-v4
+      .st3-shop-card-context
       .st3-shop-v4__grid
       .st-retail-card:hover
       img.st-retail-card__image {
@@ -50471,17 +50416,15 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (max-width: 999px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__image-link
     img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     img.st-retail-card__image {
     transform: none;
@@ -50513,7 +50456,7 @@ html body .st3-header__socials > a:focus-visible {
 
   html
     body
-    main.st3-shop-v4
+    .st3-shop-card-context
     .st3-shop-v4__grid
     :is(
       .st-retail-card__badge,
@@ -50557,7 +50500,7 @@ html body .st3-header__socials > a:focus-visible {
 
   html
     body
-    main.st3-shop-v4
+    .st3-shop-card-context
     .st3-shop-v4__grid
     :is(
       .st-retail-card__badge,
@@ -50567,7 +50510,7 @@ html body .st3-header__socials > a:focus-visible {
     > b,
   html
     body
-    main.st3-shop-v4
+    .st3-shop-card-context
     .st3-shop-v4__grid
     :is(
       .st-retail-card__badge,
@@ -50588,12 +50531,7 @@ html body .st3-header__socials > a:focus-visible {
      BADGE GROUP SPACING
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
-  html
-    body
-    .st3-home-shop-card-scope
-    .st3-shop-v4__grid
-    .st-retail-card__badges {
+  html body .st3-shop-card-context .st3-shop-v4__grid .st-retail-card__badges {
     gap: 6px !important;
   }
 
@@ -50604,7 +50542,7 @@ html body .st3-header__socials > a:focus-visible {
 
   html
     body
-    main.st3-shop-v4
+    .st3-shop-card-context
     .st3-shop-v4__grid
     :is(
       .st-retail-card__badge,
@@ -50623,10 +50561,9 @@ html body .st3-header__socials > a:focus-visible {
      Keep animation but make its halo more compact.
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid,
   html
     body
-    .st3-home-shop-card-scope
+    .st3-shop-card-context
     .st3-shop-v4__grid
     .st-retail-card__new-pulse {
     inset: -5px !important;
@@ -50643,7 +50580,7 @@ html body .st3-header__socials > a:focus-visible {
 @media (min-width: 1600px) {
   html
     body
-    main.st3-shop-v4
+    .st3-shop-card-context
     .st3-shop-v4__grid
     :is(
       .st-retail-card__badge,
@@ -50665,619 +50602,6 @@ html body .st3-header__socials > a:focus-visible {
 }
 
 /* === ST3 SHOP SMALL BADGES FINAL END === */
-
-/* === ST EXACT SHOP CARD MIRROR START === */
-
-/*
- * =========================================================
- * EXACT /SHOP PRODUCT CARD MIRROR
- * =========================================================
- *
- * DO NOT DESIGN THE CARD HERE.
- *
- * These declarations are generated directly from the CSS
- * blocks controlling the approved /shop product card.
- *
- * Only the PAGE SCOPE was changed:
- *
- * /shop:
- *   main.st3-shop-v4 .st3-shop-v4__grid
- *
- * shared:
- *   .st-product-grid-canonical
- *
- * Therefore:
- *
- * - Homepage
- * - Shop
- * - Wishlist
- * - Collections
- * - Related products
- * - Other canonical product grids
- *
- * receive the SAME physical V2ProductCard styling.
- * =========================================================
- */
-
-/*
- * IMPORTANT:
- *
- * We DO NOT modify the product-card design here.
- *
- * Original:
- * - image proportions
- * - image height
- * - badges
- * - wishlist
- * - quick view
- * - typography
- * - spacing
- *
- * all remain untouched.
- *
- * We ONLY change how many product cards occupy one row.
- */
-
-/* =========================================================
-   LARGE DESKTOP
-   ========================================================= */
-
-@media (min-width: 1100px) {
-  html body .st-product-grid-canonical {
-    display: grid !important;
-
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-
-    column-gap: 18px !important;
-
-    row-gap: 28px !important;
-
-    width: 100% !important;
-
-    align-items: stretch !important;
-  }
-
-  /*
-   * Allow the ORIGINAL card to shrink naturally into
-   * its 1/4-width grid cell.
-   *
-   * Nothing inside the card is changed.
-   */
-
-  html body .st-product-grid-canonical > .st-retail-card {
-    width: 100% !important;
-
-    min-width: 0 !important;
-
-    max-width: none !important;
-
-    margin: 0 !important;
-  }
-}
-
-/* =========================================================
-   NORMAL LAPTOP
-   Still four cards if there is enough horizontal room.
-   ========================================================= */
-
-@media (min-width: 1000px) and (max-width: 1099px) {
-  html body .st-product-grid-canonical {
-    display: grid !important;
-
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-
-    gap: 14px !important;
-  }
-
-  html body .st-product-grid-canonical > .st-retail-card {
-    width: 100% !important;
-
-    min-width: 0 !important;
-  }
-}
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (min-width: 640px) and (max-width: 999px) {
-  html body .st-product-grid-canonical {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 639px) {
-  html body .st-product-grid-canonical {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/*
- * FINAL SHOP CARD PROPORTIONS
- *
- * Keep:
- * - 4 cards horizontally
- * - existing product logic
- * - wishlist
- * - badges
- * - badge animation
- * - Quick View
- * - pricing
- * - stock status
- *
- * Change:
- * - substantially shorter image area
- * - larger / clearer product photography
- * - tighter information area
- * - card feels much closer to square
- */
-
-/* =========================================================
-   DESKTOP
-   ========================================================= */
-
-@media (min-width: 1000px) {
-  /* -------------------------------------------------------
-     CARD
-     ------------------------------------------------------- */
-
-  html body .st-product-grid-canonical > .st-retail-card {
-    min-height: 0 !important;
-
-    height: auto !important;
-
-    align-self: start !important;
-
-    overflow: visible !important;
-  }
-
-  /* -------------------------------------------------------
-     MEDIA AREA
-
-     THIS is the important change.
-
-     Previous:
-     around 300px+ of white image space
-
-     New:
-     compact 225px product stage
-     ------------------------------------------------------- */
-
-  html body .st-product-grid-canonical .st-retail-card__visual {
-    position: relative !important;
-
-    height: 225px !important;
-
-    min-height: 225px !important;
-
-    max-height: 225px !important;
-
-    overflow: visible !important;
-  }
-
-  html body .st-product-grid-canonical .st-retail-card__image-link {
-    position: relative !important;
-
-    display: flex !important;
-
-    align-items: center !important;
-
-    justify-content: center !important;
-
-    height: 225px !important;
-
-    min-height: 225px !important;
-
-    max-height: 225px !important;
-
-    aspect-ratio: auto !important;
-
-    overflow: hidden !important;
-  }
-
-  /* =======================================================
-     PRODUCT PHOTO — MAKE IT MUCH MORE VISIBLE
-     ======================================================= */
-
-  html body .st-product-grid-canonical .st-retail-card__image-link img,
-  html body .st-product-grid-canonical img.st-retail-card__image {
-    width: 82% !important;
-
-    max-width: 82% !important;
-
-    height: 82% !important;
-
-    max-height: 82% !important;
-
-    margin: auto !important;
-
-    object-fit: contain !important;
-
-    object-position: center center !important;
-
-    transform: scale(1.12) !important;
-
-    transform-origin: center center !important;
-  }
-
-  /*
-   * If Next/Image has an internal wrapper or absolutely
-   * positioned image, force the same visual scale.
-   */
-
-  html body .st-product-grid-canonical .st-retail-card__image-link > span {
-    width: 84% !important;
-
-    height: 84% !important;
-
-    margin: auto !important;
-  }
-
-  /* -------------------------------------------------------
-     BODY
-     ------------------------------------------------------- */
-
-  html body .st-product-grid-canonical .st-retail-card__body {
-    padding: 12px 13px 13px !important;
-  }
-
-  /* category */
-
-  html body .st-product-grid-canonical .st-retail-card__category {
-    margin-bottom: 6px !important;
-  }
-
-  /* title */
-
-  html body .st-product-grid-canonical .st-retail-card__title {
-    margin-top: 0 !important;
-
-    margin-bottom: 0 !important;
-
-    line-height: 1.08 !important;
-  }
-
-  /* -------------------------------------------------------
-     FOOTER
-     ------------------------------------------------------- */
-
-  html body .st-product-grid-canonical .st-retail-card__footer {
-    margin-top: 10px !important;
-
-    padding-top: 0 !important;
-
-    padding-bottom: 0 !important;
-  }
-
-  /* -------------------------------------------------------
-     BADGES
-
-     Keep them physically above the image and unchanged.
-     ------------------------------------------------------- */
-
-  html body .st-product-grid-canonical .st-retail-card__badges {
-    z-index: 5 !important;
-  }
-
-  /* -------------------------------------------------------
-     WISHLIST
-     ------------------------------------------------------- */
-
-  html body .st-product-grid-canonical .st-retail-card__wishlist {
-    z-index: 6 !important;
-  }
-
-  /* -------------------------------------------------------
-     QUICK VIEW
-     Keep it inside the shorter image stage.
-     ------------------------------------------------------- */
-
-  html body .st-product-grid-canonical .st-retail-card__quick {
-    bottom: 12px !important;
-  }
-}
-
-/* =========================================================
-   VERY LARGE DESKTOP
-   Still keep cards compact.
-   ========================================================= */
-
-@media (min-width: 1600px) {
-  html body .st-product-grid-canonical .st-retail-card__visual,
-  html body .st-product-grid-canonical .st-retail-card__image-link {
-    height: 235px !important;
-
-    min-height: 235px !important;
-
-    max-height: 235px !important;
-  }
-}
-
-/* =========================================================
-   TABLET / MOBILE
-   Leave existing responsive architecture alone.
-   ========================================================= */
-
-@media (max-width: 999px) {
-  html body .st-product-grid-canonical .st-retail-card__visual,
-  html body .st-product-grid-canonical .st-retail-card__image-link {
-    max-height: none;
-  }
-}
-
-/*
- * SHOP PRODUCT IMAGE SCALE
- *
- * Cards stay exactly the same size.
- * 4-column grid stays exactly the same.
- *
- * Only enlarge the actual product photography inside
- * the existing white media area.
- */
-
-@media (min-width: 1000px) {
-  /* =======================================================
-     IMAGE CONTAINER
-     ======================================================= */
-
-  html body .st-product-grid-canonical .st-retail-card__image-link {
-    display: flex !important;
-
-    align-items: center !important;
-
-    justify-content: center !important;
-
-    overflow: hidden !important;
-  }
-
-  /* =======================================================
-     PRODUCT IMAGE — STRONGER ZOOM
-     ======================================================= */
-
-  html body .st-product-grid-canonical .st-retail-card__image-link img,
-  html body .st-product-grid-canonical img.st-retail-card__image {
-    width: 100% !important;
-
-    max-width: 100% !important;
-
-    height: 100% !important;
-
-    max-height: 100% !important;
-
-    object-fit: contain !important;
-
-    object-position: center center !important;
-
-    transform: scale(1.42) !important;
-
-    transform-origin: center center !important;
-
-    transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
-  }
-
-  /* =======================================================
-     OPTIONAL HOVER
-     Tiny extra zoom — premium and subtle.
-     ======================================================= */
-
-  @media (hover: hover) and (pointer: fine) {
-    html
-      body
-      .st-product-grid-canonical
-      .st-retail-card:hover
-      .st-retail-card__image-link
-      img,
-    html
-      body
-      .st-product-grid-canonical
-      .st-retail-card:hover
-      img.st-retail-card__image {
-      transform: scale(1.47) !important;
-    }
-  }
-}
-
-/* =========================================================
-   LARGE DESKTOP
-   Slightly stronger because cards have more room.
-   ========================================================= */
-
-@media (min-width: 1500px) {
-  html body .st-product-grid-canonical .st-retail-card__image-link img,
-  html body .st-product-grid-canonical img.st-retail-card__image {
-    transform: scale(1.48) !important;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    html
-      body
-      .st-product-grid-canonical
-      .st-retail-card:hover
-      .st-retail-card__image-link
-      img,
-    html
-      body
-      .st-product-grid-canonical
-      .st-retail-card:hover
-      img.st-retail-card__image {
-      transform: scale(1.53) !important;
-    }
-  }
-}
-
-/* =========================================================
-   DO NOT CHANGE MOBILE / TABLET
-   ========================================================= */
-
-@media (max-width: 999px) {
-  html body .st-product-grid-canonical .st-retail-card__image-link img,
-  html body .st-product-grid-canonical img.st-retail-card__image {
-    transform: none;
-  }
-}
-
-/*
- * Shop-page badge refinement.
- *
- * Applies ONLY to the compact shop cards.
- *
- * New / Low Stock / Sale:
- * - smaller width
- * - smaller height
- * - smaller text
- * - tighter spacing
- * - same visual language
- * - same glow / animation logic
- */
-
-@media (min-width: 1000px) {
-  /* =======================================================
-     BADGES
-     ======================================================= */
-
-  html
-    body
-    .st-product-grid-canonical
-    :is(
-      .st-retail-card__badge,
-      .st-retail-card__badge--new,
-      .st-retail-card__badge--sale,
-      .st-retail-card__badge.nita-merch-badge--new,
-      .st-retail-card__badge.nita-merch-badge--low-stock
-    ) {
-    box-sizing: border-box !important;
-
-    width: auto !important;
-
-    min-width: 72px !important;
-
-    max-width: none !important;
-
-    height: 30px !important;
-
-    min-height: 30px !important;
-
-    max-height: 30px !important;
-
-    padding: 0 11px !important;
-
-    flex: 0 0 auto !important;
-
-    font-size: 11px !important;
-
-    font-weight: 600 !important;
-
-    line-height: 1 !important;
-
-    letter-spacing: -0.01em !important;
-
-    white-space: nowrap !important;
-  }
-
-  /* =======================================================
-     INNER TEXT
-     ======================================================= */
-
-  html
-    body
-    .st-product-grid-canonical
-    :is(
-      .st-retail-card__badge,
-      .st-retail-card__badge--new,
-      .st-retail-card__badge--sale
-    )
-    > b,
-  html
-    body
-    .st-product-grid-canonical
-    :is(
-      .st-retail-card__badge,
-      .st-retail-card__badge--new,
-      .st-retail-card__badge--sale
-    )
-    b {
-    font-size: 11px !important;
-
-    font-weight: 600 !important;
-
-    line-height: 1 !important;
-
-    letter-spacing: -0.01em !important;
-  }
-
-  /* =======================================================
-     BADGE GROUP SPACING
-     ======================================================= */
-
-  html body .st-product-grid-canonical .st-retail-card__badges {
-    gap: 6px !important;
-  }
-
-  /* =======================================================
-     GLOW / AURA
-     Scale it down with the smaller badge.
-     ======================================================= */
-
-  html
-    body
-    .st-product-grid-canonical
-    :is(
-      .st-retail-card__badge,
-      .st-retail-card__badge--new,
-      .st-retail-card__badge--sale,
-      .st-retail-card__badge.nita-merch-badge--new,
-      .st-retail-card__badge.nita-merch-badge--low-stock
-    )::before {
-    inset: -5px !important;
-
-    filter: blur(6px) !important;
-  }
-
-  /* =======================================================
-     REAL NEW / LOW STOCK PULSE NODE
-     Keep animation but make its halo more compact.
-     ======================================================= */
-
-  html body .st-product-grid-canonical .st-retail-card__new-pulse {
-    inset: -5px !important;
-
-    filter: blur(6px) !important;
-  }
-}
-
-/* =========================================================
-   VERY LARGE DESKTOP
-   Keep compact — don't let them grow again.
-   ========================================================= */
-
-@media (min-width: 1600px) {
-  html
-    body
-    .st-product-grid-canonical
-    :is(
-      .st-retail-card__badge,
-      .st-retail-card__badge--new,
-      .st-retail-card__badge--sale
-    ) {
-    min-width: 74px !important;
-
-    height: 31px !important;
-
-    min-height: 31px !important;
-
-    max-height: 31px !important;
-
-    padding: 0 12px !important;
-
-    font-size: 11px !important;
-  }
-}
-
-/* === ST EXACT SHOP CARD MIRROR END === */
 
 /* === ST V3 HEADER ONE TRUE UTILITY INTERACTION START === */
 
@@ -57404,3 +56728,868 @@ html
 }
 
 /* === ST OOS EXCLUSIVE + MOBILE STICKER ROW END === */
+
+/* === ST SHARED SHOP PRODUCT GRID CONTEXT START === */
+
+/*
+ * /shop and homepage now render one V2ProductGrid implementation.
+ *
+ * This class is only the common CSS scope. Product card dimensions,
+ * typography, media geometry, stickers and responsive behavior remain
+ * defined by the original Shop rules above.
+ */
+
+html body .st3-shop-card-context {
+  min-width: 0;
+}
+
+html body div.st3-shop-card-context {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+/* === ST SHARED SHOP PRODUCT GRID CONTEXT END === */
+
+/* === ST MOBILE HOMEPAGE ALWAYS VISIBLE START === */
+
+/*
+ * Mobile Safari must never depend on IntersectionObserver
+ * in order for real homepage content to become visible.
+ *
+ * Desktop/tablet reveal animations remain untouched.
+ */
+@media (max-width: 768px) {
+  html body .st3-home-live .st3-reveal {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+
+    transition: none !important;
+    animation: none !important;
+
+    will-change: auto !important;
+  }
+
+  html body .st3-home-live .st3-reveal--visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+}
+
+/* === ST MOBILE HOMEPAGE ALWAYS VISIBLE END === */
+
+/* === ST ONE CANONICAL PRODUCT CARD ARCHITECTURE START === */
+
+/*
+ * V2ProductGrid owns the exact card CSS context used by every
+ * storefront product grid.
+ *
+ * IMPORTANT:
+ * st3-shop-card-context MUST be an ANCESTOR of st3-shop-v4__grid.
+ * Existing Shop card selectors depend on that relationship.
+ *
+ * Shop and Homepage therefore receive the exact same:
+ * - card dimensions
+ * - image geometry
+ * - title truncation
+ * - stickers
+ * - wishlist positioning
+ * - footer / pricing
+ * - responsive behavior
+ */
+html body .st-product-card-canonical-context {
+  display: contents !important;
+}
+
+/*
+ * Homepage has no independent product-card presentation.
+ * The homepage section may control section spacing only.
+ */
+html body .st3-home-shop-products .st-product-card-canonical-context,
+html body .st3-home-shop-products .st-product-grid-canonical {
+  min-width: 0;
+}
+
+/* === ST ONE CANONICAL PRODUCT CARD ARCHITECTURE END === */
+
+/* === ST HOMEPAGE FOUR PRODUCT MOBILE SHELF START === */
+
+/*
+ * Homepage mobile owns only the horizontal shelf.
+ *
+ * V2ProductCard remains the same shared Shop card.
+ *
+ * Desktop is untouched.
+ * /shop is untouched.
+ */
+
+@media (max-width: 768px) {
+  /*
+   * Keep the normal section-level View All / View offers /
+   * Explore store link, exactly like desktop.
+   */
+  html body .st3-home-shop-products .st3-section-heading {
+    position: relative !important;
+  }
+
+  html body .st3-home-shop-products .st3-section-heading > .st3-section-link {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    align-items: center !important;
+
+    pointer-events: auto !important;
+  }
+
+  /*
+   * Horizontal four-product shelf.
+   */
+  html body .st3-home-shop-products .st3-home-product-shelf-context {
+    display: block !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: visible !important;
+  }
+
+  html body .st3-home-shop-products .st3-home-product-shelf {
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-flow: row nowrap !important;
+
+    gap: 10px !important;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+    padding: 0 0 10px !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 0;
+
+    overscroll-behavior-x: contain;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  html body .st3-home-shop-products .st3-home-product-shelf::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /*
+   * Two card widths are visible.
+   * There are exactly four products in the shelf.
+   */
+  html body .st3-home-shop-products .st3-home-product-shelf > .st-retail-card {
+    box-sizing: border-box !important;
+
+    flex: 0 0 calc((100% - 10px) / 2) !important;
+
+    width: calc((100% - 10px) / 2) !important;
+    min-width: calc((100% - 10px) / 2) !important;
+    max-width: calc((100% - 10px) / 2) !important;
+
+    margin: 0 !important;
+
+    align-self: flex-start !important;
+
+    overflow: hidden !important;
+
+    scroll-snap-align: start;
+  }
+
+  /*
+   * Restore the same compact card media geometry used by
+   * the working mobile Shop presentation.
+   */
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__visual {
+    box-sizing: border-box !important;
+
+    position: relative !important;
+
+    width: auto !important;
+
+    margin: 10px 10px 0 !important;
+
+    overflow: hidden !important;
+  }
+
+  /*
+   * The image link owns the media stage only.
+   */
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__image-link {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    width: 100% !important;
+
+    margin: 0 !important;
+  }
+
+  /*
+   * CARD OVERLAY
+   *
+   * One common top overlay owns:
+   * left  = sticker
+   * right = wishlist
+   *
+   * They cannot drift independently anymore.
+   */
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__top {
+    position: absolute !important;
+
+    top: 14px !important;
+    right: 14px !important;
+    bottom: auto !important;
+    left: 14px !important;
+
+    inset-inline: 14px !important;
+
+    z-index: 20 !important;
+
+    box-sizing: border-box !important;
+
+    width: auto !important;
+    height: 42px !important;
+    min-height: 42px !important;
+
+    display: flex !important;
+
+    flex-flow: row nowrap !important;
+
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+
+    gap: 6px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    pointer-events: none !important;
+
+    transform: none !important;
+  }
+
+  /*
+   * STICKER — TOP LEFT
+   */
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__top
+    > .st-card-sticker-row {
+    position: static !important;
+
+    inset: auto !important;
+
+    z-index: 1 !important;
+
+    display: flex !important;
+
+    flex: 0 1 auto !important;
+    flex-flow: row nowrap !important;
+
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 48px) !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    transform: none !important;
+
+    pointer-events: none !important;
+  }
+
+  /*
+   * Preserve the compact global mobile sticker.
+   * Do not enlarge it for Homepage.
+   */
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-card-sticker-row
+    > .st-card-sticker {
+    width: auto !important;
+
+    min-width: 54px !important;
+    max-width: 100% !important;
+
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+
+    padding: 0 8px !important;
+
+    flex: 0 1 auto !important;
+
+    font-size: 10px !important;
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-card-sticker-row
+    > .st-card-sticker
+    > b {
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+
+  /*
+   * WISHLIST — TOP RIGHT
+   */
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__top
+    > .st-retail-card__wishlist {
+    position: static !important;
+
+    inset: auto !important;
+
+    z-index: 2 !important;
+
+    flex: 0 0 36px !important;
+
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+
+    margin: 0 0 0 auto !important;
+    padding: 0 !important;
+
+    pointer-events: auto !important;
+
+    transform: none !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__wishlist
+    svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  /*
+   * Keep body/footer inside the physical card.
+   */
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    :is(.st-retail-card__content, .st-retail-card__body) {
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    :is(.st-retail-card__name, .st-retail-card__title) {
+    max-width: 100% !important;
+
+    display: -webkit-box !important;
+
+    overflow: hidden !important;
+
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+
+    line-clamp: 2 !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__footer {
+    position: static !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    transform: none !important;
+  }
+}
+
+@media (max-width: 390px) {
+  html body .st3-home-shop-products .st3-home-product-shelf {
+    gap: 8px !important;
+  }
+
+  html body .st3-home-shop-products .st3-home-product-shelf > .st-retail-card {
+    flex-basis: calc((100% - 8px) / 2) !important;
+
+    width: calc((100% - 8px) / 2) !important;
+    min-width: calc((100% - 8px) / 2) !important;
+    max-width: calc((100% - 8px) / 2) !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-retail-card__top {
+    right: 12px !important;
+    left: 12px !important;
+
+    inset-inline: 12px !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    .st-card-sticker-row
+    > .st-card-sticker {
+    min-width: 50px !important;
+
+    height: 23px !important;
+    min-height: 23px !important;
+    max-height: 23px !important;
+
+    padding: 0 7px !important;
+
+    font-size: 9.5px !important;
+  }
+}
+
+/* === ST HOMEPAGE FOUR PRODUCT MOBILE SHELF END === */
+
+/* === ST HOMEPAGE UNIVERSAL PRODUCT SHELF ACTION START === */
+
+/*
+ * PRODUCT CARDS ARE FROZEN.
+ *
+ * This block changes only:
+ * - shelf overflow on larger screens
+ * - the action underneath each shelf
+ *
+ * Mobile product-card geometry, sticker and wishlist positioning
+ * remain owned by the approved mobile shelf block above.
+ */
+
+.st3-home-shop-products .st3-section-heading > .st3-section-link {
+  display: none !important;
+}
+
+.st3-home-product-shelf__view-all {
+  display: none !important;
+}
+
+.st3-home-shop-products .st3-home-product-shelf-context {
+  min-width: 0;
+  overflow: visible;
+}
+
+.st3-home-shop-products .st3-home-product-shelf {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.st3-home-shop-products .st3-home-product-shelf::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  html body .st3-home-shop-products .st3-home-product-shelf {
+    display: grid !important;
+
+    grid-template-columns: none !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: calc((100% - 54px) / 4) !important;
+
+    column-gap: 18px !important;
+    row-gap: 0 !important;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+    padding: 0 0 10px !important;
+
+    align-items: start !important;
+
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+  }
+
+  html body .st3-home-shop-products .st3-home-product-shelf > .st-retail-card {
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+
+    scroll-snap-align: start;
+  }
+}
+
+html body .st3-home-shop-products .st3-home-product-shelf__see-all {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  width: fit-content !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 8px !important;
+
+  margin: 26px auto 0 !important;
+  padding: 11px 18px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 255, 255, 0.9) !important;
+
+  color: #9b6900 !important;
+
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.015em !important;
+
+  text-decoration: none !important;
+
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(245, 179, 53, 0.02) !important;
+
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+html
+  body
+  .st3-home-shop-products
+  .st3-home-product-shelf__see-all
+  > span:last-child {
+  display: inline-block !important;
+
+  font-size: 21px !important;
+  line-height: 0.8 !important;
+
+  transform: translateY(-1px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-home-shop-products .st3-home-product-shelf__see-all:hover {
+    transform: translateY(-1px);
+
+    border-color: rgba(245, 179, 53, 0.34) !important;
+
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.06),
+      0 0 22px rgba(245, 179, 53, 0.08) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  html body .st3-home-shop-products .st3-home-product-shelf__see-all {
+    margin-top: 22px !important;
+
+    padding: 10px 16px !important;
+
+    font-size: 14px !important;
+  }
+}
+
+/* === ST HOMEPAGE UNIVERSAL PRODUCT SHELF ACTION END === */
+
+/* === ST HOMEPAGE PRODUCT SHELF SCROLL HINT START === */
+
+/*
+ * Minimal continuation cue for Homepage product shelves.
+ *
+ * IMPORTANT:
+ * This does NOT modify product cards, stickers, wishlist controls,
+ * product images, card dimensions or shelf card geometry.
+ */
+
+html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 5px !important;
+
+  width: fit-content !important;
+
+  margin: 14px auto 0 !important;
+  padding: 0 !important;
+
+  color: rgba(29, 29, 31, 0.5) !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.01em !important;
+
+  white-space: nowrap !important;
+
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-mobile {
+  display: none !important;
+}
+
+html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-desktop {
+  display: inline !important;
+}
+
+html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
+  display: inline-block !important;
+
+  color: #b77900 !important;
+
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  transform: translateX(0);
+
+  animation: stHomeShelfExploreArrow 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes stHomeShelfExploreArrow {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.72;
+  }
+
+  50% {
+    transform: translateX(4px);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint {
+    margin-top: 12px !important;
+
+    font-size: 11.5px !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf__scroll-hint-mobile {
+    display: inline !important;
+  }
+
+  html
+    body
+    .st3-home-shop-products
+    .st3-home-product-shelf__scroll-hint-desktop {
+    display: none !important;
+  }
+
+  html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
+    font-size: 13px !important;
+  }
+
+  /*
+   * Keep the existing See All action close to the hint,
+   * without modifying the product shelf itself.
+   */
+  html body .st3-home-shop-products .st3-home-product-shelf__see-all {
+    margin-top: 14px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* === ST HOMEPAGE PRODUCT SHELF SCROLL HINT END === */
+
+/* === ST PREMIUM SHELF ARROW MOTION START === */
+
+/*
+ * Refines ONLY the arrow beside:
+ * Swipe to explore →
+ * Scroll to explore →
+ *
+ * Calm directional movement:
+ * rest → glide right → soften → return → rest
+ */
+
+html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
+  display: inline-block !important;
+
+  transform: translate3d(0, 0, 0);
+
+  transform-origin: center center !important;
+
+  will-change: transform, opacity;
+
+  animation: stHomeShelfPremiumArrow 2.35s cubic-bezier(0.22, 0.61, 0.36, 1)
+    infinite !important;
+}
+
+@keyframes stHomeShelfPremiumArrow {
+  0%,
+  18% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.72;
+  }
+
+  42% {
+    transform: translate3d(5px, 0, 0);
+    opacity: 1;
+  }
+
+  55% {
+    transform: translate3d(5px, 0, 0);
+    opacity: 0.9;
+  }
+
+  72% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.72;
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.72;
+  }
+}
+
+@media (max-width: 768px) {
+  html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
+    animation-duration: 2.15s !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
+    animation: none !important;
+
+    transform: none !important;
+    opacity: 0.82 !important;
+
+    will-change: auto !important;
+  }
+}
+
+/* === ST PREMIUM SHELF ARROW MOTION END === */
+
+/* === ST HIDE DESKTOP GHOST MENU BUTTON START === */
+
+/*
+ * Desktop/laptop already has the full navigation.
+ *
+ * The Menu control is required only for the compact
+ * mobile/tablet header.
+ *
+ * This removes the empty hover square that appeared
+ * immediately after Track Order on desktop.
+ */
+
+@media (min-width: 901px) {
+  html body .st3-header__actions > .st3-header__menu-button {
+    display: none !important;
+
+    visibility: hidden !important;
+
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    pointer-events: none !important;
+  }
+
+  html body .st3-header__actions > .st3-header__menu-button::before,
+  html body .st3-header__actions > .st3-header__menu-button::after {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+/* === ST HIDE DESKTOP GHOST MENU BUTTON END === */

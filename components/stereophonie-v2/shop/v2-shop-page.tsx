@@ -7,7 +7,7 @@ import { ArrowRight, ChevronRight, PackageSearch } from "lucide-react";
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 
 import V2CatalogControls from "@/components/stereophonie-v2/shop/v2-catalog-controls";
-import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
+import V2ProductGrid from "@/components/stereophonie-v2/shop/v2-product-grid";
 
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
@@ -129,15 +129,7 @@ export default function V2ShopPage({
             <section className="st3-shop-v4__results" aria-label="Products">
               {products.length > 0 ? (
                 <>
-                  <div className="st3-shop-v4__grid st-product-grid-canonical">
-                    {visibleProducts.map((product, index) => (
-                      <V2ProductCard
-                        key={product.id}
-                        product={product}
-                        index={index}
-                      />
-                    ))}
-                  </div>
+                  <V2ProductGrid products={visibleProducts} />
 
                   {products.length > SHOP_PRODUCTS_PER_BATCH ? (
                     <div className="st3-shop-v4__load-more">

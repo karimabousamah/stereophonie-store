@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import V3Reveal from "@/components/stereophonie-v3/shared/v3-reveal";
+import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 import V3EntertainmentCategory from "@/components/stereophonie-v3/home/v3-entertainment-category";
 import {
   isMoviesSeriesCategory,
@@ -21,8 +22,6 @@ export type V3HomeCategory = {
   homepage_wallpaper_url?: string | null;
   homepage_theme?: "light" | "dark" | null;
 };
-
-import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 
 function primaryProductImage(product: V3Product | undefined) {
   if (!product) {
@@ -164,6 +163,8 @@ function ProductSection({
     return null;
   }
 
+  const shelfProducts = products;
+
   return (
     <V3Reveal>
       <section
@@ -179,20 +180,30 @@ function ProductSection({
 
             <p className="st3-section-description">{description}</p>
           </div>
-
-          <Link href={href} className="st3-section-link">
-            {linkLabel}
-            <span aria-hidden="true">›</span>
-          </Link>
         </div>
 
-        <div className="st3-home-shop-card-scope">
-          <div className="st3-shop-v4__grid st-product-grid-canonical">
-            {products.map((product, index) => (
+        <div className="st3-shop-card-context st3-home-product-shelf-context">
+          <div className="st3-shop-v4__grid st-product-grid-canonical st3-home-product-shelf">
+            {shelfProducts.map((product, index) => (
               <V2ProductCard key={product.id} product={product} index={index} />
             ))}
           </div>
         </div>
+
+        <div className="st3-home-product-shelf__scroll-hint" aria-hidden="true">
+          <span className="st3-home-product-shelf__scroll-hint-mobile">
+            Swipe to explore
+          </span>
+          <span className="st3-home-product-shelf__scroll-hint-desktop">
+            Scroll to explore
+          </span>
+          <span className="st3-home-product-shelf__scroll-hint-arrow">→</span>
+        </div>
+
+        <Link href={href} className="st3-home-product-shelf__see-all">
+          <span>{linkLabel}</span>
+          <span aria-hidden="true">›</span>
+        </Link>
       </section>
     </V3Reveal>
   );

@@ -246,19 +246,18 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     homepage_theme: category.homepage_theme === "dark" ? "dark" : "light",
   }));
 
-  const latestProducts = products.filter(isCurrentNewDrop).slice(0, 4);
+  const latestProducts = products.filter(isCurrentNewDrop);
 
-  const latestFallback =
-    latestProducts.length > 0 ? latestProducts : products.slice(0, 4);
+  const latestFallback = latestProducts.length > 0 ? latestProducts : products;
 
-  const offerProducts = products.filter(isProductOnOffer).slice(0, 4);
+  const offerProducts = products.filter(isProductOnOffer);
 
-  const featuredProducts = products
-    .filter((product) => product.is_featured || product.is_trending)
-    .slice(0, 4);
+  const featuredProducts = products.filter(
+    (product) => product.is_featured || product.is_trending,
+  );
 
   const featuredFallback =
-    featuredProducts.length > 0 ? featuredProducts : products.slice(4, 8);
+    featuredProducts.length > 0 ? featuredProducts : products;
 
   return (
     <>
