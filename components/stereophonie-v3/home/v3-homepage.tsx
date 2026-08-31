@@ -186,10 +186,12 @@ function ProductSection({
           </Link>
         </div>
 
-        <div className="st3-shop-v4__grid st-product-grid-canonical">
-          {products.map((product, index) => (
-            <V2ProductCard key={product.id} product={product} index={index} />
-          ))}
+        <div className="st3-home-shop-card-scope">
+          <div className="st3-shop-v4__grid st-product-grid-canonical">
+            {products.map((product, index) => (
+              <V2ProductCard key={product.id} product={product} index={index} />
+            ))}
+          </div>
         </div>
       </section>
     </V3Reveal>

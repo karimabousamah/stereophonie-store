@@ -49957,7 +49957,8 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1100px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
     display: grid !important;
 
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -49978,7 +49979,8 @@ html body .st3-header__socials > a:focus-visible {
    * Nothing inside the card is changed.
    */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid > .st-retail-card {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid > .st-retail-card {
     width: 100% !important;
 
     min-width: 0 !important;
@@ -49995,7 +49997,8 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1000px) and (max-width: 1099px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
     display: grid !important;
 
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -50003,7 +50006,8 @@ html body .st3-header__socials > a:focus-visible {
     gap: 14px !important;
   }
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid > .st-retail-card {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid > .st-retail-card {
     width: 100% !important;
 
     min-width: 0 !important;
@@ -50015,7 +50019,8 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 640px) and (max-width: 999px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
@@ -50025,7 +50030,8 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (max-width: 639px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid {
     grid-template-columns: 1fr !important;
   }
 }
@@ -50063,7 +50069,8 @@ html body .st3-header__socials > a:focus-visible {
      CARD
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid > .st-retail-card {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid > .st-retail-card {
     min-height: 0 !important;
 
     height: auto !important;
@@ -50085,7 +50092,12 @@ html body .st3-header__socials > a:focus-visible {
      compact 225px product stage
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__visual {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__visual {
     position: relative !important;
 
     height: 225px !important;
@@ -50097,7 +50109,12 @@ html body .st3-header__socials > a:focus-visible {
     overflow: visible !important;
   }
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link {
     position: relative !important;
 
     display: flex !important;
@@ -50121,8 +50138,19 @@ html body .st3-header__socials > a:focus-visible {
      PRODUCT PHOTO — MAKE IT MUCH MORE VISIBLE
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid img.st-retail-card__image {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link
+    img,
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    img.st-retail-card__image {
     width: 82% !important;
 
     max-width: 82% !important;
@@ -50164,19 +50192,30 @@ html body .st3-header__socials > a:focus-visible {
      BODY
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__body {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html body .st3-home-shop-card-scope .st3-shop-v4__grid .st-retail-card__body {
     padding: 12px 13px 13px !important;
   }
 
   /* category */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__category {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__category {
     margin-bottom: 6px !important;
   }
 
   /* title */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__title {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__title {
     margin-top: 0 !important;
 
     margin-bottom: 0 !important;
@@ -50188,7 +50227,12 @@ html body .st3-header__socials > a:focus-visible {
      FOOTER
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__footer {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__footer {
     margin-top: 10px !important;
 
     padding-top: 0 !important;
@@ -50202,7 +50246,12 @@ html body .st3-header__socials > a:focus-visible {
      Keep them physically above the image and unchanged.
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__badges {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__badges {
     z-index: 5 !important;
   }
 
@@ -50210,7 +50259,12 @@ html body .st3-header__socials > a:focus-visible {
      WISHLIST
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__wishlist {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__wishlist {
     z-index: 6 !important;
   }
 
@@ -50219,7 +50273,12 @@ html body .st3-header__socials > a:focus-visible {
      Keep it inside the shorter image stage.
      ------------------------------------------------------- */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__quick {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__quick {
     bottom: 12px !important;
   }
 }
@@ -50230,8 +50289,18 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1600px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__visual,
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__visual,
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link {
     height: 235px !important;
 
     min-height: 235px !important;
@@ -50246,8 +50315,18 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (max-width: 999px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__visual,
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__visual,
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link {
     max-height: none;
   }
 }
@@ -50271,7 +50350,12 @@ html body .st3-header__socials > a:focus-visible {
      IMAGE CONTAINER
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link {
     display: flex !important;
 
     align-items: center !important;
@@ -50285,8 +50369,19 @@ html body .st3-header__socials > a:focus-visible {
      PRODUCT IMAGE — STRONGER ZOOM
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid img.st-retail-card__image {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link
+    img,
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    img.st-retail-card__image {
     width: 100% !important;
 
     max-width: 100% !important;
@@ -50336,8 +50431,19 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (min-width: 1500px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid img.st-retail-card__image {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link
+    img,
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    img.st-retail-card__image {
     transform: scale(1.48) !important;
   }
 
@@ -50365,8 +50471,19 @@ html body .st3-header__socials > a:focus-visible {
    ========================================================= */
 
 @media (max-width: 999px) {
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__image-link img,
-  html body main.st3-shop-v4 .st3-shop-v4__grid img.st-retail-card__image {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__image-link
+    img,
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    img.st-retail-card__image {
     transform: none;
   }
 }
@@ -50471,7 +50588,12 @@ html body .st3-header__socials > a:focus-visible {
      BADGE GROUP SPACING
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__badges {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__badges {
     gap: 6px !important;
   }
 
@@ -50501,7 +50623,12 @@ html body .st3-header__socials > a:focus-visible {
      Keep animation but make its halo more compact.
      ======================================================= */
 
-  html body main.st3-shop-v4 .st3-shop-v4__grid .st-retail-card__new-pulse {
+  html body main.st3-shop-v4 .st3-shop-v4__grid,
+  html
+    body
+    .st3-home-shop-card-scope
+    .st3-shop-v4__grid
+    .st-retail-card__new-pulse {
     inset: -5px !important;
 
     filter: blur(6px) !important;
