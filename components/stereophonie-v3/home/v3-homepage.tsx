@@ -186,7 +186,7 @@ function ProductSection({
           </Link>
         </div>
 
-        <div className="st-product-grid-canonical st3-product-grid st3-shop-v4__grid">
+        <div className="st-product-grid-canonical st3-shop-v4__grid">
           {products.map((product, index) => (
             <V2ProductCard key={product.id} product={product} index={index} />
           ))}
