@@ -974,7 +974,7 @@ textarea {
   height: 100%;
   object-fit: contain;
   transform: scale(0.96);
-  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 950ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .st3-product-card:hover .st3-product-card__image {
@@ -1401,7 +1401,7 @@ html {
 
 .st3-category-card {
   transition:
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 420ms ease;
 }
 
@@ -2844,7 +2844,7 @@ html {
   text-decoration: none;
 
   transition:
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 420ms ease;
 }
 
@@ -3488,7 +3488,7 @@ html {
   color: #1d1d1f;
 
   transition:
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 420ms ease;
 }
 
@@ -6343,7 +6343,7 @@ html {
   transform: translateZ(0);
 
   transition:
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1),
     background 250ms ease;
 }
@@ -9209,7 +9209,7 @@ body:has(.st3-header) {
 
   transform: translate3d(0, 0, 0) scale(0.94) !important;
 
-  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transition: transform 950ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 @media (hover: hover) {
@@ -27496,7 +27496,7 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
 
   transition:
     background-color 260ms ease,
-    opacity 260ms ease,
+    opacity 850ms ease,
     transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
 }
 
@@ -28209,7 +28209,7 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
   transition:
     clip-path var(--st-header-close-duration) var(--st-header-close-ease),
     transform var(--st-header-close-duration) var(--st-header-close-ease),
-    opacity 260ms ease,
+    opacity 850ms ease,
     visibility 0s linear var(--st-header-close-duration) !important;
 }
 
@@ -28232,7 +28232,7 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
   transition:
     clip-path var(--st-header-open-duration) var(--st-header-reveal-ease),
     transform var(--st-header-open-duration) var(--st-header-reveal-ease),
-    opacity 260ms ease,
+    opacity 850ms ease,
     visibility 0s linear 0s !important;
 }
 
@@ -28349,7 +28349,7 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
   transform: translate3d(0, -3px, 0) !important;
 
   transition:
-    opacity 260ms ease,
+    opacity 850ms ease,
     transform 340ms var(--st-header-close-ease) !important;
 }
 
@@ -42649,7 +42649,7 @@ section[data-st-more-for-less="true"] .st-retail-card__visual {
 
   transition:
     opacity 560ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 560ms ease !important;
 }
 
@@ -42694,7 +42694,7 @@ section[data-st-more-for-less="true"] .st-retail-card__visual {
   transition:
     width 340ms cubic-bezier(0.22, 1, 0.36, 1),
     background 260ms ease,
-    opacity 260ms ease,
+    opacity 850ms ease,
     transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
@@ -42786,7 +42786,7 @@ section[data-st-more-for-less="true"] .st-retail-card__visual {
 
   transition:
     opacity 420ms ease,
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 .st3-reveal--movies-series
@@ -42944,7 +42944,7 @@ section[data-st-more-for-less="true"] .st-retail-card__visual {
 
   transition:
     opacity 420ms ease,
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 .st3-reveal--movies-series
@@ -43490,7 +43490,7 @@ section[data-st-more-for-less="true"] .st-retail-card__visual {
 
   transition:
     opacity 420ms ease,
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 /*
@@ -44178,7 +44178,7 @@ section[data-st-more-for-less="true"] .st-retail-card__visual {
 
   transition:
     opacity 420ms ease,
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transform 950ms cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 /* Mobile keeps exactly the same text-width principle. */
@@ -54320,7 +54320,7 @@ html body .st-retail-card .st-retail-card__out-of-stock-overlay {
 
     transition:
       opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform 950ms cubic-bezier(0.22, 1, 0.36, 1);
 
     -webkit-overflow-scrolling: touch;
   }
@@ -54425,7 +54425,7 @@ html body .st-retail-card .st-retail-card__out-of-stock-overlay {
     transition:
       color 180ms ease,
       opacity 340ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform 950ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   html
@@ -65562,17 +65562,10 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 /* === ST MOBILE SHOP COLLAPSIBLE FILTERS START === */
 
 /*
- * Mobile Shop filter presentation only.
+ * Mobile Shop filter presentation.
  *
- * Desktop:
- * - existing filter bar remains permanently visible
- * - mobile toggle remains hidden
- *
- * Mobile:
- * - search remains permanently visible
- * - filter controls are collapsed by default
- * - one compact Filters button opens/closes them
- * - opening and closing use a smooth height/fade/slide transition
+ * The filter bar now animates using its real measured pixel height.
+ * No fixed 720px max-height approximation is used.
  */
 
 .st-filter-v4__mobile-toggle {
@@ -65608,7 +65601,6 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 
     font: inherit;
     text-align: left;
-
     cursor: pointer;
 
     box-shadow:
@@ -65639,6 +65631,7 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 
   html body .st-filter-v4__mobile-toggle-copy {
     min-width: 0;
+
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -65653,6 +65646,7 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 
   html body .st-filter-v4__mobile-toggle-copy > strong {
     margin: 0;
+
     color: inherit;
 
     font-family:
@@ -65672,7 +65666,7 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
     color: #6e6e73;
 
     transition:
-      transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 950ms cubic-bezier(0.22, 1, 0.36, 1),
       color 220ms ease;
   }
 
@@ -65682,15 +65676,13 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
   }
 
   /*
-   * Closed state.
+   * CLOSED
    *
-   * max-height is animated rather than display:none so the customer
-   * sees the entire filter section physically collapse upward.
+   * React supplies height: 0px inline.
    */
   html body .st-filter-v4__bar {
     box-sizing: border-box;
 
-    max-height: 0 !important;
     margin-top: 0 !important;
 
     overflow: hidden !important;
@@ -65699,24 +65691,24 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
     visibility: hidden;
     pointer-events: none;
 
-    transform: translateY(-8px);
+    transform: translate3d(0, -10px, 0);
+
+    will-change: height, opacity, transform;
 
     transition:
-      max-height 480ms cubic-bezier(0.22, 1, 0.36, 1),
-      margin-top 420ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 260ms ease,
-      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 480ms;
+      height 850ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin-top 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 580ms ease,
+      transform 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 850ms !important;
   }
 
   /*
-   * Open state.
+   * OPEN
    *
-   * This height comfortably contains the existing Category / Brand /
-   * Price / In stock / Sort controls without changing their layout.
+   * React supplies the exact scrollHeight inline.
    */
   html body .st-filter-v4__bar.is-mobile-open {
-    max-height: 720px !important;
     margin-top: 14px !important;
 
     overflow: visible !important;
@@ -65725,46 +65717,229 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
     visibility: visible;
     pointer-events: auto;
 
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
 
     transition:
-      max-height 520ms cubic-bezier(0.22, 1, 0.36, 1),
-      margin-top 420ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 280ms ease 40ms,
-      transform 440ms cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 0s;
+      height 900ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin-top 760ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 620ms ease 55ms,
+      transform 760ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0s !important;
   }
 }
 
 /*
- * Desktop authority:
- * explicitly neutralize the mobile collapsing behavior.
+ * Desktop remains permanently expanded.
+ * !important intentionally overrides the mobile inline height value.
  */
 @media (min-width: 769px) {
   html body .st-filter-v4__mobile-toggle {
     display: none !important;
   }
 
-  html body .st-filter-v4__bar {
-    max-height: none !important;
+  html body .st-filter-v4__bar,
+  html body .st-filter-v4__bar.is-mobile-open {
+    height: auto !important;
+    margin-top: 16px !important;
+
     overflow: visible !important;
+
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
+
     transform: none !important;
+
+    transition: none !important;
   }
 }
 
-/*
- * Respect users who request reduced motion while preserving
- * the exact same open/close functionality.
- */
 @media (prefers-reduced-motion: reduce) {
   html body .st-filter-v4__mobile-toggle,
-  html body .st-filter-v4__mobile-toggle > svg,
-  html body .st-filter-v4__bar {
+  html body .st-filter-v4__mobile-toggle > svg {
     transition-duration: 0.01ms !important;
   }
 }
 
 /* === ST MOBILE SHOP COLLAPSIBLE FILTERS END === */
+
+/* === ST SHOP SEARCH CLEAN INPUT FOCUS START === */
+
+/*
+ * The rounded search shell owns the visible focus treatment.
+ *
+ * Prevent the actual text input from drawing a second rectangular
+ * border / outline / shadow inside that shell.
+ */
+html body .st-retail-shop .st-filter-v4__search input,
+html body .st-retail-shop .st-filter-v4__search input:hover,
+html body .st-retail-shop .st-filter-v4__search input:focus,
+html body .st-retail-shop .st-filter-v4__search input:focus-visible,
+html body .st-filter-v4__search input,
+html body .st-filter-v4__search input:hover,
+html body .st-filter-v4__search input:focus,
+html body .st-filter-v4__search input:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+
+  background: transparent !important;
+
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Keep the native text caret visible. */
+html body .st-filter-v4__search input {
+  caret-color: #1d1d1f;
+}
+
+/* === ST SHOP SEARCH CLEAN INPUT FOCUS END === */
+
+/* === ST MOBILE SHOP SEARCH LAYOUT + SPINNER START === */
+
+/*
+ * Search loading indicator.
+ *
+ * The loader has its own explicit rotation so it never appears as
+ * a frozen partial circle while product suggestions are loading.
+ */
+@keyframes stShopSearchSpinner {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+html body .st-filter-v4__search-loader,
+html body .st-filter-v4__suggestion-spinner {
+  width: 20px;
+  height: 20px;
+
+  min-width: 20px;
+  min-height: 20px;
+
+  flex: 0 0 20px;
+
+  transform-origin: 50% 50%;
+
+  animation: stShopSearchSpinner 780ms linear infinite !important;
+}
+
+/*
+ * Mobile search must always remain a single horizontal row:
+ *
+ * search icon | input | loader/clear | Search
+ *
+ * Previously the mobile rule declared only three grid columns,
+ * so the fourth element wrapped the Search button onto a new row
+ * whenever the loader appeared.
+ */
+@media (max-width: 620px) {
+  html body .st-filter-v4__search {
+    grid-template-columns: 19px minmax(0, 1fr) 20px 96px !important;
+
+    grid-auto-flow: column;
+
+    column-gap: 10px !important;
+
+    align-items: center;
+
+    min-height: 62px;
+
+    padding: 7px 8px 7px 15px !important;
+  }
+
+  html body .st-filter-v4__search > svg:first-child {
+    width: 19px;
+    height: 19px;
+
+    min-width: 19px;
+  }
+
+  html body .st-filter-v4__search input {
+    width: 100% !important;
+    min-width: 0 !important;
+
+    overflow: hidden;
+
+    text-overflow: clip;
+    white-space: nowrap;
+  }
+
+  html body .st-filter-v4__search-loader {
+    grid-column: 3;
+
+    justify-self: center;
+  }
+
+  html body .st-filter-v4__clear-search {
+    grid-column: 3;
+
+    width: 20px;
+    height: 20px;
+
+    min-width: 20px;
+
+    display: grid;
+
+    place-items: center;
+
+    padding: 0;
+  }
+
+  html body .st-filter-v4__search-button {
+    grid-column: 4;
+
+    box-sizing: border-box;
+
+    width: 96px !important;
+    min-width: 96px !important;
+    max-width: 96px !important;
+
+    min-height: 48px;
+
+    padding: 0 12px !important;
+
+    white-space: nowrap;
+
+    justify-self: end;
+  }
+}
+
+/*
+ * On very narrow phones give a little more room back to the input.
+ */
+@media (max-width: 380px) {
+  html body .st-filter-v4__search {
+    grid-template-columns: 18px minmax(0, 1fr) 19px 88px !important;
+
+    column-gap: 8px !important;
+
+    padding-left: 13px !important;
+  }
+
+  html body .st-filter-v4__search-loader,
+  html body .st-filter-v4__clear-search {
+    width: 19px;
+    height: 19px;
+    min-width: 19px;
+  }
+
+  html body .st-filter-v4__search-button {
+    width: 88px !important;
+    min-width: 88px !important;
+    max-width: 88px !important;
+
+    padding-inline: 9px !important;
+  }
+}
+
+/* === ST MOBILE SHOP SEARCH LAYOUT + SPINNER END === */

@@ -77,6 +77,7 @@ export default function V2CatalogControls({
   const searchShellRef = useRef<HTMLDivElement>(null);
   const categoryPickerRef = useRef<HTMLDivElement>(null);
   const brandPickerRef = useRef<HTMLDivElement>(null);
+  const mobileFilterBarRef = useRef<HTMLDivElement>(null);
 
   const [, startTransition] = useTransition();
 
@@ -91,12 +92,53 @@ export default function V2CatalogControls({
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [brandOpen, setBrandOpen] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileFilterHeight, setMobileFilterHeight] = useState(0);
   const [categoryQuery, setCategoryQuery] = useState("");
   const [brandQuery, setBrandQuery] = useState("");
 
   const [priceOpen, setPriceOpen] = useState(false);
   const [priceMounted, setPriceMounted] = useState(false);
   const [priceVisible, setPriceVisible] = useState(false);
+
+  /*
+   * Measure the real mobile filter-bar height.
+   *
+   * We animate between exactly 0px and the bar's actual scrollHeight.
+   * This avoids the artificial delay caused by animating toward a large
+   * fixed max-height that is much taller than the real controls.
+   */
+  useEffect(() => {
+    const filterBar = mobileFilterBarRef.current;
+
+    if (!filterBar) {
+      return;
+    }
+
+    function measureMobileFilterBar() {
+      const bar = mobileFilterBarRef.current;
+
+      if (!bar) {
+        return;
+      }
+
+      setMobileFilterHeight(bar.scrollHeight);
+    }
+
+    measureMobileFilterBar();
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(measureMobileFilterBar)
+        : null;
+
+    resizeObserver?.observe(filterBar);
+    window.addEventListener("resize", measureMobileFilterBar);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", measureMobileFilterBar);
+    };
+  }, []);
 
   /*
    * Keep the Price panel mounted briefly while it closes,
@@ -592,6 +634,10 @@ export default function V2CatalogControls({
           setMobileFiltersOpen((current) => {
             const next = !current;
 
+            if (next && mobileFilterBarRef.current) {
+              setMobileFilterHeight(mobileFilterBarRef.current.scrollHeight);
+            }
+
             if (!next) {
               setCategoryOpen(false);
               setBrandOpen(false);
@@ -616,10 +662,14 @@ export default function V2CatalogControls({
       </button>
 
       <div
+        ref={mobileFilterBarRef}
         id="shop-mobile-filter-panel"
         className={`st-filter-v4__bar ${
           mobileFiltersOpen ? "is-mobile-open" : ""
         }`}
+        style={{
+          height: mobileFiltersOpen ? `${mobileFilterHeight}px` : "0px",
+        }}
       >
         <div className="st-filter-v4__filters">
           <div
