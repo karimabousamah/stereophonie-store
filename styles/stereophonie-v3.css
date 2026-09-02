@@ -65558,3 +65558,213 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 }
 
 /* === ST PRODUCT RELATED REAL FIX V3 END === */
+
+/* === ST MOBILE SHOP COLLAPSIBLE FILTERS START === */
+
+/*
+ * Mobile Shop filter presentation only.
+ *
+ * Desktop:
+ * - existing filter bar remains permanently visible
+ * - mobile toggle remains hidden
+ *
+ * Mobile:
+ * - search remains permanently visible
+ * - filter controls are collapsed by default
+ * - one compact Filters button opens/closes them
+ * - opening and closing use a smooth height/fade/slide transition
+ */
+
+.st-filter-v4__mobile-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  html body .st-filter-v4 {
+    overflow: visible !important;
+  }
+
+  html body .st-filter-v4__mobile-label {
+    display: none !important;
+  }
+
+  html body .st-filter-v4__mobile-toggle {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 56px;
+    margin: 14px 0 0;
+    padding: 0 18px;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+
+    border: 1px solid rgba(29, 29, 31, 0.12);
+    border-radius: 18px;
+
+    background: #ffffff;
+    color: #1d1d1f;
+
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.025),
+      0 5px 18px rgba(0, 0, 0, 0.025);
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+      background-color 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease,
+      transform 180ms ease;
+  }
+
+  html body .st-filter-v4__mobile-toggle:active {
+    transform: scale(0.992);
+  }
+
+  html body .st-filter-v4__mobile-toggle.is-open {
+    border-color: rgba(253, 183, 62, 0.46);
+    background: #fffaf0;
+
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.025),
+      0 7px 22px rgba(253, 183, 62, 0.08);
+  }
+
+  html body .st-filter-v4__mobile-toggle-copy {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  html body .st-filter-v4__mobile-toggle-copy > svg {
+    width: 19px;
+    height: 19px;
+    flex: 0 0 auto;
+    stroke-width: 1.9;
+  }
+
+  html body .st-filter-v4__mobile-toggle-copy > strong {
+    margin: 0;
+    color: inherit;
+
+    font-family:
+      -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+      sans-serif;
+
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+  }
+
+  html body .st-filter-v4__mobile-toggle > svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+
+    color: #6e6e73;
+
+    transition:
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 220ms ease;
+  }
+
+  html body .st-filter-v4__mobile-toggle > svg.is-open {
+    color: #1d1d1f;
+    transform: rotate(180deg);
+  }
+
+  /*
+   * Closed state.
+   *
+   * max-height is animated rather than display:none so the customer
+   * sees the entire filter section physically collapse upward.
+   */
+  html body .st-filter-v4__bar {
+    box-sizing: border-box;
+
+    max-height: 0 !important;
+    margin-top: 0 !important;
+
+    overflow: hidden !important;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: translateY(-8px);
+
+    transition:
+      max-height 480ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin-top 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 260ms ease,
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 480ms;
+  }
+
+  /*
+   * Open state.
+   *
+   * This height comfortably contains the existing Category / Brand /
+   * Price / In stock / Sort controls without changing their layout.
+   */
+  html body .st-filter-v4__bar.is-mobile-open {
+    max-height: 720px !important;
+    margin-top: 14px !important;
+
+    overflow: visible !important;
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transform: translateY(0);
+
+    transition:
+      max-height 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin-top 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 280ms ease 40ms,
+      transform 440ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0s;
+  }
+}
+
+/*
+ * Desktop authority:
+ * explicitly neutralize the mobile collapsing behavior.
+ */
+@media (min-width: 769px) {
+  html body .st-filter-v4__mobile-toggle {
+    display: none !important;
+  }
+
+  html body .st-filter-v4__bar {
+    max-height: none !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
+}
+
+/*
+ * Respect users who request reduced motion while preserving
+ * the exact same open/close functionality.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html body .st-filter-v4__mobile-toggle,
+  html body .st-filter-v4__mobile-toggle > svg,
+  html body .st-filter-v4__bar {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === ST MOBILE SHOP COLLAPSIBLE FILTERS END === */

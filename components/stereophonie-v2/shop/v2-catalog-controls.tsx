@@ -90,6 +90,7 @@ export default function V2CatalogControls({
 
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [brandOpen, setBrandOpen] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [categoryQuery, setCategoryQuery] = useState("");
   const [brandQuery, setBrandQuery] = useState("");
 
@@ -580,7 +581,46 @@ export default function V2CatalogControls({
         ) : null}
       </div>
 
-      <div className="st-filter-v4__bar">
+      <button
+        type="button"
+        className={`st-filter-v4__mobile-toggle ${
+          mobileFiltersOpen ? "is-open" : ""
+        }`}
+        aria-expanded={mobileFiltersOpen}
+        aria-controls="shop-mobile-filter-panel"
+        onClick={() => {
+          setMobileFiltersOpen((current) => {
+            const next = !current;
+
+            if (!next) {
+              setCategoryOpen(false);
+              setBrandOpen(false);
+              setCategoryQuery("");
+              setBrandQuery("");
+              setPriceOpen(false);
+            }
+
+            return next;
+          });
+        }}
+      >
+        <span className="st-filter-v4__mobile-toggle-copy">
+          <Filter aria-hidden="true" />
+          <strong>{mobileFiltersOpen ? "Close filters" : "Filters"}</strong>
+        </span>
+
+        <ChevronDown
+          aria-hidden="true"
+          className={mobileFiltersOpen ? "is-open" : ""}
+        />
+      </button>
+
+      <div
+        id="shop-mobile-filter-panel"
+        className={`st-filter-v4__bar ${
+          mobileFiltersOpen ? "is-mobile-open" : ""
+        }`}
+      >
         <div className="st-filter-v4__filters">
           <div
             ref={categoryPickerRef}
@@ -994,11 +1034,6 @@ export default function V2CatalogControls({
 
           <ChevronDown />
         </label>
-      </div>
-
-      <div className="st-filter-v4__mobile-label">
-        <Filter />
-        Shop filters
       </div>
     </div>
   );

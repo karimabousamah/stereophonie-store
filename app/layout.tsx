@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import FirstOrderWelcomePopup from "@/components/storefront/first-order-welcome-popup";
 import { CartProvider } from "@/components/cart/cart-provider";
@@ -14,6 +14,13 @@ import "./globals.css";
 import "../styles/stereophonie-v3.css";
 import "../styles/stereophonie-retail-utility.css";
 import "../styles/stereophonie-v3-admin.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicStoreSettings();
