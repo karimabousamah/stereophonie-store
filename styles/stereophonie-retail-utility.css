@@ -9409,3 +9409,33 @@ html
 }
 
 /* ST WISHLIST EXACT SHOP CARD INHERITANCE V2 END */
+
+/* === ST MOBILE CART FULL VIEWPORT BACKDROP START === */
+/*
+ * iOS Safari can size an absolutely positioned cart backdrop
+ * against the layout viewport instead of the current visual viewport.
+ *
+ * On mobile only, lock the cart overlay and its backdrop to the
+ * dynamic viewport so the dim/blur treatment always reaches the
+ * true bottom edge of the screen.
+ */
+@media (max-width: 768px) {
+  html body .st-retail-cart {
+    position: fixed;
+    inset: 0;
+    width: 100dvw;
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  html body .st-retail-cart__backdrop {
+    position: fixed;
+    inset: 0;
+    width: 100dvw;
+    height: 100dvh;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+  }
+}
+/* === ST MOBILE CART FULL VIEWPORT BACKDROP END === */

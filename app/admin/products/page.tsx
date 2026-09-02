@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, PackageOpen, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  ImageIcon,
+  PackageOpen,
+  Plus,
+} from "lucide-react";
 
 import AdminShell from "@/components/admin/admin-shell";
 import { createClient } from "@/lib/supabase/server";
@@ -54,9 +60,9 @@ export default async function AdminProductsPage({
       is_trending,
       is_new_arrival,
       created_at,
-      categories (
-        name
-      ),
+        category_id,
+        brand_id,
+
       product_variants (
         id,
         variant_name,
@@ -75,6 +81,82 @@ export default async function AdminProductsPage({
   if (error) {
     console.error("Products query error:", error);
   }
+
+  const productIds = (products ?? []).map((product) => product.id);
+
+  const { data: primaryImages, error: primaryImagesError } =
+    productIds.length > 0
+      ? await supabase
+          .from("product_images")
+          .select("product_id, image_url, alt_text, position, is_primary")
+          .in("product_id", productIds)
+          .eq("is_primary", true)
+          .order("position", { ascending: true })
+      : {
+          data: [],
+          error: null,
+        };
+
+  if (primaryImagesError) {
+    console.error("Product primary images query error:", primaryImagesError);
+  }
+
+  const primaryImageByProductId = new Map(
+    (primaryImages ?? []).map((image) => [String(image.product_id), image]),
+  );
+
+  const categoryIds = Array.from(
+    new Set(
+      (products ?? [])
+        .map((product) => product.category_id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  );
+
+  const brandIds = Array.from(
+    new Set(
+      (products ?? [])
+        .map((product) => product.brand_id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  );
+
+  const [
+    { data: directoryCategories, error: directoryCategoriesError },
+    { data: directoryBrands, error: directoryBrandsError },
+  ] = await Promise.all([
+    categoryIds.length
+      ? supabase.from("categories").select("id, name").in("id", categoryIds)
+      : Promise.resolve({ data: [], error: null }),
+    brandIds.length
+      ? supabase.from("brands").select("id, name").in("id", brandIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+
+  if (directoryCategoriesError) {
+    console.error(
+      "Product directory categories query error:",
+      directoryCategoriesError,
+    );
+  }
+
+  if (directoryBrandsError) {
+    console.error(
+      "Product directory brands query error:",
+      directoryBrandsError,
+    );
+  }
+
+  const categoryNameById = new Map(
+    (directoryCategories ?? []).map((category) => [
+      String(category.id),
+      category.name,
+    ]),
+  );
+
+  const brandNameById = new Map(
+    (directoryBrands ?? []).map((brand) => [String(brand.id), brand.name]),
+  );
 
   return (
     <AdminShell
@@ -185,6 +267,13 @@ export default async function AdminProductsPage({
                     products.filter((product) => product.status === "draft")
                       .length
                   }
+                  comingSoonTotal={
+                    products.filter(
+                      (product) =>
+                        product.status === "published" &&
+                        product.availability === "coming_soon",
+                    ).length
+                  }
                   archivedTotal={
                     products.filter((product) => product.status === "archived")
                       .length
@@ -203,6 +292,10 @@ export default async function AdminProductsPage({
                         return false;
                       }
 
+                      if (product.availability === "coming_soon") {
+                        return false;
+                      }
+
                       const variants = product.product_variants ?? [];
 
                       if (variants.length === 0) {
@@ -216,103 +309,206 @@ export default async function AdminProductsPage({
                   }
                 />
 
-                {products.map((product) => {
-                  const variants = product.product_variants ?? [];
+                <div className="st-admin-products-directory">
+                  <div
+                    className="st-admin-products-directory__head"
+                    aria-hidden="true"
+                  >
+                    <span>Product</span>
+                    <span>Status</span>
+                    <span>Inventory</span>
+                    <span>Category</span>
+                    <span>Brand</span>
+                    <span>Price</span>
+                    <span>Configurations</span>
+                    <span>Storefront</span>
+                  </div>
 
-                  const totalStock = variants.reduce(
-                    (total, variant) =>
-                      total + Number(variant.stock_quantity ?? 0),
-                    0,
-                  );
+                  <div className="st-admin-products-directory__body">
+                    {products.map((product) => {
+                      const variants = product.product_variants ?? [];
 
-                  /*
-                   * A product is considered out of stock when it has
-                   * configurations but none of them has sellable stock.
-                   */
-                  const isOutOfStock =
-                    product.status === "published" &&
-                    variants.length > 0 &&
-                    variants.every(
-                      (variant) => Number(variant.stock_quantity ?? 0) <= 0,
-                    );
+                      const totalStock = variants.reduce(
+                        (total, variant) =>
+                          total + Number(variant.stock_quantity ?? 0),
+                        0,
+                      );
 
-                  const prices = variants
-                    .map(
-                      (variant) => variant.sale_price ?? variant.regular_price,
-                    )
-                    .filter(
-                      (price): price is number => typeof price === "number",
-                    );
+                      const isComingSoon =
+                        product.status === "published" &&
+                        product.availability === "coming_soon";
 
-                  const lowestPrice =
-                    prices.length > 0 ? Math.min(...prices) : null;
+                      const isOutOfStock =
+                        product.status === "published" &&
+                        !isComingSoon &&
+                        variants.length > 0 &&
+                        variants.every(
+                          (variant) => Number(variant.stock_quantity ?? 0) <= 0,
+                        );
 
-                  const category = product.categories?.[0]?.name ?? null;
+                      const prices = variants
+                        .map(
+                          (variant) =>
+                            variant.sale_price ?? variant.regular_price,
+                        )
+                        .filter(
+                          (price): price is number => typeof price === "number",
+                        );
 
-                  return (
-                    <Link
-                      key={product.id}
-                      href={`/admin/products/${product.id}`}
-                      className="group grid gap-4 px-5 py-4 transition duration-300 hover:bg-white/[0.045] sm:grid-cols-[1fr_auto] sm:items-center sm:px-6"
+                      const lowestPrice =
+                        prices.length > 0 ? Math.min(...prices) : null;
 
-                      data-admin-product-search-card="true"
-                      data-admin-product-status={product.status}
-                      data-admin-product-out-of-stock={
-                        isOutOfStock ? "true" : "false"
-                      }
-                      data-admin-product-search={[
-                        product.name,
-                        product.categories?.[0]?.name ?? "",
-                        ...(product.product_variants ?? []).flatMap(
-                          (variant) => [
-                            variant.variant_name ?? "",
-                            variant.size ?? "",
-                            variant.sku ?? "",
-                          ],
-                        ),
-                      ].join(" ")}
-                    >
-                      <div>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <h2 className="text-xl font-semibold tracking-[-0.02em]">
-                            {product.name}
-                          </h2>
+                      const category = product.category_id
+                        ? (categoryNameById.get(String(product.category_id)) ??
+                          null)
+                        : null;
 
-                          <span
-                            className={`st-admin-product-status-badge ${
-                              product.status === "published"
-                                ? "is-live"
-                                : "is-draft"
-                            }`}
+                      const brand = product.brand_id
+                        ? (brandNameById.get(String(product.brand_id)) ?? null)
+                        : null;
+
+                      const primaryImage =
+                        primaryImageByProductId.get(String(product.id)) ?? null;
+
+                      const statusLabel =
+                        product.status === "published"
+                          ? "Live"
+                          : product.status === "archived"
+                            ? "Archived"
+                            : "Draft";
+
+                      return (
+                        <div
+                          key={product.id}
+                          className="st-admin-products-directory__row"
+                          data-admin-product-search-card="true"
+                          data-admin-product-status={product.status}
+                          data-admin-product-availability={
+                            product.availability ?? ""
+                          }
+                          data-admin-product-out-of-stock={
+                            isOutOfStock ? "true" : "false"
+                          }
+                          data-admin-product-search={[
+                            product.name,
+                            category ?? "",
+                            brand ?? "",
+                            ...variants.flatMap((variant) => [
+                              variant.variant_name ?? "",
+                              variant.size ?? "",
+                              variant.sku ?? "",
+                            ]),
+                          ].join(" ")}
+                        >
+                          <Link
+                            href={`/admin/products/${product.id}`}
+                            className="st-admin-products-directory__product st-admin-products-directory__edit-link"
                           >
-                            <i aria-hidden="true" />
-                            {product.status === "published"
-                              ? "Live"
-                              : product.status === "archived"
-                                ? "Archived"
-                                : "Draft"}
-                          </span>
+                            <div className="st-admin-products-directory__image">
+                              {primaryImage?.image_url ? (
+                                <img
+                                  src={primaryImage.image_url}
+                                  alt={
+                                    primaryImage.alt_text ||
+                                    `${product.name} product image`
+                                  }
+                                />
+                              ) : (
+                                <ImageIcon aria-hidden="true" />
+                              )}
+                            </div>
+
+                            <div className="st-admin-products-directory__identity">
+                              <strong>{product.name}</strong>
+                              <span>
+                                {variants[0]?.sku
+                                  ? `SKU ${variants[0].sku}`
+                                  : product.slug}
+                              </span>
+                            </div>
+                          </Link>
+
+                          <div className="st-admin-products-directory__cell">
+                            <span
+                              className={`st-admin-product-status-badge ${
+                                product.status === "published"
+                                  ? "is-live"
+                                  : product.status === "archived"
+                                    ? "is-archived"
+                                    : "is-draft"
+                              }`}
+                            >
+                              <i aria-hidden="true" />
+                              {statusLabel}
+                            </span>
+                          </div>
+
+                          <div className="st-admin-products-directory__cell st-admin-products-directory__inventory">
+                            <strong
+                              className={
+                                isComingSoon
+                                  ? ""
+                                  : isOutOfStock
+                                    ? "is-empty"
+                                    : totalStock > 0 && totalStock <= 5
+                                      ? "is-low"
+                                      : ""
+                              }
+                            >
+                              {isComingSoon
+                                ? "Coming soon"
+                                : variants.length === 0
+                                  ? "No configurations"
+                                  : isOutOfStock
+                                    ? "Out of stock"
+                                    : `${totalStock} in stock`}
+                            </strong>
+
+                            {variants.length > 1 ? (
+                              <span>
+                                Across {variants.length} configurations
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <div className="st-admin-products-directory__cell">
+                            <span>{category ?? "No category"}</span>
+                          </div>
+
+                          <div className="st-admin-products-directory__cell st-admin-products-directory__brand">
+                            <span>{brand ?? "No brand"}</span>
+                          </div>
+
+                          <div className="st-admin-products-directory__cell st-admin-products-directory__price">
+                            <strong>
+                              {lowestPrice === null
+                                ? "—"
+                                : `$${lowestPrice.toFixed(2)}`}
+                            </strong>
+                          </div>
+
+                          <div className="st-admin-products-directory__cell st-admin-products-directory__configurations">
+                            <span>{variants.length}</span>
+                          </div>
+
+                          <div className="st-admin-products-directory__preview">
+                            <Link
+                              href={`/shop/${product.slug}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="st-admin-products-directory__preview-link"
+                              aria-label={`View ${product.name} on storefront`}
+                              title="View storefront"
+                            >
+                              <span>View</span>
+                              <ArrowUpRight aria-hidden="true" />
+                            </Link>
+                          </div>
                         </div>
-
-                        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/40">
-                          <span>{category ?? "No category"}</span>
-
-                          <span>{variants.length} configurations</span>
-
-                          <span>{totalStock} units</span>
-
-                          <span>
-                            {lowestPrice === null
-                              ? "No price"
-                              : `$${lowestPrice.toFixed(2)}`}
-                          </span>
-                        </div>
-                      </div>
-
-                      <ArrowUpRight className="h-5 w-5 text-white/25 transition duration-300 group-hover:rotate-45 group-hover:text-white" />
-                    </Link>
-                  );
-                })}
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             )}
           </section>

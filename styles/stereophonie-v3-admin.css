@@ -7681,3 +7681,683 @@ html body .st3-admin [data-admin-archive-action="true"] {
 }
 
 /* === ST ADMIN ORDER FINAL VISUAL FIX V7 END === */
+
+/* === ST ADMIN PRODUCT DIRECTORY FINAL START === */
+
+.st3-admin .st-admin-products-directory {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+}
+
+.st3-admin .st-admin-products-directory__head,
+.st3-admin .st-admin-products-directory__row {
+  display: grid;
+  grid-template-columns:
+    minmax(300px, 2.1fr)
+    105px
+    minmax(155px, 1fr)
+    minmax(140px, 0.9fr)
+    95px
+    115px
+    28px;
+  align-items: center;
+  gap: 18px;
+  min-width: 1080px;
+}
+
+.st3-admin .st-admin-products-directory__head {
+  min-height: 44px;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.08);
+  background: #f7f7f8;
+  color: #6e6e73;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.st3-admin .st-admin-products-directory__row {
+  min-height: 68px;
+  padding: 8px 20px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.075);
+  background: #fff;
+  color: #1d1d1f;
+  text-decoration: none;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.st3-admin .st-admin-products-directory__row:last-child {
+  border-bottom: 0;
+}
+
+.st3-admin .st-admin-products-directory__row:hover {
+  background: #f8f8f9;
+}
+
+.st3-admin .st-admin-products-directory__row:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(245, 179, 53, 0.72);
+}
+
+.st3-admin .st-admin-products-directory__product {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.st3-admin .st-admin-products-directory__image {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 9px;
+  background: #f5f5f7;
+}
+
+.st3-admin .st-admin-products-directory__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.st3-admin .st-admin-products-directory__image svg {
+  width: 18px;
+  height: 18px;
+  color: #a1a1a6;
+}
+
+.st3-admin .st-admin-products-directory__identity {
+  min-width: 0;
+}
+
+.st3-admin .st-admin-products-directory__identity strong {
+  display: block;
+  overflow: hidden;
+  color: #1d1d1f;
+  font-size: 13px;
+  font-weight: 620;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st3-admin .st-admin-products-directory__identity span {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  color: #86868b;
+  font-size: 10.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st3-admin .st-admin-products-directory__cell {
+  min-width: 0;
+  color: #515154;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.st3-admin .st-admin-products-directory__inventory strong,
+.st3-admin .st-admin-products-directory__inventory span {
+  display: block;
+}
+
+.st3-admin .st-admin-products-directory__inventory strong {
+  color: #3a3a3c;
+  font-size: 11.5px;
+  font-weight: 580;
+}
+
+.st3-admin .st-admin-products-directory__inventory strong.is-empty {
+  color: #b42318;
+}
+
+.st3-admin .st-admin-products-directory__inventory strong.is-low {
+  color: #a86600;
+}
+
+.st3-admin .st-admin-products-directory__inventory span {
+  margin-top: 3px;
+  color: #86868b;
+  font-size: 9.5px;
+}
+
+.st3-admin .st-admin-products-directory__price strong {
+  color: #1d1d1f;
+  font-size: 12px;
+  font-weight: 620;
+}
+
+.st3-admin .st-admin-products-directory__configurations span {
+  display: inline-flex;
+  min-width: 28px;
+  height: 25px;
+  padding: 0 8px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 999px;
+  background: #f5f5f7;
+  color: #515154;
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+.st3-admin .st-admin-products-directory__open {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.st3-admin .st-admin-products-directory__open svg {
+  width: 15px;
+  height: 15px;
+  color: #a1a1a6;
+  transition:
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.st3-admin
+  .st-admin-products-directory__row:hover
+  .st-admin-products-directory__open
+  svg {
+  color: #1d1d1f;
+  transform: translate(2px, -2px);
+}
+
+.st3-admin .st-admin-products-directory .st-admin-product-status-badge {
+  width: fit-content;
+  min-height: 24px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: none;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+}
+
+.st3-admin .st-admin-products-directory .st-admin-product-status-badge i {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border-radius: 50%;
+}
+
+.st3-admin .st-admin-products-directory .st-admin-product-status-badge.is-live {
+  background: #dff7e7;
+  color: #17663a;
+}
+
+.st3-admin
+  .st-admin-products-directory
+  .st-admin-product-status-badge.is-live
+  i {
+  background: #2fa866;
+}
+
+.st3-admin
+  .st-admin-products-directory
+  .st-admin-product-status-badge.is-draft {
+  background: #f1f1f3;
+  color: #5d5d62;
+}
+
+.st3-admin
+  .st-admin-products-directory
+  .st-admin-product-status-badge.is-draft
+  i {
+  background: #86868b;
+}
+
+.st3-admin
+  .st-admin-products-directory
+  .st-admin-product-status-badge.is-archived {
+  background: #f3f0eb;
+  color: #6e6256;
+}
+
+.st3-admin
+  .st-admin-products-directory
+  .st-admin-product-status-badge.is-archived
+  i {
+  background: #8d8175;
+}
+
+.st3-admin
+  .st-admin-products-directory__row[data-admin-product-search-card="true"][hidden] {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .st3-admin .st-admin-products-directory__head,
+  .st3-admin .st-admin-products-directory__row {
+    min-width: 980px;
+    grid-template-columns:
+      minmax(260px, 2fr)
+      95px
+      140px
+      130px
+      85px
+      100px
+      26px;
+    gap: 15px;
+  }
+}
+
+/* === ST ADMIN PRODUCT DIRECTORY FINAL END === */
+
+/* === ST ADMIN PRODUCT DIRECTORY SHOPIFY CLEAN START === */
+
+.st3-admin .st-admin-products-directory {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 0 !important;
+  background: #fff !important;
+}
+
+.st3-admin .st-admin-products-directory__head,
+.st3-admin .st-admin-products-directory__row {
+  display: grid;
+  grid-template-columns:
+    minmax(280px, 2.1fr)
+    92px
+    minmax(140px, 1fr)
+    minmax(120px, 0.88fr)
+    minmax(105px, 0.78fr)
+    82px
+    100px
+    80px !important;
+  align-items: center;
+  gap: 15px !important;
+  min-width: 1070px !important;
+}
+
+.st3-admin .st-admin-products-directory__head {
+  min-height: 42px !important;
+  padding: 0 16px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.12) !important;
+  border-radius: 0 !important;
+  background: #f6f6f7 !important;
+  color: #6e6e73;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.st3-admin .st-admin-products-directory__body {
+  border-radius: 0 !important;
+  background: #fff !important;
+}
+
+.st3-admin .st-admin-products-directory__row {
+  min-height: 62px !important;
+  padding: 7px 16px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 0 !important;
+  background: #f3f8f5 !important;
+  color: #1d1d1f;
+  box-shadow: none !important;
+}
+
+.st3-admin .st-admin-products-directory__row:last-child {
+  border-bottom: 0 !important;
+}
+
+.st3-admin
+  .st-admin-products-directory__row[data-admin-product-status="draft"] {
+  background: #fff6df !important;
+}
+
+.st3-admin
+  .st-admin-products-directory__row[data-admin-product-availability="coming_soon"] {
+  background: #fff6df !important;
+}
+
+.st3-admin
+  .st-admin-products-directory__row[data-admin-product-out-of-stock="true"] {
+  background: #fff2f1 !important;
+}
+
+.st3-admin
+  .st-admin-products-directory__row[data-admin-product-status="archived"] {
+  background: #f6f6f7 !important;
+}
+
+.st3-admin .st-admin-products-directory__row:hover {
+  filter: brightness(0.985);
+}
+
+.st3-admin .st-admin-products-directory__edit-link {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.st3-admin .st-admin-products-directory__edit-link:hover strong {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.st3-admin .st-admin-products-directory__image {
+  width: 42px !important;
+  height: 42px !important;
+  flex: 0 0 42px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+}
+
+.st3-admin .st-admin-products-directory__identity strong {
+  font-size: 12.5px !important;
+  letter-spacing: 0 !important;
+}
+
+.st3-admin .st-admin-products-directory__identity span {
+  margin-top: 3px !important;
+  font-size: 10px !important;
+  letter-spacing: 0 !important;
+}
+
+.st3-admin .st-admin-products-directory__brand span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st3-admin .st-admin-products-directory__configurations span {
+  min-width: 25px !important;
+  height: 23px !important;
+  border-radius: 5px !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+}
+
+.st3-admin .st-admin-products-directory__preview {
+  display: flex;
+  align-items: center;
+}
+
+.st3-admin .st-admin-products-directory__preview-link {
+  display: inline-flex;
+  min-height: 27px;
+  padding: 0 7px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid rgba(29, 29, 31, 0.14);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #3a3a3c;
+  font-size: 10px;
+  font-weight: 620;
+  text-decoration: none;
+}
+
+.st3-admin .st-admin-products-directory__preview-link svg {
+  width: 11px;
+  height: 11px;
+}
+
+.st3-admin .st-admin-products-directory__preview-link:hover {
+  border-color: rgba(29, 29, 31, 0.28);
+  background: #fff;
+}
+
+.st3-admin
+  .st-admin-products-directory__row[data-admin-product-search-card="true"][hidden] {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .st3-admin .st-admin-products-directory__head,
+  .st3-admin .st-admin-products-directory__row {
+    min-width: 1010px !important;
+    grid-template-columns:
+      minmax(245px, 2fr)
+      88px
+      130px
+      112px
+      98px
+      78px
+      94px
+      76px !important;
+    gap: 13px !important;
+  }
+}
+
+/* === ST ADMIN PRODUCT DIRECTORY SHOPIFY CLEAN END === */
+
+/* === ST ADMIN PRODUCTS APPLE TABLE FONT START === */
+
+/*
+ * Product directory typography.
+ *
+ * Keep the existing Stereophonie table architecture and state colors,
+ * but remove the wide letter-spacing / technical-looking typography
+ * from the informational columns.
+ *
+ * This follows the same native Apple-style system font stack used by
+ * the modern storefront UI.
+ */
+
+.st3-admin .st-admin-products-directory__head,
+.st3-admin .st-admin-products-directory__cell,
+.st3-admin .st-admin-products-directory__inventory,
+.st3-admin .st-admin-products-directory__brand,
+.st3-admin .st-admin-products-directory__price,
+.st3-admin .st-admin-products-directory__configurations,
+.st3-admin .st-admin-products-directory__preview,
+.st3-admin .st-admin-products-directory__preview-link {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif !important;
+
+  font-variant-numeric: normal !important;
+  font-feature-settings: normal !important;
+  text-transform: none !important;
+}
+
+/*
+ * Column headings:
+ * compact Apple-style admin typography.
+ */
+.st3-admin .st-admin-products-directory__head,
+.st3-admin .st-admin-products-directory__head span {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif !important;
+
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+}
+
+/*
+ * Inventory.
+ */
+.st3-admin .st-admin-products-directory__inventory,
+.st3-admin .st-admin-products-directory__inventory strong,
+.st3-admin .st-admin-products-directory__inventory span {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+    sans-serif !important;
+
+  letter-spacing: -0.01em !important;
+}
+
+.st3-admin .st-admin-products-directory__inventory strong {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.25 !important;
+}
+
+.st3-admin .st-admin-products-directory__inventory > span {
+  margin-top: 2px !important;
+
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+}
+
+/*
+ * Category + Brand.
+ */
+.st3-admin
+  .st-admin-products-directory__cell:not(
+    .st-admin-products-directory__inventory
+  ):not(.st-admin-products-directory__price):not(
+    .st-admin-products-directory__configurations
+  ),
+.st3-admin .st-admin-products-directory__brand,
+.st3-admin .st-admin-products-directory__brand span {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+    sans-serif !important;
+
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/*
+ * Price.
+ */
+.st3-admin .st-admin-products-directory__price,
+.st3-admin .st-admin-products-directory__price strong {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+    sans-serif !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/*
+ * Configuration count.
+ */
+.st3-admin .st-admin-products-directory__configurations,
+.st3-admin .st-admin-products-directory__configurations span {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+    sans-serif !important;
+
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+}
+
+/*
+ * Storefront View action.
+ */
+.st3-admin .st-admin-products-directory__preview-link,
+.st3-admin .st-admin-products-directory__preview-link span {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial,
+    sans-serif !important;
+
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+}
+
+/*
+ * Explicitly neutralize broad admin typography rules that may add
+ * spacing to these table values.
+ */
+.st3-admin
+  .st-admin-products-directory__row
+  :where(
+    .st-admin-products-directory__inventory,
+    .st-admin-products-directory__inventory strong,
+    .st-admin-products-directory__inventory span,
+    .st-admin-products-directory__cell,
+    .st-admin-products-directory__cell span,
+    .st-admin-products-directory__cell strong,
+    .st-admin-products-directory__brand,
+    .st-admin-products-directory__brand span,
+    .st-admin-products-directory__price,
+    .st-admin-products-directory__price strong,
+    .st-admin-products-directory__configurations,
+    .st-admin-products-directory__configurations span,
+    .st-admin-products-directory__preview,
+    .st-admin-products-directory__preview-link,
+    .st-admin-products-directory__preview-link span
+  ) {
+  letter-spacing: -0.01em !important;
+}
+
+/* === ST ADMIN PRODUCTS APPLE TABLE FONT END === */
+
+/* === ST ADMIN COMING SOON INVENTORY BLUE START === */
+.st-admin-products-directory__row[data-admin-product-availability="coming_soon"]
+  .st-admin-products-directory__inventory
+  strong {
+  color: #0071e3 !important;
+}
+/* === ST ADMIN COMING SOON INVENTORY BLUE END === */
+
+/* === ST ADMIN COMING SOON BLUE ROW START === */
+
+/*
+ * Authoritative Admin Products row colors:
+ *
+ * Live        = green
+ * Draft       = mustard
+ * Coming Soon = blue
+ * Out of stock = red
+ *
+ * The .st3-admin scope intentionally gives Coming Soon greater
+ * specificity than the older mustard availability rule.
+ */
+html
+  body
+  .st3-admin
+  .st-admin-products-directory
+  .st-admin-products-directory__row[data-admin-product-availability="coming_soon"] {
+  background: #eef6ff !important;
+  background-color: #eef6ff !important;
+}
+
+html
+  body
+  .st3-admin
+  .st-admin-products-directory
+  .st-admin-products-directory__row[data-admin-product-availability="coming_soon"]:hover {
+  background: #e7f2ff !important;
+  background-color: #e7f2ff !important;
+}
+
+html
+  body
+  .st3-admin
+  .st-admin-products-directory
+  .st-admin-products-directory__row[data-admin-product-availability="coming_soon"]
+  .st-admin-products-directory__inventory
+  strong {
+  color: #0071e3 !important;
+}
+
+/* === ST ADMIN COMING SOON BLUE ROW END === */

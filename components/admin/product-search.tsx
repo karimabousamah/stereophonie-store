@@ -8,18 +8,20 @@ type Props = {
   total: number;
   liveTotal: number;
   draftTotal: number;
+  comingSoonTotal: number;
   outOfStockTotal: number;
   archivedTotal: number;
   initialFilter?: ProductStatusFilter;
 };
 
 type ProductStatusFilter =
-  "all" | "published" | "draft" | "out_of_stock" | "archived";
+  "all" | "published" | "draft" | "coming_soon" | "out_of_stock" | "archived";
 
 export default function ProductSearch({
   total,
   liveTotal,
   draftTotal,
+  comingSoonTotal,
   outOfStockTotal,
   archivedTotal,
   initialFilter = "all",
@@ -50,6 +52,7 @@ export default function ProductSearch({
         card.dataset.adminProductSearch?.toLocaleLowerCase() ?? "";
 
       const productStatus = card.dataset.adminProductStatus ?? "";
+      const productAvailability = card.dataset.adminProductAvailability ?? "";
 
       const matchesQuery =
         !normalizedQuery || searchable.includes(normalizedQuery);
@@ -58,9 +61,11 @@ export default function ProductSearch({
 
       const matchesStatus =
         status === "all" ||
-        (status === "out_of_stock"
-          ? productOutOfStock
-          : productStatus === status);
+        (status === "coming_soon"
+          ? productAvailability === "coming_soon"
+          : status === "out_of_stock"
+            ? productOutOfStock
+            : productStatus === status);
 
       const matches = matchesQuery && matchesStatus;
 
@@ -87,11 +92,13 @@ export default function ProductSearch({
       ? liveTotal
       : status === "draft"
         ? draftTotal
-        : status === "out_of_stock"
-          ? outOfStockTotal
-          : status === "archived"
-            ? archivedTotal
-            : total;
+        : status === "coming_soon"
+          ? comingSoonTotal
+          : status === "out_of_stock"
+            ? outOfStockTotal
+            : status === "archived"
+              ? archivedTotal
+              : total;
 
   return (
     <section
@@ -145,6 +152,15 @@ export default function ProductSearch({
         >
           <span>Drafts</span>
           <strong>{draftTotal}</strong>
+        </button>
+
+        <button
+          type="button"
+          className={status === "coming_soon" ? "is-active" : ""}
+          onClick={() => setStatus("coming_soon")}
+        >
+          <span>Coming Soon</span>
+          <strong>{comingSoonTotal}</strong>
         </button>
 
         <button
