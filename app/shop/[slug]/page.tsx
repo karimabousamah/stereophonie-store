@@ -14,6 +14,7 @@ import {
 import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 import { createClient } from "@/lib/supabase/server";
 
+import ProductConfigurationPrice from "./product-configuration-price";
 import ProductGallery from "./product-gallery";
 import ProductPurchaseControls from "./product-purchase-controls";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
@@ -88,49 +89,6 @@ function relationName(relation: Relation, fallback: string) {
   }
 
   return relation.name?.trim() || fallback;
-}
-
-function lowestPrices(variants: ProductVariant[]) {
-  const prices = variants
-    .map((variant) => {
-      const regular =
-        typeof variant.regular_price === "number"
-          ? variant.regular_price
-          : null;
-
-      const sale =
-        typeof variant.sale_price === "number" ? variant.sale_price : null;
-
-      if (sale !== null && regular !== null && sale > 0 && sale < regular) {
-        return {
-          current: sale,
-          regular,
-          sale: true,
-        };
-      }
-
-      if (regular !== null && regular > 0) {
-        return {
-          current: regular,
-          regular,
-          sale: false,
-        };
-      }
-
-      return null;
-    })
-    .filter(
-      (
-        price,
-      ): price is {
-        current: number;
-        regular: number;
-        sale: boolean;
-      } => Boolean(price),
-    )
-    .sort((first, second) => first.current - second.current);
-
-  return prices[0] ?? null;
 }
 
 export async function generateMetadata({
@@ -340,8 +298,6 @@ export default async function ProductPage({
       );
     },
   );
-
-  const price = lowestPrices(variants);
 
   const brandName = relationName(
     product.brands as Relation,
@@ -1259,17 +1215,17 @@ export default async function ProductPage({
             </div>
 
             <div className="st-product-v5__intro-meta">
-              {price ? (
-                <div className="st-product-v5__price">
-                  <strong>${price.current.toFixed(2)}</strong>
-
-                  {price.sale ? <del>${price.regular.toFixed(2)}</del> : null}
-                </div>
-              ) : (
-                <div className="st-product-v5__price">
-                  <strong>Contact us</strong>
-                </div>
-              )}
+              <ProductConfigurationPrice
+                variants={variants.map((variant) => ({
+                  id: variant.id,
+                  variant_name: variant.variant_name,
+                  display_position: variant.display_position,
+                  regular_price: variant.regular_price,
+                  sale_price: variant.sale_price,
+                  stock_quantity: variant.stock_quantity,
+                  availability_status: variant.availability_status,
+                }))}
+              />
 
               <span
                 className={`st-product-v5__availability ${

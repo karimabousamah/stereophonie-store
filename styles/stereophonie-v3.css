@@ -57593,3 +57593,7536 @@ html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
 }
 
 /* === ST HIDE DESKTOP GHOST MENU BUTTON END === */
+
+/* === ST CHECKOUT APPLE ARCHITECTURE 2026 START === */
+
+.st-checkout-v2,
+.st-checkout-review-v2,
+.st-order-success-v2,
+.st-checkout-error-v2 {
+  --st-checkout-ink: #1d1d1f;
+  --st-checkout-muted: #6e6e73;
+  --st-checkout-surface: #ffffff;
+  --st-checkout-page: #f5f5f7;
+  --st-checkout-mustard: #fdb73e;
+  --st-checkout-mustard-deep: #a96700;
+  --st-checkout-border: rgba(29, 29, 31, 0.09);
+
+  background: var(--st-checkout-page) !important;
+  color: var(--st-checkout-ink) !important;
+}
+
+.st-checkout-v2 .st-checkout-content,
+.st-checkout-review-v2 .st-checkout-content,
+.st-order-success-v2 .st-checkout-content {
+  max-width: 1120px !important;
+}
+
+.st-checkout-v2 .st-checkout-module,
+.st-checkout-review-v2 section,
+.st-order-success-v2 .st-checkout-content section,
+.st-checkout-error-v2 section > div {
+  border-color: var(--st-checkout-border) !important;
+  border-radius: 22px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.025),
+    0 12px 38px rgba(29, 29, 31, 0.035) !important;
+}
+
+.st-checkout-v2 input,
+.st-checkout-v2 textarea,
+.st-checkout-v2 select {
+  border-radius: 13px !important;
+}
+
+.st-checkout-v2 button,
+.st-checkout-v2 a,
+.st-checkout-review-v2 button,
+.st-checkout-review-v2 a,
+.st-order-success-v2 button,
+.st-order-success-v2 a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-checkout-polish__continue-button {
+  min-height: 46px !important;
+  border-radius: 999px !important;
+  background: var(--st-checkout-mustard) !important;
+  color: #1d1d1f !important;
+  box-shadow:
+    0 5px 18px rgba(189, 116, 0, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34) !important;
+}
+
+.st-checkout-polish__continue-button:hover {
+  background: #f4aa24 !important;
+  transform: translateY(-1px);
+}
+
+.st-checkout-review-v2 #payment-methods {
+  overflow: hidden;
+}
+
+.st-checkout-review-v2 #payment-methods button,
+.st-checkout-review-v2 #payment-methods [aria-disabled="true"] {
+  border-radius: 17px !important;
+}
+
+.st-checkout-review-v2 #payment-methods button[aria-pressed="true"] {
+  border-color: rgba(253, 183, 62, 0.72) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(253, 183, 62, 0.1),
+    rgba(253, 183, 62, 0.045)
+  ) !important;
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.08),
+    0 8px 24px rgba(29, 29, 31, 0.035) !important;
+}
+
+.st-checkout-review-v2
+  #payment-methods
+  button[aria-pressed="true"]
+  > span:nth-child(2) {
+  background: var(--st-checkout-mustard) !important;
+  color: #1d1d1f !important;
+  border-radius: 13px !important;
+}
+
+.st-checkout-review-v2
+  #payment-methods
+  [aria-disabled="true"]
+  > span:nth-child(2) {
+  border-radius: 13px !important;
+}
+
+.st-checkout-review-v2 #payment-methods [aria-disabled="true"] {
+  opacity: 0.56 !important;
+}
+
+.st-checkout-v2 .st-checkout-compact-head,
+.st-checkout-review-v2 .st-checkout-compact-head {
+  background: rgba(245, 245, 247, 0.88);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+
+.st-checkout-success-head {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.st-checkout-success-head__message,
+.st-checkout-success-head__number,
+.st-checkout-success-head__notices > div {
+  border-radius: 22px !important;
+}
+
+.st-checkout-success-head__icon {
+  background: rgba(253, 183, 62, 0.16) !important;
+  color: #9a6200 !important;
+}
+
+@media (max-width: 768px) {
+  .st-checkout-v2 .st-checkout-content,
+  .st-checkout-review-v2 .st-checkout-content,
+  .st-order-success-v2 .st-checkout-content {
+    padding-inline: 14px !important;
+  }
+
+  .st-checkout-v2 .st-checkout-module,
+  .st-checkout-review-v2 section,
+  .st-order-success-v2 .st-checkout-content section {
+    border-radius: 18px !important;
+  }
+
+  .st-checkout-review-v2 #payment-methods button,
+  .st-checkout-review-v2 #payment-methods [aria-disabled="true"] {
+    border-radius: 15px !important;
+  }
+
+  .st-checkout-success-head {
+    padding-inline: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-checkout-v2 *,
+  .st-checkout-review-v2 *,
+  .st-order-success-v2 * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* === ST CHECKOUT APPLE ARCHITECTURE 2026 END === */
+
+/* === ST CHECKOUT FULFILLMENT ARCHITECTURE START === */
+
+.st-checkout-fulfillment {
+  padding: 0 !important;
+}
+
+.st-checkout-fulfillment__head {
+  padding: 20px 22px 14px;
+}
+
+.st-checkout-fulfillment__eyebrow {
+  margin: 0;
+  color: rgba(29, 29, 31, 0.42);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.st-checkout-fulfillment__head h2 {
+  margin: 7px 0 0;
+  color: #1d1d1f;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.st-checkout-fulfillment__head p:last-child {
+  margin: 7px 0 0;
+  color: #6e6e73;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.st-checkout-fulfillment__choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 18px 16px;
+}
+
+.st-checkout-fulfillment__choice {
+  position: relative;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 78px;
+  padding: 13px 38px 13px 13px;
+  border: 1px solid rgba(29, 29, 31, 0.1);
+  border-radius: 16px;
+  background: #fff;
+  color: #1d1d1f;
+  text-align: left;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.st-checkout-fulfillment__choice:hover {
+  border-color: rgba(29, 29, 31, 0.2);
+  transform: translateY(-1px);
+}
+
+.st-checkout-fulfillment__choice.is-selected {
+  border-color: rgba(253, 183, 62, 0.82);
+  background: linear-gradient(
+    180deg,
+    rgba(253, 183, 62, 0.105),
+    rgba(253, 183, 62, 0.035)
+  );
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.075),
+    0 7px 22px rgba(29, 29, 31, 0.035);
+}
+
+.st-checkout-fulfillment__icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 12px;
+  background: #f5f5f7;
+  color: #68686d;
+}
+
+.st-checkout-fulfillment__choice.is-selected .st-checkout-fulfillment__icon {
+  border-color: rgba(253, 183, 62, 0.42);
+  background: rgba(253, 183, 62, 0.2);
+  color: #8a5700;
+}
+
+.st-checkout-fulfillment__icon svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.8;
+}
+
+.st-checkout-fulfillment__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.st-checkout-fulfillment__copy strong {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.st-checkout-fulfillment__copy span {
+  overflow: hidden;
+  color: #7a7a80;
+  font-size: 10.5px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+
+.st-checkout-fulfillment__price {
+  color: #1d1d1f;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.st-checkout-fulfillment__radio {
+  position: absolute;
+  top: 11px;
+  right: 11px;
+  display: grid;
+  width: 17px;
+  height: 17px;
+  place-items: center;
+  border: 1px solid rgba(29, 29, 31, 0.22);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.st-checkout-fulfillment__choice.is-selected .st-checkout-fulfillment__radio {
+  border-color: #d38a0b;
+}
+
+.st-checkout-fulfillment__choice.is-selected
+  .st-checkout-fulfillment__radio
+  span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d38a0b;
+}
+
+.st-checkout-fulfillment__note,
+.st-checkout-tax-note,
+.st-checkout-review-tax-note,
+.st-checkout-success-tax-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #77777c;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.st-checkout-fulfillment__note {
+  margin: 0 18px 17px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(29, 29, 31, 0.07);
+}
+
+.st-checkout-fulfillment__note svg,
+.st-checkout-tax-note svg,
+.st-checkout-review-tax-note svg,
+.st-checkout-success-tax-note svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  color: #a46a05;
+  stroke-width: 1.8;
+}
+
+.st-checkout-tax-note,
+.st-checkout-review-tax-note,
+.st-checkout-success-tax-note {
+  padding: 10px 12px;
+  border: 1px solid rgba(29, 29, 31, 0.07);
+  border-radius: 12px;
+  background: #f7f7f8;
+}
+
+.st-checkout-review-fulfillment {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 18px !important;
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+}
+
+.st-checkout-review-fulfillment__icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(253, 183, 62, 0.34);
+  border-radius: 13px;
+  background: rgba(253, 183, 62, 0.15);
+  color: #8a5700;
+}
+
+.st-checkout-review-fulfillment__icon svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.8;
+}
+
+.st-checkout-review-fulfillment__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.st-checkout-review-fulfillment__copy > span {
+  color: #8a8a90;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.st-checkout-review-fulfillment__copy strong {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.st-checkout-review-fulfillment__copy p {
+  margin: 3px 0 0;
+  color: #737378;
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.st-checkout-review-fulfillment__price {
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+@media (max-width: 680px) {
+  .st-checkout-fulfillment__head {
+    padding: 18px 17px 13px;
+  }
+
+  .st-checkout-fulfillment__choices {
+    grid-template-columns: 1fr;
+    padding: 0 14px 14px;
+  }
+
+  .st-checkout-fulfillment__choice {
+    min-height: 72px;
+  }
+
+  .st-checkout-fulfillment__note {
+    margin: 0 14px 15px;
+  }
+
+  .st-checkout-review-fulfillment {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    padding: 14px !important;
+  }
+
+  .st-checkout-review-fulfillment__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+}
+
+/* === ST CHECKOUT FULFILLMENT ARCHITECTURE END === */
+
+/* === ST CHECKOUT FINAL APPLE POLISH START === */
+
+/* Phone — one cohesive control */
+.st-checkout-v2 [data-checkout-phone="true"] {
+  min-width: 0;
+}
+
+.st-checkout-v2 [data-checkout-phone="true"] select,
+.st-checkout-v2 [data-checkout-phone="true"] input {
+  min-height: 50px !important;
+  background: #f7f7f8 !important;
+  border-color: rgba(29, 29, 31, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.st-checkout-v2 [data-checkout-phone="true"] select {
+  border-radius: 15px 0 0 15px !important;
+}
+
+.st-checkout-v2 [data-checkout-phone="true"] input {
+  border-radius: 0 15px 15px 0 !important;
+}
+
+.st-checkout-v2 [data-checkout-phone="true"] select:focus,
+.st-checkout-v2 [data-checkout-phone="true"] input:focus {
+  position: relative;
+  z-index: 2;
+  border-color: rgba(253, 183, 62, 0.85) !important;
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.08) !important;
+}
+
+/* Delivery address architecture */
+.st-checkout-delivery-module {
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.085) !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+}
+
+.st-checkout-delivery-module button,
+.st-checkout-delivery-module [role="button"] {
+  border-radius: 999px !important;
+}
+
+.st-checkout-delivery-module button.bg-black,
+.st-checkout-delivery-module [class*="bg-black"] {
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+}
+
+.st-checkout-delivery-module button.border-black,
+.st-checkout-delivery-module [class*="border-black"] {
+  border-color: rgba(29, 29, 31, 0.1) !important;
+}
+
+.st-checkout-delivery-module select,
+.st-checkout-delivery-module input,
+.st-checkout-delivery-module textarea {
+  border-radius: 14px !important;
+  background: #f7f7f8 !important;
+  border-color: rgba(29, 29, 31, 0.1) !important;
+  box-shadow: none !important;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background 140ms ease !important;
+}
+
+.st-checkout-delivery-module select:focus,
+.st-checkout-delivery-module input:focus,
+.st-checkout-delivery-module textarea:focus {
+  border-color: rgba(253, 183, 62, 0.82) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.075) !important;
+  outline: none !important;
+}
+
+.st-checkout-delivery-module select {
+  cursor: pointer;
+}
+
+/* Review cards */
+.st-checkout-review-info-card,
+.st-checkout-review-note-card,
+.st-checkout-review-address-card {
+  border-radius: 15px !important;
+}
+
+.st-checkout-review-address-card {
+  background: #fff !important;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+.st-checkout-review-address-card.is-saved {
+  border-color: rgba(253, 183, 62, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.06) !important;
+}
+
+.st-checkout-review-address-badge,
+.st-checkout-review-phone-country,
+.st-checkout-payment-status {
+  border-radius: 999px !important;
+}
+
+.st-checkout-review-address-badge.is-saved {
+  border: 1px solid rgba(253, 183, 62, 0.4) !important;
+  background: rgba(253, 183, 62, 0.14) !important;
+  color: #8b5900 !important;
+}
+
+/* Payment */
+.st-checkout-payment-card {
+  border-color: rgba(29, 29, 31, 0.1) !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.st-checkout-payment-card.is-selected {
+  border-color: rgba(253, 183, 62, 0.8) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(253, 183, 62, 0.09),
+    rgba(253, 183, 62, 0.025)
+  ) !important;
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.065),
+    0 7px 20px rgba(29, 29, 31, 0.025) !important;
+}
+
+.st-checkout-payment-card--disabled {
+  background: #f8f8f9 !important;
+  opacity: 0.58 !important;
+}
+
+.st-checkout-payment-icon {
+  border: 1px solid rgba(253, 183, 62, 0.4) !important;
+  border-radius: 12px !important;
+  background: rgba(253, 183, 62, 0.18) !important;
+  color: #8a5700 !important;
+}
+
+.st-checkout-payment-card--disabled .st-checkout-payment-icon {
+  border-color: rgba(29, 29, 31, 0.08) !important;
+  background: #fff !important;
+  color: #77777c !important;
+}
+
+.st-checkout-payment-status--selected {
+  border: 1px solid rgba(253, 183, 62, 0.4) !important;
+  background: rgba(253, 183, 62, 0.16) !important;
+  color: #815200 !important;
+}
+
+.st-checkout-payment-status--soon {
+  border: 1px solid rgba(29, 29, 31, 0.08) !important;
+  background: #fff !important;
+  color: #89898e !important;
+}
+
+/* Compact place-order CTA — same language as Continue to Review */
+.st-checkout-review-place-order {
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  border: 1px solid rgba(228, 173, 67, 0.72) !important;
+  border-radius: 13px !important;
+  background: #fff !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 3px 12px rgba(189, 116, 0, 0.035) !important;
+}
+
+.st-checkout-review-place-order:hover:not(:disabled) {
+  border-color: #e4ad43 !important;
+  background: rgba(253, 183, 62, 0.055) !important;
+}
+
+.st-checkout-review-place-order:disabled {
+  border-color: rgba(29, 29, 31, 0.08) !important;
+  background: #f5f5f7 !important;
+  color: #9b9ba0 !important;
+  opacity: 1 !important;
+}
+
+/* Remove harsh black accents from checkout-specific chips/buttons */
+.st-checkout-v2 .st-checkout-delivery-module .bg-black,
+.st-checkout-review-v2 .st-checkout-review-delivery .bg-black {
+  background: rgba(253, 183, 62, 0.15) !important;
+  color: #7f5100 !important;
+}
+
+@media (max-width: 680px) {
+  .st-checkout-review-place-order {
+    min-height: 44px !important;
+    padding-inline: 15px !important;
+  }
+
+  .st-checkout-payment-card {
+    border-radius: 15px !important;
+  }
+
+  .st-checkout-review-info-card,
+  .st-checkout-review-note-card,
+  .st-checkout-review-address-card {
+    border-radius: 14px !important;
+  }
+}
+
+/* === ST CHECKOUT FINAL APPLE POLISH END === */
+
+/* === ST CHECKOUT SAVED ADDRESS V2 START === */
+
+.st-checkout-saved-address-v2 {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 5px 18px rgba(29, 29, 31, 0.025) !important;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+.st-checkout-saved-address-v2:hover {
+  border-color: rgba(253, 183, 62, 0.48) !important;
+}
+
+.st-checkout-saved-address-v2.is-selected {
+  border-color: #fdb73e !important;
+
+  background:
+    radial-gradient(
+      circle at 12% 20%,
+      rgba(253, 183, 62, 0.13),
+      rgba(253, 183, 62, 0.04) 34%,
+      rgba(255, 255, 255, 0) 70%
+    ),
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.11),
+    0 10px 30px rgba(189, 116, 0, 0.1) !important;
+}
+
+.st-checkout-saved-address-v2,
+.st-checkout-saved-address-v2 * {
+  color: #1d1d1f;
+}
+
+.st-checkout-saved-address-v2.is-selected button:last-child {
+  border-left-color: rgba(253, 183, 62, 0.24) !important;
+}
+
+/* === ST CHECKOUT SAVED ADDRESS V2 END === */
+
+/* === ST CHECKOUT ADDRESS EDITOR APPLE V2 START === */
+
+/*
+ * Default-address selector
+ * Clean Stereophonie architecture:
+ * white / soft gray / mustard / black typography only.
+ */
+
+html body .st-checkout-default-address-card {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  width: 100% !important;
+  min-height: 78px !important;
+
+  align-items: center !important;
+  gap: 14px !important;
+
+  margin: 0 !important;
+  padding: 16px 18px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 16px !important;
+
+  background: #f7f7f9 !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+html body .st-checkout-default-address-card:hover {
+  border-color: rgba(253, 183, 62, 0.52) !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(253, 183, 62, 0.055),
+      rgba(255, 255, 255, 0) 70%
+    ),
+    #fafafa !important;
+
+  box-shadow: 0 7px 22px rgba(189, 116, 0, 0.055) !important;
+}
+
+html body .st-checkout-default-address-card,
+html body .st-checkout-default-address-card * {
+  color: #1d1d1f !important;
+}
+
+html body .st-checkout-default-address-card p,
+html body .st-checkout-default-address-card span,
+html body .st-checkout-default-address-card strong {
+  font-family: inherit !important;
+}
+
+html body .st-checkout-default-address-card p:first-of-type,
+html body .st-checkout-default-address-card strong:first-of-type {
+  text-transform: none !important;
+
+  letter-spacing: -0.012em !important;
+
+  font-size: 14px !important;
+  font-weight: 600 !important;
+
+  color: #1d1d1f !important;
+}
+
+html body .st-checkout-default-address-card p:last-of-type {
+  margin-top: 3px !important;
+
+  text-transform: none !important;
+
+  letter-spacing: -0.005em !important;
+
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+
+  color: rgba(29, 29, 31, 0.48) !important;
+}
+
+/*
+ * Native checkbox replaced visually with compact Apple-style selector.
+ */
+
+html body input.st-checkout-default-address-checkbox {
+  box-sizing: border-box !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  position: relative !important;
+
+  display: inline-grid !important;
+
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
+
+  height: 22px !important;
+  min-height: 22px !important;
+  max-height: 22px !important;
+
+  place-items: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.18) !important;
+  border-radius: 7px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+
+  outline: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+html body input.st-checkout-default-address-checkbox:checked {
+  border-color: #e4ad43 !important;
+
+  background: #fdb73e !important;
+
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.1) !important;
+}
+
+html body input.st-checkout-default-address-checkbox:checked::after {
+  content: "" !important;
+
+  display: block !important;
+
+  width: 8px !important;
+  height: 5px !important;
+
+  margin-top: -2px !important;
+
+  border-left: 1.8px solid #1d1d1f !important;
+  border-bottom: 1.8px solid #1d1d1f !important;
+
+  transform: rotate(-45deg) !important;
+}
+
+html body input.st-checkout-default-address-checkbox:focus-visible {
+  outline: 2px solid rgba(253, 183, 62, 0.45) !important;
+  outline-offset: 3px !important;
+}
+
+/*
+ * Save / Cancel:
+ * smaller, restrained, same font family as storefront.
+ */
+
+html body button.st-checkout-address-save,
+html body button.st-checkout-address-cancel {
+  box-sizing: border-box !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  margin: 0 !important;
+
+  padding: 0 18px !important;
+
+  border-radius: 999px !important;
+
+  font-family: inherit !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  text-transform: none !important;
+  letter-spacing: -0.012em !important;
+
+  box-shadow: none !important;
+
+  transition:
+    border-color 170ms ease,
+    background 170ms ease,
+    box-shadow 170ms ease,
+    transform 170ms ease !important;
+}
+
+html body button.st-checkout-address-save {
+  border: 1px solid rgba(228, 173, 67, 0.58) !important;
+
+  background: rgba(253, 183, 62, 0.1) !important;
+
+  color: #1d1d1f !important;
+}
+
+html body button.st-checkout-address-save:hover:not(:disabled) {
+  border-color: #fdb73e !important;
+
+  background: rgba(253, 183, 62, 0.17) !important;
+
+  box-shadow: 0 5px 16px rgba(189, 116, 0, 0.075) !important;
+}
+
+html body button.st-checkout-address-cancel {
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  background: #ffffff !important;
+
+  color: rgba(29, 29, 31, 0.66) !important;
+}
+
+html body button.st-checkout-address-cancel:hover {
+  border-color: rgba(29, 29, 31, 0.2) !important;
+
+  background: #f5f5f7 !important;
+
+  color: #1d1d1f !important;
+}
+
+html body button.st-checkout-address-save:active:not(:disabled),
+html body button.st-checkout-address-cancel:active {
+  transform: scale(0.985) !important;
+}
+
+/*
+ * Close X
+ */
+
+html body button.st-checkout-address-close {
+  box-sizing: border-box !important;
+
+  display: inline-flex !important;
+
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 4px 14px rgba(29, 29, 31, 0.045) !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+html body button.st-checkout-address-close::before,
+html body button.st-checkout-address-close::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body button.st-checkout-address-close:hover {
+  border-color: rgba(253, 183, 62, 0.65) !important;
+
+  background: rgba(253, 183, 62, 0.12) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(253, 183, 62, 0.08),
+    0 8px 22px rgba(189, 116, 0, 0.1) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+html body button.st-checkout-address-close:active {
+  transform: scale(0.96) !important;
+}
+
+html body button.st-checkout-address-close svg {
+  width: 18px !important;
+  height: 18px !important;
+
+  stroke-width: 1.8 !important;
+}
+
+/*
+ * Continue to Review
+ *
+ * Crucial:
+ * old .st-checkout-polish__continue-button rules no longer own this
+ * control. Typography inherits the storefront font instead.
+ */
+
+html body button.st-checkout-apple-continue {
+  box-sizing: border-box !important;
+
+  min-height: 48px !important;
+
+  border: 1px solid rgba(228, 173, 67, 0.7) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  text-transform: none !important;
+  letter-spacing: -0.012em !important;
+
+  box-shadow: 0 5px 16px rgba(189, 116, 0, 0.045) !important;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+html body button.st-checkout-apple-continue:hover {
+  border-color: #fdb73e !important;
+
+  background: rgba(253, 183, 62, 0.055) !important;
+
+  box-shadow: 0 7px 20px rgba(189, 116, 0, 0.075) !important;
+}
+
+html body button.st-checkout-apple-continue:active {
+  transform: scale(0.995) !important;
+}
+
+html body button.st-checkout-apple-continue svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/*
+ * Mobile sizing
+ */
+
+@media (max-width: 640px) {
+  html body .st-checkout-default-address-card {
+    min-height: 72px !important;
+
+    padding: 14px !important;
+  }
+
+  html body button.st-checkout-address-save,
+  html body button.st-checkout-address-cancel {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+
+    padding: 0 15px !important;
+
+    font-size: 12px !important;
+  }
+
+  html body button.st-checkout-address-close {
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+  }
+
+  html body button.st-checkout-apple-continue {
+    font-size: 12.5px !important;
+  }
+}
+
+/* === ST CHECKOUT ADDRESS EDITOR APPLE V2 END === */
+
+/* === ST CHECKOUT CONTINUE EXACT AUTH START === */
+
+/*
+ * CONTINUE TO REVIEW
+ *
+ * Exact interaction language from the live Stereophonie
+ * Admin Login / authentication button.
+ *
+ * This unique selector intentionally wins over old
+ * checkout submit-button rules.
+ */
+
+html body .st-checkout-v2 button.st-checkout-continue-auth {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  width: 100% !important;
+
+  min-width: 0 !important;
+  max-width: none !important;
+
+  height: auto !important;
+  min-height: 48px !important;
+  max-height: none !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 10px !important;
+
+  margin: 0 !important;
+
+  padding: 14px 24px !important;
+
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: rgba(197, 139, 34, 0.55) !important;
+
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+
+  letter-spacing: -0.012em !important;
+  text-transform: none !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.035) !important;
+
+  outline: none !important;
+
+  opacity: 1 !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 300ms ease !important;
+}
+
+/*
+ * EXACT AUTH HOVER
+ *
+ * Admin button:
+ * hover border = #c58b22 / 80%
+ * hover surface = #fffaf0
+ * halo = 4px rgba(245,179,53,.11)
+ * warm shadow = rgba(196,135,27,.13)
+ */
+
+html body .st-checkout-v2 button.st-checkout-continue-auth:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+  transform: none !important;
+}
+
+/*
+ * Keyboard focus uses the same mustard language
+ * as the authentication controls.
+ */
+
+html body .st-checkout-v2 button.st-checkout-continue-auth:focus-visible {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #ffffff !important;
+
+  outline: none !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.15) !important;
+}
+
+/*
+ * Gentle physical press.
+ */
+
+html body .st-checkout-v2 button.st-checkout-continue-auth:active {
+  border-color: rgba(197, 139, 34, 0.85) !important;
+
+  background: #fffaf0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.09),
+    0 5px 16px rgba(196, 135, 27, 0.09) !important;
+
+  transform: scale(0.992) !important;
+}
+
+/*
+ * Prevent old checkout pseudo-elements from creating
+ * mustard fills, overlays or giant effects.
+ */
+
+html body .st-checkout-v2 button.st-checkout-continue-auth::before,
+html body .st-checkout-v2 button.st-checkout-continue-auth::after {
+  content: none !important;
+
+  display: none !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Icon follows the same black foreground.
+ */
+
+html body .st-checkout-v2 button.st-checkout-continue-auth svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  flex: 0 0 auto !important;
+
+  color: #1d1d1f !important;
+
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+}
+
+/*
+ * Strong final protection against generic checkout
+ * submit / CTA mustard-fill rules.
+ */
+
+html body .st-checkout-v2 form button[type="submit"].st-checkout-continue-auth {
+  border-color: rgba(197, 139, 34, 0.55) !important;
+
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+}
+
+html
+  body
+  .st-checkout-v2
+  form
+  button[type="submit"].st-checkout-continue-auth:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+}
+
+/*
+ * Keep it compact on mobile.
+ */
+
+@media (max-width: 640px) {
+  html body .st-checkout-v2 button.st-checkout-continue-auth {
+    min-height: 46px !important;
+
+    padding: 13px 18px !important;
+
+    border-radius: 14px !important;
+
+    font-size: 12.5px !important;
+  }
+}
+
+/* === ST CHECKOUT CONTINUE EXACT AUTH END === */
+
+/* === ST CHECKOUT CONTINUE ABSOLUTE FINAL START === */
+
+/*
+ * AUTHORITATIVE CONTINUE TO REVIEW BUTTON
+ *
+ * Unique ID deliberately gives this rule higher specificity
+ * than the legacy checkout CTA architecture.
+ */
+
+html body #st-checkout-continue-review {
+  all: unset !important;
+
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: flex !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 10px !important;
+
+  margin: 0 !important;
+  padding: 0 22px !important;
+
+  border: 1px solid rgba(197, 139, 34, 0.55) !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Helvetica Neue", Arial, sans-serif !important;
+
+  font-size: 13px !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  letter-spacing: -0.012em !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  outline: none !important;
+
+  opacity: 1 !important;
+
+  cursor: pointer !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.035) !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 180ms ease !important;
+}
+
+/*
+ * Exact interaction recipe from Admin Login:
+ *
+ * hover:border-[#c58b22]/80
+ * hover:bg-[#fffaf0]
+ * halo: rgba(245,179,53,.11)
+ * warm shadow: rgba(196,135,27,.13)
+ */
+
+html body #st-checkout-continue-review:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+  transform: none !important;
+}
+
+html body #st-checkout-continue-review:focus,
+html body #st-checkout-continue-review:focus-visible {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  outline: none !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.15) !important;
+}
+
+html body #st-checkout-continue-review:active {
+  border-color: rgba(197, 139, 34, 0.85) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.09),
+    0 5px 16px rgba(196, 135, 27, 0.09) !important;
+
+  transform: scale(0.992) !important;
+}
+
+/*
+ * Kill every legacy mustard overlay/pseudo-element.
+ */
+
+html body #st-checkout-continue-review::before,
+html body #st-checkout-continue-review::after {
+  content: none !important;
+
+  display: none !important;
+
+  position: static !important;
+
+  width: 0 !important;
+  height: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+
+  box-shadow: none !important;
+
+  opacity: 0 !important;
+}
+
+/*
+ * Icon.
+ */
+
+html body #st-checkout-continue-review svg {
+  display: block !important;
+
+  width: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+
+  height: 16px !important;
+  min-height: 16px !important;
+  max-height: 16px !important;
+
+  flex: 0 0 16px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #1d1d1f !important;
+
+  stroke: #1d1d1f !important;
+  stroke-width: 1.8 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * EXTRA PROTECTION
+ *
+ * These selectors intentionally beat generic:
+ * button[type=submit]
+ * form button
+ * checkout CTA
+ * primary CTA
+ * mustard CTA
+ * rules.
+ */
+
+html body .st-checkout-v2 #st-checkout-continue-review,
+html body .st-checkout-v2 form #st-checkout-continue-review,
+html body .st-checkout-v2 form button#st-checkout-continue-review,
+html body button#st-checkout-continue-review.st-checkout-continue-review {
+  border: 1px solid rgba(197, 139, 34, 0.55) !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+}
+
+html body .st-checkout-v2 #st-checkout-continue-review:hover,
+html body .st-checkout-v2 form #st-checkout-continue-review:hover,
+html body .st-checkout-v2 form button#st-checkout-continue-review:hover,
+html body button#st-checkout-continue-review.st-checkout-continue-review:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+}
+
+@media (max-width: 640px) {
+  html body #st-checkout-continue-review {
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+
+    padding: 0 18px !important;
+
+    border-radius: 14px !important;
+
+    font-size: 12.5px !important;
+  }
+}
+
+/* === ST CHECKOUT CONTINUE ABSOLUTE FINAL END === */
+
+/* === ST CONTINUE REVIEW DOM PROTECTION START === */
+
+html body #st-checkout-continue-review::before,
+html body #st-checkout-continue-review::after {
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html body #st-checkout-continue-review svg {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  color: #1d1d1f !important;
+  stroke: #1d1d1f !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* === ST CONTINUE REVIEW DOM PROTECTION END === */
+
+/* === ST CHECKOUT TRUE CONTINUE BUTTON START === */
+
+/*
+ * Continue to review
+ *
+ * Exact Stereophonie auth-button interaction:
+ * white default
+ * warm cream hover
+ * mustard outline
+ * mustard halo
+ *
+ * Unique ID intentionally outranks old checkout CTA rules.
+ */
+
+html body button#st-checkout-continue-review {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  width: 100% !important;
+
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+
+  margin: 0 !important;
+  padding: 0 22px !important;
+
+  border: 1px solid rgba(197, 139, 34, 0.55) !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  letter-spacing: -0.012em !important;
+  text-transform: none !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  outline: none !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.035) !important;
+
+  transform: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 180ms ease !important;
+}
+
+/*
+ * Exact Admin Login hover behavior.
+ */
+
+html body button#st-checkout-continue-review:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+  transform: none !important;
+}
+
+html body button#st-checkout-continue-review:active {
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.09),
+    0 5px 16px rgba(196, 135, 27, 0.09) !important;
+
+  transform: scale(0.992) !important;
+}
+
+html body button#st-checkout-continue-review:focus-visible {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  outline: none !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.15) !important;
+}
+
+/*
+ * Kill any old pseudo-element mustard overlay.
+ */
+
+html body button#st-checkout-continue-review::before,
+html body button#st-checkout-continue-review::after {
+  content: none !important;
+  display: none !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/*
+ * Check icon.
+ */
+
+html body button#st-checkout-continue-review svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  flex: 0 0 16px !important;
+
+  color: #1d1d1f !important;
+
+  stroke: #1d1d1f !important;
+  stroke-width: 1.8 !important;
+
+  background: transparent !important;
+}
+
+/*
+ * Strong protection against generic checkout CTA selectors.
+ */
+
+html body .st-checkout-v2 button#st-checkout-continue-review,
+html body .st-checkout-v2 form button#st-checkout-continue-review,
+html body form button#st-checkout-continue-review.st-checkout-continue-review {
+  border: 1px solid rgba(197, 139, 34, 0.55) !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+}
+
+html body .st-checkout-v2 button#st-checkout-continue-review:hover,
+html body .st-checkout-v2 form button#st-checkout-continue-review:hover,
+html
+  body
+  form
+  button#st-checkout-continue-review.st-checkout-continue-review:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+}
+
+@media (max-width: 640px) {
+  html body button#st-checkout-continue-review {
+    height: 46px !important;
+    min-height: 46px !important;
+    max-height: 46px !important;
+
+    padding: 0 18px !important;
+
+    border-radius: 14px !important;
+
+    font-size: 12.5px !important;
+  }
+}
+
+/* === ST CHECKOUT TRUE CONTINUE BUTTON END === */
+
+/* === ST SAVED ADDRESS COMPACT EDIT START === */
+
+/*
+ * Right-side edit area.
+ *
+ * It no longer behaves as a full-height column.
+ * It only provides comfortable spacing for the
+ * compact pencil control.
+ */
+
+html body .st-checkout-saved-address-edit-slot {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  width: auto !important;
+  min-width: 58px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  align-self: stretch !important;
+
+  flex: 0 0 auto !important;
+
+  padding: 10px 14px 10px 4px !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Compact professional pencil button.
+ *
+ * Same restrained Stereophonie interaction language
+ * as the auth/admin controls.
+ */
+
+html body button.st-checkout-saved-address-edit {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: inline-flex !important;
+
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+
+  flex: 0 0 40px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 12px !important;
+
+  background: rgba(255, 255, 255, 0.86) !important;
+  background-color: rgba(255, 255, 255, 0.86) !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.035) !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  outline: none !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 180ms ease !important;
+}
+
+/*
+ * Exact warm hover language used elsewhere on the site.
+ */
+
+html body button.st-checkout-saved-address-edit:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+html body button.st-checkout-saved-address-edit:active {
+  transform: scale(0.96) !important;
+}
+
+html body button.st-checkout-saved-address-edit:focus-visible {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  outline: none !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.15) !important;
+}
+
+/*
+ * Prevent any inherited edit-button decoration.
+ */
+
+html body button.st-checkout-saved-address-edit::before,
+html body button.st-checkout-saved-address-edit::after {
+  content: none !important;
+
+  display: none !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Pencil icon.
+ */
+
+html body button.st-checkout-saved-address-edit svg {
+  display: block !important;
+
+  width: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+
+  height: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #1d1d1f !important;
+
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Kill the legacy "last child gets a divider"
+ * behavior for this new dedicated edit control.
+ */
+
+html
+  body
+  .st-checkout-saved-address-v2.is-selected
+  button.st-checkout-saved-address-edit,
+html body .st-checkout-saved-address-v2 button.st-checkout-saved-address-edit {
+  border-left: 1px solid rgba(29, 29, 31, 0.09) !important;
+}
+
+@media (max-width: 640px) {
+  html body .st-checkout-saved-address-edit-slot {
+    min-width: 52px !important;
+
+    padding: 8px 10px 8px 2px !important;
+  }
+
+  html body button.st-checkout-saved-address-edit {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    flex-basis: 38px !important;
+
+    border-radius: 11px !important;
+  }
+
+  html body button.st-checkout-saved-address-edit svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}
+
+/* === ST SAVED ADDRESS COMPACT EDIT END === */
+
+/* === ST SAVED ADDRESS EDIT GLOW CLIP FIX START === */
+
+/*
+ * The saved-address card previously clipped descendants
+ * with overflow:hidden.
+ *
+ * The compact edit button now has a mustard halo on hover,
+ * so the card must allow that halo to render naturally.
+ */
+
+html body .st-checkout-saved-address-v2 {
+  overflow: visible !important;
+}
+
+/*
+ * Keep the edit area completely transparent and allow
+ * the hover shadow to extend in every direction.
+ */
+
+html body .st-checkout-saved-address-edit-slot {
+  position: relative !important;
+
+  overflow: visible !important;
+
+  isolation: isolate !important;
+
+  z-index: 4 !important;
+
+  background: transparent !important;
+  background-image: none !important;
+}
+
+/*
+ * Pencil button sits above the card content while hovered.
+ */
+
+html body button.st-checkout-saved-address-edit {
+  position: relative !important;
+
+  overflow: visible !important;
+
+  z-index: 5 !important;
+}
+
+html body button.st-checkout-saved-address-edit:hover,
+html body button.st-checkout-saved-address-edit:focus-visible {
+  z-index: 20 !important;
+
+  overflow: visible !important;
+}
+
+/*
+ * Preserve the exact professional hover treatment,
+ * but ensure the halo is symmetrical around all four sides.
+ */
+
+html body button.st-checkout-saved-address-edit:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+  transform: translateY(-1px) !important;
+}
+
+/*
+ * Ensure the neighboring address-selection button cannot
+ * visually cover the left part of the pencil glow.
+ */
+
+html body .st-checkout-saved-address-v2 > div > button:first-child {
+  position: relative !important;
+
+  z-index: 1 !important;
+}
+
+/*
+ * Keep the selected card itself visually unchanged.
+ */
+
+html body .st-checkout-saved-address-v2.is-selected {
+  border-radius: 18px !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.11),
+    0 10px 30px rgba(189, 116, 0, 0.1) !important;
+}
+
+/* === ST SAVED ADDRESS EDIT GLOW CLIP FIX END === */
+
+/* === ST SAVED ADDRESS PENCIL CLEAN HOVER START === */
+
+/*
+ * Protected edit-button zone.
+ *
+ * Enough breathing room on every side so the glow never
+ * touches or visually merges with the selected-address card.
+ */
+
+html body .st-checkout-saved-address-edit-slot {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: flex !important;
+
+  width: 70px !important;
+  min-width: 70px !important;
+  max-width: 70px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  flex: 0 0 70px !important;
+  align-self: stretch !important;
+
+  margin: 0 !important;
+
+  padding: 12px !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  isolation: auto !important;
+
+  z-index: 10 !important;
+}
+
+/*
+ * Pencil button — neutral default state.
+ */
+
+html body button.st-checkout-saved-address-edit {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: inline-flex !important;
+
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+
+  flex: 0 0 40px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: visible !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-left: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  border-radius: 12px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.035) !important;
+
+  outline: none !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  z-index: 20 !important;
+
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 180ms ease !important;
+}
+
+/*
+ * Clean symmetrical mustard hover.
+ *
+ * No giant directional 30px shadow.
+ * The aura expands evenly around all four sides.
+ */
+
+html body button.st-checkout-saved-address-edit:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+  border-left-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 0 18px rgba(196, 135, 27, 0.13) !important;
+
+  transform: translateY(-1px) !important;
+
+  z-index: 30 !important;
+}
+
+html body button.st-checkout-saved-address-edit:focus-visible {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.13),
+    0 0 16px rgba(196, 135, 27, 0.1) !important;
+}
+
+html body button.st-checkout-saved-address-edit:active {
+  transform: scale(0.96) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.09),
+    0 0 10px rgba(196, 135, 27, 0.08) !important;
+}
+
+/*
+ * Absolutely remove any old decorative layers.
+ */
+
+html body button.st-checkout-saved-address-edit::before,
+html body button.st-checkout-saved-address-edit::after,
+html body .st-checkout-saved-address-edit-slot::before,
+html body .st-checkout-saved-address-edit-slot::after {
+  content: none !important;
+
+  display: none !important;
+
+  position: static !important;
+
+  width: 0 !important;
+  height: 0 !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  opacity: 0 !important;
+}
+
+/*
+ * Remove legacy saved-address rules that treat the final
+ * button like the old full-height edit column.
+ */
+
+html
+  body
+  .st-checkout-saved-address-v2.is-selected
+  .st-checkout-saved-address-edit-slot,
+html body .st-checkout-saved-address-v2 .st-checkout-saved-address-edit-slot {
+  border: 0 !important;
+  border-left: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+html
+  body
+  .st-checkout-saved-address-v2.is-selected
+  button.st-checkout-saved-address-edit,
+html body .st-checkout-saved-address-v2 button.st-checkout-saved-address-edit {
+  border-left-width: 1px !important;
+  border-left-style: solid !important;
+  border-left-color: rgba(29, 29, 31, 0.1) !important;
+
+  background: #ffffff !important;
+}
+
+html
+  body
+  .st-checkout-saved-address-v2.is-selected
+  button.st-checkout-saved-address-edit:hover,
+html
+  body
+  .st-checkout-saved-address-v2
+  button.st-checkout-saved-address-edit:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 0 18px rgba(196, 135, 27, 0.13) !important;
+}
+
+/*
+ * Pencil.
+ */
+
+html body button.st-checkout-saved-address-edit svg {
+  position: relative !important;
+
+  display: block !important;
+
+  width: 18px !important;
+  min-width: 18px !important;
+
+  height: 18px !important;
+  min-height: 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #1d1d1f !important;
+
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  z-index: 2 !important;
+}
+
+@media (max-width: 640px) {
+  html body .st-checkout-saved-address-edit-slot {
+    width: 62px !important;
+    min-width: 62px !important;
+    max-width: 62px !important;
+
+    flex-basis: 62px !important;
+
+    padding: 10px !important;
+  }
+
+  html body button.st-checkout-saved-address-edit {
+    width: 38px !important;
+    min-width: 38px !important;
+    max-width: 38px !important;
+
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+
+    flex-basis: 38px !important;
+
+    border-radius: 11px !important;
+  }
+}
+
+/* === ST SAVED ADDRESS PENCIL CLEAN HOVER END === */
+
+/* === ST PHONE DIVIDER CLEAN AUTHORITY START === */
+
+/*
+ * AUTHORITATIVE PHONE FIELD
+ *
+ * The outer wrapper owns ALL exterior rounding.
+ * Internal children are completely square at the seam.
+ */
+
+html body .st-checkout-v2 [data-checkout-phone="true"] {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  border-radius: 14px !important;
+}
+
+/*
+ * Country selector shell.
+ *
+ * CRITICAL:
+ * zero border-radius everywhere.
+ *
+ * The outer parent clips its LEFT side into the parent's
+ * rounded exterior corner, so this child does not need
+ * any radius of its own.
+ */
+
+html
+  body
+  .st-checkout-v2
+  [data-checkout-phone="true"]
+  > .st-checkout-phone-country-shell {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: flex !important;
+
+  align-items: center !important;
+
+  flex-shrink: 0 !important;
+
+  align-self: stretch !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+
+  /*
+   * THE ONLY INTERNAL DIVIDER.
+   */
+  border-right: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  /*
+   * ZERO CURVES.
+   */
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+/*
+ * Every visual child inside the selector shell must remain
+ * square on the internal RIGHT seam.
+ */
+
+html
+  body
+  .st-checkout-v2
+  [data-checkout-phone="true"]
+  > .st-checkout-phone-country-shell
+  > * {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/*
+ * Invisible native country select.
+ */
+
+html body .st-checkout-v2 .st-checkout-phone-country-shell select {
+  position: absolute !important;
+
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  opacity: 0 !important;
+
+  cursor: pointer !important;
+}
+
+/*
+ * Remove all hidden decorative layers from this shell.
+ */
+
+html body .st-checkout-v2 .st-checkout-phone-country-shell::before,
+html body .st-checkout-v2 .st-checkout-phone-country-shell::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Phone-number input.
+ *
+ * It must be completely square on its LEFT side.
+ * The country shell's border-right is the divider.
+ */
+
+html
+  body
+  .st-checkout-v2
+  [data-checkout-phone="true"]
+  > .st-checkout-phone-country-shell
+  + input#phone {
+  box-sizing: border-box !important;
+
+  min-width: 0 !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+
+  /*
+   * Also remove independent right rounding.
+   * Parent owns outer right curvature.
+   */
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  outline: none !important;
+}
+
+/*
+ * Focus changes color only.
+ * Geometry NEVER changes.
+ */
+
+html
+  body
+  .st-checkout-v2
+  [data-checkout-phone="true"]:focus-within
+  > .st-checkout-phone-country-shell {
+  border-right: 1px solid rgba(197, 139, 34, 0.3) !important;
+
+  border-radius: 0 !important;
+}
+
+/*
+ * Prevent the old generic `.relative` or direct-child
+ * architecture from ever rounding this shell again.
+ */
+
+html
+  body
+  .st-checkout-v2
+  [data-checkout-phone="true"]
+  > div.st-checkout-phone-country-shell,
+html
+  body
+  .st-checkout-v2
+  [data-checkout-phone="true"]
+  .st-checkout-phone-country-shell {
+  border-radius: 0 !important;
+
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+@media (max-width: 640px) {
+  html
+    body
+    .st-checkout-v2
+    [data-checkout-phone="true"]
+    > .st-checkout-phone-country-shell {
+    border-radius: 0 !important;
+  }
+
+  html
+    body
+    .st-checkout-v2
+    [data-checkout-phone="true"]
+    > .st-checkout-phone-country-shell
+    + input#phone {
+    border-radius: 0 !important;
+  }
+}
+
+/* === ST PHONE DIVIDER CLEAN AUTHORITY END === */
+
+/* === ST PHONE ONE TRUE VERTICAL DIVIDER START === */
+
+/*
+ * COUNTRY-CODE SECTION
+ *
+ * Keep its exact width and interaction area.
+ * No curved internal edge.
+ */
+
+html body .st-checkout-phone-country-shell {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  flex: 0 0 132px !important;
+
+  width: 132px !important;
+  min-width: 132px !important;
+  max-width: 132px !important;
+
+  align-self: stretch !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * THE ONE TRUE DIVIDER
+ *
+ * A physical 1px line.
+ * Perfectly straight.
+ * No radius.
+ * No curved cap.
+ */
+
+html body .st-checkout-phone-country-shell::after {
+  content: "" !important;
+
+  position: absolute !important;
+
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  z-index: 30 !important;
+
+  display: block !important;
+
+  width: 1px !important;
+  height: auto !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.11) !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  pointer-events: none !important;
+
+  transform: none !important;
+}
+
+/*
+ * Do not let any other pseudo-element draw another shape.
+ */
+
+html body .st-checkout-phone-country-shell::before {
+  content: none !important;
+
+  display: none !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Country SELECT remains restricted to the left shell only.
+ */
+
+html body .st-checkout-phone-country-shell select {
+  position: absolute !important;
+
+  inset: 0 !important;
+
+  z-index: 10 !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  opacity: 0 !important;
+
+  cursor: pointer !important;
+}
+
+/*
+ * Phone-number input stays independent on the right.
+ */
+
+html body .st-checkout-phone-country-shell + input#phone {
+  position: relative !important;
+
+  z-index: 1 !important;
+
+  min-width: 0 !important;
+
+  flex: 1 1 auto !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  cursor: text !important;
+}
+
+/*
+ * When the whole phone control has focus,
+ * only make the straight divider slightly warmer.
+ */
+
+html
+  body
+  [data-checkout-phone="true"]:focus-within
+  .st-checkout-phone-country-shell::after {
+  background: rgba(197, 139, 34, 0.32) !important;
+}
+
+/*
+ * Desktop width from the existing design.
+ */
+
+@media (min-width: 640px) {
+  html body .st-checkout-phone-country-shell {
+    flex-basis: 142px !important;
+
+    width: 142px !important;
+    min-width: 142px !important;
+    max-width: 142px !important;
+  }
+}
+
+/* === ST PHONE ONE TRUE VERTICAL DIVIDER END === */
+
+/* === ST CHECKOUT PHYSICAL PHONE DIVIDER START === */
+
+/*
+ * REAL DOM DIVIDER
+ *
+ * This is an actual element between the country selector
+ * and the phone-number input.
+ *
+ * It cannot inherit a rounded right edge because it has
+ * no border radius and no container geometry.
+ */
+
+html body .st-checkout-v2 .st-checkout-phone-divider,
+html body .st-checkout-phone-divider {
+  box-sizing: border-box !important;
+
+  display: block !important;
+
+  width: 1px !important;
+  min-width: 1px !important;
+  max-width: 1px !important;
+
+  height: auto !important;
+  min-height: 100% !important;
+
+  align-self: stretch !important;
+
+  flex: 0 0 1px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.12) !important;
+  background-color: rgba(29, 29, 31, 0.12) !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  pointer-events: none !important;
+
+  position: relative !important;
+
+  z-index: 20 !important;
+}
+
+/*
+ * Country shell no longer needs to draw any border itself.
+ */
+
+html body .st-checkout-v2 .st-checkout-phone-country-shell,
+html body .st-checkout-phone-country-shell {
+  border-right: 0 !important;
+
+  border-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Disable the old pseudo divider so there is only ONE line.
+ */
+
+html body .st-checkout-phone-country-shell::after {
+  content: none !important;
+
+  display: none !important;
+
+  width: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Phone number area begins immediately after the physical
+ * divider and has no independent curved left edge.
+ */
+
+html body .st-checkout-phone-divider + input#phone {
+  min-width: 0 !important;
+
+  flex: 1 1 auto !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Slightly warmer divider while interacting with phone field.
+ */
+
+html body [data-checkout-phone="true"]:focus-within .st-checkout-phone-divider {
+  background: rgba(197, 139, 34, 0.3) !important;
+  background-color: rgba(197, 139, 34, 0.3) !important;
+}
+
+/* === ST CHECKOUT PHYSICAL PHONE DIVIDER END === */
+
+/* === ST CHECKOUT PROGRESS RADIO ARCHITECTURE START === */
+
+/*
+ * Checkout progress
+ *
+ * Uses the same visual selection language as the
+ * Delivery / Pick up in store configuration cards:
+ *
+ * selected = mustard ring + center dot
+ * inactive = quiet neutral ring
+ */
+
+html body .st-checkout-progress-radio {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+
+  padding: 10px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.075) !important;
+  border-radius: 20px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 10px 34px rgba(29, 29, 31, 0.045) !important;
+}
+
+html body .st-checkout-progress-radio__grid {
+  display: grid !important;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+
+  gap: 10px !important;
+
+  width: 100% !important;
+}
+
+/*
+ * Individual step
+ */
+
+html body .st-checkout-progress-radio__step {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: flex !important;
+
+  min-width: 0 !important;
+  min-height: 62px !important;
+
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  gap: 14px !important;
+
+  padding: 13px 16px !important;
+
+  border: 1px solid transparent !important;
+  border-radius: 16px !important;
+
+  background: transparent !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease !important;
+}
+
+/*
+ * Current step — same restrained selected architecture
+ * as Delivery.
+ */
+
+html body .st-checkout-progress-radio__step.is-active {
+  border-color: rgba(228, 173, 67, 0.68) !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(253, 183, 62, 0.13),
+    rgba(253, 183, 62, 0.055) 58%,
+    rgba(255, 255, 255, 0.92)
+  ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.065),
+    0 7px 20px rgba(189, 116, 0, 0.055) !important;
+}
+
+/*
+ * Text
+ */
+
+html body .st-checkout-progress-radio__copy {
+  min-width: 0 !important;
+
+  flex: 1 1 auto !important;
+}
+
+html body .st-checkout-progress-radio__title {
+  margin: 0 !important;
+
+  color: rgba(29, 29, 31, 0.42) !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+}
+
+html body .st-checkout-progress-radio__description {
+  margin: 5px 0 0 !important;
+
+  color: rgba(29, 29, 31, 0.29) !important;
+
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+
+  letter-spacing: 0 !important;
+}
+
+html
+  body
+  .st-checkout-progress-radio__step.is-active
+  .st-checkout-progress-radio__title {
+  color: #1d1d1f !important;
+}
+
+html
+  body
+  .st-checkout-progress-radio__step.is-active
+  .st-checkout-progress-radio__description {
+  color: rgba(29, 29, 31, 0.56) !important;
+}
+
+/*
+ * Completed steps stay readable but quieter than current.
+ */
+
+html
+  body
+  .st-checkout-progress-radio__step.is-complete
+  .st-checkout-progress-radio__title {
+  color: rgba(29, 29, 31, 0.62) !important;
+}
+
+html
+  body
+  .st-checkout-progress-radio__step.is-complete
+  .st-checkout-progress-radio__description {
+  color: rgba(29, 29, 31, 0.4) !important;
+}
+
+/*
+ * Indicator
+ *
+ * Mirrors Delivery / Pick up in store:
+ * small ring, centered inner dot.
+ */
+
+html body .st-checkout-progress-radio__indicator {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: inline-grid !important;
+
+  width: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+
+  height: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+
+  place-items: center !important;
+
+  flex: 0 0 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1.5px solid rgba(29, 29, 31, 0.16) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 200ms ease !important;
+}
+
+html body .st-checkout-progress-radio__indicator-dot {
+  display: block !important;
+
+  width: 7px !important;
+  height: 7px !important;
+
+  border-radius: 999px !important;
+
+  background: transparent !important;
+
+  transform: scale(0.65) !important;
+
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease !important;
+}
+
+/*
+ * Active radio — exact mustard selection language.
+ */
+
+html
+  body
+  .st-checkout-progress-radio__step.is-active
+  .st-checkout-progress-radio__indicator {
+  border-color: #e4ad43 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.09) !important;
+}
+
+html
+  body
+  .st-checkout-progress-radio__step.is-active
+  .st-checkout-progress-radio__indicator-dot {
+  background: #fdb73e !important;
+
+  transform: scale(1) !important;
+}
+
+/*
+ * Completed indicator:
+ * subtle mustard ring, no filled center.
+ *
+ * This keeps the CURRENT step visually authoritative.
+ */
+
+html
+  body
+  .st-checkout-progress-radio__step.is-complete
+  .st-checkout-progress-radio__indicator {
+  border-color: rgba(228, 173, 67, 0.55) !important;
+
+  background: #fffaf0 !important;
+}
+
+/*
+ * No old circles / numbered badges should survive.
+ */
+
+html body .st-checkout-progress-radio [class*="number"],
+html body .st-checkout-progress-radio [class*="badge"] {
+  box-shadow: none !important;
+}
+
+/*
+ * Mobile:
+ * three compact steps remain in one row when practical,
+ * with reduced typography and spacing.
+ */
+
+@media (max-width: 680px) {
+  html body .st-checkout-progress-radio {
+    padding: 7px !important;
+
+    border-radius: 18px !important;
+  }
+
+  html body .st-checkout-progress-radio__grid {
+    gap: 6px !important;
+  }
+
+  html body .st-checkout-progress-radio__step {
+    min-height: 58px !important;
+
+    gap: 8px !important;
+
+    padding: 10px 9px !important;
+
+    border-radius: 13px !important;
+  }
+
+  html body .st-checkout-progress-radio__title {
+    font-size: 11.5px !important;
+  }
+
+  html body .st-checkout-progress-radio__description {
+    margin-top: 3px !important;
+
+    font-size: 9px !important;
+    line-height: 1.25 !important;
+  }
+
+  html body .st-checkout-progress-radio__indicator {
+    width: 16px !important;
+    min-width: 16px !important;
+    max-width: 16px !important;
+
+    height: 16px !important;
+    min-height: 16px !important;
+    max-height: 16px !important;
+
+    flex-basis: 16px !important;
+  }
+
+  html body .st-checkout-progress-radio__indicator-dot {
+    width: 6px !important;
+    height: 6px !important;
+  }
+}
+
+/*
+ * Very narrow phones:
+ * hide subtitles before making the architecture cramped.
+ */
+
+@media (max-width: 420px) {
+  html body .st-checkout-progress-radio__step {
+    min-height: 50px !important;
+
+    padding: 9px 8px !important;
+  }
+
+  html body .st-checkout-progress-radio__description {
+    display: none !important;
+  }
+
+  html body .st-checkout-progress-radio__title {
+    font-size: 10.5px !important;
+  }
+}
+
+/* === ST CHECKOUT PROGRESS RADIO ARCHITECTURE END === */
+
+/* === ST CHECKOUT REAL SHARED CONTAINER START === */
+
+/*
+ * ============================================================
+ * ONE PHYSICAL CHECKOUT CONTAINER
+ * ============================================================
+ *
+ * Header
+ * Progress
+ * Customer/Fulfillment/Form + Order Terminal
+ *
+ * are now children of the SAME st-checkout-content element.
+ *
+ * Therefore none of the top components are allowed to create
+ * their own width, max-width, horizontal margin or offset.
+ */
+
+html body .st-checkout-page-stack {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  /*
+   * Mobile major-section rhythm.
+   */
+  gap: 24px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/*
+ * At sm and above the real checkout left column already uses:
+ *
+ * space-y-8 = 32px
+ *
+ * Use that exact same value for:
+ *
+ * Header -> Progress
+ * Progress -> Customer/Order
+ */
+
+@media (min-width: 640px) {
+  html body .st-checkout-page-stack {
+    gap: 32px !important;
+  }
+}
+
+/*
+ * ============================================================
+ * REMOVE ALL INDEPENDENT TOP WIDTH
+ * ============================================================
+ */
+
+html body .st-checkout-page-stack .st-checkout-top-hero,
+html body .st-checkout-page-stack .st-checkout-progress-three {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  margin: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+/*
+ * Header itself keeps its internal card padding,
+ * but may not change its outer geometry.
+ */
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-compact-head.st-checkout-top-hero {
+  margin: 0 !important;
+
+  max-width: none !important;
+
+  align-self: stretch !important;
+}
+
+/*
+ * ============================================================
+ * PROGRESS WRAPPER
+ * ============================================================
+ */
+
+html body .st-checkout-page-stack .st-checkout-progress-three {
+  border: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  overflow: visible !important;
+}
+
+html body .st-checkout-progress-three__grid {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+
+  width: 100% !important;
+
+  gap: 12px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/*
+ * No connector line.
+ */
+
+html body .st-checkout-progress-three__grid::before,
+html body .st-checkout-progress-three__grid::after {
+  content: none !important;
+  display: none !important;
+}
+
+/*
+ * ============================================================
+ * THREE CLEAR, EQUAL STEP CARDS
+ * ============================================================
+ */
+
+html body .st-checkout-progress-three__card {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    18px !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  height: 68px !important;
+  min-height: 68px !important;
+  max-height: 68px !important;
+
+  align-items: center !important;
+
+  column-gap: 14px !important;
+
+  margin: 0 !important;
+
+  padding: 13px 15px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
+  border-radius: 15px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 3px 12px rgba(29, 29, 31, 0.025) !important;
+}
+
+/*
+ * Review and Confirmation stay visibly defined.
+ */
+
+html body .st-checkout-progress-three__card:not(.is-active) {
+  border-color: rgba(29, 29, 31, 0.11) !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 3px 12px rgba(29, 29, 31, 0.025) !important;
+}
+
+/*
+ * Current step.
+ */
+
+html body .st-checkout-progress-three__card.is-active {
+  border-color: #e4ad43 !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(253, 183, 62, 0.1),
+    rgba(253, 183, 62, 0.025) 62%,
+    #ffffff 100%
+  ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.075),
+    0 7px 20px rgba(189, 116, 0, 0.065) !important;
+}
+
+/*
+ * ============================================================
+ * CENTER TEXT IDENTICALLY
+ * ============================================================
+ */
+
+html body .st-checkout-progress-three__copy {
+  display: flex !important;
+
+  min-width: 0 !important;
+
+  flex-direction: column !important;
+
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  align-self: center !important;
+
+  gap: 4px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html body .st-checkout-progress-three__title,
+html body .st-checkout-progress-three__description {
+  display: block !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-family: inherit !important;
+}
+
+html body .st-checkout-progress-three__title {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 16px !important;
+
+  letter-spacing: -0.01em !important;
+}
+
+html body .st-checkout-progress-three__description {
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  line-height: 13px !important;
+}
+
+/*
+ * ============================================================
+ * INDICATORS
+ * ============================================================
+ */
+
+html body .st-checkout-progress-three__indicator {
+  align-self: center !important;
+  justify-self: end !important;
+
+  margin: 0 !important;
+}
+
+/*
+ * ============================================================
+ * MOBILE
+ * ============================================================
+ */
+
+@media (max-width: 639px) {
+  html body .st-checkout-progress-three__grid {
+    grid-template-columns: 1fr !important;
+
+    gap: 8px !important;
+  }
+
+  html body .st-checkout-progress-three__card {
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+
+    padding: 10px 12px !important;
+
+    border-radius: 14px !important;
+  }
+}
+
+/* === ST CHECKOUT REAL SHARED CONTAINER END === */
+
+/* === ST CHECKOUT TOP TYPOGRAPHY FINAL START === */
+
+/*
+ * Keep the approved top-card geometry.
+ * Only normalize the typography inside it.
+ */
+
+html body .st-checkout-top-hero {
+  padding: 24px 26px !important;
+}
+
+/*
+ * CHECKOUT eyebrow
+ */
+
+html body .st-checkout-top-hero .st-checkout-compact-head__eyebrow {
+  margin: 0 !important;
+
+  font-family: inherit !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+}
+
+/*
+ * Delivery details
+ */
+
+html body .st-checkout-top-hero h1 {
+  margin-top: 10px !important;
+  margin-bottom: 0 !important;
+
+  font-family: inherit !important;
+
+  font-size: 32px !important;
+  font-weight: 600 !important;
+  line-height: 1.04 !important;
+
+  letter-spacing: -0.045em !important;
+
+  color: #1d1d1f !important;
+}
+
+/*
+ * Supporting description
+ */
+
+html body .st-checkout-top-hero h1 + p {
+  margin-top: 10px !important;
+  margin-bottom: 0 !important;
+
+  max-width: 560px !important;
+
+  font-family: inherit !important;
+
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+
+  letter-spacing: -0.005em !important;
+
+  color: rgba(29, 29, 31, 0.5) !important;
+}
+
+/*
+ * Secure checkout chip
+ */
+
+html body .st-checkout-top-hero .st-checkout-compact-head__trust {
+  min-height: 54px !important;
+
+  padding: 11px 15px !important;
+
+  border-radius: 14px !important;
+}
+
+html body .st-checkout-top-hero .st-checkout-compact-head__trust svg {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+html body .st-checkout-top-hero .st-checkout-compact-head__trust strong {
+  font-size: 11.5px !important;
+  line-height: 1.25 !important;
+}
+
+html body .st-checkout-top-hero .st-checkout-compact-head__trust small {
+  margin-top: 3px !important;
+
+  font-size: 9.5px !important;
+  line-height: 1.35 !important;
+}
+
+/*
+ * Tablet
+ */
+
+@media (max-width: 900px) {
+  html body .st-checkout-top-hero {
+    padding: 22px !important;
+  }
+
+  html body .st-checkout-top-hero h1 {
+    font-size: 29px !important;
+  }
+
+  html body .st-checkout-top-hero h1 + p {
+    font-size: 12.5px !important;
+  }
+}
+
+/*
+ * Mobile
+ */
+
+@media (max-width: 640px) {
+  html body .st-checkout-top-hero {
+    padding: 20px !important;
+  }
+
+  html body .st-checkout-top-hero h1 {
+    margin-top: 8px !important;
+
+    font-size: 27px !important;
+    line-height: 1.05 !important;
+  }
+
+  html body .st-checkout-top-hero h1 + p {
+    margin-top: 8px !important;
+
+    font-size: 12px !important;
+  }
+
+  html body .st-checkout-top-hero .st-checkout-compact-head__trust {
+    min-height: 50px !important;
+
+    padding: 10px 13px !important;
+  }
+}
+
+/* === ST CHECKOUT TOP TYPOGRAPHY FINAL END === */
+
+/* === ST CHECKOUT TOP TRUE COMPACT TYPE START === */
+
+/*
+ * FINAL TOP-CARD TYPOGRAPHY
+ *
+ * Geometry is approved.
+ * Only scale the CONTENT inside the checkout hero.
+ */
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-compact-head.st-checkout-top-hero {
+  padding: 20px 22px !important;
+}
+
+/* CHECKOUT */
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-top-hero
+  .st-checkout-compact-head__eyebrow {
+  margin: 0 !important;
+
+  font-family: inherit !important;
+
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  line-height: 10px !important;
+
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+
+  color: #9a6200 !important;
+}
+
+/* Delivery details */
+
+html body .st-checkout-page-stack .st-checkout-top-hero h1 {
+  margin: 7px 0 0 !important;
+  padding: 0 !important;
+
+  font-family: inherit !important;
+
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  line-height: 1.02 !important;
+
+  letter-spacing: -0.04em !important;
+
+  color: #1d1d1f !important;
+}
+
+/* Description */
+
+html body .st-checkout-page-stack .st-checkout-top-hero h1 + p {
+  margin: 8px 0 0 !important;
+  padding: 0 !important;
+
+  max-width: 520px !important;
+
+  font-family: inherit !important;
+
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 17px !important;
+
+  letter-spacing: 0 !important;
+
+  color: rgba(29, 29, 31, 0.48) !important;
+}
+
+/*
+ * Secure checkout chip
+ */
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-top-hero
+  .st-checkout-compact-head__trust {
+  box-sizing: border-box !important;
+
+  min-height: 48px !important;
+
+  gap: 10px !important;
+
+  padding: 9px 13px !important;
+
+  border-radius: 13px !important;
+}
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-top-hero
+  .st-checkout-compact-head__trust
+  svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  flex: 0 0 15px !important;
+}
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-top-hero
+  .st-checkout-compact-head__trust
+  span {
+  gap: 2px !important;
+}
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-top-hero
+  .st-checkout-compact-head__trust
+  strong {
+  font-family: inherit !important;
+
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  line-height: 13px !important;
+
+  letter-spacing: -0.005em !important;
+}
+
+html
+  body
+  .st-checkout-page-stack
+  .st-checkout-top-hero
+  .st-checkout-compact-head__trust
+  small {
+  margin: 2px 0 0 !important;
+
+  font-family: inherit !important;
+
+  font-size: 8.5px !important;
+  font-weight: 400 !important;
+  line-height: 11px !important;
+
+  letter-spacing: 0 !important;
+}
+
+/*
+ * Tablet
+ */
+
+@media (max-width: 900px) {
+  html
+    body
+    .st-checkout-page-stack
+    .st-checkout-compact-head.st-checkout-top-hero {
+    padding: 18px 20px !important;
+  }
+
+  html body .st-checkout-page-stack .st-checkout-top-hero h1 {
+    font-size: 24px !important;
+  }
+
+  html body .st-checkout-page-stack .st-checkout-top-hero h1 + p {
+    font-size: 11.5px !important;
+  }
+}
+
+/*
+ * Mobile
+ */
+
+@media (max-width: 640px) {
+  html
+    body
+    .st-checkout-page-stack
+    .st-checkout-compact-head.st-checkout-top-hero {
+    padding: 17px !important;
+  }
+
+  html body .st-checkout-page-stack .st-checkout-top-hero h1 {
+    margin-top: 6px !important;
+
+    font-size: 22px !important;
+  }
+
+  html body .st-checkout-page-stack .st-checkout-top-hero h1 + p {
+    margin-top: 7px !important;
+
+    font-size: 11px !important;
+    line-height: 16px !important;
+  }
+
+  html
+    body
+    .st-checkout-page-stack
+    .st-checkout-top-hero
+    .st-checkout-compact-head__trust {
+    min-height: 44px !important;
+
+    padding: 8px 11px !important;
+  }
+}
+
+/* === ST CHECKOUT TOP TRUE COMPACT TYPE END === */
+
+/* === ST CHECKOUT SEGMENTED QUANTITY START === */
+
+/*
+ * ORDER TERMINAL QUANTITY SELECTOR
+ *
+ * Final architecture:
+ *
+ *        −  |  1  |  +
+ *
+ * One outer rounded control.
+ * Three clean internal cells.
+ * No circles inside the plus/minus cells.
+ */
+
+/*
+ * ------------------------------------------------------------
+ * MINUS + PLUS
+ * ------------------------------------------------------------
+ *
+ * Kill every old circular / pill / mustard-ring treatment
+ * applied directly to the quantity buttons.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"],
+html body .st-checkout-v2 button[aria-label="Increase quantity"] {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  display: inline-flex !important;
+
+  width: 46px !important;
+  min-width: 46px !important;
+  max-width: 46px !important;
+
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  /*
+   * Absolutely no individual rounded button.
+   */
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  outline: none !important;
+
+  transform: none !important;
+
+  overflow: hidden !important;
+
+  isolation: auto !important;
+
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease !important;
+}
+
+/*
+ * Destroy old pseudo-element circles / glows.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]::before,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]::after,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]::before,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: none !important;
+
+  box-shadow: none !important;
+
+  filter: none !important;
+}
+
+/*
+ * ------------------------------------------------------------
+ * TWO STRAIGHT INTERNAL DIVIDERS
+ * ------------------------------------------------------------
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"] {
+  border-right: 1px solid rgba(29, 29, 31, 0.1) !important;
+}
+
+html body .st-checkout-v2 button[aria-label="Increase quantity"] {
+  border-left: 1px solid rgba(29, 29, 31, 0.1) !important;
+}
+
+/*
+ * ------------------------------------------------------------
+ * HOVER
+ * ------------------------------------------------------------
+ *
+ * Hover belongs to the CELL itself.
+ * No circle appears.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-v2
+    button[aria-label="Decrease quantity"]:hover:not(:disabled),
+  html
+    body
+    .st-checkout-v2
+    button[aria-label="Increase quantity"]:hover:not(:disabled) {
+    border-radius: 0 !important;
+
+    background: rgba(253, 183, 62, 0.075) !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+  }
+}
+
+/*
+ * ------------------------------------------------------------
+ * DISABLED MINUS
+ * ------------------------------------------------------------
+ *
+ * Quantity = 1:
+ * simply quieter.
+ * Still part of the same segmented control.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:disabled,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:disabled {
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  color: rgba(29, 29, 31, 0.16) !important;
+
+  opacity: 1 !important;
+
+  box-shadow: none !important;
+
+  cursor: not-allowed !important;
+}
+
+/*
+ * Keep separator visible even while disabled.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:disabled {
+  border-right: 1px solid rgba(29, 29, 31, 0.08) !important;
+}
+
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:disabled {
+  border-left: 1px solid rgba(29, 29, 31, 0.08) !important;
+}
+
+/*
+ * ------------------------------------------------------------
+ * ICONS
+ * ------------------------------------------------------------
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"] svg,
+html body .st-checkout-v2 button[aria-label="Increase quantity"] svg {
+  display: block !important;
+
+  width: 18px !important;
+  height: 18px !important;
+
+  margin: 0 !important;
+
+  stroke-width: 1.8 !important;
+
+  color: currentColor !important;
+
+  transform: none !important;
+
+  filter: none !important;
+}
+
+/*
+ * ------------------------------------------------------------
+ * FOCUS
+ * ------------------------------------------------------------
+ *
+ * Keyboard accessibility without putting another circle
+ * inside the segmented control.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:focus-visible,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:focus-visible {
+  z-index: 2 !important;
+
+  border-radius: 0 !important;
+
+  outline: none !important;
+
+  background: rgba(253, 183, 62, 0.08) !important;
+
+  box-shadow: inset 0 0 0 2px rgba(228, 173, 67, 0.55) !important;
+}
+
+/*
+ * ------------------------------------------------------------
+ * MOBILE
+ * ------------------------------------------------------------
+ */
+
+@media (max-width: 640px) {
+  html body .st-checkout-v2 button[aria-label="Decrease quantity"],
+  html body .st-checkout-v2 button[aria-label="Increase quantity"] {
+    width: 42px !important;
+    min-width: 42px !important;
+    max-width: 42px !important;
+
+    height: 42px !important;
+    min-height: 42px !important;
+    max-height: 42px !important;
+  }
+
+  html body .st-checkout-v2 button[aria-label="Decrease quantity"] svg,
+  html body .st-checkout-v2 button[aria-label="Increase quantity"] svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}
+
+/* === ST CHECKOUT SEGMENTED QUANTITY END === */
+
+/* === ST CHECKOUT QUANTITY SOFT DIVIDERS START === */
+
+/*
+ * Final quantity-divider polish.
+ *
+ * Keep:
+ *   − | 2 | +
+ *
+ * But make both internal separators extremely subtle,
+ * neutral and uniform.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"] {
+  border-right: 1px solid rgba(29, 29, 31, 0.085) !important;
+}
+
+html body .st-checkout-v2 button[aria-label="Increase quantity"] {
+  border-left: 1px solid rgba(29, 29, 31, 0.085) !important;
+}
+
+/*
+ * Never allow hover / focus / active / disabled states
+ * to turn those separators mustard or darker.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:hover,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:focus,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:focus-visible,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:active,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:disabled {
+  border-right-color: rgba(29, 29, 31, 0.085) !important;
+}
+
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:hover,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:focus,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:focus-visible,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:active,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:disabled {
+  border-left-color: rgba(29, 29, 31, 0.085) !important;
+}
+
+/*
+ * Remove any extra inset or focus line that can visually
+ * stack on top of the divider.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:focus-visible,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:focus-visible {
+  box-shadow: none !important;
+}
+
+/*
+ * No pseudo-element can create a second separator.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]::before,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]::after,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]::before,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]::after {
+  content: none !important;
+  display: none !important;
+}
+
+/*
+ * Keep hover soft and inside the cell only.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-v2
+    button[aria-label="Decrease quantity"]:hover:not(:disabled),
+  html
+    body
+    .st-checkout-v2
+    button[aria-label="Increase quantity"]:hover:not(:disabled) {
+    background: rgba(253, 183, 62, 0.05) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* === ST CHECKOUT QUANTITY SOFT DIVIDERS END === */
+
+/* === ST CHECKOUT QUANTITY ONE TRUE DIVIDER START === */
+
+/*
+ * Final quantity architecture:
+ *
+ *     − | 2 | +
+ *
+ * IMPORTANT:
+ * Only the CENTER value cell owns the two separators.
+ *
+ * Minus and Plus own ZERO divider borders.
+ * This prevents doubled / thick internal lines.
+ */
+
+/*
+ * ------------------------------------------------------------
+ * REMOVE ALL BUTTON-OWNED DIVIDERS
+ * ------------------------------------------------------------
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"],
+html body .st-checkout-v2 button[aria-label="Increase quantity"] {
+  border: 0 !important;
+
+  border-left: 0 !important;
+  border-right: 0 !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Keep those borders gone in every state.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:hover,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:focus,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:focus-visible,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:active,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:disabled,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:hover,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:focus,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:focus-visible,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:active,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:disabled {
+  border: 0 !important;
+
+  border-left: 0 !important;
+  border-right: 0 !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * ------------------------------------------------------------
+ * CENTER CELL OWNS EXACTLY TWO 1PX LINES
+ * ------------------------------------------------------------
+ */
+
+html body .st-checkout-v2 .st-checkout-quantity-value {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+
+  border-left: 1px solid rgba(29, 29, 31, 0.085) !important;
+  border-right: 1px solid rgba(29, 29, 31, 0.085) !important;
+
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Absolutely no extra line from pseudo-elements.
+ */
+
+html body .st-checkout-v2 .st-checkout-quantity-value::before,
+html body .st-checkout-v2 .st-checkout-quantity-value::after,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]::before,
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]::after,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]::before,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+
+  background: none !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * ------------------------------------------------------------
+ * HOVER
+ * ------------------------------------------------------------
+ *
+ * Background may react softly.
+ * Divider remains neutral gray.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-v2
+    button[aria-label="Decrease quantity"]:hover:not(:disabled),
+  html
+    body
+    .st-checkout-v2
+    button[aria-label="Increase quantity"]:hover:not(:disabled) {
+    background: rgba(253, 183, 62, 0.05) !important;
+
+    border: 0 !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+  }
+}
+
+/*
+ * Keyboard focus stays inside the cell without creating
+ * a vertical mustard divider.
+ */
+
+html body .st-checkout-v2 button[aria-label="Decrease quantity"]:focus-visible,
+html body .st-checkout-v2 button[aria-label="Increase quantity"]:focus-visible {
+  outline: none !important;
+
+  border: 0 !important;
+
+  background: rgba(253, 183, 62, 0.06) !important;
+
+  box-shadow: inset 0 0 0 1px rgba(228, 173, 67, 0.28) !important;
+}
+
+/* === ST CHECKOUT QUANTITY ONE TRUE DIVIDER END === */
+
+/* === ST CHECKOUT QUANTITY SAFE HOVER START === */
+
+/*
+ * FINAL SAFE QUANTITY HOVER
+ *
+ * Keep approved geometry:
+ *
+ *      − | 1 | +
+ *
+ * No detached cells.
+ * No floating cards.
+ * No z-index tricks.
+ * No border-radius changes.
+ * No transform.
+ *
+ * Hover only changes the surface + subtle mustard inner aura
+ * of the specific + or − segment.
+ */
+
+/* Outer segmented control stays fixed and neutral */
+
+html body .st-checkout-v2 .st-checkout-quantity-control {
+  overflow: hidden !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.025) !important;
+
+  transform: none !important;
+}
+
+/* Base cells */
+
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Decrease quantity"],
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Increase quantity"] {
+  position: static !important;
+
+  z-index: auto !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+
+  outline: none !important;
+
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease !important;
+}
+
+/*
+ * Only the hovered segment reacts.
+ *
+ * Important:
+ * the glow is inset, so it cannot detach the segment
+ * or change the outside silhouette.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-quantity-control
+    button[aria-label="Decrease quantity"]:hover:not(:disabled),
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-quantity-control
+    button[aria-label="Increase quantity"]:hover:not(:disabled) {
+    background: #fffaf0 !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      inset 0 0 16px rgba(245, 179, 53, 0.2),
+      inset 0 3px 10px rgba(245, 179, 53, 0.08) !important;
+
+    transform: none !important;
+  }
+}
+
+/*
+ * Center number owns the only two separators.
+ * Keep them neutral at all times.
+ */
+
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  .st-checkout-quantity-value {
+  position: static !important;
+
+  z-index: auto !important;
+
+  border-left: 1px solid rgba(29, 29, 31, 0.085) !important;
+  border-right: 1px solid rgba(29, 29, 31, 0.085) !important;
+
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+}
+
+/* Disabled segment stays quiet */
+
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Decrease quantity"]:disabled,
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Increase quantity"]:disabled {
+  background: #ffffff !important;
+
+  color: rgba(29, 29, 31, 0.15) !important;
+
+  opacity: 1 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+/*
+ * Keyboard focus:
+ * same internal mustard treatment,
+ * still no detached card.
+ */
+
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Decrease quantity"]:focus-visible,
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Increase quantity"]:focus-visible {
+  outline: none !important;
+
+  background: #fffaf0 !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(197, 139, 34, 0.72),
+    inset 0 0 14px rgba(245, 179, 53, 0.16) !important;
+}
+
+/* No pseudo element may create another box */
+
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Decrease quantity"]::before,
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Decrease quantity"]::after,
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Increase quantity"]::before,
+html
+  body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  button[aria-label="Increase quantity"]::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+
+  background: none !important;
+
+  box-shadow: none !important;
+}
+
+/* === ST CHECKOUT QUANTITY SAFE HOVER END === */
+
+/* === ST CHECKOUT REVIEW PREMIUM V1 START === */
+
+/*
+ * ============================================================
+ * STEREOPHONIE CHECKOUT — REVIEW
+ * ============================================================
+ *
+ * Same architecture as the finished Details page:
+ *
+ * - centered 1180px checkout system
+ * - consistent major-section rhythm
+ * - restrained Apple-like cards
+ * - white / soft gray / mustard / black
+ * - no giant controls
+ * - no Nita-style black blocks
+ * - same progress architecture
+ */
+
+/* ============================================================
+   1. PAGE SHELL
+   ============================================================ */
+
+html body .st-checkout-review-v2 {
+  --st-review-max-width: 1180px;
+  --st-review-gap: 24px;
+  --st-review-radius: 20px;
+  --st-review-small-radius: 15px;
+
+  background: #f7f7f9 !important;
+  color: #1d1d1f !important;
+}
+
+/* ============================================================
+   2. TOP CHECKOUT HEADER
+   ============================================================ */
+
+/*
+ * Review uses the exact same horizontal system as Details.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-compact-head {
+  box-sizing: border-box !important;
+
+  width: calc(100% - 48px) !important;
+  max-width: var(--st-review-max-width) !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.085) !important;
+  border-radius: var(--st-review-radius) !important;
+
+  background: rgba(255, 255, 255, 0.58) !important;
+
+  box-shadow: 0 10px 34px rgba(29, 29, 31, 0.035) !important;
+}
+
+/* Keep header typography compact */
+
+html body .st-checkout-review-v2 .st-checkout-compact-head h1 {
+  margin: 7px 0 0 !important;
+
+  font-family: inherit !important;
+
+  font-size: clamp(27px, 3vw, 38px) !important;
+  font-weight: 650 !important;
+  line-height: 1.02 !important;
+
+  letter-spacing: -0.045em !important;
+
+  color: #1d1d1f !important;
+}
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-compact-head
+  > div:first-child
+  > p:last-child {
+  margin-top: 8px !important;
+
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+
+  color: rgba(29, 29, 31, 0.48) !important;
+}
+
+/* Edit-details control */
+
+html body .st-checkout-review-v2 .st-checkout-compact-head a[href="/checkout"] {
+  min-height: 42px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 8px !important;
+
+  padding: 0 16px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+
+  box-shadow: 0 3px 12px rgba(29, 29, 31, 0.025) !important;
+
+  transition:
+    border-color 220ms ease,
+    background 220ms ease,
+    box-shadow 260ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-review-v2
+    .st-checkout-compact-head
+    a[href="/checkout"]:hover {
+    border-color: rgba(197, 139, 34, 0.78) !important;
+
+    background: #fffaf0 !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.11) !important;
+  }
+}
+
+/* ============================================================
+   3. PROGRESS
+   ============================================================ */
+
+/*
+ * Same width as Details content system.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-progress-three {
+  box-sizing: border-box !important;
+
+  width: calc(100% - 48px) !important;
+  max-width: var(--st-review-max-width) !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  margin-top: var(--st-review-gap) !important;
+  margin-bottom: 0 !important;
+}
+
+html body .st-checkout-review-v2 .st-checkout-progress-three__grid {
+  gap: 12px !important;
+}
+
+html body .st-checkout-review-v2 .st-checkout-progress-three__card {
+  min-height: 68px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 15px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 3px 12px rgba(29, 29, 31, 0.025) !important;
+}
+
+html body .st-checkout-review-v2 .st-checkout-progress-three__card.is-active {
+  border-color: #e4ad43 !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(253, 183, 62, 0.09),
+    rgba(253, 183, 62, 0.018) 64%,
+    #ffffff
+  ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.07),
+    0 8px 22px rgba(189, 116, 0, 0.07) !important;
+}
+
+/* ============================================================
+   4. REVIEW CONTENT WIDTH + RHYTHM
+   ============================================================ */
+
+/*
+ * First large review content container after progress.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-progress-three + section,
+html body .st-checkout-review-v2 .st-checkout-progress-three + main,
+html body .st-checkout-review-v2 .st-checkout-progress-three + div {
+  box-sizing: border-box !important;
+
+  width: calc(100% - 48px) !important;
+  max-width: var(--st-review-max-width) !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  margin-top: var(--st-review-gap) !important;
+}
+
+/* ============================================================
+   5. CUSTOMER ACCOUNT CARD
+   ============================================================ */
+
+html body .st-checkout-review-v2 section[class*="emerald"],
+html body .st-checkout-review-v2 div[class*="emerald-50"] {
+  border-color: rgba(5, 150, 105, 0.16) !important;
+
+  border-radius: 18px !important;
+
+  background: rgba(236, 253, 245, 0.68) !important;
+
+  box-shadow: none !important;
+}
+
+/* ============================================================
+   6. GENERAL REVIEW CARDS
+   ============================================================ */
+
+html body .st-checkout-review-v2 .st-checkout-review-info-card,
+html body .st-checkout-review-v2 .st-checkout-review-note-card,
+html body .st-checkout-review-v2 .st-checkout-review-address-card,
+html body .st-checkout-review-v2 .st-checkout-review-delivery,
+html body .st-checkout-review-v2 .st-checkout-review-fulfillment {
+  box-sizing: border-box !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.085) !important;
+  border-radius: var(--st-review-radius) !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: 0 8px 26px rgba(29, 29, 31, 0.028) !important;
+}
+
+/*
+ * Internal information cells should be quieter than the
+ * containing architecture.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-review-info-card > div,
+html body .st-checkout-review-v2 .st-checkout-review-address-card > div {
+  border-color: rgba(29, 29, 31, 0.075) !important;
+
+  border-radius: 14px !important;
+
+  background: #fafafa !important;
+}
+
+/* ============================================================
+   7. CARD HEADERS
+   ============================================================ */
+
+html
+  body
+  .st-checkout-review-v2
+  :is(
+    .st-checkout-review-info-card,
+    .st-checkout-review-address-card,
+    .st-checkout-review-delivery,
+    .st-checkout-review-fulfillment
+  )
+  h2,
+html
+  body
+  .st-checkout-review-v2
+  :is(
+    .st-checkout-review-info-card,
+    .st-checkout-review-address-card,
+    .st-checkout-review-delivery,
+    .st-checkout-review-fulfillment
+  )
+  h3 {
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-weight: 650 !important;
+
+  letter-spacing: -0.035em !important;
+}
+
+/* ============================================================
+   8. FULFILLMENT SUMMARY
+   ============================================================ */
+
+html body .st-checkout-review-v2 .st-checkout-review-fulfillment {
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 14px !important;
+
+  padding: 16px 18px !important;
+}
+
+html body .st-checkout-review-v2 .st-checkout-review-fulfillment__icon {
+  display: grid !important;
+
+  width: 40px !important;
+  height: 40px !important;
+
+  flex: 0 0 40px !important;
+
+  place-items: center !important;
+
+  border: 1px solid rgba(228, 173, 67, 0.4) !important;
+  border-radius: 12px !important;
+
+  background: rgba(253, 183, 62, 0.08) !important;
+
+  color: #946000 !important;
+}
+
+html body .st-checkout-review-v2 .st-checkout-review-fulfillment__price {
+  margin-left: auto !important;
+
+  color: #1d1d1f !important;
+
+  font-weight: 650 !important;
+}
+
+/* ============================================================
+   9. PAYMENT METHODS
+   ============================================================ */
+
+html body .st-checkout-review-v2 .st-checkout-payment-card {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  min-height: 72px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 16px !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 240ms ease !important;
+}
+
+html body .st-checkout-review-v2 .st-checkout-payment-card.is-selected {
+  border-color: #e4ad43 !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(253, 183, 62, 0.08),
+    rgba(253, 183, 62, 0.015) 68%,
+    #ffffff
+  ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.075),
+    0 7px 20px rgba(189, 116, 0, 0.06) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st-checkout-review-v2 button.st-checkout-payment-card:hover {
+    border-color: rgba(228, 173, 67, 0.68) !important;
+  }
+}
+
+/* Coming soon payment */
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-payment-card[aria-disabled="true"] {
+  border-color: rgba(29, 29, 31, 0.07) !important;
+
+  background: #f7f7f9 !important;
+
+  color: rgba(29, 29, 31, 0.46) !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+}
+
+/* ============================================================
+   10. TAX NOTE
+   ============================================================ */
+
+html body .st-checkout-review-v2 .st-checkout-review-tax-note {
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 8px !important;
+
+  padding: 10px 12px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.07) !important;
+  border-radius: 12px !important;
+
+  background: #f7f7f9 !important;
+
+  color: rgba(29, 29, 31, 0.48) !important;
+
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+}
+
+html body .st-checkout-review-v2 .st-checkout-review-tax-note svg {
+  color: #a66b00 !important;
+}
+
+/* ============================================================
+   11. RIGHT ORDER SUMMARY
+   ============================================================ */
+
+html body .st-checkout-review-v2 aside,
+html body .st-checkout-review-v2 [class*="summary"] {
+  border-radius: var(--st-review-radius) !important;
+}
+
+/*
+ * Avoid old black accent blocks inside the summary.
+ */
+
+html body .st-checkout-review-v2 aside .bg-black,
+html body .st-checkout-review-v2 [class*="summary"] .bg-black {
+  background: #f7f7f9 !important;
+
+  color: #1d1d1f !important;
+}
+
+/* ============================================================
+   12. CONTINUE TO PLACE ORDER
+   ============================================================ */
+
+html body .st-checkout-review-v2 button.st-checkout-review-place-order {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+
+  min-height: 46px !important;
+
+  padding: 0 18px !important;
+
+  border: 1px solid rgba(197, 139, 34, 0.55) !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  letter-spacing: -0.012em !important;
+  text-transform: none !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.03) !important;
+
+  transition:
+    border-color 220ms ease,
+    background 220ms ease,
+    box-shadow 260ms ease,
+    transform 180ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-review-v2
+    button.st-checkout-review-place-order:hover:not(:disabled) {
+    border-color: rgba(197, 139, 34, 0.82) !important;
+
+    background: #fffaf0 !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.12) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+html
+  body
+  .st-checkout-review-v2
+  button.st-checkout-review-place-order:disabled {
+  border-color: rgba(29, 29, 31, 0.08) !important;
+
+  background: #f7f7f9 !important;
+
+  color: rgba(29, 29, 31, 0.35) !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  cursor: not-allowed !important;
+}
+
+/* ============================================================
+   13. VERTICAL RHYTHM
+   ============================================================ */
+
+html body .st-checkout-review-v2 form > div:first-child {
+  gap: var(--st-review-gap) !important;
+}
+
+html body .st-checkout-review-v2 form > div:first-child > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ============================================================
+   14. TABLET
+   ============================================================ */
+
+@media (max-width: 900px) {
+  html body .st-checkout-review-v2 {
+    --st-review-gap: 20px;
+  }
+
+  html body .st-checkout-review-v2 .st-checkout-compact-head,
+  html body .st-checkout-review-v2 .st-checkout-progress-three,
+  html body .st-checkout-review-v2 .st-checkout-progress-three + section,
+  html body .st-checkout-review-v2 .st-checkout-progress-three + main,
+  html body .st-checkout-review-v2 .st-checkout-progress-three + div {
+    width: calc(100% - 28px) !important;
+  }
+}
+
+/* ============================================================
+   15. MOBILE
+   ============================================================ */
+
+@media (max-width: 640px) {
+  html body .st-checkout-review-v2 {
+    --st-review-gap: 18px;
+  }
+
+  html body .st-checkout-review-v2 .st-checkout-compact-head,
+  html body .st-checkout-review-v2 .st-checkout-progress-three,
+  html body .st-checkout-review-v2 .st-checkout-progress-three + section,
+  html body .st-checkout-review-v2 .st-checkout-progress-three + main,
+  html body .st-checkout-review-v2 .st-checkout-progress-three + div {
+    width: calc(100% - 20px) !important;
+  }
+
+  html body .st-checkout-review-v2 .st-checkout-progress-three__grid {
+    grid-template-columns: 1fr !important;
+
+    gap: 8px !important;
+  }
+
+  html body .st-checkout-review-v2 .st-checkout-progress-three__card {
+    min-height: 56px !important;
+  }
+
+  html body .st-checkout-review-v2 .st-checkout-review-fulfillment {
+    padding: 14px !important;
+  }
+
+  html body .st-checkout-review-v2 button.st-checkout-review-place-order {
+    min-height: 44px !important;
+
+    font-size: 12.5px !important;
+  }
+}
+
+/* === ST CHECKOUT REVIEW PREMIUM V1 END === */
+
+/* === ST CHECKOUT REVIEW PAYMENT STATUS + CTA V2 START === */
+
+/*
+ * Selected payment badge
+ *
+ * Replaces the old black/Nita-style block with the same
+ * restrained Stereophonie white / mustard architecture.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-payment-selected-badge {
+  box-sizing: border-box !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 28px !important;
+
+  padding: 0 11px !important;
+
+  border: 1px solid rgba(197, 139, 34, 0.45) !important;
+  border-radius: 999px !important;
+
+  background: rgba(253, 183, 62, 0.105) !important;
+
+  color: #7f5200 !important;
+
+  font-family: inherit !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  text-transform: none !important;
+  letter-spacing: -0.006em !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.055),
+    0 3px 10px rgba(189, 116, 0, 0.045) !important;
+}
+
+/*
+ * Continue to place order
+ *
+ * Exact interaction family used by the approved
+ * Continue to review / admin login controls:
+ *
+ * default:
+ * white surface + quiet border
+ *
+ * hover:
+ * mustard border + warm background + visible mustard aura
+ */
+
+html body .st-checkout-review-v2 button.st-checkout-review-place-order-v2 {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  width: 100% !important;
+
+  min-height: 48px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 10px !important;
+
+  padding: 0 18px !important;
+
+  border: 1px solid rgba(197, 139, 34, 0.55) !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  text-transform: none !important;
+  letter-spacing: -0.012em !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.035) !important;
+
+  outline: none !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 260ms ease,
+    transform 180ms ease !important;
+}
+
+html
+  body
+  .st-checkout-review-v2
+  button.st-checkout-review-place-order-v2::before,
+html
+  body
+  .st-checkout-review-v2
+  button.st-checkout-review-place-order-v2::after {
+  content: none !important;
+  display: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-review-v2
+    button.st-checkout-review-place-order-v2:hover:not(:disabled) {
+    border-color: rgba(197, 139, 34, 0.82) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+
+    color: #1d1d1f !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+html
+  body
+  .st-checkout-review-v2
+  button.st-checkout-review-place-order-v2:focus-visible {
+  border-color: rgba(197, 139, 34, 0.82) !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.14),
+    0 8px 22px rgba(196, 135, 27, 0.09) !important;
+}
+
+html
+  body
+  .st-checkout-review-v2
+  button.st-checkout-review-place-order-v2:active:not(:disabled) {
+  transform: scale(0.995) !important;
+}
+
+html
+  body
+  .st-checkout-review-v2
+  button.st-checkout-review-place-order-v2:disabled {
+  border-color: rgba(29, 29, 31, 0.08) !important;
+
+  background: #f7f7f9 !important;
+
+  color: rgba(29, 29, 31, 0.34) !important;
+  -webkit-text-fill-color: rgba(29, 29, 31, 0.34) !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  transform: none !important;
+
+  cursor: not-allowed !important;
+}
+
+html body .st-checkout-review-v2 button.st-checkout-review-place-order-v2 svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  flex: 0 0 auto !important;
+
+  stroke-width: 1.8 !important;
+}
+
+@media (max-width: 640px) {
+  html body .st-checkout-review-v2 button.st-checkout-review-place-order-v2 {
+    min-height: 46px !important;
+
+    padding-inline: 15px !important;
+
+    font-size: 12.5px !important;
+  }
+}
+
+/* === ST CHECKOUT REVIEW PAYMENT STATUS + CTA V2 END === */
+
+/* === ST REVIEW COMING SOON + PHONE CLEAN V1 START === */
+
+/*
+ * WHISH MONEY PAY — COMING SOON
+ *
+ * Same physical architecture as Selected,
+ * but deliberately neutral because the option
+ * is not currently available.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-payment-coming-soon-badge {
+  box-sizing: border-box !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-height: 28px !important;
+
+  padding: 0 11px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+
+  color: rgba(29, 29, 31, 0.42) !important;
+
+  font-family: inherit !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  text-transform: none !important;
+  letter-spacing: -0.006em !important;
+
+  box-shadow: 0 2px 7px rgba(29, 29, 31, 0.025) !important;
+}
+
+/*
+ * PHONE NUMBER REVIEW FIELD
+ *
+ * A previous generic review-card rule applied
+ * #fafafa to nested divs. On the phone field that
+ * creates the two strange horizontal gray bands.
+ *
+ * Phone field gets its own clean white architecture.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  border-color: rgba(29, 29, 31, 0.085) !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Remove inherited gray strips from the phone field
+ * without changing Full name / Email address cards.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > div,
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > span,
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > p {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/*
+ * Nested copy/content wrappers must also stay
+ * visually transparent. The containing phone card
+ * owns the white surface.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean div {
+  background-image: none !important;
+}
+
+/*
+ * Lebanon country pill remains a real compact pill.
+ */
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-phone-clean
+  .st-checkout-review-phone-country {
+  display: inline-flex !important;
+  align-items: center !important;
+
+  width: auto !important;
+
+  padding: 6px 11px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 999px !important;
+
+  background: #f7f7f8 !important;
+
+  color: rgba(29, 29, 31, 0.52) !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Do not allow generic review info-card rules
+ * to recreate gray horizontal fills here.
+ */
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-info-card
+  .st-checkout-review-phone-clean,
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-info-card
+  .st-checkout-review-phone-clean
+  > div {
+  background-color: #ffffff !important;
+}
+
+/*
+ * Only the little country badge is allowed to
+ * have its subtle gray surface.
+ */
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-info-card
+  .st-checkout-review-phone-clean
+  .st-checkout-review-phone-country {
+  background-color: #f7f7f8 !important;
+}
+
+/* === ST REVIEW COMING SOON + PHONE CLEAN V1 END === */
+
+/* === ST REVIEW PHONE TRUE CLEAN SURFACE START === */
+
+/*
+ * PHONE NUMBER — FINAL SURFACE RESET
+ *
+ * The outer information card owns the white surface.
+ * No nested wrapper is allowed to paint a horizontal gray band.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+/*
+ * Kill every inherited nested fill.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean *,
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-info-card
+  .st-checkout-review-phone-clean
+  * {
+  background-image: none !important;
+}
+
+/*
+ * Direct structural wrappers are transparent.
+ * This specifically removes the remaining long gray bar.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > div,
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > span,
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > p,
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > section,
+html body .st-checkout-review-v2 .st-checkout-review-phone-clean > div > div {
+  background: transparent !important;
+  background-color: transparent !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Common utility backgrounds inherited by this one field
+ * must also become transparent.
+ */
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-phone-clean
+  [class*="bg-[#fafafa]"],
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-phone-clean
+  [class*="bg-neutral"],
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-phone-clean
+  [class*="bg-black/"],
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-phone-clean
+  [class*="bg-[#f7f7"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/*
+ * Country is the ONLY nested element allowed a soft-gray fill.
+ */
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-phone-clean
+  .st-checkout-review-phone-country {
+  display: inline-flex !important;
+
+  width: auto !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  background: #f7f7f8 !important;
+  background-color: #f7f7f8 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 999px !important;
+
+  box-shadow: none !important;
+}
+
+/* === ST REVIEW PHONE TRUE CLEAN SURFACE END === */
+
+/* === ST REVIEW PHONE VALUE CLEAN ROW START === */
+
+/*
+ * Review > Contact information > Phone number
+ *
+ * The generic review information-cell architecture gives
+ * inner divs a soft-gray background. That was creating the
+ * long gray capsule behind the actual phone number.
+ *
+ * The phone value row should instead sit naturally on the
+ * white Phone Number card.
+ */
+
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-info-card
+  .st-checkout-review-phone-value-row {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+  outline: 0 !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/*
+ * Never allow a pseudo-element or inherited decoration
+ * to recreate the gray horizontal capsule.
+ */
+html body .st-checkout-review-v2 .st-checkout-review-phone-value-row::before,
+html body .st-checkout-review-v2 .st-checkout-review-phone-value-row::after {
+  content: none !important;
+  display: none !important;
+}
+
+/*
+ * Keep the Lebanon badge itself intact.
+ * Only the long background behind the row disappears.
+ */
+html
+  body
+  .st-checkout-review-v2
+  .st-checkout-review-phone-value-row
+  .st-checkout-review-phone-country {
+  background: #f7f7f8 !important;
+  background-color: #f7f7f8 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 999px !important;
+
+  box-shadow: none !important;
+}
+
+/* === ST REVIEW PHONE VALUE CLEAN ROW END === */
+
+/* === ST CHECKOUT PROGRESS STATE COLORS START === */
+
+/*
+ * Three authoritative checkout progress states:
+ *
+ * completed = green
+ * current   = mustard
+ * upcoming  = neutral gray
+ *
+ * This changes state communication only.
+ * Dimensions, spacing and card architecture stay untouched.
+ */
+
+/* ------------------------------------------------------------
+   COMPLETED STEP
+   ------------------------------------------------------------ */
+
+html body .st-checkout-progress-three__card.is-completed {
+  border-color: rgba(5, 150, 105, 0.48) !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.075),
+    rgba(16, 185, 129, 0.018) 68%,
+    #ffffff 100%
+  ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(16, 185, 129, 0.065),
+    0 8px 22px rgba(5, 120, 87, 0.075) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-completed
+  .st-checkout-progress-three__title {
+  color: #166534 !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-completed
+  .st-checkout-progress-three__description {
+  color: rgba(22, 101, 52, 0.58) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-completed
+  .st-checkout-progress-three__indicator {
+  border-color: rgba(5, 150, 105, 0.72) !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(16, 185, 129, 0.085),
+    0 3px 10px rgba(5, 120, 87, 0.08) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-completed
+  .st-checkout-progress-three__dot {
+  background: #10b981 !important;
+}
+
+/* ------------------------------------------------------------
+   CURRENT STEP
+   Keep the existing Stereophonie mustard language.
+   ------------------------------------------------------------ */
+
+html body .st-checkout-progress-three__card.is-active {
+  border-color: #e4ad43 !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(253, 183, 62, 0.1),
+    rgba(253, 183, 62, 0.025) 64%,
+    #ffffff 100%
+  ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.075),
+    0 8px 22px rgba(189, 116, 0, 0.075) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-active
+  .st-checkout-progress-three__title {
+  color: #1d1d1f !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-active
+  .st-checkout-progress-three__description {
+  color: rgba(29, 29, 31, 0.55) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-active
+  .st-checkout-progress-three__indicator {
+  border-color: #e4ad43 !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.1),
+    0 3px 10px rgba(189, 116, 0, 0.07) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-active
+  .st-checkout-progress-three__dot {
+  background: #fdb73e !important;
+}
+
+/* ------------------------------------------------------------
+   UPCOMING STEP
+   ------------------------------------------------------------ */
+
+html body .st-checkout-progress-three__card.is-upcoming {
+  border-color: rgba(29, 29, 31, 0.1) !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(29, 29, 31, 0.018),
+    rgba(29, 29, 31, 0.006) 68%,
+    #ffffff 100%
+  ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.025),
+    0 7px 20px rgba(29, 29, 31, 0.035) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-upcoming
+  .st-checkout-progress-three__title {
+  color: rgba(29, 29, 31, 0.54) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-upcoming
+  .st-checkout-progress-three__description {
+  color: rgba(29, 29, 31, 0.32) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-upcoming
+  .st-checkout-progress-three__indicator {
+  border-color: rgba(29, 29, 31, 0.18) !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.025),
+    0 3px 10px rgba(29, 29, 31, 0.03) !important;
+}
+
+html
+  body
+  .st-checkout-progress-three__card.is-upcoming
+  .st-checkout-progress-three__dot {
+  background: rgba(29, 29, 31, 0.12) !important;
+}
+
+/* === ST CHECKOUT PROGRESS STATE COLORS END === */
+
+/* === ST CHECKOUT REAL SUBMISSION + CONFIRMATION V3 START === */
+
+/*
+ * ============================================================
+ * REAL REVIEW-PAGE SUBMISSION OVERLAY
+ * ============================================================
+ *
+ * The real Review page remains underneath.
+ * No artificial white / gray replacement page.
+ */
+
+html body .st-checkout-submit-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147481000 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  padding: 24px !important;
+
+  overflow: hidden !important;
+}
+
+html body .st-checkout-submit-overlay__backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+
+  background: rgba(247, 247, 249, 0.32) !important;
+
+  -webkit-backdrop-filter: blur(7px) saturate(0.94) !important;
+  backdrop-filter: blur(7px) saturate(0.94) !important;
+
+  animation: stCheckoutSubmitBackdropIn 260ms ease both !important;
+}
+
+html body .st-checkout-submit-overlay__card {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+  z-index: 1 !important;
+
+  width: min(440px, calc(100vw - 32px)) !important;
+
+  padding: 30px 30px 26px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 24px !important;
+
+  background: rgba(255, 255, 255, 0.94) !important;
+
+  -webkit-backdrop-filter: blur(24px) saturate(1.12) !important;
+  backdrop-filter: blur(24px) saturate(1.12) !important;
+
+  color: #1d1d1f !important;
+
+  text-align: center !important;
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.62),
+    0 0 0 4px rgba(253, 183, 62, 0.045),
+    0 26px 80px rgba(29, 29, 31, 0.14) !important;
+
+  animation: stCheckoutSubmitCardIn 420ms cubic-bezier(0.22, 0.61, 0.36, 1) both !important;
+}
+
+html body .st-checkout-submit-overlay__loader {
+  position: relative !important;
+
+  width: 68px !important;
+  height: 68px !important;
+
+  margin: 0 auto 20px !important;
+}
+
+html body .st-checkout-submit-overlay__orbit {
+  position: absolute !important;
+  inset: 0 !important;
+
+  border: 1.5px solid rgba(29, 29, 31, 0.08) !important;
+  border-top-color: #fdb73e !important;
+  border-right-color: rgba(228, 173, 67, 0.55) !important;
+  border-radius: 999px !important;
+
+  box-shadow:
+    0 0 18px rgba(253, 183, 62, 0.12),
+    inset 0 0 14px rgba(253, 183, 62, 0.035) !important;
+
+  animation: stCheckoutSubmitSpin 900ms linear infinite !important;
+}
+
+html body .st-checkout-submit-overlay__core {
+  position: absolute !important;
+
+  inset: 11px !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border: 1px solid rgba(228, 173, 67, 0.34) !important;
+  border-radius: 999px !important;
+
+  background: #fffaf0 !important;
+
+  color: #996200 !important;
+
+  box-shadow: 0 0 20px rgba(253, 183, 62, 0.1) !important;
+
+  animation: stCheckoutSubmitCorePulse 1.7s ease-in-out infinite !important;
+}
+
+html body .st-checkout-submit-overlay__core svg {
+  width: 20px !important;
+  height: 20px !important;
+
+  stroke-width: 1.8 !important;
+}
+
+html body .st-checkout-submit-overlay__eyebrow {
+  margin: 0 !important;
+
+  color: #946000 !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+}
+
+html body .st-checkout-submit-overlay__card h2 {
+  margin: 10px 0 0 !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 27px !important;
+  font-weight: 650 !important;
+  line-height: 1.08 !important;
+
+  letter-spacing: -0.04em !important;
+}
+
+html body .st-checkout-submit-overlay__message {
+  max-width: 340px !important;
+
+  margin: 12px auto 0 !important;
+
+  color: rgba(29, 29, 31, 0.5) !important;
+
+  font-size: 12.5px !important;
+  line-height: 1.6 !important;
+}
+
+html body .st-checkout-submit-overlay__activity {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 7px !important;
+
+  height: 20px !important;
+
+  margin-top: 15px !important;
+}
+
+html body .st-checkout-submit-overlay__activity span {
+  width: 5px !important;
+  height: 5px !important;
+
+  border-radius: 999px !important;
+
+  background: #fdb73e !important;
+
+  box-shadow: 0 0 9px rgba(253, 183, 62, 0.38) !important;
+
+  animation: stCheckoutSubmitDot 1.15s ease-in-out infinite !important;
+}
+
+html body .st-checkout-submit-overlay__activity span:nth-child(2) {
+  animation-delay: 120ms !important;
+}
+
+html body .st-checkout-submit-overlay__activity span:nth-child(3) {
+  animation-delay: 240ms !important;
+}
+
+html body .st-checkout-submit-overlay__progress {
+  position: relative !important;
+
+  overflow: hidden !important;
+
+  width: 100% !important;
+  height: 4px !important;
+
+  margin-top: 12px !important;
+
+  border-radius: 999px !important;
+
+  background: rgba(29, 29, 31, 0.07) !important;
+}
+
+html body .st-checkout-submit-overlay__progress span {
+  position: absolute !important;
+  inset-block: 0 !important;
+
+  width: 42% !important;
+
+  border-radius: inherit !important;
+
+  background: linear-gradient(
+    90deg,
+    rgba(253, 183, 62, 0.5),
+    #fdb73e,
+    rgba(228, 173, 67, 0.8)
+  ) !important;
+
+  box-shadow: 0 0 12px rgba(253, 183, 62, 0.26) !important;
+
+  animation: stCheckoutSubmitProgress 1.45s cubic-bezier(0.65, 0, 0.35, 1)
+    infinite !important;
+}
+
+html body .st-checkout-submit-overlay__caption {
+  margin: 12px 0 0 !important;
+
+  color: rgba(29, 29, 31, 0.34) !important;
+
+  font-size: 10.5px !important;
+  line-height: 1.4 !important;
+}
+
+@keyframes stCheckoutSubmitBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes stCheckoutSubmitCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stCheckoutSubmitSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes stCheckoutSubmitCorePulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 16px rgba(253, 183, 62, 0.08);
+  }
+
+  50% {
+    transform: scale(1.045);
+    box-shadow: 0 0 25px rgba(253, 183, 62, 0.2);
+  }
+}
+
+@keyframes stCheckoutSubmitDot {
+  0%,
+  100% {
+    opacity: 0.32;
+    transform: translateY(1px) scale(0.82);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.08);
+  }
+}
+
+@keyframes stCheckoutSubmitProgress {
+  0% {
+    left: -45%;
+  }
+
+  100% {
+    left: 105%;
+  }
+}
+
+/*
+ * ============================================================
+ * CONFIRMATION PAGE — ONE TRUE CONTAINER
+ * ============================================================
+ */
+
+html body .st-order-success-v2 {
+  --st-confirm-max-width: 1180px;
+  --st-confirm-gap: 24px;
+
+  background: #f7f7f9 !important;
+  color: #1d1d1f !important;
+}
+
+html body .st-order-success-v2 .st-checkout-progress-three,
+html body .st-order-success-v2 .st-checkout-success-head,
+html body .st-order-success-v2 .st-checkout-content {
+  box-sizing: border-box !important;
+
+  width: calc(100% - 48px) !important;
+  max-width: var(--st-confirm-max-width) !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+html body .st-order-success-v2 .st-checkout-progress-three {
+  margin-top: 24px !important;
+}
+
+/*
+ * ============================================================
+ * CONFIRMATION HERO
+ * ============================================================
+ */
+
+html body .st-order-success-v2 .st-checkout-success-head {
+  display: grid !important;
+
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 330px) !important;
+
+  gap: 20px !important;
+
+  margin-top: var(--st-confirm-gap) !important;
+  padding: 28px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.085) !important;
+  border-radius: 22px !important;
+
+  background:
+    radial-gradient(
+      circle at 10% 8%,
+      rgba(253, 183, 62, 0.07),
+      rgba(253, 183, 62, 0.018) 27%,
+      transparent 50%
+    ),
+    #ffffff !important;
+
+  box-shadow: 0 12px 38px rgba(29, 29, 31, 0.04) !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__message {
+  display: flex !important;
+
+  min-width: 0 !important;
+
+  align-items: center !important;
+
+  gap: 18px !important;
+
+  padding: 10px 4px !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__icon {
+  display: grid !important;
+
+  width: 48px !important;
+  min-width: 48px !important;
+  height: 48px !important;
+
+  place-items: center !important;
+
+  border: 1px solid rgba(228, 173, 67, 0.42) !important;
+  border-radius: 999px !important;
+
+  background: #fff8e9 !important;
+
+  color: #996200 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.055),
+    0 5px 18px rgba(189, 116, 0, 0.055) !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__icon svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__eyebrow {
+  margin: 0 !important;
+
+  color: #946000 !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__message h1 {
+  margin: 9px 0 0 !important;
+
+  color: #1d1d1f !important;
+
+  font-size: clamp(28px, 4vw, 46px) !important;
+  font-weight: 650 !important;
+  line-height: 1.02 !important;
+
+  letter-spacing: -0.045em !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__message h1 + p {
+  max-width: 640px !important;
+
+  margin: 10px 0 0 !important;
+
+  color: rgba(29, 29, 31, 0.5) !important;
+
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+/*
+ * Order number card.
+ */
+
+html body .st-order-success-v2 .st-checkout-success-head__number {
+  padding: 20px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.08) !important;
+  border-radius: 17px !important;
+
+  background: #f7f7f9 !important;
+
+  box-shadow: none !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number > span {
+  color: rgba(29, 29, 31, 0.42) !important;
+
+  font-size: 9px !important;
+  font-weight: 650 !important;
+
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number > strong {
+  display: block !important;
+
+  margin-top: 9px !important;
+
+  color: #1d1d1f !important;
+
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+
+  overflow-wrap: anywhere !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number > p {
+  display: flex !important;
+  align-items: flex-start !important;
+
+  gap: 7px !important;
+
+  margin: 12px 0 0 !important;
+
+  color: rgba(29, 29, 31, 0.42) !important;
+
+  font-size: 10.5px !important;
+  line-height: 1.5 !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number > p svg {
+  width: 14px !important;
+  height: 14px !important;
+
+  margin-top: 1px !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number > a {
+  display: inline-flex !important;
+
+  align-items: center !important;
+
+  gap: 7px !important;
+
+  margin-top: 15px !important;
+
+  color: #8a5900 !important;
+
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+
+  text-decoration: none !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number > a svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/*
+ * Account/email notices span the full hero.
+ */
+
+html body .st-order-success-v2 .st-checkout-success-head__notices {
+  grid-column: 1 / -1 !important;
+
+  display: grid !important;
+
+  gap: 10px !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__notices > div {
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 10px !important;
+
+  padding: 12px 14px !important;
+
+  border-radius: 13px !important;
+}
+
+html
+  body
+  .st-order-success-v2
+  .st-checkout-success-head__notices
+  > div.is-success {
+  border: 1px solid rgba(5, 150, 105, 0.15) !important;
+
+  background: rgba(236, 253, 245, 0.72) !important;
+
+  color: #047857 !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__notices svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  flex: 0 0 auto !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__notices p {
+  margin: 0 !important;
+
+  font-size: 11px !important;
+  line-height: 1.45 !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__notices strong {
+  display: block !important;
+
+  margin-bottom: 2px !important;
+
+  color: currentColor !important;
+}
+
+/*
+ * ============================================================
+ * GENERAL CONFIRMATION CARDS
+ * ============================================================
+ */
+
+html body .st-order-success-v2 .st-checkout-content {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  padding-top: var(--st-confirm-gap) !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-card,
+html body .st-order-success-v2 .st-checkout-content section,
+html body .st-order-success-v2 .st-checkout-content aside > section {
+  overflow: hidden !important;
+
+  border-color: rgba(29, 29, 31, 0.085) !important;
+  border-radius: 18px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 8px 26px rgba(29, 29, 31, 0.028) !important;
+}
+
+html body .st-order-success-v2 .st-checkout-content > div {
+  gap: var(--st-confirm-gap) !important;
+}
+
+html body .st-order-success-v2 .st-checkout-content > div > div:first-child {
+  gap: var(--st-confirm-gap) !important;
+}
+
+/*
+ * Product thumbnails.
+ */
+
+html body .st-order-success-v2 .st-checkout-content article > a:first-child {
+  border-radius: 14px !important;
+
+  background: #f5f5f7 !important;
+}
+
+/*
+ * ============================================================
+ * WHAT HAPPENS NEXT
+ * ============================================================
+ */
+
+html body .st-order-success-v2 .st-checkout-success-step-number {
+  box-sizing: border-box !important;
+
+  display: inline-flex !important;
+
+  width: 24px !important;
+  min-width: 24px !important;
+  height: 24px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid rgba(228, 173, 67, 0.42) !important;
+  border-radius: 999px !important;
+
+  background: #fff8e9 !important;
+
+  color: #8a5900 !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.04) !important;
+}
+
+/*
+ * ============================================================
+ * CONFIRMATION ACTIONS
+ * ============================================================
+ *
+ * Same family as Continue to review / Continue to place order.
+ */
+
+html body .st-order-success-v2 .st-checkout-success-action {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  width: 100% !important;
+  min-height: 48px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 9px !important;
+
+  padding: 0 18px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  letter-spacing: -0.012em !important;
+  text-transform: none !important;
+
+  box-shadow: 0 3px 11px rgba(29, 29, 31, 0.03) !important;
+
+  text-decoration: none !important;
+
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    box-shadow 240ms ease,
+    transform 180ms ease !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-action svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  stroke-width: 1.8 !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st-order-success-v2 .st-checkout-success-action:hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.12) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+/*
+ * Ensure no confirmation action falls back to black.
+ */
+
+html body .st-order-success-v2 .st-checkout-success-action.bg-black {
+  background: #ffffff !important;
+
+  color: #1d1d1f !important;
+}
+
+/*
+ * ============================================================
+ * TABLET
+ * ============================================================
+ */
+
+@media (max-width: 900px) {
+  html body .st-order-success-v2 {
+    --st-confirm-gap: 20px;
+  }
+
+  html body .st-order-success-v2 .st-checkout-progress-three,
+  html body .st-order-success-v2 .st-checkout-success-head,
+  html body .st-order-success-v2 .st-checkout-content {
+    width: calc(100% - 28px) !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head {
+    grid-template-columns: 1fr !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head__number {
+    width: 100% !important;
+  }
+}
+
+/*
+ * ============================================================
+ * MOBILE
+ * ============================================================
+ */
+
+@media (max-width: 640px) {
+  html body .st-order-success-v2 {
+    --st-confirm-gap: 18px;
+  }
+
+  html body .st-order-success-v2 .st-checkout-progress-three,
+  html body .st-order-success-v2 .st-checkout-success-head,
+  html body .st-order-success-v2 .st-checkout-content {
+    width: calc(100% - 20px) !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head {
+    padding: 20px !important;
+
+    border-radius: 18px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head__message {
+    align-items: flex-start !important;
+
+    gap: 13px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head__icon {
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head__message h1 {
+    font-size: 30px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-submit-overlay__card {
+    padding: 26px 21px 22px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-action {
+    min-height: 46px !important;
+
+    font-size: 12.5px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st-checkout-submit-overlay *,
+  html body .st-checkout-submit-overlay *::before,
+  html body .st-checkout-submit-overlay *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* === ST CHECKOUT REAL SUBMISSION + CONFIRMATION V3 END === */
+
+/* === ST CHECKOUT CONFIRMATION SPACING FINAL START === */
+
+/*
+ * Confirmation page:
+ * 1. Remove the white strip behind the progress cards.
+ * 2. Compact the success hero without changing its approved content.
+ */
+
+/* ------------------------------------------------------------
+   PROGRESS AREA — CONTINUOUS PAGE GRAY
+   ------------------------------------------------------------ */
+
+html body .st-order-success-v2 {
+  background: #f6f5f2 !important;
+}
+
+html body .st-order-success-v2 > .st-checkout-progress-three {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+html
+  body
+  .st-order-success-v2
+  > .st-checkout-progress-three
+  .st-checkout-progress-three__grid {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/*
+ * The individual Details / Review / Confirmation cards keep
+ * their existing approved state colors and glows.
+ */
+
+/* ------------------------------------------------------------
+   SUCCESS HERO — REMOVE USELESS EMPTY HEIGHT
+   ------------------------------------------------------------ */
+
+html body .st-order-success-v2 .st-checkout-success-head {
+  min-height: 0 !important;
+  height: auto !important;
+
+  padding-top: 28px !important;
+  padding-bottom: 24px !important;
+
+  row-gap: 22px !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__message {
+  align-self: center !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number {
+  align-self: start !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__notices {
+  margin-top: 0 !important;
+}
+
+/*
+ * Keep the following Purchased products section naturally close
+ * to the confirmation hero.
+ */
+html body .st-order-success-v2 .st-checkout-content {
+  padding-top: 22px !important;
+}
+
+/* ------------------------------------------------------------
+   MOBILE
+   ------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  html body .st-order-success-v2 .st-checkout-success-head {
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+
+    row-gap: 18px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-content {
+    padding-top: 18px !important;
+  }
+}
+
+/* === ST CHECKOUT CONFIRMATION SPACING FINAL END === */
+
+/* === ST CONFIRMATION TRUE COMPACT ARCHITECTURE START === */
+
+/*
+ * Confirmation page only.
+ *
+ * 1. Paint one continuous gray checkout surface behind
+ *    Details / Review / Confirmation.
+ *
+ * 2. Prevent the confirmation hero grid from stretching
+ *    its rows and producing the large useless empty area.
+ */
+
+html body .st-order-success-v2 {
+  background: #f7f7f9 !important;
+  background-color: #f7f7f9 !important;
+  background-image: none !important;
+}
+
+/*
+ * Full-width progress background.
+ *
+ * The progress component itself is intentionally constrained
+ * to the checkout content width, so this pseudo-element paints
+ * the page-width surface behind it without changing card size.
+ */
+html body .st-order-success-v2 > .st-checkout-progress-three {
+  position: relative !important;
+  z-index: 0 !important;
+  isolation: isolate !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+html body .st-order-success-v2 > .st-checkout-progress-three::before {
+  content: "" !important;
+
+  position: absolute !important;
+  z-index: -1 !important;
+
+  top: -24px !important;
+  bottom: -24px !important;
+
+  left: 50% !important;
+
+  width: 100vw !important;
+  max-width: none !important;
+
+  transform: translateX(-50%) !important;
+
+  background: #f7f7f9 !important;
+  background-color: #f7f7f9 !important;
+  background-image: none !important;
+
+  pointer-events: none !important;
+}
+
+html
+  body
+  .st-order-success-v2
+  > .st-checkout-progress-three
+  .st-checkout-progress-three__grid {
+  position: relative !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/*
+ * Confirmation hero.
+ *
+ * Explicitly remove every stretching mechanism:
+ * - no inherited min-height
+ * - no forced height
+ * - no space-between distribution
+ * - rows are only as tall as their content
+ */
+html body .st-order-success-v2 .st-checkout-success-head {
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(280px, 330px) !important;
+
+  grid-template-rows: auto auto !important;
+  grid-auto-rows: max-content !important;
+
+  align-items: start !important;
+  align-content: start !important;
+  justify-content: stretch !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+
+  gap: 20px !important;
+  row-gap: 18px !important;
+
+  padding: 26px 28px !important;
+
+  overflow: visible !important;
+}
+
+/*
+ * First row: message and order-number card.
+ */
+html body .st-order-success-v2 .st-checkout-success-head__message {
+  align-self: center !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 8px 4px !important;
+}
+
+html body .st-order-success-v2 .st-checkout-success-head__number {
+  align-self: start !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin: 0 !important;
+}
+
+/*
+ * Second row: Account connected / email notice.
+ *
+ * It must sit directly below the first row rather than being
+ * pushed toward the bottom of a stretched confirmation card.
+ */
+html body .st-order-success-v2 .st-checkout-success-head__notices {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+
+  align-self: start !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  gap: 10px !important;
+}
+
+/*
+ * Purchased products should follow the confirmation hero using
+ * the same normal checkout rhythm.
+ */
+html body .st-order-success-v2 .st-checkout-content {
+  padding-top: 24px !important;
+}
+
+/*
+ * Tablet.
+ */
+@media (max-width: 900px) {
+  html body .st-order-success-v2 > .st-checkout-progress-three::before {
+    top: -20px !important;
+    bottom: -20px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+
+    row-gap: 18px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head__number {
+    grid-column: 1 !important;
+    width: 100% !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head__notices {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+}
+
+/*
+ * Mobile.
+ */
+@media (max-width: 640px) {
+  html body .st-order-success-v2 > .st-checkout-progress-three::before {
+    top: -18px !important;
+    bottom: -18px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head {
+    padding: 20px !important;
+
+    gap: 16px !important;
+    row-gap: 16px !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-success-head__message {
+    padding: 2px 0 !important;
+  }
+
+  html body .st-order-success-v2 .st-checkout-content {
+    padding-top: 18px !important;
+  }
+}
+
+/* === ST CONFIRMATION TRUE COMPACT ARCHITECTURE END === */
+
+/* === ST CHECKOUT LIVE PREPARING OVERLAY START === */
+
+/*
+ * The checkout itself remains the visual background.
+ * This overlay does NOT replace the page and does NOT paint
+ * an opaque white/gray screen over it.
+ */
+html body .st-checkout-live-preparing {
+  position: fixed !important;
+  inset: 0 !important;
+
+  z-index: 2147480000 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  padding: 24px !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  pointer-events: all !important;
+
+  animation: stCheckoutPreparingLayerIn 240ms ease both !important;
+}
+
+/*
+ * Very light glass separation only.
+ *
+ * The actual checkout remains clearly visible underneath.
+ * There is deliberately NO solid page background.
+ */
+html body .st-checkout-live-preparing__surface {
+  position: absolute !important;
+  inset: 0 !important;
+
+  background: rgba(247, 247, 249, 0.06) !important;
+
+  -webkit-backdrop-filter: blur(1.5px) saturate(0.98) !important;
+  backdrop-filter: blur(1.5px) saturate(0.98) !important;
+
+  pointer-events: none !important;
+
+  animation: stCheckoutPreparingSurfaceIn 260ms ease both !important;
+}
+
+/*
+ * Small premium floating panel.
+ */
+html body .st-checkout-live-preparing__card {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+  z-index: 2 !important;
+
+  display: flex !important;
+  width: min(390px, calc(100vw - 34px)) !important;
+
+  flex-direction: column !important;
+  align-items: center !important;
+
+  padding: 25px 28px 21px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 22px !important;
+
+  background: rgba(255, 255, 255, 0.94) !important;
+  background-color: rgba(255, 255, 255, 0.94) !important;
+
+  -webkit-backdrop-filter: blur(24px) saturate(1.12) !important;
+  backdrop-filter: blur(24px) saturate(1.12) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 20px 60px rgba(29, 29, 31, 0.11),
+    0 3px 12px rgba(29, 29, 31, 0.045) !important;
+
+  transform-origin: center !important;
+
+  animation: stCheckoutPreparingCardIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+
+/*
+ * Animated visual.
+ */
+html body .st-checkout-live-preparing__motion {
+  position: relative !important;
+
+  display: grid !important;
+
+  width: 58px !important;
+  height: 58px !important;
+
+  place-items: center !important;
+
+  margin: 0 auto 17px !important;
+}
+
+html body .st-checkout-live-preparing__halo {
+  position: absolute !important;
+  inset: 5px !important;
+
+  border-radius: 999px !important;
+
+  background: rgba(253, 183, 62, 0.12) !important;
+
+  filter: blur(9px) !important;
+
+  animation: stCheckoutPreparingHalo 1.8s ease-in-out infinite !important;
+}
+
+html body .st-checkout-live-preparing__ring {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+  z-index: 2 !important;
+
+  display: block !important;
+
+  width: 48px !important;
+  height: 48px !important;
+
+  border: 2px solid rgba(29, 29, 31, 0.08) !important;
+  border-top-color: #fdb73e !important;
+  border-right-color: rgba(228, 173, 67, 0.62) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 255, 255, 0.82) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(253, 183, 62, 0.045),
+    0 7px 22px rgba(189, 116, 0, 0.08) !important;
+
+  animation: stCheckoutPreparingSpin 850ms linear infinite !important;
+}
+
+html body .st-checkout-live-preparing__ring > span {
+  position: absolute !important;
+
+  top: 5px !important;
+  left: 50% !important;
+
+  width: 6px !important;
+  height: 6px !important;
+
+  margin-left: -3px !important;
+
+  border-radius: 999px !important;
+
+  background: #fdb73e !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.12),
+    0 0 13px rgba(253, 183, 62, 0.45) !important;
+}
+
+html body .st-checkout-live-preparing__pulse {
+  position: absolute !important;
+  z-index: 3 !important;
+
+  width: 8px !important;
+  height: 8px !important;
+
+  border-radius: 999px !important;
+
+  background: #1d1d1f !important;
+
+  box-shadow: 0 0 0 5px rgba(253, 183, 62, 0.12) !important;
+
+  animation: stCheckoutPreparingPulse 1.35s ease-in-out infinite !important;
+}
+
+/*
+ * Copy.
+ */
+html body .st-checkout-live-preparing__copy {
+  display: flex !important;
+
+  width: 100% !important;
+
+  flex-direction: column !important;
+  align-items: center !important;
+
+  text-align: center !important;
+}
+
+html body .st-checkout-live-preparing__eyebrow {
+  margin: 0 0 8px !important;
+
+  color: #966000 !important;
+
+  font-family: inherit !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+
+  letter-spacing: 0.19em !important;
+  text-transform: uppercase !important;
+}
+
+html body .st-checkout-live-preparing__copy > strong {
+  margin: 0 !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  line-height: 1.2 !important;
+
+  letter-spacing: -0.025em !important;
+}
+
+html body .st-checkout-live-preparing__status {
+  position: relative !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: 20px !important;
+
+  margin-top: 8px !important;
+
+  overflow: hidden !important;
+
+  color: rgba(29, 29, 31, 0.48) !important;
+
+  font-family: inherit !important;
+  font-size: 11.5px !important;
+  font-weight: 400 !important;
+  line-height: 20px !important;
+}
+
+html body .st-checkout-live-preparing__status > span {
+  position: absolute !important;
+  inset: 0 !important;
+
+  display: block !important;
+
+  opacity: 0 !important;
+
+  transform: translateY(5px) !important;
+
+  animation: stCheckoutPreparingStatus 3.6s ease-in-out infinite !important;
+}
+
+html body .st-checkout-live-preparing__status > span:nth-child(1) {
+  animation-delay: 0s !important;
+}
+
+html body .st-checkout-live-preparing__status > span:nth-child(2) {
+  animation-delay: 1.2s !important;
+}
+
+html body .st-checkout-live-preparing__status > span:nth-child(3) {
+  animation-delay: 2.4s !important;
+}
+
+/*
+ * True moving progress indicator.
+ *
+ * It intentionally does not pretend to represent a percentage.
+ * It visually communicates active work.
+ */
+html body .st-checkout-live-preparing__progress {
+  position: relative !important;
+
+  width: 100% !important;
+  height: 3px !important;
+
+  margin-top: 16px !important;
+
+  overflow: hidden !important;
+
+  border-radius: 999px !important;
+
+  background: rgba(29, 29, 31, 0.07) !important;
+}
+
+html body .st-checkout-live-preparing__progress > span {
+  position: absolute !important;
+
+  top: 0 !important;
+  left: -42% !important;
+
+  width: 42% !important;
+  height: 100% !important;
+
+  border-radius: inherit !important;
+
+  background: linear-gradient(
+    90deg,
+    rgba(253, 183, 62, 0),
+    #fdb73e 40%,
+    #e4ad43 72%,
+    rgba(253, 183, 62, 0)
+  ) !important;
+
+  box-shadow: 0 0 12px rgba(253, 183, 62, 0.32) !important;
+
+  animation: stCheckoutPreparingProgress 1.25s cubic-bezier(0.45, 0, 0.55, 1)
+    infinite !important;
+}
+
+/*
+ * Motion.
+ */
+@keyframes stCheckoutPreparingLayerIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes stCheckoutPreparingSurfaceIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes stCheckoutPreparingCardIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.965);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stCheckoutPreparingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes stCheckoutPreparingHalo {
+  0%,
+  100% {
+    opacity: 0.48;
+    transform: scale(0.9);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes stCheckoutPreparingPulse {
+  0%,
+  100% {
+    transform: scale(0.72);
+    opacity: 0.72;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes stCheckoutPreparingProgress {
+  0% {
+    left: -42%;
+  }
+
+  100% {
+    left: 104%;
+  }
+}
+
+@keyframes stCheckoutPreparingStatus {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  9%,
+  25% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  34%,
+  100% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+@media (max-width: 640px) {
+  html body .st-checkout-live-preparing {
+    padding: 16px !important;
+  }
+
+  html body .st-checkout-live-preparing__surface {
+    -webkit-backdrop-filter: blur(1px) saturate(0.98) !important;
+    backdrop-filter: blur(1px) saturate(0.98) !important;
+  }
+
+  html body .st-checkout-live-preparing__card {
+    width: min(350px, calc(100vw - 28px)) !important;
+
+    padding: 23px 21px 19px !important;
+
+    border-radius: 20px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st-checkout-live-preparing__card,
+  html body .st-checkout-live-preparing__surface,
+  html body .st-checkout-live-preparing__halo,
+  html body .st-checkout-live-preparing__pulse,
+  html body .st-checkout-live-preparing__ring,
+  html body .st-checkout-live-preparing__status > span,
+  html body .st-checkout-live-preparing__progress > span {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* === ST CHECKOUT LIVE PREPARING OVERLAY END === */
+
+/* === ST CHECKOUT GUEST SIGN IN APPLE V1 START === */
+
+/*
+ * Guest checkout → Sign in
+ *
+ * Same interaction family as Continue to review:
+ * - white default surface
+ * - quiet neutral border
+ * - website font
+ * - no uppercase / spaced Nita typography
+ * - mustard border + glow on hover
+ */
+
+html body .st-checkout-v2 a.st-checkout-guest-signin {
+  box-sizing: border-box !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  min-width: 92px !important;
+  min-height: 42px !important;
+
+  padding: 0 18px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  text-transform: none !important;
+  letter-spacing: -0.01em !important;
+
+  text-decoration: none !important;
+
+  box-shadow: 0 3px 12px rgba(29, 29, 31, 0.03) !important;
+
+  outline: none !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 240ms ease,
+    transform 180ms ease !important;
+}
+
+html body .st-checkout-v2 a.st-checkout-guest-signin::before,
+html body .st-checkout-v2 a.st-checkout-guest-signin::after {
+  content: none !important;
+  display: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st-checkout-v2 a.st-checkout-guest-signin:hover {
+    border-color: #e4ad43 !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+
+    color: #1d1d1f !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(253, 183, 62, 0.11),
+      0 10px 28px rgba(189, 116, 0, 0.11) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+html body .st-checkout-v2 a.st-checkout-guest-signin:focus-visible {
+  border-color: #e4ad43 !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px rgba(253, 183, 62, 0.13),
+    0 7px 22px rgba(189, 116, 0, 0.08) !important;
+}
+
+html body .st-checkout-v2 a.st-checkout-guest-signin:active {
+  transform: scale(0.98) !important;
+}
+
+@media (max-width: 640px) {
+  html body .st-checkout-v2 a.st-checkout-guest-signin {
+    min-width: 86px !important;
+    min-height: 40px !important;
+
+    padding-inline: 16px !important;
+
+    font-size: 12px !important;
+  }
+}
+
+/* === ST CHECKOUT GUEST SIGN IN APPLE V1 END === */

@@ -8,8 +8,9 @@ import {
   Clock3,
   FileText,
   Loader2,
-  PackageCheck,
+  Package,
   Save,
+  Store,
   Truck,
   X,
   XCircle,
@@ -27,6 +28,7 @@ type OrderStatus =
   | "confirmed"
   | "preparing"
   | "out_for_delivery"
+  | "ready_for_pickup"
   | "completed"
   | "cancelled";
 
@@ -37,6 +39,7 @@ type OrderStatusControlsProps = {
   currentStatus: OrderStatus;
   currentPaymentStatus: PaymentStatus;
   initialAdminNotes: string;
+  fulfillmentMethod: "delivery" | "pickup";
 };
 
 type ConfirmationState =
@@ -52,7 +55,7 @@ type ConfirmationState =
     }
   | null;
 
-const orderStatuses: {
+const deliveryOrderStatuses: {
   value: OrderStatus;
   label: string;
   description: string;
@@ -61,7 +64,7 @@ const orderStatuses: {
   {
     value: "pending",
     label: "Pending",
-    description: "Waiting for admin review",
+    description: "Awaiting review",
     icon: Clock3,
   },
   {
@@ -73,25 +76,69 @@ const orderStatuses: {
   {
     value: "preparing",
     label: "Preparing",
-    description: "Products are being prepared",
-    icon: PackageCheck,
+    description: "Items being prepared",
+    icon: Package,
   },
   {
     value: "out_for_delivery",
     label: "Out for delivery",
-    description: "Order is with the courier",
+    description: "With the courier",
     icon: Truck,
   },
   {
     value: "completed",
     label: "Completed",
-    description: "Delivered successfully",
+    description: "Delivery completed",
     icon: CheckCircle2,
   },
   {
     value: "cancelled",
     label: "Cancelled",
-    description: "Order will not be fulfilled",
+    description: "Order stopped",
+    icon: XCircle,
+  },
+];
+
+const pickupOrderStatuses: {
+  value: OrderStatus;
+  label: string;
+  description: string;
+  icon: typeof Clock3;
+}[] = [
+  {
+    value: "pending",
+    label: "Pending",
+    description: "Awaiting review",
+    icon: Clock3,
+  },
+  {
+    value: "confirmed",
+    label: "Confirmed",
+    description: "Order accepted",
+    icon: CheckCircle2,
+  },
+  {
+    value: "preparing",
+    label: "Preparing",
+    description: "Items being prepared",
+    icon: Package,
+  },
+  {
+    value: "ready_for_pickup",
+    label: "Ready for pickup",
+    description: "Ready at the store",
+    icon: Store,
+  },
+  {
+    value: "completed",
+    label: "Completed",
+    description: "Order collected",
+    icon: CheckCircle2,
+  },
+  {
+    value: "cancelled",
+    label: "Cancelled",
+    description: "Order stopped",
     icon: XCircle,
   },
 ];
@@ -119,7 +166,13 @@ export default function OrderStatusControls({
   currentStatus,
   currentPaymentStatus,
   initialAdminNotes,
+  fulfillmentMethod,
 }: OrderStatusControlsProps) {
+  const orderStatuses =
+    fulfillmentMethod === "pickup"
+      ? pickupOrderStatuses
+      : deliveryOrderStatuses;
+
   const [selectedStatus, setSelectedStatus] =
     useState<OrderStatus>(currentStatus);
 
@@ -127,18 +180,17 @@ export default function OrderStatusControls({
     useState<PaymentStatus>(currentPaymentStatus);
 
   const [adminNotes, setAdminNotes] = useState(initialAdminNotes);
-
   const [savedNotes, setSavedNotes] = useState(initialAdminNotes);
-
   const [confirmation, setConfirmation] = useState<ConfirmationState>(null);
-
   const [message, setMessage] = useState("");
-
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
-
   const [isPending, startTransition] = useTransition();
 
   const notesChanged = adminNotes.trim() !== savedNotes.trim();
+
+  const selectedStatusMeta = orderStatuses.find(
+    (status) => status.value === selectedStatus,
+  );
 
   useEffect(() => {
     if (!message) {
@@ -262,22 +314,35 @@ export default function OrderStatusControls({
 
   return (
     <>
-      <div className="space-y-6">
-        <section className="border border-white/10 bg-[#0d0d0d]">
-          <div className="border-b border-white/10 px-5 py-5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-              Fulfilment status
-            </p>
+      <div className="st-admin-order-controls">
+        <section className="st-admin-order-control-card">
+          <header className="st-admin-order-control-card__header">
+            <div>
+              <p>Fulfilment status</p>
+              <h2>Manage order progress</h2>
+            </div>
 
-            <h2 className="mt-2 text-2xl font-semibold">
-              Manage order progress
-            </h2>
-          </div>
+            <span
+              className={`st-admin-order-control-card__method ${
+                fulfillmentMethod === "pickup" ? "is-pickup" : "is-delivery"
+              }`}
+            >
+              {fulfillmentMethod === "pickup" ? (
+                <Store aria-hidden="true" />
+              ) : (
+                <Truck aria-hidden="true" />
+              )}
 
-          <div className="grid gap-2 p-4 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+              {fulfillmentMethod === "pickup" ? "Pickup" : "Delivery"}
+            </span>
+          </header>
+
+          <div
+            className="st-admin-order-status-grid"
+            aria-label="Order fulfilment status"
+          >
             {orderStatuses.map((status) => {
               const Icon = status.icon;
-
               const selected = selectedStatus === status.value;
 
               return (
@@ -286,55 +351,53 @@ export default function OrderStatusControls({
                   type="button"
                   disabled={isPending}
                   onClick={() => requestOrderStatus(status.value, status.label)}
-                  className={`group flex min-h-[92px] items-start gap-4 border p-4 text-left transition duration-300 ${
-                    selected
-                      ? "border-white/45 bg-white/[0.09]"
-                      : "border-white/10 bg-white/[0.025] hover:border-white/25 hover:bg-white/[0.05]"
-                  } disabled:cursor-wait disabled:opacity-55`}
+                  className={`st-admin-order-status-option ${
+                    selected ? "is-selected" : ""
+                  } ${
+                    status.value === "cancelled"
+                      ? "is-cancel"
+                      : status.value === "completed"
+                        ? "is-complete"
+                        : ""
+                  }`}
+                  aria-pressed={selected}
                 >
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center border transition ${
-                      selected
-                        ? "border-white/35 bg-white/[0.1]"
-                        : "border-white/10 bg-white/[0.035] group-hover:border-white/25"
-                    }`}
-                  >
+                  <span className="st-admin-order-status-option__icon">
                     {selected ? (
-                      <Check className="h-4 w-4" />
+                      <Check aria-hidden="true" />
                     ) : (
-                      <Icon className="h-4 w-4" />
+                      <Icon aria-hidden="true" />
                     )}
-                  </div>
+                  </span>
 
-                  <div>
-                    <p className="text-sm font-semibold">{status.label}</p>
-
-                    <p className="mt-1 text-xs leading-5 text-white/35">
-                      {status.description}
-                    </p>
-                  </div>
+                  <span>{status.label}</span>
                 </button>
               );
             })}
           </div>
+
+          {selectedStatusMeta && (
+            <div className="st-admin-order-current-status">
+              <span>Current</span>
+              <strong>{selectedStatusMeta.label}</strong>
+              <p>{selectedStatusMeta.description}</p>
+            </div>
+          )}
         </section>
 
-        <section className="border border-white/10 bg-[#0d0d0d]">
-          <div className="border-b border-white/10 px-5 py-5">
-            <div className="flex items-center gap-3">
-              <CircleDollarSign className="h-5 w-5 text-emerald-300" />
+        <section className="st-admin-order-control-card">
+          <header className="st-admin-order-control-card__header">
+            <div className="st-admin-order-control-card__title-with-icon">
+              <CircleDollarSign aria-hidden="true" />
 
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                  Payment
-                </p>
-
-                <h2 className="mt-1 text-xl font-semibold">Payment status</h2>
+                <p>Payment</p>
+                <h2>Payment status</h2>
               </div>
             </div>
-          </div>
+          </header>
 
-          <div className="grid grid-cols-3 gap-2 p-4">
+          <div className="st-admin-payment-status" aria-label="Payment status">
             {paymentStatuses.map((status) => {
               const selected = selectedPaymentStatus === status.value;
 
@@ -346,12 +409,12 @@ export default function OrderStatusControls({
                   onClick={() =>
                     requestPaymentStatus(status.value, status.label)
                   }
-                  className={`min-h-11 border px-2 py-3 text-[9px] font-semibold uppercase tracking-[0.11em] transition sm:px-3 sm:text-[10px] ${
-                    selected
-                      ? "border-emerald-300/50 bg-emerald-300/[0.1] text-emerald-200"
-                      : "border-white/10 bg-white/[0.025] text-white/45 hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
-                  } disabled:cursor-wait disabled:opacity-55`}
+                  aria-pressed={selected}
+                  className={`st-admin-payment-status__option is-${status.value} ${
+                    selected ? "is-selected" : ""
+                  }`}
                 >
+                  <span aria-hidden="true" />
                   {status.label}
                 </button>
               );
@@ -359,53 +422,46 @@ export default function OrderStatusControls({
           </div>
         </section>
 
-        <section className="border border-white/10 bg-[#0d0d0d]">
-          <div className="border-b border-white/10 px-5 py-5">
-            <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5 text-sky-300" />
+        <section className="st-admin-order-control-card">
+          <header className="st-admin-order-control-card__header">
+            <div className="st-admin-order-control-card__title-with-icon">
+              <FileText aria-hidden="true" />
 
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                  Private
-                </p>
-
-                <h2 className="mt-1 text-xl font-semibold">Admin notes</h2>
+                <p>Private</p>
+                <h2>Admin notes</h2>
               </div>
             </div>
-          </div>
+          </header>
 
-          <div className="p-4">
+          <div className="st-admin-order-notes">
             <textarea
               value={adminNotes}
               onChange={(event) => setAdminNotes(event.target.value)}
               disabled={isPending}
-              rows={6}
+              rows={5}
               maxLength={3000}
-              placeholder="Add private fulfilment notes, delivery instructions or customer follow-up details."
-              className="w-full resize-y border border-white/10 bg-white/[0.025] px-4 py-4 text-sm leading-6 text-white outline-none placeholder:text-white/20 focus:border-white/35 disabled:opacity-55"
+              placeholder="Private fulfilment notes, delivery instructions or customer follow-up."
             />
 
-            <div className="mt-3 flex items-center justify-between gap-4">
-              <p className="text-[10px] text-white/25">
-                {adminNotes.length}/3000
-              </p>
+            <footer>
+              <span>{adminNotes.length}/3000</span>
 
               <button
                 type="button"
                 disabled={isPending || !notesChanged}
                 onClick={saveNotes}
-                className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/15 bg-white/[0.04] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:border-white/30 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-30"
               >
-                <Save className="h-4 w-4" />
+                <Save aria-hidden="true" />
                 Save notes
               </button>
-            </div>
+            </footer>
           </div>
         </section>
 
         {isPending && (
-          <div className="flex items-center gap-3 border border-white/10 bg-white/[0.035] px-4 py-3 text-sm text-white/55">
-            <Loader2 className="h-4 w-4 animate-spin" />
+          <div className="st-admin-order-message is-loading">
+            <Loader2 aria-hidden="true" />
             Saving changes
           </div>
         )}
@@ -413,16 +469,14 @@ export default function OrderStatusControls({
         {message && !isPending && (
           <div
             role="status"
-            className={`flex items-start gap-3 border px-4 py-3 text-sm ${
-              messageType === "success"
-                ? "border-emerald-400/25 bg-emerald-400/[0.07] text-emerald-200"
-                : "border-red-400/25 bg-red-400/[0.07] text-red-200"
+            className={`st-admin-order-message ${
+              messageType === "success" ? "is-success" : "is-error"
             }`}
           >
             {messageType === "success" ? (
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+              <CheckCircle2 aria-hidden="true" />
             ) : (
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              <AlertTriangle aria-hidden="true" />
             )}
 
             {message}
@@ -431,50 +485,51 @@ export default function OrderStatusControls({
       </div>
 
       {confirmation && (
-        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4">
+        <div className="st-admin-order-confirmation">
           <button
             type="button"
             aria-label="Close confirmation"
             onClick={() => setConfirmation(null)}
-            className="absolute inset-0 h-full w-full bg-black/70 backdrop-blur-sm"
+            className="st-admin-order-confirmation__backdrop"
           />
 
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md border border-white/15 bg-[#101010] p-6 text-white shadow-[0_30px_100px_rgba(0,0,0,0.6)] sm:p-7"
+            aria-labelledby="st-admin-order-confirmation-title"
+            className="st-admin-order-confirmation__dialog"
           >
             <button
               type="button"
               onClick={() => setConfirmation(null)}
               aria-label="Close"
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center border border-white/10 text-white/45 transition hover:border-white/25 hover:text-white"
+              className="st-admin-order-confirmation__close"
             >
-              <X className="h-4 w-4" />
+              <X aria-hidden="true" />
             </button>
 
-            <div className="flex h-12 w-12 items-center justify-center border border-amber-400/25 bg-amber-400/[0.08]">
-              <AlertTriangle className="h-5 w-5 text-amber-300" />
-            </div>
+            <span className="st-admin-order-confirmation__icon">
+              <AlertTriangle aria-hidden="true" />
+            </span>
 
-            <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
+            <p className="st-admin-order-confirmation__eyebrow">
               Confirmation required
             </p>
 
-            <h2 className="mt-2 text-2xl font-semibold">
+            <h2 id="st-admin-order-confirmation-title">
               Change to {confirmation.label}?
             </h2>
 
-            <p className="mt-4 text-sm leading-6 text-white/45">
-              This change affects the order record, dashboard totals and
-              fulfilment status. Confirm that this action is correct.
+            <p className="st-admin-order-confirmation__copy">
+              This updates the order record and its operational status. Confirm
+              that this change is correct.
             </p>
 
-            <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="st-admin-order-confirmation__actions">
               <button
                 type="button"
                 onClick={() => setConfirmation(null)}
-                className="min-h-11 border border-white/15 bg-transparent px-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/55 transition hover:border-white/30 hover:text-white"
+                className="is-secondary"
               >
                 Go back
               </button>
@@ -482,7 +537,7 @@ export default function OrderStatusControls({
               <button
                 type="button"
                 onClick={confirmChange}
-                className="min-h-11 border border-white/20 bg-white/[0.1] px-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:border-white/35 hover:bg-white/[0.16]"
+                className="is-primary"
               >
                 Confirm change
               </button>

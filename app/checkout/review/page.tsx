@@ -15,12 +15,17 @@ import {
   User,
   UserRound,
   WalletCards,
+  Truck,
+  Store,
+  ShieldCheck,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 import CheckoutProgress from "@/components/checkout/checkout-progress";
+import { submitOrder } from "../place-order/actions";
 import { type CartItem, useCart } from "@/components/cart/cart-provider";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
+import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 type CustomerDetails = {
   firstName: string;
@@ -57,9 +62,11 @@ type StoredCoupon = {
   discountAmount: number;
 };
 
+type FulfillmentMethod = "delivery" | "pickup";
 type PaymentMethod = "cash_on_delivery";
 
 type StoredCheckoutDetails = {
+  fulfillmentMethod?: FulfillmentMethod;
   customer: CustomerDetails;
 
   customerAccount?: CustomerAccountDetails;
@@ -78,6 +85,7 @@ type StoredCheckoutDetails = {
 };
 
 type NormalizedCheckoutDetails = {
+  fulfillmentMethod: FulfillmentMethod;
   customer: CustomerDetails;
   customerAccount: CustomerAccountDetails;
   phoneCountry: PhoneCountryDetails | null;
@@ -94,6 +102,8 @@ function normalizeCheckoutDetails(
   details: StoredCheckoutDetails,
 ): NormalizedCheckoutDetails {
   return {
+    fulfillmentMethod:
+      details.fulfillmentMethod === "pickup" ? "pickup" : "delivery",
     customer: details.customer,
 
     customerAccount: details.customerAccount ?? {
@@ -134,7 +144,9 @@ function formatDeliveryLocation(customer: CustomerDetails) {
 export default function CheckoutReviewPage() {
   const router = useRouter();
 
-  const { items, subtotal, isCartReady } = useCart();
+  const { items, subtotal, isCartReady, clearCart } = useCart();
+
+  const { removeProduct } = useWishlist();
 
   const [checkoutDetails, setCheckoutDetails] =
     useState<NormalizedCheckoutDetails | null>(null);
@@ -146,8 +158,16 @@ export default function CheckoutReviewPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod | null>(null);
 
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+
+  const orderSubmissionStarted = useRef(false);
+
   useEffect(() => {
     try {
+      const authoritativeFulfillment = sessionStorage.getItem(
+        "stereophonie-checkout-fulfillment",
+      );
+
       const storedDetails = window.sessionStorage.getItem(
         "stereophonie-checkout-details",
       );
@@ -160,6 +180,18 @@ export default function CheckoutReviewPage() {
       }
 
       const parsedDetails = JSON.parse(storedDetails) as StoredCheckoutDetails;
+
+      /*
+       * The fulfillment selection made on the Details page is authoritative.
+       * Apply it to the parsed checkout payload before normalization so the
+       * rest of the Review page has one single source of truth.
+       */
+      if (
+        authoritativeFulfillment === "delivery" ||
+        authoritativeFulfillment === "pickup"
+      ) {
+        parsedDetails.fulfillmentMethod = authoritativeFulfillment;
+      }
 
       if (!parsedDetails?.customer || !Array.isArray(parsedDetails.cart)) {
         setErrorMessage("Your checkout information is incomplete.");
@@ -198,7 +230,10 @@ export default function CheckoutReviewPage() {
     return checkoutDetails?.subtotal ?? 0;
   }, [items, subtotal, checkoutDetails]);
 
-  const deliveryFee = checkoutDetails?.deliveryFee ?? 0;
+  const fulfillmentMethod: FulfillmentMethod =
+    checkoutDetails?.fulfillmentMethod === "pickup" ? "pickup" : "delivery";
+
+  const deliveryFee = fulfillmentMethod === "delivery" ? 4 : 0;
 
   const couponSubtotalMatches =
     Math.abs(reviewSubtotal - (checkoutDetails?.subtotal ?? reviewSubtotal)) <
@@ -228,21 +263,23 @@ export default function CheckoutReviewPage() {
     0,
   );
 
-  function continueToOrderSubmission() {
+  async function continueToOrderSubmission() {
     if (!checkoutDetails) {
       setErrorMessage("Your checkout information is missing.");
-
       return;
     }
 
     if (reviewItems.length === 0) {
       setErrorMessage("Your cart is empty.");
-
       return;
     }
 
     if (!selectedPaymentMethod) {
-      setErrorMessage("Please select cash on delivery before continuing.");
+      setErrorMessage(
+        fulfillmentMethod === "pickup"
+          ? "Please select cash at pickup before continuing."
+          : "Please select cash on delivery before continuing.",
+      );
 
       document
         .getElementById("payment-methods")
@@ -251,17 +288,21 @@ export default function CheckoutReviewPage() {
       return;
     }
 
+    if (orderSubmissionStarted.current) {
+      return;
+    }
+
     const updatedCheckoutDetails: NormalizedCheckoutDetails = {
       ...checkoutDetails,
 
       customerAccount: {
         ...checkoutDetails.customerAccount,
-
         email:
           checkoutDetails.customerAccount.email ||
           checkoutDetails.customer.email,
       },
 
+      fulfillmentMethod,
       coupon: reviewCoupon,
       discountAmount: reviewDiscountAmount,
       paymentMethod: selectedPaymentMethod,
@@ -277,7 +318,116 @@ export default function CheckoutReviewPage() {
       JSON.stringify(updatedCheckoutDetails),
     );
 
-    router.push("/checkout/place-order");
+    window.sessionStorage.setItem(
+      "stereophonie-order-submission-status",
+      "submitting",
+    );
+
+    orderSubmissionStarted.current = true;
+    setErrorMessage("");
+    setIsPlacingOrder(true);
+
+    try {
+      const result = await submitOrder({
+        customer: updatedCheckoutDetails.customer,
+
+        fulfillmentMethod,
+
+        customerAccount: updatedCheckoutDetails.customerAccount,
+
+        couponCode: updatedCheckoutDetails.coupon?.code ?? null,
+
+        paymentMethod: selectedPaymentMethod,
+
+        items: updatedCheckoutDetails.cart.map((item) => ({
+          variantId: item.variantId,
+          quantity: item.quantity,
+          name: item.name,
+          size: item.size,
+          imageUrl: item.imageUrl,
+          unitPrice: item.unitPrice,
+        })),
+      });
+
+      if (!result.success || !result.order_id || !result.order_number) {
+        window.sessionStorage.setItem(
+          "stereophonie-order-submission-status",
+          "failed",
+        );
+
+        setErrorMessage(result.message || "The order could not be submitted.");
+
+        orderSubmissionStarted.current = false;
+        setIsPlacingOrder(false);
+        return;
+      }
+
+      const snapshot = {
+        result: {
+          success: true as const,
+          order_id: result.order_id,
+          order_number: result.order_number,
+          subtotal: Number(result.subtotal ?? 0),
+          discount_amount: Number(result.discount_amount ?? 0),
+          delivery_fee: Number(result.delivery_fee ?? 0),
+          total: Number(result.total ?? 0),
+          coupon_code: result.coupon_code ?? null,
+          confirmation_email_sent: result.confirmation_email_sent,
+          confirmation_email_message: result.confirmation_email_message,
+        },
+
+        customer: updatedCheckoutDetails.customer,
+
+        customerAccount: updatedCheckoutDetails.customerAccount,
+
+        phoneCountry: updatedCheckoutDetails.phoneCountry ?? undefined,
+
+        cart: updatedCheckoutDetails.cart,
+
+        createdAt: new Date().toISOString(),
+
+        fulfillmentMethod,
+      };
+
+      window.sessionStorage.setItem(
+        "stereophonie-last-order",
+        JSON.stringify(snapshot),
+      );
+
+      window.sessionStorage.setItem(
+        "stereophonie-order-submission-status",
+        "completed",
+      );
+
+      window.sessionStorage.removeItem("stereophonie-checkout-details");
+      window.sessionStorage.removeItem("stereophonie-checkout-fulfillment");
+
+      const purchasedProductIds = Array.from(
+        new Set(updatedCheckoutDetails.cart.map((item) => item.productId)),
+      );
+
+      purchasedProductIds.forEach((productId) => {
+        removeProduct(productId);
+      });
+
+      clearCart();
+
+      router.push("/checkout/place-order");
+    } catch (error) {
+      window.sessionStorage.setItem(
+        "stereophonie-order-submission-status",
+        "failed",
+      );
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred while submitting your order.",
+      );
+
+      orderSubmissionStarted.current = false;
+      setIsPlacingOrder(false);
+    }
   }
 
   if (isLoading || !isCartReady) {
@@ -409,7 +559,7 @@ export default function CheckoutReviewPage() {
                   </div>
 
                   <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
-                    <div className="border border-black/10 p-4">
+                    <div className="st-checkout-review-info-card border border-black/10 p-4">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
                         Full name
                       </p>
@@ -419,7 +569,7 @@ export default function CheckoutReviewPage() {
                       </p>
                     </div>
 
-                    <div className="border border-black/10 p-4">
+                    <div className="st-checkout-review-info-card border border-black/10 p-4">
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-black/35" />
 
@@ -433,8 +583,8 @@ export default function CheckoutReviewPage() {
                       </p>
                     </div>
 
-                    <div className="border border-black/10 p-4 sm:col-span-2">
-                      <div className="flex items-center gap-2">
+                    <div className="st-checkout-review-info-card border border-black/10 p-4 sm:col-span-2">
+                      <div className="flex items-center gap-2 st-checkout-review-phone-clean">
                         <Phone className="h-4 w-4 text-black/35" />
 
                         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
@@ -442,11 +592,11 @@ export default function CheckoutReviewPage() {
                         </p>
                       </div>
 
-                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <div className="mt-3 flex flex-wrap items-center gap-3 st-checkout-review-phone-value-row">
                         <p className="font-semibold">{customer.phone}</p>
 
                         {checkoutDetails.phoneCountry ? (
-                          <span className="border border-black/10 bg-black/[0.025] px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/45">
+                          <span className="st-checkout-review-phone-country border border-black/10 bg-black/[0.025] px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-black/45">
                             {checkoutDetails.phoneCountry.flag}{" "}
                             {checkoutDetails.phoneCountry.country}
                           </span>
@@ -456,89 +606,119 @@ export default function CheckoutReviewPage() {
                   </div>
                 </section>
 
-                <section className="border border-black/10 bg-white">
-                  <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                        Delivery
-                      </p>
+                {fulfillmentMethod === "delivery" ? (
+                  <section className="overflow-hidden rounded-[22px] border border-black/[0.08] bg-white shadow-[0_10px_36px_rgba(29,29,31,0.035)]">
+                    <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                          Delivery
+                        </p>
 
-                      <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                        Delivery address
-                      </h2>
+                        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
+                          Delivery address
+                        </h2>
+                      </div>
+
+                      <MapPin className="h-5 w-5 text-black/35" />
                     </div>
 
-                    <MapPin className="h-5 w-5 text-black/35" />
+                    <div className="space-y-5 p-5 sm:p-6">
+                      <div
+                        className={`rounded-[16px] border p-5 ${
+                          isSavedAddress
+                            ? "is-saved border-[#fdb73e]"
+                            : "border-black/10"
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <p className="text-sm font-semibold">
+                            {customer.address}
+                          </p>
+
+                          <span
+                            className={`rounded-full border px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] ${
+                              isSavedAddress
+                                ? "border-[#e4ad43]/55 bg-[#fff2d5] text-[#8a5700]"
+                                : "border-black/[0.09] bg-[#f7f7f5] text-black/45"
+                            }`}
+                          >
+                            {isSavedAddress
+                              ? "Saved account address"
+                              : "Order-only address"}
+                          </span>
+                        </div>
+
+                        <p className="mt-3 text-sm leading-6 text-black/55">
+                          {formatDeliveryLocation(customer)}
+                        </p>
+
+                        {customer.building || customer.floor ? (
+                          <p className="mt-3 text-sm leading-6 text-black/55">
+                            {customer.building ? (
+                              <>Building: {customer.building}</>
+                            ) : null}
+
+                            {customer.building && customer.floor ? " · " : null}
+
+                            {customer.floor ? (
+                              <>Floor or apartment: {customer.floor}</>
+                            ) : null}
+                          </p>
+                        ) : null}
+                      </div>
+
+                      {customer.deliveryNotes ? (
+                        <div className="rounded-[16px] border border-black/[0.08] bg-[#f8f8fa] p-5">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                            Delivery notes
+                          </p>
+
+                          <p className="mt-3 whitespace-pre-line text-sm leading-6 text-black/60">
+                            {customer.deliveryNotes}
+                          </p>
+                        </div>
+                      ) : null}
+
+                      <Link
+                        href="/checkout"
+                        className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-black/45 transition hover:text-black"
+                      >
+                        <ArrowLeft className="h-4 w-4" />
+                        Edit delivery details
+                      </Link>
+                    </div>
+                  </section>
+                ) : null}
+
+                <section className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-[18px] border border-[#e4ad43]/40 bg-[#fffaf1] p-4 sm:p-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#fdb73e]/20 text-[#9a6200] [&>svg]:h-5 [&>svg]:w-5">
+                    {fulfillmentMethod === "pickup" ? <Store /> : <Truck />}
                   </div>
 
-                  <div className="space-y-5 p-5 sm:p-6">
-                    <div
-                      className={`border p-5 ${
-                        isSavedAddress ? "border-black" : "border-black/10"
-                      }`}
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-sm font-semibold">
-                          {customer.address}
-                        </p>
+                  <div className="min-w-0">
+                    <span className="block text-[9px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                      Fulfillment
+                    </span>
+                    <strong className="mt-1 block text-sm font-semibold">
+                      {fulfillmentMethod === "pickup"
+                        ? "Pick up in store"
+                        : "Delivery"}
+                    </strong>
+                    <p className="mt-1 text-xs leading-5 text-black/45">
+                      {fulfillmentMethod === "pickup"
+                        ? "No delivery fee. We will contact you when your order is ready to collect."
+                        : "Your order will be delivered to the address shown above."}
+                    </p>
+                  </div>
 
-                        <span
-                          className={`px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] ${
-                            isSavedAddress
-                              ? "bg-black text-white"
-                              : "border border-black/10 bg-black/[0.025] text-black/45"
-                          }`}
-                        >
-                          {isSavedAddress
-                            ? "Saved account address"
-                            : "Order-only address"}
-                        </span>
-                      </div>
-
-                      <p className="mt-3 text-sm leading-6 text-black/55">
-                        {formatDeliveryLocation(customer)}
-                      </p>
-
-                      {customer.building || customer.floor ? (
-                        <p className="mt-3 text-sm leading-6 text-black/55">
-                          {customer.building ? (
-                            <>Building: {customer.building}</>
-                          ) : null}
-
-                          {customer.building && customer.floor ? " · " : null}
-
-                          {customer.floor ? (
-                            <>Floor or apartment: {customer.floor}</>
-                          ) : null}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    {customer.deliveryNotes ? (
-                      <div className="border border-black/10 bg-black/[0.02] p-5">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                          Delivery notes
-                        </p>
-
-                        <p className="mt-3 whitespace-pre-line text-sm leading-6 text-black/60">
-                          {customer.deliveryNotes}
-                        </p>
-                      </div>
-                    ) : null}
-
-                    <Link
-                      href="/checkout"
-                      className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-black/45 transition hover:text-black"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                      Edit delivery details
-                    </Link>
+                  <div className="text-sm font-semibold text-[#8a5700]">
+                    {fulfillmentMethod === "pickup" ? "Free" : "$4.00"}
                   </div>
                 </section>
 
                 <section
                   id="payment-methods"
-                  className="scroll-mt-8 border border-black/10 bg-white"
+                  className="scroll-mt-8 overflow-hidden rounded-[22px] border border-black/[0.08] bg-white shadow-[0_10px_36px_rgba(29,29,31,0.035)]"
                 >
                   <div className="border-b border-black/10 px-5 py-5 sm:px-6">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
@@ -546,11 +726,13 @@ export default function CheckoutReviewPage() {
                     </p>
 
                     <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                      Choose a payment method
+                      Payment
                     </h2>
 
                     <p className="mt-2 text-sm leading-6 text-black/45">
-                      Select how you want to pay for this order.
+                      {fulfillmentMethod === "pickup"
+                        ? "Choose how you want to pay when collecting your order."
+                        : "Choose how you want to pay for your delivery."}
                     </p>
                   </div>
 
@@ -564,96 +746,77 @@ export default function CheckoutReviewPage() {
                       aria-pressed={
                         selectedPaymentMethod === "cash_on_delivery"
                       }
-                      className={`flex w-full items-center gap-4 border p-4 text-left transition sm:p-5 ${
+                      className={`flex w-full items-center gap-4 rounded-[16px] border p-4 text-left transition sm:p-5 ${
                         selectedPaymentMethod === "cash_on_delivery"
-                          ? "border-black bg-black/[0.025]"
-                          : "border-black/15 hover:border-black/40"
+                          ? "border-[#e4ad43] bg-[#fffaf1] shadow-[0_4px_16px_rgba(189,116,0,0.05)]"
+                          : "border-black/[0.09] bg-white hover:border-[#e4ad43]/70"
                       }`}
                     >
                       <span
                         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                           selectedPaymentMethod === "cash_on_delivery"
-                            ? "border-black"
-                            : "border-black/25"
+                            ? "border-[#d79a2b] bg-[#fdb73e]"
+                            : "border-black/20 bg-white"
                         }`}
                       >
                         {selectedPaymentMethod === "cash_on_delivery" ? (
-                          <span className="h-2.5 w-2.5 rounded-full bg-black" />
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#1d1d1f]" />
                         ) : null}
                       </span>
 
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-black text-white">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-[#fdb73e]/15 text-[#9a6200]">
                         <Banknote className="h-5 w-5" />
                       </span>
 
                       <span className="min-w-0 flex-1">
                         <span className="block text-sm font-semibold">
-                          Cash on delivery
+                          {fulfillmentMethod === "pickup"
+                            ? "Cash at pickup"
+                            : "Cash on delivery"}
                         </span>
 
                         <span className="mt-1 block text-xs leading-5 text-black/45">
-                          Pay in cash when your order is delivered.
+                          {fulfillmentMethod === "pickup"
+                            ? "Pay in cash when you collect your order in store."
+                            : "Pay in cash when your order is delivered."}
                         </span>
                       </span>
 
-                      <span className="hidden shrink-0 bg-black px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-white sm:block">
-                        Available
+                      <span className="st-checkout-payment-selected-badge hidden shrink-0 sm:inline-flex">
+                        Selected
                       </span>
                     </button>
 
                     <div
                       aria-disabled="true"
-                      className="flex cursor-not-allowed items-center gap-4 border border-black/10 bg-black/[0.02] p-4 opacity-60 sm:p-5"
+                      className="flex cursor-not-allowed items-center gap-4 rounded-[16px] border border-black/[0.07] bg-[#f7f7f9] p-4 opacity-60 sm:p-5"
                     >
                       <span className="h-5 w-5 shrink-0 rounded-full border border-black/25" />
 
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-black/10 bg-white">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-black/[0.08] bg-white text-black/45">
                         <WalletCards className="h-5 w-5" />
                       </span>
 
                       <span className="min-w-0 flex-1">
                         <span className="block text-sm font-semibold">
-                          Whish Money
+                          Whish Money Pay
                         </span>
 
                         <span className="mt-1 block text-xs leading-5 text-black/45">
-                          Pay through your Whish Money wallet.
+                          Pay through your Whish Money Pay wallet.
                         </span>
                       </span>
 
-                      <span className="hidden shrink-0 border border-black/10 bg-white px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-black/45 sm:block">
-                        Coming soon
-                      </span>
-                    </div>
-
-                    <div
-                      aria-disabled="true"
-                      className="flex cursor-not-allowed items-center gap-4 border border-black/10 bg-black/[0.02] p-4 opacity-60 sm:p-5"
-                    >
-                      <span className="h-5 w-5 shrink-0 rounded-full border border-black/25" />
-
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center border border-black/10 bg-white">
-                        <CreditCard className="h-5 w-5" />
-                      </span>
-
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-semibold">
-                          Credit or Debit Card
-                        </span>
-
-                        <span className="mt-1 block text-xs leading-5 text-black/45">
-                          Online Visa and Mastercard payments.
-                        </span>
-                      </span>
-
-                      <span className="hidden shrink-0 border border-black/10 bg-white px-3 py-2 text-[9px] font-semibold uppercase tracking-[0.14em] text-black/45 sm:block">
+                      <span className="st-checkout-payment-selected-badge st-checkout-payment-coming-soon-badge hidden shrink-0 sm:inline-flex">
                         Coming soon
                       </span>
                     </div>
 
                     {!selectedPaymentMethod ? (
                       <p className="text-xs font-medium text-amber-700">
-                        Select cash on delivery to continue.
+                        {fulfillmentMethod === "pickup"
+                          ? "Select cash at pickup to continue."
+                          : "Select cash on delivery to continue."}
                       </p>
                     ) : null}
                   </div>
@@ -769,10 +932,14 @@ export default function CheckoutReviewPage() {
                     ) : null}
 
                     <div className="flex items-center justify-between gap-4 text-sm">
-                      <span className="text-black/50">Delivery</span>
+                      <span className="text-black/50">
+                        {fulfillmentMethod === "pickup"
+                          ? "Store pickup"
+                          : "Delivery"}
+                      </span>
 
-                      <span className="text-right text-black/45">
-                        Confirmed later
+                      <span className="text-right font-medium">
+                        {fulfillmentMethod === "pickup" ? "Free" : "$4.00"}
                       </span>
                     </div>
 
@@ -781,7 +948,9 @@ export default function CheckoutReviewPage() {
 
                       <span className="text-right font-medium">
                         {selectedPaymentMethod === "cash_on_delivery"
-                          ? "Cash on delivery"
+                          ? fulfillmentMethod === "pickup"
+                            ? "Cash at pickup"
+                            : "Cash on delivery"
                           : "Not selected"}
                       </span>
                     </div>
@@ -794,13 +963,21 @@ export default function CheckoutReviewPage() {
                       </span>
                     </div>
 
+                    <div className="st-checkout-review-tax-note">
+                      <ShieldCheck />
+                      <span>
+                        Taxes are included in the price of every item.
+                      </span>
+                    </div>
+
                     <div className="border border-emerald-200 bg-emerald-50 p-4">
                       <div className="flex items-start gap-3">
                         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
 
                         <p className="text-xs leading-5 text-emerald-800">
-                          Your contact information, delivery address, and
-                          products are ready for submission.
+                          {fulfillmentMethod === "pickup"
+                            ? "Your contact information and products are ready for store pickup."
+                            : "Your contact information, delivery address, and products are ready for submission."}
                         </p>
                       </div>
                     </div>
@@ -808,8 +985,8 @@ export default function CheckoutReviewPage() {
                     <button
                       type="button"
                       onClick={continueToOrderSubmission}
-                      disabled={!selectedPaymentMethod}
-                      className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424] disabled:cursor-not-allowed disabled:bg-black/25"
+                      disabled={!selectedPaymentMethod || isPlacingOrder}
+                      className="st-checkout-review-place-order st-checkout-review-place-order-v2"
                     >
                       Continue to place order
                       <CheckCircle2 className="h-4 w-4" />
@@ -819,7 +996,9 @@ export default function CheckoutReviewPage() {
                       <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
 
                       <p>
-                        Cash will be collected when your order is delivered.
+                        {fulfillmentMethod === "pickup"
+                          ? "Cash will be collected when you pick up your order."
+                          : "Cash will be collected when your order is delivered."}
                       </p>
                     </div>
                   </div>
@@ -828,6 +1007,57 @@ export default function CheckoutReviewPage() {
             </div>
           )}
         </section>
+
+        {isPlacingOrder ? (
+          <div
+            className="st-checkout-submit-overlay"
+            role="status"
+            aria-live="polite"
+            aria-label="Placing your order"
+          >
+            <div className="st-checkout-submit-overlay__backdrop" />
+
+            <div className="st-checkout-submit-overlay__card">
+              <div
+                className="st-checkout-submit-overlay__loader"
+                aria-hidden="true"
+              >
+                <span className="st-checkout-submit-overlay__orbit" />
+                <span className="st-checkout-submit-overlay__core">
+                  <ShieldCheck />
+                </span>
+              </div>
+
+              <p className="st-checkout-submit-overlay__eyebrow">
+                Secure checkout
+              </p>
+
+              <h2>Placing your order</h2>
+
+              <p className="st-checkout-submit-overlay__message">
+                We are securely confirming your products, fulfillment, discount
+                and payment information.
+              </p>
+
+              <div
+                className="st-checkout-submit-overlay__activity"
+                aria-hidden="true"
+              >
+                <span />
+                <span />
+                <span />
+              </div>
+
+              <div className="st-checkout-submit-overlay__progress">
+                <span />
+              </div>
+
+              <p className="st-checkout-submit-overlay__caption">
+                Please keep this page open for a moment.
+              </p>
+            </div>
+          </div>
+        ) : null}
       </main>
     </>
   );

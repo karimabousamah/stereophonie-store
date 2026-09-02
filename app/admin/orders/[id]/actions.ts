@@ -14,6 +14,7 @@ const orderStatuses = [
   "confirmed",
   "preparing",
   "out_for_delivery",
+  "ready_for_pickup",
   "completed",
   "cancelled",
 ] as const;
@@ -42,6 +43,7 @@ type OrderNotificationRow = {
   id: string;
   order_number: string;
   status: OrderStatus;
+  fulfillment_method: "delivery" | "pickup";
   customer_first_name: string;
   customer_last_name: string;
   customer_email: string;
@@ -106,6 +108,7 @@ export async function updateOrderStatus(
       id,
       order_number,
       status,
+      fulfillment_method,
       customer_first_name,
       customer_last_name,
       customer_email,
@@ -134,6 +137,23 @@ export async function updateOrderStatus(
   }
 
   const order = orderData as OrderNotificationRow;
+
+  const fulfillmentMethod =
+    order.fulfillment_method === "pickup" ? "pickup" : "delivery";
+
+  if (fulfillmentMethod === "pickup" && status === "out_for_delivery") {
+    return {
+      success: false,
+      message: "Store pickup orders cannot be marked out for delivery.",
+    };
+  }
+
+  if (fulfillmentMethod === "delivery" && status === "ready_for_pickup") {
+    return {
+      success: false,
+      message: "Delivery orders cannot be marked ready for pickup.",
+    };
+  }
 
   if (order.status === status) {
     refreshOrderPages(orderId);
@@ -167,6 +187,8 @@ export async function updateOrderStatus(
     orderNumber: order.order_number,
 
     status: status as OrderStatusUpdateStatus,
+
+    fulfillmentMethod,
 
     customerFirstName: order.customer_first_name,
 

@@ -1,15 +1,19 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
 import {
+  Archive,
   ArrowLeft,
   ArrowUpRight,
   CheckCircle2,
   Clock3,
+  History,
   PackageCheck,
   PackageOpen,
+  RotateCcw,
+  Store,
   Truck,
   XCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import AdminShell from "@/components/admin/admin-shell";
 import OrderSearch from "@/components/admin/order-search";
@@ -24,17 +28,23 @@ type OrderItem = {
   line_total: number;
 };
 
+type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "preparing"
+  | "out_for_delivery"
+  | "ready_for_pickup"
+  | "completed"
+  | "cancelled";
+
+type PaymentStatus = "unpaid" | "paid" | "refunded";
+
 type Order = {
   id: string;
   order_number: string;
-  status:
-    | "pending"
-    | "confirmed"
-    | "preparing"
-    | "out_for_delivery"
-    | "completed"
-    | "cancelled";
-  payment_status: "unpaid" | "paid" | "refunded";
+  status: OrderStatus;
+  fulfillment_method: "delivery" | "pickup";
+  payment_status: PaymentStatus;
   customer_first_name: string;
   customer_last_name: string;
   customer_email: string;
@@ -48,12 +58,59 @@ type Order = {
   order_items: OrderItem[];
 };
 
-function getStatusDetails(status: Order["status"]) {
+type OrderFilter =
+  | "active"
+  | "pickup"
+  | "delivery"
+  | "history"
+  | "pending"
+  | "confirmed"
+  | "preparing"
+  | "ready_for_pickup"
+  | "out_for_delivery"
+  | "completed"
+  | "cancelled"
+  | "refunded";
+
+type AdminOrdersPageProps = {
+  searchParams: Promise<{
+    filter?: string;
+  }>;
+};
+
+const activeStatuses: OrderStatus[] = [
+  "pending",
+  "confirmed",
+  "preparing",
+  "ready_for_pickup",
+  "out_for_delivery",
+];
+
+const validFilters = new Set<OrderFilter>([
+  "active",
+  "pickup",
+  "delivery",
+  "history",
+  "pending",
+  "confirmed",
+  "preparing",
+  "ready_for_pickup",
+  "out_for_delivery",
+  "completed",
+  "cancelled",
+  "refunded",
+]);
+
+function isActiveOrder(order: Order) {
+  return activeStatuses.includes(order.status);
+}
+
+function getStatusDetails(status: OrderStatus) {
   if (status === "confirmed") {
     return {
       label: "Confirmed",
       icon: CheckCircle2,
-      className: "border-blue-400/25 bg-blue-400/[0.08] text-blue-300",
+      tone: "is-confirmed",
     };
   }
 
@@ -61,7 +118,7 @@ function getStatusDetails(status: Order["status"]) {
     return {
       label: "Preparing",
       icon: PackageCheck,
-      className: "border-amber-400/25 bg-amber-400/[0.08] text-amber-300",
+      tone: "is-preparing",
     };
   }
 
@@ -69,7 +126,15 @@ function getStatusDetails(status: Order["status"]) {
     return {
       label: "Out for delivery",
       icon: Truck,
-      className: "border-violet-400/25 bg-violet-400/[0.08] text-violet-300",
+      tone: "is-delivery-progress",
+    };
+  }
+
+  if (status === "ready_for_pickup") {
+    return {
+      label: "Ready for pickup",
+      icon: Store,
+      tone: "is-ready",
     };
   }
 
@@ -77,7 +142,7 @@ function getStatusDetails(status: Order["status"]) {
     return {
       label: "Completed",
       icon: CheckCircle2,
-      className: "border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300",
+      tone: "is-completed",
     };
   }
 
@@ -85,14 +150,14 @@ function getStatusDetails(status: Order["status"]) {
     return {
       label: "Cancelled",
       icon: XCircle,
-      className: "border-red-400/25 bg-red-400/[0.08] text-red-300",
+      tone: "is-cancelled",
     };
   }
 
   return {
     label: "Pending",
     icon: Clock3,
-    className: "border-white/10 bg-white/[0.04] text-white/55",
+    tone: "is-pending",
   };
 }
 
@@ -103,7 +168,79 @@ function formatOrderDate(dateValue: string) {
   }).format(new Date(dateValue));
 }
 
-export default async function AdminOrdersPage() {
+function orderMatchesFilter(order: Order, filter: OrderFilter) {
+  if (filter === "active") {
+    return isActiveOrder(order);
+  }
+
+  if (filter === "pickup") {
+    return order.fulfillment_method === "pickup" && isActiveOrder(order);
+  }
+
+  if (filter === "delivery") {
+    return order.fulfillment_method === "delivery" && isActiveOrder(order);
+  }
+
+  if (filter === "history") {
+    return order.status === "completed" || order.status === "cancelled";
+  }
+
+  if (filter === "refunded") {
+    return order.payment_status === "refunded";
+  }
+
+  return order.status === filter;
+}
+
+function filterTitle(filter: OrderFilter) {
+  if (filter === "pickup") return "Pick up in store";
+  if (filter === "delivery") return "Delivery";
+  if (filter === "history") return "Past orders";
+  if (filter === "ready_for_pickup") return "Ready for pickup";
+  if (filter === "out_for_delivery") return "Out for delivery";
+  if (filter === "refunded") return "Refunded";
+  if (filter === "active") return "Active orders";
+
+  return filter.charAt(0).toUpperCase() + filter.slice(1);
+}
+
+function filterDescription(filter: OrderFilter) {
+  if (filter === "active") {
+    return "All live orders that still require operational attention.";
+  }
+
+  if (filter === "pickup") {
+    return "Active orders customers will collect directly from Stereophonie.";
+  }
+
+  if (filter === "delivery") {
+    return "Active orders that still need to move through delivery fulfilment.";
+  }
+
+  if (filter === "history") {
+    return "Completed and cancelled orders are stored here automatically.";
+  }
+
+  if (filter === "refunded") {
+    return "Orders whose payment status has been marked as refunded.";
+  }
+
+  return `Orders currently marked as ${filterTitle(filter).toLowerCase()}.`;
+}
+
+export default async function AdminOrdersPage({
+  searchParams,
+}: AdminOrdersPageProps) {
+  const resolvedSearchParams = await searchParams;
+
+  const requestedFilter = resolvedSearchParams.filter as
+    OrderFilter | undefined;
+
+  const selectedFilter =
+    requestedFilter && validFilters.has(requestedFilter)
+      ? requestedFilter
+      : "active";
+
   const supabase = await createClient();
 
   const { data: claimsData } = await supabase.auth.getClaims();
@@ -131,6 +268,7 @@ export default async function AdminOrdersPage() {
         id,
         order_number,
         status,
+        fulfillment_method,
         payment_status,
         customer_first_name,
         customer_last_name,
@@ -158,17 +296,140 @@ export default async function AdminOrdersPage() {
 
   const orderList = (orders ?? []) as Order[];
 
-  const pendingCount = orderList.filter(
-    (order) => order.status === "pending",
-  ).length;
+  const counts = {
+    active: orderList.filter(isActiveOrder).length,
 
-  const activeCount = orderList.filter((order) =>
-    ["confirmed", "preparing", "out_for_delivery"].includes(order.status),
-  ).length;
+    pickup: orderList.filter(
+      (order) => order.fulfillment_method === "pickup" && isActiveOrder(order),
+    ).length,
 
-  const completedCount = orderList.filter(
-    (order) => order.status === "completed",
-  ).length;
+    delivery: orderList.filter(
+      (order) =>
+        order.fulfillment_method === "delivery" && isActiveOrder(order),
+    ).length,
+
+    history: orderList.filter(
+      (order) => order.status === "completed" || order.status === "cancelled",
+    ).length,
+
+    pending: orderList.filter((order) => order.status === "pending").length,
+
+    confirmed: orderList.filter((order) => order.status === "confirmed").length,
+
+    preparing: orderList.filter((order) => order.status === "preparing").length,
+
+    ready_for_pickup: orderList.filter(
+      (order) => order.status === "ready_for_pickup",
+    ).length,
+
+    out_for_delivery: orderList.filter(
+      (order) => order.status === "out_for_delivery",
+    ).length,
+
+    completed: orderList.filter((order) => order.status === "completed").length,
+
+    cancelled: orderList.filter((order) => order.status === "cancelled").length,
+
+    refunded: orderList.filter((order) => order.payment_status === "refunded")
+      .length,
+  };
+
+  const visibleOrders = orderList.filter((order) =>
+    orderMatchesFilter(order, selectedFilter),
+  );
+
+  const operationFilters: {
+    value: OrderFilter;
+    label: string;
+    description: string;
+    count: number;
+    icon: typeof Clock3;
+  }[] = [
+    {
+      value: "active",
+      label: "Active",
+      description: "Live workload",
+      count: counts.active,
+      icon: PackageOpen,
+    },
+    {
+      value: "pickup",
+      label: "Pick up in store",
+      description: "Active pickup",
+      count: counts.pickup,
+      icon: Store,
+    },
+    {
+      value: "delivery",
+      label: "Delivery",
+      description: "Active delivery",
+      count: counts.delivery,
+      icon: Truck,
+    },
+    {
+      value: "history",
+      label: "Past orders",
+      description: "Completed + cancelled",
+      count: counts.history,
+      icon: History,
+    },
+  ];
+
+  const workflowFilters: {
+    value: OrderFilter;
+    label: string;
+    count: number;
+    icon: typeof Clock3;
+  }[] = [
+    {
+      value: "pending",
+      label: "Pending",
+      count: counts.pending,
+      icon: Clock3,
+    },
+    {
+      value: "confirmed",
+      label: "Confirmed",
+      count: counts.confirmed,
+      icon: CheckCircle2,
+    },
+    {
+      value: "preparing",
+      label: "Preparing",
+      count: counts.preparing,
+      icon: PackageCheck,
+    },
+    {
+      value: "ready_for_pickup",
+      label: "Ready for pickup",
+      count: counts.ready_for_pickup,
+      icon: Store,
+    },
+    {
+      value: "out_for_delivery",
+      label: "Out for delivery",
+      count: counts.out_for_delivery,
+      icon: Truck,
+    },
+    {
+      value: "completed",
+      label: "Completed",
+      count: counts.completed,
+      icon: CheckCircle2,
+    },
+    {
+      value: "cancelled",
+      label: "Cancelled",
+      count: counts.cancelled,
+      icon: XCircle,
+    },
+    {
+      value: "refunded",
+      label: "Refunded",
+      count: counts.refunded,
+      icon: RotateCcw,
+    },
+  ];
 
   return (
     <AdminShell
@@ -191,79 +452,136 @@ export default async function AdminOrdersPage() {
               Commerce management
             </p>
 
-            <h1 className="mt-3 text-2xl font-semibold uppercase tracking-[-0.045em] sm:text-4xl">
+            <h1 className="mt-3 text-2xl font-semibold tracking-[-0.045em] sm:text-4xl">
               Orders
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/45">
-              Manage newly submitted orders and follow each order from
-              confirmation to delivery.
+              Manage live fulfilment first, then move through individual order
+              statuses or historical records when needed.
             </p>
           </header>
 
-          <section className="mt-5 grid gap-4 sm:grid-cols-3">
-            <div className="border border-white/10 bg-[#0d0d0d] p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
-                Pending
-              </p>
-
-              <p className="mt-3 text-2xl font-semibold">{pendingCount}</p>
-
-              <p className="mt-2 text-sm text-white/35">Awaiting review</p>
-            </div>
-
-            <div className="border border-white/10 bg-[#0d0d0d] p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
-                Active
-              </p>
-
-              <p className="mt-3 text-2xl font-semibold">{activeCount}</p>
-
-              <p className="mt-2 text-sm text-white/35">
-                Being prepared or delivered
-              </p>
-            </div>
-
-            <div className="border border-white/10 bg-[#0d0d0d] p-5">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/30">
-                Completed
-              </p>
-
-              <p className="mt-3 text-2xl font-semibold">{completedCount}</p>
-
-              <p className="mt-2 text-sm text-white/35">
-                Successfully fulfilled
-              </p>
-            </div>
-          </section>
-
           {ordersError && (
-            <div className="mt-5 border border-red-400/25 bg-red-400/[0.07] p-5 text-sm text-red-200">
+            <div className="mt-5 border border-red-400/25 bg-red-400/[0.07] p-5 text-sm text-red-700">
               Orders could not be loaded: {ordersError.message}
             </div>
           )}
 
-          <OrderSearch total={orderList.length} />
+          <OrderSearch total={visibleOrders.length} />
 
-          <section className="mt-5 overflow-hidden border border-white/10 bg-[#0d0d0d]">
-            {orderList.length === 0 ? (
-              <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
-                <div className="flex h-12 w-12 items-center justify-center border border-white/15 bg-white/[0.04]">
-                  <PackageOpen className="h-7 w-7 text-white/45" />
+          <section className="st-admin-order-hub">
+            <div className="st-admin-order-hub__section">
+              <header className="st-admin-order-hub__section-title">
+                <div>
+                  <span>Operations</span>
+                  <strong>Live order queues</strong>
                 </div>
 
-                <h2 className="mt-5 text-2xl font-semibold">No orders yet</h2>
+                <small>Completed orders do not inflate live counters</small>
+              </header>
 
-                <p className="mt-3 max-w-md text-sm leading-6 text-white/40">
-                  Customer orders will appear here after checkout is completed
-                  successfully.
+              <nav
+                className="st-admin-order-hub__operations"
+                aria-label="Order operation filters"
+              >
+                {operationFilters.map((filter) => {
+                  const Icon = filter.icon;
+
+                  return (
+                    <Link
+                      key={filter.value}
+                      href={`/admin/orders?filter=${filter.value}`}
+                      className={`st-admin-order-hub__operation ${
+                        selectedFilter === filter.value ? "is-active" : ""
+                      }`}
+                    >
+                      <span className="st-admin-order-hub__operation-icon">
+                        <Icon aria-hidden="true" />
+                      </span>
+
+                      <span className="st-admin-order-hub__operation-copy">
+                        <strong>{filter.label}</strong>
+                        <small>{filter.description}</small>
+                      </span>
+
+                      <span className="st-admin-order-hub__counter">
+                        {filter.count}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div className="st-admin-order-hub__section">
+              <header className="st-admin-order-hub__section-title">
+                <div>
+                  <span>Workflow</span>
+                  <strong>Quick status access</strong>
+                </div>
+
+                <small>Open any stage immediately</small>
+              </header>
+
+              <nav
+                className="st-admin-order-hub__workflow"
+                aria-label="Order status filters"
+              >
+                {workflowFilters.map((filter) => {
+                  const Icon = filter.icon;
+
+                  return (
+                    <Link
+                      key={filter.value}
+                      href={`/admin/orders?filter=${filter.value}`}
+                      className={`st-admin-order-hub__workflow-item ${
+                        selectedFilter === filter.value ? "is-active" : ""
+                      }`}
+                    >
+                      <Icon aria-hidden="true" />
+
+                      <span>{filter.label}</span>
+
+                      <strong>{filter.count}</strong>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          </section>
+
+          <section className="st-admin-order-directory-v3">
+            <header className="st-admin-order-directory-v3__header">
+              <div>
+                <p>Current view</p>
+
+                <h2>{filterTitle(selectedFilter)}</h2>
+
+                <span>{filterDescription(selectedFilter)}</span>
+              </div>
+
+              <div className="st-admin-order-directory-v3__result">
+                <strong>{visibleOrders.length}</strong>
+                <span>{visibleOrders.length === 1 ? "order" : "orders"}</span>
+              </div>
+            </header>
+
+            {visibleOrders.length === 0 ? (
+              <div className="st-admin-order-directory-v3__empty">
+                <Archive aria-hidden="true" />
+
+                <h3>No matching orders</h3>
+
+                <p>
+                  There are currently no orders in the{" "}
+                  {filterTitle(selectedFilter).toLowerCase()} view.
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-white/10">
-                {orderList.map((order) => {
+              <div className="st-admin-order-directory-v3__list">
+                {visibleOrders.map((order) => {
                   const statusDetails = getStatusDetails(order.status);
-
                   const StatusIcon = statusDetails.icon;
 
                   const itemQuantity = order.order_items.reduce(
@@ -279,6 +597,7 @@ export default async function AdminOrdersPage() {
                         order.order_number,
                         order.status,
                         order.payment_status,
+                        order.fulfillment_method,
                         order.customer_first_name,
                         order.customer_last_name,
                         order.customer_email,
@@ -290,69 +609,84 @@ export default async function AdminOrdersPage() {
                           item.size,
                         ]),
                       ].join(" ")}
-                      className="grid gap-5 p-5 transition hover:bg-white/[0.025] lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto] lg:items-center"
+                      className="st-admin-order-row-v3"
                     >
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-3">
-                          <h2 className="text-lg font-semibold">
-                            {order.order_number}
-                          </h2>
+                      <div className="st-admin-order-row-v3__main">
+                        <div className="st-admin-order-row-v3__heading">
+                          <h3>{order.order_number}</h3>
 
-                          <span
-                            className={`inline-flex items-center gap-2 border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${statusDetails.className}`}
-                          >
-                            <StatusIcon className="h-3.5 w-3.5" />
-                            {statusDetails.label}
-                          </span>
+                          <div className="st-admin-order-row-v3__badges">
+                            <span
+                              className={`st-admin-order-chip ${statusDetails.tone}`}
+                            >
+                              <StatusIcon aria-hidden="true" />
+                              {statusDetails.label}
+                            </span>
 
-                          <span
-                            className={`border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${
-                              order.payment_status === "paid"
-                                ? "border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300"
-                                : "border-white/10 bg-white/[0.04] text-white/45"
-                            }`}
-                          >
-                            {order.payment_status}
-                          </span>
+                            <span
+                              className={`st-admin-order-chip ${
+                                order.fulfillment_method === "pickup"
+                                  ? "is-pickup"
+                                  : "is-delivery"
+                              }`}
+                            >
+                              {order.fulfillment_method === "pickup" ? (
+                                <Store aria-hidden="true" />
+                              ) : (
+                                <Truck aria-hidden="true" />
+                              )}
+
+                              {order.fulfillment_method === "pickup"
+                                ? "Store pickup"
+                                : "Delivery"}
+                            </span>
+
+                            <span
+                              className={`st-admin-order-chip ${
+                                order.payment_status === "paid"
+                                  ? "is-paid"
+                                  : order.payment_status === "refunded"
+                                    ? "is-refunded"
+                                    : "is-unpaid"
+                              }`}
+                            >
+                              {order.payment_status}
+                            </span>
+                          </div>
                         </div>
 
-                        <p className="mt-3 font-semibold">
+                        <p className="st-admin-order-row-v3__customer">
                           {order.customer_first_name} {order.customer_last_name}
                         </p>
 
-                        <p className="mt-1 text-sm text-white/40">
-                          {order.customer_email}
-                        </p>
-
-                        <p className="mt-1 text-sm text-white/40">
-                          {order.customer_phone}
-                        </p>
+                        <div className="st-admin-order-row-v3__contact">
+                          <span>{order.customer_email}</span>
+                          <span>{order.customer_phone}</span>
+                        </div>
                       </div>
 
-                      <div>
-                        <p className="text-sm text-white/55">
+                      <div className="st-admin-order-row-v3__details">
+                        <span>
                           {itemQuantity} {itemQuantity === 1 ? "item" : "items"}
-                        </p>
+                        </span>
 
-                        <p className="mt-2 text-sm text-white/40">
-                          {order.delivery_area}, {order.delivery_city}
-                        </p>
+                        <span>
+                          {order.fulfillment_method === "pickup"
+                            ? "Stereophonie Store · Mtaileb"
+                            : `${order.delivery_area}, ${order.delivery_city}`}
+                        </span>
 
-                        <p className="mt-2 text-sm text-white/40">
-                          {formatOrderDate(order.created_at)}
-                        </p>
+                        <span>{formatOrderDate(order.created_at)}</span>
 
-                        <p className="mt-3 text-xl font-semibold">
-                          ${Number(order.total).toFixed(2)}
-                        </p>
+                        <strong>${Number(order.total).toFixed(2)}</strong>
                       </div>
 
                       <Link
                         href={`/admin/orders/${order.id}`}
-                        className="group inline-flex items-center justify-center gap-3 border border-white/15 px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white/65 transition hover:border-white hover:bg-white hover:text-black"
+                        className="st-admin-order-row-v3__open"
                       >
                         View order
-                        <ArrowUpRight className="h-4 w-4 transition group-hover:rotate-45" />
+                        <ArrowUpRight aria-hidden="true" />
                       </Link>
                     </article>
                   );

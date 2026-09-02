@@ -16,6 +16,12 @@ import {
   Trash2,
   UserRound,
   X,
+  Truck,
+  Store,
+  Banknote,
+  WalletCards,
+  ShieldCheck,
+  BadgeCheck,
 } from "lucide-react";
 import {
   type FormEvent,
@@ -39,6 +45,9 @@ import { createClient } from "@/lib/supabase/client";
 /* =========================================================
    TYPES
 ========================================================= */
+
+type FulfillmentMethod = "delivery" | "pickup";
+type PaymentMethod = "cash_on_delivery";
 
 type CheckoutForm = {
   firstName: string;
@@ -492,7 +501,7 @@ function AddressEditor({
           onClick={onClose}
           disabled={saving}
           aria-label="Close address editor"
-          className="st-checkout-module grid h-9 w-9 shrink-0 place-items-center border border-black/10 bg-white text-black/45 transition hover:border-black hover:bg-black hover:text-white disabled:opacity-40"
+          className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full border border-[#c58b22]/55 bg-white text-[#1d1d1f] shadow-[0_2px_8px_rgba(29,29,31,0.035)] transition-all duration-300 hover:border-[#c58b22]/80 hover:bg-[#fffaf0] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.11),0_10px_30px_rgba(196,135,27,0.13)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#f5b335]/15 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -764,12 +773,12 @@ function AddressEditor({
           />
         </div>
 
-        <label className="flex cursor-pointer items-start gap-3 border border-neutral-200 bg-white px-4 py-4 sm:col-span-2">
+        <label className="flex cursor-pointer items-start gap-3 border border-neutral-200 bg-white px-4 py-4 sm:col-span-2 st-checkout-default-address-card">
           <input
             type="checkbox"
             checked={draft.isDefault}
             onChange={(event) => onChange("isDefault", event.target.checked)}
-            className="mt-1 h-4 w-4 shrink-0 accent-black"
+            className="st-checkout-default-address-checkbox"
           />
 
           <span>
@@ -790,7 +799,7 @@ function AddressEditor({
           type="button"
           onClick={onSave}
           disabled={saving}
-          className="border border-black bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white hover:text-black disabled:cursor-wait disabled:border-neutral-300 disabled:bg-neutral-200 disabled:text-neutral-500"
+          className="border border-black bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white hover:text-black disabled:cursor-wait disabled:border-neutral-300 disabled:bg-neutral-200 disabled:text-neutral-500 st-checkout-address-save"
         >
           {saving
             ? "Saving address..."
@@ -803,7 +812,7 @@ function AddressEditor({
           type="button"
           onClick={onClose}
           disabled={saving}
-          className="border border-neutral-300 bg-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-600 transition hover:border-black hover:text-black disabled:opacity-40"
+          className="border border-neutral-300 bg-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-600 transition hover:border-black hover:text-black disabled:opacity-40 st-checkout-address-cancel"
         >
           Cancel
         </button>
@@ -837,6 +846,9 @@ export default function CheckoutPage() {
   } = useStoreSettings();
 
   const [form, setForm] = useState<CheckoutForm>(initialForm);
+
+  const [fulfillmentMethod, setFulfillmentMethod] =
+    useState<FulfillmentMethod>("delivery");
 
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -890,10 +902,7 @@ export default function CheckoutPage() {
 
   const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
 
-  const deliveryFee =
-    freeDeliveryThreshold >= 0 && subtotalAfterDiscount >= freeDeliveryThreshold
-      ? 0
-      : Math.max(0, configuredDeliveryFee);
+  const deliveryFee = fulfillmentMethod === "delivery" ? 4 : 0;
 
   const orderTotal = useMemo(
     () => Math.max(0, subtotal - discountAmount + deliveryFee),
@@ -1669,6 +1678,7 @@ export default function CheckoutPage() {
     }
 
     const checkoutDetails = {
+      fulfillmentMethod,
       customer: {
         ...form,
         country: "Lebanon",
@@ -1718,6 +1728,11 @@ export default function CheckoutPage() {
     };
 
     window.sessionStorage.setItem(
+      "stereophonie-checkout-fulfillment",
+      fulfillmentMethod,
+    );
+
+    sessionStorage.setItem(
       "stereophonie-checkout-details",
       JSON.stringify(checkoutDetails),
     );
@@ -1736,23 +1751,6 @@ export default function CheckoutPage() {
      LOADING
   ======================================================= */
 
-  if (!isCartReady || accountLoading) {
-    return (
-      <>
-        <V3Header />
-        <main className="st-checkout-v2 st-checkout-loading flex min-h-[60vh] items-center justify-center bg-white text-black">
-          <div className="rounded-[24px] border border-black/[0.08] bg-white px-10 py-9 text-center shadow-[0_18px_55px_rgba(29,29,31,0.06)]">
-            <div className="mx-auto h-7 w-7 animate-spin rounded-full border-2 border-black/15 border-t-[#b77700]" />
-
-            <p className="mt-4 text-sm font-medium text-black/50">
-              Preparing your checkout…
-            </p>
-          </div>
-        </main>
-      </>
-    );
-  }
-
   /* =======================================================
      PAGE
   ======================================================= */
@@ -1761,260 +1759,418 @@ export default function CheckoutPage() {
     <>
       <V3Header />
       <main className="st-checkout-v2 min-h-screen bg-[#f7f7f5] text-black">
-        <section className="st-checkout-compact-head">
-          <div>
-            <p className="st-checkout-compact-head__eyebrow">Checkout</p>
-            <h1>Delivery details</h1>
-            <p>Enter the information needed to deliver your order.</p>
-          </div>
+        {!isCartReady ? (
+          <div
+            className="st-checkout-live-preparing"
+            role="status"
+            aria-live="polite"
+            aria-label="Preparing your checkout"
+          >
+            <div
+              className="st-checkout-live-preparing__surface"
+              aria-hidden="true"
+            />
 
-          <div className="st-checkout-compact-head__trust">
-            <LockKeyhole />
-            <span>
-              <strong>Secure checkout</strong>
-              <small>Review everything before confirming</small>
-            </span>
-          </div>
-        </section>
+            <div className="st-checkout-live-preparing__card">
+              <div className="st-checkout-live-preparing__motion">
+                <span className="st-checkout-live-preparing__halo" />
 
-        <CheckoutProgress currentStep={1} />
+                <span className="st-checkout-live-preparing__ring">
+                  <span />
+                </span>
 
-        <section className="st-checkout-content mx-auto max-w-[1180px] px-4 py-6 sm:px-6 sm:py-8">
-          {items.length === 0 ? (
-            <div className="flex min-h-[440px] flex-col items-center justify-center border border-dashed border-black/15 bg-white px-6 text-center">
-              <div className="flex h-16 w-16 items-center justify-center border border-black/10 bg-black/[0.025]">
-                <ShoppingBag className="h-7 w-7 text-black/30" />
+                <span className="st-checkout-live-preparing__pulse" />
               </div>
 
-              <h2 className="mt-6 text-2xl font-semibold">
-                Your cart is empty
-              </h2>
+              <div className="st-checkout-live-preparing__copy">
+                <span className="st-checkout-live-preparing__eyebrow">
+                  Secure checkout
+                </span>
 
-              <p className="mt-3 max-w-md text-sm leading-6 text-black/45">
-                Select a product configuration before proceeding to checkout.
-              </p>
+                <strong>Preparing your checkout</strong>
 
-              <Link
-                href="/shop"
-                className="mt-7 bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.17em] !text-white transition hover:bg-[#242424]"
-              >
-                Browse products
-              </Link>
+                <span className="st-checkout-live-preparing__status">
+                  <span>Loading your cart</span>
+                  <span>Checking your details</span>
+                  <span>Almost ready</span>
+                </span>
+              </div>
+
+              <div className="st-checkout-live-preparing__progress">
+                <span />
+              </div>
             </div>
-          ) : (
-            <form
-              ref={formRef}
-              onSubmit={submitCheckout}
-              noValidate
-              className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_430px] xl:gap-10"
-            >
-              <div className="min-w-0 space-y-6 sm:space-y-8">
-                {errorMessage ? (
-                  <div
-                    role="alert"
-                    className="flex items-start gap-3 border border-red-200 bg-red-50 px-4 py-4 text-sm leading-6 text-red-700 sm:px-5"
-                  >
-                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+          </div>
+        ) : null}
 
-                    <span>{errorMessage}</span>
-                  </div>
-                ) : null}
+        <section className="st-checkout-content mx-auto max-w-[1180px] px-4 py-6 sm:px-6 sm:py-8">
+          <div className="st-checkout-page-stack">
+            <section className="st-checkout-compact-head st-checkout-top-hero">
+              <div>
+                <p className="st-checkout-compact-head__eyebrow">Checkout</p>
+                <h1>Delivery details</h1>
+                <p>Enter the information needed to deliver your order.</p>
+              </div>
 
-                {accountError ? (
-                  <div className="flex items-start gap-3 border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-800 sm:px-5">
-                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+              <div className="st-checkout-compact-head__trust">
+                <LockKeyhole />
+                <span>
+                  <strong>Secure checkout</strong>
+                  <small>Review everything before confirming</small>
+                </span>
+              </div>
+            </section>
 
-                    <span>{accountError}</span>
-                  </div>
-                ) : null}
+            <CheckoutProgress currentStep={1} />
 
-                {signedIn ? (
-                  <section className="border border-emerald-200 bg-emerald-50/50">
-                    <div className="flex items-start gap-4 px-4 py-5 sm:px-6">
-                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-white">
-                        <UserRound className="h-5 w-5" />
-                      </div>
+            {items.length === 0 ? (
+              <div className="flex min-h-[440px] flex-col items-center justify-center border border-dashed border-black/15 bg-white px-6 text-center">
+                <div className="flex h-16 w-16 items-center justify-center border border-black/10 bg-black/[0.025]">
+                  <ShoppingBag className="h-7 w-7 text-black/30" />
+                </div>
 
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-emerald-700">
-                          Customer account detected
-                        </p>
+                <h2 className="mt-6 text-2xl font-semibold">
+                  Your cart is empty
+                </h2>
 
-                        <h2 className="mt-2 text-lg font-semibold">
-                          Your account information has been applied
-                        </h2>
+                <p className="mt-3 max-w-md text-sm leading-6 text-black/45">
+                  Select a product configuration before proceeding to checkout.
+                </p>
 
-                        <p className="mt-2 break-all text-sm text-emerald-900/60">
-                          {accountEmail}
-                        </p>
-                      </div>
+                <Link
+                  href="/shop"
+                  className="mt-7 bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.17em] !text-white transition hover:bg-[#242424]"
+                >
+                  Browse products
+                </Link>
+              </div>
+            ) : (
+              <form
+                ref={formRef}
+                onSubmit={submitCheckout}
+                noValidate
+                className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_430px] xl:gap-10"
+              >
+                <div className="min-w-0 space-y-6 sm:space-y-8">
+                  {errorMessage ? (
+                    <div
+                      role="alert"
+                      className="flex items-start gap-3 border border-red-200 bg-red-50 px-4 py-4 text-sm leading-6 text-red-700 sm:px-5"
+                    >
+                      <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
 
-                      <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
+                      <span>{errorMessage}</span>
                     </div>
-                  </section>
-                ) : (
-                  <section className="st-checkout-module border border-black/10 bg-white">
-                    <div className="flex flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                  ) : null}
+
+                  {accountError ? (
+                    <div className="flex items-start gap-3 border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-800 sm:px-5">
+                      <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+
+                      <span>{accountError}</span>
+                    </div>
+                  ) : null}
+
+                  {signedIn ? (
+                    <section className="border border-emerald-200 bg-emerald-50/50">
+                      <div className="flex items-start gap-4 px-4 py-5 sm:px-6">
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-white">
+                          <UserRound className="h-5 w-5" />
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                            Customer account detected
+                          </p>
+
+                          <h2 className="mt-2 text-lg font-semibold">
+                            Your account information has been applied
+                          </h2>
+
+                          <p className="mt-2 break-all text-sm text-emerald-900/60">
+                            {accountEmail}
+                          </p>
+                        </div>
+
+                        <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
+                      </div>
+                    </section>
+                  ) : (
+                    <section className="st-checkout-module border border-black/10 bg-white">
+                      <div className="flex flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                        <div>
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                            Guest checkout
+                          </p>
+
+                          <p className="mt-2 text-sm leading-6 text-black/55">
+                            Sign in to use your customer profile and saved
+                            delivery addresses.
+                          </p>
+                        </div>
+
+                        <Link
+                          href="/account?mode=login"
+                          className="st-checkout-guest-signin shrink-0"
+                        >
+                          Sign in
+                        </Link>
+                      </div>
+                    </section>
+                  )}
+
+                  <section className="st-checkout-module st-checkout-fulfillment overflow-hidden rounded-[18px] border border-black/[0.09] bg-white shadow-[0_10px_34px_rgba(29,29,31,0.035)]">
+                    <div className="st-checkout-fulfillment__head">
                       <div>
-                        <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                          Guest checkout
+                        <p className="st-checkout-fulfillment__eyebrow">
+                          Fulfillment
                         </p>
-
-                        <p className="mt-2 text-sm leading-6 text-black/55">
-                          Sign in to use your customer profile and saved
-                          delivery addresses.
+                        <h2>How would you like your order?</h2>
+                        <p>
+                          Choose delivery or collect your order directly from
+                          Stereophonie.
                         </p>
                       </div>
+                    </div>
 
-                      <Link
-                        href="/account?mode=login"
-                        className="shrink-0 border border-black bg-black px-5 py-3 text-center text-[10px] font-semibold uppercase tracking-[0.15em] !text-white transition hover:bg-white hover:!text-black"
+                    <div
+                      className="st-checkout-fulfillment__choices"
+                      role="radiogroup"
+                      aria-label="Fulfillment method"
+                    >
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={fulfillmentMethod === "delivery"}
+                        className={`st-checkout-fulfillment__choice ${
+                          fulfillmentMethod === "delivery" ? "is-selected" : ""
+                        }`}
+                        onClick={() => setFulfillmentMethod("delivery")}
                       >
-                        Sign in
-                      </Link>
+                        <span className="st-checkout-fulfillment__icon">
+                          <Truck />
+                        </span>
+
+                        <span className="st-checkout-fulfillment__copy">
+                          <strong>Delivery</strong>
+                          <span>Delivered to your address</span>
+                        </span>
+
+                        <span className="st-checkout-fulfillment__price">
+                          $4.00
+                        </span>
+
+                        <span className="st-checkout-fulfillment__radio">
+                          <span />
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={fulfillmentMethod === "pickup"}
+                        className={`st-checkout-fulfillment__choice ${
+                          fulfillmentMethod === "pickup" ? "is-selected" : ""
+                        }`}
+                        onClick={() => setFulfillmentMethod("pickup")}
+                      >
+                        <span className="st-checkout-fulfillment__icon">
+                          <Store />
+                        </span>
+
+                        <span className="st-checkout-fulfillment__copy">
+                          <strong>Pick up in store</strong>
+                          <span>Collect directly from Stereophonie</span>
+                        </span>
+
+                        <span className="st-checkout-fulfillment__price">
+                          Free
+                        </span>
+
+                        <span className="st-checkout-fulfillment__radio">
+                          <span />
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className="st-checkout-fulfillment__note">
+                      <BadgeCheck />
+                      <span>Taxes are already included in product prices.</span>
                     </div>
                   </section>
-                )}
 
-                {/* CONTACT INFORMATION */}
+                  {/* CONTACT INFORMATION */}
 
-                <section className="st-checkout-module border border-black/10 bg-white">
-                  <div className="border-b border-black/10 px-4 py-5 sm:px-6">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                      Step 01
-                    </p>
+                  <section className="st-checkout-module border border-black/10 bg-white">
+                    <div className="border-b border-black/10 px-4 py-5 sm:px-6">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                        Step 01
+                      </p>
 
-                    <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-0.025em] sm:text-[24px]">
-                      Contact information
-                    </h2>
+                      <h2 className="mt-1.5 text-[21px] font-semibold tracking-[-0.025em] sm:text-[24px]">
+                        Contact information
+                      </h2>
 
-                    <p className="mt-2 text-sm leading-6 text-black/45">
-                      Select any international telephone code. Delivery is
-                      currently available in Lebanon only.
-                    </p>
-                  </div>
-
-                  <div className="grid gap-x-4 gap-y-4 p-4 sm:grid-cols-2 sm:px-5 sm:py-5">
-                    <div data-checkout-field="firstName">
-                      <label
-                        htmlFor="first-name"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.firstName ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        First name
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
-
-                      <input
-                        id="first-name"
-                        type="text"
-                        value={form.firstName}
-                        onChange={(event) =>
-                          updateField("firstName", event.target.value)
-                        }
-                        autoComplete="given-name"
-                        aria-invalid={Boolean(errors.firstName)}
-                        className={fieldInputClass(Boolean(errors.firstName))}
-                      />
-
-                      <FieldError message={errors.firstName} />
+                      <p className="mt-2 text-sm leading-6 text-black/45">
+                        Select any international telephone code. Delivery is
+                        currently available in Lebanon only.
+                      </p>
                     </div>
 
-                    <div data-checkout-field="lastName">
-                      <label
-                        htmlFor="last-name"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.lastName ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        Last name
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
-
-                      <input
-                        id="last-name"
-                        type="text"
-                        value={form.lastName}
-                        onChange={(event) =>
-                          updateField("lastName", event.target.value)
-                        }
-                        autoComplete="family-name"
-                        aria-invalid={Boolean(errors.lastName)}
-                        className={fieldInputClass(Boolean(errors.lastName))}
-                      />
-
-                      <FieldError message={errors.lastName} />
-                    </div>
-
-                    <div data-checkout-field="email">
-                      <label
-                        htmlFor="email"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.email ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        Email address
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
-
-                      <input
-                        id="email"
-                        type="email"
-                        value={form.email}
-                        onChange={(event) =>
-                          updateField("email", event.target.value)
-                        }
-                        autoComplete="email"
-                        inputMode="email"
-                        aria-invalid={Boolean(errors.email)}
-                        className={fieldInputClass(Boolean(errors.email))}
-                      />
-
-                      <FieldError message={errors.email} />
-                    </div>
-
-                    <div data-checkout-field="phone">
-                      <label
-                        htmlFor="phone"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.phone ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        Phone number
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
-
-                      <div className="relative mt-2.5">
-                        <div
-                          className={`flex min-h-14 ${
-                            errors.phone
-                              ? "border border-red-500 ring-1 ring-red-500"
-                              : "border border-black/15 focus-within:border-black focus-within:ring-1 focus-within:ring-black"
+                    <div className="grid gap-x-4 gap-y-4 p-4 sm:grid-cols-2 sm:px-5 sm:py-5">
+                      <div data-checkout-field="firstName">
+                        <label
+                          htmlFor="first-name"
+                          className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                            errors.firstName ? "text-red-600" : "text-black/60"
                           }`}
                         >
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setPhoneSelectorOpen((current) => !current)
-                            }
-                            aria-expanded={phoneSelectorOpen}
-                            className="flex shrink-0 items-center gap-2 border-r border-black/10 bg-[#f7f7f5] px-3 text-sm text-black transition hover:bg-black/[0.06] sm:px-4 st-checkout-phone-country-trigger"
-                          >
-                            <span className="text-xl leading-none">
-                              {selectedPhoneCountry.flag}
-                            </span>
+                          First name
+                          <span className="ml-1 text-red-600">*</span>
+                        </label>
 
-                            <span className="font-medium">
-                              {selectedPhoneCountry.code}
-                            </span>
+                        <input
+                          id="first-name"
+                          type="text"
+                          value={form.firstName}
+                          onChange={(event) =>
+                            updateField("firstName", event.target.value)
+                          }
+                          autoComplete="given-name"
+                          aria-invalid={Boolean(errors.firstName)}
+                          className={fieldInputClass(Boolean(errors.firstName))}
+                        />
 
-                            <ChevronDown
-                              className={`h-4 w-4 text-black/40 transition ${
-                                phoneSelectorOpen ? "rotate-180" : ""
-                              }`}
-                            />
-                          </button>
+                        <FieldError message={errors.firstName} />
+                      </div>
+
+                      <div data-checkout-field="lastName">
+                        <label
+                          htmlFor="last-name"
+                          className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                            errors.lastName ? "text-red-600" : "text-black/60"
+                          }`}
+                        >
+                          Last name
+                          <span className="ml-1 text-red-600">*</span>
+                        </label>
+
+                        <input
+                          id="last-name"
+                          type="text"
+                          value={form.lastName}
+                          onChange={(event) =>
+                            updateField("lastName", event.target.value)
+                          }
+                          autoComplete="family-name"
+                          aria-invalid={Boolean(errors.lastName)}
+                          className={fieldInputClass(Boolean(errors.lastName))}
+                        />
+
+                        <FieldError message={errors.lastName} />
+                      </div>
+
+                      <div data-checkout-field="email">
+                        <label
+                          htmlFor="email"
+                          className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                            errors.email ? "text-red-600" : "text-black/60"
+                          }`}
+                        >
+                          Email address
+                          <span className="ml-1 text-red-600">*</span>
+                        </label>
+
+                        <input
+                          id="email"
+                          type="email"
+                          value={form.email}
+                          onChange={(event) =>
+                            updateField("email", event.target.value)
+                          }
+                          autoComplete="email"
+                          inputMode="email"
+                          aria-invalid={Boolean(errors.email)}
+                          className={fieldInputClass(Boolean(errors.email))}
+                        />
+
+                        <FieldError message={errors.email} />
+                      </div>
+
+                      <div data-checkout-field="phone">
+                        <label
+                          htmlFor="phone"
+                          className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                            errors.phone ? "text-red-600" : "text-black/60"
+                          }`}
+                        >
+                          Phone number
+                          <span className="ml-1 text-red-600">*</span>
+                        </label>
+
+                        <div
+                          className={`mt-2.5 flex min-h-14 w-full items-stretch overflow-hidden rounded-[14px] transition ${
+                            errors.phone
+                              ? "border border-red-500 bg-white ring-2 ring-red-500/10"
+                              : "border border-black/[0.12] bg-[#f7f7f9] focus-within:border-[#e4ad43] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#fdb73e]/10"
+                          }`}
+                        >
+                          <div className="st-checkout-phone-country-shell flex w-[132px] shrink-0 items-center sm:w-[142px]">
+                            <div className="pointer-events-none flex w-full items-center gap-2 px-3.5 sm:px-4">
+                              <span className="text-lg leading-none">
+                                {selectedPhoneCountry.flag}
+                              </span>
+
+                              <span className="min-w-0 flex-1 whitespace-nowrap text-[15px] font-medium text-[#1d1d1f]">
+                                {selectedPhoneCountry.code}
+                              </span>
+
+                              <ChevronDown className="h-4 w-4 shrink-0 text-black/35" />
+                            </div>
+
+                            <select
+                              aria-label="Phone country code"
+                              value={`${selectedPhoneCountry.country}|${selectedPhoneCountry.code}`}
+                              onChange={(event) => {
+                                const separatorIndex =
+                                  event.target.value.lastIndexOf("|");
+
+                                const country = event.target.value.slice(
+                                  0,
+                                  separatorIndex,
+                                );
+
+                                const code = event.target.value.slice(
+                                  separatorIndex + 1,
+                                );
+
+                                const nextCountry = phoneCountries.find(
+                                  (option) =>
+                                    option.country === country &&
+                                    option.code === code,
+                                );
+
+                                if (nextCountry) {
+                                  selectPhoneCountry(nextCountry);
+                                }
+                              }}
+                              className="absolute inset-0 h-full w-full cursor-pointer appearance-none opacity-0"
+                            >
+                              {phoneCountries.map((option) => (
+                                <option
+                                  key={`${option.country}-${option.code}`}
+                                  value={`${option.country}|${option.code}`}
+                                >
+                                  {option.flag} {option.country} ({option.code})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div
+                            aria-hidden="true"
+                            className="st-checkout-phone-divider"
+                          />
 
                           <input
                             id="phone"
@@ -2030,7 +2186,6 @@ export default function CheckoutPage() {
                             onBeforeInput={(event) => {
                               const inputEvent =
                                 event.nativeEvent as InputEvent;
-
                               const enteredText = inputEvent.data ?? "";
 
                               if (enteredText && !/^\d+$/.test(enteredText)) {
@@ -2048,10 +2203,8 @@ export default function CheckoutPage() {
                               }
 
                               const input = event.currentTarget;
-
                               const selectionStart =
                                 input.selectionStart ?? form.phone.length;
-
                               const selectionEnd =
                                 input.selectionEnd ?? form.phone.length;
 
@@ -2077,685 +2230,636 @@ export default function CheckoutPage() {
                             }}
                             placeholder={selectedPhoneCountry.example}
                             aria-invalid={Boolean(errors.phone)}
-                            className="min-w-0 flex-1 bg-white px-4 text-[16px] text-black outline-none placeholder:text-black/25"
+                            className="min-w-0 flex-1 !border-0 !bg-transparent px-4 text-[16px] text-[#1d1d1f] !shadow-none !outline-none !ring-0 placeholder:text-black/25"
                           />
                         </div>
 
-                        {phoneSelectorOpen ? (
-                          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-72 overflow-y-auto border border-black/15 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.14)]">
-                            {phoneCountries.map((option) => {
-                              const selected =
-                                option.country ===
-                                  selectedPhoneCountry.country &&
-                                option.code === selectedPhoneCountry.code;
+                        <div className="mt-2 flex items-start justify-between gap-3">
+                          <FieldError message={errors.phone} />
 
-                              return (
-                                <button
-                                  key={`${option.country}-${option.code}`}
-                                  type="button"
-                                  onClick={() => selectPhoneCountry(option)}
-                                  className={`flex w-full items-center justify-between border-b border-black/[0.06] px-4 py-3 text-left transition last:border-b-0 ${
-                                    selected
-                                      ? "bg-black !text-white"
-                                      : "bg-white text-black hover:bg-black/[0.04]"
-                                  }`}
-                                >
-                                  <span className="flex min-w-0 items-center gap-3">
-                                    <span className="text-xl">
-                                      {option.flag}
-                                    </span>
-
-                                    <span className="truncate text-sm font-medium">
-                                      {option.country}
-                                    </span>
-                                  </span>
-
-                                  <span
-                                    className={`shrink-0 text-sm ${
-                                      selected
-                                        ? "text-white/65"
-                                        : "text-black/40"
-                                    }`}
-                                  >
-                                    {option.code}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : null}
-                      </div>
-
-                      <div className="mt-2 flex items-start justify-between gap-3">
-                        <FieldError message={errors.phone} />
-
-                        {!errors.phone ? (
-                          <p className="ml-auto text-right text-[11px] leading-5 text-black/35">
-                            {form.phone.length}/{selectedPhoneCountry.maxDigits}{" "}
-                            digits
-                          </p>
-                        ) : null}
+                          {!errors.phone ? (
+                            <p className="ml-auto text-right text-[11px] leading-5 text-black/35">
+                              {form.phone.length}/
+                              {selectedPhoneCountry.maxDigits} digits
+                            </p>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </section>
+                  </section>
 
-                {/* DELIVERY ADDRESS */}
+                  {/* DELIVERY ADDRESS */}
 
-                <section className="st-checkout-module border border-black/10 bg-white">
-                  <div className="flex flex-col gap-5 border-b border-black/10 px-4 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                        Step 02
-                      </p>
-
-                      <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
-                        Delivery address
-                      </h2>
-
-                      <p className="mt-2 text-sm leading-6 text-black/45">
-                        Delivery is currently available in {deliveryCountry}.
-                        Additional countries are coming soon.
-                      </p>
-                    </div>
-
-                    {signedIn ? (
-                      <button
-                        type="button"
-                        onClick={openNewAddressEditor}
-                        className="st-checkout-polish__saved-address-button shrink-0 rounded-full border border-[#e4ad43] bg-[#fdb73e] px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] shadow-[0_3px_10px_rgba(189,116,0,0.07)] transition hover:bg-[#f8ad24]"
-                      >
-                        + Add saved address
-                      </button>
-                    ) : null}
-                  </div>
-
-                  {addressActionMessage ? (
-                    <div className="flex items-start gap-3 border-b border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-6 text-emerald-800 sm:px-6">
-                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
-
-                      <span>{addressActionMessage}</span>
-                    </div>
-                  ) : null}
-
-                  {addressActionError && addressEditorMode === "closed" ? (
-                    <div className="flex items-start gap-3 border-b border-red-200 bg-red-50 px-4 py-4 text-sm leading-6 text-red-700 sm:px-6">
-                      <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-
-                      <span>{addressActionError}</span>
-                    </div>
-                  ) : null}
-
-                  {signedIn && addressEditorMode !== "closed" ? (
-                    <div ref={addressEditorRef}>
-                      <AddressEditor
-                        mode={addressEditorMode}
-                        draft={addressDraft}
-                        errors={addressErrors}
-                        saving={addressSaving}
-                        errorMessage={addressActionError}
-                        onChange={updateAddressDraft}
-                        onSave={() => {
-                          void saveAccountAddress();
-                        }}
-                        onClose={closeAddressEditor}
-                      />
-                    </div>
-                  ) : null}
-
-                  {signedIn ? (
-                    <div className="border-b border-black/10 bg-[#fafaf8] p-4 sm:p-6">
-                      <div className="flex items-start justify-between gap-5">
+                  {fulfillmentMethod === "delivery" ? (
+                    <section
+                      data-checkout-delivery="true"
+                      className="st-checkout-module border border-black/10 bg-white st-checkout-delivery-module"
+                    >
+                      <div className="flex flex-col gap-5 border-b border-black/10 px-4 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6">
                         <div>
-                          <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                            Saved addresses
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                            Step 02
                           </p>
 
-                          <p className="mt-2 text-sm leading-6 text-black/55">
-                            Select, add, or edit a delivery location without
-                            leaving checkout.
+                          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+                            Delivery address
+                          </h2>
+
+                          <p className="mt-2 text-sm leading-6 text-black/45">
+                            Delivery is currently available in {deliveryCountry}
+                            . Additional countries are coming soon.
                           </p>
                         </div>
 
-                        <MapPin className="h-5 w-5 shrink-0 text-black/35" />
-                      </div>
-
-                      {savedAddresses.length > 0 ? (
-                        <div className="mt-5 grid gap-3">
-                          {savedAddresses.map((address) => {
-                            const selected = selectedAddressId === address.id;
-
-                            return (
-                              <article
-                                key={address.id}
-                                className={`border transition ${
-                                  selected
-                                    ? "border-black bg-black text-white"
-                                    : "border-black/10 bg-white text-black"
-                                }`}
-                              >
-                                <div className="flex items-stretch">
-                                  <button
-                                    type="button"
-                                    onClick={() => selectSavedAddress(address)}
-                                    className="min-w-0 flex-1 p-4 text-left sm:p-5"
-                                  >
-                                    <div className="flex items-start justify-between gap-4">
-                                      <div>
-                                        <div className="flex flex-wrap items-center gap-2">
-                                          <p className="text-sm font-semibold uppercase tracking-[0.08em]">
-                                            {address.label || "Address"}
-                                          </p>
-
-                                          {address.is_default ? (
-                                            <span
-                                              className={`px-2 py-1 text-[8px] font-semibold uppercase tracking-[0.13em] ${
-                                                selected
-                                                  ? "bg-white text-black"
-                                                  : "bg-black text-white"
-                                              }`}
-                                            >
-                                              Default
-                                            </span>
-                                          ) : null}
-                                        </div>
-
-                                        <p
-                                          className={`mt-3 text-sm leading-6 ${
-                                            selected
-                                              ? "text-white/65"
-                                              : "text-black/50"
-                                          }`}
-                                        >
-                                          {formatSavedAddress(address)}
-                                        </p>
-                                      </div>
-
-                                      <span
-                                        className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border ${
-                                          selected
-                                            ? "border-white bg-white text-black"
-                                            : "border-black/20 text-transparent"
-                                        }`}
-                                      >
-                                        <Check className="h-3.5 w-3.5" />
-                                      </span>
-                                    </div>
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      openEditAddressEditor(address)
-                                    }
-                                    aria-label={`Edit ${
-                                      address.label ?? "address"
-                                    }`}
-                                    className={`grid w-14 shrink-0 place-items-center border-l transition ${
-                                      selected
-                                        ? "border-white/20 text-white/65 hover:bg-white hover:text-black"
-                                        : "border-black/10 text-black/40 hover:bg-black hover:text-white"
-                                    }`}
-                                  >
-                                    <Pencil className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              </article>
-                            );
-                          })}
-
-                          <button
-                            type="button"
-                            onClick={enterDifferentAddress}
-                            className={`flex w-full items-center justify-between border p-4 text-left transition sm:p-5 ${
-                              selectedAddressId === "manual"
-                                ? "border-black bg-black !text-white"
-                                : "border-black/10 bg-white text-black hover:border-black/40"
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span
-                                className={`grid h-8 w-8 place-items-center rounded-full ${
-                                  selectedAddressId === "manual"
-                                    ? "bg-white text-black"
-                                    : "bg-black text-white"
-                                }`}
-                              >
-                                <Plus className="h-4 w-4" />
-                              </span>
-
-                              <div>
-                                <p className="text-sm font-semibold">
-                                  Use a different address for this order
-                                </p>
-
-                                <p
-                                  className={`mt-1 text-xs ${
-                                    selectedAddressId === "manual"
-                                      ? "text-white/55"
-                                      : "text-black/40"
-                                  }`}
-                                >
-                                  This address will not be saved automatically.
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="mt-4 rounded-[16px] border border-dashed border-black/15 bg-white px-5 py-6 text-center">
-                          <MapPin className="mx-auto h-5 w-5 text-black/22" />
-
-                          <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em]">
-                            No saved addresses
-                          </p>
-
-                          <p className="mx-auto mt-1.5 max-w-sm text-[11px] leading-5 text-black/42">
-                            Add your first delivery location now, or complete
-                            the manual address form below.
-                          </p>
-
+                        {signedIn ? (
                           <button
                             type="button"
                             onClick={openNewAddressEditor}
-                            className="st-checkout-polish__first-address-button mt-4 rounded-full border border-[#e4ad43] bg-[#fdb73e] px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] shadow-[0_3px_10px_rgba(189,116,0,0.07)] transition hover:bg-[#f8ad24]"
+                            className="st-checkout-polish__saved-address-button shrink-0 rounded-full border border-[#e4ad43] bg-[#fdb73e] px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] shadow-[0_3px_10px_rgba(189,116,0,0.07)] transition hover:bg-[#f8ad24]"
                           >
-                            Add first saved address
+                            + Add saved address
                           </button>
-                        </div>
-                      )}
-                    </div>
-                  ) : null}
-
-                  <div className="grid gap-x-5 gap-y-6 p-4 sm:grid-cols-2 sm:p-6">
-                    <div>
-                      <label
-                        htmlFor="country"
-                        className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/60"
-                      >
-                        Delivery country
-                      </label>
-
-                      <div className="relative">
-                        <select
-                          id="country"
-                          value={form.country}
-                          onChange={(event) =>
-                            updateField("country", event.target.value)
-                          }
-                          className={`${fieldInputClass(
-                            false,
-                          )} appearance-none pr-12`}
-                        >
-                          {deliveryCountries.map((country) => (
-                            <option
-                              key={country.name}
-                              value={country.name}
-                              disabled={!country.enabled}
-                            >
-                              {country.flag}{" "}
-                              {country.enabled
-                                ? country.name
-                                : `${country.name} — Coming soon`}
-                            </option>
-                          ))}
-                        </select>
-
-                        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 mt-1 h-4 w-4 -translate-y-1/2 text-black/40" />
+                        ) : null}
                       </div>
 
-                      <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-black/35">
-                        Delivery is currently available in {deliveryCountry}.
-                      </p>
-                    </div>
+                      {addressActionMessage ? (
+                        <div className="flex items-start gap-3 border-b border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-6 text-emerald-800 sm:px-6">
+                          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
 
-                    <div data-checkout-field="city">
-                      <label
-                        htmlFor="city"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.city ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        City
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
+                          <span>{addressActionMessage}</span>
+                        </div>
+                      ) : null}
 
-                      <input
-                        id="city"
-                        type="text"
-                        value={form.city}
-                        onChange={(event) =>
-                          updateField("city", event.target.value)
-                        }
-                        placeholder="Beirut"
-                        autoComplete="address-level2"
-                        aria-invalid={Boolean(errors.city)}
-                        className={fieldInputClass(Boolean(errors.city))}
-                      />
+                      {addressActionError && addressEditorMode === "closed" ? (
+                        <div className="flex items-start gap-3 border-b border-red-200 bg-red-50 px-4 py-4 text-sm leading-6 text-red-700 sm:px-6">
+                          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
 
-                      <FieldError message={errors.city} />
-                    </div>
+                          <span>{addressActionError}</span>
+                        </div>
+                      ) : null}
 
-                    <div data-checkout-field="area">
-                      <label
-                        htmlFor="area"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.area ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        Area
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
+                      {signedIn && addressEditorMode !== "closed" ? (
+                        <div ref={addressEditorRef}>
+                          <AddressEditor
+                            mode={addressEditorMode}
+                            draft={addressDraft}
+                            errors={addressErrors}
+                            saving={addressSaving}
+                            errorMessage={addressActionError}
+                            onChange={updateAddressDraft}
+                            onSave={() => {
+                              void saveAccountAddress();
+                            }}
+                            onClose={closeAddressEditor}
+                          />
+                        </div>
+                      ) : null}
 
-                      <input
-                        id="area"
-                        type="text"
-                        value={form.area}
-                        onChange={(event) =>
-                          updateField("area", event.target.value)
-                        }
-                        placeholder="Antelias"
-                        autoComplete="address-level3"
-                        aria-invalid={Boolean(errors.area)}
-                        className={fieldInputClass(Boolean(errors.area))}
-                      />
+                      {signedIn ? (
+                        <div className="border-b border-black/10 bg-[#fafaf8] p-4 sm:p-6">
+                          <div className="flex items-start justify-between gap-5">
+                            <div>
+                              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                                Saved addresses
+                              </p>
 
-                      <FieldError message={errors.area} />
-                    </div>
+                              <p className="mt-2 text-sm leading-6 text-black/55">
+                                Select, add, or edit a delivery location without
+                                leaving checkout.
+                              </p>
+                            </div>
 
-                    <div data-checkout-field="address">
-                      <label
-                        htmlFor="address"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.address ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        Street address
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
+                            <MapPin className="h-5 w-5 shrink-0 text-black/35" />
+                          </div>
 
-                      <input
-                        id="address"
-                        type="text"
-                        value={form.address}
-                        onChange={(event) =>
-                          updateField("address", event.target.value)
-                        }
-                        autoComplete="street-address"
-                        aria-invalid={Boolean(errors.address)}
-                        className={fieldInputClass(Boolean(errors.address))}
-                      />
+                          {savedAddresses.length > 0 ? (
+                            <div className="mt-5 grid gap-3">
+                              {savedAddresses.map((address) => {
+                                const selected =
+                                  selectedAddressId === address.id;
 
-                      <FieldError message={errors.address} />
-                    </div>
+                                return (
+                                  <article
+                                    key={address.id}
+                                    className={`st-checkout-saved-address-v2 ${
+                                      selected ? "is-selected" : ""
+                                    }`}
+                                  >
+                                    <div className="flex items-stretch">
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          selectSavedAddress(address)
+                                        }
+                                        className="min-w-0 flex-1 p-4 text-left sm:p-5"
+                                      >
+                                        <div className="flex items-start justify-between gap-4">
+                                          <div>
+                                            <div className="flex flex-wrap items-center gap-2">
+                                              <p className="text-sm font-semibold uppercase tracking-[0.08em]">
+                                                {address.label || "Address"}
+                                              </p>
 
-                    <div data-checkout-field="building">
-                      <label
-                        htmlFor="building"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.building ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        Building
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
+                                              {address.is_default ? (
+                                                <span className="rounded-full border border-[#e4ad43]/55 bg-[#fff2d5] px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.13em] text-[#8a5700]">
+                                                  Default
+                                                </span>
+                                              ) : null}
+                                            </div>
 
-                      <input
-                        id="building"
-                        type="text"
-                        value={form.building}
-                        onChange={(event) =>
-                          updateField("building", event.target.value)
-                        }
-                        aria-invalid={Boolean(errors.building)}
-                        className={fieldInputClass(Boolean(errors.building))}
-                      />
+                                            <p
+                                              className={`mt-3 text-sm leading-6 ${
+                                                selected
+                                                  ? "text-black/55"
+                                                  : "text-black/50"
+                                              }`}
+                                            >
+                                              {formatSavedAddress(address)}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </button>
 
-                      <FieldError message={errors.building} />
-                    </div>
+                                      <div className="st-checkout-saved-address-edit-slot">
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            openEditAddressEditor(address)
+                                          }
+                                          aria-label={`Edit ${
+                                            address.label ?? "address"
+                                          }`}
+                                          className="st-checkout-saved-address-edit"
+                                        >
+                                          <Pencil className="h-4 w-4" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </article>
+                                );
+                              })}
 
-                    <div data-checkout-field="floor">
-                      <label
-                        htmlFor="floor"
-                        className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
-                          errors.floor ? "text-red-600" : "text-black/60"
-                        }`}
-                      >
-                        Floor or apartment
-                        <span className="ml-1 text-red-600">*</span>
-                      </label>
+                              <button
+                                type="button"
+                                onClick={enterDifferentAddress}
+                                className={`flex w-full items-center justify-between rounded-[16px] border p-4 text-left transition sm:p-5 ${
+                                  selectedAddressId === "manual"
+                                    ? "border-[#e4ad43] bg-[#fffaf1] text-[#1d1d1f]"
+                                    : "border-black/[0.09] bg-white text-[#1d1d1f] hover:border-[#e4ad43]/70"
+                                }`}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <span
+                                    className={`grid h-8 w-8 place-items-center rounded-full ${
+                                      selectedAddressId === "manual"
+                                        ? "bg-[#fdb73e] text-[#1d1d1f]"
+                                        : "bg-[#f3f3f1] text-[#1d1d1f]"
+                                    }`}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </span>
 
-                      <input
-                        id="floor"
-                        type="text"
-                        value={form.floor}
-                        onChange={(event) =>
-                          updateField("floor", event.target.value)
-                        }
-                        aria-invalid={Boolean(errors.floor)}
-                        className={fieldInputClass(Boolean(errors.floor))}
-                      />
+                                  <div>
+                                    <p className="text-sm font-semibold">
+                                      Use a different address for this order
+                                    </p>
 
-                      <FieldError message={errors.floor} />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="landmark"
-                        className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/60"
-                      >
-                        Nearby landmark
-                        <span className="ml-2 normal-case tracking-normal text-black/30">
-                          Optional
-                        </span>
-                      </label>
-
-                      <input
-                        id="landmark"
-                        type="text"
-                        value={form.landmark}
-                        onChange={(event) =>
-                          updateField("landmark", event.target.value)
-                        }
-                        placeholder="Near a known location"
-                        className={fieldInputClass(false)}
-                      />
-                    </div>
-
-                    <div>
-                      <label
-                        htmlFor="delivery-notes"
-                        className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/60"
-                      >
-                        Delivery instructions
-                        <span className="ml-2 normal-case tracking-normal text-black/30">
-                          Optional
-                        </span>
-                      </label>
-
-                      <textarea
-                        id="delivery-notes"
-                        rows={4}
-                        value={form.deliveryNotes}
-                        onChange={(event) =>
-                          updateField("deliveryNotes", event.target.value)
-                        }
-                        placeholder="Entrance details, preferred delivery time, or special instructions."
-                        className={`${fieldInputClass(
-                          false,
-                        )} min-h-24 resize-y py-3 leading-5`}
-                      />
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              {/* ORDER SUMMARY */}
-
-              <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
-                <section className="st-checkout-module overflow-hidden rounded-[18px] border border-black/[0.09] bg-white shadow-[0_10px_34px_rgba(29,29,31,0.035)]">
-                  <div className="border-b border-black/[0.08] px-4 py-4 sm:px-5">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                      Order terminal
-                    </p>
-
-                    <h2 className="mt-1.5 text-[21px] font-semibold">
-                      {totalItems} {totalItems === 1 ? "item" : "items"}
-                    </h2>
-                  </div>
-
-                  <div className="max-h-[380px] divide-y divide-black/[0.08] overflow-y-auto">
-                    {items.map((item) => (
-                      <article
-                        key={item.cartItemId}
-                        className="grid grid-cols-[68px_minmax(0,1fr)] gap-3 p-4 sm:grid-cols-[74px_minmax(0,1fr)] sm:p-4"
-                      >
-                        <Link
-                          href={`/shop/${item.slug}`}
-                          className="aspect-[4/5] overflow-hidden bg-neutral-100"
-                        >
-                          {item.imageUrl ? (
-                            <img
-                              src={item.imageUrl}
-                              alt={item.name}
-                              className="h-full w-full object-cover"
-                            />
+                                    <p
+                                      className={`mt-1 text-xs ${
+                                        selectedAddressId === "manual"
+                                          ? "text-black/50"
+                                          : "text-black/40"
+                                      }`}
+                                    >
+                                      This address will not be saved
+                                      automatically.
+                                    </p>
+                                  </div>
+                                </div>
+                              </button>
+                            </div>
                           ) : (
-                            <div className="flex h-full items-center justify-center">
-                              <ShoppingBag className="h-5 w-5 text-black/20" />
+                            <div className="mt-4 rounded-[16px] border border-dashed border-black/15 bg-white px-5 py-6 text-center">
+                              <MapPin className="mx-auto h-5 w-5 text-black/22" />
+
+                              <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em]">
+                                No saved addresses
+                              </p>
+
+                              <p className="mx-auto mt-1.5 max-w-sm text-[11px] leading-5 text-black/42">
+                                Add your first delivery location now, or
+                                complete the manual address form below.
+                              </p>
+
+                              <button
+                                type="button"
+                                onClick={openNewAddressEditor}
+                                className="st-checkout-polish__first-address-button mt-4 rounded-full border border-[#e4ad43] bg-[#fdb73e] px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.13em] text-[#1d1d1f] shadow-[0_3px_10px_rgba(189,116,0,0.07)] transition hover:bg-[#f8ad24]"
+                              >
+                                Add first saved address
+                              </button>
                             </div>
                           )}
-                        </Link>
-
-                        <div className="min-w-0">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold">
-                                {item.name}
-                              </p>
-
-                              <p className="mt-1 text-xs text-black/45">
-                                Configuration {item.size}
-                              </p>
-                            </div>
-
-                            <button
-                              type="button"
-                              onClick={() => removeItem(item.cartItemId)}
-                              aria-label={`Remove ${item.name}`}
-                              className="flex h-8 w-8 shrink-0 items-center justify-center text-black/30 transition hover:text-red-600"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-
-                          <div className="mt-3 flex flex-wrap items-center justify-between gap-2.5">
-                            <div className="flex h-9 items-center overflow-hidden rounded-full border border-black/10">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  updateQuantity(
-                                    item.cartItemId,
-                                    item.quantity - 1,
-                                  )
-                                }
-                                disabled={item.quantity <= 1}
-                                aria-label="Decrease quantity"
-                                className="flex h-full w-9 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
-                              >
-                                <Minus className="h-3.5 w-3.5" />
-                              </button>
-
-                              <span className="flex h-full min-w-9 items-center justify-center border-x border-black/10 px-2 text-[13px] font-semibold">
-                                {item.quantity}
-                              </span>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  updateQuantity(
-                                    item.cartItemId,
-                                    item.quantity + 1,
-                                  )
-                                }
-                                disabled={item.quantity >= item.maximumQuantity}
-                                aria-label="Increase quantity"
-                                className="flex h-full w-10 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
-                              >
-                                <Plus className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-
-                            <p className="text-sm font-semibold">
-                              ${(item.unitPrice * item.quantity).toFixed(2)}
-                            </p>
-                          </div>
                         </div>
-                      </article>
-                    ))}
-                  </div>
+                      ) : null}
 
-                  <div className="space-y-3.5 border-t border-black/[0.08] p-4 sm:p-4">
-                    <CouponBox
-                      subtotal={subtotal}
-                      customerEmail={accountEmail || form.email}
-                      value={appliedCoupon}
-                      onChange={setAppliedCoupon}
-                    />
+                      <div className="grid gap-x-5 gap-y-6 p-4 sm:grid-cols-2 sm:p-6">
+                        <div>
+                          <label
+                            htmlFor="country"
+                            className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/60"
+                          >
+                            Delivery country
+                          </label>
 
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-black/50">Subtotal</span>
+                          <div className="relative">
+                            <select
+                              id="country"
+                              value={form.country}
+                              onChange={(event) =>
+                                updateField("country", event.target.value)
+                              }
+                              className={`${fieldInputClass(
+                                false,
+                              )} appearance-none pr-12`}
+                            >
+                              {deliveryCountries.map((country) => (
+                                <option
+                                  key={country.name}
+                                  value={country.name}
+                                  disabled={!country.enabled}
+                                >
+                                  {country.flag}{" "}
+                                  {country.enabled
+                                    ? country.name
+                                    : `${country.name} — Coming soon`}
+                                </option>
+                              ))}
+                            </select>
 
-                      <span className="font-semibold">
-                        ${subtotal.toFixed(2)}
-                      </span>
+                            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 mt-1 h-4 w-4 -translate-y-1/2 text-black/40" />
+                          </div>
+
+                          <p className="mt-2 text-[10px] uppercase tracking-[0.12em] text-black/35">
+                            Delivery is currently available in {deliveryCountry}
+                            .
+                          </p>
+                        </div>
+
+                        <div data-checkout-field="city">
+                          <label
+                            htmlFor="city"
+                            className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                              errors.city ? "text-red-600" : "text-black/60"
+                            }`}
+                          >
+                            City
+                            <span className="ml-1 text-red-600">*</span>
+                          </label>
+
+                          <input
+                            id="city"
+                            type="text"
+                            value={form.city}
+                            onChange={(event) =>
+                              updateField("city", event.target.value)
+                            }
+                            placeholder="Beirut"
+                            autoComplete="address-level2"
+                            aria-invalid={Boolean(errors.city)}
+                            className={fieldInputClass(Boolean(errors.city))}
+                          />
+
+                          <FieldError message={errors.city} />
+                        </div>
+
+                        <div data-checkout-field="area">
+                          <label
+                            htmlFor="area"
+                            className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                              errors.area ? "text-red-600" : "text-black/60"
+                            }`}
+                          >
+                            Area
+                            <span className="ml-1 text-red-600">*</span>
+                          </label>
+
+                          <input
+                            id="area"
+                            type="text"
+                            value={form.area}
+                            onChange={(event) =>
+                              updateField("area", event.target.value)
+                            }
+                            placeholder="Antelias"
+                            autoComplete="address-level3"
+                            aria-invalid={Boolean(errors.area)}
+                            className={fieldInputClass(Boolean(errors.area))}
+                          />
+
+                          <FieldError message={errors.area} />
+                        </div>
+
+                        <div data-checkout-field="address">
+                          <label
+                            htmlFor="address"
+                            className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                              errors.address ? "text-red-600" : "text-black/60"
+                            }`}
+                          >
+                            Street address
+                            <span className="ml-1 text-red-600">*</span>
+                          </label>
+
+                          <input
+                            id="address"
+                            type="text"
+                            value={form.address}
+                            onChange={(event) =>
+                              updateField("address", event.target.value)
+                            }
+                            autoComplete="street-address"
+                            aria-invalid={Boolean(errors.address)}
+                            className={fieldInputClass(Boolean(errors.address))}
+                          />
+
+                          <FieldError message={errors.address} />
+                        </div>
+
+                        <div data-checkout-field="building">
+                          <label
+                            htmlFor="building"
+                            className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                              errors.building ? "text-red-600" : "text-black/60"
+                            }`}
+                          >
+                            Building
+                            <span className="ml-1 text-red-600">*</span>
+                          </label>
+
+                          <input
+                            id="building"
+                            type="text"
+                            value={form.building}
+                            onChange={(event) =>
+                              updateField("building", event.target.value)
+                            }
+                            aria-invalid={Boolean(errors.building)}
+                            className={fieldInputClass(
+                              Boolean(errors.building),
+                            )}
+                          />
+
+                          <FieldError message={errors.building} />
+                        </div>
+
+                        <div data-checkout-field="floor">
+                          <label
+                            htmlFor="floor"
+                            className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${
+                              errors.floor ? "text-red-600" : "text-black/60"
+                            }`}
+                          >
+                            Floor or apartment
+                            <span className="ml-1 text-red-600">*</span>
+                          </label>
+
+                          <input
+                            id="floor"
+                            type="text"
+                            value={form.floor}
+                            onChange={(event) =>
+                              updateField("floor", event.target.value)
+                            }
+                            aria-invalid={Boolean(errors.floor)}
+                            className={fieldInputClass(Boolean(errors.floor))}
+                          />
+
+                          <FieldError message={errors.floor} />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="landmark"
+                            className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/60"
+                          >
+                            Nearby landmark
+                            <span className="ml-2 normal-case tracking-normal text-black/30">
+                              Optional
+                            </span>
+                          </label>
+
+                          <input
+                            id="landmark"
+                            type="text"
+                            value={form.landmark}
+                            onChange={(event) =>
+                              updateField("landmark", event.target.value)
+                            }
+                            placeholder="Near a known location"
+                            className={fieldInputClass(false)}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="delivery-notes"
+                            className="text-[11px] font-semibold uppercase tracking-[0.14em] text-black/60"
+                          >
+                            Delivery instructions
+                            <span className="ml-2 normal-case tracking-normal text-black/30">
+                              Optional
+                            </span>
+                          </label>
+
+                          <textarea
+                            id="delivery-notes"
+                            rows={4}
+                            value={form.deliveryNotes}
+                            onChange={(event) =>
+                              updateField("deliveryNotes", event.target.value)
+                            }
+                            placeholder="Entrance details, preferred delivery time, or special instructions."
+                            className={`${fieldInputClass(
+                              false,
+                            )} min-h-24 resize-y py-3 leading-5`}
+                          />
+                        </div>
+                      </div>
+                    </section>
+                  ) : null}
+                </div>
+
+                {/* ORDER SUMMARY */}
+
+                <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
+                  <section className="st-checkout-module overflow-hidden rounded-[18px] border border-black/[0.09] bg-white shadow-[0_10px_34px_rgba(29,29,31,0.035)]">
+                    <div className="border-b border-black/[0.08] px-4 py-4 sm:px-5">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
+                        Order terminal
+                      </p>
+
+                      <h2 className="mt-1.5 text-[21px] font-semibold">
+                        {totalItems} {totalItems === 1 ? "item" : "items"}
+                      </h2>
                     </div>
 
-                    {appliedCoupon && discountAmount > 0 ? (
-                      <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
-                        <span>Coupon {appliedCoupon.code}</span>
+                    <div className="max-h-[380px] divide-y divide-black/[0.08] overflow-y-auto">
+                      {items.map((item) => (
+                        <article
+                          key={item.cartItemId}
+                          className="grid grid-cols-[68px_minmax(0,1fr)] gap-3 p-4 sm:grid-cols-[74px_minmax(0,1fr)] sm:p-4"
+                        >
+                          <Link
+                            href={`/shop/${item.slug}`}
+                            className="aspect-[4/5] overflow-hidden bg-neutral-100"
+                          >
+                            {item.imageUrl ? (
+                              <img
+                                src={item.imageUrl}
+                                alt={item.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full items-center justify-center">
+                                <ShoppingBag className="h-5 w-5 text-black/20" />
+                              </div>
+                            )}
+                          </Link>
+
+                          <div className="min-w-0">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold">
+                                  {item.name}
+                                </p>
+
+                                <p className="mt-1 text-xs text-black/45">
+                                  Configuration {item.size}
+                                </p>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => removeItem(item.cartItemId)}
+                                aria-label={`Remove ${item.name}`}
+                                className="flex h-8 w-8 shrink-0 items-center justify-center text-black/30 transition hover:text-red-600"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+
+                            <div className="mt-3 flex flex-wrap items-center justify-between gap-2.5">
+                              <div className="st-checkout-quantity-control flex h-9 items-center overflow-hidden rounded-full border border-black/10">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    updateQuantity(
+                                      item.cartItemId,
+                                      item.quantity - 1,
+                                    )
+                                  }
+                                  disabled={item.quantity <= 1}
+                                  aria-label="Decrease quantity"
+                                  className="flex h-full w-9 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
+                                >
+                                  <Minus className="h-3.5 w-3.5" />
+                                </button>
+
+                                <span className="st-checkout-quantity-value flex h-full min-w-9 items-center justify-center px-2 text-[13px] font-semibold">
+                                  {item.quantity}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    updateQuantity(
+                                      item.cartItemId,
+                                      item.quantity + 1,
+                                    )
+                                  }
+                                  disabled={
+                                    item.quantity >= item.maximumQuantity
+                                  }
+                                  aria-label="Increase quantity"
+                                  className="flex h-full w-10 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
+                                >
+                                  <Plus className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+
+                              <p className="text-sm font-semibold">
+                                ${(item.unitPrice * item.quantity).toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+
+                    <div className="space-y-3.5 border-t border-black/[0.08] p-4 sm:p-4">
+                      <CouponBox
+                        subtotal={subtotal}
+                        customerEmail={accountEmail || form.email}
+                        value={appliedCoupon}
+                        onChange={setAppliedCoupon}
+                      />
+
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-black/50">Subtotal</span>
 
                         <span className="font-semibold">
-                          −$
-                          {discountAmount.toFixed(2)}
+                          ${subtotal.toFixed(2)}
                         </span>
                       </div>
-                    ) : null}
 
-                    <div className="flex items-center justify-between gap-4 text-sm">
-                      <span className="text-black/50">Delivery</span>
+                      {appliedCoupon && discountAmount > 0 ? (
+                        <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
+                          <span>Coupon {appliedCoupon.code}</span>
 
-                      <span className="text-right text-black/45">
-                        Confirmed later
-                      </span>
+                          <span className="font-semibold">
+                            −$
+                            {discountAmount.toFixed(2)}
+                          </span>
+                        </div>
+                      ) : null}
+
+                      <div className="flex items-center justify-between gap-4 text-sm">
+                        <span className="text-black/50">Delivery</span>
+
+                        <span className="text-right text-black/45">
+                          Confirmed later
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between border-t border-black/[0.08] pt-3.5">
+                        <span className="font-semibold">Current total</span>
+
+                        <span className="text-[18px] font-semibold">
+                          ${orderTotal.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <button
+                        id="st-checkout-continue-review"
+                        type="submit"
+                        className="st-checkout-continue-review"
+                      >
+                        Continue to review
+                        <Check className="h-4 w-4" />
+                      </button>
+
+                      <div className="flex items-start justify-center gap-2 text-center text-[11px] leading-5 text-black/40">
+                        <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+
+                        <p>No payment will be collected during this step.</p>
+                      </div>
                     </div>
-
-                    <div className="flex items-center justify-between border-t border-black/[0.08] pt-3.5">
-                      <span className="font-semibold">Current total</span>
-
-                      <span className="text-[18px] font-semibold">
-                        ${orderTotal.toFixed(2)}
-                      </span>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="st-checkout-polish__continue-button flex min-h-[48px] w-full items-center justify-center gap-2.5 rounded-full bg-[#fdb73e] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.15em] !text-[#1d1d1f] shadow-[0_5px_16px_rgba(189,116,0,0.08)] transition hover:bg-[#f6ad29]"
-                    >
-                      Continue to review
-                      <Check className="h-4 w-4" />
-                    </button>
-
-                    <div className="flex items-start justify-center gap-2 text-center text-[11px] leading-5 text-black/40">
-                      <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-
-                      <p>No payment will be collected during this step.</p>
-                    </div>
-                  </div>
-                </section>
-              </aside>
-            </form>
-          )}
+                  </section>
+                </aside>
+              </form>
+            )}
+          </div>
         </section>
       </main>
     </>

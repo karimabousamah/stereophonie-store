@@ -14,7 +14,7 @@ const defaultSettings: StoreSettings = {
   whatsapp_number: "+961 3 161 285",
   instagram_handle: "@stereophoniestore",
 
-  delivery_fee: 5,
+  delivery_fee: 4,
   free_delivery_threshold: 150,
   delivery_estimate: "3–4 working days",
   delivery_country: "Lebanon",

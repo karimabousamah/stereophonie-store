@@ -802,14 +802,17 @@ export default function EditProductForm({
 
         {deleteConfirmationOpen ? (
           <div
-            className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6"
+            className="st-admin-product-delete-confirmation"
             aria-live="polite"
-            onMouseDown={(event) => {
-              if (event.target === event.currentTarget && !deletePending) {
-                setDeleteConfirmationOpen(false);
-              }
-            }}
           >
+            <button
+              type="button"
+              aria-label="Cancel product deletion"
+              disabled={deletePending}
+              onClick={() => setDeleteConfirmationOpen(false)}
+              className="st-admin-product-delete-confirmation__backdrop"
+            />
+
             <div
               role="dialog"
               aria-modal="true"

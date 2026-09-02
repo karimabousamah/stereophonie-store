@@ -2,6 +2,14 @@ import "server-only";
 
 import { Resend } from "resend";
 
+const STEREOPHONIE_STORE_LOCATION_URL =
+  "https://maps.app.goo.gl/kCsBPgCRFXaK298i6?g_st=ic";
+
+const STEREOPHONIE_STORE_LOCATION_LABEL =
+  "Stereophonie Store · Mtaileb, Lebanon";
+
+type FulfillmentMethod = "delivery" | "pickup";
+
 type OrderConfirmationCustomer = {
   firstName: string;
   lastName: string;
@@ -26,6 +34,7 @@ type OrderConfirmationItem = {
 
 type SendOrderConfirmationInput = {
   orderNumber: string;
+  fulfillmentMethod: FulfillmentMethod;
   customer: OrderConfirmationCustomer;
   items: OrderConfirmationItem[];
   subtotal: number;
@@ -316,8 +325,33 @@ export async function sendOrderConfirmationEmail(
       : "";
 
   const deliveryRow =
-    input.deliveryFee > 0
+    input.fulfillmentMethod === "pickup"
       ? `
+        <tr>
+          <td
+            style="
+              padding:12px 0;
+              color:#666666;
+              font-size:14px;
+            "
+          >
+            Store pickup
+          </td>
+
+          <td
+            style="
+              padding:12px 0;
+              text-align:right;
+              color:#111111;
+              font-size:14px;
+              font-weight:600;
+            "
+          >
+            Free
+          </td>
+        </tr>
+      `
+      : `
         <tr>
           <td
             style="
@@ -340,34 +374,131 @@ export async function sendOrderConfirmationEmail(
             ${money(input.deliveryFee)}
           </td>
         </tr>
-      `
-      : `
-        <tr>
-          <td
-            style="
-              padding:12px 0;
-              color:#666666;
-              font-size:14px;
-            "
-          >
-            Delivery
-          </td>
-
-          <td
-            style="
-              padding:12px 0;
-              text-align:right;
-              color:#777777;
-              font-size:14px;
-            "
-          >
-            Confirmed later
-          </td>
-        </tr>
       `;
 
-  const deliveryNotes = input.customer.deliveryNotes.trim()
-    ? `
+  const fulfillmentDetails =
+    input.fulfillmentMethod === "pickup"
+      ? `
+        <div
+          style="
+            margin-top:24px;
+            padding:20px;
+            border:1px solid #ece7dd;
+            border-radius:18px;
+            background:#fffaf1;
+          "
+        >
+          <p
+            style="
+              margin:0;
+              font-size:10px;
+              font-weight:700;
+              letter-spacing:1.6px;
+              text-transform:uppercase;
+              color:#9a6508;
+            "
+          >
+            Store pickup
+          </p>
+
+          <p
+            style="
+              margin:9px 0 0;
+              font-size:17px;
+              line-height:1.4;
+              font-weight:700;
+              color:#111111;
+            "
+          >
+            Your order will be ready for collection
+          </p>
+
+          <p
+            style="
+              margin:7px 0 0;
+              font-size:14px;
+              line-height:1.7;
+              color:#666666;
+            "
+          >
+            We will contact you when your order is ready. You can then collect
+            it directly from Stereophonie Store.
+          </p>
+
+          <p
+            style="
+              margin:14px 0 0;
+              font-size:14px;
+              line-height:1.6;
+              color:#333333;
+            "
+          >
+            ${escapeHtml(STEREOPHONIE_STORE_LOCATION_LABEL)}
+          </p>
+
+          <a
+            href="${escapeHtml(STEREOPHONIE_STORE_LOCATION_URL)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="
+              display:inline-block;
+              margin-top:16px;
+              padding:11px 17px;
+              border:1px solid #e4ad43;
+              border-radius:999px;
+              background:#fdb73e;
+              color:#1d1d1f;
+              font-size:11px;
+              font-weight:700;
+              letter-spacing:1px;
+              text-decoration:none;
+              text-transform:uppercase;
+            "
+          >
+            View store location
+          </a>
+        </div>
+      `
+      : `
+        <div
+          style="
+            margin-top:24px;
+            padding:20px;
+            border:1px solid #e8e8e8;
+            border-radius:18px;
+            background:#fafafa;
+          "
+        >
+          <p
+            style="
+              margin:0 0 8px;
+              font-size:10px;
+              font-weight:700;
+              letter-spacing:1.6px;
+              text-transform:uppercase;
+              color:#777777;
+            "
+          >
+            Delivery address
+          </p>
+
+          <p
+            style="
+              margin:0;
+              font-size:14px;
+              line-height:1.7;
+              color:#444444;
+            "
+          >
+            ${buildAddress(input.customer)}
+          </p>
+        </div>
+      `;
+
+  const deliveryNotes =
+    input.fulfillmentMethod === "delivery" &&
+    input.customer.deliveryNotes.trim()
+      ? `
         <div
           style="
             margin-top:24px;
@@ -402,7 +533,7 @@ export async function sendOrderConfirmationEmail(
           </p>
         </div>
       `
-    : "";
+      : "";
 
   const html = `
     <!doctype html>
@@ -615,7 +746,9 @@ export async function sendOrderConfirmationEmail(
                       </p>
                     </div>
 
-                    ${deliveryNotes}
+                    ${fulfillmentDetails}
+
+        ${deliveryNotes}
 
                     <table
                       role="presentation"

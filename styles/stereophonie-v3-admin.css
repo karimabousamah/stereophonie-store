@@ -4986,3 +4986,2698 @@ html body .st3-admin [data-admin-archive-action="true"] {
       0 8px 24px rgba(185, 28, 28, 0.065);
   }
 }
+
+/* === ST ADMIN ORDERS PREMIUM V2 START === */
+
+.st3-admin {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetica Neue", Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.st3-admin button,
+.st3-admin input,
+.st3-admin textarea,
+.st3-admin select {
+  font-family: inherit !important;
+}
+
+/* Live queue navigation */
+
+.st-admin-order-queue-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+  padding: 5px;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 2px rgba(29, 29, 31, 0.025);
+}
+
+.st-admin-order-queue-tab {
+  min-width: 0;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  color: #6e6e73;
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease;
+}
+
+.st-admin-order-queue-tab:hover {
+  color: #1d1d1f;
+  background: rgba(29, 29, 31, 0.025);
+}
+
+.st-admin-order-queue-tab.is-active {
+  color: #1d1d1f;
+  border-color: rgba(197, 139, 34, 0.35);
+  background: #fffaf0;
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.075),
+    0 5px 18px rgba(29, 29, 31, 0.045);
+}
+
+.st-admin-order-queue-tab__icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.st-admin-order-queue-tab__icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.st-admin-order-queue-tab.is-active .st-admin-order-queue-tab__icon {
+  border-color: rgba(197, 139, 34, 0.25);
+  color: #a86d08;
+}
+
+.st-admin-order-queue-tab__copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.st-admin-order-queue-tab__copy strong {
+  overflow: hidden;
+  color: inherit;
+  font-size: 13px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-admin-order-queue-tab__copy small {
+  overflow: hidden;
+  color: #8a8a8f;
+  font-size: 10px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-admin-order-queue-tab__count {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 999px;
+  background: #fff;
+  color: #6e6e73;
+  font-size: 10px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-admin-order-queue-tab.is-active .st-admin-order-queue-tab__count {
+  border-color: rgba(197, 139, 34, 0.2);
+  color: #895b05;
+}
+
+/* Active queue surface */
+
+.st-admin-order-queue {
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(29, 29, 31, 0.035);
+}
+
+.st-admin-order-queue__heading {
+  min-height: 88px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.07);
+}
+
+.st-admin-order-queue__heading > div {
+  min-width: 0;
+}
+
+.st-admin-order-queue__heading p {
+  margin: 0;
+  color: #8a8a8f;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-queue__heading h2 {
+  margin: 4px 0 0;
+  color: #1d1d1f;
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+.st-admin-order-queue__heading span:not(.st-admin-order-queue__total) {
+  display: block;
+  margin-top: 4px;
+  color: #86868b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.st-admin-order-queue__total {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 999px;
+  color: #6e6e73;
+  font-size: 10px;
+  font-weight: 620;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-queue__list {
+  display: grid;
+}
+
+.st-admin-order-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(220px, 0.75fr) auto;
+  align-items: center;
+  gap: 22px;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.065);
+  transition: background 160ms ease;
+}
+
+.st-admin-order-card:last-child {
+  border-bottom: 0;
+}
+
+.st-admin-order-card:hover {
+  background: #fafafa;
+}
+
+.st-admin-order-card__identity,
+.st-admin-order-card__meta {
+  min-width: 0;
+}
+
+.st-admin-order-card__topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+.st-admin-order-card__topline h2 {
+  margin: 0 3px 0 0;
+  color: #1d1d1f;
+  font-size: 18px;
+  font-weight: 660;
+  letter-spacing: -0.025em;
+}
+
+.st-admin-order-badge,
+.st-admin-order-detail-badge {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border: 1px solid rgba(29, 29, 31, 0.09);
+  border-radius: 999px;
+  background: #f7f7f7;
+  color: #6e6e73;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.st-admin-order-badge svg,
+.st-admin-order-detail-badge svg {
+  width: 11px;
+  height: 11px;
+}
+
+.st-admin-order-badge--pickup,
+.st-admin-order-detail-badge.is-pickup {
+  border-color: rgba(197, 139, 34, 0.22);
+  background: #fffaf0;
+  color: #9a6506;
+}
+
+.st-admin-order-badge--delivery,
+.st-admin-order-detail-badge.is-delivery {
+  border-color: rgba(74, 144, 226, 0.16);
+  background: rgba(74, 144, 226, 0.055);
+  color: #47729a;
+}
+
+.st-admin-order-badge.is-success,
+.st-admin-order-detail-badge.is-success,
+.st-admin-order-badge.is-paid,
+.st-admin-order-detail-badge.is-paid {
+  border-color: rgba(33, 163, 102, 0.16);
+  background: rgba(33, 163, 102, 0.055);
+  color: #23865c;
+}
+
+.st-admin-order-badge.is-danger,
+.st-admin-order-detail-badge.is-danger {
+  border-color: rgba(196, 71, 71, 0.16);
+  background: rgba(196, 71, 71, 0.045);
+  color: #a14a4a;
+}
+
+.st-admin-order-badge.is-refunded,
+.st-admin-order-detail-badge.is-refunded {
+  border-color: rgba(111, 91, 163, 0.15);
+  background: rgba(111, 91, 163, 0.045);
+  color: #756496;
+}
+
+.st-admin-order-card__customer {
+  margin: 10px 0 0;
+  color: #1d1d1f;
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.st-admin-order-card__contact {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: #86868b;
+  font-size: 11px;
+}
+
+.st-admin-order-card__meta {
+  display: grid;
+  gap: 4px;
+  color: #86868b;
+  font-size: 11px;
+}
+
+.st-admin-order-card__meta strong {
+  margin-top: 3px;
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 660;
+}
+
+.st-admin-order-card__open {
+  min-height: 38px;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(29, 29, 31, 0.1);
+  border-radius: 11px;
+  background: #fff;
+  color: #1d1d1f;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.09em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-admin-order-card__open svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st-admin-order-card__open:hover {
+  border-color: rgba(197, 139, 34, 0.4);
+  background: #fffaf0;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.07);
+}
+
+.st-admin-order-queue__empty {
+  min-height: 230px;
+  padding: 36px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.st-admin-order-queue__empty > div {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 13px;
+  background: #f7f7f7;
+  color: #86868b;
+}
+
+.st-admin-order-queue__empty svg {
+  width: 18px;
+  height: 18px;
+}
+
+.st-admin-order-queue__empty h3 {
+  margin: 13px 0 0;
+  color: #1d1d1f;
+  font-size: 17px;
+  font-weight: 650;
+}
+
+.st-admin-order-queue__empty p {
+  max-width: 390px;
+  margin: 6px 0 0;
+  color: #86868b;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+/* Detail header badges */
+
+.st-admin-order-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+/* Detail progress */
+
+.st-admin-order-detail-progress {
+  margin-top: 18px;
+  padding: 15px 18px;
+  overflow-x: auto;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.st-admin-order-detail-progress__track {
+  min-width: 610px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.st-admin-order-detail-progress__step {
+  min-width: 0;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 11px;
+  background: #fafafa;
+  color: #a1a1a6;
+}
+
+.st-admin-order-detail-progress__step.is-complete {
+  color: #557a66;
+}
+
+.st-admin-order-detail-progress__step.is-current {
+  border-color: rgba(197, 139, 34, 0.34);
+  background: #fffaf0;
+  color: #7d5507;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.06);
+}
+
+.st-admin-order-detail-progress__indicator {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.09);
+  border-radius: 9px;
+  background: #fff;
+}
+
+.st-admin-order-detail-progress__indicator svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st-admin-order-detail-progress__step strong {
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 630;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-admin-order-detail-progress__cancelled {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #a14a4a;
+}
+
+.st-admin-order-detail-progress__cancelled > svg {
+  width: 19px;
+  height: 19px;
+}
+
+.st-admin-order-detail-progress__cancelled > div {
+  display: grid;
+  gap: 2px;
+}
+
+.st-admin-order-detail-progress__cancelled strong {
+  font-size: 12px;
+}
+
+.st-admin-order-detail-progress__cancelled span {
+  color: #86868b;
+  font-size: 11px;
+}
+
+/* Status manager */
+
+.st-admin-order-controls {
+  display: grid;
+  gap: 14px;
+}
+
+.st-admin-order-control-card {
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(29, 29, 31, 0.025);
+}
+
+.st-admin-order-control-card__header {
+  min-height: 68px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.065);
+}
+
+.st-admin-order-control-card__header p {
+  margin: 0;
+  color: #86868b;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-control-card__header h2 {
+  margin: 3px 0 0;
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.st-admin-order-control-card__method {
+  min-height: 28px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 999px;
+  color: #6e6e73;
+  font-size: 9px;
+  font-weight: 620;
+}
+
+.st-admin-order-control-card__method svg {
+  width: 12px;
+  height: 12px;
+}
+
+.st-admin-order-control-card__method.is-pickup {
+  border-color: rgba(197, 139, 34, 0.2);
+  background: #fffaf0;
+  color: #946107;
+}
+
+.st-admin-order-control-card__method.is-delivery {
+  border-color: rgba(74, 144, 226, 0.15);
+  background: rgba(74, 144, 226, 0.045);
+  color: #47729a;
+}
+
+.st-admin-order-control-card__title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.st-admin-order-control-card__title-with-icon > svg {
+  width: 17px;
+  height: 17px;
+  color: #86868b;
+}
+
+.st-admin-order-status-grid {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.st-admin-order-status-option {
+  min-width: 0 !important;
+  min-height: 43px !important;
+  height: 43px !important;
+  padding: 0 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  border: 1px solid rgba(29, 29, 31, 0.08) !important;
+  border-radius: 11px !important;
+  background: #fafafa !important;
+  color: #6e6e73 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  font-size: 10px !important;
+  font-weight: 610 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.1 !important;
+  text-align: left !important;
+  text-transform: none !important;
+  white-space: nowrap !important;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+.st-admin-order-status-option::before,
+.st-admin-order-status-option::after {
+  content: none !important;
+  display: none !important;
+}
+
+.st-admin-order-status-option:hover:not(:disabled) {
+  border-color: rgba(29, 29, 31, 0.18) !important;
+  background: #fff !important;
+}
+
+.st-admin-order-status-option.is-selected {
+  border-color: rgba(197, 139, 34, 0.34) !important;
+  background: #fffaf0 !important;
+  color: #805708 !important;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.06) !important;
+}
+
+.st-admin-order-status-option.is-selected.is-complete {
+  border-color: rgba(33, 163, 102, 0.2) !important;
+  background: rgba(33, 163, 102, 0.045) !important;
+  color: #287653 !important;
+  box-shadow: none !important;
+}
+
+.st-admin-order-status-option.is-selected.is-cancel {
+  border-color: rgba(196, 71, 71, 0.18) !important;
+  background: rgba(196, 71, 71, 0.04) !important;
+  color: #9b4b4b !important;
+  box-shadow: none !important;
+}
+
+.st-admin-order-status-option__icon {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.st-admin-order-status-option__icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+.st-admin-order-current-status {
+  margin: 0 12px 12px;
+  padding: 10px 11px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 7px;
+  row-gap: 2px;
+  border: 1px solid rgba(29, 29, 31, 0.065);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.st-admin-order-current-status > span {
+  color: #9a9a9f;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-current-status strong {
+  color: #1d1d1f;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.st-admin-order-current-status p {
+  grid-column: 1 / -1;
+  margin: 1px 0 0;
+  color: #86868b;
+  font-size: 10px;
+}
+
+/* Payment status */
+
+.st-admin-payment-status {
+  margin: 12px;
+  padding: 3px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 12px;
+  background: #f5f5f7;
+}
+
+.st-admin-payment-status__option {
+  min-width: 0 !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  border: 1px solid transparent !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  color: #86868b !important;
+  box-shadow: none !important;
+  transform: none !important;
+  font-size: 9px !important;
+  font-weight: 640 !important;
+  letter-spacing: 0.03em !important;
+  line-height: 1 !important;
+  text-transform: none !important;
+  white-space: nowrap !important;
+}
+
+.st-admin-payment-status__option::before,
+.st-admin-payment-status__option::after {
+  content: none !important;
+  display: none !important;
+}
+
+.st-admin-payment-status__option > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #b8b8bd;
+}
+
+.st-admin-payment-status__option.is-selected {
+  background: #fff !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 1px 4px rgba(29, 29, 31, 0.08) !important;
+}
+
+.st-admin-payment-status__option.is-unpaid.is-selected {
+  border-color: rgba(197, 139, 34, 0.2) !important;
+}
+
+.st-admin-payment-status__option.is-unpaid.is-selected > span {
+  background: #d99b25;
+}
+
+.st-admin-payment-status__option.is-paid.is-selected {
+  border-color: rgba(33, 163, 102, 0.16) !important;
+}
+
+.st-admin-payment-status__option.is-paid.is-selected > span {
+  background: #35a975;
+}
+
+.st-admin-payment-status__option.is-refunded.is-selected {
+  border-color: rgba(111, 91, 163, 0.15) !important;
+}
+
+.st-admin-payment-status__option.is-refunded.is-selected > span {
+  background: #756496;
+}
+
+/* Notes */
+
+.st-admin-order-notes {
+  padding: 12px;
+}
+
+.st-admin-order-notes textarea {
+  width: 100%;
+  min-height: 108px;
+  resize: vertical;
+  padding: 11px 12px;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 11px;
+  background: #fafafa;
+  color: #1d1d1f;
+  outline: none;
+  font-size: 11px;
+  line-height: 1.55;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.st-admin-order-notes textarea:focus {
+  border-color: rgba(197, 139, 34, 0.3);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.055);
+}
+
+.st-admin-order-notes textarea::placeholder {
+  color: #a1a1a6;
+}
+
+.st-admin-order-notes footer {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.st-admin-order-notes footer > span {
+  color: #a1a1a6;
+  font-size: 9px;
+}
+
+.st-admin-order-notes footer button {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 0 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+  color: #1d1d1f !important;
+  box-shadow: none !important;
+  font-size: 9px !important;
+  font-weight: 620 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.st-admin-order-notes footer button svg {
+  width: 12px;
+  height: 12px;
+}
+
+.st-admin-order-notes footer button:hover:not(:disabled) {
+  border-color: rgba(197, 139, 34, 0.3) !important;
+  background: #fffaf0 !important;
+}
+
+.st-admin-order-notes footer button:disabled {
+  opacity: 0.35 !important;
+}
+
+/* Payment summary */
+
+.st-admin-order-summary {
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.st-admin-order-summary__header {
+  padding: 17px 18px 15px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.065);
+}
+
+.st-admin-order-summary__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #86868b;
+}
+
+.st-admin-order-summary__eyebrow svg {
+  width: 14px;
+  height: 14px;
+  color: #9a84b8;
+}
+
+.st-admin-order-summary__eyebrow span {
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-summary__header h2 {
+  margin: 5px 0 0 21px;
+  color: #1d1d1f;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.st-admin-order-summary__rows {
+  padding: 15px 18px;
+  display: grid;
+  gap: 11px;
+}
+
+.st-admin-order-summary__rows > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  color: #86868b;
+  font-size: 12px;
+}
+
+.st-admin-order-summary__rows strong {
+  color: #1d1d1f;
+  font-size: 12px;
+  font-weight: 580;
+}
+
+.st-admin-order-summary__rows .is-discount {
+  color: #438060;
+}
+
+.st-admin-order-summary__rows .is-discount strong {
+  color: #438060;
+}
+
+.st-admin-order-summary__total {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid rgba(29, 29, 31, 0.07);
+  background: #fafafa;
+}
+
+.st-admin-order-summary__total > div {
+  display: grid;
+  gap: 2px;
+}
+
+.st-admin-order-summary__total span {
+  color: #1d1d1f;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.st-admin-order-summary__total small {
+  color: #a1a1a6;
+  font-size: 9px;
+}
+
+.st-admin-order-summary__total > strong {
+  color: #1d1d1f;
+  font-size: 21px;
+  font-weight: 660;
+  letter-spacing: -0.035em;
+}
+
+/* Messages */
+
+.st-admin-order-message {
+  min-height: 42px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 11px;
+  background: #fff;
+  color: #6e6e73;
+  font-size: 10px;
+}
+
+.st-admin-order-message svg {
+  width: 14px;
+  height: 14px;
+}
+
+.st-admin-order-message.is-loading svg {
+  animation: spin 1s linear infinite;
+}
+
+.st-admin-order-message.is-success {
+  border-color: rgba(33, 163, 102, 0.15);
+  color: #327658;
+}
+
+.st-admin-order-message.is-error {
+  border-color: rgba(196, 71, 71, 0.15);
+  color: #9b4b4b;
+}
+
+/* Confirmation modal — exact local architecture.
+   Neutral backdrop only. No inherited giant oval / pill / pseudo-shapes. */
+
+.st3-admin .st-admin-order-confirmation {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 500 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 18px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.st3-admin .st-admin-order-confirmation::before,
+.st3-admin .st-admin-order-confirmation::after,
+.st3-admin .st-admin-order-confirmation__backdrop::before,
+.st3-admin .st-admin-order-confirmation__backdrop::after,
+.st3-admin .st-admin-order-confirmation__dialog::before,
+.st3-admin .st-admin-order-confirmation__dialog::after {
+  content: none !important;
+  display: none !important;
+}
+
+.st3-admin button.st-admin-order-confirmation__backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: rgba(29, 29, 31, 0.16) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+.st3-admin .st-admin-order-confirmation__dialog[role="dialog"] {
+  position: relative !important;
+  z-index: 2 !important;
+  width: min(100%, 390px) !important;
+  max-width: 390px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 22px !important;
+  overflow: visible !important;
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.985) !important;
+  color: #1d1d1f !important;
+  box-shadow: 0 24px 80px rgba(29, 29, 31, 0.16) !important;
+  transform: none !important;
+  filter: none !important;
+  -webkit-backdrop-filter: saturate(170%) blur(18px) !important;
+  backdrop-filter: saturate(170%) blur(18px) !important;
+}
+
+.st-admin-order-confirmation__close {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(29, 29, 31, 0.08) !important;
+  border-radius: 50% !important;
+  background: #fafafa !important;
+  color: #86868b !important;
+  box-shadow: none !important;
+}
+
+.st-admin-order-confirmation__close svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st-admin-order-confirmation__icon {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(197, 139, 34, 0.22);
+  border-radius: 12px;
+  background: #fffaf0;
+  color: #bd7f0e;
+}
+
+.st-admin-order-confirmation__icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.st-admin-order-confirmation__eyebrow {
+  margin: 16px 0 0;
+  color: #86868b;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st3-admin .st-admin-order-confirmation__dialog h2 {
+  margin: 5px 0 0 !important;
+  color: #1d1d1f !important;
+  font-size: 22px !important;
+  font-weight: 660 !important;
+  letter-spacing: -0.035em !important;
+  line-height: 1.15 !important;
+}
+
+.st-admin-order-confirmation__copy {
+  margin: 10px 0 0;
+  color: #6e6e73;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.st-admin-order-confirmation__actions {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.st-admin-order-confirmation__actions button {
+  min-width: 0 !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  transform: none !important;
+  font-size: 9px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+.st-admin-order-confirmation__actions .is-secondary {
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  background: #fff !important;
+  color: #6e6e73 !important;
+}
+
+.st-admin-order-confirmation__actions .is-primary {
+  border: 1px solid rgba(197, 139, 34, 0.28) !important;
+  background: #fffaf0 !important;
+  color: #7b5409 !important;
+}
+
+.st-admin-order-confirmation__actions .is-primary:hover {
+  border-color: rgba(197, 139, 34, 0.45) !important;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.07) !important;
+}
+
+/* Responsive */
+
+@media (max-width: 980px) {
+  .st-admin-order-queue-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .st-admin-order-card {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .st-admin-order-card__meta {
+    grid-column: 1;
+  }
+
+  .st-admin-order-card__open {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .st-admin-order-queue-tab {
+    min-height: 58px;
+  }
+
+  .st-admin-order-queue__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .st-admin-order-card {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .st-admin-order-card__open {
+    grid-column: auto;
+    grid-row: auto;
+    width: fit-content;
+  }
+
+  .st-admin-order-status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .st-admin-order-detail-progress__track {
+    min-width: 560px;
+  }
+
+  .st-admin-order-confirmation__actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === ST ADMIN ORDERS PREMIUM V2 END === */
+
+/* === ST ADMIN ORDER DIRECTORY V3 START === */
+
+.st-admin-order-hub {
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(29, 29, 31, 0.025);
+}
+
+.st-admin-order-hub__section + .st-admin-order-hub__section {
+  border-top: 1px solid rgba(29, 29, 31, 0.065);
+}
+
+.st-admin-order-hub__section {
+  padding: 16px;
+}
+
+.st-admin-order-hub__section-title {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.st-admin-order-hub__section-title > div {
+  display: grid;
+  gap: 3px;
+}
+
+.st-admin-order-hub__section-title > div > span {
+  color: #929297;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-hub__section-title > div > strong {
+  color: #1d1d1f;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.st-admin-order-hub__section-title > small {
+  color: #9a9a9f;
+  font-size: 10px;
+}
+
+.st-admin-order-hub__operations {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.st-admin-order-hub__operation {
+  min-width: 0;
+  min-height: 62px;
+  padding: 9px 10px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 13px;
+  background: #fafafa;
+  color: #6e6e73;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.st-admin-order-hub__operation:hover {
+  border-color: rgba(29, 29, 31, 0.14);
+  background: #fff;
+}
+
+.st-admin-order-hub__operation.is-active {
+  border-color: rgba(180, 125, 25, 0.28);
+  background: #fffaf1;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.055);
+}
+
+.st-admin-order-hub__operation-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 9px;
+  background: #fff;
+  color: #77777c;
+}
+
+.st-admin-order-hub__operation-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.st-admin-order-hub__operation.is-active .st-admin-order-hub__operation-icon {
+  border-color: rgba(180, 125, 25, 0.18);
+  color: #91610c;
+}
+
+.st-admin-order-hub__operation-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.st-admin-order-hub__operation-copy strong {
+  overflow: hidden;
+  color: #1d1d1f;
+  font-size: 11px;
+  font-weight: 640;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-admin-order-hub__operation-copy small {
+  overflow: hidden;
+  color: #99999e;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-admin-order-hub__counter {
+  min-width: 27px;
+  height: 27px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 999px;
+  background: #fff;
+  color: #68686d;
+  font-size: 9px;
+  font-weight: 670;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-admin-order-hub__operation.is-active .st-admin-order-hub__counter {
+  border-color: rgba(180, 125, 25, 0.18);
+  color: #805707;
+}
+
+.st-admin-order-hub__workflow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.st-admin-order-hub__workflow-item {
+  min-height: 35px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 10px;
+  background: #fafafa;
+  color: #6e6e73;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.st-admin-order-hub__workflow-item:hover {
+  border-color: rgba(29, 29, 31, 0.14);
+  background: #fff;
+  color: #1d1d1f;
+}
+
+.st-admin-order-hub__workflow-item.is-active {
+  border-color: rgba(180, 125, 25, 0.26);
+  background: #fffaf1;
+  color: #75500a;
+}
+
+.st-admin-order-hub__workflow-item svg {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  opacity: 0.78;
+}
+
+.st-admin-order-hub__workflow-item > span {
+  font-size: 9px;
+  font-weight: 620;
+  white-space: nowrap;
+}
+
+.st-admin-order-hub__workflow-item > strong {
+  min-width: 19px;
+  height: 19px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(29, 29, 31, 0.05);
+  color: #77777c;
+  font-size: 8px;
+  font-weight: 670;
+  font-variant-numeric: tabular-nums;
+}
+
+.st-admin-order-hub__workflow-item.is-active > strong {
+  background: rgba(180, 125, 25, 0.09);
+  color: #75500a;
+}
+
+/* One directory only */
+
+.st-admin-order-directory-v3 {
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 30px rgba(29, 29, 31, 0.025);
+}
+
+.st-admin-order-directory-v3__header {
+  min-height: 86px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.065);
+}
+
+.st-admin-order-directory-v3__header > div:first-child {
+  min-width: 0;
+}
+
+.st-admin-order-directory-v3__header p {
+  margin: 0;
+  color: #98989d;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-directory-v3__header h2 {
+  margin: 4px 0 0;
+  color: #1d1d1f;
+  font-size: 19px;
+  font-weight: 660;
+  letter-spacing: -0.025em;
+}
+
+.st-admin-order-directory-v3__header div:first-child > span {
+  display: block;
+  margin-top: 4px;
+  color: #8b8b90;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.st-admin-order-directory-v3__result {
+  flex: 0 0 auto;
+  min-width: 58px;
+  padding: 7px 9px;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  border: 1px solid rgba(29, 29, 31, 0.075);
+  border-radius: 11px;
+  background: #fafafa;
+}
+
+.st-admin-order-directory-v3__result strong {
+  color: #1d1d1f;
+  font-size: 14px;
+  font-weight: 670;
+  line-height: 1;
+}
+
+.st-admin-order-directory-v3__result span {
+  color: #99999e;
+  font-size: 7px;
+  font-weight: 620;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.st-admin-order-directory-v3__list {
+  display: grid;
+}
+
+.st-admin-order-row-v3 {
+  min-width: 0;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(210px, 0.7fr) auto;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.06);
+  transition: background 150ms ease;
+}
+
+.st-admin-order-row-v3:last-child {
+  border-bottom: 0;
+}
+
+.st-admin-order-row-v3:hover {
+  background: #fbfbfc;
+}
+
+.st-admin-order-row-v3__main,
+.st-admin-order-row-v3__details {
+  min-width: 0;
+}
+
+.st-admin-order-row-v3__heading {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px 9px;
+}
+
+.st-admin-order-row-v3__heading h3 {
+  margin: 0;
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 670;
+  letter-spacing: -0.025em;
+}
+
+.st-admin-order-row-v3__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* Restrained status chips.
+   No bright neon green / yellow / orange fills. */
+
+.st-admin-order-chip {
+  min-height: 22px;
+  padding: 3px 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(29, 29, 31, 0.085);
+  border-radius: 999px;
+  background: #f7f7f8;
+  color: #68686d;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.065em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.st-admin-order-chip svg {
+  width: 10px;
+  height: 10px;
+}
+
+.st-admin-order-chip.is-pending,
+.st-admin-order-chip.is-unpaid {
+  border-color: rgba(29, 29, 31, 0.09);
+  background: #f7f7f8;
+  color: #727277;
+}
+
+.st-admin-order-chip.is-confirmed {
+  border-color: rgba(84, 108, 133, 0.13);
+  background: #f5f7f9;
+  color: #607080;
+}
+
+.st-admin-order-chip.is-preparing,
+.st-admin-order-chip.is-ready,
+.st-admin-order-chip.is-pickup {
+  border-color: rgba(171, 121, 28, 0.15);
+  background: #fcf9f2;
+  color: #846423;
+}
+
+.st-admin-order-chip.is-delivery,
+.st-admin-order-chip.is-delivery-progress {
+  border-color: rgba(84, 108, 133, 0.13);
+  background: #f5f7f9;
+  color: #607080;
+}
+
+.st-admin-order-chip.is-completed,
+.st-admin-order-chip.is-paid {
+  border-color: rgba(59, 122, 91, 0.13);
+  background: #f3f8f5;
+  color: #4e765f;
+}
+
+.st-admin-order-chip.is-cancelled {
+  border-color: rgba(137, 82, 82, 0.13);
+  background: #faf5f5;
+  color: #805c5c;
+}
+
+.st-admin-order-chip.is-refunded {
+  border-color: rgba(104, 94, 127, 0.13);
+  background: #f7f6f9;
+  color: #716a80;
+}
+
+.st-admin-order-row-v3__customer {
+  margin: 9px 0 0;
+  color: #1d1d1f;
+  font-size: 11px;
+  font-weight: 630;
+}
+
+.st-admin-order-row-v3__contact {
+  margin-top: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+  color: #8b8b90;
+  font-size: 10px;
+}
+
+.st-admin-order-row-v3__details {
+  display: grid;
+  gap: 3px;
+  color: #85858a;
+  font-size: 10px;
+}
+
+.st-admin-order-row-v3__details strong {
+  margin-top: 3px;
+  color: #1d1d1f;
+  font-size: 15px;
+  font-weight: 660;
+}
+
+.st-admin-order-row-v3__open {
+  min-height: 36px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(29, 29, 31, 0.095);
+  border-radius: 10px;
+  background: #fff;
+  color: #37373a;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.st-admin-order-row-v3__open svg {
+  width: 11px;
+  height: 11px;
+}
+
+.st-admin-order-row-v3__open:hover {
+  border-color: rgba(180, 125, 25, 0.3);
+  background: #fffaf1;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.045);
+}
+
+.st-admin-order-directory-v3__empty {
+  min-height: 230px;
+  padding: 34px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.st-admin-order-directory-v3__empty > svg {
+  width: 20px;
+  height: 20px;
+  color: #9a9a9f;
+}
+
+.st-admin-order-directory-v3__empty h3 {
+  margin: 12px 0 0;
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.st-admin-order-directory-v3__empty p {
+  max-width: 390px;
+  margin: 5px 0 0;
+  color: #8b8b90;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1180px) {
+  .st-admin-order-hub__operations {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .st-admin-order-row-v3 {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .st-admin-order-row-v3__details {
+    grid-column: 1;
+  }
+
+  .st-admin-order-row-v3__open {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .st-admin-order-hub__section-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .st-admin-order-hub__operations {
+    grid-template-columns: 1fr;
+  }
+
+  .st-admin-order-hub__workflow {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .st-admin-order-hub__workflow-item {
+    justify-content: flex-start;
+  }
+
+  .st-admin-order-hub__workflow-item > strong {
+    margin-left: auto;
+  }
+
+  .st-admin-order-directory-v3__header {
+    align-items: flex-start;
+  }
+
+  .st-admin-order-row-v3 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .st-admin-order-row-v3__open {
+    grid-column: auto;
+    grid-row: auto;
+    width: fit-content;
+  }
+}
+
+/* === ST ADMIN ORDER DIRECTORY V3 END === */
+
+/* === ST ADMIN ORDERS VISUAL REFINEMENT V4 START === */
+
+/* ---------------------------------------------------------
+   1. ORDER HUB — STEREOPHONIE MUSTARD HOVER LANGUAGE
+   --------------------------------------------------------- */
+
+.st-admin-order-hub__operation,
+.st-admin-order-hub__workflow-item {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  transition:
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-admin-order-hub__operation:hover,
+  .st-admin-order-hub__workflow-item:hover {
+    border-color: rgba(197, 139, 34, 0.58) !important;
+    background: #fffaf0 !important;
+    color: #1d1d1f !important;
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.105),
+      0 10px 30px rgba(196, 135, 27, 0.105) !important;
+    transform: translateY(-1px);
+  }
+
+  .st-admin-order-hub__operation:hover .st-admin-order-hub__operation-icon {
+    border-color: rgba(197, 139, 34, 0.34);
+    background: #fffdf8;
+    color: #98650b;
+  }
+
+  .st-admin-order-hub__operation:hover .st-admin-order-hub__counter {
+    border-color: rgba(197, 139, 34, 0.42);
+    background: #fdb73e;
+    color: #1d1d1f;
+    box-shadow: 0 2px 8px rgba(196, 135, 27, 0.16);
+  }
+
+  .st-admin-order-hub__workflow-item:hover > strong {
+    background: #fdb73e;
+    color: #1d1d1f;
+    box-shadow: 0 2px 8px rgba(196, 135, 27, 0.15);
+  }
+
+  .st-admin-order-hub__workflow-item:hover > svg {
+    color: #9a6709;
+    opacity: 1;
+  }
+}
+
+.st-admin-order-hub__operation:active,
+.st-admin-order-hub__workflow-item:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.st-admin-order-hub__operation:focus-visible,
+.st-admin-order-hub__workflow-item:focus-visible {
+  outline: none;
+  border-color: rgba(197, 139, 34, 0.58) !important;
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.12),
+    0 8px 24px rgba(196, 135, 27, 0.09) !important;
+}
+
+/* Active filter keeps the same language without looking flashy. */
+
+.st-admin-order-hub__operation.is-active {
+  border-color: rgba(197, 139, 34, 0.38) !important;
+  background: #fffaf0 !important;
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.065),
+    0 5px 18px rgba(29, 29, 31, 0.035) !important;
+}
+
+.st-admin-order-hub__operation.is-active .st-admin-order-hub__counter {
+  border-color: rgba(197, 139, 34, 0.34);
+  background: rgba(253, 183, 62, 0.16);
+  color: #805707;
+}
+
+.st-admin-order-hub__workflow-item.is-active {
+  border-color: rgba(197, 139, 34, 0.38) !important;
+  background: #fffaf0 !important;
+  color: #75500a !important;
+  box-shadow: 0 0 0 3px rgba(245, 179, 53, 0.055);
+}
+
+.st-admin-order-hub__workflow-item.is-active > strong {
+  background: rgba(253, 183, 62, 0.18);
+  color: #75500a;
+}
+
+/* ---------------------------------------------------------
+   2. PAYMENT SUMMARY — ICON PERFECTLY ALIGNED
+   --------------------------------------------------------- */
+
+.st-admin-order-summary__header {
+  min-height: 82px;
+  padding: 16px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+}
+
+.st-admin-order-summary__icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(130, 106, 177, 0.12);
+  border-radius: 11px;
+  background: rgba(130, 106, 177, 0.045);
+  color: #8e77bc;
+}
+
+.st-admin-order-summary__icon svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.st-admin-order-summary__heading {
+  min-width: 0;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+}
+
+.st-admin-order-summary__heading p {
+  margin: 0 !important;
+  color: #86868b !important;
+  font-size: 9px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.14em !important;
+  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+}
+
+.st-admin-order-summary__heading h2,
+.st3-admin .st-admin-order-summary__heading h2 {
+  margin: 0 !important;
+  color: #1d1d1f !important;
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.15 !important;
+}
+
+/* Retire the previous layout rules completely. */
+
+.st-admin-order-summary__eyebrow {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------
+   3. MANAGE ORDER PROGRESS — NEVER WRAP DELIVERY / PICKUP
+   --------------------------------------------------------- */
+
+.st-admin-order-control-card__header {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.st-admin-order-control-card__method {
+  width: auto !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  flex: 0 0 auto !important;
+  padding: 0 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  border-radius: 999px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  text-align: center !important;
+}
+
+.st-admin-order-control-card__method svg {
+  width: 12px !important;
+  height: 12px !important;
+  flex: 0 0 12px !important;
+}
+
+.st-admin-order-control-card__method.is-delivery,
+.st-admin-order-control-card__method.is-pickup {
+  white-space: nowrap !important;
+}
+
+@media (max-width: 1280px) {
+  .st-admin-order-control-card__header {
+    gap: 8px;
+  }
+
+  .st-admin-order-control-card__header h2 {
+    font-size: 15px;
+  }
+
+  .st-admin-order-control-card__method {
+    padding-inline: 8px !important;
+    font-size: 8px !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   4. IMPORTANT ADMIN ACTIONS — FOCUSED BLURRED MODAL
+   --------------------------------------------------------- */
+
+.st3-admin .st-admin-order-confirmation {
+  isolation: isolate !important;
+}
+
+.st3-admin button.st-admin-order-confirmation__backdrop {
+  background: rgba(29, 29, 31, 0.24) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(0.92) !important;
+  backdrop-filter: blur(8px) saturate(0.92) !important;
+  transition:
+    background-color 180ms ease,
+    -webkit-backdrop-filter 180ms ease,
+    backdrop-filter 180ms ease !important;
+}
+
+.st3-admin .st-admin-order-confirmation__dialog[role="dialog"] {
+  box-shadow:
+    0 30px 90px rgba(29, 29, 31, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset !important;
+}
+
+/* Important confirmation CTA uses the same premium mustard feedback. */
+
+@media (hover: hover) and (pointer: fine) {
+  .st-admin-order-confirmation__actions .is-primary:hover {
+    border-color: rgba(197, 139, 34, 0.58) !important;
+    background: #fffaf0 !important;
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.105),
+      0 10px 28px rgba(196, 135, 27, 0.11) !important;
+  }
+}
+
+/* === ST ADMIN ORDERS VISUAL REFINEMENT V4 END === */
+
+/* === ST ADMIN INTERACTION + MODAL POLISH V5 START === */
+
+/* =========================================================
+   1. NO SOLID MUSTARD COUNTERS
+   ========================================================= */
+
+/*
+ * Selected and hovered states use:
+ * - pale mustard surface
+ * - mustard border
+ * - mustard halo
+ *
+ * Counters NEVER use a solid #fdb73e fill.
+ */
+
+.st-admin-order-hub__counter,
+.st-admin-order-hub__workflow-item > strong {
+  background: #ffffff !important;
+  color: #77777c !important;
+  border: 1px solid rgba(29, 29, 31, 0.075) !important;
+  box-shadow: none !important;
+}
+
+.st-admin-order-hub__operation.is-active .st-admin-order-hub__counter,
+.st-admin-order-hub__workflow-item.is-active > strong {
+  border-color: rgba(197, 139, 34, 0.32) !important;
+  background: #fffaf0 !important;
+  color: #805707 !important;
+  box-shadow: 0 0 0 2px rgba(245, 179, 53, 0.045) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-admin-order-hub__operation:hover .st-admin-order-hub__counter,
+  .st-admin-order-hub__workflow-item:hover > strong {
+    border-color: rgba(197, 139, 34, 0.4) !important;
+    background: #fffaf0 !important;
+    color: #805707 !important;
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 4px 12px rgba(196, 135, 27, 0.07) !important;
+  }
+}
+
+/* =========================================================
+   2. VIEW ORDER — FULL STEREOPHONIE HOVER
+   ========================================================= */
+
+.st-admin-order-row-v3__open {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  transition:
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-admin-order-row-v3__open:hover {
+    border-color: rgba(197, 139, 34, 0.58) !important;
+    background: #fffaf0 !important;
+    color: #1d1d1f !important;
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.105),
+      0 10px 28px rgba(196, 135, 27, 0.1) !important;
+    transform: translateY(-1px);
+  }
+
+  .st-admin-order-row-v3__open:hover svg {
+    color: #91610c;
+  }
+}
+
+.st-admin-order-row-v3__open:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.st-admin-order-row-v3__open:focus-visible {
+  outline: none !important;
+  border-color: rgba(197, 139, 34, 0.58) !important;
+  background: #fffaf0 !important;
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.12),
+    0 8px 24px rgba(196, 135, 27, 0.09) !important;
+}
+
+/* =========================================================
+   3. PAYMENT SUMMARY ICON — SAME LANGUAGE AS CUSTOMER /
+      DELIVERY ADDRESS
+   ========================================================= */
+
+.st-admin-order-summary__header {
+  gap: 10px !important;
+}
+
+/*
+ * Remove the purple boxed-chip treatment.
+ * Keep the receipt icon as a clean line icon.
+ */
+
+.st-admin-order-summary__icon {
+  width: auto !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #9a84b8 !important;
+}
+
+.st-admin-order-summary__icon svg {
+  width: 18px !important;
+  height: 18px !important;
+  display: block !important;
+  stroke-width: 1.8;
+}
+
+.st-admin-order-summary__heading {
+  align-content: center;
+}
+
+.st-admin-order-summary__heading p {
+  line-height: 1 !important;
+}
+
+.st-admin-order-summary__heading h2,
+.st3-admin .st-admin-order-summary__heading h2 {
+  margin-top: 4px !important;
+}
+
+/* =========================================================
+   4. PURCHASED PRODUCTS — TRUE VERTICAL ALIGNMENT
+   ========================================================= */
+
+.st-admin-order-products-header {
+  min-height: 82px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.065);
+}
+
+.st-admin-order-products-header__icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  display: block;
+  color: #6e6e73;
+  stroke-width: 1.8;
+}
+
+.st-admin-order-products-header__copy {
+  min-width: 0;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+}
+
+.st-admin-order-products-header__copy p {
+  margin: 0 !important;
+  color: #86868b !important;
+  font-size: 9px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.14em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+}
+
+.st-admin-order-products-header__copy h2 {
+  margin: 0 !important;
+  color: #1d1d1f !important;
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.12 !important;
+}
+
+/* =========================================================
+   5. ORDER CONFIRMATION — ABOVE EVERY ROADMAP ELEMENT
+   ========================================================= */
+
+/*
+ * The modal must beat every admin stacking context.
+ * This also prevents roadmap circles from appearing above
+ * the blurred backdrop.
+ */
+
+.st3-admin .st-admin-order-confirmation {
+  z-index: 2147483000 !important;
+}
+
+/*
+ * Remove explicit roadmap stacking so no icon can escape
+ * underneath-modal blur.
+ */
+
+.st3-admin .st-admin-order-detail-progress,
+.st3-admin .st-admin-order-detail-progress__track,
+.st3-admin .st-admin-order-detail-progress__step,
+.st3-admin .st-admin-order-detail-progress__indicator {
+  z-index: auto !important;
+}
+
+.st3-admin .st-admin-order-detail-progress__indicator {
+  position: relative;
+}
+
+/*
+ * Older JSX still contains relative z-10-like status circles.
+ * Keep all detail-page status visuals below confirmation UI.
+ */
+
+.st3-admin main .st-admin-order-detail-progress [class*="z-"],
+.st3-admin main .st-admin-order-detail-progress [class*="relativez-"] {
+  z-index: 0 !important;
+}
+
+.st3-admin button.st-admin-order-confirmation__backdrop {
+  z-index: 0 !important;
+}
+
+.st3-admin .st-admin-order-confirmation__dialog[role="dialog"] {
+  z-index: 2 !important;
+}
+
+/* =========================================================
+   6. PRODUCT DELETE CONFIRMATION — SAME FOCUSED BLUR
+   ========================================================= */
+
+.st3-admin .st-admin-product-delete-confirmation {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  isolation: isolate !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.st3-admin .st-admin-product-delete-confirmation::before,
+.st3-admin .st-admin-product-delete-confirmation::after,
+.st3-admin .st-admin-product-delete-confirmation__backdrop::before,
+.st3-admin .st-admin-product-delete-confirmation__backdrop::after {
+  content: none !important;
+  display: none !important;
+}
+
+.st3-admin button.st-admin-product-delete-confirmation__backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: rgba(29, 29, 31, 0.24) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  -webkit-backdrop-filter: blur(8px) saturate(0.92) !important;
+  backdrop-filter: blur(8px) saturate(0.92) !important;
+}
+
+.st3-admin .st-admin-product-delete-confirmation [role="dialog"] {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/*
+ * The pre-existing aria-label overlay rule used a flat
+ * black background. The dedicated V5 backdrop now owns it.
+ */
+
+.st3-admin
+  .st-admin-product-delete-confirmation
+  [aria-label="Cancel product deletion"] {
+  background: rgba(29, 29, 31, 0.24) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(0.92) !important;
+  backdrop-filter: blur(8px) saturate(0.92) !important;
+}
+
+/* =========================================================
+   7. ADMIN INTERACTION RULE
+   ========================================================= */
+
+/*
+ * Stereophonie Admin rule:
+ * mustard is an accent/halo, not a solid-fill interaction.
+ *
+ * Destructive red actions remain intentionally red.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  .st-admin-order-hub__operation:hover,
+  .st-admin-order-hub__workflow-item:hover,
+  .st-admin-order-row-v3__open:hover {
+    background-color: #fffaf0 !important;
+  }
+}
+
+/* === ST ADMIN INTERACTION + MODAL POLISH V5 END === */
+
+/* === ST ADMIN ORDER FINAL VISUAL FIX V7 START === */
+
+/*
+ * ==========================================================
+ * 1. PAYMENT SUMMARY
+ * Icon aligns specifically with ORDER TOTAL eyebrow.
+ * ==========================================================
+ */
+
+.st3-admin .st-admin-order-summary__header {
+  min-height: 82px !important;
+  padding: 16px 18px !important;
+
+  display: grid !important;
+  grid-template-columns: 18px minmax(0, 1fr) !important;
+  align-items: start !important;
+  column-gap: 10px !important;
+}
+
+.st3-admin .st-admin-order-summary__icon {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  align-self: start !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  /*
+   * 9px eyebrow with ~11px line box:
+   * this tiny offset centers the 18px receipt visually
+   * against ORDER TOTAL rather than Payment summary.
+   */
+  transform: translateY(-3px) !important;
+
+  color: #8f79b5 !important;
+}
+
+.st3-admin .st-admin-order-summary__icon svg {
+  width: 16px !important;
+  height: 16px !important;
+  display: block !important;
+
+  stroke-width: 1.75 !important;
+}
+
+.st3-admin .st-admin-order-summary__heading {
+  min-width: 0 !important;
+  display: block !important;
+}
+
+.st3-admin .st-admin-order-summary__heading p {
+  margin: 0 !important;
+
+  color: #86868b !important;
+
+  font-size: 9px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.14em !important;
+  line-height: 1 !important;
+
+  text-transform: uppercase !important;
+}
+
+.st3-admin .st-admin-order-summary__heading h2 {
+  margin: 6px 0 0 !important;
+
+  color: #1d1d1f !important;
+
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.08 !important;
+}
+
+/*
+ * ==========================================================
+ * 2. PURCHASED PRODUCTS
+ * Icon aligns specifically with PURCHASED PRODUCTS eyebrow.
+ * ==========================================================
+ */
+
+.st3-admin .st-admin-order-products-header {
+  min-height: 82px !important;
+  padding: 16px 18px !important;
+
+  display: grid !important;
+  grid-template-columns: 18px minmax(0, 1fr) !important;
+  align-items: start !important;
+  column-gap: 10px !important;
+
+  border-bottom: 1px solid rgba(29, 29, 31, 0.065) !important;
+}
+
+.st3-admin .st-admin-order-products-header__icon {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+
+  margin: 0 !important;
+
+  align-self: start !important;
+
+  /*
+   * Same concept as Payment Summary:
+   * align with the small eyebrow, not with "1 item".
+   */
+  transform: translateY(-3px) !important;
+
+  color: #77777c !important;
+  stroke-width: 1.75 !important;
+}
+
+.st3-admin .st-admin-order-products-header__copy {
+  min-width: 0 !important;
+  display: block !important;
+}
+
+.st3-admin .st-admin-order-products-header__copy p {
+  margin: 0 !important;
+
+  color: #86868b !important;
+
+  font-size: 9px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.14em !important;
+  line-height: 1 !important;
+
+  text-transform: uppercase !important;
+}
+
+.st3-admin .st-admin-order-products-header__copy h2 {
+  margin: 6px 0 0 !important;
+
+  color: #1d1d1f !important;
+
+  font-size: 19px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.08 !important;
+}
+
+/*
+ * ==========================================================
+ * 3. CONFIRMATION MODAL
+ *
+ * Blur remains exactly as approved.
+ * Roadmap disappears entirely while order confirmation is
+ * open, so its circles cannot remain recognizable through
+ * the blurred layer.
+ * ==========================================================
+ */
+
+.st3-admin:has(.st-admin-order-confirmation) [data-admin-order-roadmap="true"] {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.st3-admin .st-admin-order-confirmation {
+  z-index: 2147483000 !important;
+}
+
+.st3-admin button.st-admin-order-confirmation__backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+
+  z-index: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  background: rgba(29, 29, 31, 0.24) !important;
+
+  -webkit-backdrop-filter: blur(8px) saturate(0.92) !important;
+  backdrop-filter: blur(8px) saturate(0.92) !important;
+}
+
+.st3-admin .st-admin-order-confirmation__dialog[role="dialog"] {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/*
+ * ==========================================================
+ * 4. RESTRAINED PAID GREEN
+ *
+ * One single sage-green admin language.
+ * No bright mint.
+ * No glow.
+ * No neon border.
+ * ==========================================================
+ */
+
+.st3-admin .st-admin-order-detail-badge.is-paid,
+.st3-admin .st-admin-order-badge.is-paid,
+.st3-admin .st-admin-order-chip.is-paid {
+  border-color: rgba(59, 122, 91, 0.17) !important;
+
+  background: #f3f8f5 !important;
+
+  color: #4e765f !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  text-shadow: none !important;
+}
+
+.st3-admin .st-admin-order-detail-badge.is-paid::before,
+.st3-admin .st-admin-order-detail-badge.is-paid::after,
+.st3-admin .st-admin-order-badge.is-paid::before,
+.st3-admin .st-admin-order-badge.is-paid::after,
+.st3-admin .st-admin-order-chip.is-paid::before,
+.st3-admin .st-admin-order-chip.is-paid::after {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/*
+ * Payment segmented control "Paid".
+ * Same green family, also restrained.
+ */
+
+.st3-admin .st-admin-payment-status__option.is-paid.is-selected {
+  border-color: rgba(59, 122, 91, 0.16) !important;
+
+  background: #f5f9f6 !important;
+
+  color: #4e765f !important;
+
+  box-shadow: 0 1px 4px rgba(29, 29, 31, 0.045) !important;
+}
+
+.st3-admin .st-admin-payment-status__option.is-paid.is-selected > span {
+  background: #5d846d !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Also catch older Tailwind-based PAID badges on the
+ * order detail page without changing unrelated green UI.
+ */
+
+.st3-admin main span[class*="bg-emerald"][class*="text-emerald"] {
+  border-color: rgba(59, 122, 91, 0.17) !important;
+
+  background: #f3f8f5 !important;
+
+  color: #4e765f !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/*
+ * ==========================================================
+ * 5. ADMIN MUSTARD RULE
+ *
+ * Keep counters and navigation controls pale/outlined.
+ * Never turn these controls into solid mustard blocks.
+ * ==========================================================
+ */
+
+.st3-admin .st-admin-order-hub__counter,
+.st3-admin .st-admin-order-hub__workflow-item > strong {
+  background: #ffffff !important;
+}
+
+.st3-admin
+  .st-admin-order-hub__operation.is-active
+  .st-admin-order-hub__counter,
+.st3-admin .st-admin-order-hub__workflow-item.is-active > strong {
+  border-color: rgba(197, 139, 34, 0.32) !important;
+
+  background: #fffaf0 !important;
+
+  color: #805707 !important;
+
+  box-shadow: 0 0 0 2px rgba(245, 179, 53, 0.045) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st3-admin .st-admin-order-hub__operation:hover .st-admin-order-hub__counter,
+  .st3-admin .st-admin-order-hub__workflow-item:hover > strong {
+    border-color: rgba(197, 139, 34, 0.38) !important;
+
+    background: #fffaf0 !important;
+
+    color: #805707 !important;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.065),
+      0 4px 12px rgba(196, 135, 27, 0.055) !important;
+  }
+}
+
+/* === ST ADMIN ORDER FINAL VISUAL FIX V7 END === */

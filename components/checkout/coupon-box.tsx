@@ -214,7 +214,13 @@ export default function CouponBox({
         </p>
       </div>
 
-      <div className="st-checkout-coupon__command mt-4 flex">
+      <div
+        className={`mt-4 flex min-h-[50px] w-full items-stretch overflow-hidden rounded-[14px] border transition ${
+          hasError
+            ? "border-red-500 bg-white ring-2 ring-red-500/10"
+            : "border-black/[0.11] bg-[#f7f7f9] focus-within:border-[#e4ad43] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#fdb73e]/10"
+        }`}
+      >
         <input
           type="text"
           value={code}
@@ -233,11 +239,7 @@ export default function CouponBox({
           autoComplete="off"
           aria-label="Coupon code"
           aria-invalid={hasError}
-          className={`min-h-12 min-w-0 flex-1 border bg-white px-4 text-sm font-medium uppercase tracking-[0.1em] text-black outline-none transition placeholder:normal-case placeholder:tracking-normal placeholder:text-black/25 disabled:opacity-60 ${
-            hasError
-              ? "border-red-500 focus:border-red-600"
-              : "border-black/15 focus:border-black"
-          }`}
+          className="min-w-0 flex-1 !border-0 !bg-transparent px-4 text-sm font-medium uppercase tracking-[0.08em] text-[#1d1d1f] !shadow-none !outline-none !ring-0 placeholder:normal-case placeholder:tracking-normal placeholder:text-black/25 disabled:opacity-60"
         />
 
         <button
@@ -246,7 +248,7 @@ export default function CouponBox({
             void applyCoupon();
           }}
           disabled={isApplying || subtotal <= 0}
-          className="flex min-h-12 min-w-24 items-center justify-center gap-2 bg-black px-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#242424] disabled:cursor-not-allowed disabled:opacity-45"
+          className="flex min-w-[82px] shrink-0 items-center justify-center gap-1.5 !rounded-none !border-0 !border-l !border-black/[0.08] !bg-transparent px-4 font-[inherit] text-[13px] font-semibold tracking-[-0.01em] !text-[#1d1d1f] !shadow-none transition hover:!bg-[#fff7e8] disabled:cursor-not-allowed disabled:opacity-35"
         >
           {isApplying ? (
             <>

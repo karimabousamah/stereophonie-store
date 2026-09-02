@@ -32,6 +32,7 @@ type OrderStatus =
   | "confirmed"
   | "preparing"
   | "out_for_delivery"
+  | "ready_for_pickup"
   | "completed"
   | "cancelled";
 
@@ -51,6 +52,7 @@ type Order = {
   order_number: string;
   status: OrderStatus;
   payment_status: PaymentStatus;
+  fulfillment_method: "delivery" | "pickup";
   customer_first_name: string;
   customer_last_name: string;
   customer_email: string;
@@ -72,7 +74,7 @@ type Order = {
   order_items: OrderItem[];
 };
 
-const fulfilmentSteps: {
+const deliveryFulfilmentSteps: {
   value: OrderStatus;
   label: string;
   icon: typeof Clock3;
@@ -94,8 +96,40 @@ const fulfilmentSteps: {
   },
   {
     value: "out_for_delivery",
-    label: "Delivery",
+    label: "Out for delivery",
     icon: Truck,
+  },
+  {
+    value: "completed",
+    label: "Completed",
+    icon: CheckCircle2,
+  },
+];
+
+const pickupFulfilmentSteps: {
+  value: OrderStatus;
+  label: string;
+  icon: typeof Clock3;
+}[] = [
+  {
+    value: "pending",
+    label: "Pending",
+    icon: Clock3,
+  },
+  {
+    value: "confirmed",
+    label: "Confirmed",
+    icon: CheckCircle2,
+  },
+  {
+    value: "preparing",
+    label: "Preparing",
+    icon: Package,
+  },
+  {
+    value: "ready_for_pickup",
+    label: "Ready for pickup",
+    icon: Package,
   },
   {
     value: "completed",
@@ -137,6 +171,12 @@ function getStatusDetails(status: OrderStatus) {
         icon: Truck,
         className: "border-violet-400/25 bg-violet-400/[0.08] text-violet-300",
       };
+    case "ready_for_pickup":
+      return {
+        label: "Ready for pickup",
+        icon: Package,
+        className: "border-amber-300/30 bg-amber-300/[0.08] text-amber-200",
+      };
 
     case "completed":
       return {
@@ -162,12 +202,15 @@ function getStatusDetails(status: OrderStatus) {
   }
 }
 
-function getCurrentStepIndex(status: OrderStatus) {
+function getCurrentStepIndex(
+  status: OrderStatus,
+  steps: { value: OrderStatus }[],
+) {
   if (status === "cancelled") {
     return -1;
   }
 
-  return fulfilmentSteps.findIndex((step) => step.value === status);
+  return steps.findIndex((step) => step.value === status);
 }
 
 export default async function OrderDetailsPage({
@@ -203,6 +246,7 @@ export default async function OrderDetailsPage({
       order_number,
       status,
       payment_status,
+        fulfillment_method,
       customer_first_name,
       customer_last_name,
       customer_email,
@@ -244,7 +288,15 @@ export default async function OrderDetailsPage({
 
   const StatusIcon = statusDetails.icon;
 
-  const currentStepIndex = getCurrentStepIndex(order.status);
+  const fulfillmentMethod =
+    order.fulfillment_method === "pickup" ? "pickup" : "delivery";
+
+  const fulfilmentSteps =
+    fulfillmentMethod === "pickup"
+      ? pickupFulfilmentSteps
+      : deliveryFulfilmentSteps;
+
+  const currentStepIndex = getCurrentStepIndex(order.status, fulfilmentSteps);
 
   const totalQuantity = order.order_items.reduce(
     (sum, item) => sum + Number(item.quantity),
@@ -307,6 +359,16 @@ export default async function OrderDetailsPage({
                 </span>
 
                 <span
+                  className={`inline-flex items-center border px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] ${
+                    fulfillmentMethod === "pickup"
+                      ? "border-amber-300/30 bg-amber-300/[0.08] text-amber-200"
+                      : "border-sky-300/25 bg-sky-300/[0.07] text-sky-200"
+                  }`}
+                >
+                  {fulfillmentMethod === "pickup" ? "Store pickup" : "Delivery"}
+                </span>
+
+                <span
                   className={`border px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] ${
                     order.payment_status === "paid"
                       ? "border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300"
@@ -321,7 +383,10 @@ export default async function OrderDetailsPage({
             </div>
           </header>
 
-          <section className="mt-5 overflow-x-auto border border-white/10 bg-[#0d0d0d] p-5">
+          <section
+            className="mt-5 overflow-x-auto border border-white/10 bg-[#0d0d0d] p-5"
+            data-admin-order-roadmap="true"
+          >
             {order.status === "cancelled" ? (
               <div className="flex items-center gap-4">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center border border-red-400/25 bg-red-400/[0.08]">
@@ -395,19 +460,20 @@ export default async function OrderDetailsPage({
           <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
             <div className="min-w-0 space-y-5">
               <section className="border border-white/10 bg-[#0d0d0d]">
-                <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-                  <ShoppingBag className="h-5 w-5 text-white/45" />
+                <header className="st-admin-order-products-header">
+                  <ShoppingBag
+                    className="st-admin-order-products-header__icon"
+                    aria-hidden="true"
+                  />
 
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                      Purchased products
-                    </p>
+                  <div className="st-admin-order-products-header__copy">
+                    <p>Purchased products</p>
 
-                    <h2 className="mt-1 text-xl font-semibold">
+                    <h2>
                       {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
                     </h2>
                   </div>
-                </div>
+                </header>
 
                 <div className="divide-y divide-white/10">
                   {order.order_items.map((item) => (
@@ -475,92 +541,133 @@ export default async function OrderDetailsPage({
 
                 <div className="border border-white/10 bg-[#0d0d0d] p-5">
                   <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-emerald-300" />
+                    <MapPin
+                      className={`h-5 w-5 ${
+                        fulfillmentMethod === "pickup"
+                          ? "text-amber-200"
+                          : "text-emerald-300"
+                      }`}
+                    />
 
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                      Delivery address
+                      {fulfillmentMethod === "pickup"
+                        ? "Store pickup"
+                        : "Delivery address"}
                     </p>
                   </div>
 
-                  <div className="mt-6 space-y-2">
-                    {fullAddress.map((line, index) => (
-                      <p
-                        key={`${line}-${index}`}
-                        className={
-                          index === 0
-                            ? "text-lg font-semibold"
-                            : "text-sm text-white/45"
-                        }
+                  {fulfillmentMethod === "pickup" ? (
+                    <div className="mt-6">
+                      <h2 className="text-xl font-semibold">
+                        Stereophonie Store
+                      </h2>
+
+                      <p className="mt-2 text-sm text-white/45">
+                        Mtaileb, Lebanon
+                      </p>
+
+                      <p className="mt-5 border-t border-white/10 pt-5 text-sm leading-6 text-white/40">
+                        This order will be collected directly from the store. No
+                        customer delivery address is required.
+                      </p>
+
+                      <a
+                        href="https://maps.app.goo.gl/kCsBPgCRFXaK298i6?g_st=ic"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-5 inline-flex min-h-11 items-center gap-2 border border-white/15 bg-white/[0.035] px-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/60 transition hover:border-white/30 hover:text-white"
                       >
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-
-                  {order.delivery_notes && (
-                    <div className="mt-6 border-t border-white/10 pt-5">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/30">
-                        Customer delivery notes
-                      </p>
-
-                      <p className="mt-3 whitespace-pre-line text-sm leading-6 text-white/45">
-                        {order.delivery_notes}
-                      </p>
+                        <MapPin className="h-4 w-4" />
+                        Open store location
+                      </a>
                     </div>
+                  ) : (
+                    <>
+                      <div className="mt-6 space-y-2">
+                        {fullAddress.map((line, index) => (
+                          <p
+                            key={`${line}-${index}`}
+                            className={
+                              index === 0
+                                ? "text-lg font-semibold"
+                                : "text-sm text-white/45"
+                            }
+                          >
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+
+                      {order.delivery_notes && (
+                        <div className="mt-6 border-t border-white/10 pt-5">
+                          <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/30">
+                            Customer delivery notes
+                          </p>
+
+                          <p className="mt-3 whitespace-pre-line text-sm leading-6 text-white/45">
+                            {order.delivery_notes}
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </section>
 
-              <section className="border border-white/10 bg-[#0d0d0d]">
-                <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-                  <ReceiptText className="h-5 w-5 text-violet-300" />
+              <section className="st-admin-order-summary">
+                <header className="st-admin-order-summary__header">
+                  <span className="st-admin-order-summary__icon">
+                    <ReceiptText aria-hidden="true" />
+                  </span>
 
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
-                      Order total
-                    </p>
-
-                    <h2 className="mt-1 text-xl font-semibold">
-                      Payment summary
-                    </h2>
+                  <div className="st-admin-order-summary__heading">
+                    <p>Order total</p>
+                    <h2>Payment summary</h2>
                   </div>
-                </div>
+                </header>
 
-                <div className="space-y-4 p-5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-white/40">Subtotal</span>
-
-                    <span>${Number(order.subtotal).toFixed(2)}</span>
+                <div className="st-admin-order-summary__rows">
+                  <div>
+                    <span>Subtotal</span>
+                    <strong>${Number(order.subtotal).toFixed(2)}</strong>
                   </div>
 
                   {Number(order.discount_amount) > 0 ? (
-                    <div className="flex items-center justify-between gap-4 text-sm text-emerald-300">
+                    <div className="is-discount">
                       <span>
                         Discount
-                        {order.coupon_code ? ` (${order.coupon_code})` : ""}
+                        {order.coupon_code ? ` · ${order.coupon_code}` : ""}
                       </span>
 
-                      <span className="font-semibold">
-                        −$
-                        {Number(order.discount_amount).toFixed(2)}
-                      </span>
+                      <strong>
+                        −${Number(order.discount_amount).toFixed(2)}
+                      </strong>
                     </div>
                   ) : null}
 
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-white/40">Delivery fee</span>
-
-                    <span>${Number(order.delivery_fee).toFixed(2)}</span>
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-white/10 pt-4">
-                    <span className="font-semibold">Total</span>
-
-                    <span className="text-2xl font-semibold">
-                      ${Number(order.total).toFixed(2)}
+                  <div>
+                    <span>
+                      {fulfillmentMethod === "pickup"
+                        ? "Store pickup"
+                        : "Delivery fee"}
                     </span>
+
+                    <strong>
+                      {fulfillmentMethod === "pickup"
+                        ? "Free"
+                        : `$${Number(order.delivery_fee).toFixed(2)}`}
+                    </strong>
                   </div>
                 </div>
+
+                <footer className="st-admin-order-summary__total">
+                  <div>
+                    <span>Total</span>
+                    <small>Taxes included</small>
+                  </div>
+
+                  <strong>${Number(order.total).toFixed(2)}</strong>
+                </footer>
               </section>
             </div>
 
@@ -568,6 +675,7 @@ export default async function OrderDetailsPage({
               <OrderStatusControls
                 orderId={order.id}
                 currentStatus={order.status}
+                fulfillmentMethod={fulfillmentMethod}
                 currentPaymentStatus={order.payment_status}
                 initialAdminNotes={order.admin_notes ?? ""}
               />

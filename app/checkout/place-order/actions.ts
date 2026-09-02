@@ -34,10 +34,12 @@ type PlaceOrderItem = {
   unitPrice?: number;
 };
 
+type FulfillmentMethod = "delivery" | "pickup";
 type PaymentMethod = "cash_on_delivery";
 
 type PlaceOrderInput = {
   customer: CustomerDetails;
+  fulfillmentMethod?: FulfillmentMethod;
   customerAccount?: CustomerAccountDetails;
   couponCode?: string | null;
   paymentMethod?: PaymentMethod;
@@ -86,15 +88,22 @@ function cleanText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function customerIsValid(customer: CustomerDetails) {
-  return [
+function customerIsValid(
+  customer: CustomerDetails,
+  fulfillmentMethod: FulfillmentMethod,
+) {
+  const required = [
     customer.firstName,
     customer.lastName,
     customer.email,
     customer.phone,
-    customer.city,
-    customer.address,
-  ].every(textIsPresent);
+  ];
+
+  if (fulfillmentMethod === "delivery") {
+    required.push(customer.city, customer.address);
+  }
+
+  return required.every(textIsPresent);
 }
 
 function buildFloorValue(address: SavedAddressRow) {
@@ -183,10 +192,16 @@ export async function submitOrder(
     };
   }
 
+  const fulfillmentMethod: FulfillmentMethod =
+    input.fulfillmentMethod === "pickup" ? "pickup" : "delivery";
+
   if (input.paymentMethod !== "cash_on_delivery") {
     return {
       success: false,
-      message: "Please select Cash on Delivery before submitting your order.",
+      message:
+        fulfillmentMethod === "pickup"
+          ? "Please select Cash at Pickup before submitting your order."
+          : "Please select Cash on Delivery before submitting your order.",
     };
   }
 
@@ -309,6 +324,19 @@ export async function submitOrder(
     }
   }
 
+  if (fulfillmentMethod === "pickup") {
+    verifiedCustomer = {
+      ...verifiedCustomer,
+      country: storeSettings.deliveryCountry,
+      city: verifiedCustomer.city || "Store pickup",
+      area: verifiedCustomer.area || "Stereophonie Store",
+      address: verifiedCustomer.address || "Pick up in store",
+      building: "",
+      floor: "",
+      deliveryNotes: verifiedCustomer.deliveryNotes,
+    };
+  }
+
   if (!emailIsValid(verifiedCustomer.email)) {
     return {
       success: false,
@@ -316,7 +344,7 @@ export async function submitOrder(
     };
   }
 
-  if (!customerIsValid(verifiedCustomer)) {
+  if (!customerIsValid(verifiedCustomer, fulfillmentMethod)) {
     return {
       success: false,
       message: "Some required customer or delivery information is missing.",
@@ -347,6 +375,27 @@ export async function submitOrder(
     return {
       success: false,
       message: result?.message || "The order could not be confirmed.",
+    };
+  }
+
+  const { error: fulfillmentError } = await supabase.rpc(
+    "set_order_fulfillment",
+    {
+      target_order_id: result.order_id,
+      requested_fulfillment_method: fulfillmentMethod,
+    },
+  );
+
+  if (fulfillmentError) {
+    console.error(
+      `Order fulfillment could not be finalized for ${result.order_number}:`,
+      fulfillmentError,
+    );
+
+    return {
+      success: false,
+      message:
+        "Your order was created, but its fulfillment method could not be confirmed.",
     };
   }
 
@@ -386,6 +435,8 @@ export async function submitOrder(
 
   const emailResult = await sendOrderConfirmationEmail({
     orderNumber: authoritativeOrderNumber,
+
+    fulfillmentMethod,
 
     customer: verifiedCustomer,
 

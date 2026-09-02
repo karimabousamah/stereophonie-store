@@ -13,6 +13,7 @@ import {
   Phone,
   ShoppingBag,
   UserRound,
+  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -73,9 +74,11 @@ type StoredCartItem = {
   maximumQuantity: number;
 };
 
+type FulfillmentMethod = "delivery" | "pickup";
 type PaymentMethod = "cash_on_delivery";
 
 type StoredCheckoutDetails = {
+  fulfillmentMethod?: FulfillmentMethod;
   customer: CustomerDetails;
   customerAccount?: CustomerAccountDetails;
   phoneCountry?: PhoneCountryDetails;
@@ -108,6 +111,7 @@ type SavedOrderSnapshot = {
   phoneCountry?: PhoneCountryDetails;
   cart: StoredCartItem[];
   createdAt: string;
+  fulfillmentMethod: FulfillmentMethod;
 };
 
 type SubmitOrderResponse = Awaited<ReturnType<typeof submitOrder>>;
@@ -244,6 +248,11 @@ export default function PlaceOrderPage() {
           activeOrderSubmission = submitOrder({
             customer: checkoutDetails.customer,
 
+            fulfillmentMethod:
+              checkoutDetails.fulfillmentMethod === "pickup"
+                ? "pickup"
+                : "delivery",
+
             customerAccount: checkoutDetails.customerAccount,
 
             couponCode: checkoutDetails.coupon?.code ?? null,
@@ -310,6 +319,11 @@ export default function PlaceOrderPage() {
           result: confirmedResult,
 
           customer: checkoutDetails.customer,
+
+          fulfillmentMethod:
+            checkoutDetails.fulfillmentMethod === "pickup"
+              ? "pickup"
+              : "delivery",
 
           customerAccount: checkoutDetails.customerAccount,
 
@@ -445,8 +459,14 @@ export default function PlaceOrderPage() {
     return null;
   }
 
-  const { result, customer, customerAccount, phoneCountry, cart } =
-    confirmedOrder;
+  const {
+    result,
+    customer,
+    customerAccount,
+    phoneCountry,
+    cart,
+    fulfillmentMethod,
+  } = confirmedOrder;
 
   const accountLinked = customerAccount?.signedIn === true;
 
@@ -488,8 +508,10 @@ export default function PlaceOrderPage() {
               </p>
               <h1>Thank you, {customer.firstName}.</h1>
               <p>
-                Your order is safely recorded. The Stereophonie team will
-                contact you to confirm delivery.
+                Your order is safely recorded.{" "}
+                {fulfillmentMethod === "pickup"
+                  ? "Your order is confirmed. We will contact you when it is ready to collect."
+                  : "Your order is confirmed. The Stereophonie team will contact you about delivery."}
               </p>
             </div>
           </div>
@@ -539,7 +561,7 @@ export default function PlaceOrderPage() {
         <section className="st-checkout-content mx-auto max-w-[1180px] px-5 py-8 sm:px-6 sm:py-10">
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
             <div className="min-w-0 space-y-8">
-              <section className="border border-black/10 bg-white">
+              <section className="st-checkout-success-card border border-black/10 bg-white">
                 <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
                   <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
@@ -605,7 +627,7 @@ export default function PlaceOrderPage() {
               </section>
 
               <section className="grid gap-5 md:grid-cols-2">
-                <div className="border border-black/10 bg-white p-5 sm:p-6">
+                <div className="st-checkout-success-card border border-black/10 bg-white p-5 sm:p-6">
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5 text-black/35" />
 
@@ -635,28 +657,40 @@ export default function PlaceOrderPage() {
                   ) : null}
                 </div>
 
-                <div className="border border-black/10 bg-white p-5 sm:p-6">
+                <div className="st-checkout-success-card border border-black/10 bg-white p-5 sm:p-6">
                   <div className="flex items-center gap-3">
                     <MapPin className="h-5 w-5 text-black/35" />
 
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                      Delivery address
+                      {fulfillmentMethod === "pickup"
+                        ? "Fulfillment"
+                        : "Delivery address"}
                     </p>
                   </div>
 
                   <div className="mt-6 space-y-2">
-                    {fullAddress.map((line, index) => (
-                      <p
-                        key={`${line}-${index}`}
-                        className={
-                          index === 0
-                            ? "font-semibold"
-                            : "text-sm text-black/50"
-                        }
-                      >
-                        {line}
-                      </p>
-                    ))}
+                    {fulfillmentMethod === "pickup" ? (
+                      <>
+                        <p className="font-semibold">Pick up in store</p>
+                        <p className="text-sm leading-6 text-black/50">
+                          No delivery fee. We will contact you when your order
+                          is ready to collect.
+                        </p>
+                      </>
+                    ) : (
+                      fullAddress.map((line, index) => (
+                        <p
+                          key={`${line}-${index}`}
+                          className={
+                            index === 0
+                              ? "font-semibold"
+                              : "text-sm text-black/50"
+                          }
+                        >
+                          {line}
+                        </p>
+                      ))
+                    )}
                   </div>
 
                   {customer.deliveryNotes ? (
@@ -675,7 +709,7 @@ export default function PlaceOrderPage() {
             </div>
 
             <aside className="xl:sticky xl:top-6 xl:self-start">
-              <section className="border border-black/10 bg-white">
+              <section className="st-checkout-success-card border border-black/10 bg-white">
                 <div className="border-b border-black/10 px-5 py-5">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                     Payment summary
@@ -707,10 +741,16 @@ export default function PlaceOrderPage() {
                   ) : null}
 
                   <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-black/50">Delivery</span>
+                    <span className="text-black/50">
+                      {fulfillmentMethod === "pickup"
+                        ? "Store pickup"
+                        : "Delivery"}
+                    </span>
 
-                    <span className="text-right text-black/45">
-                      Confirmed later
+                    <span className="text-right font-medium">
+                      {fulfillmentMethod === "pickup"
+                        ? "Free"
+                        : money(result.delivery_fee)}
                     </span>
                   </div>
 
@@ -722,6 +762,11 @@ export default function PlaceOrderPage() {
                     </span>
                   </div>
 
+                  <div className="st-checkout-success-tax-note">
+                    <ShieldCheck />
+                    <span>Taxes are included in product prices.</span>
+                  </div>
+
                   <div className="border border-black/10 bg-[#f7f7f5] p-4">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
                       What happens next?
@@ -730,11 +775,15 @@ export default function PlaceOrderPage() {
                     <div className="mt-4 space-y-4">
                       {[
                         "Stereophonie reviews your order.",
-                        "You are contacted to confirm delivery.",
-                        "Payment arrangements are confirmed.",
+                        fulfillmentMethod === "pickup"
+                          ? "You are contacted when your order is ready to collect."
+                          : "You are contacted to confirm delivery.",
+                        fulfillmentMethod === "pickup"
+                          ? "Pay cash when collecting your order."
+                          : "Pay cash when your order is delivered.",
                       ].map((step, index) => (
                         <div key={step} className="flex gap-3">
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black text-[9px] font-semibold text-white">
+                          <span className="st-checkout-success-step-number">
                             {index + 1}
                           </span>
 
@@ -749,17 +798,14 @@ export default function PlaceOrderPage() {
                   {accountLinked ? (
                     <Link
                       href="/account"
-                      className="flex min-h-14 w-full items-center justify-center gap-3 border border-black bg-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-black transition hover:bg-black hover:text-white"
+                      className="st-checkout-success-action"
                     >
                       View my orders
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   ) : null}
 
-                  <Link
-                    href="/shop"
-                    className="flex min-h-14 w-full items-center justify-center gap-3 bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-[#242424]"
-                  >
+                  <Link href="/shop" className="st-checkout-success-action">
                     Continue shopping
                     <ArrowRight className="h-4 w-4" />
                   </Link>

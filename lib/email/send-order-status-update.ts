@@ -7,6 +7,7 @@ export type OrderStatusUpdateStatus =
   | "confirmed"
   | "preparing"
   | "out_for_delivery"
+  | "ready_for_pickup"
   | "completed"
   | "cancelled";
 
@@ -22,6 +23,7 @@ type OrderStatusUpdateItem = {
 type SendOrderStatusUpdateInput = {
   orderNumber: string;
   status: OrderStatusUpdateStatus;
+  fulfillmentMethod: "delivery" | "pickup";
 
   customerFirstName: string;
   customerLastName: string;
@@ -46,30 +48,26 @@ export type SendOrderStatusUpdateResult =
       message: string;
     };
 
-const fulfilmentSteps: {
-  value: Exclude<OrderStatusUpdateStatus, "cancelled">;
+const deliveryFulfilmentSteps: {
+  value: Exclude<OrderStatusUpdateStatus, "cancelled" | "ready_for_pickup">;
   label: string;
 }[] = [
-  {
-    value: "pending",
-    label: "Submitted",
-  },
-  {
-    value: "confirmed",
-    label: "Confirmed",
-  },
-  {
-    value: "preparing",
-    label: "Preparing",
-  },
-  {
-    value: "out_for_delivery",
-    label: "Out for delivery",
-  },
-  {
-    value: "completed",
-    label: "Delivered",
-  },
+  { value: "pending", label: "Submitted" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "preparing", label: "Preparing" },
+  { value: "out_for_delivery", label: "Out for delivery" },
+  { value: "completed", label: "Delivered" },
+];
+
+const pickupFulfilmentSteps: {
+  value: Exclude<OrderStatusUpdateStatus, "cancelled" | "out_for_delivery">;
+  label: string;
+}[] = [
+  { value: "pending", label: "Submitted" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "preparing", label: "Preparing" },
+  { value: "ready_for_pickup", label: "Ready for pickup" },
+  { value: "completed", label: "Collected" },
 ];
 
 function escapeHtml(value: unknown) {
@@ -151,7 +149,10 @@ function formatStatusDate(value: string | null | undefined) {
   }).format(date);
 }
 
-function getStatusContent(status: OrderStatusUpdateStatus) {
+function getStatusContent(
+  status: OrderStatusUpdateStatus,
+  fulfillmentMethod: "delivery" | "pickup",
+) {
   switch (status) {
     case "confirmed":
       return {
@@ -159,7 +160,10 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         headline: "Your order has been confirmed.",
         description:
           "Stereophonie has reviewed and confirmed your order. Your items will now move to preparation.",
-        nextStep: "Your items will be prepared for delivery.",
+        nextStep:
+          fulfillmentMethod === "pickup"
+            ? "Your items will be prepared for collection from Stereophonie."
+            : "Your items will be prepared for delivery.",
         accent: "#93c5fd",
         accentBackground: "rgba(59,130,246,0.10)",
         subjectStatus: "confirmed",
@@ -170,8 +174,13 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         label: "Order being prepared",
         headline: "We are preparing your items.",
         description:
-          "Your Stereophonie order is currently being prepared and checked before delivery.",
-        nextStep: "You will be notified when your order leaves for delivery.",
+          fulfillmentMethod === "pickup"
+            ? "Your Stereophonie order is currently being prepared and checked before collection."
+            : "Your Stereophonie order is currently being prepared and checked before delivery.",
+        nextStep:
+          fulfillmentMethod === "pickup"
+            ? "You will be notified when your order is ready for pickup."
+            : "You will be notified when your order leaves for delivery.",
         accent: "#fcd34d",
         accentBackground: "rgba(245,158,11,0.10)",
         subjectStatus: "is being prepared",
@@ -189,12 +198,33 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
         subjectStatus: "is out for delivery",
       };
 
+    case "ready_for_pickup":
+      return {
+        label: "Ready for pickup",
+        headline: "Your order is ready for pickup.",
+        description:
+          "Your Stereophonie order is ready. You can now collect it directly from Stereophonie Store in Mtaileb.",
+        nextStep:
+          "Bring your order number when collecting your order from the store.",
+        accent: "#fdb73e",
+        accentBackground: "rgba(253,183,62,0.10)",
+        subjectStatus: "is ready for pickup",
+      };
+
     case "completed":
       return {
-        label: "Order delivered",
-        headline: "Your order has been delivered.",
+        label:
+          fulfillmentMethod === "pickup"
+            ? "Order collected"
+            : "Order delivered",
+        headline:
+          fulfillmentMethod === "pickup"
+            ? "Your order has been collected."
+            : "Your order has been delivered.",
         description:
-          "Your Stereophonie order has been marked as successfully delivered. Thank you for shopping with us.",
+          fulfillmentMethod === "pickup"
+            ? "Your Stereophonie order has been marked as successfully collected. Thank you for shopping with us."
+            : "Your Stereophonie order has been marked as successfully delivered. Thank you for shopping with us.",
         nextStep: "We hope you enjoy your new Stereophonie products.",
         accent: "#86efac",
         accentBackground: "rgba(34,197,94,0.10)",
@@ -227,7 +257,10 @@ function getStatusContent(status: OrderStatusUpdateStatus) {
   }
 }
 
-function buildProgressHtml(status: OrderStatusUpdateStatus) {
+function buildProgressHtml(
+  status: OrderStatusUpdateStatus,
+  fulfillmentMethod: "delivery" | "pickup",
+) {
   if (status === "cancelled") {
     return `
       <div
@@ -259,11 +292,16 @@ function buildProgressHtml(status: OrderStatusUpdateStatus) {
           "
         >
           This order will not continue through
-          preparation or delivery.
+          preparation or fulfilment.
         </p>
       </div>
     `;
   }
+
+  const fulfilmentSteps =
+    fulfillmentMethod === "pickup"
+      ? pickupFulfilmentSteps
+      : deliveryFulfilmentSteps;
 
   const currentIndex = fulfilmentSteps.findIndex(
     (step) => step.value === status,
@@ -562,7 +600,7 @@ export async function sendOrderStatusUpdateEmail(
     };
   }
 
-  const statusContent = getStatusContent(input.status);
+  const statusContent = getStatusContent(input.status, input.fulfillmentMethod);
 
   const customerName = [input.customerFirstName, input.customerLastName]
     .filter(Boolean)
@@ -859,10 +897,10 @@ export async function sendOrderStatusUpdateEmail(
                           color:#777777;
                         "
                       >
-                        Delivery progress
+                        ${input.fulfillmentMethod === "pickup" ? "Pickup progress" : "Delivery progress"}
                       </p>
 
-                      ${buildProgressHtml(input.status)}
+                      ${buildProgressHtml(input.status, input.fulfillmentMethod)}
                     </div>
 
                     <div

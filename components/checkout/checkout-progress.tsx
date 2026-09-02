@@ -1,64 +1,69 @@
-"use client";
-
-import { Check, LockKeyhole } from "lucide-react";
-
 type CheckoutProgressProps = {
   currentStep: 1 | 2 | 3;
 };
 
 const steps = [
   {
-    number: 1,
+    step: 1 as const,
     title: "Details",
     description: "Contact and delivery",
   },
   {
-    number: 2,
+    step: 2 as const,
     title: "Review",
     description: "Order and payment",
   },
   {
-    number: 3,
+    step: 3 as const,
     title: "Confirmation",
     description: "Order complete",
   },
-] as const;
+];
 
 export default function CheckoutProgress({
   currentStep,
 }: CheckoutProgressProps) {
   return (
-    <section className="st-checkout-progress" aria-label="Checkout progress">
-      <div className="st-checkout-progress__steps">
-        {steps.map((step) => {
-          const complete = step.number < currentStep;
-          const active = step.number === currentStep;
+    <nav aria-label="Checkout progress" className="st-checkout-progress-three">
+      <div className="st-checkout-progress-three__grid">
+        {steps.map((item) => {
+          const active = currentStep === item.step;
+          const completed = item.step < currentStep;
+          const upcoming = item.step > currentStep;
 
           return (
             <div
-              key={step.number}
-              className={`st-checkout-progress__step ${
-                active ? "is-active" : ""
-              } ${complete ? "is-complete" : ""}`}
+              key={item.step}
               aria-current={active ? "step" : undefined}
+              className={[
+                "st-checkout-progress-three__card",
+                active ? "is-active" : "",
+                completed ? "is-completed" : "",
+                upcoming ? "is-upcoming" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
-              <div className="st-checkout-progress__number">
-                {complete ? <Check /> : step.number}
+              <div className="st-checkout-progress-three__copy">
+                <span className="st-checkout-progress-three__title">
+                  {item.title}
+                </span>
+
+                <span className="st-checkout-progress-three__description">
+                  {item.description}
+                </span>
               </div>
 
-              <div className="st-checkout-progress__copy">
-                <strong>{step.title}</strong>
-                <span>{step.description}</span>
-              </div>
+              <span
+                aria-hidden="true"
+                className="st-checkout-progress-three__indicator"
+              >
+                <span className="st-checkout-progress-three__dot" />
+              </span>
             </div>
           );
         })}
       </div>
-
-      <div className="st-checkout-progress__trust">
-        <LockKeyhole />
-        <span>Secure checkout</span>
-      </div>
-    </section>
+    </nav>
   );
 }
