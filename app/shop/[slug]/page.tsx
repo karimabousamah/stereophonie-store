@@ -1,15 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowRight,
-  Gamepad2,
-  PackageCheck,
-  ShieldCheck,
-  Truck,
-  Undo2,
-  Zap,
-} from "lucide-react";
+import { ArrowRight, Gamepad2, PackageCheck, Zap } from "lucide-react";
 
 import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 import { createClient } from "@/lib/supabase/server";
@@ -1378,39 +1370,6 @@ export default async function ProductPage({
                   </dl>
                 );
               })()}
-            </div>
-          </section>
-
-          <section className="st-product-v5__services">
-            <Link href="/delivery">
-              <Truck />
-
-              <div>
-                <strong>Delivery</strong>
-                <span>View delivery information</span>
-              </div>
-
-              <ArrowRight />
-            </Link>
-
-            <Link href="/returns">
-              <Undo2 />
-
-              <div>
-                <strong>Returns</strong>
-                <span>View returns policy</span>
-              </div>
-
-              <ArrowRight />
-            </Link>
-
-            <div>
-              <ShieldCheck />
-
-              <div>
-                <strong>Secure checkout</strong>
-                <span>Protected ordering</span>
-              </div>
             </div>
           </section>
 

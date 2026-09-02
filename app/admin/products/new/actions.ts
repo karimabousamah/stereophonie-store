@@ -284,6 +284,7 @@ export async function createProduct(formData: FormData) {
      */
     if (
       publishingIntent === "publish" &&
+      variant.availability_status !== "coming_soon" &&
       (!Number.isFinite(configurationRegularPrice) ||
         configurationRegularPrice <= 0)
     ) {

@@ -569,7 +569,7 @@ export default function V2ProductCard({ product }: Props) {
 
           <div className="st-retail-card__footer">
             <div className="st-retail-card__price">
-              {price ? (
+              {productAvailability === "coming_soon" ? null : price ? (
                 <>
                   <strong>${price.current.toFixed(2)}</strong>
 
@@ -582,10 +582,22 @@ export default function V2ProductCard({ product }: Props) {
 
             <span
               className={
-                lowStock ? "is-low-stock" : available ? "is-available" : ""
+                productAvailability === "coming_soon"
+                  ? "is-coming-soon"
+                  : lowStock
+                    ? "is-low-stock"
+                    : available
+                      ? "is-available"
+                      : ""
               }
             >
-              {lowStock ? "Low Stock" : available ? "In stock" : "Unavailable"}
+              {productAvailability === "coming_soon"
+                ? "Available soon"
+                : lowStock
+                  ? "Low Stock"
+                  : available
+                    ? "In stock"
+                    : "Unavailable"}
             </span>
           </div>
         </div>
@@ -639,7 +651,7 @@ export default function V2ProductCard({ product }: Props) {
                   <h2>{product.name}</h2>
 
                   <div className="st-retail-qv__price">
-                    {price ? (
+                    {productAvailability === "coming_soon" ? null : price ? (
                       <>
                         <strong>${price.current.toFixed(2)}</strong>
 
@@ -654,11 +666,19 @@ export default function V2ProductCard({ product }: Props) {
 
                   <div
                     className={`st-retail-qv__availability ${
-                      available ? "is-available" : ""
+                      productAvailability === "coming_soon"
+                        ? "is-coming-soon"
+                        : available
+                          ? "is-available"
+                          : ""
                     }`}
                   >
                     <i />
-                    {available ? "Available" : "Currently unavailable"}
+                    {productAvailability === "coming_soon"
+                      ? "Available soon"
+                      : available
+                        ? "Available"
+                        : "Currently unavailable"}
                   </div>
 
                   {product.description ? <p>{product.description}</p> : null}

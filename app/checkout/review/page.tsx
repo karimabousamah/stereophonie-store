@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   Banknote,
   CheckCircle2,
-  CreditCard,
   LockKeyhole,
   MapPin,
   Mail,

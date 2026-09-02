@@ -7,7 +7,6 @@ import {
   Box,
   CalendarClock,
   Check,
-  CreditCard,
   MapPin,
   PackageCheck,
   Truck,
@@ -202,14 +201,6 @@ export default async function DeliveryPage() {
                 <span>Coming soon</span>
                 <h3>Whish Money</h3>
                 <p>Digital payment will be added when fully enabled.</p>
-              </div>
-            </article>
-            <article className="is-coming-soon" aria-disabled="true">
-              <CreditCard />
-              <div>
-                <span>Coming soon</span>
-                <h3>Card payment</h3>
-                <p>Online debit and credit card payment is not active yet.</p>
               </div>
             </article>
           </div>

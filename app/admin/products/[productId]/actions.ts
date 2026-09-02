@@ -141,6 +141,7 @@ function validateVariants(
 
     if (
       publishingIntent === "publish" &&
+      variant.availability_status !== "coming_soon" &&
       (!Number.isFinite(regularPrice) || regularPrice <= 0)
     ) {
       redirectWithError(

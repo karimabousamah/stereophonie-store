@@ -50,9 +50,9 @@ const sections = [
     content: (
       <>
         <p>
-          Cash on Delivery is currently the only active payment method. Whish
-          Money and card payment are displayed as coming-soon options and are
-          not currently enabled.
+          Cash on Delivery is currently the only active delivery payment method.
+          Whish Money Pay is displayed as a coming-soon option and is not
+          currently enabled.
         </p>
 
         <p>

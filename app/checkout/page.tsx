@@ -1630,31 +1630,61 @@ export default function CheckoutPage() {
   }
 
   function scrollToFirstError(nextErrors: FormErrors) {
-    const firstField = Object.keys(nextErrors)[0] as RequiredField | undefined;
+    const checkoutFieldOrder: RequiredField[] = [
+      "firstName",
+      "lastName",
+      "email",
+      "phone",
+      "city",
+      "area",
+      "address",
+      "building",
+      "floor",
+    ];
+
+    const firstField = checkoutFieldOrder.find((field) =>
+      Boolean(nextErrors[field]),
+    );
 
     if (!firstField) {
       return;
     }
 
-    const element = document.querySelector(
-      `[data-checkout-field="${firstField}"]`,
-    );
+    const inputId =
+      firstField === "firstName"
+        ? "first-name"
+        : firstField === "lastName"
+          ? "last-name"
+          : firstField;
 
-    element?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const fieldContainer = document.querySelector<HTMLElement>(
+          `[data-checkout-field="${firstField}"]`,
+        );
+
+        const input = document.getElementById(inputId) as
+          HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+
+        const scrollTarget = fieldContainer ?? input;
+
+        if (!scrollTarget) {
+          return;
+        }
+
+        scrollTarget.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest",
+        });
+
+        window.setTimeout(() => {
+          input?.focus({
+            preventScroll: true,
+          });
+        }, 450);
+      });
     });
-
-    window.setTimeout(() => {
-      const inputId =
-        firstField === "firstName"
-          ? "first-name"
-          : firstField === "lastName"
-            ? "last-name"
-            : firstField;
-
-      document.getElementById(inputId)?.focus();
-    }, 400);
   }
 
   function submitCheckout(event: FormEvent<HTMLFormElement>) {

@@ -28,7 +28,7 @@ function validPositivePrice(value: number | null) {
 }
 
 function priceForVariant(variant: ProductVariant | null) {
-  if (!variant) {
+  if (!variant || variant.availability_status === "coming_soon") {
     return null;
   }
 
@@ -126,6 +126,10 @@ export default function ProductConfigurationPrice({ variants }: Props) {
     initialVariant;
 
   const price = priceForVariant(selected);
+
+  if (selected?.availability_status === "coming_soon") {
+    return null;
+  }
 
   return (
     <div

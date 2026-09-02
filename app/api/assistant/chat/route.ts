@@ -880,7 +880,7 @@ Checkout:
 - The customer reviews the products, contact information and delivery information before placing the order.
 - No payment is collected on the checkout review page.
 - After the order is placed, the customer is contacted to confirm delivery and payment arrangements.
-- Do not claim that a specific payment method such as cash, card, bank transfer or cash on delivery is supported unless it is explicitly verified elsewhere.
+- Card payment is not offered by Stereophonie Store and must never be presented as an available or coming-soon payment method. Only describe payment methods that are explicitly supported by the storefront.
 - Never ask the customer to send card numbers, passwords, security codes or banking credentials in the assistant chat.
 
 Order tracking:
