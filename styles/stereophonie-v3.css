@@ -65126,3 +65126,323 @@ html body .st-checkout-v2 a.st-checkout-guest-signin:active {
 }
 
 /* === ST CHECKOUT GUEST SIGN IN APPLE V1 END === */
+
+/* === ST MOBILE CHECKOUT CONTACT + PRODUCT CONFIG V1 START === */
+
+/*
+ * Mobile checkout Contact Information
+ *
+ * Keep every field inside the checkout module.
+ * The phone field is a compound control, so both sides must
+ * be allowed to shrink instead of forcing the card wider.
+ */
+
+@media (max-width: 640px) {
+  html body .st-checkout-v2 [data-checkout-field] {
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  html body .st-checkout-v2 [data-checkout-field] input,
+  html body .st-checkout-v2 [data-checkout-field] select,
+  html body .st-checkout-v2 [data-checkout-field] textarea {
+    box-sizing: border-box !important;
+
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /*
+   * Phone compound field.
+   *
+   * Country code keeps a compact predictable width.
+   * Telephone number receives every remaining pixel.
+   */
+
+  html body .st-checkout-v2 [data-checkout-field="phone"] > div:last-of-type {
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+  html body .st-checkout-v2 .st-checkout-phone-country-shell {
+    position: relative !important;
+
+    width: 112px !important;
+    max-width: 112px !important;
+    min-width: 0 !important;
+
+    flex: 0 0 112px !important;
+  }
+
+  html body .st-checkout-v2 .st-checkout-phone-country-shell > div:first-child {
+    box-sizing: border-box !important;
+
+    min-width: 0 !important;
+
+    gap: 7px !important;
+
+    padding-left: 11px !important;
+    padding-right: 9px !important;
+  }
+
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-phone-country-shell
+    > div:first-child
+    > span:first-child {
+    flex: 0 0 auto !important;
+
+    font-size: 16px !important;
+  }
+
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-phone-country-shell
+    > div:first-child
+    > span:nth-child(2) {
+    min-width: 0 !important;
+
+    font-size: 13px !important;
+  }
+
+  html body .st-checkout-v2 [data-checkout-field="phone"] input#phone {
+    box-sizing: border-box !important;
+
+    width: 0 !important;
+    max-width: none !important;
+    min-width: 0 !important;
+
+    flex: 1 1 0% !important;
+
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+
+    font-size: 14px !important;
+  }
+
+  html body .st-checkout-v2 .st-checkout-phone-divider {
+    flex: 0 0 1px !important;
+  }
+}
+
+/*
+ * Product configuration selector — MOBILE ONLY
+ *
+ * Desktop configuration controls remain exactly as they are.
+ * Mobile gets a tighter Apple-style selector so configuration
+ * choices do not look oversized relative to the product page.
+ */
+
+@media (max-width: 640px) {
+  html body .st-product-v5 .st-purchase-apple__group {
+    margin-top: 18px !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__group:first-child {
+    margin-top: 0 !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__heading {
+    margin-bottom: 9px !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__heading strong {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__options {
+    gap: 8px !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__option {
+    min-height: 40px !important;
+
+    padding: 8px 12px !important;
+
+    border-radius: 12px !important;
+
+    font-size: 12px !important;
+    line-height: 1.15 !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__option.is-value {
+    min-width: 0 !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__option.is-colour {
+    min-width: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+
+    padding: 5px !important;
+  }
+
+  html body .st-product-v5 .st-purchase-apple__colour-shell {
+    width: 26px !important;
+    height: 26px !important;
+  }
+}
+
+/* === ST MOBILE CHECKOUT CONTACT + PRODUCT CONFIG V1 END === */
+
+/* === ST CHECKOUT MOBILE COMPACT PAYMENT V1 START === */
+
+/*
+ * Desktop keeps the existing payment presentation.
+ * These classes exist only so mobile can have its own
+ * compact horizontal architecture without generic selectors.
+ */
+
+html body .st-checkout-review-v2 .st-checkout-payment-option__badge {
+  display: inline-flex !important;
+}
+
+@media (max-width: 640px) {
+  /*
+   * Payment section itself becomes slightly tighter.
+   */
+
+  html body .st-checkout-review-v2 #payment-methods > div:first-child {
+    padding: 16px !important;
+  }
+
+  html body .st-checkout-review-v2 #payment-methods > div:nth-child(2) {
+    padding: 12px !important;
+
+    gap: 8px !important;
+  }
+
+  /*
+   * Compact single-row payment choice:
+   *
+   * radio → icon → title → status
+   */
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option {
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 54px !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    gap: 9px !important;
+
+    padding: 9px 10px !important;
+
+    border-radius: 13px !important;
+  }
+
+  /*
+   * Radio becomes quieter and smaller.
+   */
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option__radio {
+    width: 16px !important;
+    height: 16px !important;
+
+    flex: 0 0 16px !important;
+  }
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option__radio > span {
+    width: 7px !important;
+    height: 7px !important;
+  }
+
+  /*
+   * Payment icon.
+   */
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option__icon {
+    width: 34px !important;
+    height: 34px !important;
+
+    flex: 0 0 34px !important;
+
+    border-radius: 10px !important;
+  }
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option__icon svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  /*
+   * Title gets the available space.
+   */
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option__copy {
+    min-width: 0 !important;
+
+    flex: 1 1 auto !important;
+  }
+
+  html
+    body
+    .st-checkout-review-v2
+    .st-checkout-payment-option__copy
+    > span:first-child {
+    overflow: hidden !important;
+
+    font-size: 12.5px !important;
+    line-height: 1.2 !important;
+
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /*
+   * The desktop explanation is unnecessary on a phone.
+   * Removing it is what allows the option to stay a clean row.
+   */
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option__description {
+    display: none !important;
+  }
+
+  /*
+   * Selected / Coming soon remain visible on mobile,
+   * but much smaller than the desktop badges.
+   */
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option__badge {
+    display: inline-flex !important;
+
+    min-height: 22px !important;
+
+    flex: 0 0 auto !important;
+
+    padding: 0 7px !important;
+
+    font-size: 8.5px !important;
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+    box-shadow: none !important;
+  }
+
+  /*
+   * Coming-soon row stays visually secondary without
+   * making its text difficult to read.
+   */
+
+  html body .st-checkout-review-v2 .st-checkout-payment-option--disabled {
+    opacity: 0.72 !important;
+  }
+}
+
+/* === ST CHECKOUT MOBILE COMPACT PAYMENT V1 END === */

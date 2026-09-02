@@ -511,7 +511,7 @@ export default function CheckoutReviewPage() {
                         <UserRound className="h-5 w-5" />
                       </div>
 
-                      <div className="min-w-0 flex-1">
+                      <div className="st-checkout-payment-option__copy min-w-0 flex-1">
                         <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-emerald-700">
                           Customer account linked
                         </p>
@@ -746,14 +746,14 @@ export default function CheckoutReviewPage() {
                       aria-pressed={
                         selectedPaymentMethod === "cash_on_delivery"
                       }
-                      className={`flex w-full items-center gap-4 rounded-[16px] border p-4 text-left transition sm:p-5 ${
+                      className={`st-checkout-payment-option flex w-full items-center gap-4 rounded-[16px] border p-4 text-left transition sm:p-5 ${
                         selectedPaymentMethod === "cash_on_delivery"
                           ? "border-[#e4ad43] bg-[#fffaf1] shadow-[0_4px_16px_rgba(189,116,0,0.05)]"
                           : "border-black/[0.09] bg-white hover:border-[#e4ad43]/70"
                       }`}
                     >
                       <span
-                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                        className={`st-checkout-payment-option__radio flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
                           selectedPaymentMethod === "cash_on_delivery"
                             ? "border-[#d79a2b] bg-[#fdb73e]"
                             : "border-black/20 bg-white"
@@ -764,7 +764,7 @@ export default function CheckoutReviewPage() {
                         ) : null}
                       </span>
 
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-[#fdb73e]/15 text-[#9a6200]">
+                      <span className="st-checkout-payment-option__icon flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-[#fdb73e]/15 text-[#9a6200]">
                         <Banknote className="h-5 w-5" />
                       </span>
 
@@ -775,25 +775,25 @@ export default function CheckoutReviewPage() {
                             : "Cash on delivery"}
                         </span>
 
-                        <span className="mt-1 block text-xs leading-5 text-black/45">
+                        <span className="st-checkout-payment-option__description mt-1 block text-xs leading-5 text-black/45">
                           {fulfillmentMethod === "pickup"
                             ? "Pay in cash when you collect your order in store."
                             : "Pay in cash when your order is delivered."}
                         </span>
                       </span>
 
-                      <span className="st-checkout-payment-selected-badge hidden shrink-0 sm:inline-flex">
+                      <span className="st-checkout-payment-selected-badge st-checkout-payment-option__badge shrink-0">
                         Selected
                       </span>
                     </button>
 
                     <div
                       aria-disabled="true"
-                      className="flex cursor-not-allowed items-center gap-4 rounded-[16px] border border-black/[0.07] bg-[#f7f7f9] p-4 opacity-60 sm:p-5"
+                      className="st-checkout-payment-option st-checkout-payment-option--disabled flex cursor-not-allowed items-center gap-4 rounded-[16px] border border-black/[0.07] bg-[#f7f7f9] p-4 opacity-60 sm:p-5"
                     >
-                      <span className="h-5 w-5 shrink-0 rounded-full border border-black/25" />
+                      <span className="st-checkout-payment-option__radio h-5 w-5 shrink-0 rounded-full border border-black/25" />
 
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-black/[0.08] bg-white text-black/45">
+                      <span className="st-checkout-payment-option__icon flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-black/[0.08] bg-white text-black/45">
                         <WalletCards className="h-5 w-5" />
                       </span>
 
@@ -807,7 +807,7 @@ export default function CheckoutReviewPage() {
                         </span>
                       </span>
 
-                      <span className="st-checkout-payment-selected-badge st-checkout-payment-coming-soon-badge hidden shrink-0 sm:inline-flex">
+                      <span className="st-checkout-payment-selected-badge st-checkout-payment-coming-soon-badge st-checkout-payment-option__badge shrink-0">
                         Coming soon
                       </span>
                     </div>
