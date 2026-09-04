@@ -2,6 +2,15 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import { buildOrderReceiptPdf } from "@/lib/email/order-receipt-pdf";
+
+import {
+  buildCustomerEmailLayout,
+  buildEmailButton,
+  EMAIL_COLORS,
+  getEmailSiteUrl,
+} from "@/lib/email/customer-email-ui";
+
 const STEREOPHONIE_STORE_LOCATION_URL =
   "https://maps.app.goo.gl/kCsBPgCRFXaK298i6?g_st=ic";
 
@@ -27,6 +36,7 @@ type OrderConfirmationCustomer = {
 type OrderConfirmationItem = {
   name: string;
   size: string;
+  sku?: string | null;
   quantity: number;
   imageUrl: string | null;
   unitPrice: number;
@@ -42,6 +52,9 @@ type SendOrderConfirmationInput = {
   deliveryFee: number;
   total: number;
   couponCode?: string | null;
+  createdAt?: string | null;
+  paymentMethod?: "cash_on_delivery" | null;
+  receiptToken?: string | null;
 };
 
 export type SendOrderConfirmationResult =
@@ -108,15 +121,10 @@ function buildProductRows(items: OrderConfirmationItem[]) {
   return items
     .map((item, index) => {
       const productName = escapeHtml(item.name.trim() || "Product");
-
       const productSize = item.size.trim() ? escapeHtml(item.size) : "";
-
       const quantity = Math.max(1, Math.trunc(Number(item.quantity) || 1));
-
       const unitPrice = Math.max(0, Number(item.unitPrice) || 0);
-
       const lineTotal = unitPrice * quantity;
-
       const imageUrl = safeImageUrl(item.imageUrl);
 
       const imageContent = imageUrl
@@ -124,54 +132,58 @@ function buildProductRows(items: OrderConfirmationItem[]) {
           <img
             src="${imageUrl}"
             alt="${productName}"
-            width="104"
-            height="130"
+            width="96"
+            height="112"
             style="
               display:block;
-              width:104px;
-              height:130px;
+              width:96px;
+              height:112px;
               border:0;
-              background:#f2f2f2;
+              border-radius:16px;
+              background:${EMAIL_COLORS.soft};
               object-fit:cover;
             "
           />
         `
         : `
-          <div
+          <table
+            role="presentation"
+            width="96"
+            height="112"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
             style="
-              display:table;
-              width:104px;
-              height:130px;
-              background:#f1f1ef;
-              color:#999999;
-              text-align:center;
+              width:96px;
+              height:112px;
+              border-radius:16px;
+              background:${EMAIL_COLORS.soft};
             "
           >
-            <div
-              style="
-                display:table-cell;
-                vertical-align:middle;
-                font-size:10px;
-                font-weight:700;
-                letter-spacing:1px;
-                text-transform:uppercase;
-              "
-            >
-              Stereophonie
-            </div>
-          </div>
+            <tr>
+              <td
+                align="center"
+                valign="middle"
+                style="
+                  padding:8px;
+                  color:${EMAIL_COLORS.tertiaryText};
+                  font-size:9px;
+                  font-weight:700;
+                  letter-spacing:0.8px;
+                  text-transform:uppercase;
+                "
+              >
+                Stereophonie
+              </td>
+            </tr>
+          </table>
         `;
 
       return `
         <tr>
           <td
             style="
-              padding:${index === 0 ? "0 0 20px" : "20px 0"};
-              ${
-                index < items.length - 1
-                  ? "border-bottom:1px solid #e8e8e8;"
-                  : ""
-              }
+              padding:${index === 0 ? "0" : "12px 0 0"};
             "
           >
             <table
@@ -180,30 +192,36 @@ function buildProductRows(items: OrderConfirmationItem[]) {
               cellspacing="0"
               cellpadding="0"
               border="0"
+              style="
+                background:${EMAIL_COLORS.soft};
+                border-radius:20px;
+              "
             >
               <tr>
                 <td
-                  width="104"
-                  valign="top"
-                  style="width:104px;"
+                  width="96"
+                  valign="middle"
+                  style="
+                    width:96px;
+                    padding:12px;
+                  "
                 >
                   ${imageContent}
                 </td>
 
                 <td
-                  valign="top"
+                  valign="middle"
                   style="
-                    padding-left:18px;
-                    vertical-align:top;
+                    padding:17px 18px 17px 4px;
                   "
                 >
                   <p
                     style="
                       margin:0;
-                      font-size:16px;
+                      color:${EMAIL_COLORS.text};
+                      font-size:15px;
                       line-height:1.4;
                       font-weight:700;
-                      color:#111111;
                     "
                   >
                     ${productName}
@@ -211,22 +229,23 @@ function buildProductRows(items: OrderConfirmationItem[]) {
 
                   <p
                     style="
-                      margin:10px 0 0;
+                      margin:7px 0 0;
+                      color:${EMAIL_COLORS.secondaryText};
                       font-size:12px;
-                      line-height:1.6;
-                      color:#777777;
+                      line-height:1.55;
                     "
                   >
-                    ${productSize ? `Size ${productSize}<br />` : ""}
-                    Quantity ${quantity}
+                    ${productSize ? `Size ${productSize} · ` : ""}
+                    Qty ${quantity}
                   </p>
 
                   <p
                     style="
-                      margin:14px 0 0;
-                      font-size:15px;
+                      margin:10px 0 0;
+                      color:${EMAIL_COLORS.text};
+                      font-size:14px;
+                      line-height:1.4;
                       font-weight:700;
-                      color:#111111;
                     "
                   >
                     ${money(lineTotal)}
@@ -502,19 +521,21 @@ export async function sendOrderConfirmationEmail(
         <div
           style="
             margin-top:24px;
-            padding:18px;
-            border:1px solid #e5e5e5;
-            background:#fafafa;
+            padding:20px 21px;
+            border:1px solid ${EMAIL_COLORS.border};
+            border-radius:20px;
+            background:${EMAIL_COLORS.soft};
+            overflow:hidden;
           "
         >
           <p
             style="
-              margin:0 0 8px;
+              margin:0 0 9px;
               font-size:10px;
               font-weight:700;
-              letter-spacing:1.6px;
+              letter-spacing:1.1px;
               text-transform:uppercase;
-              color:#777777;
+              color:${EMAIL_COLORS.secondaryText};
             "
           >
             Delivery instructions
@@ -535,367 +556,571 @@ export async function sendOrderConfirmationEmail(
       `
       : "";
 
-  const html = `
-    <!doctype html>
+  const shopUrl = `${getEmailSiteUrl()}/shop`;
+  const accountUrl = `${getEmailSiteUrl()}/account`;
 
-    <html lang="en">
-      <head>
-        <meta charset="utf-8" />
+  const receiptToken = input.receiptToken?.trim() ?? "";
 
-        <meta
-          name="viewport"
-          content="width=device-width,initial-scale=1"
-        />
+  const receiptUrl = receiptToken
+    ? `${getEmailSiteUrl()}/order-receipt/${encodeURIComponent(receiptToken)}`
+    : "";
 
-        <title>
-          Order confirmation
-        </title>
-      </head>
+  const fulfillmentLabel =
+    input.fulfillmentMethod === "pickup" ? "Store pickup" : "Delivery";
 
-      <body
-        style="
-          margin:0;
-          padding:0;
-          background:#f5f5f3;
-          font-family:Arial,Helvetica,sans-serif;
-          color:#111111;
-        "
-      >
-        <table
-          role="presentation"
-          width="100%"
-          cellspacing="0"
-          cellpadding="0"
-          border="0"
-          style="background:#f5f5f3;"
+  const paymentLabel =
+    input.fulfillmentMethod === "pickup"
+      ? "Cash at pickup"
+      : "Cash on delivery";
+
+  const content = `
+    <table
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+    >
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:52px 34px 30px;
+            text-align:center;
+          "
         >
-          <tr>
-            <td
-              align="center"
-              style="padding:32px 16px;"
-            >
-              <table
-                role="presentation"
-                width="100%"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
+          <div
+            style="
+              display:inline-block;
+              padding:7px 12px;
+              border-radius:999px;
+              background:${EMAIL_COLORS.mustardSoft};
+              color:${EMAIL_COLORS.mustardText};
+              font-size:10px;
+              line-height:14px;
+              font-weight:700;
+              letter-spacing:1.3px;
+              text-transform:uppercase;
+            "
+          >
+            Order confirmed
+          </div>
+
+          <h1
+            style="
+              margin:21px auto 0;
+              max-width:470px;
+              color:${EMAIL_COLORS.text};
+              font-size:38px;
+              line-height:1.08;
+              font-weight:700;
+              letter-spacing:-1.5px;
+            "
+          >
+            Thanks, ${safeCustomerName}.
+          </h1>
+
+          <p
+            style="
+              margin:17px auto 0;
+              max-width:440px;
+              color:${EMAIL_COLORS.secondaryText};
+              font-size:15px;
+              line-height:1.7;
+            "
+          >
+            We received your order and will keep you updated
+            as it moves through the process.
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:0 34px;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.soft};
+              border-radius:20px;
+            "
+          >
+            <tr>
+              <td
                 style="
-                  max-width:640px;
-                  background:#ffffff;
-                  border:1px solid #e5e5e5;
+                  padding:21px 22px;
+                  border-bottom:1px solid ${EMAIL_COLORS.border};
                 "
               >
-                <tr>
-                  <td
-                    style="
-                      padding:28px 32px;
-                      border-bottom:1px solid #e5e5e5;
-                      text-align:center;
-                    "
-                  >
-                    <p
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.tertiaryText};
+                    font-size:10px;
+                    line-height:14px;
+                    font-weight:700;
+                    letter-spacing:1.3px;
+                    text-transform:uppercase;
+                  "
+                >
+                  Order number
+                </p>
+
+                <p
+                  style="
+                    margin:7px 0 0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:20px;
+                    line-height:26px;
+                    font-weight:700;
+                  "
+                >
+                  ${safeOrderNumber}
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:20px 22px;">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                >
+                  <tr>
+                    <td
+                      width="50%"
+                      valign="top"
                       style="
-                        margin:0;
+                        width:50%;
+                        padding-right:10px;
+                      "
+                    >
+                      <p
+                        style="
+                          margin:0;
+                          color:${EMAIL_COLORS.tertiaryText};
+                          font-size:10px;
+                          line-height:14px;
+                          font-weight:700;
+                          letter-spacing:1.2px;
+                          text-transform:uppercase;
+                        "
+                      >
+                        Fulfillment
+                      </p>
+
+                      <p
+                        style="
+                          margin:7px 0 0;
+                          color:${EMAIL_COLORS.text};
+                          font-size:13px;
+                          line-height:19px;
+                          font-weight:700;
+                        "
+                      >
+                        ${fulfillmentLabel}
+                      </p>
+                    </td>
+
+                    <td
+                      width="50%"
+                      valign="top"
+                      style="
+                        width:50%;
+                        padding-left:10px;
+                      "
+                    >
+                      <p
+                        style="
+                          margin:0;
+                          color:${EMAIL_COLORS.tertiaryText};
+                          font-size:10px;
+                          line-height:14px;
+                          font-weight:700;
+                          letter-spacing:1.2px;
+                          text-transform:uppercase;
+                        "
+                      >
+                        Payment
+                      </p>
+
+                      <p
+                        style="
+                          margin:7px 0 0;
+                          color:${EMAIL_COLORS.text};
+                          font-size:13px;
+                          line-height:19px;
+                          font-weight:700;
+                        "
+                      >
+                        ${paymentLabel}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:34px 34px 0;">
+          <p
+            style="
+              margin:0 0 14px;
+              color:${EMAIL_COLORS.text};
+              font-size:17px;
+              line-height:22px;
+              font-weight:700;
+            "
+          >
+            Your items
+          </p>
+
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+          >
+            ${productRows}
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:34px 34px 0;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.soft};
+              border-radius:20px;
+            "
+          >
+            <tr>
+              <td style="padding:21px 22px;">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                >
+                  <tr>
+                    <td
+                      style="
+                        padding:0 0 11px;
+                        color:${EMAIL_COLORS.secondaryText};
+                        font-size:13px;
+                      "
+                    >
+                      Subtotal
+                    </td>
+
+                    <td
+                      align="right"
+                      style="
+                        padding:0 0 11px;
+                        color:${EMAIL_COLORS.text};
+                        font-size:13px;
+                        font-weight:600;
+                      "
+                    >
+                      ${money(input.subtotal)}
+                    </td>
+                  </tr>
+
+                  ${discountRow}
+                  ${deliveryRow}
+
+                  <tr>
+                    <td
+                      style="
+                        padding:17px 0 0;
+                        border-top:1px solid ${EMAIL_COLORS.border};
+                        color:${EMAIL_COLORS.text};
+                        font-size:15px;
+                        font-weight:700;
+                      "
+                    >
+                      Total
+                    </td>
+
+                    <td
+                      align="right"
+                      style="
+                        padding:17px 0 0;
+                        border-top:1px solid ${EMAIL_COLORS.border};
+                        color:${EMAIL_COLORS.text};
                         font-size:20px;
                         font-weight:700;
-                        letter-spacing:4px;
-                        text-transform:uppercase;
                       "
                     >
-                      Stereophonie
-                    </p>
-                  </td>
-                </tr>
+                      ${money(input.total)}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
 
-                <tr>
-                  <td
-                    style="
-                      padding:40px 32px;
-                      background:#0a0a0a;
-                      color:#ffffff;
-                    "
-                  >
-                    <p
-                      style="
-                        margin:0;
-                        font-size:10px;
-                        font-weight:700;
-                        letter-spacing:2px;
-                        text-transform:uppercase;
-                        color:#8ee4b0;
-                      "
-                    >
-                      Order received
-                    </p>
+      <tr>
+        <td style="padding:0 34px;">
+          ${fulfillmentDetails}
+          ${deliveryNotes}
+        </td>
+      </tr>
 
-                    <h1
-                      style="
-                        margin:14px 0 0;
-                        font-size:36px;
-                        line-height:1.05;
-                        letter-spacing:-1.5px;
-                      "
-                    >
-                      Thank you,
-                      <br />
-                      ${safeCustomerName}
-                    </h1>
+      <tr>
+        <td style="padding:34px 34px 0;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.soft};
+              border-radius:20px;
+            "
+          >
+            <tr>
+              <td style="padding:22px;">
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:15px;
+                    line-height:20px;
+                    font-weight:700;
+                  "
+                >
+                  What happens next?
+                </p>
 
-                    <p
-                      style="
-                        margin:22px 0 0;
-                        font-size:14px;
-                        line-height:1.8;
-                        color:#bdbdbd;
-                      "
-                    >
-                      Your order was submitted successfully.
-                      Stereophonie will review it and contact you
-                      to confirm delivery and payment.
-                    </p>
-                  </td>
-                </tr>
+                <p
+                  style="
+                    margin:10px 0 0;
+                    color:${EMAIL_COLORS.secondaryText};
+                    font-size:13px;
+                    line-height:1.75;
+                  "
+                >
+                  ${
+                    input.fulfillmentMethod === "pickup"
+                      ? "We’ll prepare your order and contact you when it is ready to collect from Stereophonie Store in Mtaileb. Payment is made when you pick it up."
+                      : "We’ll prepare your order and contact you as it moves toward delivery. Payment is made in cash when your order arrives."
+                  }
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
 
-                <tr>
-                  <td style="padding:32px;">
-                    <div
-                      style="
-                        padding:20px;
-                        border:1px solid #dddddd;
-                      "
-                    >
-                      <p
-                        style="
-                          margin:0;
-                          font-size:10px;
-                          font-weight:700;
-                          letter-spacing:1.8px;
-                          text-transform:uppercase;
-                          color:#777777;
-                        "
-                      >
-                        Order number
-                      </p>
+      ${
+        receiptUrl
+          ? `
+      <tr>
+        <td style="padding:30px 34px 0;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.mustardSoft};
+              border:1px solid #f2d38f;
+              border-radius:20px;
+            "
+          >
+            <tr>
+              <td style="padding:24px 22px;">
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.mustardText};
+                    font-size:11px;
+                    line-height:16px;
+                    font-weight:700;
+                    text-transform:uppercase;
+                    letter-spacing:.08em;
+                  "
+                >
+                  RECEIPT
+                </p>
 
-                      <p
-                        style="
-                          margin:10px 0 0;
-                          font-size:24px;
-                          font-weight:700;
-                        "
-                      >
-                        ${safeOrderNumber}
-                      </p>
-                    </div>
+                <p
+                  style="
+                    margin:7px 0 0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:17px;
+                    line-height:22px;
+                    font-weight:700;
+                  "
+                >
+                  Your order receipt
+                </p>
 
-                    <div style="margin-top:32px;">
-                      <p
-                        style="
-                          margin:0 0 18px;
-                          font-size:10px;
-                          font-weight:700;
-                          letter-spacing:1.8px;
-                          text-transform:uppercase;
-                          color:#777777;
-                        "
-                      >
-                        Your order
-                      </p>
+                <p
+                  style="
+                    margin:8px 0 0;
+                    color:${EMAIL_COLORS.secondaryText};
+                    font-size:13px;
+                    line-height:20px;
+                  "
+                >
+                  Your complete purchase document with products, SKUs,
+                  quantities, pricing, payment and fulfillment details.
+                </p>
 
-                      <table
-                        role="presentation"
-                        width="100%"
-                        cellspacing="0"
-                        cellpadding="0"
-                        border="0"
-                      >
-                        ${productRows}
-                      </table>
-                    </div>
+                <table
+                  role="presentation"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                  style="margin-top:20px;"
+                >
+                  <tr>
+                    <td>
+                      ${buildEmailButton({
+                        href: receiptUrl,
+                        label: "View your order receipt",
+                      })}
+                    </td>
+                  </tr>
+                </table>
 
-                    <div
-                      style="
-                        margin-top:30px;
-                        padding-top:28px;
-                        border-top:1px solid #e5e5e5;
-                      "
-                    >
-                      <p
-                        style="
-                          margin:0 0 14px;
-                          font-size:10px;
-                          font-weight:700;
-                          letter-spacing:1.8px;
-                          text-transform:uppercase;
-                          color:#777777;
-                        "
-                      >
-                        Delivery address
-                      </p>
+                <p
+                  style="
+                    margin:13px 0 0;
+                    color:${EMAIL_COLORS.tertiaryText};
+                    font-size:10px;
+                    line-height:16px;
+                  "
+                >
+                  A PDF copy is also attached to this email for your records.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      `
+          : ""
+      }
 
-                      <p
-                        style="
-                          margin:0;
-                          font-size:14px;
-                          line-height:1.8;
-                          color:#444444;
-                        "
-                      >
-                        ${buildAddress(input.customer)}
-                      </p>
-                    </div>
+      <tr>
+        <td style="padding:30px 34px 0;">
+          ${buildEmailButton({
+            href: accountUrl,
+            label: "View my orders",
+          })}
+        </td>
+      </tr>
 
-                    ${fulfillmentDetails}
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:24px 34px 38px;
+            text-align:center;
+          "
+        >
+          <p
+            style="
+              margin:0;
+              color:${EMAIL_COLORS.tertiaryText};
+              font-size:11px;
+              line-height:18px;
+            "
+          >
+            Keep your order number for any communication
+            about your purchase.
+          </p>
 
-        ${deliveryNotes}
-
-                    <table
-                      role="presentation"
-                      width="100%"
-                      cellspacing="0"
-                      cellpadding="0"
-                      border="0"
-                      style="
-                        margin-top:28px;
-                        border-top:1px solid #e5e5e5;
-                      "
-                    >
-                      <tr>
-                        <td
-                          style="
-                            padding:18px 0 12px;
-                            color:#666666;
-                            font-size:14px;
-                          "
-                        >
-                          Subtotal
-                        </td>
-
-                        <td
-                          style="
-                            padding:18px 0 12px;
-                            text-align:right;
-                            font-size:14px;
-                            font-weight:600;
-                          "
-                        >
-                          ${money(input.subtotal)}
-                        </td>
-                      </tr>
-
-                      ${discountRow}
-
-                      ${deliveryRow}
-
-                      <tr>
-                        <td
-                          style="
-                            padding:18px 0 0;
-                            border-top:1px solid #e5e5e5;
-                            font-size:16px;
-                            font-weight:700;
-                          "
-                        >
-                          Current total
-                        </td>
-
-                        <td
-                          style="
-                            padding:18px 0 0;
-                            border-top:1px solid #e5e5e5;
-                            text-align:right;
-                            font-size:20px;
-                            font-weight:700;
-                          "
-                        >
-                          ${money(input.total)}
-                        </td>
-                      </tr>
-                    </table>
-
-                    <div
-                      style="
-                        margin-top:32px;
-                        padding:20px;
-                        background:#f7f7f5;
-                      "
-                    >
-                      <p
-                        style="
-                          margin:0;
-                          font-size:10px;
-                          font-weight:700;
-                          letter-spacing:1.6px;
-                          text-transform:uppercase;
-                          color:#777777;
-                        "
-                      >
-                        What happens next?
-                      </p>
-
-                      <p
-                        style="
-                          margin:14px 0 0;
-                          font-size:13px;
-                          line-height:1.8;
-                          color:#555555;
-                        "
-                      >
-                        1. Stereophonie reviews your order.<br />
-                        2. You are contacted to confirm delivery.<br />
-                        3. Payment arrangements are confirmed.
-                      </p>
-                    </div>
-
-                    <p
-                      style="
-                        margin:32px 0 0;
-                        font-size:12px;
-                        line-height:1.7;
-                        color:#888888;
-                        text-align:center;
-                      "
-                    >
-                      Keep your order number for any
-                      communication about your purchase.
-                    </p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td
-                    style="
-                      padding:22px 32px;
-                      border-top:1px solid #e5e5e5;
-                      text-align:center;
-                    "
-                  >
-                    <p
-                      style="
-                        margin:0;
-                        font-size:11px;
-                        color:#999999;
-                      "
-                    >
-                      © Stereophonie. Selected Italian
-                      women’s apparel.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
+          <p
+            style="
+              margin:8px 0 0;
+              color:${EMAIL_COLORS.tertiaryText};
+              font-size:11px;
+              line-height:18px;
+            "
+          >
+            Want to keep browsing?
+            <a
+              href="${escapeHtml(shopUrl)}"
+              style="
+                color:${EMAIL_COLORS.text};
+                font-weight:700;
+                text-decoration:underline;
+              "
+            >
+              Visit the store
+            </a>
+          </p>
+        </td>
+      </tr>
+    </table>
   `;
+
+  const html = buildCustomerEmailLayout({
+    title: `Order ${input.orderNumber} confirmed — Stereophonie`,
+    previewText: `We received order ${input.orderNumber}.`,
+    content,
+  });
+
+  const receiptPdf = await buildOrderReceiptPdf({
+    orderNumber: input.orderNumber,
+    createdAt: input.createdAt,
+    fulfillmentMethod: input.fulfillmentMethod,
+    paymentMethod: input.paymentMethod,
+    customer: input.customer,
+    items: input.items.map((item) => ({
+      name: item.name,
+      sku: item.sku,
+      configuration: item.size,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+    })),
+    subtotal: input.subtotal,
+    discountAmount: input.discountAmount,
+    deliveryFee: input.deliveryFee,
+    total: input.total,
+    couponCode: input.couponCode,
+  });
+
+  const receiptFilename = `Stereophonie-Receipt-${input.orderNumber.replace(
+    /[^a-zA-Z0-9_-]+/g,
+    "-",
+  )}.pdf`;
 
   const { data, error } = await resend.emails.send({
     from: fromAddress,
     to: [customerEmail],
     subject: `Order ${input.orderNumber} received — Stereophonie`,
     html,
+    attachments: [
+      {
+        filename: receiptFilename,
+        content: receiptPdf,
+      },
+    ],
   });
 
   if (error) {

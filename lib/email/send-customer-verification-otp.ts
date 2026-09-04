@@ -1,6 +1,13 @@
+import crypto from "node:crypto";
+
 import "server-only";
 
 import { Resend } from "resend";
+
+import {
+  escapeEmailHtml,
+  getEmailLogoUrl,
+} from "@/lib/email/customer-email-ui";
 
 export async function sendCustomerVerificationOtp(email: string, code: string) {
   const apiKey = process.env.RESEND_API_KEY?.trim();
@@ -16,18 +23,48 @@ export async function sendCustomerVerificationOtp(email: string, code: string) {
 
   const resend = new Resend(apiKey);
 
+  const emailReference = crypto
+    .randomUUID()
+    .replace(/-/g, "")
+    .slice(0, 4)
+    .toUpperCase();
+
+  const logoUrl = escapeEmailHtml(getEmailLogoUrl());
+
   const { error } = await resend.emails.send({
     from: fromAddress,
     to: [email],
-    subject: "Verify your Stereophonie account",
+    subject: `Verify your Stereophonie account · ${emailReference}`,
     html: `
         <div style="
           margin:0;
-          padding:40px 18px;
+          padding:34px 18px 40px;
           background:#f5f5f7;
           font-family:Arial,Helvetica,sans-serif;
           color:#1d1d1f;
         ">
+          <div style="
+            max-width:520px;
+            margin:0 auto 24px;
+            text-align:center;
+          ">
+            <img
+              src="${logoUrl}"
+              alt="Stereophonie Store"
+              width="210"
+              style="
+                display:block;
+                width:210px;
+                max-width:70%;
+                height:auto;
+                margin:0 auto;
+                border:0;
+                outline:none;
+                text-decoration:none;
+              "
+            />
+          </div>
+
           <div style="
             max-width:520px;
             margin:auto;

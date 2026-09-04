@@ -2,6 +2,12 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import {
+  buildCustomerEmailLayout,
+  buildEmailButton,
+  EMAIL_COLORS,
+} from "@/lib/email/customer-email-ui";
+
 export type OrderStatusUpdateStatus =
   | "pending"
   | "confirmed"
@@ -265,9 +271,11 @@ function buildProgressHtml(
     return `
       <div
         style="
-          padding:20px;
-          border:1px solid #fecaca;
-          background:#fff7f7;
+          padding:20px 21px;
+          border:1px solid ${EMAIL_COLORS.mustard};
+          border-radius:20px;
+          background:${EMAIL_COLORS.mustardSoft};
+          overflow:hidden;
         "
       >
         <p
@@ -275,9 +283,9 @@ function buildProgressHtml(
             margin:0;
             font-size:10px;
             font-weight:700;
-            letter-spacing:1.7px;
+            letter-spacing:1.1px;
             text-transform:uppercase;
-            color:#dc2626;
+            color:${EMAIL_COLORS.mustardText};
           "
         >
           Order progress stopped
@@ -288,7 +296,7 @@ function buildProgressHtml(
             margin:10px 0 0;
             font-size:14px;
             line-height:1.7;
-            color:#555555;
+            color:${EMAIL_COLORS.secondaryText};
           "
         >
           This order will not continue through
@@ -309,21 +317,27 @@ function buildProgressHtml(
 
   const steps = fulfilmentSteps
     .map((step, index) => {
-      const isCompleted = index < currentIndex;
+      const isCompleted = currentIndex >= index && currentIndex !== -1;
 
       const isCurrent = index === currentIndex;
 
-      const circleBackground = isCompleted || isCurrent ? "#111111" : "#ffffff";
+      const circleBackground = isCompleted
+        ? EMAIL_COLORS.mustard
+        : EMAIL_COLORS.white;
 
-      const circleColor = isCompleted || isCurrent ? "#ffffff" : "#999999";
+      const circleColor = isCompleted
+        ? EMAIL_COLORS.text
+        : EMAIL_COLORS.tertiaryText;
 
-      const circleBorder = isCompleted || isCurrent ? "#111111" : "#d8d8d8";
+      const circleBorder = isCompleted ? "#e4a21f" : EMAIL_COLORS.border;
+
+      const circleRing = isCurrent ? "0 0 0 4px #fff4dc" : "none";
 
       const labelColor = isCurrent
-        ? "#111111"
+        ? EMAIL_COLORS.text
         : isCompleted
-          ? "#444444"
-          : "#999999";
+          ? EMAIL_COLORS.secondaryText
+          : EMAIL_COLORS.tertiaryText;
 
       return `
         <tr>
@@ -348,10 +362,70 @@ function buildProgressHtml(
                 color:${circleColor};
                 text-align:center;
                 font-size:11px;
-                font-weight:700;
+                font-weight:600;
+                box-shadow:${circleRing};
               "
             >
-              ${isCompleted ? "✓" : index + 1}
+              <table
+                role="presentation"
+                width="28"
+                height="28"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                align="center"
+                style="
+                  width:28px;
+                  height:28px;
+                  border-collapse:collapse;
+                  border-spacing:0;
+                  margin:0 auto;
+                "
+              >
+                <tr>
+                  <td
+                    width="28"
+                    height="28"
+                    align="center"
+                    valign="middle"
+                    style="
+                      width:28px;
+                      height:28px;
+                      padding:0;
+                      margin:0;
+                      text-align:center;
+                      vertical-align:middle;
+                      font-family:Arial,Helvetica,sans-serif;
+                      font-size:12px;
+                      line-height:28px;
+                      font-weight:700;
+                      color:${circleColor};
+                      mso-line-height-rule:exactly;
+                    "
+                  >
+                    ${
+                      isCompleted
+                        ? `
+                          <span
+                            style="
+                              display:inline-block;
+                              margin:0;
+                              padding:0;
+                              color:${EMAIL_COLORS.text};
+                              font-family:Arial,Helvetica,sans-serif;
+                              font-size:11px;
+                              line-height:28px;
+                              font-weight:600;
+                              text-align:center;
+                              vertical-align:middle;
+                            "
+                          >&#10003;</span>
+                        `
+                        : index + 1
+                    }
+                  </td>
+                </tr>
+              </table>
             </div>
           </td>
 
@@ -383,7 +457,7 @@ function buildProgressHtml(
                       margin:5px 0 0;
                       font-size:11px;
                       line-height:1.5;
-                      color:#777777;
+                      color:${EMAIL_COLORS.secondaryText};
                     "
                   >
                     Current order status
@@ -416,15 +490,16 @@ function buildProductRows(items: OrderStatusUpdateItem[]) {
       <tr>
         <td
           style="
-            padding:18px;
-            border:1px solid #e5e5e5;
-            background:#fafafa;
+            padding:20px;
+            border-radius:18px;
+            background:${EMAIL_COLORS.soft};
+            color:${EMAIL_COLORS.secondaryText};
             font-size:13px;
-            color:#777777;
+            line-height:1.6;
+            text-align:center;
           "
         >
-          Product details are not available for
-          this order.
+          Product details are not available for this order.
         </td>
       </tr>
     `;
@@ -433,13 +508,9 @@ function buildProductRows(items: OrderStatusUpdateItem[]) {
   return items
     .map((item, index) => {
       const productName = escapeHtml(item.productName.trim() || "Product");
-
       const size = item.size.trim() ? escapeHtml(item.size) : "";
-
       const quantity = Math.max(1, Math.trunc(Number(item.quantity) || 1));
-
       const unitPrice = Math.max(0, Number(item.unitPrice) || 0);
-
       const calculatedLineTotal = unitPrice * quantity;
 
       const lineTotal = Number.isFinite(Number(item.lineTotal))
@@ -453,86 +524,92 @@ function buildProductRows(items: OrderStatusUpdateItem[]) {
           <img
             src="${imageUrl}"
             alt="${productName}"
-            width="92"
-            height="115"
+            width="88"
+            height="104"
             style="
               display:block;
-              width:92px;
-              height:115px;
+              width:88px;
+              height:104px;
               border:0;
-              background:#f2f2f2;
+              border-radius:15px;
+              background:${EMAIL_COLORS.soft};
               object-fit:cover;
             "
           />
         `
         : `
-          <div
+          <table
+            role="presentation"
+            width="88"
+            height="104"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
             style="
-              display:table;
-              width:92px;
-              height:115px;
-              background:#f1f1ef;
-              text-align:center;
-              color:#999999;
+              width:88px;
+              height:104px;
+              border-radius:15px;
+              background:#ebebed;
             "
           >
-            <div
-              style="
-                display:table-cell;
-                vertical-align:middle;
-                font-size:9px;
-                font-weight:700;
-                letter-spacing:1px;
-                text-transform:uppercase;
-              "
-            >
-              Stereophonie
-            </div>
-          </div>
+            <tr>
+              <td
+                align="center"
+                valign="middle"
+                style="
+                  padding:7px;
+                  color:${EMAIL_COLORS.tertiaryText};
+                  font-size:8px;
+                  font-weight:700;
+                  letter-spacing:0.7px;
+                  text-transform:uppercase;
+                "
+              >
+                Stereophonie
+              </td>
+            </tr>
+          </table>
         `;
 
       return `
         <tr>
-          <td
-            style="
-              padding:${index === 0 ? "0 0 18px" : "18px 0"};
-              ${
-                index < items.length - 1
-                  ? "border-bottom:1px solid #e8e8e8;"
-                  : ""
-              }
-            "
-          >
+          <td style="padding:${index === 0 ? "0" : "11px 0 0"};">
             <table
               role="presentation"
               width="100%"
               cellspacing="0"
               cellpadding="0"
               border="0"
+              style="
+                background:${EMAIL_COLORS.soft};
+                border-radius:19px;
+              "
             >
               <tr>
                 <td
-                  width="92"
-                  valign="top"
-                  style="width:92px;"
+                  width="88"
+                  valign="middle"
+                  style="
+                    width:88px;
+                    padding:11px;
+                  "
                 >
                   ${productImage}
                 </td>
 
                 <td
-                  valign="top"
+                  valign="middle"
                   style="
-                    padding-left:17px;
-                    vertical-align:top;
+                    padding:15px 17px 15px 4px;
                   "
                 >
                   <p
                     style="
                       margin:0;
-                      font-size:15px;
+                      color:${EMAIL_COLORS.text};
+                      font-size:14px;
                       line-height:1.4;
                       font-weight:700;
-                      color:#111111;
                     "
                   >
                     ${productName}
@@ -540,22 +617,23 @@ function buildProductRows(items: OrderStatusUpdateItem[]) {
 
                   <p
                     style="
-                      margin:9px 0 0;
-                      font-size:12px;
-                      line-height:1.6;
-                      color:#777777;
+                      margin:6px 0 0;
+                      color:${EMAIL_COLORS.secondaryText};
+                      font-size:11px;
+                      line-height:1.55;
                     "
                   >
-                    ${size ? `Size ${size}<br />` : ""}
-                    Quantity ${quantity}
+                    ${size ? `Size ${size} · ` : ""}
+                    Qty ${quantity}
                   </p>
 
                   <p
                     style="
-                      margin:13px 0 0;
-                      font-size:14px;
+                      margin:9px 0 0;
+                      color:${EMAIL_COLORS.text};
+                      font-size:13px;
+                      line-height:1.4;
                       font-weight:700;
-                      color:#111111;
                     "
                   >
                     ${money(lineTotal)}
@@ -683,392 +761,381 @@ export async function sendOrderStatusUpdateEmail(
       `
       : "";
 
-  const html = `
-    <!doctype html>
-
-    <html lang="en">
-      <head>
-        <meta charset="utf-8" />
-
-        <meta
-          name="viewport"
-          content="width=device-width,initial-scale=1"
-        />
-
-        <title>
-          Order status update
-        </title>
-      </head>
-
-      <body
-        style="
-          margin:0;
-          padding:0;
-          background:#f5f5f3;
-          font-family:Arial,Helvetica,sans-serif;
-          color:#111111;
-        "
-      >
-        <table
-          role="presentation"
-          width="100%"
-          cellspacing="0"
-          cellpadding="0"
-          border="0"
-          style="background:#f5f5f3;"
+  const content = `
+    <table
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+    >
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:52px 34px 29px;
+            text-align:center;
+          "
         >
-          <tr>
-            <td
-              align="center"
-              style="padding:32px 16px;"
-            >
-              <table
-                role="presentation"
-                width="100%"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
+          <div
+            style="
+              display:inline-block;
+              padding:7px 12px;
+              border-radius:999px;
+              background:${EMAIL_COLORS.mustardSoft};
+              color:${EMAIL_COLORS.mustardText};
+              font-size:10px;
+              line-height:14px;
+              font-weight:700;
+              letter-spacing:1.3px;
+              text-transform:uppercase;
+            "
+          >
+            ${escapeHtml(statusContent.label)}
+          </div>
+
+          <h1
+            style="
+              margin:21px auto 0;
+              max-width:475px;
+              color:${EMAIL_COLORS.text};
+              font-size:37px;
+              line-height:1.08;
+              font-weight:700;
+              letter-spacing:-1.5px;
+            "
+          >
+            ${escapeHtml(statusContent.headline)}
+          </h1>
+
+          <p
+            style="
+              margin:17px auto 0;
+              max-width:440px;
+              color:${EMAIL_COLORS.secondaryText};
+              font-size:15px;
+              line-height:1.7;
+            "
+          >
+            Hello ${safeCustomerName},
+            ${escapeHtml(statusContent.description)}
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:0 34px;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.soft};
+              border-radius:20px;
+            "
+          >
+            <tr>
+              <td
+                width="55%"
+                valign="top"
                 style="
-                  max-width:640px;
-                  background:#ffffff;
-                  border:1px solid #e5e5e5;
+                  width:55%;
+                  padding:21px 12px 21px 22px;
                 "
               >
-                <tr>
-                  <td
-                    style="
-                      padding:27px 32px;
-                      border-bottom:1px solid #e5e5e5;
-                      text-align:center;
-                    "
-                  >
-                    <p
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.tertiaryText};
+                    font-size:10px;
+                    line-height:14px;
+                    font-weight:700;
+                    letter-spacing:1.2px;
+                    text-transform:uppercase;
+                  "
+                >
+                  Order number
+                </p>
+
+                <p
+                  style="
+                    margin:7px 0 0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:17px;
+                    line-height:23px;
+                    font-weight:700;
+                  "
+                >
+                  ${safeOrderNumber}
+                </p>
+              </td>
+
+              <td
+                width="45%"
+                valign="top"
+                align="right"
+                style="
+                  width:45%;
+                  padding:21px 22px 21px 12px;
+                "
+              >
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.tertiaryText};
+                    font-size:10px;
+                    line-height:14px;
+                    font-weight:700;
+                    letter-spacing:1.2px;
+                    text-transform:uppercase;
+                  "
+                >
+                  Updated
+                </p>
+
+                <p
+                  style="
+                    margin:7px 0 0;
+                    color:${EMAIL_COLORS.secondaryText};
+                    font-size:11px;
+                    line-height:18px;
+                  "
+                >
+                  ${escapeHtml(formatStatusDate(input.updatedAt))}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:34px 34px 0;">
+          <p
+            style="
+              margin:0 0 15px;
+              color:${EMAIL_COLORS.text};
+              font-size:17px;
+              line-height:22px;
+              font-weight:700;
+            "
+          >
+            ${
+              input.fulfillmentMethod === "pickup"
+                ? "Pickup progress"
+                : "Delivery progress"
+            }
+          </p>
+
+          <div
+            style="
+              padding:22px;
+              border-radius:20px;
+              background:${EMAIL_COLORS.soft};
+            "
+          >
+            ${buildProgressHtml(input.status, input.fulfillmentMethod)}
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:20px 34px 0;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.mustardSoft};
+              border:1px solid ${EMAIL_COLORS.mustard};
+              border-radius:20px;
+            "
+          >
+            <tr>
+              <td style="padding:21px 22px;">
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.mustardText};
+                    font-size:10px;
+                    line-height:14px;
+                    font-weight:700;
+                    letter-spacing:1.3px;
+                    text-transform:uppercase;
+                  "
+                >
+                  What happens next?
+                </p>
+
+                <p
+                  style="
+                    margin:9px 0 0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:13px;
+                    line-height:1.7;
+                  "
+                >
+                  ${escapeHtml(statusContent.nextStep)}
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:34px 34px 0;">
+          <p
+            style="
+              margin:0 0 14px;
+              color:${EMAIL_COLORS.text};
+              font-size:17px;
+              line-height:22px;
+              font-weight:700;
+            "
+          >
+            Order items
+          </p>
+
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+          >
+            ${buildProductRows(input.items)}
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:34px 34px 0;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.soft};
+              border-radius:20px;
+            "
+          >
+            <tr>
+              <td style="padding:21px 22px;">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellspacing="0"
+                  cellpadding="0"
+                  border="0"
+                >
+                  <tr>
+                    <td
                       style="
-                        margin:0;
+                        padding:0 0 11px;
+                        color:${EMAIL_COLORS.secondaryText};
+                        font-size:13px;
+                      "
+                    >
+                      Subtotal
+                    </td>
+
+                    <td
+                      align="right"
+                      style="
+                        padding:0 0 11px;
+                        color:${EMAIL_COLORS.text};
+                        font-size:13px;
+                        font-weight:600;
+                      "
+                    >
+                      ${money(safeSubtotal)}
+                    </td>
+                  </tr>
+
+                  ${discountSummaryHtml}
+
+                  <tr>
+                    <td
+                      style="
+                        padding:17px 0 0;
+                        border-top:1px solid ${EMAIL_COLORS.border};
+                        color:${EMAIL_COLORS.text};
+                        font-size:15px;
+                        font-weight:700;
+                      "
+                    >
+                      Order total
+                    </td>
+
+                    <td
+                      align="right"
+                      style="
+                        padding:17px 0 0;
+                        border-top:1px solid ${EMAIL_COLORS.border};
+                        color:${EMAIL_COLORS.text};
                         font-size:20px;
                         font-weight:700;
-                        letter-spacing:4px;
-                        text-transform:uppercase;
                       "
                     >
-                      Stereophonie
-                    </p>
-                  </td>
-                </tr>
+                      ${money(input.total)}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
 
-                <tr>
-                  <td
-                    style="
-                      padding:39px 32px;
-                      background:#0a0a0a;
-                      color:#ffffff;
-                    "
-                  >
-                    <div
-                      style="
-                        display:inline-block;
-                        padding:8px 11px;
-                        border:1px solid ${statusContent.accent};
-                        background:${statusContent.accentBackground};
-                      "
-                    >
-                      <p
-                        style="
-                          margin:0;
-                          font-size:9px;
-                          font-weight:700;
-                          letter-spacing:1.7px;
-                          text-transform:uppercase;
-                          color:${statusContent.accent};
-                        "
-                      >
-                        ${escapeHtml(statusContent.label)}
-                      </p>
-                    </div>
+      <tr>
+        <td style="padding:30px 34px 0;">
+          ${
+            accountUrl
+              ? buildEmailButton({
+                  href: accountUrl,
+                  label: "View my orders",
+                })
+              : ""
+          }
+        </td>
+      </tr>
 
-                    <h1
-                      style="
-                        margin:18px 0 0;
-                        font-size:34px;
-                        line-height:1.08;
-                        letter-spacing:-1.4px;
-                      "
-                    >
-                      ${escapeHtml(statusContent.headline)}
-                    </h1>
-
-                    <p
-                      style="
-                        margin:20px 0 0;
-                        font-size:14px;
-                        line-height:1.8;
-                        color:#bdbdbd;
-                      "
-                    >
-                      Hello ${safeCustomerName},
-                      ${escapeHtml(statusContent.description)}
-                    </p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td style="padding:32px;">
-                    <div
-                      style="
-                        padding:20px;
-                        border:1px solid #dddddd;
-                      "
-                    >
-                      <table
-                        role="presentation"
-                        width="100%"
-                        cellspacing="0"
-                        cellpadding="0"
-                        border="0"
-                      >
-                        <tr>
-                          <td valign="top">
-                            <p
-                              style="
-                                margin:0;
-                                font-size:10px;
-                                font-weight:700;
-                                letter-spacing:1.7px;
-                                text-transform:uppercase;
-                                color:#777777;
-                              "
-                            >
-                              Order number
-                            </p>
-
-                            <p
-                              style="
-                                margin:9px 0 0;
-                                font-size:21px;
-                                line-height:1.3;
-                                font-weight:700;
-                                color:#111111;
-                              "
-                            >
-                              ${safeOrderNumber}
-                            </p>
-                          </td>
-
-                          <td
-                            valign="top"
-                            align="right"
-                          >
-                            <p
-                              style="
-                                margin:0;
-                                font-size:10px;
-                                font-weight:700;
-                                letter-spacing:1.7px;
-                                text-transform:uppercase;
-                                color:#777777;
-                              "
-                            >
-                              Updated
-                            </p>
-
-                            <p
-                              style="
-                                margin:9px 0 0;
-                                font-size:12px;
-                                line-height:1.5;
-                                color:#555555;
-                              "
-                            >
-                              ${escapeHtml(formatStatusDate(input.updatedAt))}
-                            </p>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-
-                    <div style="margin-top:30px;">
-                      <p
-                        style="
-                          margin:0 0 18px;
-                          font-size:10px;
-                          font-weight:700;
-                          letter-spacing:1.8px;
-                          text-transform:uppercase;
-                          color:#777777;
-                        "
-                      >
-                        ${input.fulfillmentMethod === "pickup" ? "Pickup progress" : "Delivery progress"}
-                      </p>
-
-                      ${buildProgressHtml(input.status, input.fulfillmentMethod)}
-                    </div>
-
-                    <div
-                      style="
-                        margin-top:30px;
-                        padding:19px;
-                        background:#f7f7f5;
-                      "
-                    >
-                      <p
-                        style="
-                          margin:0;
-                          font-size:10px;
-                          font-weight:700;
-                          letter-spacing:1.7px;
-                          text-transform:uppercase;
-                          color:#777777;
-                        "
-                      >
-                        What happens next?
-                      </p>
-
-                      <p
-                        style="
-                          margin:11px 0 0;
-                          font-size:13px;
-                          line-height:1.75;
-                          color:#555555;
-                        "
-                      >
-                        ${escapeHtml(statusContent.nextStep)}
-                      </p>
-                    </div>
-
-                    <div style="margin-top:31px;">
-                      <p
-                        style="
-                          margin:0 0 18px;
-                          font-size:10px;
-                          font-weight:700;
-                          letter-spacing:1.8px;
-                          text-transform:uppercase;
-                          color:#777777;
-                        "
-                      >
-                        Order items
-                      </p>
-
-                      <table
-                        role="presentation"
-                        width="100%"
-                        cellspacing="0"
-                        cellpadding="0"
-                        border="0"
-                      >
-                        ${buildProductRows(input.items)}
-                      </table>
-                    </div>
-
-                    <table
-                      role="presentation"
-                      width="100%"
-                      cellspacing="0"
-                      cellpadding="0"
-                      border="0"
-                      style="
-                        margin-top:29px;
-                        border-top:1px solid #e5e5e5;
-                      "
-                    >
-                      <tr>
-                        <td
-                          style="
-                            padding:19px 0 0;
-                            font-size:13px;
-                            color:#777777;
-                          "
-                        >
-                          Subtotal
-                        </td>
-
-                        <td
-                          align="right"
-                          style="
-                            padding:19px 0 0;
-                            font-size:13px;
-                            font-weight:700;
-                            color:#444444;
-                          "
-                        >
-                          ${money(safeSubtotal)}
-                        </td>
-                      </tr>
-
-                      ${discountSummaryHtml}
-
-                      <tr>
-                        <td
-                          style="
-                            padding:18px 0 0;
-                            font-size:15px;
-                            font-weight:700;
-                            color:#111111;
-                          "
-                        >
-                          Order total
-                        </td>
-
-                        <td
-                          align="right"
-                          style="
-                            padding:18px 0 0;
-                            font-size:20px;
-                            font-weight:700;
-                            color:#111111;
-                          "
-                        >
-                          ${money(input.total)}
-                        </td>
-                      </tr>
-                    </table>
-
-                    ${accountButton}
-
-                    <p
-                      style="
-                        margin:28px 0 0;
-                        font-size:12px;
-                        line-height:1.7;
-                        color:#888888;
-                        text-align:center;
-                      "
-                    >
-                      Keep your order number for
-                      any communication about
-                      your purchase.
-                    </p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td
-                    style="
-                      padding:22px 32px;
-                      border-top:1px solid #e5e5e5;
-                      text-align:center;
-                    "
-                  >
-                    <p
-                      style="
-                        margin:0;
-                        font-size:11px;
-                        line-height:1.6;
-                        color:#999999;
-                      "
-                    >
-                      © Stereophonie. Selected
-                      consumer electronics and technology.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:24px 34px 38px;
+            text-align:center;
+          "
+        >
+          <p
+            style="
+              margin:0;
+              color:${EMAIL_COLORS.tertiaryText};
+              font-size:11px;
+              line-height:18px;
+            "
+          >
+            Keep your order number for any communication
+            about your purchase.
+          </p>
+        </td>
+      </tr>
+    </table>
   `;
+
+  const html = buildCustomerEmailLayout({
+    title: `Order ${input.orderNumber} ${statusContent.subjectStatus} — Stereophonie`,
+    previewText: `${statusContent.headline} — order ${input.orderNumber}.`,
+    content,
+  });
 
   const resend = new Resend(apiKey);
 

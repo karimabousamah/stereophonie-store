@@ -25,12 +25,50 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicStoreSettings();
 
+  const siteUrl = "https://www.stereophoniestore.com";
+  const title = `${settings.storeName} | Electronics, Gaming & Tech in Lebanon`;
+  const description =
+    "Shop phones, laptops, gaming gear, smartwatches, audio, accessories and more at Stereophonie Store. Selected technology with delivery across Lebanon.";
+
   return {
+    metadataBase: new URL(siteUrl),
+
     title: {
-      default: settings.storeName,
+      default: title,
       template: `%s | ${settings.storeName}`,
     },
-    description: `Selected consumer electronics and technology from ${settings.storeName}.`,
+
+    description,
+
+    alternates: {
+      canonical: "/",
+    },
+
+    icons: {
+      icon: [
+        {
+          url: "/favicon.ico",
+          sizes: "any",
+        },
+      ],
+      shortcut: "/favicon.ico",
+      apple: "/apple-touch-icon.png",
+    },
+
+    openGraph: {
+      type: "website",
+      url: siteUrl,
+      siteName: settings.storeName,
+      title,
+      description,
+      locale: "en_LB",
+    },
+
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 

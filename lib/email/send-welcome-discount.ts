@@ -2,6 +2,14 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import {
+  buildCustomerEmailLayout,
+  buildEmailButton,
+  EMAIL_COLORS,
+  escapeEmailHtml,
+  getEmailSiteUrl,
+} from "@/lib/email/customer-email-ui";
+
 type Input = {
   email: string;
   code: string;
@@ -28,7 +36,6 @@ export async function sendWelcomeDiscountEmail(input: Input) {
   }
 
   const email = input.email.trim().toLowerCase();
-
   const code = input.code.trim().toUpperCase();
 
   const discountPercentage = Math.max(
@@ -36,91 +43,219 @@ export async function sendWelcomeDiscountEmail(input: Input) {
     Math.min(100, Math.trunc(input.discountPercentage)),
   );
 
-  const resend = new Resend(apiKey);
+  const safeEmail = escapeEmailHtml(email);
+  const safeCode = escapeEmailHtml(code);
 
-  const html = `
-    <div style="
-      margin:0;
-      padding:36px 18px;
-      background:#f5f5f3;
-      font-family:Arial,Helvetica,sans-serif;
-      color:#1d1d1f;
-    ">
-      <div style="
-        max-width:560px;
-        margin:0 auto;
-        padding:34px;
-        background:#ffffff;
-        border:1px solid #e8e8e5;
-        border-radius:22px;
-      ">
-        <div style="
-          font-size:10px;
-          font-weight:700;
-          letter-spacing:.18em;
-          text-transform:uppercase;
-          color:#8a5b00;
-        ">
-          Stereophonie Store
-        </div>
+  const shopUrl = `${getEmailSiteUrl()}/shop`;
 
-        <h1 style="
-          margin:16px 0 10px;
-          font-size:31px;
-          line-height:1.05;
-          letter-spacing:-1.2px;
-        ">
-          ${discountPercentage}% off your first order.
-        </h1>
-
-        <p style="
-          margin:0;
-          color:#777;
-          font-size:15px;
-          line-height:1.65;
-        ">
-          Welcome to Stereophonie. Your private first-order discount code is below.
-        </p>
-
-        <div style="
-          margin-top:25px;
-          padding:22px;
-          text-align:center;
-          background:#fff8e8;
-          border:1px solid #f5b335;
-          border-radius:16px;
-        ">
-          <div style="
-            font-size:9px;
-            font-weight:700;
-            letter-spacing:.18em;
-            text-transform:uppercase;
-            color:#8a5b00;
-          ">
-            Your personal code
+  const content = `
+    <table
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+    >
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:54px 34px 22px;
+            text-align:center;
+          "
+        >
+          <div
+            style="
+              display:inline-block;
+              padding:7px 12px;
+              border-radius:999px;
+              background:${EMAIL_COLORS.mustardSoft};
+              color:${EMAIL_COLORS.mustardText};
+              font-size:10px;
+              line-height:14px;
+              font-weight:700;
+              letter-spacing:1.3px;
+              text-transform:uppercase;
+            "
+          >
+            Welcome to Stereophonie
           </div>
 
-          <div style="
-            margin-top:8px;
-            font-size:24px;
-            font-weight:800;
-            letter-spacing:.08em;
-          ">
-            ${code}
-          </div>
-        </div>
+          <h1
+            style="
+              margin:22px auto 0;
+              max-width:470px;
+              color:${EMAIL_COLORS.text};
+              font-size:38px;
+              line-height:1.08;
+              font-weight:700;
+              letter-spacing:-1.5px;
+            "
+          >
+            Your first order
+            just got better.
+          </h1>
 
-        <p style="
-          margin:22px 0 0;
-          color:#888;
-          font-size:11px;
-          line-height:1.6;
-        ">
-          This code is valid only for ${email}, only on the first order, and can be successfully used once.
-        </p>
-      </div>
-    </div>
+          <p
+            style="
+              margin:18px auto 0;
+              max-width:430px;
+              color:${EMAIL_COLORS.secondaryText};
+              font-size:15px;
+              line-height:1.7;
+            "
+          >
+            Thanks for joining Stereophonie Store.
+            Enjoy ${discountPercentage}% off your first order
+            with your personal welcome code.
+          </p>
+        </td>
+      </tr>
+
+      <tr>
+        <td
+          style="
+            padding:18px 34px 0;
+          "
+        >
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.mustardSoft};
+              border:1px solid ${EMAIL_COLORS.mustard};
+              border-radius:22px;
+            "
+          >
+            <tr>
+              <td
+                align="center"
+                style="
+                  padding:30px 24px;
+                  text-align:center;
+                "
+              >
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.mustardText};
+                    font-size:10px;
+                    line-height:14px;
+                    font-weight:700;
+                    letter-spacing:1.5px;
+                    text-transform:uppercase;
+                  "
+                >
+                  Your personal code
+                </p>
+
+                <p
+                  style="
+                    margin:11px 0 0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:29px;
+                    line-height:34px;
+                    font-weight:800;
+                    letter-spacing:1.1px;
+                  "
+                >
+                  ${safeCode}
+                </p>
+
+                <p
+                  style="
+                    margin:7px 0 0;
+                    color:${EMAIL_COLORS.mustardText};
+                    font-size:13px;
+                    line-height:19px;
+                    font-weight:600;
+                  "
+                >
+                  ${discountPercentage}% OFF
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td
+          style="
+            padding:28px 34px 0;
+          "
+        >
+          ${buildEmailButton({
+            href: shopUrl,
+            label: "Shop now",
+          })}
+        </td>
+      </tr>
+
+      <tr>
+        <td
+          style="
+            padding:34px;
+          "
+        >
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.soft};
+              border-radius:18px;
+            "
+          >
+            <tr>
+              <td
+                style="
+                  padding:20px 22px;
+                "
+              >
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:12px;
+                    line-height:18px;
+                    font-weight:700;
+                  "
+                >
+                  A few details
+                </p>
+
+                <p
+                  style="
+                    margin:8px 0 0;
+                    color:${EMAIL_COLORS.secondaryText};
+                    font-size:12px;
+                    line-height:19px;
+                  "
+                >
+                  This code is reserved for ${safeEmail},
+                  applies to your first order, and can be used once.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   `;
+
+  const html = buildCustomerEmailLayout({
+    title: `Your ${discountPercentage}% Stereophonie welcome code`,
+    previewText: `${discountPercentage}% off your first Stereophonie order.`,
+    content,
+  });
+
+  const resend = new Resend(apiKey);
 
   const { error } = await resend.emails.send({
     from: fromAddress,

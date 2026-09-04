@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  version="1.2"
+  baseProfile="tiny-ps"
+  viewBox="0 0 512 512"
+>
+  <title>Stereophonie Store</title>
+  <desc>Stereophonie Store email brand mark</desc>
+
+  <rect
+    x="0"
+    y="0"
+    width="512"
+    height="512"
+    rx="96"
+    fill="#ffffff"
+  />
+
+  <rect
+    x="54"
+    y="164"
+    width="404"
+    height="184"
+    rx="42"
+    fill="#fdb73e"
+  />
+
+  <text
+    x="256"
+    y="252"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="50"
+    font-weight="700"
+    fill="#1d1d1f"
+  >Stereophonie</text>
+
+  <text
+    x="256"
+    y="306"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="34"
+    font-weight="700"
+    fill="#1d1d1f"
+  >STORE</text>
+</svg>

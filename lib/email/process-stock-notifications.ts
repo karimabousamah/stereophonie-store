@@ -2,6 +2,11 @@ import "server-only";
 
 import { Resend } from "resend";
 
+import {
+  buildCustomerEmailLayout,
+  buildEmailButton,
+  EMAIL_COLORS,
+} from "@/lib/email/customer-email-ui";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type StockState = "available" | "low_stock" | "out_of_stock" | "coming_soon";
@@ -173,47 +178,18 @@ function getProductPriceLabel(variants: ProductVariantRow[]) {
 }
 
 function getAccentStyles(accent: "warning" | "danger" | "success") {
-  if (accent === "danger") {
-    return {
-      background: "#fff4f4",
-      border: "#f0c5c5",
-      text: "#9f1d1d",
-    };
-  }
-
-  if (accent === "success") {
-    return {
-      background: "#f1fbf5",
-      border: "#bde5c9",
-      text: "#176536",
-    };
-  }
-
   return {
-    background: "#fff9e9",
-    border: "#ead69c",
-    text: "#8a5d00",
+    background: "#fff7e8",
+    border: "#FDB73E",
+    text: "#7a4b00",
   };
 }
 
 function buildNotificationEmailHtml(input: NotificationEmailInput) {
-  const accent = getAccentStyles(input.accent);
-
   const safeProductName = escapeHtml(input.productName);
-
   const safeTitle = escapeHtml(input.title);
-
   const safeMessage = escapeHtml(input.message);
-
   const safeEyebrow = escapeHtml(input.eyebrow);
-
-  const safeButtonLabel = escapeHtml(input.buttonLabel);
-
-  const safeButtonUrl = escapeHtml(input.buttonUrl);
-
-  const safeUnsubscribeUrl = input.unsubscribeUrl
-    ? escapeHtml(input.unsubscribeUrl)
-    : null;
 
   const safeImageUrl = input.productImageUrl
     ? escapeHtml(input.productImageUrl)
@@ -225,350 +201,293 @@ function buildNotificationEmailHtml(input: NotificationEmailInput) {
     ? escapeHtml(input.optionLabel)
     : null;
 
-  return `
-    <!doctype html>
-    <html lang="en">
-      <head>
-        <meta charset="utf-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1"
-        />
-        <title>${safeTitle}</title>
-      </head>
+  const safeUnsubscribeUrl = input.unsubscribeUrl
+    ? escapeHtml(input.unsubscribeUrl)
+    : null;
 
-      <body
+  const statusBackground =
+    input.accent === "danger" ? "#f5f5f7" : EMAIL_COLORS.mustardSoft;
+
+  const statusBorder =
+    input.accent === "danger" ? EMAIL_COLORS.border : EMAIL_COLORS.mustard;
+
+  const statusText =
+    input.accent === "danger"
+      ? EMAIL_COLORS.secondaryText
+      : EMAIL_COLORS.mustardText;
+
+  const imageContent = safeImageUrl
+    ? `
+      <img
+        src="${safeImageUrl}"
+        alt="${safeProductName}"
+        width="220"
         style="
-          margin:0;
-          padding:0;
-          background:#f3f3f1;
-          color:#111111;
-          font-family:Arial,Helvetica,sans-serif;
+          display:block;
+          width:220px;
+          max-width:100%;
+          height:auto;
+          margin:0 auto;
+          border:0;
+          border-radius:22px;
+          background:${EMAIL_COLORS.soft};
+        "
+      />
+    `
+    : `
+      <table
+        role="presentation"
+        width="220"
+        height="220"
+        cellspacing="0"
+        cellpadding="0"
+        border="0"
+        align="center"
+        style="
+          width:220px;
+          height:220px;
+          max-width:100%;
+          margin:0 auto;
+          border-radius:22px;
+          background:${EMAIL_COLORS.soft};
         "
       >
-        <table
-          role="presentation"
-          width="100%"
-          cellspacing="0"
-          cellpadding="0"
-          border="0"
+        <tr>
+          <td
+            align="center"
+            valign="middle"
+            style="
+              padding:20px;
+              color:${EMAIL_COLORS.tertiaryText};
+              font-size:10px;
+              font-weight:700;
+              letter-spacing:1px;
+              text-transform:uppercase;
+            "
+          >
+            Stereophonie
+          </td>
+        </tr>
+      </table>
+    `;
+
+  const footerExtra = safeUnsubscribeUrl
+    ? `
+      <p
+        style="
+          margin:12px 0 0;
+          color:${EMAIL_COLORS.tertiaryText};
+          font-size:11px;
+          line-height:18px;
+          text-align:center;
+        "
+      >
+        You are receiving this email because you saved a product
+        or requested a stock update.
+        <a
+          href="${safeUnsubscribeUrl}"
           style="
-            width:100%;
-            background:#f3f3f1;
+            color:${EMAIL_COLORS.secondaryText};
+            text-decoration:underline;
           "
         >
-          <tr>
-            <td
-              align="center"
-              style="padding:32px 14px;"
-            >
-              <table
-                role="presentation"
-                width="100%"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
-                style="
-                  width:100%;
-                  max-width:620px;
-                  background:#ffffff;
-                  border:1px solid #deded9;
-                "
-              >
-                <tr>
-                  <td
-                    style="
-                      padding:24px 28px;
-                      background:#090909;
-                      color:#ffffff;
-                    "
-                  >
-                    <p
-                      style="
-                        margin:0;
-                        font-size:16px;
-                        font-weight:700;
-                        letter-spacing:4px;
-                        text-transform:uppercase;
-                      "
-                    >
-                      Stereophonie
-                    </p>
-                  </td>
-                </tr>
+          Unsubscribe from stock emails
+        </a>
+      </p>
+    `
+    : "";
 
-                <tr>
-                  <td
-                    style="
-                      padding:34px 28px 12px;
-                    "
-                  >
-                    <table
-                      role="presentation"
-                      cellspacing="0"
-                      cellpadding="0"
-                      border="0"
-                    >
-                      <tr>
-                        <td
-                          style="
-                            padding:9px 12px;
-                            border:1px solid ${accent.border};
-                            background:${accent.background};
-                            color:${accent.text};
-                            font-size:10px;
-                            font-weight:700;
-                            letter-spacing:2px;
-                            text-transform:uppercase;
-                          "
-                        >
-                          ${safeEyebrow}
-                        </td>
-                      </tr>
-                    </table>
+  const content = `
+    <table
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+      border="0"
+    >
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:52px 34px 24px;
+            text-align:center;
+          "
+        >
+          <div
+            style="
+              display:inline-block;
+              padding:7px 12px;
+              border:1px solid ${statusBorder};
+              border-radius:999px;
+              background:${statusBackground};
+              color:${statusText};
+              font-size:10px;
+              line-height:14px;
+              font-weight:700;
+              letter-spacing:1.3px;
+              text-transform:uppercase;
+            "
+          >
+            ${safeEyebrow}
+          </div>
 
-                    <h1
-                      style="
-                        margin:24px 0 0;
-                        font-size:38px;
-                        line-height:1.05;
-                        letter-spacing:-1.5px;
-                      "
-                    >
-                      ${safeTitle}
-                    </h1>
+          <h1
+            style="
+              margin:21px auto 0;
+              max-width:470px;
+              color:${EMAIL_COLORS.text};
+              font-size:38px;
+              line-height:1.08;
+              font-weight:700;
+              letter-spacing:-1.5px;
+            "
+          >
+            ${safeTitle}
+          </h1>
 
-                    <p
-                      style="
-                        margin:18px 0 0;
-                        color:#626262;
-                        font-size:15px;
-                        line-height:1.7;
-                      "
-                    >
-                      ${safeMessage}
-                    </p>
-                  </td>
-                </tr>
+          <p
+            style="
+              margin:17px auto 0;
+              max-width:440px;
+              color:${EMAIL_COLORS.secondaryText};
+              font-size:15px;
+              line-height:1.7;
+            "
+          >
+            ${safeMessage}
+          </p>
+        </td>
+      </tr>
 
-                <tr>
-                  <td
-                    style="
-                      padding:22px 28px;
-                    "
-                  >
-                    <table
-                      role="presentation"
-                      width="100%"
-                      cellspacing="0"
-                      cellpadding="0"
-                      border="0"
-                      style="
-                        width:100%;
-                        border:1px solid #e2e2dd;
-                        background:#fafaf8;
-                      "
-                    >
-                      <tr>
-                        ${
-                          safeImageUrl
-                            ? `
-                              <td
-                                width="150"
-                                valign="top"
-                                style="
-                                  width:150px;
-                                  padding:0;
-                                "
-                              >
-                                <img
-                                  src="${safeImageUrl}"
-                                  alt="${safeProductName}"
-                                  width="150"
-                                  style="
-                                    display:block;
-                                    width:150px;
-                                    height:190px;
-                                    object-fit:cover;
-                                  "
-                                />
-                              </td>
-                            `
-                            : ""
-                        }
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:10px 34px 0;
+          "
+        >
+          ${imageContent}
+        </td>
+      </tr>
 
-                        <td
-                          valign="middle"
-                          style="
-                            padding:22px;
-                          "
-                        >
-                          <p
-                            style="
-                              margin:0;
-                              color:#8a8a8a;
-                              font-size:10px;
-                              font-weight:700;
-                              letter-spacing:2px;
-                              text-transform:uppercase;
-                            "
-                          >
-                            Saved product
-                          </p>
+      <tr>
+        <td
+          align="center"
+          style="
+            padding:24px 34px 0;
+            text-align:center;
+          "
+        >
+          <p
+            style="
+              margin:0 auto;
+              max-width:450px;
+              color:${EMAIL_COLORS.text};
+              font-size:21px;
+              line-height:1.3;
+              font-weight:700;
+              letter-spacing:-0.4px;
+            "
+          >
+            ${safeProductName}
+          </p>
 
-                          <h2
-                            style="
-                              margin:10px 0 0;
-                              font-size:21px;
-                              line-height:1.25;
-                            "
-                          >
-                            ${safeProductName}
-                          </h2>
+          ${
+            safeOptionLabel
+              ? `
+                <div
+                  style="
+                    display:inline-block;
+                    margin-top:12px;
+                    padding:7px 11px;
+                    border-radius:999px;
+                    background:${EMAIL_COLORS.soft};
+                    color:${EMAIL_COLORS.secondaryText};
+                    font-size:11px;
+                    line-height:15px;
+                    font-weight:600;
+                  "
+                >
+                  ${safeOptionLabel}
+                </div>
+              `
+              : ""
+          }
 
-                          ${
-                            safeOptionLabel
-                              ? `
-                                <p
-                                  style="
-                                    margin:11px 0 0;
-                                    color:#666666;
-                                    font-size:13px;
-                                  "
-                                >
-                                  ${safeOptionLabel}
-                                </p>
-                              `
-                              : ""
-                          }
+          ${
+            safePriceLabel
+              ? `
+                <p
+                  style="
+                    margin:14px 0 0;
+                    color:${EMAIL_COLORS.text};
+                    font-size:18px;
+                    line-height:24px;
+                    font-weight:700;
+                  "
+                >
+                  ${safePriceLabel}
+                </p>
+              `
+              : ""
+          }
+        </td>
+      </tr>
 
-                          ${
-                            safePriceLabel
-                              ? `
-                                <p
-                                  style="
-                                    margin:12px 0 0;
-                                    font-size:17px;
-                                    font-weight:700;
-                                  "
-                                >
-                                  ${safePriceLabel}
-                                </p>
-                              `
-                              : ""
-                          }
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
+      <tr>
+        <td style="padding:29px 34px 0;">
+          ${buildEmailButton({
+            href: input.buttonUrl,
+            label: input.buttonLabel,
+          })}
+        </td>
+      </tr>
 
-                <tr>
-                  <td
-                    style="
-                      padding:8px 28px 38px;
-                    "
-                  >
-                    <table
-                      role="presentation"
-                      cellspacing="0"
-                      cellpadding="0"
-                      border="0"
-                    >
-                      <tr>
-                        <td
-                          bgcolor="#111111"
-                          style="background:#111111;"
-                        >
-                          <a
-                            href="${safeButtonUrl}"
-                            style="
-                              display:inline-block;
-                              padding:17px 26px;
-                              color:#ffffff;
-                              font-size:11px;
-                              font-weight:700;
-                              letter-spacing:2px;
-                              text-decoration:none;
-                              text-transform:uppercase;
-                            "
-                          >
-                            ${safeButtonLabel}
-                          </a>
-                        </td>
-                      </tr>
-                    </table>
+      <tr>
+        <td style="padding:30px 34px 0;">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="
+              background:${EMAIL_COLORS.soft};
+              border-radius:18px;
+            "
+          >
+            <tr>
+              <td style="padding:19px 21px;">
+                <p
+                  style="
+                    margin:0;
+                    color:${EMAIL_COLORS.secondaryText};
+                    font-size:11px;
+                    line-height:18px;
+                    text-align:center;
+                  "
+                >
+                  Availability can change quickly.
+                  Products are not reserved until an order is completed.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
 
-                    <p
-                      style="
-                        margin:22px 0 0;
-                        color:#999999;
-                        font-size:11px;
-                        line-height:1.6;
-                      "
-                    >
-                      Availability may change quickly and
-                      products are not reserved until an
-                      order is completed.
-                    </p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td
-                    style="
-                      padding:22px 28px;
-                      border-top:1px solid #e5e5e0;
-                      background:#fafaf8;
-                    "
-                  >
-                    <p
-                      style="
-                        margin:0;
-                        color:#999999;
-                        font-size:11px;
-                        line-height:1.6;
-                      "
-                    >
-                      © Stereophonie. Selected Italian women’s
-                      apparel.
-                    </p>
-
-                    ${
-                      safeUnsubscribeUrl
-                        ? `
-                          <p
-                            style="
-                              margin:12px 0 0;
-                              color:#999999;
-                              font-size:11px;
-                              line-height:1.6;
-                            "
-                          >
-                            You are receiving this email because you
-                            saved a product or requested a stock update.
-                            <a
-                              href="${safeUnsubscribeUrl}"
-                              style="
-                                color:#555555;
-                                text-decoration:underline;
-                              "
-                            >
-                              Unsubscribe from stock emails
-                            </a>
-                          </p>
-                        `
-                        : ""
-                    }
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
+      <tr>
+        <td style="padding:0 34px 38px;"></td>
+      </tr>
+    </table>
   `;
+
+  return buildCustomerEmailLayout({
+    title: `${input.title} — Stereophonie`,
+    previewText: input.message,
+    content,
+    footerExtra,
+  });
 }
 
 async function sendNotificationEmail(input: NotificationEmailInput) {

@@ -403,7 +403,7 @@ export async function submitOrder(
     await supabase
       .from("orders")
       .select(
-        "order_number, subtotal, discount_amount, delivery_fee, total, coupon_code",
+        "order_number, subtotal, discount_amount, delivery_fee, total, coupon_code, created_at, receipt_token",
       )
       .eq("id", result.order_id)
       .single();
@@ -433,6 +433,38 @@ export async function submitOrder(
     authoritativeOrder.order_number ?? result.order_number,
   ).trim();
 
+  const receiptVariantIds = Array.from(
+    new Set(
+      input.items.map((item) => cleanText(item.variantId)).filter(Boolean),
+    ),
+  );
+
+  const receiptSkuByVariantId = new Map<string, string>();
+
+  if (receiptVariantIds.length > 0) {
+    const { data: receiptVariants, error: receiptVariantsError } =
+      await supabase
+        .from("product_variants")
+        .select("id, sku")
+        .in("id", receiptVariantIds);
+
+    if (receiptVariantsError) {
+      console.error(
+        `Receipt SKU lookup failed for order ${authoritativeOrderNumber}:`,
+        receiptVariantsError.message,
+      );
+    } else {
+      for (const variant of receiptVariants ?? []) {
+        const variantId = cleanText(variant.id);
+        const sku = cleanText(variant.sku);
+
+        if (variantId) {
+          receiptSkuByVariantId.set(variantId, sku);
+        }
+      }
+    }
+  }
+
   const emailResult = await sendOrderConfirmationEmail({
     orderNumber: authoritativeOrderNumber,
 
@@ -450,10 +482,18 @@ export async function submitOrder(
 
     couponCode: cleanText(authoritativeOrder.coupon_code) || null,
 
+    createdAt: cleanText(authoritativeOrder.created_at) || null,
+
+    paymentMethod: input.paymentMethod ?? null,
+
+    receiptToken: cleanText(authoritativeOrder.receipt_token) || null,
+
     items: input.items.map((item) => ({
       name: cleanText(item.name) || "Product",
 
       size: cleanText(item.size),
+
+      sku: receiptSkuByVariantId.get(cleanText(item.variantId)) || null,
 
       quantity: item.quantity,
 
