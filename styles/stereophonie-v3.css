@@ -65559,6 +65559,130 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 
 /* === ST PRODUCT RELATED REAL FIX V3 END === */
 
+/* === ST MOBILE SHOP PICKER POLISH START === */
+
+/*
+ * Mobile Category / Brand popovers.
+ *
+ * Category naturally opens from the left column.
+ * Brand lives in the right column, so anchor its floating panel
+ * to the trigger's right edge to keep the complete panel inside
+ * the phone viewport.
+ */
+@media (max-width: 720px) {
+  html
+    body
+    .st-retail-shop
+    .st-filter-v4__picker--brand
+    .st-filter-v4__picker-popover {
+    left: auto !important;
+    right: 0 !important;
+
+    max-width: calc(100vw - 32px) !important;
+
+    transform-origin: top right !important;
+  }
+}
+
+/* === ST MOBILE SHOP PICKER POLISH END === */
+
+/* === ST MOBILE SHOP PICKER STACKING START === */
+
+/*
+ * Keep Category / Brand chooser above the complete product grid.
+ *
+ * The popover's own z-index is not enough when the parent filter
+ * sits in a lower stacking context than product-card overlays.
+ */
+@media (max-width: 768px) {
+  html body .st-retail-shop .st-filter-v4.has-picker-open {
+    position: relative !important;
+    z-index: 2000 !important;
+    isolation: isolate;
+  }
+
+  html body .st-retail-shop .st-filter-v4.has-picker-open .st-filter-v4__bar {
+    position: relative;
+    z-index: 2001;
+  }
+
+  html
+    body
+    .st-retail-shop
+    .st-filter-v4.has-picker-open
+    .st-filter-v4__picker-popover {
+    z-index: 2002 !important;
+  }
+}
+
+/* === ST MOBILE SHOP PICKER STACKING END === */
+
+/* === ST MOBILE SHOP PICKER ABOVE PRODUCT CARDS START === */
+
+/*
+ * Product cards use transforms, so each card creates its own stacking
+ * context. While Category or Brand is open, explicitly place the whole
+ * results layer underneath the filter controls.
+ *
+ * This state exists only while a picker is open.
+ */
+@media (max-width: 768px) {
+  html body .st-retail-shop.has-mobile-picker-open .st-filter-v4 {
+    position: relative !important;
+    z-index: 10000 !important;
+  }
+
+  html body .st-retail-shop.has-mobile-picker-open .st-filter-v4__bar {
+    position: relative !important;
+    z-index: 10001 !important;
+  }
+
+  html body .st-retail-shop.has-mobile-picker-open .st-filter-v4__picker {
+    position: relative !important;
+    z-index: 10002 !important;
+  }
+
+  html
+    body
+    .st-retail-shop.has-mobile-picker-open
+    .st-filter-v4__picker-popover {
+    z-index: 10003 !important;
+  }
+
+  html
+    body
+    .st-retail-shop.has-mobile-picker-open
+    :is(
+      .st-v2-shop-results,
+      .st-v2-shop-results__body,
+      .st-v2-product-grid,
+      .st3-shop-v4__grid
+    ) {
+    position: relative !important;
+    z-index: 0 !important;
+  }
+
+  html body .st-retail-shop.has-mobile-picker-open .st-v2-product-grid > * {
+    z-index: 0 !important;
+  }
+
+  html
+    body
+    .st-retail-shop.has-mobile-picker-open
+    :is(
+      .st-v2-product,
+      .st-card17,
+      .st-v2-product__wishlist,
+      .st-v2-product__badge,
+      .st-card-sticker-row,
+      .st-card-sticker
+    ) {
+    z-index: 0 !important;
+  }
+}
+
+/* === ST MOBILE SHOP PICKER ABOVE PRODUCT CARDS END === */
+
 /* === ST MOBILE SHOP COLLAPSIBLE FILTERS START === */
 
 /*

@@ -1115,10 +1115,10 @@ function DesktopScene({
 
           const labelClass =
             labelPosition === "left"
-              ? "right-[calc(100%+8px)] top-1/2 -translate-y-1/2"
+              ? "right-[calc(100%+4px)] top-1/2 -translate-y-1/2 sm:right-[calc(100%+8px)]"
               : labelPosition === "top"
-                ? "bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2"
-                : "left-[calc(100%+8px)] top-1/2 -translate-y-1/2";
+                ? "bottom-[calc(100%+4px)] left-1/2 -translate-x-1/2 sm:bottom-[calc(100%+8px)]"
+                : "left-[calc(100%+4px)] top-1/2 -translate-y-1/2 sm:left-[calc(100%+8px)]";
 
           return (
             <button
@@ -1129,9 +1129,15 @@ function DesktopScene({
               aria-pressed={active}
               className={[
                 "group absolute z-20",
-                "grid h-8 w-8 place-items-center",
+                part === "motherboard" ? "!top-[26.2%] sm:!top-[35.8%]" : "",
+                part === "cooling" ? "!left-[44%] sm:!left-[50.2%]" : "",
+                part === "gpu"
+                  ? "!left-[39%] !top-[64.5%] sm:!left-[42.8%] sm:!top-[64.1%]"
+                  : "",
+                part === "fans" ? "!top-[56%] sm:!top-[50%]" : "",
+                "grid h-5 w-5 place-items-center sm:h-8 sm:w-8",
                 "-translate-x-1/2 -translate-y-1/2",
-                "rounded-[9px] border",
+                "rounded-[6px] border sm:rounded-[9px]",
                 "transition-all duration-200",
                 "focus:outline-none",
                 "focus-visible:ring-2",
@@ -1153,8 +1159,8 @@ function DesktopScene({
             >
               <span
                 className={[
-                  "h-[10px] w-[10px]",
-                  "rounded-[3px]",
+                  "h-[6px] w-[6px] sm:h-[10px] sm:w-[10px]",
+                  "rounded-[2px] sm:rounded-[3px]",
                   "transition-colors duration-200",
                   active ? "bg-white" : "bg-[#FDB73E]",
                   "group-hover:bg-white",
@@ -1167,10 +1173,10 @@ function DesktopScene({
                   "absolute",
                   labelClass,
                   "whitespace-nowrap",
-                  "rounded-[9px]",
+                  "rounded-[6px] sm:rounded-[9px]",
                   "border",
-                  "px-2.5 py-1.5",
-                  "text-[9px]",
+                  "px-1.5 py-1 sm:px-2.5 sm:py-1.5",
+                  "text-[7px] sm:text-[9px]",
                   "font-semibold",
                   "tracking-[-0.01em]",
                   "shadow-[0_5px_16px_rgba(29,29,31,0.09)]",

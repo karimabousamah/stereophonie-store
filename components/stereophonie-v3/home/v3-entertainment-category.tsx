@@ -29,6 +29,7 @@ export default function V3EntertainmentCategory({
   >("next");
 
   const railRef = useRef<HTMLDivElement>(null);
+  const cinemaSectionRef = useRef<HTMLElement>(null);
   const trailerTimer = useRef<number | null>(null);
   const transitionTimer = useRef<number | null>(null);
 
@@ -126,6 +127,39 @@ export default function V3EntertainmentCategory({
     };
   }, [trailerLoaded, posterMinimumElapsed]);
 
+  useEffect(() => {
+    const section = cinemaSectionRef.current;
+
+    if (!section) {
+      return;
+    }
+
+    /*
+     * Sound is always opt-in.
+     *
+     * If the customer turns the trailer sound on and then scrolls
+     * away from the cinematic hero, reset it to muted. Returning
+     * to the hero never restores sound automatically; the customer
+     * must explicitly turn it on again.
+     */
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || entry.intersectionRatio < 0.2) {
+          setMuted(true);
+        }
+      },
+      {
+        threshold: [0, 0.2],
+      },
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   function select(index: number) {
     if (!items.length || transitioning) {
       return;
@@ -177,7 +211,10 @@ export default function V3EntertainmentCategory({
   }
 
   return (
-    <section className="st-entertainment-home st-entertainment-home--cinema">
+    <section
+      ref={cinemaSectionRef}
+      className="st-entertainment-home st-entertainment-home--cinema"
+    >
       <div
         className={`st-entertainment-cinema ${
           transitioning

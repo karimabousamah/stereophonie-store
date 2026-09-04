@@ -114,6 +114,10 @@ export default function V2CatalogControls({
       return;
     }
 
+    const filterControls = filterBar.querySelector<HTMLElement>(
+      ".st-filter-v4__filters",
+    );
+
     function measureMobileFilterBar() {
       const bar = mobileFilterBarRef.current;
 
@@ -121,7 +125,16 @@ export default function V2CatalogControls({
         return;
       }
 
-      setMobileFilterHeight(bar.scrollHeight);
+      /*
+       * Measure only the real filter controls.
+       *
+       * Category / Brand popovers are absolutely positioned floating UI.
+       * Using bar.scrollHeight lets those popovers artificially enlarge the
+       * collapsible panel and leaves a large blank gap after they close.
+       */
+      const controls = bar.querySelector<HTMLElement>(".st-filter-v4__filters");
+
+      setMobileFilterHeight(controls?.offsetHeight ?? bar.clientHeight);
     }
 
     measureMobileFilterBar();
@@ -131,7 +144,12 @@ export default function V2CatalogControls({
         ? new ResizeObserver(measureMobileFilterBar)
         : null;
 
-    resizeObserver?.observe(filterBar);
+    if (filterControls) {
+      resizeObserver?.observe(filterControls);
+    } else {
+      resizeObserver?.observe(filterBar);
+    }
+
     window.addEventListener("resize", measureMobileFilterBar);
 
     return () => {
@@ -210,6 +228,23 @@ export default function V2CatalogControls({
       }
     };
   }, [priceOpen, priceMounted]);
+
+  useEffect(() => {
+    const filterRoot = mobileFilterBarRef.current?.closest(".st-filter-v4");
+    const shopRoot = filterRoot?.closest(".st-retail-shop");
+
+    if (!shopRoot) {
+      return;
+    }
+
+    const pickerIsOpen = categoryOpen || brandOpen;
+
+    shopRoot.classList.toggle("has-mobile-picker-open", pickerIsOpen);
+
+    return () => {
+      shopRoot.classList.remove("has-mobile-picker-open");
+    };
+  }, [categoryOpen, brandOpen]);
 
   useEffect(() => {
     if (!priceOpen) {
@@ -480,7 +515,11 @@ export default function V2CatalogControls({
   }, [categoryOpen, brandOpen]);
 
   return (
-    <div className="st-filter-v4">
+    <div
+      className={`st-filter-v4 ${
+        categoryOpen || brandOpen ? "has-picker-open" : ""
+      }`}
+    >
       <div ref={searchShellRef} className="st-filter-v4__search-shell">
         <form className="st-filter-v4__search" onSubmit={submitSearch}>
           <Search aria-hidden="true" />
@@ -635,7 +674,15 @@ export default function V2CatalogControls({
             const next = !current;
 
             if (next && mobileFilterBarRef.current) {
-              setMobileFilterHeight(mobileFilterBarRef.current.scrollHeight);
+              const controls =
+                mobileFilterBarRef.current.querySelector<HTMLElement>(
+                  ".st-filter-v4__filters",
+                );
+
+              setMobileFilterHeight(
+                controls?.offsetHeight ??
+                  mobileFilterBarRef.current.clientHeight,
+              );
             }
 
             if (!next) {
@@ -728,7 +775,6 @@ export default function V2CatalogControls({
                     onChange={(event) => setCategoryQuery(event.target.value)}
                     placeholder="Search categories"
                     autoComplete="off"
-                    autoFocus
                   />
 
                   {categoryQuery ? (
@@ -802,7 +848,7 @@ export default function V2CatalogControls({
 
           <div
             ref={brandPickerRef}
-            className={`st-filter-v4__picker ${
+            className={`st-filter-v4__picker st-filter-v4__picker--brand ${
               selectedBrand ? "is-active" : ""
             }`}
           >
@@ -856,7 +902,6 @@ export default function V2CatalogControls({
                     onChange={(event) => setBrandQuery(event.target.value)}
                     placeholder="Search brands"
                     autoComplete="off"
-                    autoFocus
                   />
 
                   {brandQuery ? (
