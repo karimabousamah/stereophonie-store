@@ -65887,6 +65887,73 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 
 /* === ST MOBILE SHOP COLLAPSIBLE FILTERS END === */
 
+/* === ST MOBILE SHOP SORT + SINGLE DIVIDER START === */
+
+/*
+ * Mobile filter footer.
+ *
+ * Sort remains part of the animated filter panel.
+ * The panel gets exactly one quiet divider, with comfortable spacing
+ * below Price / In stock and the Sort control.
+ */
+@media (max-width: 768px) {
+  html body .st-retail-shop .st-filter-v4__bar {
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+  }
+
+  html body .st-retail-shop .st-filter-v4__filters {
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+  }
+
+  /*
+   * The bar itself previously contributed extra spacing between
+   * the filter rows and Sort. Remove that hidden parent gap so
+   * the Sort margin is the ONLY vertical spacing source.
+   */
+  html body .st-retail-shop .st-filter-v4__bar,
+  html body .st-retail-shop .st-filter-v4__bar.is-mobile-open {
+    gap: 0 !important;
+    row-gap: 0 !important;
+    column-gap: 0 !important;
+  }
+
+  html body .st-retail-shop .st-filter-v4__sort {
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    align-items: center !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    /*
+     * Same vertical rhythm as Category/Brand → Price/In stock.
+     */
+    margin: 10px 0 0 !important;
+
+    flex: 0 0 auto !important;
+  }
+
+  html body .st-retail-shop .st-filter-v4__bar.is-mobile-open {
+    padding-bottom: 22px !important;
+    border-bottom: 1px solid rgba(29, 29, 31, 0.075) !important;
+  }
+
+  html
+    body
+    .st-retail-shop
+    .st-filter-v4__bar.is-mobile-open
+    .st-filter-v4__filters {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
+
+/* === ST MOBILE SHOP SORT + SINGLE DIVIDER END === */
+
 /* === ST SHOP SEARCH CLEAN INPUT FOCUS START === */
 
 /*
@@ -66067,3 +66134,339 @@ html body .st-filter-v4__suggestion-spinner {
 }
 
 /* === ST MOBILE SHOP SEARCH LAYOUT + SPINNER END === */
+
+/* === ST MOVIES SMOOTH NATIVE TITLE SWITCH START === */
+
+/*
+ * Native MP4 title-switch transition.
+ *
+ * The old YouTube-era transition animated the very large trailer layer
+ * with transform + filter effects. Native video decoding already has
+ * work to do during a title change, so moving/filtering that layer can
+ * introduce small frame drops, especially on phones.
+ *
+ * Keep the permanent layout/crop completely unchanged. Only animate
+ * cheap compositor-friendly opacity plus a tiny text translation.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema {
+  --st-entertainment-switch-duration: 420ms !important;
+  --st-entertainment-switch-ease: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/*
+ * Copy leaves quickly and returns more gently.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__copy {
+  will-change: opacity, transform !important;
+
+  transition:
+    opacity 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching
+  .st-entertainment-cinema__copy {
+  opacity: 0 !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-next
+  .st-entertainment-cinema__copy {
+  transform: translate3d(-14px, 0, 0) !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-previous
+  .st-entertainment-cinema__copy {
+  transform: translate3d(14px, 0, 0) !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-settled
+  .st-entertainment-cinema__copy {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+}
+
+/*
+ * Fade the whole media canvas rather than animating the oversized
+ * MP4 itself. The incoming poster is therefore already in place when
+ * the media gently returns to full opacity.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__media {
+  will-change: opacity !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching
+  .st-entertainment-cinema__media {
+  opacity: 0.58 !important;
+  transition: opacity 210ms ease-out !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-settled
+  .st-entertainment-cinema__media {
+  opacity: 1 !important;
+  transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/*
+ * Do NOT animate transform/filter on the native MP4 during a title
+ * change. Its existing permanent crop remains exactly as-is.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__trailer {
+  will-change: opacity !important;
+
+  transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/*
+ * Poster positioning/crop remains untouched.
+ *
+ * During a title switch there is no directional zoom/travel anymore;
+ * the media canvas itself provides the transition. The existing
+ * poster -> trailer 2.5s cinematic dissolve remains controlled by
+ * the later authoritative poster opacity rule.
+ */
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-next
+  .st-entertainment-cinema__poster,
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-previous
+  .st-entertainment-cinema__poster {
+  transform: scale(1.02) !important;
+}
+
+/*
+ * Keep selector feedback responsive so the tap feels immediate even
+ * while the cinematic background transition is occurring.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__selector > button > span {
+  transition:
+    width 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 220ms ease,
+    opacity 300ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-reveal--movies-series .st-entertainment-cinema__copy,
+  .st3-reveal--movies-series .st-entertainment-cinema__media,
+  .st3-reveal--movies-series .st-entertainment-cinema__trailer {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* === ST MOVIES SMOOTH NATIVE TITLE SWITCH END === */
+
+/* === ST MOVIES SOLID TITLE HANDOFF START === */
+
+/*
+ * FINAL title-to-title navigation handoff.
+ *
+ * This is deliberately separate from the approved 2.5-second
+ * poster -> trailer reveal.
+ *
+ * TITLE A:
+ *   softly exits
+ *
+ * TITLE B:
+ *   poster + copy enter as one coherent cinematic scene
+ *
+ * The native MP4 itself is never translated or filtered.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__media {
+  transform: translate3d(0, 0, 0) !important;
+  transform-origin: center center !important;
+  will-change: opacity !important;
+}
+
+.st3-reveal--movies-series .st-entertainment-cinema__copy {
+  will-change: opacity, transform !important;
+}
+
+/*
+ * Outgoing scene.
+ */
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching
+  .st-entertainment-cinema__media {
+  opacity: 0.18 !important;
+
+  transition: opacity 360ms cubic-bezier(0.4, 0, 1, 1) !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching
+  .st-entertainment-cinema__copy {
+  opacity: 0 !important;
+
+  transition:
+    opacity 260ms cubic-bezier(0.4, 0, 1, 1),
+    transform 360ms cubic-bezier(0.4, 0, 1, 1) !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-next
+  .st-entertainment-cinema__copy {
+  transform: translate3d(-20px, 0, 0) !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-previous
+  .st-entertainment-cinema__copy {
+  transform: translate3d(20px, 0, 0) !important;
+}
+
+/*
+ * Incoming scene.
+ *
+ * Once React has mounted the selected title and its poster, the entire
+ * scene comes back smoothly. This creates a solid visual handoff rather
+ * than a hard image replacement.
+ */
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-settled
+  .st-entertainment-cinema__media {
+  opacity: 1 !important;
+
+  transition: opacity 680ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-settled
+  .st-entertainment-cinema__copy {
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+
+  transition:
+    opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 680ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/*
+ * Kill the old directional poster movement during title navigation.
+ * The approved poster geometry remains exactly scale(1.02).
+ */
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-next
+  .st-entertainment-cinema__poster,
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching-previous
+  .st-entertainment-cinema__poster {
+  transform: scale(1.02) !important;
+}
+
+/*
+ * Native video stays geometrically fixed. This is important for
+ * consistent frame pacing on phones/tablets.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__trailer {
+  filter: none !important;
+  will-change: opacity !important;
+}
+
+/*
+ * Selector responds immediately to the selected destination.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__selector > button > span {
+  transition:
+    width 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 240ms ease,
+    opacity 320ms ease,
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-reveal--movies-series .st-entertainment-cinema__media,
+  .st3-reveal--movies-series .st-entertainment-cinema__copy {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* === ST MOVIES SOLID TITLE HANDOFF END === */
+
+/* === ST MOVIES POSTER HARD SHIELD START === */
+
+/*
+ * HARD GUARANTEE:
+ *
+ * A native trailer is NEVER visually exposed until React confirms:
+ *
+ * 1. the selected title's trailer is actually playing
+ * 2. the selected title's 2.5-second poster minimum has elapsed
+ *
+ * This is intentionally stronger than merely placing the poster above
+ * the video. Even if Safari/Chrome paints a newly mounted <video>
+ * unusually early, that video remains fully transparent.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__trailer.is-shielded {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/*
+ * Only trailerReady is allowed to expose the native MP4.
+ *
+ * visibility becomes available immediately, while opacity performs
+ * the existing cinematic poster -> trailer dissolve.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__trailer.is-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/*
+ * The poster is the authoritative visible media before trailerReady.
+ * Keep it completely opaque during the protected period.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__poster:not(.is-hidden) {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/*
+ * Once trailerReady becomes true, poster and trailer crossfade.
+ * Existing poster geometry/crop remains untouched.
+ */
+.st3-reveal--movies-series .st-entertainment-cinema__poster.is-hidden {
+  opacity: 0 !important;
+  visibility: visible !important;
+}
+
+/*
+ * Do not let title-navigation transition states override the hard
+ * trailer shield.
+ */
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-switching
+  .st-entertainment-cinema__trailer.is-shielded,
+.st3-reveal--movies-series
+  .st-entertainment-cinema.is-settled
+  .st-entertainment-cinema__trailer.is-shielded {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/*
+ * Same guarantee on tablet/mobile.
+ */
+@media (max-width: 1000px) {
+  .st3-reveal--movies-series .st-entertainment-cinema__trailer.is-shielded {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .st3-reveal--movies-series .st-entertainment-cinema__trailer.is-shielded {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+}
+
+/* === ST MOVIES POSTER HARD SHIELD END === */

@@ -117,6 +117,9 @@ export default function V2CatalogControls({
     const filterControls = filterBar.querySelector<HTMLElement>(
       ".st-filter-v4__filters",
     );
+    const sortControl = filterBar.querySelector<HTMLElement>(
+      ".st-filter-v4__sort",
+    );
 
     function measureMobileFilterBar() {
       const bar = mobileFilterBarRef.current;
@@ -126,15 +129,31 @@ export default function V2CatalogControls({
       }
 
       /*
-       * Measure only the real filter controls.
+       * Measure only normal-flow mobile controls.
        *
-       * Category / Brand popovers are absolutely positioned floating UI.
-       * Using bar.scrollHeight lets those popovers artificially enlarge the
-       * collapsible panel and leaves a large blank gap after they close.
+       * Category / Brand popovers are absolutely positioned floating UI and
+       * must never contribute to panel height. Sort is a normal-flow sibling
+       * of the filter controls, so it MUST be included.
        */
       const controls = bar.querySelector<HTMLElement>(".st-filter-v4__filters");
+      const sort = bar.querySelector<HTMLElement>(".st-filter-v4__sort");
 
-      setMobileFilterHeight(controls?.offsetHeight ?? bar.clientHeight);
+      if (!controls) {
+        setMobileFilterHeight(bar.clientHeight);
+        return;
+      }
+
+      let height = controls.offsetHeight;
+
+      if (sort) {
+        const sortStyles = window.getComputedStyle(sort);
+        const marginTop = Number.parseFloat(sortStyles.marginTop) || 0;
+        const marginBottom = Number.parseFloat(sortStyles.marginBottom) || 0;
+
+        height += sort.offsetHeight + marginTop + marginBottom;
+      }
+
+      setMobileFilterHeight(Math.ceil(height));
     }
 
     measureMobileFilterBar();
@@ -148,6 +167,10 @@ export default function V2CatalogControls({
       resizeObserver?.observe(filterControls);
     } else {
       resizeObserver?.observe(filterBar);
+    }
+
+    if (sortControl) {
+      resizeObserver?.observe(sortControl);
     }
 
     window.addEventListener("resize", measureMobileFilterBar);
@@ -679,10 +702,25 @@ export default function V2CatalogControls({
                   ".st-filter-v4__filters",
                 );
 
-              setMobileFilterHeight(
+              const sort =
+                mobileFilterBarRef.current.querySelector<HTMLElement>(
+                  ".st-filter-v4__sort",
+                );
+
+              let nextHeight =
                 controls?.offsetHeight ??
-                  mobileFilterBarRef.current.clientHeight,
-              );
+                mobileFilterBarRef.current.clientHeight;
+
+              if (controls && sort) {
+                const sortStyles = window.getComputedStyle(sort);
+                const marginTop = Number.parseFloat(sortStyles.marginTop) || 0;
+                const marginBottom =
+                  Number.parseFloat(sortStyles.marginBottom) || 0;
+
+                nextHeight += sort.offsetHeight + marginTop + marginBottom;
+              }
+
+              setMobileFilterHeight(Math.ceil(nextHeight));
             }
 
             if (!next) {

@@ -7,7 +7,7 @@ export type StereophonieEntertainmentItem = {
   tagline: string;
   posterUrl: string;
   backdropUrl: string;
-  trailerYoutubeId: string;
+  trailerPath: string;
 };
 
 export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
@@ -22,7 +22,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",
-    trailerYoutubeId: "TcMBFSGVi1c",
+    trailerPath: "/trailers/avengers-endgame.mp4",
   },
   {
     id: "oppenheimer",
@@ -35,7 +35,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg",
-    trailerYoutubeId: "uYPbbksJxIg",
+    trailerPath: "/trailers/oppenheimer.mp4",
   },
   {
     id: "dune-part-two",
@@ -48,7 +48,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
-    trailerYoutubeId: "Way9Dexny3w",
+    trailerPath: "/trailers/dune-part-two.mp4",
   },
   {
     id: "the-batman",
@@ -61,7 +61,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/74xTEgt7R36Fpooo50r9T25onhq.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg",
-    trailerYoutubeId: "mqqft2x_Aa4",
+    trailerPath: "/trailers/the-batman.mp4",
   },
   {
     id: "interstellar",
@@ -74,7 +74,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/xJHokMbljvjADYdit5fK5VQsXEG.jpg",
-    trailerYoutubeId: "zSWdZVtXT7E",
+    trailerPath: "/trailers/interstellar.mp4",
   },
   {
     id: "the-last-of-us",
@@ -87,7 +87,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/uDgy6hyPd82kOHh6I95FLtLnj6p.jpg",
-    trailerYoutubeId: "uLtkt8BonwM",
+    trailerPath: "/trailers/the-last-of-us.mp4",
   },
   {
     id: "stranger-things",
@@ -100,7 +100,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/49WJfeN0moxb9IPfGn8AIqMGskD.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/56v2KjBlU4XaOv9rVYEQypROD7P.jpg",
-    trailerYoutubeId: "b9EkMc79ZSU",
+    trailerPath: "/trailers/stranger-things.mp4",
   },
   {
     id: "breaking-bad",
@@ -113,7 +113,7 @@ export const stereophonieEntertainment: StereophonieEntertainmentItem[] = [
       "https://image.tmdb.org/t/p/w780/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg",
     backdropUrl:
       "https://image.tmdb.org/t/p/original/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg",
-    trailerYoutubeId: "HhesaQXLuRY",
+    trailerPath: "/trailers/breaking-bad.mp4",
   },
 ];
 
