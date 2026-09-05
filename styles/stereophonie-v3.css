@@ -66470,3 +66470,247 @@ html body .st-filter-v4__suggestion-spinner {
 }
 
 /* === ST MOVIES POSTER HARD SHIELD END === */
+
+/* === ST PRODUCT RELATED HOMEPAGE EXPLORE CONTROL START === */
+
+/*
+ * PRODUCT PAGE — "YOU MAY ALSO LIKE"
+ *
+ * Exact visual equivalent of the approved Homepage
+ * product-shelf continuation controls.
+ *
+ * Homepage:
+ *   Scroll to explore →
+ *   Explore store ›
+ *
+ * Product page:
+ *   Scroll to explore →
+ *   View all ›
+ *
+ * Only the label differs.
+ */
+
+/* ------------------------------------------------------------
+   VIEW ALL PILL
+   ------------------------------------------------------------ */
+
+html
+  body
+  .st-product-v5
+  .st-product-v5__related-explore
+  .st3-home-product-shelf__see-all {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  width: fit-content !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 8px !important;
+
+  margin: 26px auto 0 !important;
+  padding: 11px 18px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 255, 255, 0.9) !important;
+
+  color: #9b6900 !important;
+
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.015em !important;
+
+  text-decoration: none !important;
+
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(245, 179, 53, 0.02) !important;
+
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html
+  body
+  .st-product-v5
+  .st-product-v5__related-explore
+  .st3-home-product-shelf__see-all
+  > span:last-child {
+  display: inline-block !important;
+
+  font-size: 21px !important;
+  line-height: 0.8 !important;
+
+  transform: translateY(-1px) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-product-v5
+    .st-product-v5__related-explore
+    .st3-home-product-shelf__see-all:hover {
+    transform: translateY(-1px);
+
+    border-color: rgba(245, 179, 53, 0.34) !important;
+
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.06),
+      0 0 22px rgba(245, 179, 53, 0.08) !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   SCROLL / SWIPE HINT
+   ------------------------------------------------------------ */
+
+html
+  body
+  .st-product-v5
+  .st-product-v5__related-explore
+  .st3-home-product-shelf__scroll-hint {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 5px !important;
+
+  width: fit-content !important;
+
+  margin: 26px auto 0 !important;
+  padding: 0 !important;
+
+  color: rgba(29, 29, 31, 0.5) !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.01em !important;
+
+  white-space: nowrap !important;
+
+  user-select: none !important;
+  pointer-events: none !important;
+}
+
+html
+  body
+  .st-product-v5
+  .st-product-v5__related-explore
+  .st3-home-product-shelf__scroll-hint-mobile {
+  display: none !important;
+}
+
+html
+  body
+  .st-product-v5
+  .st-product-v5__related-explore
+  .st3-home-product-shelf__scroll-hint-desktop {
+  display: inline !important;
+}
+
+html
+  body
+  .st-product-v5
+  .st-product-v5__related-explore
+  .st3-home-product-shelf__scroll-hint-arrow {
+  display: inline-block !important;
+
+  color: #b77900 !important;
+
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  transform: translate3d(0, 0, 0);
+
+  transform-origin: center center !important;
+
+  will-change: transform, opacity;
+
+  animation: stHomeShelfPremiumArrow 2.35s cubic-bezier(0.22, 0.61, 0.36, 1)
+    infinite !important;
+}
+
+/* ------------------------------------------------------------
+   MOBILE — EXACT HOMEPAGE BEHAVIOUR
+   ------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  html
+    body
+    .st-product-v5
+    .st-product-v5__related-explore
+    .st3-home-product-shelf__scroll-hint {
+    margin-top: 12px !important;
+
+    font-size: 11.5px !important;
+  }
+
+  html
+    body
+    .st-product-v5
+    .st-product-v5__related-explore
+    .st3-home-product-shelf__scroll-hint-mobile {
+    display: inline !important;
+  }
+
+  html
+    body
+    .st-product-v5
+    .st-product-v5__related-explore
+    .st3-home-product-shelf__scroll-hint-desktop {
+    display: none !important;
+  }
+
+  html
+    body
+    .st-product-v5
+    .st-product-v5__related-explore
+    .st3-home-product-shelf__scroll-hint-arrow {
+    font-size: 13px !important;
+
+    animation-duration: 2.15s !important;
+  }
+
+  html
+    body
+    .st-product-v5
+    .st-product-v5__related-explore
+    .st3-home-product-shelf__see-all {
+    margin-top: 14px !important;
+
+    padding: 10px 16px !important;
+
+    font-size: 14px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html
+    body
+    .st-product-v5
+    .st-product-v5__related-explore
+    .st3-home-product-shelf__scroll-hint-arrow {
+    animation: none !important;
+
+    transform: none !important;
+    opacity: 0.82 !important;
+
+    will-change: auto !important;
+  }
+}
+
+/* === ST PRODUCT RELATED HOMEPAGE EXPLORE CONTROL END === */

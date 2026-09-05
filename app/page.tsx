@@ -19,11 +19,17 @@ import {
 } from "@/components/stereophonie-v3/shared/v3-product-card";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeHomepageSettings } from "@/lib/homepage-settings";
+import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 
 export const metadata: Metadata = {
-  title: "Stereophonie",
+  title: {
+    absolute: "Stereophonie Store | Electronics, Gaming & Tech in Lebanon",
+  },
   description:
-    "Discover technology, electronics and accessories at Stereophonie.",
+    "Shop phones, laptops, gaming gear, smartwatches, audio and accessories at Stereophonie Store. Selected technology with delivery across Lebanon.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 type NamedRelation =
@@ -84,7 +90,10 @@ function normalizeProduct(product: ProductRow): V3Product {
     is_new_arrival: product.is_new_arrival,
     new_drop_started_at: product.new_drop_started_at,
     created_at: product.created_at,
-    images: product.product_images ?? [],
+    images: storefrontConfigurationImages(
+      product.product_images,
+      product.product_variants,
+    ),
     variants: product.product_variants ?? [],
   };
 }
@@ -136,13 +145,24 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           ),
 
           product_images (
+            id,
             image_url,
             alt_text,
             position,
-            is_primary
+            is_primary,
+            variant_id,
+            variant_position,
+            is_variant_primary,
+            product_image_variants (
+              variant_id,
+              position,
+              is_primary
+            )
           ),
 
           product_variants (
+            id,
+            display_position,
             regular_price,
             sale_price,
             stock_quantity,

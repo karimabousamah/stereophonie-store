@@ -1,13 +1,29 @@
 import Link from "next/link";
 
 export type V3ProductImage = {
+  id?: string | null;
   image_url: string | null;
   alt_text: string | null;
   position: number;
   is_primary: boolean;
+
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
+
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
 };
 
 export type V3ProductVariant = {
+  id?: string | null;
+  display_position?: number | null;
+
   regular_price: number | null;
   sale_price: number | null;
   stock_quantity: number;

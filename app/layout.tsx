@@ -40,19 +40,26 @@ export async function generateMetadata(): Promise<Metadata> {
 
     description,
 
-    alternates: {
-      canonical: "/",
-    },
-
     icons: {
       icon: [
         {
           url: "/favicon.ico",
           sizes: "any",
         },
+        {
+          url: "/favicon-512.png",
+          type: "image/png",
+          sizes: "512x512",
+        },
       ],
       shortcut: "/favicon.ico",
-      apple: "/apple-touch-icon.png",
+      apple: [
+        {
+          url: "/apple-touch-icon.png",
+          type: "image/png",
+          sizes: "180x180",
+        },
+      ],
     },
 
     openGraph: {
@@ -81,6 +88,36 @@ export default async function RootLayout({
 }>) {
   const settings = await getPublicStoreSettings();
 
+  const siteUrl = "https://www.stereophoniestore.com";
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${siteUrl}/#organization`,
+        name: settings.storeName,
+        url: siteUrl,
+        logo: {
+          "@type": "ImageObject",
+          url: `${siteUrl}/favicon-512.png`,
+          width: 512,
+          height: 512,
+        },
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${siteUrl}/#website`,
+        url: siteUrl,
+        name: settings.storeName,
+        publisher: {
+          "@id": `${siteUrl}/#organization`,
+        },
+        inLanguage: "en",
+      },
+    ],
+  };
+
   const supabase = await createClient();
 
   const [
@@ -104,6 +141,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+          }}
+        />
+
         <StoreSettingsProvider settings={settings}>
           <StoreAvailabilityGate>
             <CartProvider>

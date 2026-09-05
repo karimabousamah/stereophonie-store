@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Gamepad2, PackageCheck, Zap } from "lucide-react";
+import { Gamepad2, PackageCheck, Zap } from "lucide-react";
 
-import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
+import StoreProductCard from "@/components/storefront/store-product-card";
 import { createClient } from "@/lib/supabase/server";
+import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 
 import ProductConfigurationPrice from "./product-configuration-price";
 import ProductGallery from "./product-gallery";
@@ -1038,16 +1039,23 @@ export default async function ProductPage({
         ),
 
         product_images (
+          id,
           image_url,
           alt_text,
           position,
           is_primary,
           variant_id,
           variant_position,
-          is_variant_primary
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
         ),
 
         product_variants (
+          id,
           regular_price,
           sale_price,
           stock_quantity,
@@ -1055,6 +1063,7 @@ export default async function ProductPage({
           variant_name,
           display_position,
           attributes,
+          is_active,
           availability_status
         )
       `,
@@ -1174,7 +1183,10 @@ export default async function ProductPage({
 
       is_new_arrival: item.is_new_arrival,
 
-      images: item.product_images ?? [],
+      images: storefrontConfigurationImages(
+        item.product_images ?? [],
+        item.product_variants ?? [],
+      ),
 
       variants: item.product_variants ?? [],
     }));
@@ -1374,28 +1386,45 @@ export default async function ProductPage({
           </section>
 
           {relatedProducts.length ? (
-            <section className="st-product-v5__related">
+            <section className="st-product-v5__related st-product-v5__related-explore">
               <header>
                 <div>
                   <span>Recommended</span>
                   <h2>You may also like.</h2>
                 </div>
-
-                <Link href="/shop">
-                  View all
-                  <ArrowRight />
-                </Link>
               </header>
 
               <div className="st-related-products-grid st-product-v5__related-grid">
                 {relatedProducts.map((relatedProduct, index) => (
-                  <V2ProductCard
+                  <StoreProductCard
                     key={relatedProduct.id}
                     product={relatedProduct}
                     index={index}
                   />
                 ))}
               </div>
+
+              <div
+                className="st3-home-product-shelf__scroll-hint"
+                aria-hidden="true"
+              >
+                <span className="st3-home-product-shelf__scroll-hint-mobile">
+                  Swipe to explore
+                </span>
+
+                <span className="st3-home-product-shelf__scroll-hint-desktop">
+                  Scroll to explore
+                </span>
+
+                <span className="st3-home-product-shelf__scroll-hint-arrow">
+                  →
+                </span>
+              </div>
+
+              <Link href="/shop" className="st3-home-product-shelf__see-all">
+                <span>View all</span>
+                <span aria-hidden="true">›</span>
+              </Link>
             </section>
           ) : null}
         </div>
