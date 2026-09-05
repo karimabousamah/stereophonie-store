@@ -21,6 +21,7 @@ import { createClient } from "@/lib/supabase/server";
 
 import OrderStatusControls from "./order-status-controls";
 
+import DeleteOrderControl from "./delete-order-control";
 type OrderDetailsPageProps = {
   params: Promise<{
     id: string;
@@ -359,10 +360,8 @@ export default async function OrderDetailsPage({
                 </span>
 
                 <span
-                  className={`inline-flex items-center border px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] ${
-                    fulfillmentMethod === "pickup"
-                      ? "border-amber-300/30 bg-amber-300/[0.08] text-amber-200"
-                      : "border-sky-300/25 bg-sky-300/[0.07] text-sky-200"
+                  className={`st-admin-order-detail-fulfillment inline-flex items-center border px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] ${
+                    fulfillmentMethod === "pickup" ? "is-pickup" : "is-delivery"
                   }`}
                 >
                   {fulfillmentMethod === "pickup" ? "Store pickup" : "Delivery"}
@@ -678,6 +677,11 @@ export default async function OrderDetailsPage({
                 fulfillmentMethod={fulfillmentMethod}
                 currentPaymentStatus={order.payment_status}
                 initialAdminNotes={order.admin_notes ?? ""}
+              />
+
+              <DeleteOrderControl
+                orderId={order.id}
+                orderNumber={order.order_number}
               />
             </aside>
           </div>

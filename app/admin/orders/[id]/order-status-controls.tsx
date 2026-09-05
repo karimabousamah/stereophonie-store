@@ -16,6 +16,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 
 import {
   saveAdminNotes,
@@ -484,67 +485,72 @@ export default function OrderStatusControls({
         )}
       </div>
 
-      {confirmation && (
-        <div className="st-admin-order-confirmation">
-          <button
-            type="button"
-            aria-label="Close confirmation"
-            onClick={() => setConfirmation(null)}
-            className="st-admin-order-confirmation__backdrop"
-          />
+      {confirmation && typeof document !== "undefined"
+        ? createPortal(
+            <div className="st3-admin st-admin-order-confirmation-portal">
+              <div className="st-admin-order-confirmation">
+                <button
+                  type="button"
+                  aria-label="Close confirmation"
+                  onClick={() => setConfirmation(null)}
+                  className="st-admin-order-confirmation__backdrop"
+                />
 
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="st-admin-order-confirmation-title"
-            className="st-admin-order-confirmation__dialog"
-          >
-            <button
-              type="button"
-              onClick={() => setConfirmation(null)}
-              aria-label="Close"
-              className="st-admin-order-confirmation__close"
-            >
-              <X aria-hidden="true" />
-            </button>
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="st-admin-order-confirmation-title"
+                  className="st-admin-order-confirmation__dialog"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setConfirmation(null)}
+                    aria-label="Close"
+                    className="st-admin-order-confirmation__close"
+                  >
+                    <X aria-hidden="true" />
+                  </button>
 
-            <span className="st-admin-order-confirmation__icon">
-              <AlertTriangle aria-hidden="true" />
-            </span>
+                  <span className="st-admin-order-confirmation__icon">
+                    <AlertTriangle aria-hidden="true" />
+                  </span>
 
-            <p className="st-admin-order-confirmation__eyebrow">
-              Confirmation required
-            </p>
+                  <p className="st-admin-order-confirmation__eyebrow">
+                    Confirmation required
+                  </p>
 
-            <h2 id="st-admin-order-confirmation-title">
-              Change to {confirmation.label}?
-            </h2>
+                  <h2 id="st-admin-order-confirmation-title">
+                    Change to {confirmation.label}?
+                  </h2>
 
-            <p className="st-admin-order-confirmation__copy">
-              This updates the order record and its operational status. Confirm
-              that this change is correct.
-            </p>
+                  <p className="st-admin-order-confirmation__copy">
+                    This updates the order record and its operational status.
+                    Confirm that this change is correct.
+                  </p>
 
-            <div className="st-admin-order-confirmation__actions">
-              <button
-                type="button"
-                onClick={() => setConfirmation(null)}
-                className="is-secondary"
-              >
-                Go back
-              </button>
+                  <div className="st-admin-order-confirmation__actions">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmation(null)}
+                      className="is-secondary"
+                    >
+                      Go back
+                    </button>
 
-              <button
-                type="button"
-                onClick={confirmChange}
-                className="is-primary"
-              >
-                Confirm change
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                    <button
+                      type="button"
+                      onClick={confirmChange}
+                      className="is-primary"
+                    >
+                      Confirm change
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

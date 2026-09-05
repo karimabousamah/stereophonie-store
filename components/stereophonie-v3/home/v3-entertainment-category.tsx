@@ -484,6 +484,11 @@ export default function V3EntertainmentCategory({
           />
 
           <div className="st-entertainment-cinema__media-shade" />
+
+          <div
+            className="st-entertainment-cinema__mobile-edge"
+            aria-hidden="true"
+          />
         </div>
 
         {/* ==================================================

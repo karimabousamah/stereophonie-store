@@ -303,3 +303,66 @@ export async function saveAdminNotes(
     message: "Private admin notes saved.",
   };
 }
+
+export async function deleteOrder(orderId: string): Promise<ActionResult> {
+  const cleanOrderId = orderId.trim();
+
+  if (!cleanOrderId) {
+    return {
+      success: false,
+      message: "The order could not be identified.",
+    };
+  }
+
+  const supabase = await getAuthorizedAdmin();
+
+  const { data: order, error: orderLookupError } = await supabase
+    .from("orders")
+    .select("id, order_number")
+    .eq("id", cleanOrderId)
+    .maybeSingle();
+
+  if (orderLookupError) {
+    return {
+      success: false,
+      message: orderLookupError.message,
+    };
+  }
+
+  if (!order) {
+    return {
+      success: false,
+      message: "This order no longer exists.",
+    };
+  }
+
+  const { data: deletedOrder, error: deleteError } = await supabase
+    .from("orders")
+    .delete()
+    .eq("id", cleanOrderId)
+    .select("id")
+    .maybeSingle();
+
+  if (deleteError) {
+    return {
+      success: false,
+      message: deleteError.message,
+    };
+  }
+
+  if (!deletedOrder) {
+    return {
+      success: false,
+      message: "The order was not deleted. Please try again.",
+    };
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${cleanOrderId}`);
+
+  return {
+    success: true,
+    message: `Order ${order.order_number} was permanently deleted.`,
+  };
+}

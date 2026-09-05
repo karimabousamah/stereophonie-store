@@ -8361,3 +8361,1044 @@ html
 }
 
 /* === ST ADMIN COMING SOON BLUE ROW END === */
+
+/* === ST ADMIN ORDER DELETE CONTROL START === */
+
+.st3-admin .st-admin-order-delete {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 18px;
+  background: linear-gradient(
+    145deg,
+    rgba(127, 29, 29, 0.12),
+    rgba(13, 13, 13, 0.96) 62%
+  );
+}
+
+.st3-admin .st-admin-order-delete__copy > p {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.st3-admin .st-admin-order-delete__copy > h2 {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.st3-admin .st-admin-order-delete__copy > span {
+  display: block;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.st3-admin button.st-admin-order-delete__trigger {
+  display: inline-flex;
+  min-height: 40px;
+  margin-top: 17px;
+  padding: 0 15px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.7);
+  border-radius: 11px;
+  background: rgba(185, 28, 28, 0.88);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.st3-admin button.st-admin-order-delete__trigger svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st3-admin button.st-admin-order-delete__trigger:hover {
+    transform: translateY(-1px);
+    border-color: rgba(248, 113, 113, 0.92);
+    background: #b42318;
+    box-shadow:
+      0 0 0 4px rgba(239, 68, 68, 0.08),
+      0 10px 28px rgba(127, 29, 29, 0.2);
+  }
+}
+
+.st3-admin .st-admin-order-delete-confirmation {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  isolation: isolate !important;
+  background: transparent !important;
+}
+
+.st3-admin button.st-admin-order-delete-confirmation__backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: rgba(29, 29, 31, 0.24) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: blur(8px) saturate(0.92) !important;
+  backdrop-filter: blur(8px) saturate(0.92) !important;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__dialog[role="dialog"] {
+  position: relative !important;
+  z-index: 2 !important;
+  width: min(100%, 430px) !important;
+  max-width: 430px !important;
+  padding: 24px !important;
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.985) !important;
+  color: #1d1d1f !important;
+  box-shadow:
+    0 30px 90px rgba(29, 29, 31, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset !important;
+  -webkit-backdrop-filter: saturate(170%) blur(18px) !important;
+  backdrop-filter: saturate(170%) blur(18px) !important;
+}
+
+.st3-admin button.st-admin-order-delete-confirmation__close {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  display: inline-flex !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid rgba(29, 29, 31, 0.08) !important;
+  border-radius: 50% !important;
+  background: #fafafa !important;
+  color: #86868b !important;
+}
+
+.st3-admin button.st-admin-order-delete-confirmation__close svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(185, 28, 28, 0.14);
+  border-radius: 12px;
+  background: #fff3f2;
+  color: #b42318;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__eyebrow {
+  margin: 18px 0 0;
+  color: #b42318;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__dialog h2 {
+  margin: 9px 38px 0 0;
+  color: #1d1d1f;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__copy {
+  margin: 14px 0 0;
+  color: #6e6e73;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__copy strong {
+  color: #1d1d1f;
+  font-weight: 650;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__warning {
+  margin-top: 16px;
+  padding: 13px 14px;
+  border: 1px solid #fee2e2;
+  border-radius: 14px;
+  background: #fff6f6;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__warning strong {
+  display: block;
+  color: #a42620;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__warning span {
+  display: block;
+  margin-top: 4px;
+  color: #8c5a57;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__error {
+  display: flex;
+  margin-top: 14px;
+  padding: 11px 12px;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid rgba(185, 28, 28, 0.14);
+  border-radius: 12px;
+  background: rgba(254, 242, 242, 0.92);
+  color: #a42620;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__error svg {
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  flex: 0 0 auto;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__actions {
+  display: flex;
+  margin-top: 20px;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__actions button {
+  display: inline-flex;
+  min-height: 40px;
+  padding: 0 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__actions .is-secondary {
+  border: 1px solid rgba(29, 29, 31, 0.1);
+  background: #fff;
+  color: #1d1d1f;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__actions .is-destructive {
+  border: 1px solid #c9342f;
+  background: #c9342f;
+  color: #fff;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__actions .is-destructive svg {
+  width: 14px;
+  height: 14px;
+}
+
+.st3-admin .st-admin-order-delete-confirmation__spinner {
+  animation: st-admin-order-delete-spin 700ms linear infinite;
+}
+
+@keyframes st-admin-order-delete-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st3-admin
+    .st-admin-order-delete-confirmation__actions
+    .is-secondary:hover:not(:disabled) {
+    background: #f2f2f3;
+  }
+
+  .st3-admin
+    .st-admin-order-delete-confirmation__actions
+    .is-destructive:hover:not(:disabled) {
+    border-color: #ab2925;
+    background: #ab2925;
+    box-shadow:
+      0 0 0 4px rgba(185, 28, 28, 0.08),
+      0 8px 24px rgba(127, 29, 29, 0.16);
+  }
+}
+
+@media (max-width: 640px) {
+  .st3-admin .st-admin-order-delete-confirmation__dialog[role="dialog"] {
+    padding: 20px !important;
+  }
+
+  .st3-admin .st-admin-order-delete-confirmation__actions {
+    flex-direction: column-reverse;
+  }
+
+  .st3-admin .st-admin-order-delete-confirmation__actions button {
+    width: 100%;
+  }
+}
+
+/* === ST ADMIN ORDER DELETE CONTROL END === */
+
+/* === ST ADMIN ORDER DELETE MINIMAL V2 START === */
+
+.st3-admin .st-admin-order-delete {
+  display: none !important;
+}
+
+.st3-admin .st-admin-order-delete-minimal {
+  display: flex;
+  margin-top: 14px;
+  justify-content: flex-end;
+}
+
+.st3-admin button.st-admin-order-delete-minimal__button {
+  display: inline-flex !important;
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+
+  border: 1px solid rgba(180, 35, 24, 0.2) !important;
+  border-radius: 10px !important;
+
+  background: rgba(255, 255, 255, 0.76) !important;
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase !important;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease !important;
+}
+
+.st3-admin button.st-admin-order-delete-minimal__button svg {
+  width: 13px !important;
+  height: 13px !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st3-admin button.st-admin-order-delete-minimal__button:hover {
+    transform: translateY(-1px) !important;
+    border-color: rgba(180, 35, 24, 0.34) !important;
+    background: #fff7f7 !important;
+    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.055) !important;
+  }
+}
+
+.st-admin-order-delete-confirmation {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483646 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 18px !important;
+
+  isolation: isolate !important;
+  background: transparent !important;
+}
+
+button.st-admin-order-delete-confirmation__backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.22) !important;
+
+  box-shadow: none !important;
+
+  -webkit-backdrop-filter: blur(8px) saturate(0.92) !important;
+  backdrop-filter: blur(8px) saturate(0.92) !important;
+}
+
+.st-admin-order-delete-confirmation__dialog[role="dialog"] {
+  position: relative !important;
+  z-index: 2 !important;
+
+  width: min(100%, 430px) !important;
+  max-width: 430px !important;
+
+  margin: 0 !important;
+  padding: 24px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 20px !important;
+
+  background: rgba(255, 255, 255, 0.985) !important;
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 30px 90px rgba(29, 29, 31, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.82) inset !important;
+
+  -webkit-backdrop-filter: saturate(170%) blur(18px) !important;
+  backdrop-filter: saturate(170%) blur(18px) !important;
+}
+
+button.st-admin-order-delete-confirmation__close {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+
+  display: inline-flex !important;
+
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+
+  padding: 0 !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.08) !important;
+  border-radius: 50% !important;
+
+  background: #fafafa !important;
+  color: #86868b !important;
+
+  box-shadow: none !important;
+}
+
+button.st-admin-order-delete-confirmation__close svg {
+  width: 13px !important;
+  height: 13px !important;
+}
+
+.st-admin-order-delete-confirmation__icon {
+  display: inline-flex !important;
+
+  width: 40px !important;
+  height: 40px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid rgba(180, 35, 24, 0.14) !important;
+  border-radius: 12px !important;
+
+  background: #fff3f2 !important;
+  color: #b42318 !important;
+}
+
+.st-admin-order-delete-confirmation__icon svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.st-admin-order-delete-confirmation__eyebrow {
+  margin: 18px 0 0 !important;
+
+  color: #b42318 !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+}
+
+.st-admin-order-delete-confirmation__dialog h2 {
+  margin: 9px 38px 0 0 !important;
+
+  color: #1d1d1f !important;
+
+  font-size: 22px !important;
+  font-weight: 650 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.st-admin-order-delete-confirmation__copy {
+  margin: 14px 0 0 !important;
+
+  color: #6e6e73 !important;
+
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+
+.st-admin-order-delete-confirmation__copy strong {
+  color: #1d1d1f !important;
+  font-weight: 650 !important;
+}
+
+.st-admin-order-delete-confirmation__warning {
+  margin-top: 16px !important;
+  padding: 13px 14px !important;
+
+  border: 1px solid #fee2e2 !important;
+  border-radius: 14px !important;
+
+  background: #fff7f7 !important;
+}
+
+.st-admin-order-delete-confirmation__warning strong {
+  display: block !important;
+
+  color: #a42620 !important;
+
+  font-size: 12px !important;
+  font-weight: 650 !important;
+}
+
+.st-admin-order-delete-confirmation__warning span {
+  display: block !important;
+
+  margin-top: 4px !important;
+
+  color: #8c5a57 !important;
+
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+}
+
+.st-admin-order-delete-confirmation__error {
+  display: flex !important;
+
+  margin-top: 14px !important;
+  padding: 11px 12px !important;
+
+  align-items: flex-start !important;
+  gap: 8px !important;
+
+  border: 1px solid rgba(180, 35, 24, 0.15) !important;
+  border-radius: 12px !important;
+
+  background: #fff5f5 !important;
+  color: #a42620 !important;
+
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+}
+
+.st-admin-order-delete-confirmation__error svg {
+  width: 14px !important;
+  height: 14px !important;
+
+  margin-top: 1px !important;
+
+  flex: 0 0 auto !important;
+}
+
+.st-admin-order-delete-confirmation__actions {
+  display: flex !important;
+
+  margin-top: 20px !important;
+
+  justify-content: flex-end !important;
+  gap: 8px !important;
+}
+
+.st-admin-order-delete-confirmation__actions button {
+  display: inline-flex !important;
+
+  min-height: 40px !important;
+  padding: 0 16px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+
+  border-radius: 11px !important;
+
+  font-size: 11px !important;
+  font-weight: 650 !important;
+}
+
+.st-admin-order-delete-confirmation__actions button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.52 !important;
+}
+
+.st-admin-order-delete-confirmation__actions .is-secondary {
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  background: #fff !important;
+  color: #1d1d1f !important;
+}
+
+.st-admin-order-delete-confirmation__actions .is-destructive {
+  border: 1px solid #c9342f !important;
+
+  background: #c9342f !important;
+  color: #fff !important;
+}
+
+.st-admin-order-delete-confirmation__actions .is-destructive svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.st-admin-order-delete-confirmation__spinner {
+  animation: st-admin-order-delete-spin-v2 700ms linear infinite !important;
+}
+
+@keyframes st-admin-order-delete-spin-v2 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-admin-order-delete-confirmation__actions
+    .is-secondary:hover:not(:disabled) {
+    background: #f2f2f3 !important;
+  }
+
+  .st-admin-order-delete-confirmation__actions
+    .is-destructive:hover:not(:disabled) {
+    border-color: #ab2925 !important;
+    background: #ab2925 !important;
+
+    box-shadow:
+      0 0 0 4px rgba(180, 35, 24, 0.08),
+      0 8px 24px rgba(127, 29, 29, 0.16) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .st-admin-order-delete-confirmation__dialog[role="dialog"] {
+    padding: 20px !important;
+  }
+
+  .st-admin-order-delete-confirmation__actions {
+    flex-direction: column-reverse !important;
+  }
+
+  .st-admin-order-delete-confirmation__actions button {
+    width: 100% !important;
+  }
+}
+
+/* === ST ADMIN ORDER DELETE MINIMAL V2 END === */
+
+/* === ST ADMIN ORDER VISUAL REFINEMENT START === */
+
+/*
+ * DELETE ORDER
+ * Full-width continuation of the Admin Notes sidebar column.
+ */
+
+.st3-admin .st-admin-order-delete-minimal {
+  display: block !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  margin-top: 14px !important;
+}
+
+.st3-admin button.st-admin-order-delete-minimal__button {
+  display: flex !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  min-height: 44px !important;
+  padding: 0 16px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+
+  border: 1px solid rgba(180, 35, 24, 0.24) !important;
+  border-radius: 12px !important;
+
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+.st3-admin button.st-admin-order-delete-minimal__button svg {
+  width: 13px !important;
+  height: 13px !important;
+
+  flex: 0 0 auto !important;
+
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/*
+ * Keep the destructive action crisp on hover.
+ * No pale text/icon and no washed-out pink button.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  .st3-admin button.st-admin-order-delete-minimal__button:hover {
+    border-color: rgba(180, 35, 24, 0.46) !important;
+
+    background: #fff6f5 !important;
+    color: #9f1f17 !important;
+
+    opacity: 1 !important;
+
+    transform: translateY(-1px) !important;
+
+    box-shadow:
+      0 0 0 3px rgba(180, 35, 24, 0.045),
+      0 5px 14px rgba(127, 29, 29, 0.055) !important;
+  }
+
+  .st3-admin button.st-admin-order-delete-minimal__button:hover svg {
+    color: #9f1f17 !important;
+    stroke: #9f1f17 !important;
+  }
+}
+
+.st3-admin button.st-admin-order-delete-minimal__button:active {
+  border-color: rgba(180, 35, 24, 0.5) !important;
+
+  background: #ffefed !important;
+  color: #8f1c15 !important;
+
+  opacity: 1 !important;
+
+  transform: translateY(0) !important;
+}
+
+/*
+ * ORDER FULFILLMENT / STATUS BADGES
+ * Preserve the mustard identity while improving contrast.
+ */
+
+.st3-admin [class*="order"] [class*="badge"].is-preparing,
+.st3-admin [class*="order"] [class*="badge"].is-pickup,
+.st3-admin [class*="order"] [class*="pill"].is-preparing,
+.st3-admin [class*="order"] [class*="pill"].is-pickup {
+  border-color: rgba(193, 132, 18, 0.38) !important;
+  background: rgba(253, 183, 62, 0.1) !important;
+  color: #9a6810 !important;
+}
+
+/*
+ * Existing order-page mustard states use several component-specific
+ * selectors. Normalize their foreground so STORE PICKUP cannot become
+ * pale yellow against the white surface.
+ */
+
+.st3-admin
+  :is(
+    [class*="order"],
+    [class*="fulfillment"],
+    [class*="status"],
+    [class*="summary"]
+  )
+  :is(button, span, div)[class*="pickup"],
+.st3-admin
+  :is(
+    [class*="order"],
+    [class*="fulfillment"],
+    [class*="status"],
+    [class*="summary"]
+  )
+  :is(button, span, div)[class*="preparing"] {
+  --st-order-mustard-readable: #9a6810;
+
+  color: var(--st-order-mustard-readable) !important;
+}
+
+.st3-admin
+  :is(
+    [class*="order"],
+    [class*="fulfillment"],
+    [class*="status"],
+    [class*="summary"]
+  )
+  :is(button, span, div)[class*="pickup"]
+  svg,
+.st3-admin
+  :is(
+    [class*="order"],
+    [class*="fulfillment"],
+    [class*="status"],
+    [class*="summary"]
+  )
+  :is(button, span, div)[class*="preparing"]
+  svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* === ST ADMIN ORDER VISUAL REFINEMENT END === */
+
+/* === ST STORE PICKUP CONTRAST AUTHORITATIVE START === */
+
+.st3-admin :is([class*="pickup"], [class*="fulfillment"]) {
+  --st-pickup-readable: #8f5b05;
+}
+
+.st3-admin
+  :is([class*="pickup"], [class*="fulfillment"])
+  :is([class*="badge"], [class*="pill"], [class*="chip"], [class*="tag"]) {
+  color: var(--st-pickup-readable) !important;
+  border-color: rgba(170, 111, 5, 0.42) !important;
+  background: rgba(253, 183, 62, 0.09) !important;
+  opacity: 1 !important;
+}
+
+.st3-admin
+  :is([class*="pickup"], [class*="fulfillment"])
+  :is([class*="badge"], [class*="pill"], [class*="chip"], [class*="tag"])
+  * {
+  color: var(--st-pickup-readable) !important;
+  opacity: 1 !important;
+}
+
+.st3-admin
+  :is([class*="pickup"], [class*="fulfillment"])
+  :is([class*="badge"], [class*="pill"], [class*="chip"], [class*="tag"])
+  svg {
+  color: var(--st-pickup-readable) !important;
+  stroke: var(--st-pickup-readable) !important;
+}
+
+/* === ST STORE PICKUP CONTRAST AUTHORITATIVE END === */
+
+/* === ST ORDER DETAIL FULFILLMENT BADGE START === */
+
+/*
+ * Order detail fulfillment badge.
+ * Restrained like Pending / Unpaid — no fluorescent foreground.
+ */
+
+.st3-admin .st-admin-order-detail-fulfillment {
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.st3-admin .st-admin-order-detail-fulfillment.is-pickup {
+  border-color: rgba(171, 121, 28, 0.22) !important;
+  background: #fcf9f2 !important;
+  color: #846423 !important;
+}
+
+.st3-admin .st-admin-order-detail-fulfillment.is-pickup svg {
+  color: #846423 !important;
+  stroke: #846423 !important;
+}
+
+.st3-admin .st-admin-order-detail-fulfillment.is-delivery {
+  border-color: rgba(84, 108, 133, 0.16) !important;
+  background: #f5f7f9 !important;
+  color: #607080 !important;
+}
+
+.st3-admin .st-admin-order-detail-fulfillment.is-delivery svg {
+  color: #607080 !important;
+  stroke: #607080 !important;
+}
+
+/* === ST ORDER DETAIL FULFILLMENT BADGE END === */
+
+/* === ST ADMIN CONFIRMATION PORTAL SHARP START === */
+
+/*
+ * The confirmation is portaled directly under body.
+ *
+ * Backdrop:
+ *   blurs the complete admin application, including sidebar.
+ *
+ * Dialog:
+ *   stays completely sharp above the backdrop.
+ */
+
+body > .st-admin-order-confirmation-portal {
+  position: fixed !important;
+  inset: 0 !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  z-index: 2147483646 !important;
+
+  pointer-events: none !important;
+
+  background: transparent !important;
+
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+body > .st-admin-order-confirmation-portal > .st-admin-order-confirmation {
+  position: fixed !important;
+  inset: 0 !important;
+
+  display: flex !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 18px !important;
+
+  z-index: 1 !important;
+
+  isolation: isolate !important;
+
+  pointer-events: auto !important;
+
+  background: transparent !important;
+
+  filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/*
+ * ONLY this layer owns the background blur.
+ */
+
+body
+  > .st-admin-order-confirmation-portal
+  button.st-admin-order-confirmation__backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+
+  min-width: 0 !important;
+  min-height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  z-index: 0 !important;
+
+  background: rgba(29, 29, 31, 0.22) !important;
+
+  box-shadow: none !important;
+
+  -webkit-backdrop-filter: blur(8px) saturate(0.92) !important;
+  backdrop-filter: blur(8px) saturate(0.92) !important;
+
+  filter: none !important;
+
+  opacity: 1 !important;
+}
+
+/*
+ * Dialog lives ABOVE the backdrop.
+ * It must never inherit blur.
+ */
+
+body
+  > .st-admin-order-confirmation-portal
+  .st-admin-order-confirmation__dialog {
+  position: relative !important;
+
+  z-index: 10 !important;
+
+  pointer-events: auto !important;
+
+  filter: none !important;
+
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+  opacity: 1 !important;
+
+  transform: none;
+}
+
+/* === ST ADMIN CONFIRMATION PORTAL SHARP END === */

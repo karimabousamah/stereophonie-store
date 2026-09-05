@@ -66714,3 +66714,1023 @@ html
 }
 
 /* === ST PRODUCT RELATED HOMEPAGE EXPLORE CONTROL END === */
+
+/* === ST MOBILE MOVIES HORIZONTAL CINEMA START === */
+
+/*
+ * MOBILE ONLY.
+ *
+ * Desktop / tablet / laptop design remains exactly as before.
+ *
+ * Phone architecture:
+ *
+ *   ┌─────────────────────────────┐
+ *   │      16:9 MEDIA FRAME       │
+ *   │   centered poster/trailer   │
+ *   ├─────────────────────────────┤
+ *   │ Movies & Series · Movie ... │
+ *   │ Title                       │
+ *   │ Tagline                     │
+ *   │ loader                      │
+ *   │ Explore   Sound      dots   │
+ *   └─────────────────────────────┘
+ *
+ * The media itself determines the cinematic proportions.
+ * Copy no longer competes with / covers the trailer.
+ */
+
+@media (max-width: 700px) {
+  /* ==========================================================
+     OUTER CINEMA
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema {
+    position: relative !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+
+    width: 100% !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    aspect-ratio: auto !important;
+
+    overflow: hidden !important;
+
+    border-radius: 26px !important;
+
+    background: #080808 !important;
+
+    isolation: isolate !important;
+  }
+
+  /* ==========================================================
+     TRUE HORIZONTAL MEDIA FRAME
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__media {
+    position: relative !important;
+
+    inset: auto !important;
+
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+
+    width: 100% !important;
+    height: auto !important;
+
+    aspect-ratio: 16 / 9 !important;
+
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+
+    background: #000 !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__poster,
+  html body .st3-reveal--movies-series .st-entertainment-cinema__trailer {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 100% !important;
+    min-height: 100% !important;
+
+    object-fit: cover !important;
+
+    /*
+     * No directional bias.
+     * The visual is centered horizontally AND vertically.
+     */
+    object-position: 50% 50% !important;
+
+    margin: 0 !important;
+
+    transform-origin: 50% 50% !important;
+  }
+
+  /*
+   * Remove the desktop left-side darkness from the mobile media.
+   * Only a very light cinematic edge treatment remains.
+   */
+  html body .st3-reveal--movies-series .st-entertainment-cinema__media-shade {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    z-index: 9 !important;
+
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.04) 0%,
+      transparent 68%,
+      rgba(0, 0, 0, 0.2) 100%
+    ) !important;
+
+    pointer-events: none !important;
+  }
+
+  /* ==========================================================
+     INFORMATION PANEL
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__content {
+    position: relative !important;
+
+    inset: auto !important;
+
+    z-index: 20 !important;
+
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+
+    display: block !important;
+
+    width: 100% !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: linear-gradient(180deg, #111 0%, #090909 100%) !important;
+
+    pointer-events: auto !important;
+
+    overflow: visible !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__copy {
+    position: relative !important;
+
+    z-index: 21 !important;
+
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "eyebrow meta"
+      "title title"
+      "tagline tagline"
+      "status status"
+      "actions selector" !important;
+
+    align-items: center !important;
+
+    column-gap: 12px !important;
+    row-gap: 0 !important;
+
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    max-width: none !important;
+
+    min-width: 0 !important;
+
+    margin: 0 !important;
+
+    padding: 15px 17px 16px !important;
+
+    pointer-events: auto !important;
+  }
+
+  /* ==========================================================
+     TOP ROW
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__eyebrow {
+    grid-area: eyebrow !important;
+
+    align-self: center !important;
+
+    width: auto !important;
+    max-width: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #fff !important;
+
+    font-size: 16px !important;
+    font-weight: 650 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.025em !important;
+
+    white-space: nowrap !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__active-kicker {
+    grid-area: meta !important;
+
+    align-self: center !important;
+    justify-self: end !important;
+
+    width: auto !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #f5b335 !important;
+
+    font-size: 10px !important;
+    font-weight: 650 !important;
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+  }
+
+  /* ==========================================================
+     TITLE
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__copy > h2 {
+    grid-area: title !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 11px 0 0 !important;
+    padding: 0 !important;
+
+    color: #fff !important;
+
+    font-size: clamp(25px, 7.5vw, 31px) !important;
+    font-weight: 650 !important;
+    line-height: 0.96 !important;
+    letter-spacing: -0.05em !important;
+
+    text-wrap: balance !important;
+
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+
+  /* ==========================================================
+     TAGLINE
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__tagline {
+    grid-area: tagline !important;
+
+    width: 100% !important;
+    max-width: 100% !important;
+
+    margin: 7px 0 0 !important;
+    padding: 0 !important;
+
+    color: rgba(255, 255, 255, 0.62) !important;
+
+    font-size: 12px !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  /* ==========================================================
+     PREPARING TRAILER
+     ========================================================== */
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__copy
+    .st-entertainment-cinema__trailer-status {
+    grid-area: status !important;
+
+    display: block !important;
+
+    width: 112px !important;
+    max-width: 112px !important;
+
+    min-width: 0 !important;
+
+    margin: 8px 0 0 !important;
+    padding: 0 !important;
+
+    overflow: visible !important;
+  }
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__copy
+    .st-entertainment-cinema__trailer-status-copy {
+    display: block !important;
+
+    width: auto !important;
+
+    margin: 0 0 4px !important;
+    padding: 0 !important;
+
+    color: rgba(255, 255, 255, 0.58) !important;
+
+    font-size: 7.5px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    letter-spacing: 0.09em !important;
+
+    white-space: nowrap !important;
+  }
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__copy
+    .st-entertainment-cinema__trailer-progress {
+    display: block !important;
+
+    width: 112px !important;
+    max-width: 112px !important;
+
+    height: 2px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* ==========================================================
+     BOTTOM ROW — ACTIONS LEFT / CAROUSEL RIGHT
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__actions {
+    grid-area: actions !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+
+    align-items: center !important;
+    justify-content: flex-start !important;
+
+    gap: 7px !important;
+
+    width: auto !important;
+
+    min-width: 0 !important;
+
+    margin: 11px 0 0 !important;
+    padding: 0 !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__explore {
+    box-sizing: border-box !important;
+
+    display: inline-flex !important;
+
+    align-items: center !important;
+    justify-content: center !important;
+
+    gap: 5px !important;
+
+    width: auto !important;
+
+    height: 33px !important;
+    min-height: 33px !important;
+
+    margin: 0 !important;
+    padding: 0 13px !important;
+
+    border-radius: 999px !important;
+
+    font-size: 11px !important;
+    font-weight: 650 !important;
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__explore span {
+    font-size: 15px !important;
+    line-height: 1 !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__sound {
+    box-sizing: border-box !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    width: 33px !important;
+    height: 33px !important;
+
+    min-width: 33px !important;
+    min-height: 33px !important;
+
+    flex: 0 0 33px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__sound svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  /* ==========================================================
+     SMALL HORIZONTAL CAROUSEL
+     ========================================================== */
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__selector-wrap {
+    grid-area: selector !important;
+
+    justify-self: end !important;
+    align-self: end !important;
+
+    display: block !important;
+
+    width: auto !important;
+    max-width: min(42vw, 154px) !important;
+
+    min-width: 0 !important;
+
+    margin: 11px 0 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__selector {
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    width: auto !important;
+    max-width: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 18px !important;
+
+    gap: 6px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+
+    scrollbar-width: none !important;
+
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__selector::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__selector
+    > button {
+    display: grid !important;
+    place-items: center !important;
+
+    width: 8px !important;
+    height: 12px !important;
+
+    min-width: 8px !important;
+
+    flex: 0 0 8px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__selector
+    > button
+    > span {
+    display: block !important;
+
+    width: 6px !important;
+    height: 6px !important;
+
+    border-radius: 999px !important;
+  }
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__selector
+    > button.is-active {
+    width: 26px !important;
+    min-width: 26px !important;
+
+    flex-basis: 26px !important;
+  }
+
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__selector
+    > button.is-active
+    > span {
+    width: 24px !important;
+    height: 6px !important;
+  }
+
+  /* Original mobile behavior: hide Ask about this title. */
+  html body .st3-reveal--movies-series .st-entertainment-cinema__request {
+    display: none !important;
+  }
+}
+
+/*
+ * Very narrow phones.
+ *
+ * Same structure, only slightly tighter.
+ */
+@media (max-width: 380px) {
+  html body .st3-reveal--movies-series .st-entertainment-cinema {
+    border-radius: 23px !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__copy {
+    column-gap: 8px !important;
+
+    padding: 13px 14px 14px !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__eyebrow {
+    font-size: 15px !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__active-kicker {
+    font-size: 9px !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__copy > h2 {
+    font-size: 25px !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__tagline {
+    font-size: 11px !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__selector-wrap {
+    max-width: 130px !important;
+  }
+}
+
+/*
+ * ==========================================================
+ * MOBILE 16:9 MEDIA — AUTHORITATIVE FINAL GEOMETRY
+ * ==========================================================
+ *
+ * The old phone campaign used a tall 720px card and therefore
+ * deliberately rendered the trailer at 205% x 145%.
+ *
+ * The new phone design has a real 16:9 media window, so ALL of
+ * that legacy oversizing / centering geometry is cancelled here.
+ *
+ * Poster and native MP4 occupy the exact same rectangle.
+ */
+
+@media (max-width: 700px) {
+  html body .st3-reveal--movies-series .st-entertainment-cinema__media {
+    position: relative !important;
+
+    inset: auto !important;
+
+    display: block !important;
+
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    height: auto !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    max-width: 100% !important;
+    max-height: none !important;
+
+    aspect-ratio: 16 / 9 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+
+    border-radius: 0 !important;
+
+    background: #000 !important;
+  }
+
+  /*
+   * Exact shared box for poster + MP4.
+   */
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__media
+    > .st-entertainment-cinema__poster,
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__media
+    > .st-entertainment-cinema__trailer {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+
+    display: block !important;
+
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    max-width: 100% !important;
+    max-height: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+    outline: 0 !important;
+
+    /*
+     * Both source assets are 16:9.
+     *
+     * cover keeps cinematic letterboxing inside the source where
+     * it genuinely exists, while filling the complete media box.
+     */
+    object-fit: cover !important;
+    object-position: center center !important;
+
+    /*
+     * Kill the OLD:
+     *
+     * left: 50%
+     * top: 50%
+     * width: 205%
+     * height: 145%
+     * translate(-50%, -50%)
+     * scale(...)
+     */
+    transform: none !important;
+    transform-origin: center center !important;
+
+    translate: 0 0 !important;
+    scale: 1 !important;
+
+    clip: auto !important;
+    clip-path: none !important;
+  }
+
+  /*
+   * Native video gets an especially strict reset because this is
+   * the element that inherited several generations of old crop CSS.
+   */
+  html body .st3-reveal--movies-series video.st-entertainment-cinema__trailer {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    max-width: 100% !important;
+    max-height: 100% !important;
+
+    object-fit: cover !important;
+    object-position: 50% 50% !important;
+
+    transform: none !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+
+    margin: 0 !important;
+
+    background: #000 !important;
+
+    filter: none !important;
+  }
+
+  /*
+   * Switching states may change opacity, NEVER geometry.
+   */
+  html
+    body
+    .st3-reveal--movies-series
+    :is(
+      .st-entertainment-cinema.is-switching,
+      .st-entertainment-cinema.is-switching-next,
+      .st-entertainment-cinema.is-switching-previous,
+      .st-entertainment-cinema.is-settled
+    )
+    video.st-entertainment-cinema__trailer {
+    inset: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    max-width: 100% !important;
+    max-height: 100% !important;
+
+    object-fit: cover !important;
+    object-position: 50% 50% !important;
+
+    transform: none !important;
+    translate: 0 0 !important;
+    scale: 1 !important;
+  }
+
+  /*
+   * MOBILE:
+   *
+   * No desktop left fade.
+   * No bottom readability shade.
+   * No artificial darkening whatsoever.
+   *
+   * Copy lives in its own panel underneath, so the cinematic
+   * image should remain completely clean.
+   */
+  html body .st3-reveal--movies-series .st-entertainment-cinema__media-shade {
+    display: none !important;
+
+    background: none !important;
+    background-image: none !important;
+
+    opacity: 0 !important;
+  }
+}
+
+/* === ST MOBILE MOVIES HORIZONTAL CINEMA END === */
+
+/* === ST MOBILE MOVIES REAL EDGE AUTHORITATIVE START === */
+
+.st-entertainment-cinema__mobile-edge {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  html body .st3-reveal--movies-series .st-entertainment-cinema__media-shade {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+
+    background: none !important;
+    background-image: none !important;
+
+    border: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
+  html body .st3-reveal--movies-series .st-entertainment-cinema__media::before,
+  html body .st3-reveal--movies-series .st-entertainment-cinema__media::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  /*
+   * Real DOM layer sitting above BOTH poster and trailer.
+   */
+  html body .st3-reveal--movies-series .st-entertainment-cinema__mobile-edge {
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    z-index: 2147483000 !important;
+
+    display: block !important;
+
+    box-sizing: border-box !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+
+    pointer-events: none !important;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    background: transparent !important;
+
+    /*
+     * Small common perimeter depth.
+     */
+    box-shadow:
+      inset 0 0 0 1px rgba(0, 0, 0, 0.58),
+      inset 0 0 24px rgba(0, 0, 0, 0.28) !important;
+
+    border: 0 !important;
+
+    filter: none !important;
+
+    mix-blend-mode: normal !important;
+  }
+
+  /*
+   * TOP + BOTTOM.
+   *
+   * Both edges use the exact same darkness and fade distance.
+   */
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__mobile-edge::before {
+    content: "" !important;
+
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    z-index: 1 !important;
+
+    display: block !important;
+
+    pointer-events: none !important;
+
+    opacity: 1 !important;
+
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.88) 0,
+        rgba(0, 0, 0, 0.68) 8px,
+        rgba(0, 0, 0, 0.43) 20px,
+        rgba(0, 0, 0, 0.22) 34px,
+        rgba(0, 0, 0, 0.09) 48px,
+        transparent 64px
+      ),
+      linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.88) 0,
+        rgba(0, 0, 0, 0.68) 8px,
+        rgba(0, 0, 0, 0.43) 20px,
+        rgba(0, 0, 0, 0.22) 34px,
+        rgba(0, 0, 0, 0.09) 48px,
+        transparent 64px
+      ) !important;
+
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * LEFT + RIGHT.
+   *
+   * Same exact treatment as top + bottom.
+   */
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__mobile-edge::after {
+    content: "" !important;
+
+    position: absolute !important;
+
+    inset: 0 !important;
+
+    z-index: 2 !important;
+
+    display: block !important;
+
+    pointer-events: none !important;
+
+    opacity: 1 !important;
+
+    background:
+      linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.88) 0,
+        rgba(0, 0, 0, 0.68) 8px,
+        rgba(0, 0, 0, 0.43) 20px,
+        rgba(0, 0, 0, 0.22) 34px,
+        rgba(0, 0, 0, 0.09) 48px,
+        transparent 64px
+      ),
+      linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0.88) 0,
+        rgba(0, 0, 0, 0.68) 8px,
+        rgba(0, 0, 0, 0.43) 20px,
+        rgba(0, 0, 0, 0.22) 34px,
+        rgba(0, 0, 0, 0.09) 48px,
+        transparent 64px
+      ) !important;
+
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /*
+   * Movies & Series:
+   * smaller than the previous 30px,
+   * but still clearly larger than the original 16–22px treatment.
+   */
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__content
+    .st-entertainment-cinema__copy
+    > .st-entertainment-cinema__eyebrow {
+    font-size: 26px !important;
+
+    font-weight: 670 !important;
+
+    line-height: 0.98 !important;
+
+    letter-spacing: -0.04em !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: #fff !important;
+
+    opacity: 1 !important;
+
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__content
+    .st-entertainment-cinema__copy
+    > .st-entertainment-cinema__eyebrow {
+    font-size: 24px !important;
+  }
+}
+
+/* === ST MOBILE MOVIES REAL EDGE AUTHORITATIVE END === */
+
+/* === ST MOBILE MOVIES META ALIGNMENT START === */
+
+@media (max-width: 700px) {
+  /*
+   * Keep:
+   *
+   * Movies & Series        Movie · 2023
+   *
+   * visually centered on the same horizontal row.
+   *
+   * Mobile only.
+   */
+  html
+    body
+    .st3-reveal--movies-series
+    .st-entertainment-cinema__content
+    .st-entertainment-cinema__copy
+    > .st-entertainment-cinema__active-kicker {
+    align-self: center !important;
+    justify-self: end !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    line-height: 1 !important;
+
+    transform: translateY(3px) !important;
+    translate: none !important;
+  }
+}
+
+/* === ST MOBILE MOVIES META ALIGNMENT END === */
