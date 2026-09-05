@@ -1288,6 +1288,58 @@ function defaultVariant(
   };
 }
 
+function specificationTextFromClipboardHtml(html: string) {
+  if (!html.trim() || typeof DOMParser === "undefined") {
+    return "";
+  }
+
+  const document = new DOMParser().parseFromString(html, "text/html");
+  const lines: string[] = [];
+
+  const elements = Array.from(
+    document.body.querySelectorAll("li, p, div, h1, h2, h3, h4, h5, h6"),
+  );
+
+  for (const element of elements) {
+    const hasNestedBlock = element.querySelector(
+      "li, p, div, h1, h2, h3, h4, h5, h6",
+    );
+
+    if (hasNestedBlock) {
+      continue;
+    }
+
+    const value = (element.textContent ?? "")
+      .replace(/\u00a0/g, " ")
+      .replace(/[ \t]+/g, " ")
+      .trim();
+
+    if (!value) {
+      continue;
+    }
+
+    const isListItem = element.tagName === "LI";
+
+    lines.push(isListItem ? `• ${value}` : value);
+  }
+
+  const uniqueLines: string[] = [];
+  const seen = new Set<string>();
+
+  for (const line of lines) {
+    const identity = line.replace(/^[•●▪◦*]\s*/, "").trim();
+
+    if (!identity || seen.has(identity)) {
+      continue;
+    }
+
+    seen.add(identity);
+    uniqueLines.push(line);
+  }
+
+  return uniqueLines.join("\n").trim();
+}
+
 export default function ElectronicsVariantEditor({
   variants,
   onChange,
@@ -1303,6 +1355,7 @@ export default function ElectronicsVariantEditor({
   const [newLevelName, setNewLevelName] = useState("");
   const [hierarchyError, setHierarchyError] = useState("");
   const [customSpecName, setCustomSpecName] = useState("");
+  const [bulkTechnicalSpecs, setBulkTechnicalSpecs] = useState("");
 
   const [customSpecError, setCustomSpecError] = useState("");
   const [technicalSpecsMessage, setTechnicalSpecsMessage] = useState("");
@@ -1888,6 +1941,164 @@ export default function ElectronicsVariantEditor({
           ? "technical specification"
           : "technical specifications"
       } to all ${orderedVariants.length} configurations.`,
+    );
+  }
+
+  function parseBulkTechnicalSpecifications() {
+    if (!activeVariant) {
+      return;
+    }
+
+    setCustomSpecError("");
+    setTechnicalSpecsMessage("");
+
+    const source = bulkTechnicalSpecs.replace(/\u00a0/g, " ").trim();
+
+    if (!source) {
+      setCustomSpecError("Paste technical specifications before parsing them.");
+      return;
+    }
+
+    const protectedKeys = new Set([
+      ...levels.map((level) => normalizeKey(level.key)),
+      normalizeKey(configurationHierarchyKey),
+    ]);
+
+    const parsedSpecifications = new Map<
+      string,
+      { label: string; value: string }
+    >();
+
+    let ignoredLines = 0;
+
+    const lines = source
+      .replace(/\r\n?/g, "\n")
+      .split("\n")
+      .map((line) =>
+        line
+          .trim()
+          .replace(/^[•●▪◦*]+\s*/, "")
+          .replace(/^[-–—]\s+/, "")
+          .replace(/^\d+[.)]\s+/, "")
+          .replace(/\*\*/g, "")
+          .trim(),
+      )
+      .filter(Boolean);
+
+    for (const line of lines) {
+      /*
+       * A specification MUST contain a colon.
+       *
+       * Lines without a colon are treated as headings, for example:
+       * "Version 10 000 mAh (PowerPod-10)"
+       * "Display and Design"
+       */
+      const colonIndex = line.indexOf(":");
+
+      if (colonIndex <= 0) {
+        ignoredLines += 1;
+        continue;
+      }
+
+      /*
+       * Split ONLY on the first colon.
+       * Any later colon remains part of the specification value.
+       */
+      const label = clean(line.slice(0, colonIndex));
+      const value = clean(line.slice(colonIndex + 1));
+
+      if (!label || !value || label.length > 100) {
+        ignoredLines += 1;
+        continue;
+      }
+
+      /*
+       * normalizeKey is used ONLY as an internal identity.
+       *
+       * The original label itself is preserved exactly so accents,
+       * punctuation and capitalization are never destroyed.
+       */
+      const identity = normalizeKey(label);
+
+      if (
+        !identity ||
+        protectedKeys.has(identity) ||
+        hiddenSelectorKeys.has(identity)
+      ) {
+        ignoredLines += 1;
+        continue;
+      }
+
+      parsedSpecifications.set(identity, {
+        label,
+        value,
+      });
+    }
+
+    if (parsedSpecifications.size === 0) {
+      setCustomSpecError(
+        'No specifications detected. Each specification needs the format "Title: value".',
+      );
+      return;
+    }
+
+    const parsedEntries = Array.from(parsedSpecifications.values());
+
+    emit(
+      orderedVariants.map((variant) => {
+        if (variant.clientId !== activeVariant.clientId) {
+          return variant;
+        }
+
+        const attributes = {
+          ...(variant.attributes ?? {}),
+        };
+
+        /*
+         * If the same specification already exists, replace it rather
+         * than producing a duplicate. Comparison uses the normalized
+         * identity, while the newly pasted human label is preserved.
+         */
+        for (const existingKey of Object.keys(attributes)) {
+          const existingIdentity = normalizeKey(existingKey);
+
+          if (
+            parsedSpecifications.has(existingIdentity) &&
+            existingKey !== configurationHierarchyKey
+          ) {
+            delete attributes[existingKey];
+          }
+        }
+
+        for (const specification of parsedEntries) {
+          attributes[specification.label] = specification.value;
+        }
+
+        return {
+          ...variant,
+          attributes,
+        };
+      }),
+    );
+
+    setBulkTechnicalSpecs("");
+    setCustomSpecError("");
+
+    const ignoredMessage =
+      ignoredLines > 0
+        ? ` · ignored ${ignoredLines} ${
+            ignoredLines === 1
+              ? "heading or unsupported line"
+              : "headings or unsupported lines"
+          }`
+        : "";
+
+    setTechnicalSpecsMessage(
+      `Parsed ${parsedEntries.length} ${
+        parsedEntries.length === 1
+          ? "technical specification"
+          : "technical specifications"
+      }${ignoredMessage}.`,
     );
   }
 
@@ -2611,6 +2822,89 @@ export default function ElectronicsVariantEditor({
               </section>
 
               <section className="mt-7 border-t border-white/10 pt-6">
+                <div className="mb-5 overflow-hidden rounded-[16px] border border-[#fdb73e]/25 bg-[#fdb73e]/[0.045]">
+                  <div className="border-b border-white/[0.07] px-4 py-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#fdb73e]">
+                          Quick paste specifications
+                        </p>
+
+                        <p className="mt-1.5 max-w-2xl text-[11px] leading-5 text-white/40">
+                          Copy a full specification list from Google or another
+                          source and paste it here. Each line containing a colon
+                          will automatically become a technical specification.
+                        </p>
+                      </div>
+
+                      <Copy className="mt-0.5 h-4 w-4 shrink-0 text-[#fdb73e]/70" />
+                    </div>
+                  </div>
+
+                  <div className="p-4">
+                    <textarea
+                      value={bulkTechnicalSpecs}
+                      onChange={(event) => {
+                        setBulkTechnicalSpecs(event.target.value);
+                        setCustomSpecError("");
+                        setTechnicalSpecsMessage("");
+                      }}
+                      onPaste={(event) => {
+                        const html = event.clipboardData.getData("text/html");
+
+                        if (!html) {
+                          return;
+                        }
+
+                        const reconstructed =
+                          specificationTextFromClipboardHtml(html);
+
+                        if (!reconstructed) {
+                          return;
+                        }
+
+                        event.preventDefault();
+
+                        setBulkTechnicalSpecs(reconstructed);
+                        setCustomSpecError("");
+                        setTechnicalSpecsMessage("");
+                      }}
+                      rows={8}
+                      spellCheck={false}
+                      placeholder={`Paste specifications here...
+
+Display and Design
+Screen: 6.3-inch OLED with ProMotion
+Resolution: 2622-by-1206 pixels at 460 ppi
+Brightness: 3000 nits peak outdoor brightness
+
+Performance and Hardware
+Processor: Apple A19 Pro chipset
+RAM: 12 GB RAM
+Storage Options: 256GB, 512GB, and 1TB`}
+                      className="w-full resize-y border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-[#fdb73e]/60"
+                    />
+
+                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-[10px] leading-4 text-white/30">
+                        Format:{" "}
+                        <span className="text-white/50">Title: value</span> ·
+                        Section headings are ignored automatically.
+                      </p>
+
+                      <button
+                        type="button"
+                        onClick={parseBulkTechnicalSpecifications}
+                        disabled={!bulkTechnicalSpecs.trim()}
+                        className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] border border-[#e3a32d] bg-[#fdb73e] px-5 text-[10px] font-semibold uppercase tracking-[0.08em] text-black transition hover:bg-[#ffc45b] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-35"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Parse specifications
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                   <input
                     value={customSpecName}
@@ -2673,7 +2967,7 @@ export default function ElectronicsVariantEditor({
                       >
                         <div className="flex items-center justify-between gap-3">
                           <span className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/35">
-                            {humanizeKey(key)}
+                            {key}
                           </span>
 
                           <button

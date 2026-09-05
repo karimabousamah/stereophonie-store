@@ -23,6 +23,7 @@ type EditProductPageProps = {
     error?: string;
     saved?: string;
     image_success?: string;
+    setup_saved?: string;
   }>;
 };
 
@@ -211,6 +212,8 @@ export default async function EditProductPage({
 
   const imageSuccessMessage = resolvedSearchParams.image_success;
 
+  const setupSaved = resolvedSearchParams.setup_saved === "true";
+
   const isLive = product.status === "published";
 
   return (
@@ -315,18 +318,22 @@ export default async function EditProductPage({
             </div>
           )}
 
-          <div className="mb-8">
-            <ImageManager
-              productId={product.id}
-              productName={product.name}
-              images={images}
-              configurations={variants.map((variant) => ({
-                id: variant.id,
-                variant_name: variant.variant_name || variant.size,
-              }))}
-              successMessage={imageSuccessMessage}
-            />
-          </div>
+          {setupSaved && (
+            <div className="mb-7 flex items-start gap-4 rounded-[18px] border border-[#fdb73e]/30 bg-[#fdb73e]/[0.07] p-5">
+              <CheckCircle2 className="h-5 w-5 shrink-0 self-center text-[#fdb73e]" />
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#fdb73e]">
+                  Product setup saved
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-white/65">
+                  Product information, configurations and store placement were
+                  saved. The current publication status was preserved.
+                </p>
+              </div>
+            </div>
+          )}
 
           <EditProductForm
             product={{
@@ -348,6 +355,18 @@ export default async function EditProductPage({
             categories={categoriesResult.data ?? []}
             brands={brandsResult.data ?? []}
             errorMessage={errorMessage}
+            mediaManager={
+              <ImageManager
+                productId={product.id}
+                productName={product.name}
+                images={images}
+                configurations={variants.map((variant) => ({
+                  id: variant.id,
+                  variant_name: variant.variant_name || variant.size,
+                }))}
+                successMessage={imageSuccessMessage}
+              />
+            }
           />
         </div>
       </div>

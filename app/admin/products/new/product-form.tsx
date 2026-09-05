@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   AlertCircle,
   ArrowRight,
@@ -118,6 +119,23 @@ export default function ProductForm({
   const [uploadFileName, setUploadFileName] = useState("");
   const [submissionError, setSubmissionError] = useState("");
 
+  const [submissionPhase, setSubmissionPhase] = useState<
+    "idle" | "preparing" | "uploading" | "saving" | "stopping"
+  >("idle");
+
+  const [activeSubmissionIntent, setActiveSubmissionIntent] = useState<
+    "draft" | "publish"
+  >("draft");
+
+  /*
+   * Cancellation is cooperative until the final Server Action handoff.
+   *
+   * Once requestSubmit() hands the form to Next.js / the server,
+   * cancellation is intentionally disabled because hiding the UI would
+   * not reliably cancel a database write already in progress.
+   */
+  const cancelSubmissionRef = useRef(false);
+
   const [variants, setVariants] = useState<AdminElectronicsVariant[]>(
     createInitialVariants,
   );
@@ -230,6 +248,42 @@ export default function ProductForm({
     [],
   );
 
+  async function waitForProcessingPaint(delay = 0) {
+    /*
+     * React state updates are asynchronous. Waiting for two animation
+     * frames guarantees that the processing overlay has an opportunity
+     * to reach the browser before expensive work or navigation begins.
+     */
+    await new Promise<void>((resolve) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          if (delay > 0) {
+            window.setTimeout(resolve, delay);
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
+  }
+
+  function resetSubmissionExperience() {
+    setIsSubmitting(false);
+    setSubmissionPhase("idle");
+    setUploadPercentage(0);
+    setUploadFileName("");
+    cancelSubmissionRef.current = false;
+  }
+
+  function stopSubmission() {
+    if (!isSubmitting || submissionPhase === "saving") {
+      return;
+    }
+
+    cancelSubmissionRef.current = true;
+    setSubmissionPhase("stopping");
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     const form = event.currentTarget;
 
@@ -270,12 +324,45 @@ export default function ProductForm({
       return;
     }
 
-    setSubmissionError("");
-    setUploadPercentage(0);
-    setUploadFileName("");
-    setIsSubmitting(true);
+    /*
+     * Commit the processing interface synchronously before beginning any
+     * asynchronous upload work or handing the form to the Server Action.
+     *
+     * This is intentionally owned by onSubmit rather than the button click,
+     * so visual state and duplicate-submission protection cannot race each
+     * other.
+     */
+    flushSync(() => {
+      setSubmissionError("");
+      setUploadPercentage(0);
+      setUploadFileName("");
+      setActiveSubmissionIntent(submissionIntent);
+      setSubmissionPhase("preparing");
+      setIsSubmitting(true);
+    });
+
+    cancelSubmissionRef.current = false;
 
     try {
+      /*
+       * Give React a moment to paint the processing state before any
+       * heavy image work or navigation begins.
+       *
+       * This also gives the administrator a genuine opportunity to stop
+       * an accidental submission before uploads/server persistence begin.
+       */
+      /*
+       * Make the processing experience visibly render before continuing.
+       * The short minimum display time also prevents a photo-less draft
+       * from flashing too quickly to be perceived.
+       */
+      await waitForProcessingPaint(650);
+
+      if (cancelSubmissionRef.current) {
+        resetSubmissionExperience();
+        return;
+      }
+
       let uploadedImages: Awaited<
         ReturnType<typeof uploadImagesBeforeProductSubmission>
       > = [];
@@ -290,16 +377,26 @@ export default function ProductForm({
                         : "Preparing product submission"} 0%".
        */
       if (selectedImages.length > 0) {
+        setSubmissionPhase("uploading");
+
         uploadedImages = await uploadImagesBeforeProductSubmission(form, {
           images: selectedImages,
           validateForm: submissionIntent === "publish",
 
           onProgress(progress) {
             setUploadPercentage(progress.percentage);
-
             setUploadFileName(progress.currentFileName);
           },
         });
+      }
+
+      /*
+       * A Stop request made while image preparation was active prevents
+       * the product from ever being handed to the Server Action.
+       */
+      if (cancelSubmissionRef.current) {
+        resetSubmissionExperience();
+        return;
       }
 
       const uploadedImagesJson = JSON.stringify(uploadedImages);
@@ -320,6 +417,21 @@ export default function ProductForm({
        * Allow exactly one real browser/Next.js Server Action submission.
        * Reusing the original submitter preserves Draft's formNoValidate
        * behavior and Publish's normal browser validation.
+       */
+      setSubmissionPhase("saving");
+
+      /*
+       * Force the finalizing state to visibly reach the browser before
+       * Next.js receives the Server Action submission. Without this paint
+       * boundary, a fast submission can navigate before the administrator
+       * ever sees the processing experience.
+       */
+      await waitForProcessingPaint(450);
+
+      /*
+       * After this point the browser is handing the completed form to the
+       * existing Next.js Server Action. The Stop control is therefore
+       * disabled rather than pretending a database request can be undone.
        */
       allowServerSubmissionRef.current = true;
 
@@ -350,14 +462,184 @@ export default function ProductForm({
           : "The product could not be saved.",
       );
 
-      setIsSubmitting(false);
-      setUploadPercentage(0);
-      setUploadFileName("");
+      resetSubmissionExperience();
     }
   }
 
+  const processingPercentage = (() => {
+    if (!isSubmitting) {
+      return 0;
+    }
+
+    if (submissionPhase === "preparing") {
+      return 8;
+    }
+
+    if (submissionPhase === "uploading") {
+      /*
+       * Keep the final portion of the progress track available for the
+       * database save/publication phase.
+       */
+      return Math.min(84, Math.max(12, 12 + uploadPercentage * 0.72));
+    }
+
+    if (submissionPhase === "saving") {
+      return 94;
+    }
+
+    if (submissionPhase === "stopping") {
+      return Math.min(88, Math.max(8, 12 + uploadPercentage * 0.72));
+    }
+
+    return 0;
+  })();
+
+  const processingTitle =
+    activeSubmissionIntent === "publish"
+      ? "Publishing product"
+      : "Saving product draft";
+
+  const processingDescription = (() => {
+    if (submissionPhase === "preparing") {
+      return activeSubmissionIntent === "publish"
+        ? "Preparing product information for publication."
+        : "Preparing your product draft safely.";
+    }
+
+    if (submissionPhase === "uploading") {
+      return uploadFileName
+        ? `Processing ${uploadFileName}`
+        : "Processing product photography.";
+    }
+
+    if (submissionPhase === "saving") {
+      return activeSubmissionIntent === "publish"
+        ? "Finalizing product data and pushing it live."
+        : "Finalizing product data and saving your draft.";
+    }
+
+    if (submissionPhase === "stopping") {
+      return "Stopping before the product is submitted.";
+    }
+
+    return "";
+  })();
+
   return (
     <form ref={formRef} action={createProduct} onSubmit={handleSubmit}>
+      {isSubmitting && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-5 backdrop-blur-md"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="w-full max-w-xl overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0b0c] shadow-[0_30px_100px_rgba(0,0,0,0.65)]">
+            <div className="border-b border-white/10 px-6 py-6 sm:px-8">
+              <div className="flex items-start justify-between gap-6">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
+                    Stereophonie Product Manager
+                  </p>
+
+                  <h2 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white">
+                    {processingTitle}
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-6 text-white/45">
+                    {processingDescription}
+                  </p>
+                </div>
+
+                <div className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">
+                  {submissionPhase === "saving"
+                    ? "Finalizing"
+                    : submissionPhase === "stopping"
+                      ? "Stopping"
+                      : "Processing"}
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 py-6 sm:px-8">
+              <div className="flex items-end justify-between gap-5">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                    Progress
+                  </p>
+
+                  <p className="mt-1 text-sm font-medium text-white/75">
+                    {submissionPhase === "preparing" && "Preparing submission"}
+
+                    {submissionPhase === "uploading" &&
+                      `${Math.round(uploadPercentage)}% of media processed`}
+
+                    {submissionPhase === "saving" &&
+                      (activeSubmissionIntent === "publish"
+                        ? "Publishing to storefront"
+                        : "Saving to Draft products")}
+
+                    {submissionPhase === "stopping" && "Stopping process"}
+                  </p>
+                </div>
+
+                <span className="font-mono text-sm tabular-nums text-white/50">
+                  {Math.round(processingPercentage)}%
+                </span>
+              </div>
+
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.07]">
+                <div
+                  className="h-full rounded-full bg-[#fdb73e] transition-[width] duration-500 ease-out"
+                  style={{
+                    width: `${processingPercentage}%`,
+                  }}
+                />
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-4">
+                <div className="flex items-center gap-3">
+                  <span className="relative flex h-2.5 w-2.5">
+                    {submissionPhase !== "stopping" && (
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#fdb73e] opacity-40" />
+                    )}
+
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#fdb73e]" />
+                  </span>
+
+                  <p className="text-xs leading-5 text-white/40">
+                    {submissionPhase === "saving"
+                      ? "The final save is now being processed securely. Please keep this page open."
+                      : submissionPhase === "stopping"
+                        ? "Your product will not be submitted to the server."
+                        : "You can stop the process before the final save begins."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-center justify-between gap-4">
+                <p className="max-w-xs text-[10px] leading-5 text-white/25">
+                  Do not close or refresh this page while product information is
+                  being processed.
+                </p>
+
+                {submissionPhase !== "saving" && (
+                  <button
+                    type="button"
+                    onClick={stopSubmission}
+                    disabled={submissionPhase === "stopping"}
+                    className="shrink-0 rounded-full border border-red-400/30 bg-red-400/[0.06] px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-red-300 transition hover:border-red-300 hover:bg-red-400/10 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {submissionPhase === "stopping"
+                      ? "Stopping..."
+                      : "Stop process"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <input
         ref={resolvedIntentInputRef}
         type="hidden"

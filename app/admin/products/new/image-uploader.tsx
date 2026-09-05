@@ -19,8 +19,6 @@ type SelectedImage = {
   id: string;
   file: File;
   previewUrl: string;
-  altText: string;
-
   /*
    * Empty array = Shared with all configurations.
    *
@@ -187,7 +185,7 @@ export default function ImageUploader({
               .filter(Boolean),
           ),
         ),
-        altText: image.altText,
+        altText: "",
         isPrimary: absoluteIndex === 0,
         position: absoluteIndex,
       }),
@@ -247,7 +245,6 @@ export default function ImageUploader({
       id: crypto.randomUUID(),
       file,
       previewUrl: URL.createObjectURL(file),
-      altText: "",
       configurationIds: activeConfigurationId ? [activeConfigurationId] : [],
     }));
 
@@ -284,19 +281,6 @@ export default function ImageUploader({
 
       return current.filter((image) => image.id !== imageId);
     });
-  }
-
-  function updateAltText(imageId: string, altText: string) {
-    setImages((current) =>
-      current.map((image) =>
-        image.id === imageId
-          ? {
-              ...image,
-              altText,
-            }
-          : image,
-      ),
-    );
   }
 
   function toggleConfiguration(imageId: string, configurationId: string) {
@@ -562,7 +546,7 @@ export default function ImageUploader({
                 }}
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-red-400/20 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.07] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
                 Clear all photographs
               </button>
 
@@ -613,10 +597,7 @@ export default function ImageUploader({
                   <div className="relative aspect-[4/3] overflow-hidden bg-white">
                     <img
                       src={image.previewUrl}
-                      alt={
-                        image.altText ||
-                        `Product photograph ${visibleIndex + 1}`
-                      }
+                      alt={`Product photograph ${visibleIndex + 1}`}
                       className="h-full w-full object-contain"
                     />
 
@@ -714,35 +695,15 @@ export default function ImageUploader({
                       </p>
                     </div>
 
-                    <div className="mt-4">
-                      <label
-                        htmlFor={`alt-${image.id}`}
-                        className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35"
-                      >
-                        Image description
-                      </label>
-
-                      <input
-                        id={`alt-${image.id}`}
-                        type="text"
-                        value={image.altText}
-                        onChange={(event) =>
-                          updateAltText(image.id, event.target.value)
-                        }
-                        placeholder="Front view, back view, detail…"
-                        className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/30 px-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/35"
-                      />
-                    </div>
-
                     <div className="mt-4 flex items-center gap-2">
                       <button
                         type="button"
                         disabled={disabled || visibleIndex === 0}
                         onClick={() => moveImage(image.id, "left")}
                         title="Move photograph earlier"
-                        className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                        className="flex h-9 flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                       >
-                        <ArrowLeft className="h-4 w-4" />
+                        <ArrowLeft className="h-3.5 w-3.5" />
                       </button>
 
                       <button
@@ -752,9 +713,9 @@ export default function ImageUploader({
                         }
                         onClick={() => moveImage(image.id, "right")}
                         title="Move photograph later"
-                        className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                        className="flex h-9 flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                       >
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-3.5 w-3.5" />
                       </button>
 
                       <button
@@ -762,9 +723,9 @@ export default function ImageUploader({
                         disabled={disabled}
                         onClick={() => removeImage(image.id)}
                         title="Remove photograph"
-                        className="flex h-10 flex-1 items-center justify-center rounded-xl border border-white/10 text-white/50 transition hover:border-red-400/30 hover:bg-red-400/[0.06] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-20"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-red-400/15 bg-red-400/[0.025] text-red-300/55 transition hover:border-red-400/35 hover:bg-red-400/[0.07] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-20"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>

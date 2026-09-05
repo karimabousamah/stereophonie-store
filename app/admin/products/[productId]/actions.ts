@@ -211,6 +211,12 @@ export async function updateProduct(formData: FormData) {
 
   const publishingIntent = String(formData.get("intent") ?? "draft");
 
+  /*
+   * setup = persist Product Information + Configurations + Store Placement
+   * without changing the product's existing publication status.
+   */
+  const isSetupIntent = publishingIntent === "setup";
+
   const variantsJson = String(formData.get("variants_json") ?? "[]");
 
   let isFeatured = formData.get("is_featured") === "on";
@@ -238,14 +244,36 @@ export async function updateProduct(formData: FormData) {
     );
   }
 
-  validateVariants(
-    productId,
-    variants,
-    publishingIntent === "archive" ? "draft" : publishingIntent,
-  );
+  const { data: currentProduct, error: currentProductError } = await supabase
+    .from("products")
+    .select("status")
+    .eq("id", productId)
+    .single();
 
-  const productStatus =
-    publishingIntent === "publish"
+  if (currentProductError || !currentProduct) {
+    redirectWithError(
+      productId,
+      currentProductError?.message ??
+        "The current product status could not be verified.",
+    );
+  }
+
+  const currentProductStatus = String(currentProduct.status || "draft");
+
+  const validationIntent =
+    publishingIntent === "archive"
+      ? "draft"
+      : isSetupIntent
+        ? currentProductStatus === "published"
+          ? "publish"
+          : "draft"
+        : publishingIntent;
+
+  validateVariants(productId, variants, validationIntent);
+
+  const productStatus = isSetupIntent
+    ? currentProductStatus
+    : publishingIntent === "publish"
       ? "published"
       : publishingIntent === "archive"
         ? "archived"
@@ -447,8 +475,12 @@ export async function updateProduct(formData: FormData) {
   revalidatePath("/shop");
   revalidatePath(`/shop/${productId}`);
 
-  if (productStatus === "archived") {
+  if (productStatus === "archived" && !isSetupIntent) {
     redirect("/admin/products?filter=archived");
+  }
+
+  if (isSetupIntent) {
+    redirect(`/admin/products/${productId}?setup_saved=true`);
   }
 
   redirect(

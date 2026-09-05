@@ -18,7 +18,6 @@ import {
   deleteProductImage,
   moveProductImage,
   setPrimaryProductImage,
-  updateProductImageAltText,
   updateProductImageVariantName,
   updateProductImageVariantUsageBulk,
   finalizeDirectProductImageUploads,
@@ -1062,8 +1061,8 @@ export default function ImageManager({
       <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
         <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
-              Product media
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
+              04 · Product media
             </p>
 
             <h2 className="mt-2 text-xl font-semibold">Manage photographs</h2>
@@ -1707,40 +1706,6 @@ export default function ImageManager({
                         })()}
                       </form>
 
-                      <form action={updateProductImageAltText}>
-                        <input
-                          type="hidden"
-                          name="product_id"
-                          value={productId}
-                        />
-
-                        <input type="hidden" name="image_id" value={image.id} />
-
-                        <label
-                          htmlFor={`alt-text-${image.id}`}
-                          className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/40"
-                        >
-                          Image description
-                        </label>
-
-                        <textarea
-                          id={`alt-text-${image.id}`}
-                          name="alt_text"
-                          rows={2}
-                          defaultValue={image.alt_text ?? ""}
-                          placeholder="Example: Front view of the dress"
-                          className="mt-2 w-full resize-none border border-white/10 bg-black/30 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-white/40"
-                        />
-
-                        <button
-                          type="submit"
-                          className="mt-3 inline-flex items-center gap-2 border border-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/50 transition hover:border-white hover:bg-white hover:text-black"
-                        >
-                          <Save className="h-3.5 w-3.5" />
-                          Save description
-                        </button>
-                      </form>
-
                       {isShared ? (
                         <div className="space-y-3 border border-white/10 bg-black/20 p-3">
                           <div className="flex items-center justify-between gap-3">
@@ -1791,9 +1756,9 @@ export default function ImageManager({
                                 type="submit"
                                 disabled={sharedIndex <= 0}
                                 aria-label="Move shared photograph earlier"
-                                className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                                className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                               >
-                                <ArrowLeft className="h-4 w-4" />
+                                <ArrowLeft className="h-3.5 w-3.5" />
                               </button>
                             </form>
 
@@ -1826,9 +1791,9 @@ export default function ImageManager({
                                   sharedIndex >= sharedImages.length - 1
                                 }
                                 aria-label="Move shared photograph later"
-                                className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                                className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                               >
-                                <ArrowRight className="h-4 w-4" />
+                                <ArrowRight className="h-3.5 w-3.5" />
                               </button>
                             </form>
 
@@ -1853,10 +1818,10 @@ export default function ImageManager({
                                 type="submit"
                                 disabled={image.is_primary}
                                 aria-label="Set shared photograph as Main"
-                                className="flex h-11 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-emerald-400/35 hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/30 disabled:text-emerald-300"
+                                className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.05] hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/25 disabled:bg-emerald-400/[0.05] disabled:text-emerald-300"
                               >
                                 <Star
-                                  className={`h-4 w-4 ${
+                                  className={`h-3.5 w-3.5 ${
                                     image.is_primary ? "fill-current" : ""
                                   }`}
                                 />
@@ -1974,9 +1939,9 @@ export default function ImageManager({
                                       type="submit"
                                       disabled={configurationIndex <= 0}
                                       aria-label={`Move photograph earlier in ${configurationLabel}`}
-                                      className="flex h-10 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                                      className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                                     >
-                                      <ArrowLeft className="h-4 w-4" />
+                                      <ArrowLeft className="h-3.5 w-3.5" />
                                     </button>
                                   </form>
 
@@ -2016,9 +1981,9 @@ export default function ImageManager({
                                         configurationImages.length - 1
                                       }
                                       aria-label={`Move photograph later in ${configurationLabel}`}
-                                      className="flex h-10 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                                      className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                                     >
-                                      <ArrowRight className="h-4 w-4" />
+                                      <ArrowRight className="h-3.5 w-3.5" />
                                     </button>
                                   </form>
 
@@ -2052,10 +2017,10 @@ export default function ImageManager({
                                       type="submit"
                                       disabled={assignment.is_primary}
                                       aria-label={`Set as Main for ${configurationLabel}`}
-                                      className="flex h-10 w-full items-center justify-center border border-white/10 text-white/50 transition hover:border-emerald-400/35 hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/30 disabled:text-emerald-300"
+                                      className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.05] hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/25 disabled:bg-emerald-400/[0.05] disabled:text-emerald-300"
                                     >
                                       <Star
-                                        className={`h-4 w-4 ${
+                                        className={`h-3.5 w-3.5 ${
                                           assignment.is_primary
                                             ? "fill-current"
                                             : ""
@@ -2093,10 +2058,11 @@ export default function ImageManager({
                         <button
                           type="submit"
                           aria-label="Delete photograph"
-                          className="flex h-11 w-full items-center justify-center gap-2 border border-red-400/20 text-[10px] font-semibold uppercase tracking-[0.13em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.06] hover:text-red-300"
+                          title="Delete photograph"
+                          className="flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.025] px-3 text-[9px] font-semibold uppercase tracking-[0.13em] text-red-300/65 transition hover:border-red-400/40 hover:bg-red-400/[0.07] hover:text-red-300"
                         >
-                          <Trash2 className="h-4 w-4" />
-                          Delete photograph
+                          <Trash2 className="h-3.5 w-3.5 shrink-0" />
+                          <span>Delete photograph</span>
                         </button>
                       </form>
                     </div>

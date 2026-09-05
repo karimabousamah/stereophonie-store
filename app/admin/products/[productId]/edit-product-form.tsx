@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
 import {
   AlertCircle,
   Archive,
@@ -138,6 +145,7 @@ type EditProductFormProps = {
     name: string;
   }[];
   errorMessage?: string;
+  mediaManager?: ReactNode;
 };
 
 export default function EditProductForm({
@@ -145,10 +153,22 @@ export default function EditProductForm({
   categories,
   brands,
   errorMessage,
+  mediaManager,
 }: EditProductFormProps) {
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
 
   const [deletePending, startDeleteTransition] = useTransition();
+
+  const [productSaveState, setProductSaveState] = useState<
+    "idle" | "draft" | "publish"
+  >("idle");
+
+  const productSaveCancelledRef = useRef(false);
+
+  function cancelProductSave() {
+    productSaveCancelledRef.current = true;
+    setProductSaveState("idle");
+  }
 
   function permanentlyDeleteProduct() {
     if (deletePending) {
@@ -289,6 +309,11 @@ export default function EditProductForm({
 
           const intent = submitter.value;
 
+          if (intent === "draft" || intent === "publish") {
+            productSaveCancelledRef.current = false;
+            setProductSaveState(intent);
+          }
+
           void new Promise<boolean>((resolve) => {
             const detail = {
               handled: false,
@@ -311,6 +336,16 @@ export default function EditProductForm({
             }
           }).then((saved) => {
             if (!saved) {
+              setProductSaveState("idle");
+              return;
+            }
+
+            if (
+              (intent === "draft" || intent === "publish") &&
+              productSaveCancelledRef.current
+            ) {
+              productSaveCancelledRef.current = false;
+              setProductSaveState("idle");
               return;
             }
 
@@ -331,6 +366,142 @@ export default function EditProductForm({
           });
         }}
       >
+        {productSaveState !== "idle" && (
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center px-5"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.24)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+            }}
+            aria-live="assertive"
+            aria-busy="true"
+          >
+            <div className="w-full max-w-[420px] overflow-hidden rounded-[22px] border border-white/70 bg-white/95 shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
+              <div className="p-6">
+                <div className="flex items-start justify-between gap-5">
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#c97d00]">
+                      Stereophonie Product Manager
+                    </p>
+
+                    <h2 className="mt-2 text-[21px] font-semibold tracking-[-0.04em] text-[#1d1d1f]">
+                      {productSaveState === "publish"
+                        ? "Saving and publishing"
+                        : "Saving product draft"}
+                    </h2>
+
+                    <p className="mt-2 text-[12px] leading-5 text-[#6e6e73]">
+                      {productSaveState === "publish"
+                        ? "Processing your latest changes before this product goes live."
+                        : "Processing your latest changes before saving this draft."}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-5 rounded-[15px] border border-black/[0.055] bg-[#f7f7f8] p-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#fdb73e]" />
+
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#515154]">
+                        Processing
+                      </span>
+                    </div>
+
+                    <span className="text-[9px] text-[#86868b]">
+                      Please wait
+                    </span>
+                  </div>
+
+                  <div className="st-product-save-track relative mt-3 h-[7px] w-full overflow-hidden rounded-full bg-black/[0.08]">
+                    <div
+                      className="st-product-save-loader absolute inset-y-0 left-0 rounded-full"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between gap-4 border-t border-black/[0.07] pt-4">
+                  <p className="max-w-[210px] text-[10px] leading-[16px] text-[#86868b]">
+                    You can cancel before the final save is submitted.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={cancelProductSave}
+                    className="shrink-0 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-red-600 transition hover:border-red-300 hover:bg-red-100"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <style>{`
+              .st-product-save-track {
+                position: relative;
+                isolation: isolate;
+              }
+
+              .st-product-save-loader {
+                display: block !important;
+                width: 100%;
+                opacity: 1 !important;
+                visibility: visible !important;
+                background: #fdb73e !important;
+                transform: scaleX(0);
+                transform-origin: left center;
+                box-shadow:
+                  0 0 7px rgba(253, 183, 62, 0.32),
+                  0 0 14px rgba(253, 183, 62, 0.12);
+                animation: stProductSaveFill 7.5s
+                  cubic-bezier(0.22, 0.61, 0.36, 1)
+                  1 forwards !important;
+                will-change: transform;
+                z-index: 2;
+              }
+
+              @keyframes stProductSaveFill {
+                0% {
+                  transform: scaleX(0);
+                }
+
+                15% {
+                  transform: scaleX(0.12);
+                }
+
+                38% {
+                  transform: scaleX(0.34);
+                }
+
+                62% {
+                  transform: scaleX(0.61);
+                }
+
+                82% {
+                  transform: scaleX(0.82);
+                }
+
+                96% {
+                  transform: scaleX(1);
+                }
+
+                100% {
+                  transform: scaleX(1);
+                }
+              }
+
+              @media (prefers-reduced-motion: reduce) {
+                .st-product-save-loader {
+                  animation: stProductSaveFill 7.5s
+                    linear 1 forwards !important;
+                }
+              }
+            `}</style>
+          </div>
+        )}
+
         <input type="hidden" name="product_id" value={product.id} />
 
         <input
@@ -579,6 +750,38 @@ export default function EditProductForm({
                 </label>
               </div>
             </section>
+
+            <section className="overflow-hidden rounded-[24px] border border-[#fdb73e]/25 bg-[#0d0d0d]">
+              <div className="flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+                <div className="max-w-2xl">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
+                    Setup checkpoint
+                  </p>
+
+                  <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-white">
+                    Save product setup
+                  </h2>
+
+                  <p className="mt-2 text-sm leading-6 text-white/40">
+                    Save product information, configurations and store placement
+                    before managing photographs. The current Live or Draft
+                    status will stay exactly as it is.
+                  </p>
+                </div>
+
+                <button
+                  id="st-save-product-setup"
+                  type="submit"
+                  name="intent"
+                  value="setup"
+                  disabled={productSaveState !== "idle"}
+                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-[#e2a128] bg-[#fdb73e] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45"
+                >
+                  <Save className="h-4 w-4" />
+                  Save product setup
+                </button>
+              </div>
+            </section>
           </div>
 
           <aside>
@@ -677,6 +880,7 @@ export default function EditProductForm({
                     id="st-save-existing-product-draft"
                     type="submit"
                     name="intent"
+                    disabled={productSaveState !== "idle"}
                     value="draft"
                     className="flex w-full items-center justify-between rounded-full border border-white/15 bg-white/[0.025] px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-white transition hover:border-white hover:bg-white hover:text-black"
                   >
@@ -692,6 +896,7 @@ export default function EditProductForm({
                     id="st-save-existing-product-publish"
                     type="submit"
                     name="intent"
+                    disabled={productSaveState !== "idle"}
                     value="publish"
                     className="flex w-full items-center justify-between rounded-full border border-emerald-300 bg-emerald-300 px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-emerald-300"
                   >
@@ -708,6 +913,12 @@ export default function EditProductForm({
           </aside>
         </div>
       </form>
+
+      {mediaManager ? (
+        <div className="mt-7" data-admin-product-media-section="04">
+          {mediaManager}
+        </div>
+      ) : null}
 
       <section
         data-admin-danger-zone="true"
