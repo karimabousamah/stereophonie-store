@@ -3,10 +3,9 @@ import "server-only";
 import { Resend } from "resend";
 
 import {
-  buildCustomerEmailLayout,
-  buildEmailButton,
   EMAIL_COLORS,
   escapeEmailHtml,
+  getEmailLogoUrl,
   getEmailSiteUrl,
 } from "@/lib/email/customer-email-ui";
 
@@ -84,12 +83,14 @@ function detailRow(label: string, value: string, emphasized = false) {
   return `
     <tr>
       <td
+        width="34%"
         style="
-          padding:10px 0;
+          width:34%;
+          padding:7px 0;
           border-bottom:1px solid ${EMAIL_COLORS.border};
           color:${EMAIL_COLORS.secondaryText};
-          font-size:12px;
-          line-height:18px;
+          font-size:10.5px;
+          line-height:15px;
           vertical-align:top;
         "
       >
@@ -97,15 +98,19 @@ function detailRow(label: string, value: string, emphasized = false) {
       </td>
 
       <td
+        width="66%"
         align="right"
         style="
-          padding:10px 0 10px 18px;
+          width:66%;
+          padding:7px 0 7px 12px;
           border-bottom:1px solid ${EMAIL_COLORS.border};
           color:${EMAIL_COLORS.text};
-          font-size:${emphasized ? "15px" : "12px"};
-          line-height:18px;
+          font-size:${emphasized ? "12.5px" : "11px"};
+          line-height:${emphasized ? "17px" : "16px"};
           font-weight:${emphasized ? "800" : "700"};
           vertical-align:top;
+          overflow-wrap:anywhere;
+          word-break:break-word;
         "
       >
         ${escapeEmailHtml(value)}
@@ -183,7 +188,7 @@ export async function sendAdminOrderNotificationEmail(
         <tr>
           <td
             style="
-              padding:14px 0;
+              padding:10px 0;
               border-bottom:1px solid ${EMAIL_COLORS.border};
               vertical-align:top;
             "
@@ -191,8 +196,8 @@ export async function sendAdminOrderNotificationEmail(
             <div
               style="
                 color:${EMAIL_COLORS.text};
-                font-size:13px;
-                line-height:19px;
+                font-size:11.5px;
+                line-height:16px;
                 font-weight:800;
               "
             >
@@ -206,8 +211,8 @@ export async function sendAdminOrderNotificationEmail(
                     style="
                       margin-top:3px;
                       color:${EMAIL_COLORS.secondaryText};
-                      font-size:11px;
-                      line-height:17px;
+                      font-size:10px;
+                      line-height:14px;
                     "
                   >
                     ${escapeEmailHtml(configuration)}
@@ -223,8 +228,8 @@ export async function sendAdminOrderNotificationEmail(
                     style="
                       margin-top:2px;
                       color:${EMAIL_COLORS.tertiaryText};
-                      font-size:10px;
-                      line-height:16px;
+                      font-size:9px;
+                      line-height:13px;
                     "
                   >
                     SKU ${escapeEmailHtml(sku)}
@@ -237,7 +242,7 @@ export async function sendAdminOrderNotificationEmail(
           <td
             align="center"
             style="
-              padding:14px 12px;
+              padding:10px 8px;
               border-bottom:1px solid ${EMAIL_COLORS.border};
               color:${EMAIL_COLORS.secondaryText};
               font-size:12px;
@@ -251,7 +256,7 @@ export async function sendAdminOrderNotificationEmail(
           <td
             align="right"
             style="
-              padding:14px 0;
+              padding:10px 0;
               border-bottom:1px solid ${EMAIL_COLORS.border};
               color:${EMAIL_COLORS.text};
               font-size:12px;
@@ -290,8 +295,8 @@ export async function sendAdminOrderNotificationEmail(
           <div
             style="
               display:inline-block;
-              margin-bottom:14px;
-              padding:7px 11px;
+              margin-bottom:10px;
+              padding:5px 8px;
               border-radius:999px;
               background:${fulfillmentBadgeBackground};
               color:${fulfillmentBadgeText};
@@ -309,8 +314,8 @@ export async function sendAdminOrderNotificationEmail(
             style="
               margin:0;
               color:${EMAIL_COLORS.text};
-              font-size:27px;
-              line-height:34px;
+              font-size:22px;
+              line-height:27px;
               font-weight:800;
               letter-spacing:-0.03em;
             "
@@ -320,7 +325,7 @@ export async function sendAdminOrderNotificationEmail(
 
           <p
             style="
-              margin:8px 0 0;
+              margin:6px 0 0;
               color:${EMAIL_COLORS.secondaryText};
               font-size:13px;
               line-height:20px;
@@ -336,7 +341,7 @@ export async function sendAdminOrderNotificationEmail(
       </tr>
 
       <tr>
-        <td style="padding-top:28px;">
+        <td style="padding-top:18px;">
           <table
             role="presentation"
             width="100%"
@@ -358,7 +363,7 @@ export async function sendAdminOrderNotificationEmail(
         input.fulfillmentMethod === "delivery"
           ? `
             <tr>
-              <td style="padding-top:28px;">
+              <td style="padding-top:18px;">
                 <div
                   style="
                     margin-bottom:10px;
@@ -391,10 +396,10 @@ export async function sendAdminOrderNotificationEmail(
           `
           : `
             <tr>
-              <td style="padding-top:24px;">
+              <td style="padding-top:16px;">
                 <div
                   style="
-                    padding:14px 16px;
+                    padding:10px 12px;
                     border:1px solid ${EMAIL_COLORS.border};
                     border-radius:12px;
                     background:${EMAIL_COLORS.soft};
@@ -415,7 +420,7 @@ export async function sendAdminOrderNotificationEmail(
       }
 
       <tr>
-        <td style="padding-top:30px;">
+        <td style="padding-top:20px;">
           <div
             style="
               margin-bottom:10px;
@@ -443,7 +448,7 @@ export async function sendAdminOrderNotificationEmail(
       </tr>
 
       <tr>
-        <td style="padding-top:24px;">
+        <td style="padding-top:16px;">
           <table
             role="presentation"
             width="100%"
@@ -474,23 +479,211 @@ export async function sendAdminOrderNotificationEmail(
       </tr>
 
       <tr>
-        <td style="padding-top:30px;">
-          ${buildEmailButton({
-            href: orderUrl,
-            label: "Open order in admin",
-          })}
+        <td style="padding-top:20px;">
+          <table
+            role="presentation"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            align="center"
+          >
+            <tr>
+              <td
+                align="center"
+                bgcolor="${EMAIL_COLORS.mustard}"
+                style="
+                  border-radius:999px;
+                  background:${EMAIL_COLORS.mustard};
+                "
+              >
+                <a
+                  href="${escapeEmailHtml(orderUrl)}"
+                  style="
+                    display:inline-block;
+                    padding:10px 18px;
+                    border-radius:999px;
+                    color:${EMAIL_COLORS.black};
+                    font-family:Arial,Helvetica,sans-serif;
+                    font-size:10.5px;
+                    line-height:15px;
+                    font-weight:800;
+                    text-decoration:none;
+                  "
+                >
+                  Open order in admin
+                </a>
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>
   `;
 
-  const html = buildCustomerEmailLayout({
-    title: `New ${fulfillmentLabel.toLowerCase()} order ${input.orderNumber} — Stereophonie`,
-    previewText: `${input.orderNumber} · ${fulfillmentLabel} · ${money(
-      input.total,
-    )}`,
-    content,
-  });
+  const logoUrl = escapeEmailHtml(getEmailLogoUrl());
+
+  const safeTitle = escapeEmailHtml(
+    `New ${fulfillmentLabel.toLowerCase()} order ${input.orderNumber} — Stereophonie`,
+  );
+
+  const safePreviewText = escapeEmailHtml(
+    `${input.orderNumber} · ${fulfillmentLabel} · ${money(input.total)}`,
+  );
+
+  const html = `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1"
+        />
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
+        <title>${safeTitle}</title>
+
+        <style>
+          @media screen and (max-width:560px) {
+            .st-admin-shell {
+              padding:8px !important;
+            }
+
+            .st-admin-card {
+              border-radius:14px !important;
+            }
+
+            .st-admin-content {
+              padding:16px 14px 18px !important;
+            }
+
+            .st-admin-logo {
+              width:108px !important;
+              max-width:108px !important;
+            }
+          }
+        </style>
+      </head>
+
+      <body
+        style="
+          margin:0;
+          padding:0;
+          width:100%;
+          background:${EMAIL_COLORS.background};
+          color:${EMAIL_COLORS.text};
+          font-family:Arial,Helvetica,sans-serif;
+          -webkit-text-size-adjust:100%;
+        "
+      >
+        <div
+          style="
+            display:none;
+            max-height:0;
+            overflow:hidden;
+            opacity:0;
+            color:transparent;
+          "
+        >
+          ${safePreviewText}
+        </div>
+
+        <table
+          role="presentation"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          style="
+            width:100%;
+            background:${EMAIL_COLORS.background};
+          "
+        >
+          <tr>
+            <td
+              class="st-admin-shell"
+              align="center"
+              style="padding:16px 10px;"
+            >
+              <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                  width:100%;
+                  max-width:520px;
+                  margin:0 auto;
+                "
+              >
+                <tr>
+                  <td
+                    align="center"
+                    style="padding:2px 0 12px;"
+                  >
+                    <img
+                      class="st-admin-logo"
+                      src="${logoUrl}"
+                      width="120"
+                      alt="Stereophonie Store"
+                      style="
+                        display:block;
+                        width:120px;
+                        max-width:120px;
+                        height:auto;
+                        margin:0 auto;
+                        border:0;
+                      "
+                    />
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    class="st-admin-card"
+                    style="
+                      background:${EMAIL_COLORS.surface};
+                      border:1px solid ${EMAIL_COLORS.border};
+                      border-radius:16px;
+                      overflow:hidden;
+                    "
+                  >
+                    <div
+                      class="st-admin-content"
+                      style="
+                        padding:20px 20px 22px;
+                      "
+                    >
+                      ${content}
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    align="center"
+                    style="
+                      padding:12px 8px 2px;
+                      color:${EMAIL_COLORS.tertiaryText};
+                      font-size:9px;
+                      line-height:13px;
+                    "
+                  >
+                    <strong style="color:${EMAIL_COLORS.secondaryText};">
+                      © Stereophonie Store
+                    </strong>
+                    <br />
+                    Administrator order notification
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `;
 
   const { data, error } = await resend.emails.send({
     from: fromAddress,
