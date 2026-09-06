@@ -1,6 +1,7 @@
 "use server";
 
 import { processStockNotificationsForVariants } from "@/lib/email/process-stock-notifications";
+import { sendAdminOrderNotificationEmail } from "@/lib/email/send-admin-order-notification";
 import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
 import { getPublicStoreSettings } from "@/lib/store-settings";
 import { createClient } from "@/lib/supabase/server";
@@ -510,6 +511,59 @@ export async function submitOrder(
     console.error(
       `Order confirmation email failed for order ${authoritativeOrderNumber}:`,
       emailResult.message,
+    );
+  }
+
+  try {
+    const adminEmailResult = await sendAdminOrderNotificationEmail({
+      orderId: result.order_id,
+
+      orderNumber: authoritativeOrderNumber,
+
+      fulfillmentMethod,
+
+      customer: verifiedCustomer,
+
+      subtotal,
+
+      discountAmount,
+
+      deliveryFee,
+
+      total,
+
+      couponCode: cleanText(authoritativeOrder.coupon_code) || null,
+
+      createdAt: cleanText(authoritativeOrder.created_at) || null,
+
+      paymentMethod: input.paymentMethod ?? null,
+
+      items: input.items.map((item) => ({
+        name: cleanText(item.name) || "Product",
+
+        size: cleanText(item.size),
+
+        sku: receiptSkuByVariantId.get(cleanText(item.variantId)) || null,
+
+        quantity: item.quantity,
+
+        unitPrice:
+          typeof item.unitPrice === "number" && Number.isFinite(item.unitPrice)
+            ? Math.max(0, item.unitPrice)
+            : 0,
+      })),
+    });
+
+    if (!adminEmailResult.success) {
+      console.error(
+        `Admin order notification failed for order ${authoritativeOrderNumber}:`,
+        adminEmailResult.message,
+      );
+    }
+  } catch (error) {
+    console.error(
+      `Admin order notification could not be processed for order ${authoritativeOrderNumber}:`,
+      error,
     );
   }
 
