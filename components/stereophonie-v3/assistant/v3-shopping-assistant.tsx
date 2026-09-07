@@ -12,6 +12,7 @@ type AssistantProductCard = {
   description?: string | null;
   category?: string;
   imageUrl?: string | null;
+  hoverImageUrl?: string | null;
   imageAlt?: string;
   price?: number | null;
   variants?: {
@@ -149,6 +150,10 @@ function normalizeAssistantProducts(data: unknown): AssistantProductCard[] {
       category: typeof product.category === "string" ? product.category : "",
 
       imageUrl: typeof product.imageUrl === "string" ? product.imageUrl : null,
+      hoverImageUrl:
+        typeof product.hoverImageUrl === "string"
+          ? product.hoverImageUrl
+          : null,
 
       imageAlt:
         typeof product.imageAlt === "string"
@@ -221,20 +226,30 @@ function ProductRecommendationCard({
     >
       <span className="st3-ai-product-card__visual">
         {product.imageUrl ? (
-          <img
-            src={product.imageUrl}
-            alt={product.imageAlt || product.name}
-            loading="lazy"
-          />
+          <>
+            <img
+              className="st3-ai-product-card__image st3-ai-product-card__image--primary"
+              src={product.imageUrl}
+              alt={product.imageAlt || product.name}
+              loading="lazy"
+            />
+
+            {product.hoverImageUrl &&
+            product.hoverImageUrl !== product.imageUrl ? (
+              <img
+                className="st3-ai-product-card__image st3-ai-product-card__image--hover"
+                src={product.hoverImageUrl}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+              />
+            ) : null}
+          </>
         ) : (
           <span className="st3-ai-product-card__placeholder">
             <RobotIcon />
           </span>
         )}
-
-        {hasSale ? (
-          <span className="st3-ai-product-card__sale">Offer</span>
-        ) : null}
       </span>
 
       <span className="st3-ai-product-card__body">
@@ -500,11 +515,11 @@ export default function V3ShoppingAssistant() {
 
             <button
               type="button"
-              className="st3-ai-panel__close"
-              aria-label="Close assistant"
+              className="st-ai-v16-close"
+              aria-label="Close Stereophonie assistant"
               onClick={() => setOpen(false)}
             >
-              <CloseIcon />
+              <span aria-hidden="true">×</span>
             </button>
           </div>
 
@@ -545,13 +560,15 @@ export default function V3ShoppingAssistant() {
                   role="status"
                   aria-label="Stereophonie Assistant is preparing a response"
                 >
-                  <span className="st3-ai-loader__track">
+                  <span className="st3-ai-loader__signal" aria-hidden="true">
                     <i />
                     <i />
                     <i />
                   </span>
 
-                  <span className="st3-ai-loader__line" />
+                  <span className="st3-ai-loader__label">Thinking</span>
+
+                  <span className="st3-ai-loader__glint" aria-hidden="true" />
                 </div>
               </div>
             ) : null}

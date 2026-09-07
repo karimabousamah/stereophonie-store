@@ -1,5 +1,11 @@
 import type { ParsedAssistantRequest } from "./local-intelligence";
 
+import {
+  assistantConceptSearchTerms,
+  understandAssistantProductQuery,
+  type AssistantProductUnderstanding,
+} from "./product-taxonomy";
+
 export type RankedAssistantVariant = {
   id: string;
   size: string;
@@ -16,6 +22,7 @@ export type RankedAssistantProduct = {
   slug: string;
   description: string | null;
   category: string;
+  knowledgeText?: string;
   imageUrl: string | null;
   imageAlt: string;
   price: number | null;
@@ -197,6 +204,8 @@ export function rankAssistantProducts(
   products: RankedAssistantProduct[],
   request: ParsedAssistantRequest,
 ) {
+  const understanding = requestProductUnderstanding(request);
+
   const ranked: RankedProductResult[] = products.map((product) => {
     let score = 0;
     const reasons: string[] = [];
@@ -209,6 +218,22 @@ export function rankAssistantProducts(
       reasons.push("available");
     } else {
       score -= 100;
+    }
+
+    if (understanding.concept) {
+      const intelligence = productIntelligenceTier(product, understanding);
+
+      score += intelligence.score;
+
+      if (
+        request.productQuery &&
+        explicitQueryMatches(product, request.productQuery)
+      ) {
+        score += understanding.concept ? 18 : 72;
+        reasons.push(
+          understanding.concept ? "query match" : "live catalog match",
+        );
+      }
     }
 
     if (request.category && contains(product.category, request.category)) {
@@ -226,7 +251,7 @@ export function rankAssistantProducts(
       (contains(product.name, request.productQuery) ||
         contains(product.description ?? "", request.productQuery))
     ) {
-      score += 30;
+      score += understanding.concept ? 18 : 30;
       reasons.push("query match");
     }
 
@@ -292,6 +317,424 @@ function normalizeCatalogMatch(value: string) {
     .replace(/[^a-z0-9\u0600-\u06ff\s-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function catalogProductText(product: RankedAssistantProduct) {
+  return normalizeCatalogMatch(
+    [
+      product.name,
+      product.category,
+      product.description ?? "",
+      product.knowledgeText ?? "",
+    ].join(" "),
+  );
+}
+
+function normalizedProductName(product: RankedAssistantProduct) {
+  return normalizeCatalogMatch(product.name);
+}
+
+function phraseContained(haystack: string, needle: string) {
+  const cleanNeedle = normalizeCatalogMatch(needle);
+
+  if (!cleanNeedle) {
+    return false;
+  }
+
+  return haystack.includes(cleanNeedle);
+}
+
+function productCategoryMatchesConcept(
+  product: RankedAssistantProduct,
+  understanding: AssistantProductUnderstanding,
+) {
+  const concept = understanding.concept;
+
+  if (!concept) {
+    return false;
+  }
+
+  const category = normalizeCatalogMatch(product.category);
+
+  return concept.categories.some((candidate) => {
+    const normalizedCandidate = normalizeCatalogMatch(candidate);
+
+    if (!normalizedCandidate || !category) {
+      return false;
+    }
+
+    return (
+      category === normalizedCandidate ||
+      category.includes(normalizedCandidate) ||
+      normalizedCandidate.includes(category)
+    );
+  });
+}
+
+function productLooksLikeAccessory(product: RankedAssistantProduct) {
+  const searchable = normalizeCatalogMatch(
+    [product.name, product.category].join(" "),
+  );
+
+  return [
+    "accessory",
+    "accessories",
+    "keyboard",
+    "case",
+    "cover",
+    "charger",
+    "charging",
+    "cable",
+    "adapter",
+    "hub",
+    "dock",
+    "stand",
+    "stylus",
+    "pencil",
+    "pen",
+    "screen protector",
+    "protector",
+    "power bank",
+    "mount",
+  ].some((term) => searchable.includes(term));
+}
+
+function conceptAliases(understanding: AssistantProductUnderstanding) {
+  const concept = understanding.concept;
+
+  if (!concept) {
+    return [];
+  }
+
+  return [understanding.matchedAlias, ...concept.aliases]
+    .filter((value): value is string => Boolean(value))
+    .map(normalizeCatalogMatch)
+    .filter(Boolean)
+    .sort((first, second) => second.length - first.length);
+}
+
+function productMatchesExactConcept(
+  product: RankedAssistantProduct,
+  understanding: AssistantProductUnderstanding,
+) {
+  const concept = understanding.concept;
+
+  if (!concept) {
+    return false;
+  }
+
+  const productName = normalizedProductName(product);
+
+  return conceptAliases(understanding).some((alias) => {
+    if (productName === alias) {
+      return true;
+    }
+
+    /*
+     * Exact model names may legitimately continue with generation,
+     * storage, size or another model qualifier:
+     *
+     *   Apple AirPods Max 2
+     *   iPad Pro 11-inch (M5)
+     *
+     * But an accessory such as:
+     *
+     *   Magic Keyboard for iPad Pro
+     *
+     * must NEVER become an exact iPad match merely because the
+     * requested product name appears later in the accessory title.
+     */
+    return productName.startsWith(`${alias} `);
+  });
+}
+
+function productMatchesConceptFamilyName(
+  product: RankedAssistantProduct,
+  understanding: AssistantProductUnderstanding,
+) {
+  const concept = understanding.concept;
+
+  if (!concept) {
+    return false;
+  }
+
+  const name = normalizedProductName(product);
+  const family = normalizeCatalogMatch(concept.family);
+
+  if (!family) {
+    return false;
+  }
+
+  if (name === family || name.startsWith(`${family} `)) {
+    return true;
+  }
+
+  return (concept.brands ?? []).some((brand) => {
+    const normalizedBrand = normalizeCatalogMatch(brand);
+
+    if (!normalizedBrand) {
+      return false;
+    }
+
+    return (
+      name === `${normalizedBrand} ${family}` ||
+      name.startsWith(`${normalizedBrand} ${family} `)
+    );
+  });
+}
+
+function productMatchesCompatibleAccessory(
+  product: RankedAssistantProduct,
+  understanding: AssistantProductUnderstanding,
+) {
+  const concept = understanding.concept;
+
+  if (!concept || !productLooksLikeAccessory(product)) {
+    return false;
+  }
+
+  const searchable = catalogProductText(product);
+
+  if (
+    conceptAliases(understanding).some(
+      (alias) => alias && searchable.includes(alias),
+    )
+  ) {
+    return true;
+  }
+
+  const family = normalizeCatalogMatch(concept.family);
+
+  if (family && searchable.includes(family)) {
+    return true;
+  }
+
+  return false;
+}
+
+function productIntelligenceTier(
+  product: RankedAssistantProduct,
+  understanding: AssistantProductUnderstanding,
+) {
+  const concept = understanding.concept;
+
+  if (!concept) {
+    return {
+      tier: 0,
+      score: 0,
+      reason: null as string | null,
+    };
+  }
+
+  if (productMatchesExactConcept(product, understanding)) {
+    return {
+      tier: 5,
+      score: 320,
+      reason: "exact product match",
+    };
+  }
+
+  /*
+   * A true same-family product must present itself as that family.
+   * Mentioning the family inside an accessory title is insufficient.
+   */
+  if (
+    !productLooksLikeAccessory(product) &&
+    productMatchesConceptFamilyName(product, understanding)
+  ) {
+    return {
+      tier: 4,
+      score: 190,
+      reason: "product family match",
+    };
+  }
+
+  /*
+   * The catalog category is the strongest source of truth for
+   * broader core-product fallback.
+   *
+   * iPad -> Tablets
+   * MacBook -> Laptops
+   * Apple Watch -> Smartwatches
+   */
+  if (
+    !productLooksLikeAccessory(product) &&
+    productCategoryMatchesConcept(product, understanding)
+  ) {
+    return {
+      tier: 3,
+      score: 130,
+      reason: "semantic category match",
+    };
+  }
+
+  const type = normalizeCatalogMatch(concept.type);
+  const name = normalizedProductName(product);
+
+  if (
+    !productLooksLikeAccessory(product) &&
+    type &&
+    (name === type || name.startsWith(`${type} `) || name.includes(` ${type} `))
+  ) {
+    return {
+      tier: 2,
+      score: 100,
+      reason: "product type match",
+    };
+  }
+
+  /*
+   * Accessories are deliberately LAST.
+   *
+   * This allows the assistant to say:
+   *
+   *   "I couldn't find the iPad itself, but I did find
+   *    compatible accessories."
+   *
+   * instead of silently pretending a keyboard is an iPad.
+   */
+  if (productMatchesCompatibleAccessory(product, understanding)) {
+    return {
+      tier: 1,
+      score: 55,
+      reason: "compatible accessory",
+    };
+  }
+
+  return {
+    tier: 0,
+    score: -140,
+    reason: null as string | null,
+  };
+}
+
+export type AssistantProductAvailability =
+  | "in_stock"
+  | "low_stock"
+  | "partially_available"
+  | "coming_soon"
+  | "out_of_stock"
+  | "unavailable";
+
+export function assistantProductAvailability(
+  product: RankedAssistantProduct,
+): AssistantProductAvailability {
+  const variants = product.variants;
+
+  if (variants.length === 0) {
+    return "unavailable";
+  }
+
+  const inStock = variants.some(
+    (variant) =>
+      variant.availabilityStatus === "in_stock" && variant.stockQuantity > 0,
+  );
+
+  const lowStock = variants.some(
+    (variant) =>
+      variant.availabilityStatus === "low_stock" && variant.stockQuantity > 0,
+  );
+
+  const comingSoon = variants.some(
+    (variant) => variant.availabilityStatus === "coming_soon",
+  );
+
+  const unavailable = variants.some(
+    (variant) =>
+      variant.availabilityStatus === "out_of_stock" ||
+      variant.availabilityStatus === "unavailable" ||
+      (variant.stockQuantity <= 0 &&
+        variant.availabilityStatus !== "coming_soon"),
+  );
+
+  if ((inStock || lowStock) && (comingSoon || unavailable)) {
+    return "partially_available";
+  }
+
+  if (inStock) {
+    return "in_stock";
+  }
+
+  if (lowStock) {
+    return "low_stock";
+  }
+
+  if (comingSoon && !unavailable) {
+    return "coming_soon";
+  }
+
+  if (unavailable) {
+    return "out_of_stock";
+  }
+
+  return "unavailable";
+}
+
+export function assistantProductIsPurchasable(product: RankedAssistantProduct) {
+  return product.variants.some(
+    (variant) =>
+      variant.stockQuantity > 0 &&
+      variant.availabilityStatus !== "out_of_stock" &&
+      variant.availabilityStatus !== "coming_soon" &&
+      variant.availabilityStatus !== "unavailable",
+  );
+}
+
+export function assistantResultRelationship(item: RankedProductResult) {
+  if (item.reasons.includes("exact product match")) {
+    return "exact" as const;
+  }
+
+  if (
+    item.reasons.includes("product family match") ||
+    item.reasons.includes("query match") ||
+    item.reasons.includes("live catalog match")
+  ) {
+    return "close" as const;
+  }
+
+  if (
+    item.reasons.includes("semantic category match") ||
+    item.reasons.includes("category match") ||
+    item.reasons.includes("brand match")
+  ) {
+    return "alternative" as const;
+  }
+
+  if (item.reasons.includes("compatible accessory")) {
+    return "accessory" as const;
+  }
+
+  return "alternative" as const;
+}
+
+export function assistantAvailableAlternatives(
+  ranked: RankedProductResult[],
+  excludedProductId?: string | null,
+  limit = 3,
+) {
+  const seen = new Set<string>();
+
+  return ranked
+    .filter(
+      (item) =>
+        item.product.id !== excludedProductId &&
+        assistantResultRelationship(item) !== "accessory" &&
+        assistantProductIsPurchasable(item.product),
+    )
+    .filter((item) => {
+      if (seen.has(item.product.id)) {
+        return false;
+      }
+
+      seen.add(item.product.id);
+      return true;
+    })
+    .slice(0, limit);
+}
+
+function requestProductUnderstanding(request: ParsedAssistantRequest) {
+  return understandAssistantProductQuery(request.productQuery || request.raw);
 }
 
 const strictCategoryFamilies: Record<string, string[]> = {
@@ -380,10 +823,7 @@ function explicitCategoryMatches(
   requestedCategory: string,
 ) {
   const category = normalizeCatalogMatch(requestedCategory);
-
-  const searchable = normalizeCatalogMatch(
-    [product.name, product.category, product.description ?? ""].join(" "),
-  );
+  const searchable = catalogProductText(product);
 
   const family = strictCategoryFamilies[category] ?? [category];
 
@@ -392,50 +832,343 @@ function explicitCategoryMatches(
   );
 }
 
-function explicitQueryMatches(product: RankedAssistantProduct, query: string) {
-  const searchable = normalizeCatalogMatch(
-    [product.name, product.category, product.description ?? ""].join(" "),
+function catalogWordRoot(value: string) {
+  const word = normalizeCatalogMatch(value);
+
+  if (!word) {
+    return "";
+  }
+
+  if (word.endsWith("ies") && word.length > 4) {
+    return `${word.slice(0, -3)}y`;
+  }
+
+  if (
+    word.endsWith("es") &&
+    word.length > 4 &&
+    /(ches|shes|xes|zes|sses)$/.test(word)
+  ) {
+    return word.slice(0, -2);
+  }
+
+  if (
+    word.endsWith("s") &&
+    word.length > 3 &&
+    !word.endsWith("ss") &&
+    !word.endsWith("us") &&
+    !word.endsWith("is")
+  ) {
+    return word.slice(0, -1);
+  }
+
+  return word;
+}
+
+function catalogEditDistance(first: string, second: string) {
+  if (first === second) {
+    return 0;
+  }
+
+  if (!first.length) {
+    return second.length;
+  }
+
+  if (!second.length) {
+    return first.length;
+  }
+
+  const previous = Array.from(
+    { length: second.length + 1 },
+    (_, index) => index,
   );
 
-  const words = normalizeCatalogMatch(query)
-    .split(" ")
-    .filter((word) => word.length >= 3)
-    .filter(
-      (word) =>
-        ![
-          "the",
-          "and",
-          "for",
-          "with",
-          "want",
-          "have",
-          "show",
-          "find",
-          "buy",
-          "new",
-          "any",
-          "available",
-          "looking",
-        ].includes(word),
-    );
+  for (let firstIndex = 1; firstIndex <= first.length; firstIndex += 1) {
+    let diagonal = previous[0];
+    previous[0] = firstIndex;
 
-  if (words.length === 0) {
+    for (let secondIndex = 1; secondIndex <= second.length; secondIndex += 1) {
+      const oldPrevious = previous[secondIndex];
+
+      const insertion = previous[secondIndex - 1] + 1;
+      const deletion = previous[secondIndex] + 1;
+      const substitution =
+        diagonal + (first[firstIndex - 1] === second[secondIndex - 1] ? 0 : 1);
+
+      previous[secondIndex] = Math.min(insertion, deletion, substitution);
+
+      diagonal = oldPrevious;
+    }
+  }
+
+  return previous[second.length];
+}
+
+function catalogTermsAreFuzzyMatch(requested: string, candidate: string) {
+  if (!requested || !candidate) {
+    return false;
+  }
+
+  if (requested === candidate) {
     return true;
   }
 
-  return words.some((word) => searchable.includes(word));
+  const lengthDifference = Math.abs(requested.length - candidate.length);
+
+  if (lengthDifference > 2) {
+    return false;
+  }
+
+  const shortestLength = Math.min(requested.length, candidate.length);
+
+  if (shortestLength < 4) {
+    return false;
+  }
+
+  const distance = catalogEditDistance(requested, candidate);
+
+  if (shortestLength <= 5) {
+    return distance <= 1;
+  }
+
+  if (shortestLength <= 8) {
+    return distance <= 2;
+  }
+
+  return distance <= 2;
+}
+
+function catalogTermMatchesVocabulary(
+  requested: string,
+  searchableRoots: Set<string>,
+) {
+  if (searchableRoots.has(requested)) {
+    return true;
+  }
+
+  for (const candidate of searchableRoots) {
+    if (catalogTermsAreFuzzyMatch(requested, candidate)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function catalogWordRoots(value: string) {
+  return normalizeCatalogMatch(value)
+    .split(/\s+/)
+    .map(catalogWordRoot)
+    .filter(Boolean);
+}
+
+function meaningfulCatalogQueryTerms(query: string) {
+  const ignored = new Set([
+    "a",
+    "about",
+    "actually",
+    "all",
+    "am",
+    "an",
+    "and",
+    "any",
+    "anything",
+    "are",
+    "around",
+    "at",
+    "available",
+    "availability",
+    "be",
+    "been",
+    "being",
+    "best",
+    "buy",
+    "buying",
+    "can",
+    "could",
+    "do",
+    "does",
+    "for",
+    "find",
+    "from",
+    "get",
+    "getting",
+    "give",
+    "good",
+    "got",
+    "have",
+    "has",
+    "hello",
+    "help",
+    "hey",
+    "hi",
+    "i",
+    "id",
+    "ill",
+    "im",
+    "in",
+    "is",
+    "it",
+    "ive",
+    "just",
+    "like",
+    "look",
+    "looking",
+    "me",
+    "my",
+    "need",
+    "needed",
+    "needs",
+    "new",
+    "of",
+    "on",
+    "one",
+    "our",
+    "please",
+    "purchase",
+    "recommend",
+    "recommendation",
+    "search",
+    "searching",
+    "show",
+    "some",
+    "something",
+    "the",
+    "there",
+    "to",
+    "trying",
+    "want",
+    "wanted",
+    "wants",
+    "was",
+    "we",
+    "were",
+    "with",
+    "would",
+    "you",
+    "your",
+
+    "bonjour",
+    "bonsoir",
+    "cherche",
+    "chercher",
+    "cherches",
+    "cherchez",
+    "je",
+    "jai",
+    "j",
+    "veux",
+    "voudrais",
+    "besoin",
+    "montre",
+    "montrez",
+    "moi",
+    "svp",
+    "sil",
+    "vous",
+    "plait",
+    "avez",
+    "avoir",
+    "un",
+    "une",
+    "des",
+    "du",
+    "de",
+    "le",
+    "la",
+    "les",
+    "pour",
+    "avec",
+    "dans",
+    "sur",
+    "quelque",
+    "chose",
+
+    "بدي",
+    "اريد",
+    "أريد",
+    "عندك",
+    "عندكم",
+    "في",
+    "من",
+    "على",
+    "لو",
+    "سمحت",
+    "اعطيني",
+    "أعطيني",
+    "فرجيني",
+  ]);
+
+  return normalizeCatalogMatch(query)
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(
+      (word) =>
+        word.length >= 2 && !ignored.has(word) && !/^\d+(?:\.\d+)?$/.test(word),
+    );
+}
+
+function explicitQueryMatches(
+  product: RankedAssistantProduct,
+  requestedQuery: string,
+) {
+  const searchable = catalogProductText(product);
+  const normalizedQuery = normalizeCatalogMatch(requestedQuery);
+
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  if (searchable.includes(normalizedQuery)) {
+    return true;
+  }
+
+  const terms = meaningfulCatalogQueryTerms(requestedQuery);
+
+  if (terms.length === 0) {
+    return true;
+  }
+
+  const searchableRoots = new Set(catalogWordRoots(searchable));
+
+  const termRoots = terms.map(catalogWordRoot).filter(Boolean);
+
+  const matchedRoots = termRoots.filter((term) =>
+    catalogTermMatchesVocabulary(term, searchableRoots),
+  );
+
+  if (termRoots.length === 1) {
+    return matchedRoots.length === 1;
+  }
+
+  /*
+   * Natural customer sentences frequently contain extra
+   * descriptive words that may not exist literally in the
+   * product record. A strong catalog term should therefore be
+   * enough for short queries, while longer searches still
+   * require multiple pieces of evidence.
+   */
+  const requiredMatches =
+    termRoots.length <= 3 ? 1 : Math.max(2, Math.ceil(termRoots.length * 0.5));
+
+  return matchedRoots.length >= requiredMatches;
 }
 
 function passesExplicitCatalogGate(
   item: ReturnType<typeof rankAssistantProducts>[number],
   request: ParsedAssistantRequest,
 ) {
-  if (request.category) {
-    return explicitCategoryMatches(item.product, request.category);
+  const understanding = requestProductUnderstanding(request);
+
+  if (understanding.concept) {
+    return productIntelligenceTier(item.product, understanding).tier > 0;
   }
 
   if (request.productQuery) {
     return explicitQueryMatches(item.product, request.productQuery);
+  }
+
+  if (request.category) {
+    return explicitCategoryMatches(item.product, request.category);
   }
 
   return true;
@@ -446,8 +1179,42 @@ export function topAssistantProducts(
   request: ParsedAssistantRequest,
   limit = 4,
 ) {
-  return rankAssistantProducts(products, request)
+  const understanding = requestProductUnderstanding(request);
+
+  const ranked = rankAssistantProducts(products, request)
     .filter((item) => passesExplicitCatalogGate(item, request))
-    .filter((item) => item.score > -50)
-    .slice(0, Math.max(1, Math.min(limit, 8)));
+    .filter((item) => item.score > -50);
+
+  if (understanding.concept) {
+    const exactMatches = ranked.filter(
+      (item) => productIntelligenceTier(item.product, understanding).tier === 5,
+    );
+
+    if (exactMatches.length > 0) {
+      return exactMatches.slice(0, 1);
+    }
+
+    const highestSemanticTier = ranked.reduce(
+      (highest, item) =>
+        Math.max(
+          highest,
+          productIntelligenceTier(item.product, understanding).tier,
+        ),
+      0,
+    );
+
+    if (highestSemanticTier > 0) {
+      const strongestMatches = ranked.filter(
+        (item) =>
+          productIntelligenceTier(item.product, understanding).tier ===
+          highestSemanticTier,
+      );
+
+      if (strongestMatches.length > 0) {
+        return strongestMatches.slice(0, Math.max(1, Math.min(limit, 8)));
+      }
+    }
+  }
+
+  return ranked.slice(0, Math.max(1, Math.min(limit, 8)));
 }

@@ -118,6 +118,7 @@ export async function createCategoryInline(
       description: null,
       sort_order: 0,
       is_active: true,
+      show_on_homepage: false,
     })
     .select("id, name")
     .single();

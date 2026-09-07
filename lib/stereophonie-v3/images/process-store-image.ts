@@ -142,6 +142,220 @@ function backgroundStrength(
   return colorMatch * 0.46 + whiteStrength * 0.36 + neutrality * 0.18;
 }
 
+async function removeProductWhiteBackground(input: Buffer) {
+  const prepared = await prepareRgba(input);
+
+  const { data, width, height } = prepared;
+
+  const totalPixels = width * height;
+
+  if (totalPixels <= 0) {
+    return input;
+  }
+
+  /*
+   * Estimate the real studio background from the four corners.
+   * Product photography normally leaves those areas unobstructed.
+   */
+  const background = sampleBackgroundColor(prepared);
+
+  const backgroundBrightness = (background.r + background.g + background.b) / 3;
+
+  const backgroundSpread =
+    Math.max(background.r, background.g, background.b) -
+    Math.min(background.r, background.g, background.b);
+
+  /*
+   * Product removal is intentionally restricted to genuinely light,
+   * reasonably neutral backgrounds.
+   *
+   * A colored/dark lifestyle photograph therefore passes through
+   * untouched rather than risking damage to the subject.
+   */
+  if (backgroundBrightness < 205 || backgroundSpread > 48) {
+    return sharp(data, {
+      raw: {
+        width,
+        height,
+        channels: 4,
+      },
+    })
+      .png({
+        compressionLevel: 9,
+        adaptiveFiltering: true,
+      })
+      .toBuffer();
+  }
+
+  const connected = new Uint8Array(totalPixels);
+  const queue = new Int32Array(totalPixels);
+
+  let readIndex = 0;
+  let writeIndex = 0;
+
+  function productBackgroundConfidence(pixel: number) {
+    const offset = pixelOffset(pixel);
+
+    const alpha = data[offset + 3];
+
+    if (alpha < 16) {
+      return 1;
+    }
+
+    const r = data[offset];
+    const g = data[offset + 1];
+    const b = data[offset + 2];
+
+    const brightness = (r + g + b) / 3;
+
+    const spread = Math.max(r, g, b) - Math.min(r, g, b);
+
+    const distance = productBackgroundDistance(
+      r,
+      g,
+      b,
+      background.r,
+      background.g,
+      background.b,
+    );
+
+    /*
+     * The thresholds are deliberately conservative.
+     *
+     * Background must simultaneously be:
+     * - bright;
+     * - neutral;
+     * - close to the sampled outside color.
+     *
+     * This is substantially safer for white electronics than a plain
+     * "RGB > threshold" chroma-key.
+     */
+    const brightnessScore = clamp((brightness - 200) / 48, 0, 1);
+
+    const neutralityScore = 1 - clamp(spread / 46, 0, 1);
+
+    const distanceScore = 1 - clamp(distance / 78, 0, 1);
+
+    return (
+      brightnessScore * 0.42 + neutralityScore * 0.2 + distanceScore * 0.38
+    );
+  }
+
+  function canEnter(pixel: number) {
+    if (pixel < 0 || pixel >= totalPixels || connected[pixel]) {
+      return false;
+    }
+
+    const offset = pixelOffset(pixel);
+
+    if (data[offset + 3] < 16) {
+      return true;
+    }
+
+    return productBackgroundConfidence(pixel) >= 0.67;
+  }
+
+  function enqueue(pixel: number) {
+    if (!canEnter(pixel)) {
+      return;
+    }
+
+    connected[pixel] = 1;
+    queue[writeIndex] = pixel;
+    writeIndex += 1;
+  }
+
+  /*
+   * Flood exclusively from the outer frame.
+   *
+   * A white region that belongs to the product but is surrounded by
+   * product pixels cannot suddenly become background.
+   */
+  for (let x = 0; x < width; x += 1) {
+    enqueue(x);
+    enqueue((height - 1) * width + x);
+  }
+
+  for (let y = 0; y < height; y += 1) {
+    enqueue(y * width);
+    enqueue(y * width + width - 1);
+  }
+
+  while (readIndex < writeIndex) {
+    const pixel = queue[readIndex];
+
+    readIndex += 1;
+
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+
+    if (x > 0) {
+      enqueue(pixel - 1);
+    }
+
+    if (x < width - 1) {
+      enqueue(pixel + 1);
+    }
+
+    if (y > 0) {
+      enqueue(pixel - width);
+    }
+
+    if (y < height - 1) {
+      enqueue(pixel + width);
+    }
+  }
+
+  /*
+   * Do not apply a hard binary cut.
+   *
+   * Strong outside-background pixels become fully transparent while
+   * uncertain boundary pixels retain partial alpha. This gives product
+   * edges a cleaner anti-aliased transition and reduces white halos.
+   */
+  for (let pixel = 0; pixel < totalPixels; pixel += 1) {
+    if (!connected[pixel]) {
+      continue;
+    }
+
+    const offset = pixelOffset(pixel);
+
+    const originalAlpha = data[offset + 3];
+
+    if (originalAlpha < 16) {
+      data[offset + 3] = 0;
+      continue;
+    }
+
+    const confidence = productBackgroundConfidence(pixel);
+
+    const removal = clamp((confidence - 0.6) / 0.24, 0, 1);
+
+    data[offset + 3] = Math.round(originalAlpha * (1 - removal));
+  }
+
+  /*
+   * A very small alpha blur is applied to the mask only.
+   *
+   * RGB/product detail is never blurred. The purpose is simply to avoid
+   * a jagged one-pixel cutout on high-resolution product photography.
+   */
+  const rgba = await sharp(data, {
+    raw: {
+      width,
+      height,
+      channels: 4,
+    },
+  })
+    .png({
+      compressionLevel: 9,
+      adaptiveFiltering: true,
+    })
+    .toBuffer();
+
+  return rgba;
+}
+
 async function removeConnectedBackground(input: Buffer) {
   const prepared = await prepareRgba(input);
 
@@ -485,31 +699,24 @@ export async function processStoreImage({
 }: ProcessStoreImageOptions) {
   if (kind === "product") {
     /*
-     * PRODUCT PHOTOS — PRESERVE SOURCE
+     * PRODUCT PHOTOS — CONSERVATIVE WHITE-BACKGROUND REMOVAL
      *
-     * Automatic background removal is intentionally disabled.
+     * Only background-colored pixels connected to the outside edge
+     * are eligible for removal. This is deliberately different from
+     * deleting every white pixel in the photograph:
      *
-     * Product uploads keep the complete photograph:
-     * - no AI segmentation;
-     * - no white-background detection;
-     * - no flood fill;
-     * - no generated transparency;
-     * - no RGB manipulation.
-     *
-     * Existing transparency in PNG/WebP uploads is preserved.
-     * We only normalize orientation before using the existing
-     * Stereophonie product canvas.
+     * - white/light details inside the product remain untouched;
+     * - enclosed highlights and reflections remain untouched;
+     * - existing transparency is preserved;
+     * - the product itself is never globally color-keyed;
+     * - the resulting subject is trimmed and centered on the existing
+     *   transparent Stereophonie product canvas.
      */
-    const preserved = await sharp(input)
-      .rotate()
-      .ensureAlpha()
-      .png({
-        compressionLevel: 9,
-        adaptiveFiltering: true,
-      })
-      .toBuffer();
+    const transparent = await removeProductWhiteBackground(input);
 
-    return productCanvas(preserved);
+    const trimmed = await trimTransparentSpace(transparent);
+
+    return productCanvas(trimmed);
   }
 
   const transparent = await removeConnectedBackground(input);

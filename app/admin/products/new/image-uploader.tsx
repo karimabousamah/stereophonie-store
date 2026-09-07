@@ -472,7 +472,7 @@ export default function ImageUploader({
 
       <input
         ref={inputRef}
-        id="product-images"
+        id="product-image-files"
         type="file"
         accept="image/*"
         multiple
@@ -491,7 +491,7 @@ export default function ImageUploader({
 
       {images.length === 0 ? (
         <label
-          htmlFor="product-images"
+          htmlFor="product-image-files"
           className="group flex min-h-[190px] cursor-pointer flex-col items-center justify-center rounded-[16px] border border-dashed border-white/15 bg-black/20 px-5 text-center transition hover:border-white/35 hover:bg-white/[0.025]"
         >
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
@@ -548,7 +548,7 @@ export default function ImageUploader({
               </button>
 
               <label
-                htmlFor="product-images"
+                htmlFor="product-image-files"
                 className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65 transition hover:bg-white hover:text-black"
               >
                 <ImagePlus className="h-4 w-4" />

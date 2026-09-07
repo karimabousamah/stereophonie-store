@@ -18,9 +18,14 @@ type ProductImage = {
   alt_text?: string | null;
   position?: number | null;
   is_primary?: boolean | null;
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
 };
 
 type ProductVariant = {
+  id?: string | null;
+  display_position?: number | null;
   regular_price?: number | string | null;
   sale_price?: number | string | null;
   stock_quantity?: number | null;
@@ -152,17 +157,70 @@ function getAvailability(variants: ProductVariant[]) {
   };
 }
 
-function getPrimaryImage(images: ProductImage[]) {
-  return (
-    [...images]
-      .sort((a, b) => {
-        if (Boolean(a.is_primary) !== Boolean(b.is_primary)) {
-          return a.is_primary ? -1 : 1;
+function getPrimaryImage(images: ProductImage[], variants: ProductVariant[]) {
+  const availableImages = [...images].filter((image) =>
+    Boolean(image.image_url),
+  );
+
+  const orderedVariants = [...variants]
+    .filter((variant) => variant.is_active !== false)
+    .sort((first, second) => {
+      const firstPosition = Number(first.display_position ?? 0);
+      const secondPosition = Number(second.display_position ?? 0);
+
+      if (firstPosition !== secondPosition) {
+        return firstPosition - secondPosition;
+      }
+
+      return String(first.variant_name ?? first.size ?? "").localeCompare(
+        String(second.variant_name ?? second.size ?? ""),
+        undefined,
+        {
+          numeric: true,
+        },
+      );
+    });
+
+  const firstVariant = orderedVariants[0] ?? null;
+
+  if (firstVariant?.id) {
+    const configurationImages = availableImages
+      .filter((image) => image.variant_id === firstVariant.id)
+      .sort((first, second) => {
+        if (
+          Boolean(first.is_variant_primary) !==
+          Boolean(second.is_variant_primary)
+        ) {
+          return first.is_variant_primary ? -1 : 1;
         }
 
-        return (a.position ?? 999) - (b.position ?? 999);
-      })
-      .find((image) => image.image_url) ?? null
+        const firstPosition = Number(
+          first.variant_position ?? first.position ?? 0,
+        );
+        const secondPosition = Number(
+          second.variant_position ?? second.position ?? 0,
+        );
+
+        if (firstPosition !== secondPosition) {
+          return firstPosition - secondPosition;
+        }
+
+        return Number(first.position ?? 0) - Number(second.position ?? 0);
+      });
+
+    if (configurationImages.length > 0) {
+      return configurationImages[0] ?? null;
+    }
+  }
+
+  return (
+    availableImages.sort((first, second) => {
+      if (Boolean(first.is_primary) !== Boolean(second.is_primary)) {
+        return first.is_primary ? -1 : 1;
+      }
+
+      return Number(first.position ?? 0) - Number(second.position ?? 0);
+    })[0] ?? null
   );
 }
 
@@ -244,11 +302,16 @@ export async function GET(request: NextRequest) {
         image_url,
         alt_text,
         position,
-        is_primary
+        is_primary,
+          variant_id,
+          variant_position,
+          is_variant_primary
       ),
 
       product_variants (
-        regular_price,
+          id,
+          display_position,
+          regular_price,
         sale_price,
         stock_quantity,
         availability_status,
@@ -293,7 +356,10 @@ export async function GET(request: NextRequest) {
     });
 
   const results = matchingProducts.slice(0, 8).map((product) => {
-    const image = getPrimaryImage(product.product_images ?? []);
+    const image = getPrimaryImage(
+      product.product_images ?? [],
+      product.product_variants ?? [],
+    );
 
     const prices = getProductPrices(product.product_variants ?? []);
 

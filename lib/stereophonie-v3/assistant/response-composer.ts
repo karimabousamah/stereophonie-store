@@ -3,9 +3,13 @@ import {
   type ParsedAssistantRequest,
 } from "./local-intelligence";
 
-import type {
-  RankedProductResult,
-  RankedAssistantProduct,
+import {
+  assistantAvailableAlternatives,
+  assistantProductAvailability,
+  assistantProductIsPurchasable,
+  assistantResultRelationship,
+  type RankedProductResult,
+  type RankedAssistantProduct,
 } from "./product-ranking";
 
 import type { AssistantConversationMemory } from "./conversation-memory";
@@ -146,79 +150,258 @@ function ArabicRecommendationIntro(request: ParsedAssistantRequest) {
   );
 }
 
+function requestedProductLabel(request: ParsedAssistantRequest) {
+  return (
+    request.productQuery?.trim() ||
+    request.category?.trim() ||
+    request.brand?.trim() ||
+    "that product"
+  );
+}
+
+function productAvailabilitySentence(
+  product: RankedAssistantProduct,
+  language: ParsedAssistantRequest["language"],
+) {
+  const status = assistantProductAvailability(product);
+
+  if (language === "fr") {
+    if (status === "in_stock") {
+      return `${product.name} est actuellement disponible.`;
+    }
+
+    if (status === "low_stock") {
+      return `${product.name} est disponible, mais le stock est limité.`;
+    }
+
+    if (status === "partially_available") {
+      return `${product.name} est disponible dans certaines configurations, tandis que d’autres sont actuellement indisponibles ou arrivent prochainement.`;
+    }
+
+    if (status === "coming_soon") {
+      return `${product.name} est déjà référencé dans notre boutique et arrive prochainement.`;
+    }
+
+    if (status === "out_of_stock") {
+      return `Nous proposons bien ${product.name}, mais il est actuellement en rupture de stock.`;
+    }
+
+    return `${product.name} est référencé dans notre boutique, mais il n’est pas disponible actuellement.`;
+  }
+
+  if (language === "ar") {
+    if (status === "in_stock") {
+      return `${product.name} متوفر حالياً.`;
+    }
+
+    if (status === "low_stock") {
+      return `${product.name} متوفر، لكن الكمية محدودة.`;
+    }
+
+    if (status === "partially_available") {
+      return `${product.name} متوفر ببعض النسخ، بينما توجد نسخ أخرى غير متوفرة حالياً أو ستتوفر قريباً.`;
+    }
+
+    if (status === "coming_soon") {
+      return `${product.name} موجود بالفعل ضمن المتجر وسيكون متوفراً قريباً.`;
+    }
+
+    if (status === "out_of_stock") {
+      return `${product.name} من المنتجات التي نوفرها، لكنه غير متوفر في المخزون حالياً.`;
+    }
+
+    return `${product.name} موجود ضمن المتجر، لكنه غير متوفر حالياً.`;
+  }
+
+  if (status === "in_stock") {
+    return `${product.name} is currently in stock.`;
+  }
+
+  if (status === "low_stock") {
+    return `${product.name} is available, but stock is limited.`;
+  }
+
+  if (status === "partially_available") {
+    return `${product.name} is available in some configurations, while others are currently out of stock or coming soon.`;
+  }
+
+  if (status === "coming_soon") {
+    return `${product.name} is already listed in the store and is coming soon.`;
+  }
+
+  if (status === "out_of_stock") {
+    return `We do carry ${product.name}, but it is currently out of stock.`;
+  }
+
+  return `${product.name} is listed in the store, but it is not currently available.`;
+}
+
+function alternativeIntro(
+  request: ParsedAssistantRequest,
+  alternatives: RankedProductResult[],
+) {
+  const requested = requestedProductLabel(request);
+  const names = sentenceJoin(productNames(alternatives));
+
+  if (request.language === "fr") {
+    if (names) {
+      return `Je n’ai pas trouvé exactement « ${requested} » dans le catalogue actuel. Les alternatives disponibles les plus proches que j’ai trouvées sont ${names}.`;
+    }
+
+    return `Je n’ai pas trouvé exactement « ${requested} » dans le catalogue actuel.`;
+  }
+
+  if (request.language === "ar") {
+    if (names) {
+      return `لم أجد «${requested}» بالضبط ضمن الكتالوج الحالي. أقرب البدائل المتوفرة التي وجدتها هي ${names}.`;
+    }
+
+    return `لم أجد «${requested}» بالضبط ضمن الكتالوج الحالي.`;
+  }
+
+  if (names) {
+    return `I don’t see the exact ${requested} in the current catalog. The closest available alternatives I found are ${names}.`;
+  }
+
+  return `I don’t see the exact ${requested} in the current catalog.`;
+}
+
+function unavailableProductWithAlternatives(
+  request: ParsedAssistantRequest,
+  exact: RankedProductResult,
+  ranked: RankedProductResult[],
+) {
+  const availability = productAvailabilitySentence(
+    exact.product,
+    request.language,
+  );
+
+  const alternatives = assistantAvailableAlternatives(
+    ranked,
+    exact.product.id,
+    3,
+  );
+
+  if (alternatives.length === 0) {
+    return availability;
+  }
+
+  const names = sentenceJoin(productNames(alternatives));
+
+  if (request.language === "fr") {
+    return `${availability} Si vous avez besoin d’une option disponible maintenant, je regarderais plutôt ${names}.`;
+  }
+
+  if (request.language === "ar") {
+    return `${availability} إذا كنت بحاجة إلى خيار متوفر الآن، فأنصحك بالنظر إلى ${names}.`;
+  }
+
+  return `${availability} If you need something available now, I’d look at ${names} instead.`;
+}
+
 export function composeRecommendationResponse(
   request: ParsedAssistantRequest,
   ranked: RankedProductResult[],
 ) {
   if (ranked.length === 0) {
+    const requested = requestedProductLabel(request);
+
     if (request.language === "fr") {
-      return "Je n’ai trouvé aucun produit disponible correspondant exactement à votre recherche. Essayez d’élargir le budget, la marque ou la catégorie.";
+      return `Je ne vois pas exactement « ${requested} » dans notre catalogue actuel. Je peux toutefois vous proposer les options les plus proches si elles sont disponibles.`;
     }
 
     if (request.language === "ar") {
-      return "لم أجد حالياً منتجاً متوفراً يطابق طلبك تماماً. جرّب توسيع الميزانية أو تغيير العلامة التجارية أو الفئة.";
+      return `لا أرى «${requested}» بالضبط ضمن الكتالوج الحالي. يمكنني مع ذلك اقتراح أقرب الخيارات المتوفرة إذا كانت موجودة.`;
     }
 
-    return "I couldn’t find a currently available product that matches those requirements exactly. Try widening the budget, brand, or category.";
+    return `I don’t see the exact ${requested} in our current catalog. I can still recommend the closest available options when we have relevant alternatives.`;
   }
 
-  const intro =
-    request.language === "fr"
-      ? FrenchRecommendationIntro(request)
-      : request.language === "ar"
-        ? ArabicRecommendationIntro(request)
-        : EnglishRecommendationIntro(request);
+  const exact =
+    ranked.find((item) => assistantResultRelationship(item) === "exact") ??
+    null;
 
-  const first = ranked[0];
+  if (exact) {
+    if (!assistantProductIsPurchasable(exact.product)) {
+      return unavailableProductWithAlternatives(request, exact, ranked);
+    }
 
-  const reason = strongestReason(first);
+    const availability = productAvailabilitySentence(
+      exact.product,
+      request.language,
+    );
 
-  const firstPrice = money(first.product.price);
+    const firstPrice = money(exact.product.price);
 
-  if (request.language === "fr") {
-    const detail = firstPrice
-      ? `${first.product.name} commence à ${firstPrice}.`
-      : `${first.product.name} est l’une des options les plus pertinentes.`;
+    if (request.language === "fr") {
+      return firstPrice
+        ? `${availability} Son prix commence actuellement à ${firstPrice}.`
+        : availability;
+    }
 
-    return `${intro} ${detail}`;
+    if (request.language === "ar") {
+      return firstPrice
+        ? `${availability} ويبدأ سعره حالياً من ${firstPrice}.`
+        : availability;
+    }
+
+    return firstPrice
+      ? `${availability} It currently starts at ${firstPrice}.`
+      : availability;
   }
 
-  if (request.language === "ar") {
-    const detail = firstPrice
-      ? `يبدأ سعر ${first.product.name} من ${firstPrice}.`
-      : `${first.product.name} من أكثر الخيارات المناسبة.`;
+  const accessoryFallback = ranked.every(
+    (item) => assistantResultRelationship(item) === "accessory",
+  );
 
-    return `${intro} ${detail}`;
+  if (accessoryFallback) {
+    const requested = requestedProductLabel(request);
+
+    if (request.language === "fr") {
+      return `Je n’ai pas trouvé ${requested} lui-même dans notre catalogue actuel. J’ai seulement trouvé des accessoires compatibles, que je vous affiche séparément.`;
+    }
+
+    if (request.language === "ar") {
+      return `لم أجد ${requested} نفسه ضمن الكتالوج الحالي. وجدت فقط بعض الإكسسوارات المتوافقة، وسأعرضها بشكل منفصل.`;
+    }
+
+    return `I don’t see ${requested} itself in our current catalog. I only found compatible accessories for it, so I’m showing those separately.`;
   }
 
-  let detail = "";
+  const actualProducts = ranked.filter(
+    (item) => assistantResultRelationship(item) !== "accessory",
+  );
 
-  if (firstPrice) {
-    detail = `${first.product.name} starts at ${firstPrice}`;
-  } else {
-    detail = `${first.product.name} is one of the strongest matches`;
+  const purchasableAlternatives = assistantAvailableAlternatives(
+    actualProducts,
+    null,
+    4,
+  );
+
+  if (purchasableAlternatives.length > 0) {
+    return alternativeIntro(request, purchasableAlternatives);
   }
 
-  if (reason) {
-    const readableReason = reason
-      .replace("category match", "it matches the category you asked for")
-      .replace("brand match", "it matches your preferred brand")
-      .replace("within budget", "it stays within your budget")
-      .replace("fits budget", "it fits your budget")
-      .replace("on sale", "it is currently on offer")
-      .replace("gaming fit", "it fits a gaming setup well")
-      .replace("work fit", "it fits a work setup well")
-      .replace("school fit", "it suits study and school use")
-      .replace("audio fit", "it matches your audio needs")
-      .replace("photography fit", "it fits photography use")
-      .replace("fitness fit", "it matches fitness use")
-      .replace("travel fit", "it is a good fit for travel")
-      .replace("available", "it is currently available");
+  const first = actualProducts[0];
 
-    detail += `, and ${readableReason}`;
+  if (first) {
+    const availability = productAvailabilitySentence(
+      first.product,
+      request.language,
+    );
+
+    if (request.language === "fr") {
+      return `Je n’ai pas trouvé le produit exact demandé, mais ${first.product.name} est l’option la plus proche que j’ai trouvée. ${availability}`;
+    }
+
+    if (request.language === "ar") {
+      return `لم أجد المنتج المطلوب بالضبط، لكن ${first.product.name} هو أقرب خيار وجدته. ${availability}`;
+    }
+
+    return `I couldn’t find the exact product you asked for, but ${first.product.name} is the closest match I found. ${availability}`;
   }
 
-  return `${intro} ${detail}.`;
+  return alternativeIntro(request, []);
 }
 
 export function composeComparisonResponse(

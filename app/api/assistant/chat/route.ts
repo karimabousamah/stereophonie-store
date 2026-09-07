@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
+import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 import {
   buildClarification,
   parseAssistantRequest,
@@ -40,10 +41,21 @@ type IncomingMessage = {
 };
 
 type ProductImageRow = {
-  image_url?: string | null;
-  alt_text?: string | null;
-  position?: number | null;
-  is_primary?: boolean | null;
+  id?: string | null;
+  image_url: string | null;
+  alt_text: string | null;
+  position: number;
+  is_primary: boolean;
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
 };
 
 type ProductVariantRow = {
@@ -53,6 +65,10 @@ type ProductVariantRow = {
   sale_price?: number | string | null;
   stock_quantity?: number | null;
   availability_status?: string | null;
+  variant_name?: string | null;
+  attributes?: Record<string, unknown> | null;
+  display_position?: number | null;
+  is_active?: boolean | null;
 };
 
 type CategoryRelation =
@@ -66,12 +82,22 @@ type CategoryRelation =
     }[]
   | null;
 
+type BrandRelation =
+  | {
+      name?: string | null;
+    }
+  | {
+      name?: string | null;
+    }[]
+  | null;
+
 type ProductRow = {
   id: string;
   name: string;
   slug: string | null;
   description: string | null;
   categories: CategoryRelation;
+  brands: BrandRelation;
   product_images: ProductImageRow[] | null;
   product_variants: ProductVariantRow[] | null;
 };
@@ -94,6 +120,7 @@ type AssistantProduct = {
   description: string | null;
   category: string;
   imageUrl: string | null;
+  hoverImageUrl: string | null;
   imageAlt: string;
   price: number | null;
   variants: AssistantVariant[];
@@ -347,18 +374,6 @@ function getCategoryName(relation: CategoryRelation) {
   return relation.name?.trim() || "Collection";
 }
 
-function getPrimaryImage(images: ProductImageRow[]) {
-  return [...images]
-    .sort((first, second) => {
-      if (Boolean(first.is_primary) !== Boolean(second.is_primary)) {
-        return first.is_primary ? -1 : 1;
-      }
-
-      return (first.position ?? 999) - (second.position ?? 999);
-    })
-    .find((image) => Boolean(image.image_url));
-}
-
 function mapVariant(variant: ProductVariantRow): AssistantVariant {
   const regularPrice = toNumber(variant.regular_price);
 
@@ -404,19 +419,77 @@ function mapProduct(product: ProductRow): AssistantProduct {
     .filter((variant) => variant.purchasable)
     .map((variant) => variant.currentPrice);
 
-  const primaryImage = getPrimaryImage(product.product_images ?? []);
+  const canonicalImages = storefrontConfigurationImages(
+    product.product_images ?? [],
+    product.product_variants ?? [],
+  );
 
-  return {
+  const primaryImage = canonicalImages[0];
+  const hoverImage = canonicalImages[1];
+
+  const brandName = Array.isArray(product.brands)
+    ? (product.brands[0]?.name?.trim() ?? "")
+    : (product.brands?.name?.trim() ?? "");
+
+  const variantKnowledge = (product.product_variants ?? [])
+    .flatMap((variant) => {
+      const attributeKnowledge =
+        variant.attributes &&
+        typeof variant.attributes === "object" &&
+        !Array.isArray(variant.attributes)
+          ? Object.entries(variant.attributes).flatMap(([key, value]) => {
+              if (value === null || value === undefined) {
+                return [];
+              }
+
+              if (typeof value === "string") {
+                return [key, value];
+              }
+
+              try {
+                return [key, JSON.stringify(value)];
+              } catch {
+                return [key, String(value)];
+              }
+            })
+          : [];
+
+      return [
+        variant.variant_name ?? "",
+        variant.size ?? "",
+        ...attributeKnowledge,
+      ];
+    })
+    .filter(Boolean)
+    .join(" ");
+
+  const catalogKnowledge = [brandName, variantKnowledge]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+
+  const mappedProduct: AssistantProduct = {
     id: product.id,
     name: product.name,
     slug: product.slug ?? product.id,
     description: product.description,
     category: getCategoryName(product.categories),
     imageUrl: primaryImage?.image_url ?? null,
+
+    hoverImageUrl: hoverImage?.image_url ?? null,
     imageAlt: primaryImage?.alt_text || product.name,
     price: purchasablePrices.length > 0 ? Math.min(...purchasablePrices) : null,
     variants,
   };
+
+  Object.defineProperty(mappedProduct, "catalogKnowledge", {
+    value: catalogKnowledge,
+    enumerable: false,
+    configurable: false,
+    writable: false,
+  });
+
+  return mappedProduct;
 }
 
 function normalizeWords(value: string) {
@@ -460,6 +533,8 @@ async function searchProducts(argumentsValue: Record<string, unknown>) {
       ? maximumPriceValue
       : null;
 
+  const returnAll = argumentsValue.return_all === true;
+
   const requestedLimit = Number(argumentsValue.limit);
 
   const limit = Number.isInteger(requestedLimit)
@@ -468,83 +543,129 @@ async function searchProducts(argumentsValue: Record<string, unknown>) {
 
   const supabase = createAdminClient();
 
-  const { data, error } = await supabase
-    .from("products")
-    .select(
-      `
-      id,
-      name,
-      slug,
-      description,
-      categories (
-        name,
-        slug
-      ),
-      product_images (
-        image_url,
-        alt_text,
-        position,
-        is_primary
-      ),
-      product_variants (
-        id,
-        size,
-        regular_price,
-        sale_price,
-        stock_quantity,
-        availability_status
+  /*
+   * Load the published catalog in deterministic pages.
+   *
+   * This avoids the previous hard 100-product knowledge ceiling.
+   * Public/tool searches still respect their requested result limit,
+   * while the main assistant brain can explicitly request the full
+   * published catalog with return_all: true.
+   */
+  const pageSize = 250;
+  let offset = 0;
+
+  const catalogRows: ProductRow[] = [];
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        `
+          id,
+          name,
+          slug,
+          description,
+          categories (
+            name,
+            slug
+          ),
+          brands (
+            name
+          ),
+          product_images (
+            id,
+            image_url,
+            alt_text,
+            position,
+            is_primary,
+            variant_id,
+            variant_position,
+            is_variant_primary,
+            product_image_variants (
+              variant_id,
+              position,
+              is_primary
+            )
+          ),
+          product_variants (
+            id,
+            size,
+            variant_name,
+            attributes,
+            display_position,
+            is_active,
+            regular_price,
+            sale_price,
+            stock_quantity,
+            availability_status
+          )
+        `,
       )
-    `,
-    )
-    .eq("status", "published")
-    .order("name", {
-      ascending: true,
-    })
-    .limit(100);
+      .eq("status", "published")
+      .order("name", {
+        ascending: true,
+      })
+      .range(offset, offset + pageSize - 1);
 
-  if (error) {
-    console.error("Assistant catalog tool failed:", error);
+    if (error) {
+      console.error("Assistant catalog tool failed:", error);
 
-    throw new Error("The live catalog could not be searched.");
+      throw new Error("The live catalog could not be searched.");
+    }
+
+    const page = (data ?? []) as ProductRow[];
+
+    catalogRows.push(...page);
+
+    if (page.length < pageSize) {
+      break;
+    }
+
+    offset += pageSize;
   }
 
-  return ((data ?? []) as ProductRow[])
-    .map(mapProduct)
-    .filter((product) => {
-      if (category && !product.category.toLowerCase().includes(category)) {
+  const matchingProducts = catalogRows.map(mapProduct).filter((product) => {
+    if (category && !product.category.toLowerCase().includes(category)) {
+      return false;
+    }
+
+    if (query && !productMatchesQuery(product, query)) {
+      return false;
+    }
+
+    const matchingVariants = product.variants.filter((variant) => {
+      if (size && variant.size.toLowerCase() !== size) {
         return false;
       }
 
-      if (query && !productMatchesQuery(product, query)) {
+      if (maximumPrice !== null && variant.currentPrice > maximumPrice) {
         return false;
       }
 
-      const matchingVariants = product.variants.filter((variant) => {
-        if (!variant.purchasable) {
-          return false;
-        }
+      return true;
+    });
 
-        if (size && variant.size.toLowerCase() !== size) {
-          return false;
-        }
+    product.variants = matchingVariants;
 
-        if (maximumPrice !== null && variant.currentPrice > maximumPrice) {
-          return false;
-        }
+    const purchasablePrices = matchingVariants
+      .filter((variant) => variant.purchasable)
+      .map((variant) => variant.currentPrice);
 
-        return true;
-      });
+    const listedPrices = matchingVariants
+      .map((variant) => variant.currentPrice)
+      .filter((price) => price > 0);
 
-      product.variants = matchingVariants;
-
-      product.price =
-        matchingVariants.length > 0
-          ? Math.min(...matchingVariants.map((variant) => variant.currentPrice))
+    product.price =
+      purchasablePrices.length > 0
+        ? Math.min(...purchasablePrices)
+        : listedPrices.length > 0
+          ? Math.min(...listedPrices)
           : null;
 
-      return matchingVariants.length > 0;
-    })
-    .slice(0, limit);
+    return matchingVariants.length > 0;
+  });
+
+  return returnAll ? matchingProducts : matchingProducts.slice(0, limit);
 }
 
 function normalizeProductReference(value: string) {
@@ -1640,12 +1761,17 @@ function detectLocalAction(value: string) {
 }
 
 function toRankedProduct(product: AssistantProduct): RankedAssistantProduct {
+  const knowledgeProduct = product as AssistantProduct & {
+    catalogKnowledge?: string;
+  };
+
   return {
     id: product.id,
     name: product.name,
     slug: product.slug,
     description: product.description,
     category: product.category,
+    knowledgeText: knowledgeProduct.catalogKnowledge ?? "",
     imageUrl: product.imageUrl,
     imageAlt: product.imageAlt,
     price: product.price,
@@ -1728,25 +1854,125 @@ function priceResponse(product: AssistantProduct, language: Language) {
 }
 
 function availabilityResponse(product: AssistantProduct, language: Language) {
-  const available = product.variants.some(
-    (variant) => variant.purchasable && variant.stockQuantity > 0,
+  const variants = product.variants;
+
+  const inStock = variants.filter(
+    (variant) =>
+      variant.availabilityStatus === "in_stock" && variant.stockQuantity > 0,
   );
 
+  const lowStock = variants.filter(
+    (variant) =>
+      variant.availabilityStatus === "low_stock" && variant.stockQuantity > 0,
+  );
+
+  const comingSoon = variants.filter(
+    (variant) => variant.availabilityStatus === "coming_soon",
+  );
+
+  const outOfStock = variants.filter(
+    (variant) =>
+      variant.availabilityStatus === "out_of_stock" ||
+      variant.availabilityStatus === "unavailable" ||
+      (variant.stockQuantity <= 0 &&
+        variant.availabilityStatus !== "coming_soon"),
+  );
+
+  const availableCount = inStock.length + lowStock.length;
+
+  if (variants.length === 0) {
+    if (language === "fr") {
+      return `${product.name} est bien référencé dans notre catalogue, mais aucune configuration n’est disponible actuellement.`;
+    }
+
+    if (language === "ar") {
+      return `${product.name} موجود ضمن الكتالوج لدينا، ولكن لا توجد أي نسخة متوفرة حالياً.`;
+    }
+
+    return `${product.name} is listed in our catalog, but no configuration is currently available.`;
+  }
+
+  if (availableCount > 0) {
+    if (language === "fr") {
+      if (lowStock.length > 0 && inStock.length === 0) {
+        return `${product.name} est disponible actuellement, mais le stock est limité.`;
+      }
+
+      if (comingSoon.length > 0 || outOfStock.length > 0) {
+        return `${product.name} est disponible actuellement. Certaines configurations sont disponibles, tandis que d’autres sont en rupture de stock ou arrivent prochainement.`;
+      }
+
+      return `${product.name} est actuellement disponible.`;
+    }
+
+    if (language === "ar") {
+      if (lowStock.length > 0 && inStock.length === 0) {
+        return `${product.name} متوفر حالياً، لكن الكمية محدودة.`;
+      }
+
+      if (comingSoon.length > 0 || outOfStock.length > 0) {
+        return `${product.name} متوفر حالياً. بعض النسخ متوفرة، بينما قد تكون نسخ أخرى غير متوفرة أو ستتوفر قريباً.`;
+      }
+
+      return `${product.name} متوفر حالياً.`;
+    }
+
+    if (lowStock.length > 0 && inStock.length === 0) {
+      return `${product.name} is available right now, but stock is limited.`;
+    }
+
+    if (comingSoon.length > 0 || outOfStock.length > 0) {
+      return `${product.name} is available. Some configurations are currently in stock, while others are out of stock or coming soon.`;
+    }
+
+    return `${product.name} is currently in stock.`;
+  }
+
+  if (comingSoon.length > 0 && outOfStock.length === 0) {
+    if (language === "fr") {
+      return `${product.name} est déjà référencé dans notre catalogue et arrive prochainement, mais il n’est pas encore disponible à l’achat.`;
+    }
+
+    if (language === "ar") {
+      return `${product.name} موجود بالفعل ضمن الكتالوج وسيكون متوفراً قريباً، لكنه غير متاح للشراء بعد.`;
+    }
+
+    return `${product.name} is already listed in our catalog and is coming soon, but it is not available to purchase yet.`;
+  }
+
+  if (outOfStock.length > 0 && comingSoon.length === 0) {
+    if (language === "fr") {
+      return `Nous proposons bien ${product.name}, mais il est actuellement en rupture de stock.`;
+    }
+
+    if (language === "ar") {
+      return `${product.name} من المنتجات التي نوفرها، لكنه غير متوفر في المخزون حالياً.`;
+    }
+
+    return `We do carry ${product.name}, but it is currently out of stock.`;
+  }
+
+  if (comingSoon.length > 0 && outOfStock.length > 0) {
+    if (language === "fr") {
+      return `${product.name} est bien référencé dans notre catalogue. Certaines configurations sont en rupture de stock et d’autres arrivent prochainement.`;
+    }
+
+    if (language === "ar") {
+      return `${product.name} موجود ضمن الكتالوج لدينا. بعض النسخ غير متوفرة حالياً ونسخ أخرى ستتوفر قريباً.`;
+    }
+
+    return `${product.name} is listed in our catalog. Some configurations are currently out of stock, while others are coming soon.`;
+  }
+
   if (language === "fr") {
-    return available
-      ? `${product.name} est actuellement disponible.`
-      : `${product.name} n’est pas disponible actuellement.`;
+    return `${product.name} est bien référencé dans notre catalogue, mais il n’est pas disponible actuellement.`;
   }
 
   if (language === "ar") {
-    return available
-      ? `${product.name} متوفر حالياً.`
-      : `${product.name} غير متوفر حالياً.`;
+    return `${product.name} موجود ضمن الكتالوج لدينا، لكنه غير متوفر حالياً.`;
   }
 
-  return available
-    ? `${product.name} is currently in stock.`
-    : `${product.name} is currently unavailable.`;
+  return `We do carry ${product.name}, but it is not currently available.`;
 }
 
 type AssistantLatestOrder = {
@@ -2323,6 +2549,7 @@ export async function POST(request: Request) {
       size: "",
       maximum_price: 0,
       limit: 100,
+      return_all: true,
     });
 
     const rankedCatalog = catalog.map(toRankedProduct);
@@ -2378,8 +2605,24 @@ export async function POST(request: Request) {
       })
       .filter((product): product is AssistantProduct => Boolean(product));
 
+    const liveCatalogResolvedRequest =
+      parsed.intent === "unknown" &&
+      Boolean(parsed.productQuery) &&
+      selectedProducts.length > 0;
+
+    const resolvedParsed = liveCatalogResolvedRequest
+      ? {
+          ...parsed,
+          intent: "product_search" as const,
+          needsClarification: false,
+          confidence: Math.max(parsed.confidence, 0.82),
+        }
+      : parsed;
+
     const explicitCatalogRequest = Boolean(
-      parsed.category || parsed.productQuery || parsed.brand,
+      resolvedParsed.category ||
+      resolvedParsed.productQuery ||
+      resolvedParsed.brand,
     );
 
     const productSensitiveIntent = [
@@ -2388,7 +2631,7 @@ export async function POST(request: Request) {
       "gift",
       "price_question",
       "availability",
-    ].includes(parsed.intent);
+    ].includes(resolvedParsed.intent);
 
     if (
       explicitCatalogRequest &&
@@ -2396,7 +2639,7 @@ export async function POST(request: Request) {
       selectedProducts.length === 0
     ) {
       return NextResponse.json({
-        message: unavailableCatalogResponse(parsed, language),
+        message: unavailableCatalogResponse(resolvedParsed, language),
         products: [],
         cartActions,
         wishlistActions,
@@ -2411,7 +2654,10 @@ export async function POST(request: Request) {
      * when we have an obvious top match.
      */
 
-    if (parsed.intent === "price_question" && selectedProducts.length > 0) {
+    if (
+      resolvedParsed.intent === "price_question" &&
+      selectedProducts.length > 0
+    ) {
       return NextResponse.json({
         message: priceResponse(selectedProducts[0], language),
         products: selectedProducts.slice(0, 4),
@@ -2423,7 +2669,10 @@ export async function POST(request: Request) {
       });
     }
 
-    if (parsed.intent === "availability" && selectedProducts.length > 0) {
+    if (
+      resolvedParsed.intent === "availability" &&
+      selectedProducts.length > 0
+    ) {
       return NextResponse.json({
         message: availabilityResponse(selectedProducts[0], language),
         products: selectedProducts.slice(0, 4),
@@ -2435,9 +2684,9 @@ export async function POST(request: Request) {
       });
     }
 
-    if (parsed.intent === "offers") {
+    if (resolvedParsed.intent === "offers") {
       return NextResponse.json({
-        message: composeOfferResponse(ranked, parsed),
+        message: composeOfferResponse(ranked, resolvedParsed),
         products: selectedProducts.slice(0, 4),
         cartActions,
         wishlistActions,
@@ -2448,13 +2697,13 @@ export async function POST(request: Request) {
     }
 
     if (
-      parsed.intent === "product_search" ||
-      parsed.intent === "recommendation" ||
-      parsed.intent === "gift"
+      resolvedParsed.intent === "product_search" ||
+      resolvedParsed.intent === "recommendation" ||
+      resolvedParsed.intent === "gift"
     ) {
-      if (parsed.needsClarification && selectedProducts.length === 0) {
+      if (resolvedParsed.needsClarification && selectedProducts.length === 0) {
         return NextResponse.json({
-          message: buildClarification(parsed),
+          message: buildClarification(resolvedParsed),
           products: [],
           cartActions,
           wishlistActions,
@@ -2465,7 +2714,7 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.json({
-        message: composeRecommendationResponse(parsed, ranked),
+        message: composeRecommendationResponse(resolvedParsed, ranked),
 
         products: selectedProducts.slice(0, 4),
 

@@ -11,7 +11,7 @@ export async function GET() {
     .from("categories")
     .select("id,name,slug,sort_order")
     .eq("is_active", true)
-    .eq("show_on_homepage", true)
+
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 

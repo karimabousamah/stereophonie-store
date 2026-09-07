@@ -1288,56 +1288,726 @@ function defaultVariant(
   };
 }
 
+const bulkTechnicalSpecificationSectionLabels = [
+  "Network & Connectivity",
+  "Network and Connectivity",
+  "Dimensions & Weight",
+  "Dimensions and Weight",
+  "Durability",
+  "Display",
+  "Processor (CPU/GPU)",
+  "Processor",
+  "RAM",
+  "Memory",
+  "Memory & Storage",
+  "Memory and Storage",
+  "Internal Storage",
+  "Storage",
+  "Rear Camera System",
+  "Rear Camera",
+  "Front Camera",
+  "Video Recording",
+  "Video",
+  "Audio",
+  "Biometrics",
+  "Security",
+  "Battery & Charging",
+  "Battery and Charging",
+  "Battery",
+  "Operating System",
+  "Software",
+  "Connectivity",
+  "Design & Build",
+  "Design and Build",
+  "Build & Design",
+  "Build and Design",
+  "Dimensions",
+  "Weight",
+  "Camera System",
+  "Cameras",
+  "Sensors",
+  "Color Schemes",
+  "Colour Schemes",
+  "Colors",
+  "Colours",
+].sort((first, second) => second.length - first.length);
+
+function cleanClipboardSpecificationText(value: unknown) {
+  return (
+    String(value ?? "")
+      .replace(/\u00a0/g, " ")
+      /*
+       * Google AI Mode citation/reference markers.
+       *
+       * Examples:
+       * [1]
+       * [1, 2]
+       * [1, 2, 3]
+       * [1][2][3]
+       *
+       * These are source references, not product specification content.
+       */
+      .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\s*\n\s*/g, " ")
+      .trim()
+  );
+}
+
+function escapeSpecificationRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function specificationLabelIdentity(value: string) {
+  return cleanClipboardSpecificationText(value)
+    .replace(/[:\-–—]+$/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .trim()
+    .toLocaleLowerCase();
+}
+
+function looksLikeTechnicalSpecificationLabel(value: string) {
+  const label = cleanClipboardSpecificationText(value)
+    .replace(/^[•●▪◦*\-–—\d.)\s]+/, "")
+    .replace(/[:\-–—]+$/g, "")
+    .trim();
+
+  if (!label || label.length > 80) {
+    return false;
+  }
+
+  if (/^[\d.,%+*/()[\]{}]+$/.test(label)) {
+    return false;
+  }
+
+  const words = label.split(/\s+/).filter(Boolean);
+
+  if (words.length === 0 || words.length > 9) {
+    return false;
+  }
+
+  /*
+   * Product specification titles are normally concise noun phrases.
+   * Avoid interpreting full prose sentences as labels.
+   */
+  if (/[.!?]$/.test(label) || /[,;]{2,}/.test(label)) {
+    return false;
+  }
+
+  const alphabeticCharacters = (label.match(/[A-Za-z]/g) ?? []).length;
+
+  if (alphabeticCharacters < 2) {
+    return false;
+  }
+
+  return true;
+}
+
+function cleanTechnicalSpecificationLine(value: string) {
+  return String(value ?? "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
+    .replace(/\*\*/g, "")
+    .replace(/^[•●▪◦*]+\s*/, "")
+    .replace(/^[-–—]\s+/, "")
+    .replace(/^\d+[.)]\s+/, "")
+    .replace(/[ \t]+/g, " ")
+    .trim();
+}
+
+function insertCollapsedSpecificationBoundaries(value: string) {
+  let result = String(value ?? "");
+
+  /*
+   * GOOGLE / SEARCH CLIPBOARD RECOVERY
+   *
+   * Modern result pages often visually show separate table rows while the
+   * clipboard removes the DOM boundary:
+   *
+   *   12 GBStorage128 GB
+   *   slot)Rear CameraTriple Camera Setup
+   *   cameras)Battery & Charging5,000 mAh
+   *   supported)SecurityUnder-display fingerprint reader
+   *
+   * Restore boundaries before known TOP-LEVEL specification labels.
+   *
+   * We require the heading to be immediately attached to preceding content,
+   * so normal prose such as "includes security features" is not split.
+   */
+  const knownHeadingPattern = bulkTechnicalSpecificationSectionLabels
+    .map(escapeSpecificationRegExp)
+    .join("|");
+
+  if (knownHeadingPattern) {
+    result = result.replace(
+      new RegExp(
+        `([^\\s])(${knownHeadingPattern})(?=\\d|[A-Z]|[a-z]|[:\\-–—])`,
+        "g",
+      ),
+      "$1\n$2",
+    );
+  }
+
+  /*
+   * Acronym rows are especially common in copied specification tables.
+   *
+   * Examples:
+   *   GHz)RAM8 GB
+   *   valueSSD512 GB
+   */
+  result = result.replace(
+    /([A-Za-z0-9)%\]])(RAM|ROM|CPU|GPU|NPU|SSD|HDD)(?=\d|\s|[A-Z])/g,
+    "$1\n$2",
+  );
+
+  /*
+   * Restore a conservative generic boundary when a camel-collapsed
+   * multi-word title is immediately followed by a numerical value.
+   *
+   * Example:
+   *   someValueMaximumPower120 W
+   */
+  result = result.replace(
+    /([a-z0-9)%\]])([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+){0,3})(?=\d)/g,
+    "$1\n$2",
+  );
+
+  /*
+   * Finally restore ordinary camel-case spacing.
+   *
+   * RecordingUp -> Recording Up
+   * StorageOptions -> Storage Options
+   *
+   * This happens AFTER top-level row boundaries are recovered.
+   */
+  result = result.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+  return result;
+}
+
+function specificationEntriesFromStructuredText(source: string) {
+  const normalizedSource = insertCollapsedSpecificationBoundaries(
+    String(source ?? "")
+      .replace(/\u00a0/g, " ")
+      .replace(/[\u200B-\u200D\uFEFF]/g, "")
+      .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
+      .replace(/\r\n?/g, "\n"),
+  );
+
+  const rawLines = normalizedSource
+    .split("\n")
+    .map(cleanTechnicalSpecificationLine)
+    .filter(Boolean);
+
+  const entries: Array<{ label: string; value: string }> = [];
+
+  /*
+   * Keep mutable parser state inside an object.
+   *
+   * TypeScript does not track assignments to a local union variable made
+   * inside nested helper functions reliably enough for the outer loop.
+   * Using a state object preserves the exact runtime behavior while keeping
+   * control-flow narrowing correct.
+   */
+  const parserState: {
+    current: { label: string; value: string } | null;
+  } = {
+    current: null,
+  };
+
+  function commitCurrent() {
+    const current = parserState.current;
+
+    if (!current) {
+      return;
+    }
+
+    const label = cleanTechnicalSpecificationLine(current.label);
+    const value = cleanTechnicalSpecificationLine(current.value);
+
+    if (looksLikeTechnicalSpecificationLabel(label) && value) {
+      entries.push({ label, value });
+    }
+
+    parserState.current = null;
+  }
+
+  function begin(label: string, value: string) {
+    commitCurrent();
+
+    parserState.current = {
+      label: cleanTechnicalSpecificationLine(label),
+      value: cleanTechnicalSpecificationLine(value),
+    };
+  }
+
+  for (const rawLine of rawLines) {
+    const line = cleanTechnicalSpecificationLine(rawLine);
+
+    if (!line) {
+      continue;
+    }
+
+    /*
+     * Strongest structure: Title<TAB>Value.
+     * Spreadsheet/table clipboard formats frequently use tabs.
+     */
+    const tabParts = line
+      .split(/\t+/)
+      .map(cleanTechnicalSpecificationLine)
+      .filter(Boolean);
+
+    if (
+      tabParts.length >= 2 &&
+      looksLikeTechnicalSpecificationLabel(tabParts[0])
+    ) {
+      begin(tabParts[0], tabParts.slice(1).join(" "));
+      continue;
+    }
+
+    /*
+     * KNOWN TOP-LEVEL ROW HEADING — HIGHEST PRIORITY
+     *
+     * This MUST run before colon and numeric inference.
+     *
+     * Example:
+     *
+     * Display6.7-inch Super AMOLED+ Display • Resolution: FHD+
+     *
+     * "Display" is the row heading.
+     * "Resolution:" belongs INSIDE Display's value.
+     */
+    const knownLabel = bulkTechnicalSpecificationSectionLabels.find((label) => {
+      const escaped = escapeSpecificationRegExp(label);
+
+      return new RegExp(
+        `^${escaped}(?=\\s|\\d|[A-Z]|[a-z]|[:\\-–—])`,
+        "i",
+      ).test(line);
+    });
+
+    if (knownLabel && line.length > knownLabel.length) {
+      const candidateValue = cleanTechnicalSpecificationLine(
+        line.slice(knownLabel.length).replace(/^[:\-–—\s]+/, ""),
+      );
+
+      if (candidateValue) {
+        begin(knownLabel, candidateValue);
+        continue;
+      }
+    }
+
+    /*
+     * Standard Title: value syntax.
+     *
+     * Only the FIRST colon may be structural.
+     *
+     * We reject it when the supposed label already contains obvious value
+     * material. This stops nested details from becoming giant labels:
+     *
+     * BAD:
+     * Display6.7-inch OLED • Resolution
+     *
+     * GOOD:
+     * Display
+     * 6.7-inch OLED • Resolution: FHD+
+     */
+    const colonIndex = line.indexOf(":");
+
+    if (colonIndex > 0) {
+      const candidateLabel = cleanTechnicalSpecificationLine(
+        line.slice(0, colonIndex),
+      );
+
+      const candidateValue = cleanTechnicalSpecificationLine(
+        line.slice(colonIndex + 1),
+      );
+
+      const labelContainsValueMaterial =
+        /\d/.test(candidateLabel) ||
+        /[•●▪◦]/.test(candidateLabel) ||
+        /\b(?:gb|tb|mb|mah|w|kw|hz|khz|mhz|ghz|mp|mm|cm|fps|ppi|nit|nits)\b/i.test(
+          candidateLabel,
+        );
+
+      if (
+        !labelContainsValueMaterial &&
+        looksLikeTechnicalSpecificationLabel(candidateLabel) &&
+        candidateValue
+      ) {
+        begin(candidateLabel, candidateValue);
+        continue;
+      }
+    }
+
+    /*
+     * CONSERVATIVE UNKNOWN-LABEL NUMERIC FALLBACK
+     *
+     * This remains useful for specification titles we have never seen
+     * before:
+     *
+     * Ports2x USB-C
+     * Maximum Power120 W
+     *
+     * But it is deliberately lower priority than known row headings.
+     */
+    const numericBoundary = line.match(
+      /^([A-Za-z][A-Za-z/&+().'\- ]{1,39}?)(?=\d)(.+)$/,
+    );
+
+    if (numericBoundary) {
+      const candidateLabel = cleanTechnicalSpecificationLine(
+        numericBoundary[1],
+      );
+
+      const candidateValue = cleanTechnicalSpecificationLine(
+        line.slice(numericBoundary[1].length),
+      );
+
+      const candidateWords = candidateLabel.split(/\s+/).filter(Boolean);
+
+      if (
+        candidateWords.length <= 5 &&
+        !/[•●▪◦]/.test(candidateLabel) &&
+        looksLikeTechnicalSpecificationLabel(candidateLabel) &&
+        candidateValue
+      ) {
+        begin(candidateLabel, candidateValue);
+        continue;
+      }
+    }
+
+    /*
+     * No new structural title was detected. Keep this as a continuation of
+     * the current specification instead of throwing the text away.
+     *
+     * This preserves nested camera bullets, notes, supported standards, etc.
+     */
+    const current = parserState.current;
+
+    if (current) {
+      current.value = cleanTechnicalSpecificationLine(
+        `${current.value} • ${line}`,
+      );
+    }
+  }
+
+  commitCurrent();
+
+  /*
+   * Deduplicate case/spacing variants while preserving first-seen order.
+   */
+  const deduplicated = new Map<string, { label: string; value: string }>();
+
+  for (const entry of entries) {
+    const identity = specificationLabelIdentity(entry.label);
+
+    if (!identity) {
+      continue;
+    }
+
+    const existing = deduplicated.get(identity);
+
+    if (!existing) {
+      deduplicated.set(identity, entry);
+      continue;
+    }
+
+    if (
+      entry.value.length > existing.value.length &&
+      !existing.value.includes(entry.value)
+    ) {
+      deduplicated.set(identity, entry);
+    }
+  }
+
+  return Array.from(deduplicated.values());
+}
+
+function splitFlattenedTechnicalSpecificationText(source: string) {
+  const cleanedSource = cleanClipboardSpecificationText(source);
+
+  if (!cleanedSource) {
+    return "";
+  }
+
+  /*
+   * First try the generic structural parser. This handles Title:value,
+   * numerical boundaries and many collapsed clipboard rows.
+   */
+  const structuralEntries =
+    specificationEntriesFromStructuredText(cleanedSource);
+
+  if (structuralEntries.length > 1) {
+    return structuralEntries
+      .map(({ label, value }) => `${label}: ${value}`)
+      .join("\n");
+  }
+
+  /*
+   * Final recovery for completely flattened Google/search text.
+   *
+   * Historical high-level headings remain useful here, but they are no
+   * longer the primary parsing mechanism.
+   */
+  const labelPattern = bulkTechnicalSpecificationSectionLabels
+    .map(escapeSpecificationRegExp)
+    .join("|");
+
+  const headingRegex = new RegExp(`(${labelPattern})`, "g");
+
+  const matches = Array.from(cleanedSource.matchAll(headingRegex));
+
+  if (matches.length === 0) {
+    return cleanedSource;
+  }
+
+  const sections: string[] = [];
+
+  for (let index = 0; index < matches.length; index += 1) {
+    const match = matches[index];
+
+    if (match.index == null) {
+      continue;
+    }
+
+    const label = match[1]?.trim();
+
+    if (!label) {
+      continue;
+    }
+
+    const valueStart = match.index + match[0].length;
+    const nextMatch = matches[index + 1];
+    const valueEnd =
+      nextMatch?.index == null ? cleanedSource.length : nextMatch.index;
+
+    const value = cleanClipboardSpecificationText(
+      cleanedSource.slice(valueStart, valueEnd),
+    ).replace(/^[:\-–—\s]+/, "");
+
+    if (!value) {
+      continue;
+    }
+
+    sections.push(`${label}: ${value}`);
+  }
+
+  return sections.length > 0 ? sections.join("\n") : cleanedSource;
+}
+
 function specificationTextFromClipboardHtml(html: string) {
   if (!html.trim() || typeof DOMParser === "undefined") {
     return "";
   }
 
   const document = new DOMParser().parseFromString(html, "text/html");
-  const lines: string[] = [];
 
-  const elements = Array.from(
-    document.body.querySelectorAll("li, p, div, h1, h2, h3, h4, h5, h6"),
-  );
+  /*
+   * PRIORITY 1 — REAL TABLE ROWS
+   *
+   * Google technical-specification tables normally expose:
+   *
+   * left cell  = title
+   * right cell = complete value
+   *
+   * Every row becomes exactly ONE textarea line.
+   */
+  const tableLines: string[] = [];
 
-  for (const element of elements) {
-    const hasNestedBlock = element.querySelector(
-      "li, p, div, h1, h2, h3, h4, h5, h6",
+  for (const row of Array.from(document.body.querySelectorAll("tr"))) {
+    const cells = Array.from(row.querySelectorAll(":scope > th, :scope > td"));
+
+    if (cells.length < 2) {
+      continue;
+    }
+
+    const label = cleanClipboardSpecificationText(cells[0]?.textContent);
+
+    const value = cleanClipboardSpecificationText(
+      cells
+        .slice(1)
+        .map((cell) => cell.textContent ?? "")
+        .join(" "),
     );
 
-    if (hasNestedBlock) {
+    if (!label || !value || label.length > 100) {
       continue;
     }
 
-    const value = (element.textContent ?? "")
-      .replace(/\u00a0/g, " ")
-      .replace(/[ \t]+/g, " ")
-      .trim();
-
-    if (!value) {
-      continue;
-    }
-
-    const isListItem = element.tagName === "LI";
-
-    lines.push(isListItem ? `• ${value}` : value);
+    tableLines.push(`${label}: ${value}`);
   }
 
-  const uniqueLines: string[] = [];
-  const seen = new Set<string>();
+  if (tableLines.length > 0) {
+    return Array.from(new Set(tableLines)).join("\n\n").trim();
+  }
 
-  for (const line of lines) {
-    const identity = line.replace(/^[•●▪◦*]\s*/, "").trim();
+  /*
+   * PRIORITY 2 — BULLET / LIST ITEMS
+   *
+   * Google AI Mode commonly returns feature specifications as:
+   *
+   * • Design & Build: ...
+   * • Display Flagship Feel: ...
+   * • Next-Gen Software: ...
+   *
+   * NEVER merge these together.
+   * One <li> = one Quick Paste line.
+   */
+  const listLines = Array.from(document.body.querySelectorAll("li"))
+    .map((item) => cleanClipboardSpecificationText(item.textContent))
+    .filter(Boolean);
 
-    if (!identity || seen.has(identity)) {
+  if (listLines.length > 0) {
+    return Array.from(new Set(listLines)).join("\n\n").trim();
+  }
+
+  /*
+   * PRIORITY 3 — ARIA TABLE / GRID ROWS
+   */
+  const ariaLines: string[] = [];
+
+  for (const row of Array.from(
+    document.body.querySelectorAll('[role="row"]'),
+  )) {
+    const cells = Array.from(
+      row.querySelectorAll(
+        ':scope > [role="cell"], :scope > [role="gridcell"], :scope > [role="rowheader"], :scope > [role="columnheader"]',
+      ),
+    );
+
+    if (cells.length < 2) {
       continue;
     }
 
-    seen.add(identity);
-    uniqueLines.push(line);
+    const label = cleanClipboardSpecificationText(cells[0]?.textContent);
+
+    const value = cleanClipboardSpecificationText(
+      cells
+        .slice(1)
+        .map((cell) => cell.textContent ?? "")
+        .join(" "),
+    );
+
+    if (!label || !value || label.length > 100) {
+      continue;
+    }
+
+    ariaLines.push(`${label}: ${value}`);
   }
 
-  return uniqueLines.join("\n").trim();
+  if (ariaLines.length > 0) {
+    return Array.from(new Set(ariaLines)).join("\n\n").trim();
+  }
+
+  /*
+   * PRIORITY 4 — DEFINITION LISTS
+   */
+  const definitionLines: string[] = [];
+
+  for (const term of Array.from(document.body.querySelectorAll("dt"))) {
+    const description = term.nextElementSibling;
+
+    if (!description || description.tagName !== "DD") {
+      continue;
+    }
+
+    const label = cleanClipboardSpecificationText(term.textContent);
+
+    const value = cleanClipboardSpecificationText(description.textContent);
+
+    if (!label || !value || label.length > 100) {
+      continue;
+    }
+
+    definitionLines.push(`${label}: ${value}`);
+  }
+
+  if (definitionLines.length > 0) {
+    return Array.from(new Set(definitionLines)).join("\n\n").trim();
+  }
+
+  /*
+   * PRIORITY 5 — GENERIC BLOCK ELEMENTS
+   *
+   * Preserve block boundaries instead of flattening the entire page
+   * into one giant string.
+   */
+  const blockLines = Array.from(
+    document.body.querySelectorAll("p, h1, h2, h3, h4, h5, h6"),
+  )
+    .map((element) => cleanClipboardSpecificationText(element.textContent))
+    .filter(Boolean);
+
+  const specificationBlockLines = blockLines.filter((line) => {
+    const colonIndex = line.indexOf(":");
+
+    return colonIndex > 0 && colonIndex <= 100;
+  });
+
+  if (specificationBlockLines.length > 0) {
+    return Array.from(new Set(specificationBlockLines)).join("\n\n").trim();
+  }
+
+  /*
+   * FINAL FALLBACK
+   *
+   * Modern Google AI/search results often LOOK like a two-column
+   * specification table while the copied HTML is actually nested
+   * div/span markup.
+   *
+   * In that case the clipboard may flatten this:
+   *
+   * Display
+   *   6.7-inch Super AMOLED Plus
+   *   • Resolution: ...
+   *   • Refresh Rate: ...
+   *
+   * Processor (CPU/GPU)
+   *   Samsung Exynos ...
+   *
+   * into one long string.
+   *
+   * Reconstruct ONLY known top-level specification sections here.
+   * Internal bullets and nested labels remain part of their parent value.
+   */
+  const fallbackText = String(
+    document.body.innerText || document.body.textContent || "",
+  )
+    .replace(/\u00a0/g, " ")
+    .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
+    .replace(/\r\n?/g, "\n")
+    .trim();
+
+  const reconstructed = splitFlattenedTechnicalSpecificationText(fallbackText);
+
+  const reconstructedLines = reconstructed
+    .split("\n")
+    .map((line) => line.replace(/[ \t]+/g, " ").trim())
+    .filter(Boolean)
+    .filter((line) => {
+      const colonIndex = line.indexOf(":");
+
+      if (colonIndex <= 0) {
+        return true;
+      }
+
+      const label = line.slice(0, colonIndex).trim().toLocaleLowerCase();
+
+      const value = line
+        .slice(colonIndex + 1)
+        .trim()
+        .toLocaleLowerCase();
+
+      return !(label === "category" && value === "specification details");
+    });
+
+  if (reconstructedLines.length > 0) {
+    return reconstructedLines.join("\n\n").trim();
+  }
+
+  return fallbackText;
 }
 
 export default function ElectronicsVariantEditor({
@@ -1961,7 +2631,12 @@ export default function ElectronicsVariantEditor({
     setCustomSpecError("");
     setTechnicalSpecsMessage("");
 
-    const source = bulkTechnicalSpecs.replace(/\u00a0/g, " ").trim();
+    const source = bulkTechnicalSpecs
+      .replace(/\u00a0/g, " ")
+      .replace(/[\u200B-\u200D\uFEFF]/g, "")
+      .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
+      .replace(/\r\n?/g, "\n")
+      .trim();
 
     if (!source) {
       setCustomSpecError("Paste technical specifications before parsing them.");
@@ -1978,55 +2653,56 @@ export default function ElectronicsVariantEditor({
       { label: string; value: string }
     >();
 
+    /*
+     * Universal Quick Paste pipeline:
+     *
+     * clipboard text
+     * -> normalize hostile/collapsed formatting
+     * -> detect structural Title/value boundaries
+     * -> preserve nested details
+     * -> deduplicate
+     *
+     * This intentionally does NOT require every specification to already
+     * exist on its own physical line.
+     */
+    let entries = specificationEntriesFromStructuredText(source);
+
+    /*
+     * If the original clipboard text has been flattened into one continuous
+     * string, run the reconstruction layer and parse the reconstructed form.
+     */
+    if (entries.length <= 1) {
+      const reconstructed = splitFlattenedTechnicalSpecificationText(source);
+
+      const reconstructedEntries =
+        specificationEntriesFromStructuredText(reconstructed);
+
+      if (reconstructedEntries.length > entries.length) {
+        entries = reconstructedEntries;
+      }
+    }
+
     let ignoredLines = 0;
 
-    const lines = source
-      .replace(/\r\n?/g, "\n")
-      .split("\n")
-      .map((line) =>
-        line
-          .trim()
-          .replace(/^[•●▪◦*]+\s*/, "")
-          .replace(/^[-–—]\s+/, "")
-          .replace(/^\d+[.)]\s+/, "")
-          .replace(/\*\*/g, "")
-          .trim(),
-      )
-      .filter(Boolean);
-
-    for (const line of lines) {
-      /*
-       * A specification MUST contain a colon.
-       *
-       * Lines without a colon are treated as headings, for example:
-       * "Version 10 000 mAh (PowerPod-10)"
-       * "Display and Design"
-       */
-      const colonIndex = line.indexOf(":");
-
-      if (colonIndex <= 0) {
-        ignoredLines += 1;
-        continue;
-      }
-
-      /*
-       * Split ONLY on the first colon.
-       * Any later colon remains part of the specification value.
-       */
-      const label = clean(line.slice(0, colonIndex));
-      const value = clean(line.slice(colonIndex + 1));
+    for (const entry of entries) {
+      const label = clean(entry.label);
+      const value = clean(entry.value);
 
       if (!label || !value || label.length > 100) {
         ignoredLines += 1;
         continue;
       }
 
+      const lowerLabel = label.toLocaleLowerCase();
+      const lowerValue = value.toLocaleLowerCase();
+
       /*
-       * normalizeKey is used ONLY as an internal identity.
-       *
-       * The original label itself is preserved exactly so accents,
-       * punctuation and capitalization are never destroyed.
+       * Google table column headers are metadata, not product specs.
        */
+      if (lowerLabel === "category" && lowerValue === "specification details") {
+        continue;
+      }
+
       const identity = normalizeKey(label);
 
       if (
@@ -2046,7 +2722,7 @@ export default function ElectronicsVariantEditor({
 
     if (parsedSpecifications.size === 0) {
       setCustomSpecError(
-        'No specifications detected. Each specification needs the format "Title: value".',
+        "No specifications detected. Paste a specification table, bullet list, or Title/value text.",
       );
       return;
     }
@@ -2063,11 +2739,6 @@ export default function ElectronicsVariantEditor({
           ...(variant.attributes ?? {}),
         };
 
-        /*
-         * If the same specification already exists, replace it rather
-         * than producing a duplicate. Comparison uses the normalized
-         * identity, while the newly pasted human label is preserved.
-         */
         for (const existingKey of Object.keys(attributes)) {
           const existingIdentity = normalizeKey(existingKey);
 
@@ -2097,8 +2768,8 @@ export default function ElectronicsVariantEditor({
       ignoredLines > 0
         ? ` · ignored ${ignoredLines} ${
             ignoredLines === 1
-              ? "heading or unsupported line"
-              : "headings or unsupported lines"
+              ? "non-specification item"
+              : "non-specification items"
           }`
         : "";
 
@@ -2842,10 +3513,10 @@ export default function ElectronicsVariantEditor({
                               </p>
 
                               <p className="mt-1.5 max-w-2xl text-[11px] leading-5 text-white/40">
-                                Copy a full specification list from Google or
-                                another source and paste it here. Each line
-                                containing a colon will automatically become a
-                                technical specification.
+                                Paste a specification table or feature list from
+                                Google or another source. Top-level sections are
+                                preserved automatically, including nested
+                                specification details.
                               </p>
                             </div>
 
@@ -2902,9 +3573,10 @@ Storage Options: 256GB, 512GB, and 1TB`}
                             <p className="text-[10px] leading-4 text-white/30">
                               Format:{" "}
                               <span className="text-white/50">
-                                Title: value
+                                Google table, bullet list, or Title: value
                               </span>{" "}
-                              · Section headings are ignored automatically.
+                              · Nested details stay inside their parent
+                              specification.
                             </p>
 
                             <button

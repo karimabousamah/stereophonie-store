@@ -7,6 +7,7 @@ import {
   canonicalizeProductColorwayName,
   normalizeProductColorway,
   productColorwayHex,
+  productColorways,
 } from "@/lib/product-colorways";
 
 export type ConfigurationColorValue = {
@@ -287,7 +288,7 @@ const rawPresetColors: ConfigurationColorValue[] = [
 
 const presetColors = Array.from(
   new Map(
-    rawPresetColors.map((colorway) => {
+    [...rawPresetColors, ...productColorways].map((colorway) => {
       const normalized = normalizeProductColorway(colorway);
 
       return [normalized.name.toLocaleLowerCase(), normalized] as const;

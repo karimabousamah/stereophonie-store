@@ -37048,28 +37048,18 @@ button[data-st-ai-edge-launcher="true"].is-open {
 }
 
 /* ---------------------------------------------------------
-   7. REMOVE TOP X CLOSE BUTTON
+   7. TOP CLOSE BUTTON
    --------------------------------------------------------- */
 
 /*
- * Closing is now handled by:
- * 1. clicking AI Assistant side tab
- * 2. clicking outside the assistant
+ * The assistant now uses an explicit visible close control.
+ *
+ * Historical CSS previously hid every Close-labelled button here
+ * with an ID-specific !important rule. That behavior is obsolete.
+ *
+ * Final close-button styling and positioning are owned by the
+ * authoritative assistant rules at the end of this stylesheet.
  */
-
-.st3-ai-panel__top button[aria-label*="Close" i],
-.st3-ai-panel__top button[title*="Close" i],
-#stereophonie-ai-drawer button[aria-label*="Close" i] {
-  display: none !important;
-}
-
-/* ---------------------------------------------------------
-   8. REBALANCE HEADER AFTER X REMOVAL
-   --------------------------------------------------------- */
-
-.st3-ai-panel__top {
-  padding-right: 18px !important;
-}
 
 /* ---------------------------------------------------------
    9. HOVER — VERY SUBTLE
@@ -37389,12 +37379,11 @@ button.st3-ai-edge-tab:not(.is-open),
 }
 
 /*
- * The close button remains structurally present for
- * accessibility/fallback, but the interface is closed
- * using the side tab or outside click.
+ * The close button is a primary visible control.
+ * It may also be closed through the side launcher or outside click.
  */
 .st3-ai-panel__close {
-  display: none !important;
+  display: grid !important;
 }
 
 /* =========================================================
@@ -67978,3 +67967,1505 @@ html
   }
 }
 /* === ST MOBILE DISABLE PRODUCT IMAGE HOVER END === */
+
+/* === ST SHOP SEARCH SUGGESTION STACKING GUARD START ===
+ *
+ * Keep the complete Shop search surface above product cards so
+ * availability stickers and wishlist controls cannot bleed through.
+ */
+html body .st-retail-shop .st-filter-v4 {
+  position: relative !important;
+  z-index: 12000 !important;
+}
+
+html body .st-retail-shop .st-filter-v4__search {
+  position: relative !important;
+  z-index: 12001 !important;
+}
+
+html body .st-retail-shop .st-filter-v4__suggestions {
+  z-index: 12002 !important;
+  isolation: isolate;
+}
+
+html
+  body
+  .st-retail-shop
+  :is(.st-v2-shop-results, .st-v2-shop-results__body, .st3-shop-v4__grid) {
+  position: relative;
+  z-index: 0 !important;
+}
+/* === ST SHOP SEARCH SUGGESTION STACKING GUARD END === */
+
+/* ========================================================================
+   STEREOPHONIE AI — PREMIUM THINKING STATE V6
+   ======================================================================== */
+
+/*
+ * Authoritative thinking-state override.
+ *
+ * Intentionally appended after the historical assistant styles so this
+ * single block controls the active V3 loader without changing the drawer,
+ * messages, composer, launcher or recommendation cards.
+ */
+
+.st3-ai-panel .st3-ai-loader {
+  position: relative !important;
+  width: 116px !important;
+  height: 38px !important;
+  min-width: 116px !important;
+  min-height: 38px !important;
+  margin: 0 !important;
+  padding: 0 13px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+
+  align-self: flex-start !important;
+  overflow: hidden !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.075) !important;
+  border-radius: 15px 15px 15px 6px !important;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(247, 247, 248, 0.96)
+  ) !important;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.025),
+    0 5px 16px rgba(0, 0, 0, 0.035) !important;
+
+  animation: st-ai-v6-thinking-enter 260ms cubic-bezier(0.22, 0.61, 0.36, 1)
+    both !important;
+
+  isolation: isolate;
+}
+
+.st3-ai-panel .st3-ai-loader__signal {
+  position: relative !important;
+
+  width: 24px !important;
+  height: 16px !important;
+  min-width: 24px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+
+  z-index: 2;
+}
+
+.st3-ai-panel .st3-ai-loader__signal i {
+  position: relative !important;
+
+  width: 3px !important;
+  height: 7px !important;
+  min-width: 3px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  border: 0 !important;
+  border-radius: 999px !important;
+
+  background: #f5b335 !important;
+
+  opacity: 0.42;
+
+  transform-origin: center;
+
+  animation: st-ai-v6-thinking-bar 1.05s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+}
+
+.st3-ai-panel .st3-ai-loader__signal i:nth-child(2) {
+  animation-delay: 120ms !important;
+}
+
+.st3-ai-panel .st3-ai-loader__signal i:nth-child(3) {
+  animation-delay: 240ms !important;
+}
+
+.st3-ai-panel .st3-ai-loader__label {
+  position: relative !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.015em !important;
+
+  color: rgba(29, 29, 31, 0.62) !important;
+
+  white-space: nowrap !important;
+
+  z-index: 2;
+}
+
+.st3-ai-panel .st3-ai-loader__glint {
+  position: absolute !important;
+
+  top: 0 !important;
+  bottom: 0 !important;
+  left: -52% !important;
+
+  width: 42% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  pointer-events: none !important;
+
+  background: linear-gradient(
+    100deg,
+    rgba(245, 179, 53, 0),
+    rgba(245, 179, 53, 0.035) 30%,
+    rgba(245, 179, 53, 0.115) 50%,
+    rgba(245, 179, 53, 0.035) 70%,
+    rgba(245, 179, 53, 0)
+  ) !important;
+
+  transform: skewX(-12deg);
+
+  animation: st-ai-v6-thinking-glint 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+
+  z-index: 1;
+}
+
+@keyframes st-ai-v6-thinking-bar {
+  0%,
+  66%,
+  100% {
+    height: 6px;
+    opacity: 0.34;
+    transform: translateY(0) scaleY(0.92);
+  }
+
+  33% {
+    height: 13px;
+    opacity: 0.96;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes st-ai-v6-thinking-glint {
+  0%,
+  18% {
+    left: -52%;
+    opacity: 0;
+  }
+
+  28% {
+    opacity: 1;
+  }
+
+  62% {
+    opacity: 1;
+  }
+
+  74%,
+  100% {
+    left: 112%;
+    opacity: 0;
+  }
+}
+
+@keyframes st-ai-v6-thinking-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(-5px, 4px, 0) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-ai-panel .st3-ai-loader,
+  .st3-ai-panel .st3-ai-loader__signal i,
+  .st3-ai-panel .st3-ai-loader__glint {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .st3-ai-panel .st3-ai-loader__signal i {
+    height: 8px !important;
+    opacity: 0.72 !important;
+  }
+
+  .st3-ai-panel .st3-ai-loader__glint {
+    display: none !important;
+  }
+}
+
+/* === END STEREOPHONIE AI PREMIUM THINKING STATE V6 === */
+
+/* === ST AI COMPOSER + PRODUCT CARD POLISH V7 START === */
+
+/*
+ * The rounded composer shell owns focus.
+ *
+ * The native input must not draw another rectangular border,
+ * outline or inset shadow inside it.
+ */
+html body .st3-ai-panel .st3-ai-composer input,
+html body .st3-ai-panel .st3-ai-composer input:hover,
+html body .st3-ai-panel .st3-ai-composer input:focus,
+html body .st3-ai-panel .st3-ai-composer input:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+
+  background: transparent !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+html body .st3-ai-panel .st3-ai-composer:focus-within {
+  border-color: rgba(228, 173, 67, 0.62) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.09),
+    0 6px 20px rgba(0, 0, 0, 0.035) !important;
+}
+
+/*
+ * Recommendation-card media normalization.
+ *
+ * Images are blocks rather than inline replaced elements so there
+ * is no text-baseline / descender gap below certain source images.
+ *
+ * The fixed visual surface owns centering and clipping.
+ */
+html body .st3-ai-panel .st3-ai-product-card__visual {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+
+  line-height: 0 !important;
+
+  vertical-align: middle !important;
+}
+
+html body .st3-ai-panel .st3-ai-product-card__visual > img {
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  max-width: 100% !important;
+  max-height: 100% !important;
+
+  margin: 0 !important;
+
+  object-fit: contain !important;
+  object-position: center center !important;
+
+  vertical-align: middle !important;
+}
+
+/* === ST AI COMPOSER + PRODUCT CARD POLISH V7 END === */
+
+/* === ST AI CARD MEDIA CLEANUP V8 START === */
+
+/*
+ * Compact assistant cards should be visually clean:
+ * - no sale / offer stickers
+ * - no source-image canvas visibly shifting the product
+ * - consistent centering for chargers, keyboards, earbuds, etc.
+ */
+
+html body .st3-ai-panel .st3-ai-product-card__sale {
+  display: none !important;
+}
+
+html body .st3-ai-panel .st3-ai-product-card__visual {
+  position: relative !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+
+  padding: 0 !important;
+
+  line-height: 0 !important;
+}
+
+html body .st3-ai-panel .st3-ai-product-card__visual > img {
+  position: absolute !important;
+
+  top: 50% !important;
+  left: 50% !important;
+
+  width: 112% !important;
+  height: 112% !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+
+  object-fit: contain !important;
+  object-position: center center !important;
+
+  transform: translate(-50%, -50%) !important;
+
+  transform-origin: center center !important;
+}
+
+/*
+ * Keep images with larger transparent source canvases from looking
+ * noticeably lower or farther left than neighboring products.
+ */
+html body .st3-ai-panel .st3-ai-product-card__visual::before {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+
+  pointer-events: none !important;
+
+  background: transparent !important;
+
+  z-index: 2 !important;
+}
+
+/* === ST AI CARD MEDIA CLEANUP V8 END === */
+
+/* === ST AI PRODUCT MEDIA FINAL V9 START === */
+
+/*
+ * FINAL compact assistant-card media behavior.
+ *
+ * 1. Keep the photo completely fixed on hover.
+ *    Historical product-card hover transforms must never move the
+ *    assistant thumbnail away from its centered position.
+ *
+ * 2. Use a white thumbnail surface.
+ *    Some administrator product images contain white source-canvas
+ *    padding. A white media surface makes that padding visually
+ *    continuous instead of exposing a gray/white strip.
+ */
+
+html body .st3-ai-panel .st3-ai-product-card__visual {
+  position: relative !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+
+  padding: 0 !important;
+
+  background: #ffffff !important;
+
+  line-height: 0 !important;
+
+  transform: none !important;
+}
+
+html body .st3-ai-panel .st3-ai-product-card__visual > img,
+html
+  body
+  .st3-ai-panel
+  .st3-ai-product-card:hover
+  .st3-ai-product-card__visual
+  > img,
+html
+  body
+  .st3-ai-panel
+  .st3-ai-product-card:focus
+  .st3-ai-product-card__visual
+  > img,
+html
+  body
+  .st3-ai-panel
+  .st3-ai-product-card:focus-visible
+  .st3-ai-product-card__visual
+  > img,
+html
+  body
+  .st3-ai-panel
+  .st3-ai-product-card:active
+  .st3-ai-product-card__visual
+  > img {
+  position: absolute !important;
+
+  top: 50% !important;
+  left: 50% !important;
+
+  width: 116% !important;
+  height: 116% !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  object-fit: contain !important;
+  object-position: center center !important;
+
+  transform: translate3d(-50%, -50%, 0) !important;
+
+  scale: 1 !important;
+
+  transition: none !important;
+
+  animation: none !important;
+
+  filter: none !important;
+}
+
+/*
+ * No pseudo-element, hover overlay or image treatment may create
+ * another visual layer over the compact assistant thumbnail.
+ */
+html body .st3-ai-panel .st3-ai-product-card__visual::before,
+html body .st3-ai-panel .st3-ai-product-card__visual::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* === ST AI PRODUCT MEDIA FINAL V9 END === */
+
+/* === ST AI CANONICAL SECOND-IMAGE HOVER V10 START === */
+
+/*
+ * Restore the approved neutral-gray product media surface.
+ */
+html body .st3-ai-panel .st3-ai-product-card__visual {
+  position: relative !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  overflow: hidden !important;
+
+  padding: 0 !important;
+
+  background: #f7f7f8 !important;
+
+  line-height: 0 !important;
+}
+
+/*
+ * Both canonical images occupy exactly the same coordinates.
+ *
+ * No translate, scale, slide or geometry change occurs on hover.
+ * Only opacity changes.
+ */
+html body .st3-ai-panel .st3-ai-product-card__image {
+  position: absolute !important;
+
+  top: 50% !important;
+  left: 50% !important;
+
+  width: 122% !important;
+  height: 122% !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  object-fit: contain !important;
+  object-position: center center !important;
+
+  transform: translate3d(-50%, -50%, 0) !important;
+
+  scale: 1 !important;
+
+  animation: none !important;
+
+  filter: none !important;
+
+  will-change: opacity;
+}
+
+html body .st3-ai-panel .st3-ai-product-card__image--primary {
+  opacity: 1 !important;
+
+  z-index: 1 !important;
+
+  transition: opacity 220ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+
+html body .st3-ai-panel .st3-ai-product-card__image--hover {
+  opacity: 0 !important;
+
+  z-index: 2 !important;
+
+  pointer-events: none !important;
+
+  transition: opacity 220ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:hover
+    .st3-ai-product-card__image--primary:has(
+      ~ .st3-ai-product-card__image--hover
+    ) {
+    opacity: 0 !important;
+  }
+
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:hover
+    .st3-ai-product-card__image--hover {
+    opacity: 1 !important;
+  }
+}
+
+/*
+ * Keyboard focus gets the same second-image preview when available.
+ */
+html
+  body
+  .st3-ai-panel
+  .st3-ai-product-card:focus-visible
+  .st3-ai-product-card__image--primary:has(
+    ~ .st3-ai-product-card__image--hover
+  ) {
+  opacity: 0 !important;
+}
+
+html
+  body
+  .st3-ai-panel
+  .st3-ai-product-card:focus-visible
+  .st3-ai-product-card__image--hover {
+  opacity: 1 !important;
+}
+
+/*
+ * Products with only one canonical image remain completely static.
+ */
+html
+  body
+  .st3-ai-panel
+  .st3-ai-product-card:hover
+  .st3-ai-product-card__image--primary:only-child {
+  opacity: 1 !important;
+}
+
+/*
+ * AI cards never contain storefront sale/offer stickers.
+ */
+html body .st3-ai-panel .st3-ai-product-card__sale {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st3-ai-panel .st3-ai-product-card__image {
+    transition: none !important;
+  }
+}
+
+/* === ST AI CANONICAL SECOND-IMAGE HOVER V10 END === */
+
+/* === ST AI MOBILE PRODUCT HOVER OFF V11 START === */
+
+/*
+ * Compact AI recommendation cards:
+ * second-image previews are desktop-only.
+ *
+ * Touch/mobile devices always display canonical image #1,
+ * including after tap/focus.
+ */
+@media (hover: none), (pointer: coarse), (max-width: 640px) {
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card
+    .st3-ai-product-card__image--primary,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:hover
+    .st3-ai-product-card__image--primary,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:focus
+    .st3-ai-product-card__image--primary,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:focus-visible
+    .st3-ai-product-card__image--primary,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:active
+    .st3-ai-product-card__image--primary {
+    opacity: 1 !important;
+  }
+
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card
+    .st3-ai-product-card__image--hover,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:hover
+    .st3-ai-product-card__image--hover,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:focus
+    .st3-ai-product-card__image--hover,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:focus-visible
+    .st3-ai-product-card__image--hover,
+  html
+    body
+    .st3-ai-panel
+    .st3-ai-product-card:active
+    .st3-ai-product-card__image--hover {
+    opacity: 0 !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-product-card__image {
+    transition: none !important;
+  }
+}
+
+/* === ST AI MOBILE PRODUCT HOVER OFF V11 END === */
+
+/* ==========================================================
+   STEREOPHONIE AI — MOBILE SHELL + CLOSE BUTTON FINAL V13
+
+   IMPORTANT:
+   - Desktop/laptop assistant WIDTH is unchanged.
+   - Desktop/laptop assistant HEIGHT is unchanged.
+   - Existing React close button is reused.
+   - Only mobile shell geometry is reduced.
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   PREMIUM CLOSE BUTTON — ALL DEVICES
+   ---------------------------------------------------------- */
+
+.st3-ai-panel__top {
+  position: relative !important;
+}
+
+button.st3-ai-panel__close,
+.st3-ai-panel__close {
+  flex: 0 0 auto !important;
+
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 12px !important;
+
+  background: rgba(247, 247, 249, 0.92) !important;
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+
+  backdrop-filter: blur(14px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(145%) !important;
+
+  cursor: pointer !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+button.st3-ai-panel__close svg,
+.st3-ai-panel__close svg {
+  width: 14px !important;
+  min-width: 14px !important;
+  max-width: 14px !important;
+
+  height: 14px !important;
+  min-height: 14px !important;
+  max-height: 14px !important;
+
+  display: block !important;
+
+  stroke: currentColor !important;
+
+  transform: none !important;
+
+  pointer-events: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button.st3-ai-panel__close:hover,
+  .st3-ai-panel__close:hover {
+    border-color: rgba(181, 123, 18, 0.28) !important;
+
+    background: #fffaf1 !important;
+
+    color: #9a680d !important;
+
+    box-shadow:
+      0 7px 20px rgba(174, 116, 16, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+button.st3-ai-panel__close:active,
+.st3-ai-panel__close:active {
+  transform: scale(0.94) !important;
+}
+
+button.st3-ai-panel__close:focus-visible,
+.st3-ai-panel__close:focus-visible {
+  outline: 2px solid rgba(181, 123, 18, 0.38) !important;
+  outline-offset: 2px !important;
+}
+
+/* ----------------------------------------------------------
+   MOBILE ONLY
+
+   The panel is intentionally narrow enough that the vertical
+   AI Assistant launcher remains fully visible on the LEFT.
+   ---------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  :root {
+    --st-ai-compact-width: min(360px, calc(100vw - 58px)) !important;
+
+    --st-ai-compact-height: min(530px, calc(100dvh - 96px)) !important;
+  }
+
+  .st3-ai-panel,
+  #stereophonie-ai-drawer {
+    width: var(--st-ai-compact-width) !important;
+
+    min-width: 0 !important;
+
+    max-width: 360px !important;
+
+    height: var(--st-ai-compact-height) !important;
+
+    min-height: 0 !important;
+
+    max-height: calc(100dvh - 96px) !important;
+
+    right: 12px !important;
+
+    left: auto !important;
+
+    border-radius: 23px !important;
+  }
+
+  button.st3-ai-edge-tab.is-open,
+  .st3-ai-edge-tab.is-open[data-st-ai-edge-launcher="true"],
+  button[data-st-ai-edge-launcher="true"].is-open {
+    right: calc(var(--st-ai-compact-width) + 14px) !important;
+
+    top: 50% !important;
+
+    transform: translateY(-50%) !important;
+  }
+
+  .st3-ai-panel__top {
+    padding: 16px 14px 14px 16px !important;
+  }
+
+  button.st3-ai-panel__close,
+  .st3-ai-panel__close {
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+
+    border-radius: 11px !important;
+  }
+
+  button.st3-ai-panel__close svg,
+  .st3-ai-panel__close svg {
+    width: 13px !important;
+    min-width: 13px !important;
+    max-width: 13px !important;
+
+    height: 13px !important;
+    min-height: 13px !important;
+    max-height: 13px !important;
+  }
+}
+
+/* ----------------------------------------------------------
+   VERY SMALL PHONES
+
+   Preserve the launcher instead of letting the panel consume
+   the final remaining horizontal space.
+   ---------------------------------------------------------- */
+
+@media (max-width: 370px) {
+  :root {
+    --st-ai-compact-width: calc(100vw - 54px) !important;
+  }
+
+  button.st3-ai-edge-tab.is-open,
+  .st3-ai-edge-tab.is-open[data-st-ai-edge-launcher="true"],
+  button[data-st-ai-edge-launcher="true"].is-open {
+    right: calc(var(--st-ai-compact-width) + 12px) !important;
+  }
+}
+
+/* ----------------------------------------------------------
+   REDUCED MOTION
+   ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  button.st3-ai-panel__close,
+  .st3-ai-panel__close {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* === END STEREOPHONIE AI MOBILE SHELL + CLOSE BUTTON FINAL V13 === */
+
+/* ========================================================================
+   STEREOPHONIE AI — INTERACTION + CLOSE CONTROL FINAL V14
+
+   Fixes:
+   1. Historical CSS must never hide the real React close button.
+   2. The assistant shell must never create an invisible touch layer.
+   3. Only the launcher and visible/open assistant panel receive pointers.
+
+   Desktop/laptop panel dimensions are intentionally untouched.
+   ======================================================================== */
+
+/* =========================================================
+   1. ASSISTANT SHELL MUST NEVER BLOCK THE STOREFRONT
+   ========================================================= */
+
+/*
+ * The shell is only a structural positioning container.
+ *
+ * It must NOT itself intercept mouse/touch input because historical
+ * versions of the assistant may give the shell viewport-sized geometry.
+ */
+html body .st3-ai-shell,
+html body .st3-ai-shell.is-open {
+  pointer-events: none !important;
+}
+
+/*
+ * The launcher itself remains interactive whether the panel is
+ * currently open or closed.
+ */
+html body button.st3-ai-edge-tab,
+html body .st3-ai-edge-tab[data-st-ai-edge-launcher="true"],
+html body button[data-st-ai-edge-launcher="true"] {
+  pointer-events: auto !important;
+}
+
+/*
+ * Closed/off-screen assistant:
+ * it must never catch taps from the page underneath.
+ */
+html body .st3-ai-panel:not(.st3-ai-panel--open),
+html body #stereophonie-ai-drawer:not(.st3-ai-panel--open) {
+  pointer-events: none !important;
+}
+
+/*
+ * Open assistant:
+ * only the actual visible panel becomes interactive.
+ */
+html body .st3-ai-panel.st3-ai-panel--open,
+html body #stereophonie-ai-drawer.st3-ai-panel--open {
+  pointer-events: auto !important;
+}
+
+/* =========================================================
+   2. FORCE THE REAL CLOSE BUTTON TO BE VISIBLE
+   ========================================================= */
+
+/*
+ * Overrides the historical rule:
+ *
+ * .st3-ai-panel__close {
+ *   display: none !important;
+ * }
+ *
+ * We deliberately use a stronger selector here.
+ */
+html body .st3-ai-panel .st3-ai-panel__close {
+  position: relative !important;
+
+  z-index: 30 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  flex: 0 0 36px !important;
+
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 12px !important;
+
+  background: rgba(247, 247, 249, 0.96) !important;
+
+  color: #1d1d1f !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: auto !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  touch-action: manipulation !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/*
+ * Make sure the actual CloseIcon SVG can never disappear because
+ * of another historical icon rule.
+ */
+html body .st3-ai-panel .st3-ai-panel__close svg {
+  display: block !important;
+
+  width: 14px !important;
+  min-width: 14px !important;
+  max-width: 14px !important;
+
+  height: 14px !important;
+  min-height: 14px !important;
+  max-height: 14px !important;
+
+  margin: 0 !important;
+
+  fill: none !important;
+
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: none !important;
+
+  transform: none !important;
+}
+
+/*
+ * Keep the two SVG paths visible even if generic website SVG/path
+ * styling has been applied elsewhere.
+ */
+html body .st3-ai-panel .st3-ai-panel__close svg path {
+  display: block !important;
+
+  fill: none !important;
+
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-ai-panel .st3-ai-panel__close:hover {
+    border-color: rgba(181, 123, 18, 0.3) !important;
+
+    background: #fffaf1 !important;
+
+    color: #9a680d !important;
+
+    box-shadow:
+      0 7px 20px rgba(174, 116, 16, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+
+    transform: translateY(-1px) !important;
+  }
+}
+
+html body .st3-ai-panel .st3-ai-panel__close:active {
+  transform: scale(0.94) !important;
+}
+
+html body .st3-ai-panel .st3-ai-panel__close:focus-visible {
+  outline: 2px solid rgba(181, 123, 18, 0.4) !important;
+  outline-offset: 2px !important;
+}
+
+/* =========================================================
+   3. MOBILE TOUCH SAFETY
+   ========================================================= */
+
+@media (max-width: 640px) {
+  /*
+   * Structural shell stays touch-transparent on phones.
+   */
+  html body .st3-ai-shell,
+  html body .st3-ai-shell.is-open {
+    pointer-events: none !important;
+  }
+
+  /*
+   * Only these two actual visible assistant surfaces can be tapped.
+   */
+  html body button.st3-ai-edge-tab,
+  html body .st3-ai-edge-tab[data-st-ai-edge-launcher="true"],
+  html body button[data-st-ai-edge-launcher="true"],
+  html body .st3-ai-panel.st3-ai-panel--open,
+  html body #stereophonie-ai-drawer.st3-ai-panel--open {
+    pointer-events: auto !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-panel__close {
+    flex-basis: 34px !important;
+
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+
+    border-radius: 11px !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-panel__close svg {
+    width: 13px !important;
+    min-width: 13px !important;
+    max-width: 13px !important;
+
+    height: 13px !important;
+    min-height: 13px !important;
+    max-height: 13px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st3-ai-panel .st3-ai-panel__close {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* === END STEREOPHONIE AI INTERACTION + CLOSE CONTROL FINAL V14 === */
+
+/* ========================================================================
+   STEREOPHONIE AI — GUARANTEED CLOSE BUTTON V15
+
+   The real React close button is positioned explicitly so historical
+   assistant header layouts cannot hide, squeeze or displace it.
+
+   Assistant panel width and height are NOT changed here.
+   ======================================================================== */
+
+html body .st3-ai-panel .st3-ai-panel__top {
+  position: relative !important;
+
+  /*
+   * Preserve room for the absolute close control without changing
+   * the actual panel dimensions.
+   */
+  padding-right: 66px !important;
+}
+
+html body .st3-ai-panel .st3-ai-panel__close {
+  position: absolute !important;
+
+  top: 15px !important;
+  right: 16px !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  z-index: 100 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  flex: none !important;
+
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.11) !important;
+  border-radius: 12px !important;
+
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: auto !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  touch-action: manipulation !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html body .st3-ai-panel .st3-ai-panel__close svg {
+  display: block !important;
+
+  width: 15px !important;
+  min-width: 15px !important;
+  max-width: 15px !important;
+
+  height: 15px !important;
+  min-height: 15px !important;
+  max-height: 15px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  fill: none !important;
+
+  stroke: #1d1d1f !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: none !important;
+
+  transform: none !important;
+}
+
+html body .st3-ai-panel .st3-ai-panel__close svg path {
+  display: block !important;
+
+  fill: none !important;
+
+  stroke: #1d1d1f !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-ai-panel .st3-ai-panel__close:hover {
+    border-color: rgba(181, 123, 18, 0.34) !important;
+
+    background: #fff8eb !important;
+
+    color: #9a680d !important;
+
+    box-shadow:
+      0 7px 20px rgba(174, 116, 16, 0.11),
+      inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+
+    transform: translateY(-1px) !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-panel__close:hover svg,
+  html body .st3-ai-panel .st3-ai-panel__close:hover svg path {
+    stroke: #9a680d !important;
+  }
+}
+
+html body .st3-ai-panel .st3-ai-panel__close:active {
+  transform: scale(0.94) !important;
+}
+
+html body .st3-ai-panel .st3-ai-panel__close:focus-visible {
+  outline: 2px solid rgba(181, 123, 18, 0.42) !important;
+  outline-offset: 2px !important;
+}
+
+/* Mobile positioning only. Panel geometry remains owned by V13. */
+@media (max-width: 640px) {
+  html body .st3-ai-panel .st3-ai-panel__top {
+    padding-right: 58px !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-panel__close {
+    top: 13px !important;
+    right: 13px !important;
+
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+
+    border-radius: 11px !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-panel__close svg {
+    width: 14px !important;
+    min-width: 14px !important;
+    max-width: 14px !important;
+
+    height: 14px !important;
+    min-height: 14px !important;
+    max-height: 14px !important;
+  }
+}
+
+/* === END STEREOPHONIE AI GUARANTEED CLOSE BUTTON V15 === */
+
+/* ========================================================================
+   STEREOPHONIE AI — ISOLATED CLOSE BUTTON V16
+
+   This control intentionally uses a completely new selector.
+   It does not inherit any historical .st3-ai-panel__close behavior.
+
+   Assistant panel width and height are untouched.
+   ======================================================================== */
+
+html body .st3-ai-panel {
+  position: fixed !important;
+}
+
+html body .st3-ai-panel .st3-ai-panel__top {
+  position: relative !important;
+  padding-right: 64px !important;
+}
+
+html body .st3-ai-panel button.st-ai-v16-close {
+  position: absolute !important;
+
+  top: 16px !important;
+  right: 16px !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  z-index: 2147483640 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.12) !important;
+  border-radius: 12px !important;
+
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: auto !important;
+
+  cursor: pointer !important;
+
+  overflow: visible !important;
+
+  transform: none !important;
+
+  box-shadow:
+    0 5px 16px rgba(0, 0, 0, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html body .st3-ai-panel button.st-ai-v16-close > span {
+  position: static !important;
+
+  display: block !important;
+
+  width: auto !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #1d1d1f !important;
+
+  font-family: Arial, Helvetica, sans-serif !important;
+
+  font-size: 25px !important;
+  line-height: 0.7 !important;
+  font-weight: 300 !important;
+
+  letter-spacing: 0 !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  pointer-events: none !important;
+
+  transform: translateY(-1px) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-ai-panel button.st-ai-v16-close:hover {
+    border-color: rgba(181, 123, 18, 0.32) !important;
+
+    background: #fff8eb !important;
+
+    color: #9a680d !important;
+
+    box-shadow:
+      0 7px 20px rgba(174, 116, 16, 0.11),
+      inset 0 1px 0 #ffffff !important;
+
+    transform: translateY(-1px) !important;
+  }
+
+  html body .st3-ai-panel button.st-ai-v16-close:hover > span {
+    color: #9a680d !important;
+  }
+}
+
+html body .st3-ai-panel button.st-ai-v16-close:active {
+  transform: scale(0.94) !important;
+}
+
+html body .st3-ai-panel button.st-ai-v16-close:focus-visible {
+  outline: 2px solid rgba(181, 123, 18, 0.42) !important;
+  outline-offset: 2px !important;
+}
+
+/* Mobile: same control, slightly more compact. */
+@media (max-width: 640px) {
+  html body .st3-ai-panel .st3-ai-panel__top {
+    padding-right: 58px !important;
+  }
+
+  html body .st3-ai-panel button.st-ai-v16-close {
+    top: 13px !important;
+    right: 13px !important;
+
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+
+    border-radius: 11px !important;
+  }
+
+  html body .st3-ai-panel button.st-ai-v16-close > span {
+    font-size: 24px !important;
+  }
+}
+
+/* === END STEREOPHONIE AI ISOLATED CLOSE BUTTON V16 === */

@@ -19,6 +19,7 @@ import {
   uploadImagesBeforeProductSubmission,
   type DirectUploadSelectedImage,
 } from "./direct-upload-client";
+import ImageUploader from "./image-uploader";
 
 import ProductBrandPicker from "@/components/admin/product-brand-picker";
 import ProductCategoryPicker from "@/components/admin/product-category-picker";
@@ -528,28 +529,28 @@ export default function ProductForm({
     <form ref={formRef} action={createProduct} onSubmit={handleSubmit}>
       {isSubmitting && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-5 backdrop-blur-md"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/70 px-5 backdrop-blur-md"
           aria-live="polite"
           aria-busy="true"
         >
-          <div className="w-full max-w-xl overflow-hidden rounded-[28px] border border-white/10 bg-[#0b0b0c] shadow-[0_30px_100px_rgba(0,0,0,0.65)]">
-            <div className="border-b border-white/10 px-6 py-6 sm:px-8">
+          <div className="w-full max-w-xl overflow-hidden rounded-[28px] border border-black/[0.08] bg-white shadow-[0_30px_100px_rgba(0,0,0,0.18)]">
+            <div className="border-b border-black/[0.07] px-6 py-6 sm:px-8">
               <div className="flex items-start justify-between gap-6">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
                     Stereophonie Product Manager
                   </p>
 
-                  <h2 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white">
+                  <h2 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#1d1d1f]">
                     {processingTitle}
                   </h2>
 
-                  <p className="mt-2 text-sm leading-6 text-white/45">
+                  <p className="mt-2 text-sm leading-6 text-[#6e6e73]">
                     {processingDescription}
                   </p>
                 </div>
 
-                <div className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">
+                <div className="shrink-0 rounded-full border border-black/[0.08] bg-[#f7f7f8] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#6e6e73]">
                   {submissionPhase === "saving"
                     ? "Finalizing"
                     : submissionPhase === "stopping"
@@ -562,11 +563,11 @@ export default function ProductForm({
             <div className="px-6 py-6 sm:px-8">
               <div className="flex items-end justify-between gap-5">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
                     Progress
                   </p>
 
-                  <p className="mt-1 text-sm font-medium text-white/75">
+                  <p className="mt-1 text-sm font-medium text-[#515154]">
                     {submissionPhase === "preparing" && "Preparing submission"}
 
                     {submissionPhase === "uploading" &&
@@ -581,12 +582,12 @@ export default function ProductForm({
                   </p>
                 </div>
 
-                <span className="font-mono text-sm tabular-nums text-white/50">
+                <span className="font-mono text-sm tabular-nums text-[#86868b]">
                   {Math.round(processingPercentage)}%
                 </span>
               </div>
 
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.07]">
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/[0.08]">
                 <div
                   className="h-full rounded-full bg-[#fdb73e] transition-[width] duration-500 ease-out"
                   style={{
@@ -595,7 +596,7 @@ export default function ProductForm({
                 />
               </div>
 
-              <div className="mt-6 rounded-2xl border border-white/[0.07] bg-white/[0.025] px-4 py-4">
+              <div className="mt-6 rounded-2xl border border-black/[0.07] bg-[#f7f7f8] px-4 py-4">
                 <div className="flex items-center gap-3">
                   <span className="relative flex h-2.5 w-2.5">
                     {submissionPhase !== "stopping" && (
@@ -605,7 +606,7 @@ export default function ProductForm({
                     <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#fdb73e]" />
                   </span>
 
-                  <p className="text-xs leading-5 text-white/40">
+                  <p className="text-xs leading-5 text-[#6e6e73]">
                     {submissionPhase === "saving"
                       ? "The final save is now being processed securely. Please keep this page open."
                       : submissionPhase === "stopping"
@@ -616,7 +617,7 @@ export default function ProductForm({
               </div>
 
               <div className="mt-6 flex items-center justify-between gap-4">
-                <p className="max-w-xs text-[10px] leading-5 text-white/25">
+                <p className="max-w-xs text-[10px] leading-5 text-[#86868b]">
                   Do not close or refresh this page while product information is
                   being processed.
                 </p>
@@ -626,7 +627,7 @@ export default function ProductForm({
                     type="button"
                     onClick={stopSubmission}
                     disabled={submissionPhase === "stopping"}
-                    className="shrink-0 rounded-full border border-red-400/30 bg-red-400/[0.06] px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-red-300 transition hover:border-red-300 hover:bg-red-400/10 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="shrink-0 rounded-full border border-red-200 bg-red-50 px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-red-600 transition hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {submissionPhase === "stopping"
                       ? "Stopping..."
@@ -956,6 +957,31 @@ export default function ProductForm({
                 <Save className="h-4 w-4" />
                 Save product setup
               </button>
+            </div>
+          </section>
+
+          <section
+            id="product-images"
+            data-admin-product-media-section="04"
+            className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]"
+          >
+            <SectionHeader
+              number="04"
+              title="Product Images"
+              description="Upload clear product images, choose the main image and arrange their order."
+            />
+
+            <div className="p-5">
+              <ImageUploader
+                disabled={isSubmitting}
+                configurations={variants.map((variant, index) => ({
+                  clientId: variant.clientId,
+                  variant_name: variant.variant_name,
+                  attributes: variant.attributes,
+                  fallbackLabel: `Configuration ${index + 1}`,
+                }))}
+                onImagesChange={handleImagesChange}
+              />
             </div>
           </section>
         </div>

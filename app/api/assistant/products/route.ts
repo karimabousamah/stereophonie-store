@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
 
+import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 export const dynamic = "force-dynamic";
 
 type CategoryRelation =
@@ -14,10 +15,21 @@ type CategoryRelation =
   | null;
 
 type ProductImageRow = {
-  image_url?: string | null;
-  alt_text?: string | null;
-  position?: number | null;
-  is_primary?: boolean | null;
+  id?: string | null;
+  image_url: string | null;
+  alt_text: string | null;
+  position: number;
+  is_primary: boolean;
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
 };
 
 type ProductVariantRow = {
@@ -27,6 +39,9 @@ type ProductVariantRow = {
   sale_price?: number | string | null;
   stock_quantity?: number | null;
   availability_status?: string | null;
+  variant_name?: string | null;
+  display_position?: number | null;
+  is_active?: boolean | null;
 };
 
 type ProductRow = {
@@ -63,18 +78,6 @@ function getCategoryName(relation: CategoryRelation) {
 
 function normalizeStatus(value: string | null | undefined) {
   return cleanText(value).toLowerCase().replaceAll(" ", "_");
-}
-
-function getPrimaryImage(images: ProductImageRow[]) {
-  return [...images]
-    .sort((first, second) => {
-      if (Boolean(first.is_primary) !== Boolean(second.is_primary)) {
-        return first.is_primary ? -1 : 1;
-      }
-
-      return (first.position ?? 999) - (second.position ?? 999);
-    })
-    .find((image) => Boolean(image.image_url));
 }
 
 function getVariantPrice(variant: ProductVariantRow) {
@@ -171,19 +174,31 @@ export async function GET(request: NextRequest) {
         name
       ),
       product_images (
-        image_url,
-        alt_text,
-        position,
-        is_primary
-      ),
+          id,
+          image_url,
+          alt_text,
+          position,
+          is_primary,
+          variant_id,
+          variant_position,
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
+        ),
       product_variants (
-        id,
-        size,
-        regular_price,
-        sale_price,
-        stock_quantity,
-        availability_status
-      )
+          id,
+          size,
+          variant_name,
+          display_position,
+          is_active,
+          regular_price,
+          sale_price,
+          stock_quantity,
+          availability_status
+        )
     `,
     )
     .eq("status", "published")
@@ -244,7 +259,13 @@ export async function GET(request: NextRequest) {
           return true;
         });
 
-      const primaryImage = getPrimaryImage(product.product_images ?? []);
+      const canonicalImages = storefrontConfigurationImages(
+        product.product_images ?? [],
+        product.product_variants ?? [],
+      );
+
+      const primaryImage = canonicalImages[0];
+      const hoverImage = canonicalImages[1];
 
       const lowestPrice =
         variants.length > 0
@@ -258,6 +279,8 @@ export async function GET(request: NextRequest) {
         description: product.description,
         category: getCategoryName(product.categories),
         imageUrl: primaryImage?.image_url ?? null,
+
+        hoverImageUrl: hoverImage?.image_url ?? null,
         imageAlt: primaryImage?.alt_text ?? product.name,
         price: lowestPrice,
         variants,
