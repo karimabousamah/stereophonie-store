@@ -515,11 +515,19 @@ export default function V3ShoppingAssistant() {
 
             <button
               type="button"
-              className="st-ai-v16-close"
+              className="st-ai-close-final-v20"
               aria-label="Close Stereophonie assistant"
               onClick={() => setOpen(false)}
             >
-              <span aria-hidden="true">×</span>
+              <svg
+                className="st-ai-close-final-v20__icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M7 7L17 17" />
+                <path d="M17 7L7 17" />
+              </svg>
             </button>
           </div>
 

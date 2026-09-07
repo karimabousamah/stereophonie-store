@@ -69469,3 +69469,172 @@ html body .st3-ai-panel button.st-ai-v16-close:focus-visible {
 }
 
 /* === END STEREOPHONIE AI ISOLATED CLOSE BUTTON V16 === */
+
+/* =========================================================
+   STEREOPHONIE AI — FINAL ISOLATED CLOSE BUTTON V20
+
+   NEW selector.
+   It intentionally does NOT use st-ai-v16-close.
+
+   Therefore historical V16/V17/V18/V19 close-button rules
+   cannot control this button.
+
+   The SVG itself has perfectly symmetric geometry around 12,12.
+   ========================================================= */
+
+html body .st3-ai-panel button.st-ai-close-final-v20 {
+  position: absolute !important;
+
+  top: 16px !important;
+  right: 16px !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  z-index: 2147483640 !important;
+
+  box-sizing: border-box !important;
+
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.12) !important;
+  border-radius: 12px !important;
+
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+
+  font-size: 0 !important;
+  line-height: 0 !important;
+
+  text-indent: 0 !important;
+  text-align: center !important;
+
+  overflow: hidden !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  box-shadow:
+    0 5px 16px rgba(0, 0, 0, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html
+  body
+  .st3-ai-panel
+  button.st-ai-close-final-v20
+  > svg.st-ai-close-final-v20__icon {
+  position: static !important;
+
+  display: block !important;
+
+  width: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+
+  height: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: visible !important;
+
+  fill: none !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+  transform-origin: center center !important;
+
+  pointer-events: none !important;
+}
+
+html
+  body
+  .st3-ai-panel
+  button.st-ai-close-final-v20
+  > svg.st-ai-close-final-v20__icon
+  path {
+  fill: none !important;
+
+  stroke: currentColor !important;
+  stroke-width: 2.35 !important;
+
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+
+  vector-effect: non-scaling-stroke !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-ai-panel button.st-ai-close-final-v20:hover {
+    border-color: rgba(181, 123, 18, 0.32) !important;
+    background: #fff8eb !important;
+    color: #9a680d !important;
+
+    box-shadow:
+      0 7px 20px rgba(174, 116, 16, 0.11),
+      inset 0 1px 0 #ffffff !important;
+  }
+}
+
+html body .st3-ai-panel button.st-ai-close-final-v20:active {
+  transform: scale(0.94) !important;
+}
+
+html body .st3-ai-panel button.st-ai-close-final-v20:focus-visible {
+  outline: 2px solid rgba(181, 123, 18, 0.42) !important;
+  outline-offset: 2px !important;
+}
+
+@media (max-width: 640px) {
+  html body .st3-ai-panel button.st-ai-close-final-v20 {
+    top: 13px !important;
+    right: 13px !important;
+
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+    max-height: 34px !important;
+
+    border-radius: 11px !important;
+  }
+
+  html
+    body
+    .st3-ai-panel
+    button.st-ai-close-final-v20
+    > svg.st-ai-close-final-v20__icon {
+    width: 17px !important;
+    min-width: 17px !important;
+    max-width: 17px !important;
+
+    height: 17px !important;
+    min-height: 17px !important;
+    max-height: 17px !important;
+  }
+}
+
+/* === STEREOPHONIE AI FINAL ISOLATED CLOSE V20 === */
