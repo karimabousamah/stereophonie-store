@@ -36,7 +36,7 @@ type DirectUploadedImage = {
   storage_path: string;
 
   /*
-   * Empty configuration_ids = Shared photograph.
+   * Empty configuration_ids = Shared image.
    *
    * configuration_id remains accepted temporarily for an
    * already-open browser tab using the previous client bundle.
@@ -335,7 +335,7 @@ export async function createProduct(formData: FormData) {
     ) as DirectUploadedImage[];
   } catch {
     redirectWithError(
-      "The directly uploaded photograph information could not be processed.",
+      "The directly uploaded image information could not be processed.",
     );
   }
 
@@ -348,12 +348,12 @@ export async function createProduct(formData: FormData) {
    * CONFIGURATION-SAFE IMAGE ASSIGNMENT
    * ==========================================================
    *
-   * The browser assigns photographs using the configuration's
+   * The browser assigns images using the configuration's
    * stable client_id.
    *
    * Configuration names may be generated or edited AFTER a photo
    * has been assigned. Resolving the ID here, at final submission,
-   * prevents photographs from silently losing their configuration.
+   * prevents images from silently losing their configuration.
    */
   const configurationNameByClientId = new Map(
     variants
@@ -387,7 +387,7 @@ export async function createProduct(formData: FormData) {
     for (const configurationId of configurationIds) {
       if (!configurationNameByClientId.has(configurationId)) {
         redirectWithError(
-          "A photograph is assigned to a configuration that could not be resolved. Reassign the photograph and try again.",
+          "A image is assigned to a configuration that could not be resolved. Reassign the image and try again.",
         );
       }
     }
@@ -400,17 +400,17 @@ export async function createProduct(formData: FormData) {
 
   /*
    * ==========================================================
-   * MAXIMUM 10 PHOTOGRAPHS PER EXACT CONFIGURATION
+   * MAXIMUM 10 IMAGES PER EXACT CONFIGURATION
    * ==========================================================
    *
-   * There is intentionally no product-wide photograph limit.
+   * There is intentionally no product-wide image limit.
    *
-   * A photograph with no configuration_ids is Shared and is
+   * A image with no configuration_ids is Shared and is
    * therefore visible in every exact configuration gallery.
-   * Shared photographs consequently count against every
-   * configuration's 10-photograph allowance.
+   * Shared images consequently count against every
+   * configuration's 10-image allowance.
    *
-   * A physical photograph assigned to several configurations
+   * A physical image assigned to several configurations
    * counts once in each of those galleries.
    */
   if (variants.length > 0 && directUploadedImages.length > 0) {
@@ -440,7 +440,7 @@ export async function createProduct(formData: FormData) {
             "this configuration";
 
           redirectWithError(
-            `${configurationName} can have a maximum of ${maximumImagesPerConfiguration} photographs. Shared photographs count toward every configuration.`,
+            `${configurationName} can have a maximum of ${maximumImagesPerConfiguration} images. Shared images count toward every configuration.`,
           );
         }
       }
@@ -449,7 +449,7 @@ export async function createProduct(formData: FormData) {
 
   if (uploadedFiles.length > 0 && directUploadedImages.length > 0) {
     redirectWithError(
-      "The photographs were submitted using two different upload methods. Please reload the page and try again.",
+      "The images were submitted using two different upload methods. Please reload the page and try again.",
     );
   }
 
@@ -475,7 +475,7 @@ export async function createProduct(formData: FormData) {
   try {
     imageMetadata = JSON.parse(imageMetadataJson) as ImageMetadata[];
   } catch {
-    redirectWithError("The photograph information could not be processed.");
+    redirectWithError("The image information could not be processed.");
   }
 
   if (!Array.isArray(imageMetadata)) {
@@ -487,7 +487,7 @@ export async function createProduct(formData: FormData) {
     imageMetadata.length !== uploadedFiles.length
   ) {
     redirectWithError(
-      "The photograph order could not be processed. Please reselect the images.",
+      "The image order could not be processed. Please reselect the images.",
     );
   }
 
@@ -497,7 +497,7 @@ export async function createProduct(formData: FormData) {
       : imageMetadata.filter((image) => image.is_primary);
 
   if (submittedImageCount > 0 && primaryImages.length !== 1) {
-    redirectWithError("Select exactly one main product photograph.");
+    redirectWithError("Select exactly one main product image.");
   }
 
   for (const image of directUploadedImages) {
@@ -512,19 +512,19 @@ export async function createProduct(formData: FormData) {
 
     if (!storagePath || !storagePath.startsWith("temporary/")) {
       redirectWithError(
-        "A directly uploaded photograph has an invalid temporary storage path.",
+        "A directly uploaded image has an invalid temporary storage path.",
       );
     }
 
     if (!validImageTypes.has(contentType)) {
       redirectWithError(
-        `${originalName || "A photograph"} is not supported. Use JPEG, PNG or WebP.`,
+        `${originalName || "A image"} is not supported. Use JPEG, PNG or WebP.`,
       );
     }
 
     if (!Number.isFinite(size) || size <= 0 || size > maximumImageSize) {
       redirectWithError(
-        `${originalName || "A photograph"} has an invalid file size.`,
+        `${originalName || "A image"} has an invalid file size.`,
       );
     }
 
@@ -533,7 +533,7 @@ export async function createProduct(formData: FormData) {
       position < 0 ||
       position >= directUploadedImages.length
     ) {
-      redirectWithError("The directly uploaded photograph order is invalid.");
+      redirectWithError("The directly uploaded image order is invalid.");
     }
   }
 
@@ -546,7 +546,7 @@ export async function createProduct(formData: FormData) {
     directImagePositions.size !== directUploadedImages.length
   ) {
     redirectWithError(
-      "The directly uploaded photograph order contains duplicate positions.",
+      "The directly uploaded image order contains duplicate positions.",
     );
   }
 
@@ -779,7 +779,7 @@ export async function createProduct(formData: FormData) {
 
             if (!variantId) {
               throw new Error(
-                "A photograph configuration could not be resolved after creating the product configurations.",
+                "A image configuration could not be resolved after creating the product configurations.",
               );
             }
 
@@ -814,7 +814,7 @@ export async function createProduct(formData: FormData) {
             image_url: publicUrlData.publicUrl,
             alt_text:
               String(image.alt_text ?? "").trim() ||
-              `${name} photograph ${index + 1}`,
+              `${name} image ${index + 1}`,
             position: index,
             is_primary: Boolean(image.is_primary),
 
@@ -830,7 +830,7 @@ export async function createProduct(formData: FormData) {
 
         if (imageInsertError || !insertedImage) {
           throw new Error(
-            imageInsertError?.message ?? "The photograph could not be saved.",
+            imageInsertError?.message ?? "The image could not be saved.",
           );
         }
 
@@ -862,7 +862,7 @@ export async function createProduct(formData: FormData) {
     } else {
       /*
        * Legacy FormData uploads carry no exact configuration
-       * assignments, therefore they are Shared photographs.
+       * assignments, therefore they are Shared images.
        */
       for (let index = 0; index < uploadedFiles.length; index += 1) {
         const file = uploadedFiles[index];
@@ -900,7 +900,7 @@ export async function createProduct(formData: FormData) {
             storage_path: storagePath,
             image_url: publicUrlData.publicUrl,
             alt_text:
-              metadata?.alt_text?.trim() || `${name} photograph ${index + 1}`,
+              metadata?.alt_text?.trim() || `${name} image ${index + 1}`,
             position: index,
             is_primary: metadata?.is_primary ?? index === 0,
 
@@ -914,7 +914,7 @@ export async function createProduct(formData: FormData) {
 
         if (imageInsertError || !insertedImage) {
           throw new Error(
-            imageInsertError?.message ?? "The photograph could not be saved.",
+            imageInsertError?.message ?? "The image could not be saved.",
           );
         }
 
@@ -923,7 +923,7 @@ export async function createProduct(formData: FormData) {
     }
   } catch (error) {
     /*
-     * Delete database photographs first.
+     * Delete database images first.
      * Junction rows cascade automatically.
      */
     if (insertedImageIds.length > 0) {
@@ -940,7 +940,7 @@ export async function createProduct(formData: FormData) {
     const message =
       error instanceof Error
         ? error.message
-        : "The photographs could not be uploaded.";
+        : "The images could not be uploaded.";
 
     redirectWithError(message);
   }
@@ -950,8 +950,8 @@ export async function createProduct(formData: FormData) {
   revalidatePath("/");
 
   redirect(
-    publishingIntent === "draft"
-      ? "/admin/products?filter=draft&saved=draft"
-      : "/admin/products?filter=live&saved=published",
+    `/admin/products/${product.id}?setup=1&saved=${
+      publishingIntent === "publish" ? "published" : "draft"
+    }#product-images`,
   );
 }

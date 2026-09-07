@@ -97,6 +97,10 @@ export default function V2CatalogControls({
   const [brandQuery, setBrandQuery] = useState("");
 
   const [priceOpen, setPriceOpen] = useState(false);
+  const [categoryMounted, setCategoryMounted] = useState(false);
+  const [categoryVisible, setCategoryVisible] = useState(false);
+  const [brandMounted, setBrandMounted] = useState(false);
+  const [brandVisible, setBrandVisible] = useState(false);
   const [priceMounted, setPriceMounted] = useState(false);
   const [priceVisible, setPriceVisible] = useState(false);
 
@@ -182,6 +186,109 @@ export default function V2CatalogControls({
   }, []);
 
   /*
+   * Category and Brand deliberately mirror the Price filter lifecycle.
+   *
+   * MOUNT -> ENTERING -> OPEN -> CLOSING -> UNMOUNT
+   */
+  useEffect(() => {
+    let closeTimer: number | undefined;
+    let frameOne: number | undefined;
+    let frameTwo: number | undefined;
+
+    if (categoryOpen) {
+      setCategoryMounted(true);
+      setCategoryVisible(false);
+
+      frameOne = window.requestAnimationFrame(() => {
+        frameTwo = window.requestAnimationFrame(() => {
+          setCategoryVisible(true);
+        });
+      });
+
+      return () => {
+        if (frameOne !== undefined) {
+          window.cancelAnimationFrame(frameOne);
+        }
+
+        if (frameTwo !== undefined) {
+          window.cancelAnimationFrame(frameTwo);
+        }
+      };
+    }
+
+    setCategoryVisible(false);
+
+    if (categoryMounted) {
+      closeTimer = window.setTimeout(() => {
+        setCategoryMounted(false);
+      }, 290);
+    }
+
+    return () => {
+      if (closeTimer !== undefined) {
+        window.clearTimeout(closeTimer);
+      }
+
+      if (frameOne !== undefined) {
+        window.cancelAnimationFrame(frameOne);
+      }
+
+      if (frameTwo !== undefined) {
+        window.cancelAnimationFrame(frameTwo);
+      }
+    };
+  }, [categoryOpen, categoryMounted]);
+
+  useEffect(() => {
+    let closeTimer: number | undefined;
+    let frameOne: number | undefined;
+    let frameTwo: number | undefined;
+
+    if (brandOpen) {
+      setBrandMounted(true);
+      setBrandVisible(false);
+
+      frameOne = window.requestAnimationFrame(() => {
+        frameTwo = window.requestAnimationFrame(() => {
+          setBrandVisible(true);
+        });
+      });
+
+      return () => {
+        if (frameOne !== undefined) {
+          window.cancelAnimationFrame(frameOne);
+        }
+
+        if (frameTwo !== undefined) {
+          window.cancelAnimationFrame(frameTwo);
+        }
+      };
+    }
+
+    setBrandVisible(false);
+
+    if (brandMounted) {
+      closeTimer = window.setTimeout(() => {
+        setBrandMounted(false);
+      }, 290);
+    }
+
+    return () => {
+      if (closeTimer !== undefined) {
+        window.clearTimeout(closeTimer);
+      }
+
+      if (frameOne !== undefined) {
+        window.cancelAnimationFrame(frameOne);
+      }
+
+      if (frameTwo !== undefined) {
+        window.cancelAnimationFrame(frameTwo);
+      }
+    };
+  }, [brandOpen, brandMounted]);
+
+  /*
    * Keep the Price panel mounted briefly while it closes,
    * allowing the CSS exit animation to complete.
    */
@@ -260,14 +367,14 @@ export default function V2CatalogControls({
       return;
     }
 
-    const pickerIsOpen = categoryOpen || brandOpen;
+    const pickerIsOpen = categoryMounted || brandMounted;
 
     shopRoot.classList.toggle("has-mobile-picker-open", pickerIsOpen);
 
     return () => {
       shopRoot.classList.remove("has-mobile-picker-open");
     };
-  }, [categoryOpen, brandOpen]);
+  }, [categoryMounted, brandMounted]);
 
   useEffect(() => {
     if (!priceOpen) {
@@ -540,7 +647,7 @@ export default function V2CatalogControls({
   return (
     <div
       className={`st-filter-v4 ${
-        categoryOpen || brandOpen ? "has-picker-open" : ""
+        categoryMounted || brandMounted ? "has-picker-open" : ""
       }`}
     >
       <div ref={searchShellRef} className="st-filter-v4__search-shell">
@@ -780,9 +887,15 @@ export default function V2CatalogControls({
               <ChevronDown className={categoryOpen ? "is-open" : ""} />
             </button>
 
-            {categoryOpen ? (
+            {categoryMounted ? (
               <div
-                className="st-filter-v4__picker-popover"
+                className={`st-filter-v4__picker-popover ${
+                  categoryOpen
+                    ? categoryVisible
+                      ? "is-open"
+                      : "is-entering"
+                    : "is-closing"
+                }`}
                 role="dialog"
                 aria-label="Category filter"
               >
@@ -907,9 +1020,15 @@ export default function V2CatalogControls({
               <ChevronDown className={brandOpen ? "is-open" : ""} />
             </button>
 
-            {brandOpen ? (
+            {brandMounted ? (
               <div
-                className="st-filter-v4__picker-popover"
+                className={`st-filter-v4__picker-popover ${
+                  brandOpen
+                    ? brandVisible
+                      ? "is-open"
+                      : "is-entering"
+                    : "is-closing"
+                }`}
                 role="dialog"
                 aria-label="Brand filter"
               >

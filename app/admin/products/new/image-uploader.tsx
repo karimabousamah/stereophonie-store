@@ -23,7 +23,7 @@ type SelectedImage = {
    * Empty array = Shared with all configurations.
    *
    * Otherwise this contains every exact configuration clientId
-   * using this same physical photograph.
+   * using this same physical image.
    */
   configurationIds: string[];
 };
@@ -111,7 +111,7 @@ export default function ImageUploader({
 
   /*
    * ========================================================
-   * CONFIGURATION-FIRST PHOTOGRAPH WORKSPACE
+   * CONFIGURATION-FIRST IMAGE WORKSPACE
    * ========================================================
    *
    * The administrator selects one configuration, then uploads and
@@ -163,7 +163,7 @@ export default function ImageUploader({
   }, []);
 
   /*
-   * A physical photograph has one order while creating the
+   * A physical image has one order while creating the
    * product. Each exact configuration derives its initial
    * gallery by filtering that physical order.
    *
@@ -224,7 +224,7 @@ export default function ImageUploader({
     let processedFiles: File[];
 
     try {
-      setErrorMessage("Preparing photographs…");
+      setErrorMessage("Preparing images…");
 
       processedFiles = await Promise.all(
         files.map((file) => processImageBeforeUpload(file, "product")),
@@ -233,7 +233,7 @@ export default function ImageUploader({
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : "The photographs could not be prepared.",
+          : "The images could not be prepared.",
       );
 
       return;
@@ -323,7 +323,7 @@ export default function ImageUploader({
       /*
        * Configuration-first ordering:
        *
-       * Moving Midnight photograph 2 only changes Midnight's relative order.
+       * Moving Midnight image 2 only changes Midnight's relative order.
        * Starlight/Blue/etc. keep their own relative sequence.
        */
       const visibleImages = activeConfigurationId
@@ -410,11 +410,11 @@ export default function ImageUploader({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
-                Photograph configuration
+                Image configuration
               </p>
 
               <p className="mt-1 text-sm font-semibold text-white">
-                Choose a configuration, then upload its photographs.
+                Choose a configuration, then upload its images.
               </p>
             </div>
 
@@ -458,7 +458,7 @@ export default function ImageUploader({
           {activeConfiguration ? (
             <div className="mt-4 rounded-xl border border-[#fdb73e]/25 bg-[#fdb73e]/[0.06] px-4 py-3">
               <p className="text-xs leading-5 text-white/55">
-                New photographs will automatically be added to{" "}
+                New images will automatically be added to{" "}
                 <strong className="font-semibold text-white">
                   {configurationLabel(activeConfiguration)}
                 </strong>
@@ -498,19 +498,17 @@ export default function ImageUploader({
             <ImagePlus className="h-6 w-6" />
           </div>
 
-          <p className="mt-6 text-lg font-semibold">
-            Upload product photographs
-          </p>
+          <p className="mt-6 text-lg font-semibold">Upload product images</p>
 
           <p className="mt-2 max-w-lg text-sm leading-6 text-white/40">
             {activeConfiguration
-              ? `Upload photographs for ${configurationLabel(activeConfiguration)}. They will keep the exact order in which you select them.`
-              : "Upload product photographs in the exact order customers should see them."}
+              ? `Upload images for ${configurationLabel(activeConfiguration)}. They will keep the exact order in which you select them.`
+              : "Upload product images in the exact order customers should see them."}
           </p>
 
           <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65">
             <Upload className="h-4 w-4" />
-            Select photographs
+            Select images
           </span>
         </label>
       ) : (
@@ -518,14 +516,13 @@ export default function ImageUploader({
           <div className="mb-5 flex flex-col gap-4 rounded-[20px] border border-white/10 bg-black/20 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold">
-                {images.length}{" "}
-                {images.length === 1 ? "photograph" : "photographs"}
+                {images.length} {images.length === 1 ? "image" : "images"}
               </p>
 
               <p className="mt-1 text-xs leading-5 text-white/35">
                 {activeConfiguration
-                  ? `${configurationLabel(activeConfiguration)} gallery · ${visibleImages.length} photograph${visibleImages.length === 1 ? "" : "s"}. The first photograph is Main.`
-                  : "Arrange the photographs in the order customers should see them."}
+                  ? `${configurationLabel(activeConfiguration)} gallery · ${visibleImages.length} image${visibleImages.length === 1 ? "" : "s"}. The first image is Main.`
+                  : "Arrange the images in the order customers should see them."}
               </p>
             </div>
 
@@ -536,7 +533,7 @@ export default function ImageUploader({
                 onClick={() => {
                   if (
                     window.confirm(
-                      `Clear all ${images.length} selected photograph${
+                      `Clear all ${images.length} selected image${
                         images.length === 1 ? "" : "s"
                       }?`,
                     )
@@ -547,7 +544,7 @@ export default function ImageUploader({
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-red-400/20 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.07] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Clear all photographs
+                Clear all images
               </button>
 
               <label
@@ -555,7 +552,7 @@ export default function ImageUploader({
                 className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65 transition hover:bg-white hover:text-black"
               >
                 <ImagePlus className="h-4 w-4" />
-                Add photographs
+                Add images
               </label>
             </div>
           </div>
@@ -597,7 +594,7 @@ export default function ImageUploader({
                   <div className="relative aspect-[4/3] overflow-hidden bg-white">
                     <img
                       src={image.previewUrl}
-                      alt={`Product photograph ${visibleIndex + 1}`}
+                      alt={`Product image ${visibleIndex + 1}`}
                       className="h-full w-full object-contain"
                     />
 
@@ -626,7 +623,7 @@ export default function ImageUploader({
 
                     <div className="mt-4">
                       <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                        Photograph usage
+                        Image usage
                       </p>
 
                       <button
@@ -685,8 +682,8 @@ export default function ImageUploader({
                         </div>
                       ) : (
                         <p className="mt-2 text-[10px] leading-4 text-white/25">
-                          Create product configurations to assign this
-                          photograph to specific versions.
+                          Create product configurations to assign this image to
+                          specific versions.
                         </p>
                       )}
 
@@ -700,7 +697,7 @@ export default function ImageUploader({
                         type="button"
                         disabled={disabled || visibleIndex === 0}
                         onClick={() => moveImage(image.id, "left")}
-                        title="Move photograph earlier"
+                        title="Move image earlier"
                         className="flex h-9 flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                       >
                         <ArrowLeft className="h-3.5 w-3.5" />
@@ -712,7 +709,7 @@ export default function ImageUploader({
                           disabled || visibleIndex === visibleImages.length - 1
                         }
                         onClick={() => moveImage(image.id, "right")}
-                        title="Move photograph later"
+                        title="Move image later"
                         className="flex h-9 flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                       >
                         <ArrowRight className="h-3.5 w-3.5" />
@@ -722,7 +719,7 @@ export default function ImageUploader({
                         type="button"
                         disabled={disabled}
                         onClick={() => removeImage(image.id)}
-                        title="Remove photograph"
+                        title="Remove image"
                         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-red-400/15 bg-red-400/[0.025] text-red-300/55 transition hover:border-red-400/35 hover:bg-red-400/[0.07] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-20"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

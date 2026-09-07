@@ -1344,6 +1344,15 @@ export default function ElectronicsVariantEditor({
   variants,
   onChange,
 }: ElectronicsVariantEditorProps) {
+  const [specificationsPortalTarget, setSpecificationsPortalTarget] =
+    useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setSpecificationsPortalTarget(
+      document.getElementById("st-product-information-specifications"),
+    );
+  }, []);
+
   const [levels, setLevels] = useState<OptionLevel[]>(() =>
     levelsFromVariants(variants),
   );
@@ -2821,57 +2830,61 @@ export default function ElectronicsVariantEditor({
                 </div>
               </section>
 
-              <section className="mt-7 border-t border-white/10 pt-6">
-                <div className="mb-5 overflow-hidden rounded-[16px] border border-[#fdb73e]/25 bg-[#fdb73e]/[0.045]">
-                  <div className="border-b border-white/[0.07] px-4 py-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#fdb73e]">
-                          Quick paste specifications
-                        </p>
+              {specificationsPortalTarget
+                ? createPortal(
+                    <section className="mt-7 border-t border-white/10 pt-6">
+                      <div className="mb-5 overflow-hidden rounded-[16px] border border-[#fdb73e]/25 bg-[#fdb73e]/[0.045]">
+                        <div className="border-b border-white/[0.07] px-4 py-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#fdb73e]">
+                                Quick paste specifications
+                              </p>
 
-                        <p className="mt-1.5 max-w-2xl text-[11px] leading-5 text-white/40">
-                          Copy a full specification list from Google or another
-                          source and paste it here. Each line containing a colon
-                          will automatically become a technical specification.
-                        </p>
-                      </div>
+                              <p className="mt-1.5 max-w-2xl text-[11px] leading-5 text-white/40">
+                                Copy a full specification list from Google or
+                                another source and paste it here. Each line
+                                containing a colon will automatically become a
+                                technical specification.
+                              </p>
+                            </div>
 
-                      <Copy className="mt-0.5 h-4 w-4 shrink-0 text-[#fdb73e]/70" />
-                    </div>
-                  </div>
+                            <Copy className="mt-0.5 h-4 w-4 shrink-0 text-[#fdb73e]/70" />
+                          </div>
+                        </div>
 
-                  <div className="p-4">
-                    <textarea
-                      value={bulkTechnicalSpecs}
-                      onChange={(event) => {
-                        setBulkTechnicalSpecs(event.target.value);
-                        setCustomSpecError("");
-                        setTechnicalSpecsMessage("");
-                      }}
-                      onPaste={(event) => {
-                        const html = event.clipboardData.getData("text/html");
+                        <div className="p-4">
+                          <textarea
+                            value={bulkTechnicalSpecs}
+                            onChange={(event) => {
+                              setBulkTechnicalSpecs(event.target.value);
+                              setCustomSpecError("");
+                              setTechnicalSpecsMessage("");
+                            }}
+                            onPaste={(event) => {
+                              const html =
+                                event.clipboardData.getData("text/html");
 
-                        if (!html) {
-                          return;
-                        }
+                              if (!html) {
+                                return;
+                              }
 
-                        const reconstructed =
-                          specificationTextFromClipboardHtml(html);
+                              const reconstructed =
+                                specificationTextFromClipboardHtml(html);
 
-                        if (!reconstructed) {
-                          return;
-                        }
+                              if (!reconstructed) {
+                                return;
+                              }
 
-                        event.preventDefault();
+                              event.preventDefault();
 
-                        setBulkTechnicalSpecs(reconstructed);
-                        setCustomSpecError("");
-                        setTechnicalSpecsMessage("");
-                      }}
-                      rows={8}
-                      spellCheck={false}
-                      placeholder={`Paste specifications here...
+                              setBulkTechnicalSpecs(reconstructed);
+                              setCustomSpecError("");
+                              setTechnicalSpecsMessage("");
+                            }}
+                            rows={8}
+                            spellCheck={false}
+                            placeholder={`Paste specifications here...
 
 Display and Design
 Screen: 6.3-inch OLED with ProMotion
@@ -2882,129 +2895,134 @@ Performance and Hardware
 Processor: Apple A19 Pro chipset
 RAM: 12 GB RAM
 Storage Options: 256GB, 512GB, and 1TB`}
-                      className="w-full resize-y border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-[#fdb73e]/60"
-                    />
+                            className="w-full resize-y border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-[#fdb73e]/60"
+                          />
 
-                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="text-[10px] leading-4 text-white/30">
-                        Format:{" "}
-                        <span className="text-white/50">Title: value</span> ·
-                        Section headings are ignored automatically.
-                      </p>
+                          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <p className="text-[10px] leading-4 text-white/30">
+                              Format:{" "}
+                              <span className="text-white/50">
+                                Title: value
+                              </span>{" "}
+                              · Section headings are ignored automatically.
+                            </p>
 
-                      <button
-                        type="button"
-                        onClick={parseBulkTechnicalSpecifications}
-                        disabled={!bulkTechnicalSpecs.trim()}
-                        className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] border border-[#e3a32d] bg-[#fdb73e] px-5 text-[10px] font-semibold uppercase tracking-[0.08em] text-black transition hover:bg-[#ffc45b] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-35"
-                      >
-                        <Plus className="h-3.5 w-3.5" />
-                        Parse specifications
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                            <button
+                              type="button"
+                              onClick={parseBulkTechnicalSpecifications}
+                              disabled={!bulkTechnicalSpecs.trim()}
+                              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] border border-[#e3a32d] bg-[#fdb73e] px-5 text-[10px] font-semibold uppercase tracking-[0.08em] text-black transition hover:bg-[#ffc45b] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-35"
+                            >
+                              <Plus className="h-3.5 w-3.5" />
+                              Parse specifications
+                            </button>
+                          </div>
+                        </div>
+                      </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-                  <input
-                    value={customSpecName}
-                    onChange={(event) => {
-                      setCustomSpecName(event.target.value);
-                      setCustomSpecError("");
-                    }}
-                    placeholder="Technical metadata — e.g. Charging standard"
-                    className="min-h-11 flex-1 border border-white/10 bg-black/30 px-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/45"
-                  />
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                        <input
+                          value={customSpecName}
+                          onChange={(event) => {
+                            setCustomSpecName(event.target.value);
+                            setCustomSpecError("");
+                          }}
+                          placeholder="Technical metadata — e.g. Charging standard"
+                          className="min-h-11 flex-1 border border-white/10 bg-black/30 px-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/45"
+                        />
 
-                  <div className="flex w-full shrink-0 flex-col gap-0 sm:w-[181px]">
-                    <button
-                      type="button"
-                      onClick={addCustomSpecification}
-                      className="inline-flex min-h-11 w-full items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.11em] text-white transition hover:bg-white hover:text-black"
-                    >
-                      <Plus className="h-4 w-4 shrink-0" />
-                      <span>Add technical spec</span>
-                    </button>
-
-                    {orderedVariants.length > 1 ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={applyTechnicalSpecificationsToAll}
-                          className="inline-flex h-8 w-full items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap border border-[#e3a32d] bg-[#fdb73e] px-2 !text-[9px] font-semibold uppercase !tracking-[0.035em] leading-none text-black transition hover:bg-[#ffc45b] active:scale-[0.99] mt-2"
-                        >
-                          <Copy className="h-3.5 w-3.5 shrink-0" />
-                          <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
-                            Apply specs to all
-                          </span>
-                        </button>
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-
-                {customSpecError ? (
-                  <p className="mt-2 text-xs font-medium text-red-500">
-                    {customSpecError}
-                  </p>
-                ) : null}
-
-                {technicalSpecsMessage ? (
-                  <p
-                    role="status"
-                    className="mt-2 text-right text-[10px] font-semibold text-[#d99a24]"
-                  >
-                    {technicalSpecsMessage}
-                  </p>
-                ) : null}
-
-                {technicalAttributes.length > 0 ? (
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
-                    {technicalAttributes.map(([key, value]) => (
-                      <div
-                        key={key}
-                        className="border border-white/10 bg-black/20 p-4"
-                      >
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/35">
-                            {key}
-                          </span>
-
+                        <div className="flex w-full shrink-0 flex-col gap-0 sm:w-[181px]">
                           <button
                             type="button"
-                            onClick={() => {
-                              const attributes = {
-                                ...activeVariant.attributes,
-                              };
-
-                              delete attributes[key];
-
-                              updateVariant(activeVariant.clientId, {
-                                attributes,
-                              });
-                            }}
-                            className="text-white/30 hover:text-red-300"
+                            onClick={addCustomSpecification}
+                            className="inline-flex min-h-11 w-full items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.11em] text-white transition hover:bg-white hover:text-black"
                           >
-                            <X className="h-4 w-4" />
+                            <Plus className="h-4 w-4 shrink-0" />
+                            <span>Add technical spec</span>
                           </button>
-                        </div>
 
-                        <input
-                          value={value}
-                          onChange={(event) =>
-                            updateAttribute(
-                              activeVariant.clientId,
-                              key,
-                              event.target.value,
-                            )
-                          }
-                          className="mt-3 min-h-10 w-full border border-white/10 bg-black/30 px-3 text-sm text-white outline-none focus:border-white/45"
-                        />
+                          {orderedVariants.length > 1 ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={applyTechnicalSpecificationsToAll}
+                                className="inline-flex h-8 w-full items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap border border-[#e3a32d] bg-[#fdb73e] px-2 !text-[9px] font-semibold uppercase !tracking-[0.035em] leading-none text-black transition hover:bg-[#ffc45b] active:scale-[0.99] mt-2"
+                              >
+                                <Copy className="h-3.5 w-3.5 shrink-0" />
+                                <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
+                                  Apply specs to all
+                                </span>
+                              </button>
+                            </>
+                          ) : null}
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                ) : null}
-              </section>
+
+                      {customSpecError ? (
+                        <p className="mt-2 text-xs font-medium text-red-500">
+                          {customSpecError}
+                        </p>
+                      ) : null}
+
+                      {technicalSpecsMessage ? (
+                        <p
+                          role="status"
+                          className="mt-2 text-right text-[10px] font-semibold text-[#d99a24]"
+                        >
+                          {technicalSpecsMessage}
+                        </p>
+                      ) : null}
+
+                      {technicalAttributes.length > 0 ? (
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                          {technicalAttributes.map(([key, value]) => (
+                            <div
+                              key={key}
+                              className="border border-white/10 bg-black/20 p-4"
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/35">
+                                  {key}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const attributes = {
+                                      ...activeVariant.attributes,
+                                    };
+
+                                    delete attributes[key];
+
+                                    updateVariant(activeVariant.clientId, {
+                                      attributes,
+                                    });
+                                  }}
+                                  className="text-white/30 hover:text-red-300"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+
+                              <input
+                                value={value}
+                                onChange={(event) =>
+                                  updateAttribute(
+                                    activeVariant.clientId,
+                                    key,
+                                    event.target.value,
+                                  )
+                                }
+                                className="mt-3 min-h-10 w-full border border-white/10 bg-black/30 px-3 text-sm text-white outline-none focus:border-white/45"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                    </section>,
+                    specificationsPortalTarget,
+                  )
+                : null}
             </div>
           ) : null}
         </div>

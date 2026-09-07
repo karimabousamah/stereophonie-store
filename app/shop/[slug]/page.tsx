@@ -1304,18 +1304,6 @@ export default async function ProductPage({
               <h2>Product overview.</h2>
 
               <p>{product.description || `${product.name} by ${brandName}.`}</p>
-
-              <dl className="st-product-v5__basic-info">
-                <div>
-                  <dt>Brand</dt>
-                  <dd>{brandName}</dd>
-                </div>
-
-                <div>
-                  <dt>Category</dt>
-                  <dd>{categoryName}</dd>
-                </div>
-              </dl>
             </div>
 
             <div className="st-product-v5__specifications">
@@ -1345,20 +1333,18 @@ export default async function ProductPage({
                   firstAttributes,
                 ).filter(([key]) => !key.startsWith("__"));
 
-                if (
-                  technicalSpecs.length === 0 &&
-                  configurationSpecs.length === 0
-                ) {
-                  return (
-                    <p>
-                      Technical information will appear when a configuration is
-                      available.
-                    </p>
-                  );
-                }
-
                 return (
                   <dl>
+                    <div>
+                      <dt>Brand</dt>
+                      <dd>{brandName}</dd>
+                    </div>
+
+                    <div>
+                      <dt>Category</dt>
+                      <dd>{categoryName}</dd>
+                    </div>
+
                     {technicalSpecs.map((spec, index) => (
                       <div key={`technical-${spec.name}-${index}`}>
                         <dt>{spec.name}</dt>

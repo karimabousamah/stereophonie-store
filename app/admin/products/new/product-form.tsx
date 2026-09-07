@@ -19,7 +19,6 @@ import {
   uploadImagesBeforeProductSubmission,
   type DirectUploadSelectedImage,
 } from "./direct-upload-client";
-import ImageUploader from "./image-uploader";
 
 import ProductBrandPicker from "@/components/admin/product-brand-picker";
 import ProductCategoryPicker from "@/components/admin/product-category-picker";
@@ -98,7 +97,7 @@ export default function ProductForm({
 
   /*
    * Preserve exactly which publishing action the administrator
-   * selected while photographs are prepared before the final
+   * selected while images are prepared before the final
    * server submission.
    */
   const pendingIntentRef = useRef<"draft" | "publish">("draft");
@@ -369,7 +368,7 @@ export default function ProductForm({
 
       /*
        * Only enter the upload pipeline when the administrator
-       * has actually selected photographs.
+       * has actually selected images.
        *
        * A photo-less draft therefore saves immediately instead
        * of sitting forever on "{pendingIntentRef.current === "draft"
@@ -509,7 +508,7 @@ export default function ProductForm({
     if (submissionPhase === "uploading") {
       return uploadFileName
         ? `Processing ${uploadFileName}`
-        : "Processing product photography.";
+        : "Processing product images.";
     }
 
     if (submissionPhase === "saving") {
@@ -738,7 +737,28 @@ export default function ProductForm({
                 />
               </div>
 
+              <div
+                id="st-product-information-specifications"
+                data-admin-product-specifications-target="true"
+              />
+
               <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 md:items-start">
+                <div className="min-w-0">
+                  <label
+                    htmlFor="brand"
+                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
+                  >
+                    Brand
+                  </label>
+
+                  <ProductBrandPicker
+                    brands={brands}
+                    onBrandChange={(brand) =>
+                      setSelectedBrandName(brand?.name ?? "")
+                    }
+                  />
+                </div>
+
                 <div className="min-w-0">
                   <label
                     htmlFor="category"
@@ -756,22 +776,6 @@ export default function ProductForm({
                     }}
                   />
                 </div>
-
-                <div className="min-w-0">
-                  <label
-                    htmlFor="brand"
-                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                  >
-                    Brand
-                  </label>
-
-                  <ProductBrandPicker
-                    brands={brands}
-                    onBrandChange={(brand) =>
-                      setSelectedBrandName(brand?.name ?? "")
-                    }
-                  />
-                </div>
               </div>
             </div>
           </section>
@@ -779,27 +783,6 @@ export default function ProductForm({
           <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
               number="02"
-              title="Product images"
-              description="Upload clear product images, choose the main image and arrange their order."
-            />
-
-            <div className="p-5">
-              <ImageUploader
-                disabled={isSubmitting}
-                configurations={variants.map((variant, index) => ({
-                  clientId: variant.clientId,
-                  variant_name: variant.variant_name,
-                  attributes: variant.attributes,
-                  fallbackLabel: `Configuration ${index + 1}`,
-                }))}
-                onImagesChange={handleImagesChange}
-              />
-            </div>
-          </section>
-
-          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="03"
               title="Product configurations"
               description="Create every sellable version of this product and define its technical specifications, SKU, stock and availability."
             />
@@ -816,7 +799,7 @@ export default function ProductForm({
 
           <section className="st-admin-store-placement overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
             <SectionHeader
-              number="04"
+              number="03"
               title="Store placement"
               description="Choose where this product should receive extra visibility in the storefront."
             />
@@ -935,6 +918,46 @@ export default function ProductForm({
               </label>
             </div>
           </section>
+
+          <section className="overflow-hidden rounded-[24px] border border-[#fdb73e]/25 bg-[#0d0d0d]">
+            <div className="flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
+                  Setup checkpoint
+                </p>
+
+                <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-white">
+                  Save product setup
+                </h2>
+
+                <p className="mt-2 text-sm leading-6 text-white/40">
+                  Save product information, configurations and store placement
+                  first. Product Images will open immediately afterward so
+                  images can be assigned to the saved configurations.
+                </p>
+              </div>
+
+              <button
+                id="st-create-product-setup"
+                type="submit"
+                name="intent"
+                value="draft"
+                formNoValidate
+                disabled={isSubmitting}
+                onClick={() => {
+                  pendingIntentRef.current = "draft";
+
+                  if (resolvedIntentInputRef.current) {
+                    resolvedIntentInputRef.current.value = "draft";
+                  }
+                }}
+                className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-[#e2a128] bg-[#fdb73e] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                <Save className="h-4 w-4" />
+                Save product setup
+              </button>
+            </div>
+          </section>
         </div>
 
         <aside>
@@ -1041,7 +1064,7 @@ export default function ProductForm({
                       {pendingIntentRef.current === "draft"
                         ? "Saving draft"
                         : selectedImages.length > 0
-                          ? "Preparing photographs"
+                          ? "Preparing images"
                           : "Publishing product"}
                     </p>
 
@@ -1050,7 +1073,7 @@ export default function ProductForm({
                         (pendingIntentRef.current === "draft"
                           ? "Saving safely to Draft products"
                           : selectedImages.length > 0
-                            ? "Preparing product photographs"
+                            ? "Preparing product images"
                             : "Preparing product submission")}
                     </p>
                   </div>

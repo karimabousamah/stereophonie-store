@@ -211,7 +211,7 @@ export default function EditProductForm({
   );
 
   /*
-   * Keep the photograph manager synchronized with the configuration
+   * Keep the image manager synchronized with the configuration
    * editor without waiting for a page refresh.
    *
    * Newly-created configurations are visible immediately. They are
@@ -327,7 +327,7 @@ export default function EditProductForm({
             );
 
             /*
-             * A product can legitimately have no mounted photograph manager.
+             * A product can legitimately have no mounted image manager.
              * In that case there is nothing to flush and the product save
              * must continue immediately instead of hanging forever.
              */
@@ -595,7 +595,29 @@ export default function EditProductForm({
                   />
                 </div>
 
+                <div
+                  id="st-product-information-specifications"
+                  data-admin-product-specifications-target="true"
+                />
+
                 <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 md:items-start">
+                  <div className="min-w-0">
+                    <label
+                      htmlFor="brand"
+                      className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
+                    >
+                      Brand
+                    </label>
+
+                    <ProductBrandPicker
+                      brands={brands}
+                      defaultValue={product.brandId}
+                      onBrandChange={(brand) =>
+                        setSelectedBrandName(brand?.name ?? "")
+                      }
+                    />
+                  </div>
+
                   <div className="min-w-0">
                     <label
                       htmlFor="category"
@@ -617,23 +639,6 @@ export default function EditProductForm({
                           setSelectedSubcategoryId("");
                         }
                       }}
-                    />
-                  </div>
-
-                  <div className="min-w-0">
-                    <label
-                      htmlFor="brand"
-                      className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                    >
-                      Brand
-                    </label>
-
-                    <ProductBrandPicker
-                      brands={brands}
-                      defaultValue={product.brandId}
-                      onBrandChange={(brand) =>
-                        setSelectedBrandName(brand?.name ?? "")
-                      }
                     />
                   </div>
                 </div>
@@ -764,8 +769,8 @@ export default function EditProductForm({
 
                   <p className="mt-2 text-sm leading-6 text-white/40">
                     Save product information, configurations and store placement
-                    before managing photographs. The current Live or Draft
-                    status will stay exactly as it is.
+                    before managing images. The current Live or Draft status
+                    will stay exactly as it is.
                   </p>
                 </div>
 
@@ -915,8 +920,20 @@ export default function EditProductForm({
       </form>
 
       {mediaManager ? (
-        <div className="mt-7" data-admin-product-media-section="04">
-          {mediaManager}
+        <div
+          id="product-images"
+          className="mt-7 scroll-mt-[110px]"
+          data-admin-product-media-section="04"
+        >
+          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
+            <SectionHeader
+              number="04"
+              title="Product Images"
+              description="Upload, arrange and assign images to the saved product configurations."
+            />
+
+            <div className="p-5">{mediaManager}</div>
+          </section>
         </div>
       ) : null}
 
@@ -936,7 +953,7 @@ export default function EditProductForm({
           <p className="mt-2 max-w-3xl text-[13px] leading-5 text-[#6e6e73]">
             Archive a product when you only want to remove it from the
             storefront. Permanent deletion removes the product, configurations,
-            photograph records and uploaded files.
+            image records and uploaded files.
           </p>
         </div>
 

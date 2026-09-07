@@ -67734,3 +67734,247 @@ html
 }
 
 /* === ST MOBILE MOVIES META ALIGNMENT END === */
+
+/* === ST SHOP PICKER PRICE-MATCHED MOTION START === */
+
+/*
+ * Category and Brand use the same painted motion lifecycle
+ * already proven by the Price filter.
+ *
+ * is-entering -> is-open -> is-closing
+ */
+
+html body .st-retail-shop .st-filter-v4__picker-popover {
+  will-change: opacity, transform !important;
+
+  transition:
+    opacity 290ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 190ms ease !important;
+
+  animation: none !important;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-popover.is-entering {
+  opacity: 0 !important;
+
+  visibility: visible !important;
+  pointer-events: none !important;
+
+  transform: translate3d(0, -12px, 0) scale(0.972) !important;
+
+  animation: none !important;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-popover.is-open {
+  opacity: 1 !important;
+
+  visibility: visible !important;
+  pointer-events: auto !important;
+
+  transform: translate3d(0, 0, 0) scale(1) !important;
+
+  animation: none !important;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-popover.is-closing {
+  opacity: 0 !important;
+
+  visibility: visible !important;
+  pointer-events: none !important;
+
+  transform: translate3d(0, -9px, 0) scale(0.982) !important;
+
+  transition:
+    opacity 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 270ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+  animation: none !important;
+}
+
+html body .st-retail-shop .st-filter-v4__picker-trigger > svg {
+  transition:
+    transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 180ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st-retail-shop .st-filter-v4__picker-popover,
+  html body .st-retail-shop .st-filter-v4__picker-trigger > svg {
+    transition: none !important;
+  }
+}
+
+/* === ST SHOP PICKER PRICE-MATCHED MOTION END === */
+
+/* === ST EXACT PRICE CATEGORY BRAND MOTION V4 START === */
+
+/*
+ * FINAL AUTHORITATIVE FILTER POPOVER MOTION
+ *
+ * Price, Category and Brand intentionally share the exact
+ * same visual transition values.
+ *
+ * Component-specific rules continue to control:
+ * - width
+ * - content
+ * - positioning
+ * - mobile anchoring
+ *
+ * This block controls ONLY the pop-in / pop-out motion.
+ */
+
+html
+  body
+  .st-retail-shop
+  :is(.st-filter-v4__price-popover, .st-filter-v4__picker-popover) {
+  will-change: opacity, transform !important;
+
+  animation: none !important;
+
+  transition:
+    opacity 290ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 190ms ease !important;
+}
+
+html
+  body
+  .st-retail-shop
+  :is(.st-filter-v4__price-popover, .st-filter-v4__picker-popover).is-entering {
+  opacity: 0 !important;
+
+  visibility: visible !important;
+  pointer-events: none !important;
+
+  transform: translate3d(0, -12px, 0) scale(0.972) !important;
+
+  animation: none !important;
+}
+
+html
+  body
+  .st-retail-shop
+  :is(.st-filter-v4__price-popover, .st-filter-v4__picker-popover).is-open {
+  opacity: 1 !important;
+
+  visibility: visible !important;
+  pointer-events: auto !important;
+
+  transform: translate3d(0, 0, 0) scale(1) !important;
+
+  animation: none !important;
+}
+
+html
+  body
+  .st-retail-shop
+  :is(.st-filter-v4__price-popover, .st-filter-v4__picker-popover).is-closing {
+  opacity: 0 !important;
+
+  visibility: visible !important;
+  pointer-events: none !important;
+
+  transform: translate3d(0, -9px, 0) scale(0.982) !important;
+
+  animation: none !important;
+
+  transition:
+    opacity 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 270ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/*
+ * Category / Brand arrow movement now matches the Price arrow.
+ */
+
+html
+  body
+  .st-retail-shop
+  :is(
+    .st-filter-v4__picker-trigger > svg,
+    .st-filter-v4__price-wrap .st-filter-v4__pill > svg:last-child
+  ) {
+  transition:
+    transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    color 180ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html
+    body
+    .st-retail-shop
+    :is(.st-filter-v4__price-popover, .st-filter-v4__picker-popover),
+  html
+    body
+    .st-retail-shop
+    :is(
+      .st-filter-v4__picker-trigger > svg,
+      .st-filter-v4__price-wrap .st-filter-v4__pill > svg:last-child
+    ) {
+    transition: none !important;
+  }
+}
+
+/* === ST EXACT PRICE CATEGORY BRAND MOTION V4 END === */
+
+/* === ST SINGLE-IMAGE PRODUCT CARD HOVER GUARD START ===
+ *
+ * Desktop/laptop catalogue cards normally crossfade from the primary
+ * product image to the second product image on hover.
+ *
+ * When a product only has one valid image there is no secondary layer,
+ * so the primary image must remain visible instead of fading to the
+ * empty white media surface.
+ *
+ * Products with 2+ images keep the existing hover/crossfade unchanged.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .st-retail-card:hover
+    .st-retail-card__image-link[data-has-secondary-image="false"]
+    .st-retail-card__image--primary {
+    opacity: 1 !important;
+  }
+}
+/* === ST SINGLE-IMAGE PRODUCT CARD HOVER GUARD END === */
+
+/* === ST MOBILE PRODUCT CARD DIRECT NAVIGATION START ===
+ *
+ * Mobile product cards do not use Quick View.
+ *
+ * The product image and product name already link directly to the
+ * product page, so removing the Quick View trigger makes the normal
+ * mobile interaction a direct product-page navigation.
+ *
+ * Tablet / laptop / desktop Quick View remains unchanged.
+ */
+@media (max-width: 767px) {
+  html body .st-retail-card .st-retail-card__quick {
+    display: none !important;
+  }
+
+  html body .st-retail-qv {
+    display: none !important;
+  }
+}
+/* === ST MOBILE PRODUCT CARD DIRECT NAVIGATION END === */
+
+/* === ST MOBILE DISABLE PRODUCT IMAGE HOVER START ===
+ *
+ * Mobile product cards must never switch to the secondary image.
+ * Keep the primary image fully visible and the secondary image hidden.
+ *
+ * Desktop/laptop hover behavior remains unchanged.
+ */
+@media (max-width: 767px) {
+  html body .st-retail-card .st-retail-card__image--primary,
+  html body .st-retail-card:hover .st-retail-card__image--primary {
+    opacity: 1 !important;
+  }
+
+  html body .st-retail-card .st-retail-card__image--secondary,
+  html body .st-retail-card:hover .st-retail-card__image--secondary {
+    opacity: 0 !important;
+  }
+}
+/* === ST MOBILE DISABLE PRODUCT IMAGE HOVER END === */

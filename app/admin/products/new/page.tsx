@@ -70,7 +70,7 @@ export default async function NewProductPage({
     <AdminShell
       role={admin.role}
       pageTitle="Add product"
-      pageDescription="Add product details, images, pricing, configurations, inventory and visibility."
+      pageDescription="Add product information, configurations and store placement, then manage product images."
     >
       <div className="px-5 py-6 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">

@@ -214,6 +214,7 @@ export default function V3Homepage({
   latestProducts,
   offerProducts,
   featuredProducts,
+  comingSoonProducts,
   catalogProducts,
   heroImageUrl,
   heroProductId,
@@ -231,6 +232,7 @@ export default function V3Homepage({
   latestProducts: V3Product[];
   offerProducts: V3Product[];
   featuredProducts: V3Product[];
+  comingSoonProducts: V3Product[];
   catalogProducts: V3Product[];
   heroImageUrl?: string | null;
   heroProductId?: string | null;
@@ -538,6 +540,17 @@ export default function V3Homepage({
         href="/shop"
         linkLabel="Explore store"
       />
+
+      {comingSoonProducts.length ? (
+        <ProductSection
+          eyebrow="Coming soon"
+          title="Coming soon."
+          description="A preview of technology arriving soon at Stereophonie."
+          products={comingSoonProducts}
+          href="/shop"
+          linkLabel="Explore store"
+        />
+      ) : null}
     </main>
   );
 }

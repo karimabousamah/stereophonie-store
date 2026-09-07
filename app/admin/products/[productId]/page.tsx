@@ -357,6 +357,7 @@ export default async function EditProductPage({
             errorMessage={errorMessage}
             mediaManager={
               <ImageManager
+                key={`product-images-${product.id}`}
                 productId={product.id}
                 productName={product.name}
                 images={images}

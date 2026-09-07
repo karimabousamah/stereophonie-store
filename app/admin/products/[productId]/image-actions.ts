@@ -91,7 +91,7 @@ export async function uploadProductImages(formData: FormData) {
     .filter((entry): entry is File => entry instanceof File && entry.size > 0);
 
   if (files.length === 0) {
-    redirectWithError(productId, "Select at least one photograph.");
+    redirectWithError(productId, "Select at least one image.");
   }
 
   const { count: existingImageCount, error: countError } = await supabase
@@ -201,14 +201,14 @@ export async function uploadProductImages(formData: FormData) {
     const message =
       error instanceof Error
         ? error.message
-        : "The photographs could not be uploaded.";
+        : "The images could not be uploaded.";
 
     redirectWithError(productId, message);
   }
 
   await refreshProductPages(productId);
 
-  redirectWithSuccess(productId, "Photographs uploaded successfully.");
+  redirectWithSuccess(productId, "Images uploaded successfully.");
 }
 
 type DirectUploadedExistingProductImage = {
@@ -243,12 +243,12 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
   } catch {
     redirectWithError(
       productId,
-      "The uploaded photograph information could not be processed.",
+      "The uploaded image information could not be processed.",
     );
   }
 
   if (!Array.isArray(uploadedImages) || uploadedImages.length === 0) {
-    redirectWithError(productId, "Select at least one photograph.");
+    redirectWithError(productId, "Select at least one image.");
   }
 
   const { data: product, error: productError } = await supabase
@@ -313,21 +313,21 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     if (!storagePath || !storagePath.startsWith("temporary/")) {
       redirectWithError(
         productId,
-        "A photograph has an invalid temporary storage path.",
+        "A image has an invalid temporary storage path.",
       );
     }
 
     if (!allowedImageTypes.has(contentType)) {
       redirectWithError(
         productId,
-        `${originalName || "A photograph"} is not supported. Use JPEG, PNG or WebP.`,
+        `${originalName || "A image"} is not supported. Use JPEG, PNG or WebP.`,
       );
     }
 
     if (!Number.isFinite(size) || size <= 0 || size > maximumImageSize) {
       redirectWithError(
         productId,
-        `${originalName || "A photograph"} has an invalid file size.`,
+        `${originalName || "A image"} has an invalid file size.`,
       );
     }
 
@@ -336,13 +336,13 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       position < 0 ||
       position >= uploadedImages.length
     ) {
-      redirectWithError(productId, "The photograph order is invalid.");
+      redirectWithError(productId, "The image order is invalid.");
     }
 
     if (submittedPositions.has(position)) {
       redirectWithError(
         productId,
-        "The photograph order contains duplicate positions.",
+        "The image order contains duplicate positions.",
       );
     }
 
@@ -358,7 +358,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       if (!validConfigurationsById.has(variantId)) {
         redirectWithError(
           productId,
-          "A photograph is assigned to a product configuration that no longer exists.",
+          "A image is assigned to a product configuration that no longer exists.",
         );
       }
     }
@@ -370,12 +370,12 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
 
   /*
    * ==========================================================
-   * MAXIMUM 10 PHOTOGRAPHS PER EXACT CONFIGURATION
+   * MAXIMUM 10 IMAGES PER EXACT CONFIGURATION
    * ==========================================================
    *
-   * Existing Shared photographs count toward every configuration.
-   * Existing assigned photographs count only toward their linked
-   * configurations. Incoming photographs are evaluated using the
+   * Existing Shared images count toward every configuration.
+   * Existing assigned images count only toward their linked
+   * configurations. Incoming images are evaluated using the
    * exact same rule before any permanent database/storage changes.
    */
   const { data: existingImageAssignments, error: assignmentCountError } =
@@ -447,7 +447,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
 
         redirectWithError(
           productId,
-          `${configuration?.variant_name || "This configuration"} can have a maximum of ${maximumImagesPerConfiguration} photographs. Shared photographs count toward every configuration.`,
+          `${configuration?.variant_name || "This configuration"} can have a maximum of ${maximumImagesPerConfiguration} images. Shared images count toward every configuration.`,
         );
       }
     }
@@ -466,7 +466,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
    * Keep track of database rows created during this upload batch.
    *
    * Storage moves and database inserts cannot share one transaction.
-   * If a later photograph or configuration assignment fails, these
+   * If a later image or configuration assignment fails, these
    * IDs let us remove every product_images row already created by
    * this batch before removing the corresponding storage objects.
    *
@@ -537,7 +537,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
           image_url: publicUrlData.publicUrl,
           alt_text:
             String(image.alt_text ?? "").trim() ||
-            `${product.name} photograph ${nextPosition + index + 1}`,
+            `${product.name} image ${nextPosition + index + 1}`,
           position: nextPosition + index,
           is_primary: !productHasPrimaryImage && index === 0,
 
@@ -559,7 +559,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
 
       if (insertImageError || !insertedImage) {
         throw new Error(
-          insertImageError?.message ?? "The photograph could not be saved.",
+          insertImageError?.message ?? "The image could not be saved.",
         );
       }
 
@@ -627,9 +627,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     }
 
     const message =
-      error instanceof Error
-        ? error.message
-        : "The photographs could not be saved.";
+      error instanceof Error ? error.message : "The images could not be saved.";
 
     redirectWithError(productId, message);
   }
@@ -639,8 +637,8 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
   redirectWithSuccess(
     productId,
     uploadedImages.length === 1
-      ? "Photograph uploaded successfully."
-      : `${uploadedImages.length} photographs uploaded successfully.`,
+      ? "Image uploaded successfully."
+      : `${uploadedImages.length} images uploaded successfully.`,
   );
 }
 
@@ -761,7 +759,7 @@ async function finishImageOperation(
  *   Position 1 of N, Position 2 of N...
  *
  * Existing Main stays first. If a gallery somehow has no Main, the first
- * photograph becomes Main automatically.
+ * image becomes Main automatically.
  */
 async function normalizeProductImageVariantGalleries(
   supabase: Awaited<ReturnType<typeof requireAdministrator>>,
@@ -884,7 +882,7 @@ export async function setPrimaryProductImage(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      "The photograph operation is missing required information.",
+      "The image operation is missing required information.",
     );
   }
 
@@ -899,7 +897,7 @@ export async function setPrimaryProductImage(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      imageError?.message ?? "The photograph could not be found.",
+      imageError?.message ?? "The image could not be found.",
     );
   }
 
@@ -908,7 +906,7 @@ export async function setPrimaryProductImage(formData: FormData) {
    * EXACT CONFIGURATION MAIN
    * ========================================================
    *
-   * A photograph may belong to multiple exact configurations.
+   * A image may belong to multiple exact configurations.
    *
    * Main therefore belongs to the image/configuration
    * association, not to product_images itself.
@@ -943,7 +941,7 @@ export async function setPrimaryProductImage(formData: FormData) {
         formData,
         productId,
         selectedAssignmentError?.message ??
-          "This photograph is not assigned to that configuration.",
+          "This image is not assigned to that configuration.",
       );
     }
 
@@ -959,7 +957,7 @@ export async function setPrimaryProductImage(formData: FormData) {
         formData,
         productId,
         assignmentsError?.message ??
-          "Configuration photographs could not be loaded.",
+          "Configuration images could not be loaded.",
       );
     }
 
@@ -971,7 +969,7 @@ export async function setPrimaryProductImage(formData: FormData) {
       imageOperationError(
         formData,
         productId,
-        "The configuration photograph could not be found.",
+        "The configuration image could not be found.",
       );
     }
 
@@ -1036,7 +1034,7 @@ export async function setPrimaryProductImage(formData: FormData) {
       formData,
       supabase,
       productId,
-      "Configuration Main photograph updated.",
+      "Configuration Main image updated.",
     );
   }
 
@@ -1045,7 +1043,7 @@ export async function setPrimaryProductImage(formData: FormData) {
    * SHARED PRODUCT MAIN
    * ========================================================
    *
-   * No variant_id means this action is for a photograph shared
+   * No variant_id means this action is for a image shared
    * with every configuration.
    */
   const { count: assignmentCount, error: assignmentCountError } = await supabase
@@ -1064,7 +1062,7 @@ export async function setPrimaryProductImage(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      "Choose an exact configuration before changing this photograph's Main state.",
+      "Choose an exact configuration before changing this image's Main state.",
     );
   }
 
@@ -1099,7 +1097,7 @@ export async function setPrimaryProductImage(formData: FormData) {
     formData,
     supabase,
     productId,
-    "Main photograph updated.",
+    "Main image updated.",
   );
 }
 
@@ -1121,11 +1119,11 @@ export async function updateProductImageVariantUsageBulk(formData: FormData) {
   try {
     requestedUsage = JSON.parse(usageJson);
   } catch {
-    throw new Error("The photograph usage could not be processed.");
+    throw new Error("The image usage could not be processed.");
   }
 
   if (!Array.isArray(requestedUsage)) {
-    throw new Error("The photograph usage could not be processed.");
+    throw new Error("The image usage could not be processed.");
   }
 
   const usage = requestedUsage
@@ -1192,7 +1190,7 @@ export async function updateProductImageVariantUsageBulk(formData: FormData) {
   }
 
   if ((imagesResult.data ?? []).length !== imageIds.length) {
-    throw new Error("One or more photographs could not be verified.");
+    throw new Error("One or more images could not be verified.");
   }
 
   if (
@@ -1325,7 +1323,7 @@ export async function updateProductImageVariantUsageBulk(formData: FormData) {
   }
 
   /*
-   * One delete clears the usage rows for every photograph being saved.
+   * One delete clears the usage rows for every image being saved.
    */
   const { error: clearError } = await supabase
     .from("product_image_variants")
@@ -1468,7 +1466,7 @@ export async function updateProductImageVariantName(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      "The photograph operation is missing required information.",
+      "The image operation is missing required information.",
     );
   }
 
@@ -1483,7 +1481,7 @@ export async function updateProductImageVariantName(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      imageError?.message ?? "The photograph could not be found.",
+      imageError?.message ?? "The image could not be found.",
     );
   }
 
@@ -1600,7 +1598,7 @@ export async function updateProductImageVariantName(formData: FormData) {
   /*
    * Legacy fields are mirrored only for exactly one assignment.
    * For shared/multi-assignment images they stay null so they
-   * cannot falsely describe the photograph.
+   * cannot falsely describe the image.
    */
   const singleVariant =
     selectedVariants.length === 1 ? selectedVariants[0] : null;
@@ -1630,7 +1628,7 @@ export async function updateProductImageVariantName(formData: FormData) {
       productId,
       error instanceof Error
         ? error.message
-        : "The configuration photograph order could not be normalized.",
+        : "The configuration image order could not be normalized.",
     );
   }
 
@@ -1643,8 +1641,8 @@ export async function updateProductImageVariantName(formData: FormData) {
     supabase,
     productId,
     selectedVariants.length === 0
-      ? "Photograph shared with all configurations."
-      : `Photograph assigned to ${selectedVariants.length} configuration${
+      ? "Image shared with all configurations."
+      : `Image assigned to ${selectedVariants.length} configuration${
           selectedVariants.length === 1 ? "" : "s"
         }.`,
   );
@@ -1692,12 +1690,12 @@ export async function moveProductImage(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      "The photograph operation is missing required information.",
+      "The image operation is missing required information.",
     );
   }
 
   if (direction !== "left" && direction !== "right") {
-    imageOperationError(formData, productId, "Invalid photograph direction.");
+    imageOperationError(formData, productId, "Invalid image direction.");
   }
 
   /*
@@ -1736,7 +1734,7 @@ export async function moveProductImage(formData: FormData) {
         formData,
         productId,
         assignmentsError?.message ??
-          "Configuration photographs could not be loaded.",
+          "Configuration images could not be loaded.",
       );
     }
 
@@ -1748,7 +1746,7 @@ export async function moveProductImage(formData: FormData) {
       imageOperationError(
         formData,
         productId,
-        "This photograph is not assigned to that configuration.",
+        "This image is not assigned to that configuration.",
       );
     }
 
@@ -1764,7 +1762,7 @@ export async function moveProductImage(formData: FormData) {
         formData,
         supabase,
         productId,
-        "This photograph is already at the edge of its configuration.",
+        "This image is already at the edge of its configuration.",
       );
     }
 
@@ -1778,7 +1776,7 @@ export async function moveProductImage(formData: FormData) {
      * First move every assignment into a temporary position range.
      * Then write the final positions.
      *
-     * This prevents adjacent photographs from colliding while they
+     * This prevents adjacent images from colliding while they
      * exchange positions.
      */
     for (let index = 0; index < reordered.length; index += 1) {
@@ -1821,7 +1819,7 @@ export async function moveProductImage(formData: FormData) {
       formData,
       supabase,
       productId,
-      "Configuration photograph order updated.",
+      "Configuration image order updated.",
     );
   }
 
@@ -1830,9 +1828,9 @@ export async function moveProductImage(formData: FormData) {
    * SHARED PHOTO ORDER
    * ========================================================
    *
-   * Shared means the photograph has zero junction rows.
+   * Shared means the image has zero junction rows.
    *
-   * Only other shared photographs participate in this ordering.
+   * Only other shared images participate in this ordering.
    */
   const { data: productImages, error: productImagesError } = await supabase
     .from("product_images")
@@ -1853,7 +1851,7 @@ export async function moveProductImage(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      productImagesError?.message ?? "Product photographs could not be loaded.",
+      productImagesError?.message ?? "Product images could not be loaded.",
     );
   }
 
@@ -1869,7 +1867,7 @@ export async function moveProductImage(formData: FormData) {
     imageOperationError(
       formData,
       productId,
-      "Choose an exact configuration before moving this photograph.",
+      "Choose an exact configuration before moving this image.",
     );
   }
 
@@ -1885,7 +1883,7 @@ export async function moveProductImage(formData: FormData) {
       formData,
       supabase,
       productId,
-      "This photograph is already at the edge of the shared gallery.",
+      "This image is already at the edge of the shared gallery.",
     );
   }
 
@@ -1896,7 +1894,7 @@ export async function moveProductImage(formData: FormData) {
   reordered.splice(targetIndex, 0, moving);
 
   /*
-   * Keep shared photographs in deterministic order without
+   * Keep shared images in deterministic order without
    * changing configuration-specific junction positions.
    */
   for (let index = 0; index < reordered.length; index += 1) {
@@ -1923,7 +1921,7 @@ export async function moveProductImage(formData: FormData) {
     formData,
     supabase,
     productId,
-    "Shared photograph order updated.",
+    "Shared image order updated.",
   );
 }
 
@@ -1948,7 +1946,7 @@ export async function deleteProductImage(formData: FormData) {
   if (imageError || !image) {
     redirectWithError(
       productId,
-      imageError?.message ?? "The photograph could not be found.",
+      imageError?.message ?? "The image could not be found.",
     );
   }
 
@@ -2006,5 +2004,5 @@ export async function deleteProductImage(formData: FormData) {
 
   await refreshProductPages(productId);
 
-  redirectWithSuccess(productId, "Photograph deleted.");
+  redirectWithSuccess(productId, "Image deleted.");
 }

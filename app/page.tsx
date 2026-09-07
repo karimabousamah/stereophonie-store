@@ -51,6 +51,10 @@ type ProductRow = {
   is_new_arrival: boolean | null;
   new_drop_started_at: string | null;
   created_at: string | null;
+  availability: string | null;
+  offer_started_at: string | null;
+  discovering_started_at: string | null;
+  coming_soon_started_at: string | null;
   categories: NamedRelation;
   brands: NamedRelation;
   product_images: V3ProductImage[] | null;
@@ -77,7 +81,14 @@ function relationName(relation: NamedRelation, fallback = "") {
   return relation.name?.trim() || fallback;
 }
 
-function normalizeProduct(product: ProductRow): V3Product {
+type HomepageProduct = V3Product & {
+  availability?: string | null;
+  offer_started_at?: string | null;
+  discovering_started_at?: string | null;
+  coming_soon_started_at?: string | null;
+};
+
+function normalizeProduct(product: ProductRow): HomepageProduct {
   return {
     id: product.id,
     name: product.name,
@@ -90,12 +101,49 @@ function normalizeProduct(product: ProductRow): V3Product {
     is_new_arrival: product.is_new_arrival,
     new_drop_started_at: product.new_drop_started_at,
     created_at: product.created_at,
+    availability: product.availability,
+    offer_started_at: product.offer_started_at,
+    discovering_started_at: product.discovering_started_at,
+    coming_soon_started_at: product.coming_soon_started_at,
     images: storefrontConfigurationImages(
       product.product_images,
       product.product_variants,
     ),
     variants: product.product_variants ?? [],
   };
+}
+
+function timestampValue(value: string | null | undefined) {
+  if (!value) {
+    return 0;
+  }
+
+  const parsed = Date.parse(value);
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function sortProductsByTimestamp(
+  products: HomepageProduct[],
+  getTimestamp: (product: HomepageProduct) => string | null | undefined,
+) {
+  return [...products].sort((a, b) => {
+    const aTimestamp =
+      timestampValue(getTimestamp(a)) || timestampValue(a.created_at);
+
+    const bTimestamp =
+      timestampValue(getTimestamp(b)) || timestampValue(b.created_at);
+
+    if (bTimestamp !== aTimestamp) {
+      return bTimestamp - aTimestamp;
+    }
+
+    return String(b.id).localeCompare(String(a.id));
+  });
+}
+
+function isComingSoonProduct(product: HomepageProduct) {
+  return product.availability === "coming_soon";
 }
 
 type HomePageProps = {
@@ -135,6 +183,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           is_new_arrival,
           new_drop_started_at,
           created_at,
+          availability,
+          offer_started_at,
+          discovering_started_at,
+          coming_soon_started_at,
 
           categories (
             name
@@ -176,8 +228,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       .eq("status", "published")
       .order("created_at", {
         ascending: false,
-      })
-      .limit(40),
+      }),
 
     supabase
       .from("categories")
@@ -266,18 +317,35 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     homepage_theme: category.homepage_theme === "dark" ? "dark" : "light",
   }));
 
-  const latestProducts = products.filter(isCurrentNewDrop);
+  const latestProducts = sortProductsByTimestamp(
+    products.filter(isCurrentNewDrop),
+    (product) => product.new_drop_started_at,
+  );
 
-  const latestFallback = latestProducts.length > 0 ? latestProducts : products;
+  const latestFallback =
+    latestProducts.length > 0
+      ? latestProducts
+      : sortProductsByTimestamp(products, (product) => product.created_at);
 
-  const offerProducts = products.filter(isProductOnOffer);
+  const offerProducts = sortProductsByTimestamp(
+    products.filter(isProductOnOffer),
+    (product) => product.offer_started_at,
+  );
 
-  const featuredProducts = products.filter(
-    (product) => product.is_featured || product.is_trending,
+  const featuredProducts = sortProductsByTimestamp(
+    products.filter((product) => product.is_featured || product.is_trending),
+    (product) => product.discovering_started_at,
   );
 
   const featuredFallback =
-    featuredProducts.length > 0 ? featuredProducts : products;
+    featuredProducts.length > 0
+      ? featuredProducts
+      : sortProductsByTimestamp(products, (product) => product.created_at);
+
+  const comingSoonProducts = sortProductsByTimestamp(
+    products.filter(isComingSoonProduct),
+    (product) => product.coming_soon_started_at,
+  );
 
   return (
     <>
@@ -297,6 +365,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         latestProducts={latestFallback}
         offerProducts={offerProducts}
         featuredProducts={featuredFallback}
+        comingSoonProducts={comingSoonProducts}
         catalogProducts={products}
         heroImageUrl={homepageSettings.hero_image_url}
         heroProductId={homepageSettings.hero_product_id}

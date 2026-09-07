@@ -1,6 +1,13 @@
 "use client";
 
-import { Check, ChevronDown, Search, X } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  LoaderCircle,
+  Plus,
+  Search,
+  X,
+} from "lucide-react";
 import {
   useEffect,
   useLayoutEffect,
@@ -10,6 +17,8 @@ import {
   type KeyboardEvent,
 } from "react";
 import { createPortal } from "react-dom";
+
+import { createCategoryInline } from "@/components/admin/product-category-picker-actions";
 
 export type ProductCategoryOption = {
   id: string;
@@ -37,11 +46,15 @@ export default function ProductCategoryPicker({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
+  const [options, setOptions] = useState(categories);
   const [selectedId, setSelectedId] = useState(defaultValue);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [mounted, setMounted] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState("");
+  const [creationMessage, setCreationMessage] = useState("");
 
   const [position, setPosition] = useState({
     top: 0,
@@ -54,23 +67,33 @@ export default function ProductCategoryPicker({
   }, []);
 
   useEffect(() => {
+    setOptions(categories);
+  }, [categories]);
+
+  useEffect(() => {
     setSelectedId(defaultValue);
   }, [defaultValue]);
 
   const selectedCategory =
-    categories.find((category) => category.id === selectedId) ?? null;
+    options.find((category) => category.id === selectedId) ?? null;
 
   const cleanQuery = normalize(query);
 
   const filtered = useMemo(() => {
     if (!cleanQuery) {
-      return categories;
+      return options;
     }
 
-    return categories.filter((category) =>
+    return options.filter((category) =>
       normalize(category.name).includes(cleanQuery),
     );
-  }, [categories, cleanQuery]);
+  }, [options, cleanQuery]);
+
+  const exactMatch = options.some(
+    (category) => normalize(category.name) === cleanQuery,
+  );
+
+  const canCreate = Boolean(cleanQuery && !exactMatch);
 
   function calculatePosition() {
     const button = triggerRef.current;
@@ -165,8 +188,64 @@ export default function ProductCategoryPicker({
     setQuery("");
     setOpen(false);
     setActiveIndex(-1);
+    setError("");
+    setCreationMessage("");
 
     onCategoryChange?.(category);
+  }
+
+  async function createRequestedCategory() {
+    const requestedName = query.replace(/\s+/g, " ").trim();
+
+    if (!requestedName || creating || !canCreate) {
+      return;
+    }
+
+    setCreating(true);
+    setError("");
+    setCreationMessage("");
+
+    try {
+      const result = await createCategoryInline(requestedName);
+
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+
+      const nextCategory = result.category;
+
+      setOptions((current) => {
+        if (current.some((category) => category.id === nextCategory.id)) {
+          return current;
+        }
+
+        return [...current, nextCategory].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        );
+      });
+
+      setSelectedId(nextCategory.id);
+      setQuery("");
+      setActiveIndex(-1);
+
+      setCreationMessage(
+        result.created
+          ? `${nextCategory.name} was created and selected.`
+          : `${nextCategory.name} already existed and was selected.`,
+      );
+
+      onCategoryChange?.(nextCategory);
+
+      window.setTimeout(() => {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }, 450);
+    } catch {
+      setError("The category could not be created. Please try again.");
+    } finally {
+      setCreating(false);
+    }
   }
 
   function keyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -197,6 +276,8 @@ export default function ProductCategoryPicker({
         choose(filtered[activeIndex]);
       } else if (filtered.length === 1) {
         choose(filtered[0]);
+      } else if (canCreate) {
+        void createRequestedCategory();
       }
     }
   }
@@ -219,7 +300,11 @@ export default function ProductCategoryPicker({
               <input
                 ref={searchRef}
                 value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setError("");
+                  setCreationMessage("");
+                }}
                 onKeyDown={keyDown}
                 placeholder="Search categories..."
                 autoComplete="off"
@@ -232,6 +317,8 @@ export default function ProductCategoryPicker({
                   className="st-admin-category-picker__clear"
                   onClick={() => {
                     setQuery("");
+                    setError("");
+                    setCreationMessage("");
                     searchRef.current?.focus();
                   }}
                   aria-label="Clear category search"
@@ -280,6 +367,49 @@ export default function ProductCategoryPicker({
                 </div>
               )}
             </div>
+
+            {error ? (
+              <div className="border-t border-red-500/10 bg-red-50 px-4 py-3 text-[12px] font-medium text-red-700">
+                {error}
+              </div>
+            ) : null}
+
+            {creationMessage ? (
+              <div className="border-t border-emerald-500/10 bg-emerald-50 px-4 py-3 text-[12px] font-medium text-emerald-700">
+                {creationMessage}
+              </div>
+            ) : null}
+
+            {canCreate ? (
+              <div className="border-t border-black/[0.07] bg-[#fafafa] p-2.5">
+                <button
+                  type="button"
+                  onClick={() => void createRequestedCategory()}
+                  disabled={creating}
+                  className="st-admin-category-picker__option"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fdb73e] text-black">
+                      {creating ? (
+                        <LoaderCircle className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Plus className="h-4 w-4" strokeWidth={2.2} />
+                      )}
+                    </span>
+
+                    <span className="min-w-0 text-left">
+                      <strong className="block truncate">
+                        {creating
+                          ? "Creating category..."
+                          : `Add “${query.replace(/\s+/g, " ").trim()}”`}
+                      </strong>
+
+                      <small>Create and select automatically</small>
+                    </span>
+                  </span>
+                </button>
+              </div>
+            ) : null}
           </div>,
           document.body,
         )
@@ -313,6 +443,7 @@ export default function ProductCategoryPicker({
 
         <ChevronDown className="st-admin-category-picker__chevron h-4 w-4" />
       </button>
+
       {selectedCategory ? (
         <button
           type="button"
@@ -321,6 +452,8 @@ export default function ProductCategoryPicker({
             setQuery("");
             setOpen(false);
             setActiveIndex(-1);
+            setError("");
+            setCreationMessage("");
             onCategoryChange?.(null);
           }}
           className="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/42 transition hover:border-[#fdb73e]/35 hover:bg-[#fdb73e]/[0.08] hover:text-[#f4bd55] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fdb73e]/25"

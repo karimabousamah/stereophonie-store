@@ -53,7 +53,7 @@ type UploadOptions = {
 function validateProductForm(form: HTMLFormElement) {
   if (!form.reportValidity()) {
     throw new Error(
-      "Complete all required product information before uploading photographs.",
+      "Complete all required product information before uploading images.",
     );
   }
 
@@ -66,11 +66,11 @@ function validateProductForm(form: HTMLFormElement) {
   const variantsJson = String(formData.get("variants_json") ?? "[]");
 
   if (!productName) {
-    throw new Error("Enter the product name before uploading photographs.");
+    throw new Error("Enter the product name before uploading images.");
   }
 
   if (!categoryId) {
-    throw new Error("Select a product category before uploading photographs.");
+    throw new Error("Select a product category before uploading images.");
   }
 
   let variants: unknown[];
@@ -83,7 +83,7 @@ function validateProductForm(form: HTMLFormElement) {
 
   if (!Array.isArray(variants) || variants.length === 0) {
     throw new Error(
-      "Create at least one product configuration before uploading photographs.",
+      "Create at least one product configuration before uploading images.",
     );
   }
 
@@ -142,7 +142,7 @@ export async function uploadImagesBeforeProductSubmission(
   const primaryImages = orderedImages.filter((image) => image.isPrimary);
 
   if (primaryImages.length !== 1) {
-    throw new Error("Select exactly one main product photograph.");
+    throw new Error("Select exactly one main product image.");
   }
 
   const totalBytes = orderedImages.reduce(

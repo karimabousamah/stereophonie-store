@@ -215,7 +215,7 @@ export default function ImageManager({
   }, [liveConfigurations, selectedGalleryConfigurationId]);
 
   /*
-   * Each new photograph can belong to zero, one or many exact
+   * Each new image can belong to zero, one or many exact
    * saved product configurations.
    *
    * [] = Shared with all configurations.
@@ -233,7 +233,7 @@ export default function ImageManager({
   /*
    * Product media is grouped and ordered by configuration.
    *
-   * `variant_position` is the real customer-facing photograph
+   * `variant_position` is the real customer-facing image
    * order inside one configuration.
    *
    * The old global `position` remains only as a stable fallback.
@@ -250,7 +250,7 @@ export default function ImageManager({
   );
 
   /*
-   * Every physical photograph appears once in the Admin.
+   * Every physical image appears once in the Admin.
    *
    * Its exact-configuration order is displayed below the image
    * from product_image_variants rather than pretending that the
@@ -286,7 +286,7 @@ export default function ImageManager({
     }
 
     /*
-     * Shared photographs and the initial untouched gallery retain their
+     * Shared images and the initial untouched gallery retain their
      * stable product-level fallback ordering.
      */
     const firstPosition = Number(first.position ?? 0);
@@ -374,10 +374,10 @@ export default function ImageManager({
 
     const operationLabel =
       operation === "usage"
-        ? "Saving photograph usage…"
+        ? "Saving image usage…"
         : operation === "move"
-          ? "Updating photograph order…"
-          : "Updating Main photograph…";
+          ? "Updating image order…"
+          : "Updating Main image…";
 
     setPendingImageOperation(operationLabel);
     setImageOperationErrorMessage("");
@@ -519,7 +519,7 @@ export default function ImageManager({
      * OPTIMISTIC MAIN
      * ========================================================
      *
-     * Selecting Main immediately promotes that photograph to position 1
+     * Selecting Main immediately promotes that image to position 1
      * in the exact configuration gallery.
      */
     if (operation === "primary" && imageId) {
@@ -662,7 +662,7 @@ export default function ImageManager({
         !Array.isArray(result.images)
       ) {
         throw new Error(
-          "The photograph changed, but the refreshed gallery could not be loaded.",
+          "The image changed, but the refreshed gallery could not be loaded.",
         );
       }
 
@@ -682,7 +682,7 @@ export default function ImageManager({
       setImageOperationErrorMessage(
         error instanceof Error
           ? error.message
-          : "The photograph could not be updated. Please try again.",
+          : "The image could not be updated. Please try again.",
       );
     } finally {
       controls.forEach((control, index) => {
@@ -736,7 +736,7 @@ export default function ImageManager({
       const result = await updateProductImageVariantUsageBulk(formData);
 
       if (!result?.success || !Array.isArray(result.images)) {
-        throw new Error("The photograph usage could not be saved.");
+        throw new Error("The image usage could not be saved.");
       }
 
       setManagedImages(result.images as ProductImage[]);
@@ -744,7 +744,7 @@ export default function ImageManager({
       setPhotoUsageSavedMessage(
         usage.length === 1
           ? "Photo usage saved."
-          : `Photo usage saved for ${usage.length} photographs.`,
+          : `Photo usage saved for ${usage.length} images.`,
       );
 
       return true;
@@ -800,7 +800,7 @@ export default function ImageManager({
     }
 
     const confirmed = window.confirm(
-      `Delete all ${managedImages.length} uploaded photograph${
+      `Delete all ${managedImages.length} uploaded image${
         managedImages.length === 1 ? "" : "s"
       } from this product? This cannot be undone.`,
     );
@@ -809,7 +809,7 @@ export default function ImageManager({
       return;
     }
 
-    setPendingImageOperation("Clearing photographs…");
+    setPendingImageOperation("Clearing images…");
     setImageOperationErrorMessage("");
     setPhotoUsageSavedMessage("");
 
@@ -820,16 +820,16 @@ export default function ImageManager({
       const result = await deleteAllProductImages(formData);
 
       if (!result?.success) {
-        throw new Error("The photographs could not be cleared.");
+        throw new Error("The images could not be cleared.");
       }
 
       setManagedImages([]);
-      setPhotoUsageSavedMessage("All photographs cleared.");
+      setPhotoUsageSavedMessage("All images cleared.");
     } catch (error) {
       setImageOperationErrorMessage(
         error instanceof Error
           ? error.message
-          : "The photographs could not be cleared. Please try again.",
+          : "The images could not be cleared. Please try again.",
       );
     } finally {
       setPendingImageOperation("");
@@ -861,7 +861,7 @@ export default function ImageManager({
     setUploadError("");
 
     if (selectedFiles.length === 0) {
-      setUploadError("Select at least one photograph.");
+      setUploadError("Select at least one image.");
       return;
     }
 
@@ -871,7 +871,7 @@ export default function ImageManager({
       setUploadError(
         error instanceof Error
           ? error.message
-          : "The selected photographs could not be processed.",
+          : "The selected images could not be processed.",
       );
       return;
     }
@@ -948,7 +948,7 @@ export default function ImageManager({
       });
 
       if (!directUploadedImagesInputRef.current) {
-        throw new Error("The photograph upload form could not be prepared.");
+        throw new Error("The image upload form could not be prepared.");
       }
 
       directUploadedImagesInputRef.current.value = JSON.stringify(payload);
@@ -956,7 +956,7 @@ export default function ImageManager({
       const form = uploadFormRef.current;
 
       if (!form) {
-        throw new Error("The photograph upload form could not be submitted.");
+        throw new Error("The image upload form could not be submitted.");
       }
 
       allowServerSubmissionRef.current = true;
@@ -973,7 +973,7 @@ export default function ImageManager({
       setUploadError(
         error instanceof Error
           ? error.message
-          : "The photographs could not be uploaded.",
+          : "The images could not be uploaded.",
       );
 
       setUploadProgress(null);
@@ -1012,7 +1012,7 @@ export default function ImageManager({
 
     try {
       setUploadError(
-        "Preparing photographs… removing background and standardizing layout.",
+        "Preparing images… removing background and standardizing layout.",
       );
 
       processedFiles = await Promise.all(
@@ -1022,7 +1022,7 @@ export default function ImageManager({
       setUploadError(
         error instanceof Error
           ? error.message
-          : "The photographs could not be prepared.",
+          : "The images could not be prepared.",
       );
 
       return;
@@ -1037,8 +1037,8 @@ export default function ImageManager({
     setSelectedFiles(processedFiles);
 
     /*
-     * New photographs default to Shared with all configurations.
-     * The admin can change each photograph independently before upload.
+     * New images default to Shared with all configurations.
+     * The admin can change each image independently before upload.
      */
     setSelectedVariantIds(processedFiles.map(() => []));
 
@@ -1052,7 +1052,7 @@ export default function ImageManager({
           <CheckCircle2 className="st-admin-notice__icon" aria-hidden="true" />
 
           <div>
-            <strong>Photographs updated</strong>
+            <strong>Images updated</strong>
             <p>{successMessage}</p>
           </div>
         </div>
@@ -1065,11 +1065,11 @@ export default function ImageManager({
               04 · Product media
             </p>
 
-            <h2 className="mt-2 text-xl font-semibold">Manage photographs</h2>
+            <h2 className="mt-2 text-xl font-semibold">Manage images</h2>
 
             <p className="mt-2 text-sm leading-6 text-white/35">
-              Add, remove, reorder and connect photographs to the correct
-              product configuration.
+              Add, remove, reorder and connect images to the correct product
+              configuration.
             </p>
           </div>
 
@@ -1090,7 +1090,7 @@ export default function ImageManager({
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
-                    Photograph configuration
+                    Image configuration
                   </p>
 
                   <p className="mt-1 text-sm font-semibold text-white">
@@ -1186,7 +1186,7 @@ export default function ImageManager({
                 <div className="flex items-center gap-3">
                   <ImagePlus className="h-5 w-5 text-white/55" />
 
-                  <p className="font-semibold">Add new photographs</p>
+                  <p className="font-semibold">Add new images</p>
                 </div>
 
                 <p className="mt-2 text-sm leading-6 text-white/35">
@@ -1205,7 +1205,7 @@ export default function ImageManager({
                 }`}
               >
                 <ImagePlus className="h-4 w-4" />
-                Select photographs
+                Select images
               </label>
             </div>
 
@@ -1222,8 +1222,8 @@ export default function ImageManager({
                     <p className="font-semibold">
                       {selectedFiles.length}{" "}
                       {selectedFiles.length === 1
-                        ? "photograph selected"
-                        : "photographs selected"}
+                        ? "image selected"
+                        : "images selected"}
                     </p>
 
                     <p className="mt-1 text-xs text-white/35">
@@ -1251,7 +1251,7 @@ export default function ImageManager({
                       <div className="aspect-[4/3] overflow-hidden bg-[#f5f5f7]">
                         <img
                           src={previewUrls[index]}
-                          alt={`New product photograph ${index + 1}`}
+                          alt={`New product image ${index + 1}`}
                           className="h-full w-full object-contain p-3"
                         />
                       </div>
@@ -1268,7 +1268,7 @@ export default function ImageManager({
                         <div className="mt-4">
                           <div className="flex items-center justify-between gap-3">
                             <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                              Photograph usage
+                              Image usage
                             </span>
 
                             <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-white/25">
@@ -1368,9 +1368,8 @@ export default function ImageManager({
                           </div>
 
                           <p className="mt-2 text-[10px] leading-4 text-white/25">
-                            Leave this photograph Shared for every
-                            configuration, or select every exact configuration
-                            that should use it.
+                            Leave this image Shared for every configuration, or
+                            select every exact configuration that should use it.
                           </p>
                         </div>
                       </div>
@@ -1382,8 +1381,7 @@ export default function ImageManager({
                   <div className="mt-5 border border-white/10 bg-black/30 p-4">
                     <div className="flex items-center justify-between gap-4 text-xs">
                       <p className="min-w-0 truncate text-white/55">
-                        {uploadProgress.currentFileName ||
-                          "Finalizing photographs"}
+                        {uploadProgress.currentFileName || "Finalizing images"}
                       </p>
 
                       <p className="shrink-0 font-semibold text-white">
@@ -1411,7 +1409,7 @@ export default function ImageManager({
 
                   {isUploading
                     ? `Uploading ${uploadProgress?.percentage ?? 0}%`
-                    : "Upload selected photographs"}
+                    : "Upload selected images"}
                 </button>
               </div>
             )}
@@ -1433,9 +1431,9 @@ export default function ImageManager({
               </h3>
 
               <p className="mt-2 text-sm leading-6 text-white/40">
-                Choose which configurations can use each photograph below. You
-                can make changes to several photographs first, then save every
-                photo usage setting together with this one button.
+                Choose which configurations can use each image below. You can
+                make changes to several images first, then save every photo
+                usage setting together with this one button.
               </p>
 
               <p className="mt-2 text-xs leading-5 text-white/30">
@@ -1448,9 +1446,7 @@ export default function ImageManager({
                 </strong>
                 {" · "}
                 {selectedConfigurationImages.length}{" "}
-                {selectedConfigurationImages.length === 1
-                  ? "photograph"
-                  : "photographs"}
+                {selectedConfigurationImages.length === 1 ? "image" : "images"}
               </p>
 
               {photoUsageSavedMessage ? (
@@ -1486,7 +1482,7 @@ export default function ImageManager({
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="mt-2 text-xl font-semibold">Current photographs</h2>
+            <h2 className="mt-2 text-xl font-semibold">Current images</h2>
             {managedImages.length > 0 ? (
               <button
                 type="button"
@@ -1495,14 +1491,14 @@ export default function ImageManager({
                 onClick={() => void handleClearAllPhotographs()}
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Clear all photographs
+                Clear all images
               </button>
             ) : null}
           </div>
 
           <p className="mt-2 text-sm leading-6 text-white/35">
-            The photograph marked Main appears first on product cards and
-            product pages.
+            The image marked Main appears first on product cards and product
+            pages.
           </p>
         </div>
 
@@ -1511,10 +1507,10 @@ export default function ImageManager({
             <div className="flex min-h-[190px] flex-col items-center justify-center border border-dashed border-white/15 bg-black/20 px-6 text-center">
               <ImageOff className="h-8 w-8 text-white/25" />
 
-              <h3 className="mt-5 text-lg font-semibold">No photographs</h3>
+              <h3 className="mt-5 text-lg font-semibold">No images</h3>
 
               <p className="mt-2 max-w-md text-sm leading-6 text-white/35">
-                Upload at least one photograph so the product can be displayed
+                Upload at least one image so the product can be displayed
                 correctly on the storefront.
               </p>
             </div>
@@ -1584,7 +1580,7 @@ export default function ImageManager({
                           src={image.image_url}
                           alt={
                             image.alt_text ||
-                            `${productName} photograph ${index + 1}`
+                            `${productName} image ${index + 1}`
                           }
                           className="h-full w-full object-contain p-3"
                         />
@@ -1630,7 +1626,7 @@ export default function ImageManager({
                         <input type="hidden" name="image_id" value={image.id} />
 
                         <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                          Photograph usage
+                          Image usage
                         </p>
 
                         {(() => {
@@ -1654,12 +1650,12 @@ export default function ImageManager({
                                 <p className="text-xs font-semibold text-white/75">
                                   {isShared
                                     ? "Shared with all configurations"
-                                    : "Configuration-specific photograph"}
+                                    : "Configuration-specific image"}
                                 </p>
 
                                 <p className="mt-1 text-[10px] leading-4 text-white/30">
                                   Leave every option unchecked to share this
-                                  photograph with every configuration.
+                                  image with every configuration.
                                 </p>
                               </div>
 
@@ -1755,7 +1751,7 @@ export default function ImageManager({
                               <button
                                 type="submit"
                                 disabled={sharedIndex <= 0}
-                                aria-label="Move shared photograph earlier"
+                                aria-label="Move shared image earlier"
                                 className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                               >
                                 <ArrowLeft className="h-3.5 w-3.5" />
@@ -1790,7 +1786,7 @@ export default function ImageManager({
                                 disabled={
                                   sharedIndex >= sharedImages.length - 1
                                 }
-                                aria-label="Move shared photograph later"
+                                aria-label="Move shared image later"
                                 className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                               >
                                 <ArrowRight className="h-3.5 w-3.5" />
@@ -1817,7 +1813,7 @@ export default function ImageManager({
                               <button
                                 type="submit"
                                 disabled={image.is_primary}
-                                aria-label="Set shared photograph as Main"
+                                aria-label="Set shared image as Main"
                                 className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.05] hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/25 disabled:bg-emerald-400/[0.05] disabled:text-emerald-300"
                               >
                                 <Star
@@ -1837,8 +1833,8 @@ export default function ImageManager({
                             </p>
 
                             <p className="mt-1 text-[10px] leading-4 text-white/30">
-                              The same photograph can have a different position
-                              and Main state in every configuration.
+                              The same image can have a different position and
+                              Main state in every configuration.
                             </p>
                           </div>
 
@@ -1938,7 +1934,7 @@ export default function ImageManager({
                                     <button
                                       type="submit"
                                       disabled={configurationIndex <= 0}
-                                      aria-label={`Move photograph earlier in ${configurationLabel}`}
+                                      aria-label={`Move image earlier in ${configurationLabel}`}
                                       className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                                     >
                                       <ArrowLeft className="h-3.5 w-3.5" />
@@ -1980,7 +1976,7 @@ export default function ImageManager({
                                         configurationIndex >=
                                         configurationImages.length - 1
                                       }
-                                      aria-label={`Move photograph later in ${configurationLabel}`}
+                                      aria-label={`Move image later in ${configurationLabel}`}
                                       className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
                                     >
                                       <ArrowRight className="h-3.5 w-3.5" />
@@ -2039,7 +2035,7 @@ export default function ImageManager({
                         action={deleteProductImage}
                         onSubmit={(event) => {
                           const confirmed = window.confirm(
-                            "Delete this photograph permanently?",
+                            "Delete this image permanently?",
                           );
 
                           if (!confirmed) {
@@ -2057,12 +2053,12 @@ export default function ImageManager({
 
                         <button
                           type="submit"
-                          aria-label="Delete photograph"
-                          title="Delete photograph"
+                          aria-label="Delete image"
+                          title="Delete image"
                           className="flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.025] px-3 text-[9px] font-semibold uppercase tracking-[0.13em] text-red-300/65 transition hover:border-red-400/40 hover:bg-red-400/[0.07] hover:text-red-300"
                         >
                           <Trash2 className="h-3.5 w-3.5 shrink-0" />
-                          <span>Delete photograph</span>
+                          <span>Delete image</span>
                         </button>
                       </form>
                     </div>

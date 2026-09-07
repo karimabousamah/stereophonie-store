@@ -282,6 +282,7 @@ export default function V2ProductCard({ product }: Props) {
 
   const primaryImage = images[0] ?? null;
   const secondaryImage = images[1] ?? null;
+  const hasSecondaryImage = Boolean(secondaryImage?.image_url);
 
   const price = useMemo(() => getPrice(product), [product]);
   const available = useMemo(() => isAvailable(product), [product]);
@@ -413,6 +414,7 @@ export default function V2ProductCard({ product }: Props) {
           <Link
             href={href}
             className="st-retail-card__image-link"
+            data-has-secondary-image={hasSecondaryImage ? "true" : "false"}
             aria-label={`View ${product.name}`}
           >
             {primaryImage?.image_url ? (
@@ -425,7 +427,7 @@ export default function V2ProductCard({ product }: Props) {
                   decoding="async"
                 />
 
-                {secondaryImage?.image_url ? (
+                {hasSecondaryImage && secondaryImage?.image_url ? (
                   <img
                     src={secondaryImage.image_url}
                     alt=""
