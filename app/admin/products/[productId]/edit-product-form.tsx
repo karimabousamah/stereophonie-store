@@ -160,7 +160,7 @@ export default function EditProductForm({
   const [deletePending, startDeleteTransition] = useTransition();
 
   const [productSaveState, setProductSaveState] = useState<
-    "idle" | "draft" | "publish"
+    "idle" | "draft" | "publish" | "setup"
   >("idle");
 
   const productSaveCancelledRef = useRef(false);
@@ -300,6 +300,7 @@ export default function EditProductForm({
             !submitter ||
             (submitter.value !== "publish" &&
               submitter.value !== "draft" &&
+              submitter.value !== "setup" &&
               submitter.value !== "archive")
           ) {
             return;
@@ -309,7 +310,19 @@ export default function EditProductForm({
 
           const intent = submitter.value;
 
-          if (intent === "draft" || intent === "publish") {
+          const resolvedIntentInput = form.elements.namedItem(
+            "resolved_intent",
+          ) as HTMLInputElement | null;
+
+          if (resolvedIntentInput) {
+            resolvedIntentInput.value = intent;
+          }
+
+          if (
+            intent === "draft" ||
+            intent === "publish" ||
+            intent === "setup"
+          ) {
             productSaveCancelledRef.current = false;
             setProductSaveState(intent);
           }
@@ -341,7 +354,9 @@ export default function EditProductForm({
             }
 
             if (
-              (intent === "draft" || intent === "publish") &&
+              (intent === "draft" ||
+                intent === "publish" ||
+                intent === "setup") &&
               productSaveCancelledRef.current
             ) {
               productSaveCancelledRef.current = false;
@@ -349,23 +364,45 @@ export default function EditProductForm({
               return;
             }
 
-            form.dataset.photoUsageFlushed = "true";
+            /*
+             * The save flow performs asynchronous image/configuration work
+             * before the real Server Action submission.
+             *
+             * Re-assert the original administrator intent immediately before
+             * that final submission so a render/form update during the async
+             * phase can never restore the hidden field to its Draft default.
+             */
+            const finalResolvedIntentInput = form.elements.namedItem(
+              "resolved_intent",
+            ) as HTMLInputElement | null;
 
-            const authoritativeSubmitter =
-              document.querySelector<HTMLButtonElement>(
-                intent === "publish"
-                  ? "#st-save-existing-product-publish"
-                  : intent === "archive"
-                    ? "#st-archive-existing-product"
-                    : "#st-save-existing-product-draft",
+            if (!finalResolvedIntentInput) {
+              setProductSaveState("idle");
+              throw new Error(
+                "The product publishing intent field could not be found.",
               );
-
-            if (authoritativeSubmitter) {
-              form.requestSubmit(authoritativeSubmitter);
             }
+
+            finalResolvedIntentInput.value = intent;
+
+            if (process.env.NODE_ENV === "development") {
+              console.log("[EDIT PRODUCT] final client intent", {
+                capturedIntent: intent,
+                resolvedIntent: finalResolvedIntentInput.value,
+              });
+            }
+
+            form.dataset.photoUsageFlushed = "true";
+            form.requestSubmit();
           });
         }}
       >
+        <input
+          type="hidden"
+          name="resolved_intent"
+          defaultValue={product.status === "published" ? "publish" : "draft"}
+        />
+
         {productSaveState !== "idle" && (
           <div
             className="fixed inset-0 z-[9999] flex items-center justify-center px-5"
@@ -388,13 +425,17 @@ export default function EditProductForm({
                     <h2 className="mt-2 text-[21px] font-semibold tracking-[-0.04em] text-[#1d1d1f]">
                       {productSaveState === "publish"
                         ? "Saving and publishing"
-                        : "Saving product draft"}
+                        : productSaveState === "setup"
+                          ? "Saving product setup"
+                          : "Saving product draft"}
                     </h2>
 
                     <p className="mt-2 text-[12px] leading-5 text-[#6e6e73]">
                       {productSaveState === "publish"
                         ? "Processing your latest changes before this product goes live."
-                        : "Processing your latest changes before saving this draft."}
+                        : productSaveState === "setup"
+                          ? "Saving product information, configurations and store placement. Publication status will stay unchanged."
+                          : "Processing your latest changes before saving this draft."}
                     </p>
                   </div>
                 </div>

@@ -209,7 +209,21 @@ export async function updateProduct(formData: FormData) {
 
   const brandId = String(formData.get("brand_id") ?? "").trim();
 
-  const publishingIntent = String(formData.get("intent") ?? "draft");
+  const resolvedPublishingIntent = formData.get("resolved_intent");
+  const submittedButtonIntent = formData.get("intent");
+
+  const publishingIntent = String(
+    resolvedPublishingIntent ?? submittedButtonIntent ?? "draft",
+  );
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[EDIT PRODUCT] server publishing intent", {
+      productId,
+      resolvedIntent: resolvedPublishingIntent,
+      buttonIntent: submittedButtonIntent,
+      publishingIntent,
+    });
+  }
 
   /*
    * setup = persist Product Information + Configurations + Store Placement
@@ -280,6 +294,16 @@ export async function updateProduct(formData: FormData) {
         : "draft";
 
   const productAvailability = calculateProductAvailability(variants);
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[EDIT PRODUCT] calculated product status", {
+      productId,
+      publishingIntent,
+      currentProductStatus,
+      productStatus,
+      productAvailability,
+    });
+  }
 
   /*
    * Out of Stock is exclusive.

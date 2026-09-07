@@ -643,7 +643,7 @@ export default function ProductForm({
       <input
         ref={resolvedIntentInputRef}
         type="hidden"
-        name="resolved_intent"
+        name="intent"
         defaultValue="draft"
       />
 
@@ -941,7 +941,6 @@ export default function ProductForm({
               <button
                 id="st-create-product-setup"
                 type="submit"
-                name="intent"
                 value="draft"
                 formNoValidate
                 disabled={isSubmitting}
@@ -1128,7 +1127,6 @@ export default function ProductForm({
               <div className="mt-4 space-y-3">
                 <button
                   type="submit"
-                  name="intent"
                   value="draft"
                   formNoValidate
                   onClick={() => {
@@ -1151,7 +1149,6 @@ export default function ProductForm({
 
                 <button
                   type="submit"
-                  name="intent"
                   value="publish"
                   onClick={() => {
                     pendingIntentRef.current = "publish";
