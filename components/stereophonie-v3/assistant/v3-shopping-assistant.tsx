@@ -3,6 +3,7 @@
 import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 type AssistantProductCard = {
@@ -204,8 +205,10 @@ function normalizeAssistantProducts(data: unknown): AssistantProductCard[] {
 
 function ProductRecommendationCard({
   product,
+  onNavigate,
 }: {
   product: AssistantProductCard;
+  onNavigate?: () => void;
 }) {
   const saleVariant = product.variants?.find(
     (variant) =>
@@ -223,6 +226,7 @@ function ProductRecommendationCard({
     <Link
       href={`/shop/${encodeURIComponent(product.slug)}`}
       className="st3-ai-product-card"
+      onClick={onNavigate}
     >
       <span className="st3-ai-product-card__visual">
         {product.imageUrl ? (
@@ -310,6 +314,7 @@ function normalizeAssistantResponse(data: unknown): string {
 }
 
 export default function V3ShoppingAssistant() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   const assistantPanelRef = useRef<HTMLElement | null>(null);
@@ -325,6 +330,20 @@ export default function V3ShoppingAssistant() {
   const [error, setError] = useState("");
 
   const endRef = useRef<HTMLDivElement | null>(null);
+
+  /*
+   * Universal navigation close.
+   *
+   * The assistant lives high enough in the storefront tree that it can
+   * survive client-side route transitions. Closing on pathname changes makes
+   * product-card navigation behave identically on desktop, tablet and mobile.
+   *
+   * Keep the existing product-card onNavigate close as the immediate action;
+   * this effect is the route-level guarantee.
+   */
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!open) {
@@ -554,6 +573,7 @@ export default function V3ShoppingAssistant() {
                       <ProductRecommendationCard
                         key={product.id}
                         product={product}
+                        onNavigate={() => setOpen(false)}
                       />
                     ))}
                   </div>

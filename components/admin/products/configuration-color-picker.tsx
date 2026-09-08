@@ -1,7 +1,16 @@
 "use client";
 
-import { Check, ChevronDown, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  ArrowLeft,
+  Check,
+  ChevronDown,
+  Palette,
+  Plus,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 import {
   canonicalizeProductColorwayName,
@@ -9,6 +18,13 @@ import {
   productColorwayHex,
   productColorways,
 } from "@/lib/product-colorways";
+
+import {
+  createCustomColorway,
+  deleteCustomColorway,
+  listCustomColorways,
+  type AdminCustomColorway,
+} from "./configuration-colorway-actions";
 
 export type ConfigurationColorValue = {
   name: string;
@@ -313,30 +329,148 @@ function swatchStyle(hex: string) {
 export default function ConfigurationColorPicker({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [customColors, setCustomColors] = useState<AdminCustomColorway[]>([]);
+  const [creatorOpen, setCreatorOpen] = useState(false);
+  const [newColorName, setNewColorName] = useState("");
+  const [newColorHex, setNewColorHex] = useState("#FDB73E");
+  const [creatorError, setCreatorError] = useState("");
+  const [isSaving, startSaving] = useTransition();
+  const [deletingColorwayId, setDeletingColorwayId] = useState<string | null>(
+    null,
+  );
+
+  useEffect(() => {
+    let active = true;
+
+    void listCustomColorways().then((result) => {
+      if (!active || !result.ok) return;
+      setCustomColors(result.colorways);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const filteredColors = useMemo(() => {
     const normalized = query.trim().toLowerCase();
 
+    const allColors = Array.from(
+      new Map(
+        [...customColors, ...presetColors].map((color) => [
+          color.name.toLocaleLowerCase(),
+          {
+            name: color.name,
+            hex: color.hex,
+          },
+        ]),
+      ).values(),
+    );
+
     if (!normalized) {
-      return presetColors;
+      return allColors;
     }
 
-    return presetColors.filter((color) =>
+    return allColors.filter((color) =>
       color.name.toLowerCase().includes(normalized),
     );
-  }, [query]);
+  }, [customColors, query]);
+
+  function closePicker() {
+    setOpen(false);
+    setQuery("");
+    setCreatorOpen(false);
+    setCreatorError("");
+  }
 
   function chooseColor(color: ConfigurationColorValue) {
-    const name = canonicalizeProductColorwayName(color.name);
+    const customColor = customColors.find(
+      (item) =>
+        item.name.toLocaleLowerCase() === color.name.toLocaleLowerCase(),
+    );
+
+    const name = customColor
+      ? customColor.name
+      : canonicalizeProductColorwayName(color.name);
 
     onChange({
       name,
-      hex: productColorwayHex(name) ?? color.hex,
+      hex: customColor
+        ? customColor.hex
+        : (productColorwayHex(name) ?? color.hex),
     });
 
-    setOpen(false);
-    setQuery("");
+    closePicker();
   }
+
+  function openCreator() {
+    if (query.trim()) {
+      setNewColorName(query.trim());
+    }
+
+    setCreatorError("");
+    setCreatorOpen(true);
+  }
+
+  function saveColorway() {
+    setCreatorError("");
+
+    startSaving(async () => {
+      const result = await createCustomColorway(newColorName, newColorHex);
+
+      if (!result.ok) {
+        setCreatorError(result.error);
+        return;
+      }
+
+      setCustomColors((current) => {
+        const remaining = current.filter(
+          (color) =>
+            color.id !== result.colorway.id &&
+            color.name.toLocaleLowerCase() !==
+              result.colorway.name.toLocaleLowerCase(),
+        );
+
+        return [result.colorway, ...remaining];
+      });
+
+      onChange({
+        name: result.colorway.name,
+        hex: result.colorway.hex,
+      });
+
+      setNewColorName("");
+      setNewColorHex("#FDB73E");
+      closePicker();
+    });
+  }
+
+  async function removeCustomColorway(colorway: AdminCustomColorway) {
+    const confirmed = window.confirm(
+      `Delete "${colorway.name}" from the saved colorway library?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingColorwayId(colorway.id);
+
+    const result = await deleteCustomColorway(colorway.id);
+
+    setDeletingColorwayId(null);
+
+    if (!result.ok) {
+      window.alert(result.error);
+      return;
+    }
+
+    setCustomColors((current) =>
+      current.filter((item) => item.id !== colorway.id),
+    );
+  }
+
+  const validHex = /^#[0-9A-Fa-f]{6}$/.test(newColorHex);
 
   return (
     <div className="relative w-fit">
@@ -366,82 +500,315 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
 
       {open ? (
         <div className="absolute left-0 top-[calc(100%+8px)] z-[100] w-[470px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_22px_60px_rgba(0,0,0,0.16)]">
-          <div className="flex items-center gap-2 border-b border-black/[0.07] bg-white p-3">
-            <div className="relative min-w-0 flex-1">
-              <Search
-                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35"
-                strokeWidth={1.8}
-                aria-hidden="true"
-              />
+          {creatorOpen ? (
+            <>
+              <div className="flex items-center gap-2 border-b border-black/[0.07] bg-white p-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreatorOpen(false);
+                    setCreatorError("");
+                  }}
+                  aria-label="Back to colors"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] text-black/40 transition hover:border-black/20 hover:bg-white hover:text-black"
+                >
+                  <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
+                </button>
 
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search colors..."
-                className="h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] pl-10 pr-4 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 hover:border-black/15 focus:border-[#e4a42d] focus:bg-white focus:ring-0"
-              />
-            </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-semibold text-[#1d1d1f]">
+                    Create new colorway
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-black/40">
+                    Save a custom color to your product library.
+                  </p>
+                </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                setQuery("");
-              }}
-              aria-label="Close color selector"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-[#fdb73e]/70 hover:bg-[#fff8e9] hover:text-black hover:shadow-[0_0_0_3px_rgba(253,183,62,0.14),0_0_18px_rgba(253,183,62,0.20)]"
-            >
-              <X className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
-            </button>
-          </div>
+                <button
+                  type="button"
+                  onClick={closePicker}
+                  aria-label="Close color selector"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-[#fdb73e]/70 hover:bg-[#fff8e9] hover:text-black"
+                >
+                  <X className="h-4 w-4" strokeWidth={1.8} />
+                </button>
+              </div>
 
-          <div className="max-h-[300px] overflow-y-auto p-3">
-            {filteredColors.length > 0 ? (
-              <div className="grid grid-cols-3 gap-2">
-                {filteredColors.map((color) => {
-                  const selected =
-                    value?.name === color.name &&
-                    value?.hex.toLowerCase() === color.hex.toLowerCase();
-
-                  return (
-                    <button
-                      key={`${color.name}-${color.hex}`}
-                      type="button"
-                      onClick={() => chooseColor(color)}
-                      className={`flex h-10 min-w-0 items-center gap-2.5 rounded-[10px] border px-3 text-left text-[11px] font-medium transition ${
-                        selected
-                          ? "border-[#e2a12d] bg-[#fff8e9] text-[#1d1d1f]"
-                          : "border-black/[0.07] bg-[#fafafa] text-black/70 hover:border-black/15 hover:bg-white"
-                      }`}
-                    >
+              <div className="p-4">
+                <div className="flex gap-4">
+                  <label className="relative flex h-[145px] w-[145px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-[18px] border border-black/[0.08] bg-[#fafafa] p-3 transition hover:border-[#fdb73e]/55 hover:bg-white hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+                    <span className="relative grid h-[82px] w-[82px] place-items-center rounded-full border border-black/10 bg-white shadow-[0_8px_20px_rgba(0,0,0,0.10)]">
                       <span
-                        className="h-5 w-5 shrink-0 rounded-full border border-black/10"
-                        style={swatchStyle(color.hex)}
-                        aria-hidden="true"
+                        className="h-[68px] w-[68px] rounded-full border border-black/[0.08]"
+                        style={{
+                          backgroundColor: validHex ? newColorHex : "#FDB73E",
+                        }}
                       />
 
-                      <span className="min-w-0 flex-1 truncate">
-                        {color.name}
+                      <span className="pointer-events-none absolute inset-[-5px] rounded-full border border-[#fdb73e]/0 transition group-hover:border-[#fdb73e]/30" />
+                    </span>
+
+                    <span className="pointer-events-none mt-3 inline-flex h-8 items-center justify-center gap-1.5 rounded-[9px] border border-black/[0.08] bg-white px-3 text-[9px] font-semibold text-black/60 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+                      <Palette
+                        className="h-3.5 w-3.5 text-[#b87500]"
+                        strokeWidth={1.8}
+                      />
+                      Open color wheel
+                    </span>
+
+                    <input
+                      type="color"
+                      value={validHex ? newColorHex : "#FDB73E"}
+                      onChange={(event) => {
+                        setNewColorHex(event.target.value.toUpperCase());
+                        setCreatorError("");
+                      }}
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      aria-label="Choose custom color"
+                    />
+                  </label>
+
+                  <div className="min-w-0 flex-1">
+                    <label className="block">
+                      <span className="text-[10px] font-semibold text-black/55">
+                        Colorway name
                       </span>
 
-                      {selected ? (
-                        <Check
-                          className="h-3.5 w-3.5 shrink-0 text-[#bf7e08]"
-                          aria-hidden="true"
+                      <input
+                        value={newColorName}
+                        onChange={(event) => {
+                          setNewColorName(event.target.value);
+                          setCreatorError("");
+                        }}
+                        placeholder="e.g. Desert Titanium"
+                        maxLength={80}
+                        autoFocus
+                        className="mt-1.5 h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] px-3 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 focus:border-[#e4a42d] focus:bg-white"
+                      />
+                    </label>
+
+                    <label className="mt-3 block">
+                      <span className="text-[10px] font-semibold text-black/55">
+                        HEX
+                      </span>
+
+                      <div className="relative mt-1.5">
+                        <span
+                          className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 rounded-full border border-black/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
+                          style={{
+                            backgroundColor: validHex ? newColorHex : "#FDB73E",
+                          }}
                         />
-                      ) : null}
-                    </button>
-                  );
-                })}
+
+                        <input
+                          value={newColorHex}
+                          onChange={(event) => {
+                            setNewColorHex(event.target.value.toUpperCase());
+                            setCreatorError("");
+                          }}
+                          maxLength={7}
+                          spellCheck={false}
+                          aria-label="HEX color value"
+                          className="h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] !pl-11 pr-3 font-mono text-[12px] font-semibold uppercase text-[#1d1d1f] outline-none transition focus:border-[#e4a42d] focus:bg-white focus:ring-0"
+                        />
+                      </div>
+                    </label>
+
+                    <div className="mt-3 flex items-center gap-2 rounded-[10px] border border-black/[0.07] bg-white px-3 py-2">
+                      <span
+                        className="h-7 w-7 shrink-0 rounded-full border border-black/10"
+                        style={{
+                          backgroundColor: validHex ? newColorHex : "#FDB73E",
+                        }}
+                      />
+
+                      <div className="min-w-0">
+                        <p className="truncate text-[11px] font-semibold text-[#1d1d1f]">
+                          {newColorName.trim() || "Untitled colorway"}
+                        </p>
+                        <p className="font-mono text-[9px] uppercase text-black/35">
+                          {newColorHex}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {creatorError ? (
+                  <p className="mt-3 rounded-[10px] border border-red-200 bg-red-50 px-3 py-2 text-[10px] leading-4 text-red-600">
+                    {creatorError}
+                  </p>
+                ) : null}
+
+                <div className="mt-4 flex items-center justify-between gap-3 border-t border-black/[0.07] pt-3">
+                  <p className="text-[9px] leading-4 text-black/35">
+                    Saved colors remain available for future products.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={saveColorway}
+                    disabled={isSaving || !newColorName.trim() || !validHex}
+                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[10px] bg-[#fdb73e] px-4 text-[10px] font-bold text-[#1d1d1f] transition hover:bg-[#f3ac2c] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                    {isSaving ? "Saving..." : "Save Colorway"}
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div className="px-4 py-8 text-center">
-                <p className="text-[12px] font-medium text-black/45">
-                  No matching colors.
-                </p>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 border-b border-black/[0.07] bg-white p-3">
+                <div className="relative min-w-0 flex-1">
+                  <Search
+                    className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35"
+                    strokeWidth={1.8}
+                    aria-hidden="true"
+                  />
+
+                  <input
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder="Search colors..."
+                    className="h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] pl-10 pr-4 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 hover:border-black/15 focus:border-[#e4a42d] focus:bg-white focus:ring-0"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={closePicker}
+                  aria-label="Close color selector"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-[#fdb73e]/70 hover:bg-[#fff8e9] hover:text-black hover:shadow-[0_0_0_3px_rgba(253,183,62,0.14),0_0_18px_rgba(253,183,62,0.20)]"
+                >
+                  <X className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+                </button>
               </div>
-            )}
-          </div>
+
+              <div className="max-h-[300px] overflow-y-auto p-3">
+                {filteredColors.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {filteredColors.map((color) => {
+                      const selected =
+                        value?.name === color.name &&
+                        value?.hex.toLowerCase() === color.hex.toLowerCase();
+
+                      const customColorway = customColors.find(
+                        (item) =>
+                          item.name.toLocaleLowerCase() ===
+                            color.name.toLocaleLowerCase() &&
+                          item.hex.toLocaleLowerCase() ===
+                            color.hex.toLocaleLowerCase(),
+                      );
+
+                      if (customColorway) {
+                        const deleting =
+                          deletingColorwayId === customColorway.id;
+
+                        return (
+                          <div
+                            key={`${color.name}-${color.hex}`}
+                            className={`flex h-10 min-w-0 items-center rounded-[10px] border transition ${
+                              selected
+                                ? "border-[#e2a12d] bg-[#fff8e9]"
+                                : "border-black/[0.07] bg-[#fafafa] hover:border-black/15 hover:bg-white"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => chooseColor(color)}
+                              className="flex min-w-0 flex-1 items-center gap-2.5 self-stretch rounded-l-[9px] px-3 text-left text-[11px] font-medium text-black/70"
+                            >
+                              <span
+                                className="h-5 w-5 shrink-0 rounded-full border border-black/10"
+                                style={swatchStyle(color.hex)}
+                                aria-hidden="true"
+                              />
+
+                              <span className="min-w-0 flex-1 truncate">
+                                {color.name}
+                              </span>
+
+                              {selected ? (
+                                <Check
+                                  className="h-3.5 w-3.5 shrink-0 text-[#bf7e08]"
+                                  aria-hidden="true"
+                                />
+                              ) : null}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                void removeCustomColorway(customColorway)
+                              }
+                              disabled={deleting}
+                              aria-label={`Delete ${customColorway.name}`}
+                              title="Delete saved colorway"
+                              className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] text-black/25 transition hover:bg-red-50 hover:text-red-500 disabled:cursor-wait disabled:opacity-35"
+                            >
+                              <Trash2
+                                className="h-3.5 w-3.5"
+                                strokeWidth={1.8}
+                                aria-hidden="true"
+                              />
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <button
+                          key={`${color.name}-${color.hex}`}
+                          type="button"
+                          onClick={() => chooseColor(color)}
+                          className={`flex h-10 min-w-0 items-center gap-2.5 rounded-[10px] border px-3 text-left text-[11px] font-medium transition ${
+                            selected
+                              ? "border-[#e2a12d] bg-[#fff8e9] text-[#1d1d1f]"
+                              : "border-black/[0.07] bg-[#fafafa] text-black/70 hover:border-black/15 hover:bg-white"
+                          }`}
+                        >
+                          <span
+                            className="h-5 w-5 shrink-0 rounded-full border border-black/10"
+                            style={swatchStyle(color.hex)}
+                            aria-hidden="true"
+                          />
+
+                          <span className="min-w-0 flex-1 truncate">
+                            {color.name}
+                          </span>
+
+                          {selected ? (
+                            <Check
+                              className="h-3.5 w-3.5 shrink-0 text-[#bf7e08]"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="px-4 py-8 text-center">
+                    <p className="text-[12px] font-medium text-black/45">
+                      No matching colors.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t border-black/[0.07] bg-white p-3">
+                <button
+                  type="button"
+                  onClick={openCreator}
+                  className="flex h-10 w-full items-center justify-center gap-2 rounded-[10px] border border-[#fdb73e]/40 bg-[#fff9ec] text-[10px] font-semibold text-[#9b6500] transition hover:border-[#fdb73e] hover:bg-[#fff5dd]"
+                >
+                  <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+                  Create new colorway
+                </button>
+              </div>
+            </>
+          )}
         </div>
       ) : null}
     </div>

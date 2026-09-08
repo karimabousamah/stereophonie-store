@@ -425,26 +425,79 @@ function productMatchesExactConcept(
 
   const productName = normalizedProductName(product);
 
-  return conceptAliases(understanding).some((alias) => {
-    if (productName === alias) {
+  const aliases = conceptAliases(understanding);
+
+  const brands = (concept.brands ?? [])
+    .map(normalizeCatalogMatch)
+    .filter(Boolean);
+
+  /*
+   * Model/generation numbers are meaningful product identity.
+   *
+   * Example:
+   *   request:  AirPods Max 2
+   *   catalog:  Apple AirPods Max 2  -> valid exact match
+   *   catalog:  Apple AirPods Max    -> not exact
+   *   catalog:  Apple AirPods Max 3  -> not exact
+   *
+   * The same protection applies to product families such as
+   * iPhone 17 Pro, Galaxy S26, Watch 11, etc.
+   */
+  const requestedNumbers: string[] =
+    understanding.normalizedQuery.match(/\b\d+(?:\.\d+)?\b/g) ?? [];
+
+  const productNumbers: string[] =
+    productName.match(/\b\d+(?:\.\d+)?\b/g) ?? [];
+
+  if (
+    requestedNumbers.length > 0 &&
+    !requestedNumbers.every((number) => productNumbers.includes(number))
+  ) {
+    return false;
+  }
+
+  return aliases.some((alias) => {
+    if (!alias) {
+      return false;
+    }
+
+    /*
+     * Direct/unbranded product title:
+     *
+     *   AirPods Max
+     *   AirPods Max 2
+     *   iPad Pro 11-inch
+     */
+    if (productName === alias || productName.startsWith(`${alias} `)) {
       return true;
     }
 
     /*
-     * Exact model names may legitimately continue with generation,
-     * storage, size or another model qualifier:
+     * Official brand-prefixed title:
      *
-     *   Apple AirPods Max 2
-     *   iPad Pro 11-inch (M5)
+     *   Requested concept: AirPods Max
+     *   Catalog title:     Apple AirPods Max 2
      *
-     * But an accessory such as:
+     * A leading official brand must not downgrade a real product
+     * to an "alternative" match.
+     *
+     * We only accept the brand at the beginning of the title.
+     * This keeps accessory titles such as:
      *
      *   Magic Keyboard for iPad Pro
      *
-     * must NEVER become an exact iPad match merely because the
-     * requested product name appears later in the accessory title.
+     * from being classified as the exact requested product.
      */
-    return productName.startsWith(`${alias} `);
+    return brands.some((brand) => {
+      const brandedAlias = alias.startsWith(`${brand} `)
+        ? alias
+        : `${brand} ${alias}`;
+
+      return (
+        productName === brandedAlias ||
+        productName.startsWith(`${brandedAlias} `)
+      );
+    });
   });
 }
 
@@ -1103,7 +1156,8 @@ function meaningfulCatalogQueryTerms(query: string) {
     .map((word) => word.trim())
     .filter(
       (word) =>
-        word.length >= 2 && !ignored.has(word) && !/^\d+(?:\.\d+)?$/.test(word),
+        (word.length >= 2 || /^\d+(?:\.\d+)?$/.test(word)) &&
+        !ignored.has(word),
     );
 }
 

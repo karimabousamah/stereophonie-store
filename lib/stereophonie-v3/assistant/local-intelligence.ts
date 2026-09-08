@@ -460,7 +460,25 @@ function detectIntent(text: string): AssistantIntent {
     return "recommendation";
   }
 
-  if (containsAny(text, ["in stock", "available", "availability", "stock"])) {
+  if (
+    containsAny(text, [
+      "in stock",
+      "available",
+      "availability",
+      "stock",
+      "do you have",
+      "do you sell",
+      "do you carry",
+      "have you got",
+      "have you",
+      "got any",
+      "you got",
+      "you have",
+      "you sell",
+      "you carry",
+      "is there",
+    ])
+  ) {
     return "availability";
   }
 
@@ -522,6 +540,28 @@ function buildProductQuery(
     "show",
     "me",
     "please",
+    "do",
+    "does",
+    "did",
+    "you",
+    "your",
+    "we",
+    "have",
+    "has",
+    "had",
+    "got",
+    "carry",
+    "carries",
+    "carrying",
+    "sell",
+    "sells",
+    "selling",
+    "stock",
+    "stocked",
+    "available",
+    "availability",
+    "currently",
+    "now",
     "a",
     "an",
     "the",

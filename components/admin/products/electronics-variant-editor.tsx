@@ -1289,43 +1289,199 @@ function defaultVariant(
 }
 
 const bulkTechnicalSpecificationSectionLabels = [
-  "Network & Connectivity",
-  "Network and Connectivity",
+  /*
+   * Strong row / section names.
+   *
+   * Keep this library focused on actual product-specification categories.
+   * Nested details such as Resolution, Refresh Rate and Aperture are
+   * intentionally NOT required here because ordinary Label: Value and
+   * numeric-boundary parsing already handles them.
+   */
+
+  // Identity / physical construction
   "Dimensions & Weight",
   "Dimensions and Weight",
-  "Durability",
-  "Display",
-  "Processor (CPU/GPU)",
-  "Processor",
-  "RAM",
-  "Memory",
-  "Memory & Storage",
-  "Memory and Storage",
-  "Internal Storage",
-  "Storage",
-  "Rear Camera System",
-  "Rear Camera",
-  "Front Camera",
-  "Video Recording",
-  "Video",
-  "Audio",
-  "Biometrics",
-  "Security",
-  "Battery & Charging",
-  "Battery and Charging",
-  "Battery",
-  "Operating System",
-  "Software",
-  "Connectivity",
   "Design & Build",
   "Design and Build",
   "Build & Design",
   "Build and Design",
+  "Build Quality",
+  "Build",
+  "Materials",
+  "Material",
+  "Form Factor",
   "Dimensions",
   "Weight",
+  "Durability",
+  "Water Resistance",
+  "Dust Resistance",
+  "Ingress Protection",
+
+  // Display / visual
+  "Display & Graphics",
+  "Display and Graphics",
+  "Display",
+  "Screen",
+  "Panel",
+  "Panel Type",
+  "Touchscreen",
+  "Touch Screen",
+
+  // Processing / compute
+  "Processor (CPU/GPU)",
+  "CPU & GPU",
+  "CPU and GPU",
+  "Processor & Graphics",
+  "Processor and Graphics",
+  "Processor",
+  "Chipset",
+  "CPU",
+  "GPU",
+  "NPU",
+  "Graphics",
+  "Graphics Card",
+
+  // Memory / storage
+  "Memory & Storage",
+  "Memory and Storage",
+  "System Memory",
+  "Internal Storage",
+  "Expandable Storage",
+  "Memory",
+  "Storage",
+  "RAM",
+  "ROM",
+  "SSD",
+  "HDD",
+
+  // Camera / imaging
+  "Rear Camera System",
+  "Front Camera System",
   "Camera System",
+  "Rear Cameras",
+  "Front Cameras",
+  "Rear Camera",
+  "Front Camera",
+  "Main Camera",
   "Cameras",
+  "Camera",
+  "Video Recording",
+  "Video",
+  "Photography",
+
+  // Sound
+  "Audio & Speakers",
+  "Audio and Speakers",
+  "Speakers & Microphone",
+  "Speakers and Microphone",
+  "Audio",
+  "Speakers",
+  "Speaker",
+  "Microphones",
+  "Microphone",
+
+  // Networking / ports
+  "Network & Connectivity",
+  "Network and Connectivity",
+  "Wireless & Connectivity",
+  "Wireless and Connectivity",
+  "Ports & Connectivity",
+  "Ports and Connectivity",
+  "I/O & Connectivity",
+  "I/O and Connectivity",
+  "Network",
+  "Connectivity",
+  "Wireless",
+  "Wi-Fi",
+  "WiFi",
+  "Bluetooth",
+  "Ethernet",
+  "Ports",
+  "Interfaces",
+
+  // Power
+  "Battery & Charging",
+  "Battery and Charging",
+  "Power & Battery",
+  "Power and Battery",
+  "Power & Charging",
+  "Power and Charging",
+  "Battery",
+  "Charging",
+  "Power",
+  "Power Supply",
+
+  // Software / security
+  "Operating System",
+  "Operating System & Software",
+  "Operating System and Software",
+  "Software & Features",
+  "Software and Features",
+  "Software",
+  "Biometrics & Security",
+  "Biometrics and Security",
+  "Biometrics",
+  "Security",
+
+  // Inputs / sensors
+  "Keyboard & Touchpad",
+  "Keyboard and Touchpad",
+  "Keyboard",
+  "Touchpad",
+  "Trackpad",
+  "Controls",
   "Sensors",
+
+  // Cooling / PC hardware
+  "Cooling & Thermals",
+  "Cooling and Thermals",
+  "Thermal Design",
+  "Cooling",
+  "Motherboard",
+  "Expansion",
+  "Expansion Slots",
+
+  // TV / monitor / projector
+  "Picture Quality",
+  "Picture",
+  "Display Technology",
+  "Smart Features",
+
+  // Audio products
+  "Sound Quality",
+  "Noise Cancellation",
+  "Microphone System",
+  "Driver System",
+  "Drivers",
+
+  // Watches / wearables
+  "Health & Fitness",
+  "Health and Fitness",
+  "Health Features",
+  "Fitness Features",
+
+  // Printers / scanners
+  "Print & Scan",
+  "Print and Scan",
+  "Printing",
+  "Scanning",
+  "Scanner",
+  "Paper Handling",
+
+  // Cameras
+  "Lens & Optics",
+  "Lens and Optics",
+  "Lens",
+  "Optics",
+
+  // Other common technical groups
+  "Compatibility",
+  "Included Accessories",
+  "Accessories",
+  "Certifications",
+  "Warranty",
+
+  // Existing color headings retained for historical clipboard data
   "Color Schemes",
   "Colour Schemes",
   "Colors",
@@ -1404,16 +1560,224 @@ function looksLikeTechnicalSpecificationLabel(value: string) {
 }
 
 function cleanTechnicalSpecificationLine(value: string) {
-  return String(value ?? "")
-    .replace(/\u00a0/g, " ")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
-    .replace(/\*\*/g, "")
-    .replace(/^[•●▪◦*]+\s*/, "")
-    .replace(/^[-–—]\s+/, "")
-    .replace(/^\d+[.)]\s+/, "")
-    .replace(/[ \t]+/g, " ")
-    .trim();
+  return (
+    String(value ?? "")
+      .replace(/\u00a0/g, " ")
+      .replace(/[\u200B-\u200D\uFEFF]/g, "")
+      .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
+      .replace(/\*\*/g, "")
+      .replace(/^[•●▪◦*]+\s*/, "")
+      .replace(/^[-–—]\s+/, "")
+      .replace(/^\d+[.)]\s+/, "")
+      /*
+       * Preserve TAB separators.
+       *
+       * Spreadsheet/specification-table clipboard data frequently uses:
+       *
+       *   Label<TAB>Value
+       *
+       * Previously [ \t]+ collapsed those tabs into spaces before the parser
+       * could inspect them.
+       */
+      .replace(/ +/g, " ")
+      .replace(/\t+/g, "\t")
+      .trim()
+  );
+}
+
+function isLikelySpecificationPageJunk(value: string) {
+  const text = cleanTechnicalSpecificationLine(value);
+  const normalized = text.toLocaleLowerCase();
+
+  if (!normalized) {
+    return true;
+  }
+
+  if (/^(?:https?:\/\/|www\.)/i.test(text) || /^[€$£¥]\s*\d/.test(text)) {
+    return true;
+  }
+
+  return /^(?:buy now|add to cart|add to basket|shop now|where to buy|compare|share|save|wishlist|sign in|log in|register|learn more|read more|see more|show more|show less|customer reviews?|ratings?|reviews?|frequently bought|sponsored|advertisement|related products?|similar products?|recommended products?|shipping|delivery|returns?|availability|in stock|out of stock|product description|overview|highlights?|key features?|specifications?|technical specifications?|specification details)$/i.test(
+    normalized,
+  );
+}
+
+function splitExplicitSpecificationPair(
+  value: string,
+): { label: string; value: string } | null {
+  const line = cleanTechnicalSpecificationLine(value);
+
+  if (!line) {
+    return null;
+  }
+
+  /*
+   * Strong table/clipboard separators.
+   */
+  const tabParts = line
+    .split(/\t+/)
+    .map(cleanTechnicalSpecificationLine)
+    .filter(Boolean);
+
+  if (
+    tabParts.length >= 2 &&
+    looksLikeTechnicalSpecificationLabel(tabParts[0])
+  ) {
+    return {
+      label: tabParts[0],
+      value: tabParts.slice(1).join(" "),
+    };
+  }
+
+  /*
+   * Pipe-delimited retailer/manufacturer tables:
+   *
+   * Resolution | 2560 × 1600
+   */
+  const pipeIndex = line.indexOf("|");
+
+  if (pipeIndex > 0) {
+    const label = cleanTechnicalSpecificationLine(line.slice(0, pipeIndex));
+    const pairValue = cleanTechnicalSpecificationLine(
+      line.slice(pipeIndex + 1),
+    );
+
+    if (
+      looksLikeTechnicalSpecificationLabel(label) &&
+      pairValue &&
+      !isLikelySpecificationPageJunk(label)
+    ) {
+      return { label, value: pairValue };
+    }
+  }
+
+  /*
+   * Standard Label: Value.
+   * Only the first colon is structural. Any later colons remain inside value.
+   */
+  const colonIndex = line.indexOf(":");
+
+  if (colonIndex > 0) {
+    const label = cleanTechnicalSpecificationLine(line.slice(0, colonIndex));
+    const pairValue = cleanTechnicalSpecificationLine(
+      line.slice(colonIndex + 1),
+    );
+
+    const labelContainsValueMaterial =
+      /\d/.test(label) ||
+      /[•●▪◦]/.test(label) ||
+      /\b(?:gb|tb|mb|mah|wh|w|kw|hz|khz|mhz|ghz|mp|mm|cm|fps|ppi|nit|nits)\b/i.test(
+        label,
+      );
+
+    if (
+      !labelContainsValueMaterial &&
+      looksLikeTechnicalSpecificationLabel(label) &&
+      pairValue &&
+      !isLikelySpecificationPageJunk(label)
+    ) {
+      return { label, value: pairValue };
+    }
+  }
+
+  /*
+   * Label = Value
+   */
+  const equalsMatch = line.match(/^(.{1,80}?)\s*=\s*(.+)$/);
+
+  if (equalsMatch) {
+    const label = cleanTechnicalSpecificationLine(equalsMatch[1]);
+    const pairValue = cleanTechnicalSpecificationLine(equalsMatch[2]);
+
+    if (
+      looksLikeTechnicalSpecificationLabel(label) &&
+      pairValue &&
+      !isLikelySpecificationPageJunk(label)
+    ) {
+      return { label, value: pairValue };
+    }
+  }
+
+  /*
+   * Label - Value / Label — Value / Label – Value
+   *
+   * Require whitespace around the dash so names such as Wi-Fi, USB-C and
+   * model codes are never broken.
+   */
+  const dashMatch = line.match(/^(.{1,80}?)\s+[–—-]\s+(.+)$/);
+
+  if (dashMatch) {
+    const label = cleanTechnicalSpecificationLine(dashMatch[1]);
+    const pairValue = cleanTechnicalSpecificationLine(dashMatch[2]);
+
+    if (
+      looksLikeTechnicalSpecificationLabel(label) &&
+      pairValue &&
+      !isLikelySpecificationPageJunk(label)
+    ) {
+      return { label, value: pairValue };
+    }
+  }
+
+  return null;
+}
+
+function exactKnownSpecificationLabel(value: string) {
+  const identity = specificationLabelIdentity(value);
+
+  if (!identity) {
+    return null;
+  }
+
+  return (
+    bulkTechnicalSpecificationSectionLabels.find(
+      (label) => specificationLabelIdentity(label) === identity,
+    ) ?? null
+  );
+}
+
+function looksLikeStandaloneSpecificationValue(value: string) {
+  const line = cleanTechnicalSpecificationLine(value);
+
+  if (!line || isLikelySpecificationPageJunk(line)) {
+    return false;
+  }
+
+  /*
+   * Numeric/unit values are the strongest signal.
+   */
+  if (
+    /\d/.test(line) ||
+    /\b(?:gb|tb|mb|kb|mah|wh|w|kw|v|a|hz|khz|mhz|ghz|mp|mm|cm|inch|inches|fps|ppi|dpi|nit|nits|rpm|mbps|gbps)\b/i.test(
+      line,
+    )
+  ) {
+    return true;
+  }
+
+  /*
+   * Common non-numeric technical values.
+   */
+  if (
+    /\b(?:oled|amoled|lcd|ips|tn|va|mini-led|micro-led|windows|android|ios|macos|linux|stereo|mono|wireless|wired|bluetooth|wifi|wi-fi|ethernet|aluminum|aluminium|plastic|glass|metal|yes|no|supported|not supported|integrated|dedicated|backlit)\b/i.test(
+      line,
+    )
+  ) {
+    return true;
+  }
+
+  /*
+   * Model / standard style values:
+   * Snapdragon 8 Elite
+   * Apple M4 Pro
+   * NVIDIA GeForce RTX 5070
+   * Bluetooth 5.4
+   */
+  return (
+    line.length <= 120 &&
+    !/[.!?]$/.test(line) &&
+    !isLikelySpecificationPageJunk(line)
+  );
 }
 
 function insertCollapsedSpecificationBoundaries(value: string) {
@@ -1457,7 +1821,7 @@ function insertCollapsedSpecificationBoundaries(value: string) {
    *   valueSSD512 GB
    */
   result = result.replace(
-    /([A-Za-z0-9)%\]])(RAM|ROM|CPU|GPU|NPU|SSD|HDD)(?=\d|\s|[A-Z])/g,
+    /([A-Za-z0-9)%\]])(RAM|ROM|CPU|GPU|NPU|SSD|HDD|USB|HDMI|NFC|GPS|LAN|WAN|WLAN)(?=\d|\s|[A-Z])/g,
     "$1\n$2",
   );
 
@@ -1502,14 +1866,6 @@ function specificationEntriesFromStructuredText(source: string) {
 
   const entries: Array<{ label: string; value: string }> = [];
 
-  /*
-   * Keep mutable parser state inside an object.
-   *
-   * TypeScript does not track assignments to a local union variable made
-   * inside nested helper functions reliably enough for the outer loop.
-   * Using a state object preserves the exact runtime behavior while keeping
-   * control-flow narrowing correct.
-   */
   const parserState: {
     current: { label: string; value: string } | null;
   } = {
@@ -1526,7 +1882,12 @@ function specificationEntriesFromStructuredText(source: string) {
     const label = cleanTechnicalSpecificationLine(current.label);
     const value = cleanTechnicalSpecificationLine(current.value);
 
-    if (looksLikeTechnicalSpecificationLabel(label) && value) {
+    if (
+      looksLikeTechnicalSpecificationLabel(label) &&
+      value &&
+      !isLikelySpecificationPageJunk(label) &&
+      !isLikelySpecificationPageJunk(value)
+    ) {
       entries.push({ label, value });
     }
 
@@ -1542,41 +1903,35 @@ function specificationEntriesFromStructuredText(source: string) {
     };
   }
 
-  for (const rawLine of rawLines) {
-    const line = cleanTechnicalSpecificationLine(rawLine);
+  for (let index = 0; index < rawLines.length; index += 1) {
+    const line = cleanTechnicalSpecificationLine(rawLines[index]);
 
-    if (!line) {
+    if (!line || isLikelySpecificationPageJunk(line)) {
       continue;
     }
 
     /*
-     * Strongest structure: Title<TAB>Value.
-     * Spreadsheet/table clipboard formats frequently use tabs.
+     * 1. Strong explicit table / separator structures:
+     *
+     * Label<TAB>Value
+     * Label | Value
+     * Label: Value
+     * Label = Value
+     * Label - Value
      */
-    const tabParts = line
-      .split(/\t+/)
-      .map(cleanTechnicalSpecificationLine)
-      .filter(Boolean);
+    const explicitPair = splitExplicitSpecificationPair(line);
 
-    if (
-      tabParts.length >= 2 &&
-      looksLikeTechnicalSpecificationLabel(tabParts[0])
-    ) {
-      begin(tabParts[0], tabParts.slice(1).join(" "));
+    if (explicitPair) {
+      begin(explicitPair.label, explicitPair.value);
       continue;
     }
 
     /*
-     * KNOWN TOP-LEVEL ROW HEADING — HIGHEST PRIORITY
+     * 2. Known TOP-LEVEL row heading attached directly to its value.
      *
-     * This MUST run before colon and numeric inference.
+     * Display6.7-inch Super AMOLED+ • Resolution: FHD+
      *
-     * Example:
-     *
-     * Display6.7-inch Super AMOLED+ Display • Resolution: FHD+
-     *
-     * "Display" is the row heading.
-     * "Resolution:" belongs INSIDE Display's value.
+     * Display remains the parent. Resolution stays inside its value.
      */
     const knownLabel = bulkTechnicalSpecificationSectionLabels.find((label) => {
       const escaped = escapeSpecificationRegExp(label);
@@ -1592,68 +1947,75 @@ function specificationEntriesFromStructuredText(source: string) {
         line.slice(knownLabel.length).replace(/^[:\-–—\s]+/, ""),
       );
 
-      if (candidateValue) {
+      if (candidateValue && !isLikelySpecificationPageJunk(candidateValue)) {
         begin(knownLabel, candidateValue);
         continue;
       }
     }
 
     /*
-     * Standard Title: value syntax.
+     * 3. Two-line specification rows.
      *
-     * Only the FIRST colon may be structural.
+     * Many copied tables become:
      *
-     * We reject it when the supposed label already contains obvious value
-     * material. This stops nested details from becoming giant labels:
-     *
-     * BAD:
-     * Display6.7-inch OLED • Resolution
-     *
-     * GOOD:
      * Display
-     * 6.7-inch OLED • Resolution: FHD+
+     * 6.7-inch OLED
+     *
+     * or:
+     *
+     * Operating System
+     * Windows 11 Home
+     *
+     * Exact known labels are high-confidence enough to pair with the next
+     * line even when the value itself looks like words rather than numbers.
      */
-    const colonIndex = line.indexOf(":");
+    const exactKnownLabel = exactKnownSpecificationLabel(line);
+    const nextLine =
+      index + 1 < rawLines.length
+        ? cleanTechnicalSpecificationLine(rawLines[index + 1])
+        : "";
 
-    if (colonIndex > 0) {
-      const candidateLabel = cleanTechnicalSpecificationLine(
-        line.slice(0, colonIndex),
-      );
+    if (
+      exactKnownLabel &&
+      nextLine &&
+      !isLikelySpecificationPageJunk(nextLine)
+    ) {
+      begin(exactKnownLabel, nextLine);
+      index += 1;
+      continue;
+    }
 
-      const candidateValue = cleanTechnicalSpecificationLine(
-        line.slice(colonIndex + 1),
-      );
+    /*
+     * 4. Unknown two-line labels.
+     *
+     * This is deliberately more conservative than the known-label path.
+     * It allows previously unseen specifications while avoiding prose.
+     */
+    if (
+      nextLine &&
+      looksLikeTechnicalSpecificationLabel(line) &&
+      !isLikelySpecificationPageJunk(line) &&
+      looksLikeStandaloneSpecificationValue(nextLine) &&
+      !splitExplicitSpecificationPair(nextLine)
+    ) {
+      const words = line.split(/\s+/).filter(Boolean);
 
-      const labelContainsValueMaterial =
-        /\d/.test(candidateLabel) ||
-        /[•●▪◦]/.test(candidateLabel) ||
-        /\b(?:gb|tb|mb|mah|w|kw|hz|khz|mhz|ghz|mp|mm|cm|fps|ppi|nit|nits)\b/i.test(
-          candidateLabel,
-        );
-
-      if (
-        !labelContainsValueMaterial &&
-        looksLikeTechnicalSpecificationLabel(candidateLabel) &&
-        candidateValue
-      ) {
-        begin(candidateLabel, candidateValue);
+      if (words.length <= 6 && !/\d/.test(line) && !/[.!?]$/.test(line)) {
+        begin(line, nextLine);
+        index += 1;
         continue;
       }
     }
 
     /*
-     * CONSERVATIVE UNKNOWN-LABEL NUMERIC FALLBACK
-     *
-     * This remains useful for specification titles we have never seen
-     * before:
+     * 5. Conservative unknown-label numeric boundary.
      *
      * Ports2x USB-C
      * Maximum Power120 W
-     *
-     * But it is deliberately lower priority than known row headings.
+     * Refresh Rate144 Hz
      */
     const numericBoundary = line.match(
-      /^([A-Za-z][A-Za-z/&+().'\- ]{1,39}?)(?=\d)(.+)$/,
+      /^([A-Za-z][A-Za-z/&+().'\- ]{1,49}?)(?=\d)(.+)$/,
     );
 
     if (numericBoundary) {
@@ -1668,9 +2030,10 @@ function specificationEntriesFromStructuredText(source: string) {
       const candidateWords = candidateLabel.split(/\s+/).filter(Boolean);
 
       if (
-        candidateWords.length <= 5 &&
+        candidateWords.length <= 6 &&
         !/[•●▪◦]/.test(candidateLabel) &&
         looksLikeTechnicalSpecificationLabel(candidateLabel) &&
+        !isLikelySpecificationPageJunk(candidateLabel) &&
         candidateValue
       ) {
         begin(candidateLabel, candidateValue);
@@ -1679,17 +2042,29 @@ function specificationEntriesFromStructuredText(source: string) {
     }
 
     /*
-     * No new structural title was detected. Keep this as a continuation of
-     * the current specification instead of throwing the text away.
+     * 6. No confident new title was found.
      *
-     * This preserves nested camera bullets, notes, supported standards, etc.
+     * Preserve the line as continuation of the current parent specification.
+     * Nested details therefore stay together:
+     *
+     * Display
+     * 6.7-inch OLED
+     * Resolution: 2796 × 1290
+     * HDR: Dolby Vision
      */
     const current = parserState.current;
 
     if (current) {
-      current.value = cleanTechnicalSpecificationLine(
-        `${current.value} • ${line}`,
-      );
+      const normalizedContinuation = cleanTechnicalSpecificationLine(line);
+
+      if (
+        normalizedContinuation &&
+        !isLikelySpecificationPageJunk(normalizedContinuation)
+      ) {
+        current.value = cleanTechnicalSpecificationLine(
+          `${current.value} • ${normalizedContinuation}`,
+        );
+      }
     }
   }
 
@@ -1697,6 +2072,9 @@ function specificationEntriesFromStructuredText(source: string) {
 
   /*
    * Deduplicate case/spacing variants while preserving first-seen order.
+   *
+   * If the same specification appears twice, keep the richer value rather
+   * than producing duplicate technical-spec rows.
    */
   const deduplicated = new Map<string, { label: string; value: string }>();
 
@@ -1714,10 +2092,19 @@ function specificationEntriesFromStructuredText(source: string) {
       continue;
     }
 
-    if (
-      entry.value.length > existing.value.length &&
-      !existing.value.includes(entry.value)
-    ) {
+    const existingValue = existing.value.toLocaleLowerCase();
+    const incomingValue = entry.value.toLocaleLowerCase();
+
+    if (existingValue.includes(incomingValue)) {
+      continue;
+    }
+
+    if (incomingValue.includes(existingValue)) {
+      deduplicated.set(identity, entry);
+      continue;
+    }
+
+    if (entry.value.length > existing.value.length) {
       deduplicated.set(identity, entry);
     }
   }
