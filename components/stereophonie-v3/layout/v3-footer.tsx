@@ -161,9 +161,16 @@ export default function V3Footer() {
 
         <div className="st3-footer__bottom">
           <span>
-            © {new Date().getFullYear()} Stereophonie. All rights reserved.{" "}
-            | Designed and developed by{" "}
-            <span style={{ fontWeight: 600 }}>Script404</span>
+            <span>
+              © {new Date().getFullYear()} Stereophonie. All rights reserved.
+            </span>
+            <span className="st3-footer__credit-separator" aria-hidden="true">
+              |
+            </span>
+            <span className="st3-footer__credit">
+              Designed and developed by{" "}
+              <span style={{ fontWeight: 600 }}>Script404</span>
+            </span>
           </span>
         </div>
       </div>
