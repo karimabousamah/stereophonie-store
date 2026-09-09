@@ -162,6 +162,16 @@ export default function V3Footer() {
         <div className="st3-footer__bottom">
           <span>
             © {new Date().getFullYear()} Stereophonie. All rights reserved.
+              <span
+                aria-hidden="true"
+                style={{ margin: "0 10px", opacity: 0.45 }}
+              >
+                •
+              </span>
+              <span>
+                Designed by{" "}
+                <span style={{ fontWeight: 600 }}>Script404</span>
+              </span>
           </span>
         </div>
       </div>
