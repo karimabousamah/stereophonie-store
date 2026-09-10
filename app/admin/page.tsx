@@ -73,6 +73,10 @@ export default async function AdminDashboardPage() {
     new Date(now.getFullYear(), now.getMonth(), now.getDate() - 59),
   );
 
+  const livePerformanceStart = startOfDay(
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() - 89),
+  );
+
   const forgottenDraftBoundary = new Date(
     now.getTime() - 14 * 24 * 60 * 60 * 1000,
   ).toISOString();
@@ -127,7 +131,7 @@ export default async function AdminDashboardPage() {
 
     supabase
       .from("orders")
-      .select("id, total, created_at")
+      .select("total")
       .eq("payment_status", "paid")
       .neq("status", "cancelled"),
 
@@ -189,7 +193,7 @@ export default async function AdminDashboardPage() {
       .select("id, total, created_at")
       .eq("payment_status", "paid")
       .neq("status", "cancelled")
-      .gte("created_at", previousPeriodStart.toISOString())
+      .gte("created_at", livePerformanceStart.toISOString())
       .order("created_at", {
         ascending: true,
       }),
@@ -226,11 +230,15 @@ export default async function AdminDashboardPage() {
 
   const paidOrders = (recentPaidOrdersResult.data ?? []) as RevenueOrder[];
 
-  const currentOrders = paidOrders.filter(
+  const comparisonOrders = paidOrders.filter(
+    (order) => new Date(order.created_at) >= previousPeriodStart,
+  );
+
+  const currentOrders = comparisonOrders.filter(
     (order) => new Date(order.created_at) >= currentPeriodStart,
   );
 
-  const previousOrders = paidOrders.filter((order) => {
+  const previousOrders = comparisonOrders.filter((order) => {
     const createdAt = new Date(order.created_at);
 
     return createdAt >= previousPeriodStart && createdAt < currentPeriodStart;
@@ -323,7 +331,7 @@ export default async function AdminDashboardPage() {
   return (
     <DashboardClient
       role={admin.role}
-      paidOrders={allPaidOrdersResult.data ?? []}
+      paidOrders={paidOrders}
       statistics={{
         liveProducts,
         draftProducts,

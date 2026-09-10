@@ -26,6 +26,8 @@ type ProductPageProps = {
 type ProductImage = {
   id: string;
   image_url: string | null;
+  storage_path: string | null;
+  storefront_image_url?: string | null;
   alt_text: string | null;
   position: number;
   is_primary: boolean;
@@ -71,6 +73,41 @@ type Relation =
       name: string;
     }[]
   | null;
+
+function storefrontThumbnailPath(storagePath: string) {
+  const normalized = storagePath.trim().replace(/^\/+/, "");
+  const slash = normalized.lastIndexOf("/");
+  const directory = slash >= 0 ? normalized.slice(0, slash) : "";
+  const filename = slash >= 0 ? normalized.slice(slash + 1) : normalized;
+  const dot = filename.lastIndexOf(".");
+  const basename = dot > 0 ? filename.slice(0, dot) : filename;
+
+  return directory
+    ? `${directory}/storefront/${basename}.webp`
+    : `storefront/${basename}.webp`;
+}
+
+function productImagesWithStorefrontUrls(
+  images: ProductImage[],
+  supabase: Awaited<ReturnType<typeof createClient>>,
+) {
+  return images.map((image) => {
+    const storagePath = image.storage_path?.trim();
+
+    if (!storagePath) {
+      return image;
+    }
+
+    const { data } = supabase.storage
+      .from("product-images")
+      .getPublicUrl(storefrontThumbnailPath(storagePath));
+
+    return {
+      ...image,
+      storefront_image_url: data.publicUrl,
+    };
+  });
+}
 
 function relationName(relation: Relation, fallback: string) {
   if (!relation) {
@@ -215,6 +252,7 @@ export default async function ProductPage({
         product_images (
           id,
           image_url,
+          storage_path,
           alt_text,
           position,
           is_primary,
@@ -262,7 +300,10 @@ export default async function ProductPage({
   const currentProductCategoryId = product.category_id;
   const currentProductCollectionId = product.collection_id;
 
-  const images = ((product.product_images as ProductImage[]) ?? []).sort(
+  const images = productImagesWithStorefrontUrls(
+    (product.product_images as ProductImage[]) ?? [],
+    supabase,
+  ).sort(
     (first, second) => first.position - second.position,
   );
 
@@ -1041,6 +1082,7 @@ export default async function ProductPage({
         product_images (
           id,
           image_url,
+          storage_path,
           alt_text,
           position,
           is_primary,
@@ -1184,9 +1226,29 @@ export default async function ProductPage({
       is_new_arrival: item.is_new_arrival,
 
       images: storefrontConfigurationImages(
-        item.product_images ?? [],
-        item.product_variants ?? [],
-      ),
+          (item.product_images ?? []).map((image: any) => {
+            const storagePath =
+              typeof image.storage_path === "string"
+                ? image.storage_path.trim()
+                : "";
+
+            if (!storagePath) {
+              return image;
+            }
+
+            const { data } = supabase.storage
+              .from("product-images")
+              .getPublicUrl(
+                storefrontThumbnailPath(storagePath),
+              );
+
+            return {
+              ...image,
+              storefront_image_url: data.publicUrl,
+            };
+          }),
+          item.product_variants ?? [],
+        ),
 
       variants: item.product_variants ?? [],
     }));
@@ -1271,7 +1333,10 @@ export default async function ProductPage({
                 id: product.id,
                 slug: product.slug ?? slug,
                 name: product.name,
-                imageUrl: primary?.image_url ?? null,
+                imageUrl:
+                  primary?.storefront_image_url ??
+                  primary?.image_url ??
+                  null,
                 description: product.description ?? null,
                 categoryName,
                 is_featured: product.is_featured,
@@ -1279,7 +1344,9 @@ export default async function ProductPage({
                 is_new_arrival: product.is_new_arrival,
 
                 images: galleryImages.map((image) => ({
-                  image_url: image.image_url,
+                  image_url:
+                    image.storefront_image_url ??
+                    image.image_url,
                   alt_text: image.alt_text,
                   position: image.position,
                   is_primary: image.is_primary,

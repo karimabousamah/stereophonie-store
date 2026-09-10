@@ -4,6 +4,13 @@ import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 
 export type StoreProductImage = {
   image_url: string | null;
+
+  /*
+   * Lightweight permanent storefront derivative.
+   * Falls back to image_url if unavailable.
+   */
+  storefront_image_url?: string | null;
+
   alt_text: string | null;
 
   /*

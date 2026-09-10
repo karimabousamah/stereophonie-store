@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export type WishlistProductImage = {
   image_url: string | null;
+  storefront_image_url?: string | null;
   alt_text: string | null;
   position: number;
   is_primary: boolean;

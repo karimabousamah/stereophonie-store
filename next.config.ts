@@ -47,9 +47,30 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.1.74", "10.222.2.69"],
 
   images: {
-    unoptimized: true,
-    qualities: [75, 90, 95, 100],
+    /*
+     * PERFORMANCE
+     *
+     * Let Next.js resize and optimize Supabase product imagery
+     * instead of forcing browsers to download the original file.
+     */
+    unoptimized: false,
+
     formats: ["image/webp"],
+
+    qualities: [75, 90, 95, 100],
+
+    /*
+     * Responsive output sizes used throughout the storefront.
+     * Small product cards no longer need full-resolution originals.
+     */
+    deviceSizes: [640, 750, 828, 1080, 1200, 1440, 1920],
+    imageSizes: [32, 48, 64, 96, 128, 256, 384],
+
+    /*
+     * Optimized variants can remain cached for one week.
+     */
+    minimumCacheTTL: 604800,
+
     remotePatterns: [
       {
         protocol: "https",

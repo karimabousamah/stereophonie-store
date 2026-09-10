@@ -236,6 +236,7 @@ function ProductRecommendationCard({
               src={product.imageUrl}
               alt={product.imageAlt || product.name}
               loading="lazy"
+                  decoding="async"
             />
 
             {product.hoverImageUrl &&
@@ -245,7 +246,9 @@ function ProductRecommendationCard({
                 src={product.hoverImageUrl}
                 alt=""
                 aria-hidden="true"
-                loading="lazy"
+                loading="eager"
+                    fetchPriority="low"
+                    decoding="async"
               />
             ) : null}
           </>

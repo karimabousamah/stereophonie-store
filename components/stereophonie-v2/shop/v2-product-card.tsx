@@ -277,12 +277,111 @@ function productCardBadgeClass(badge: string | null) {
   return classes.join(" ");
 }
 
-export default function V2ProductCard({ product }: Props) {
+export default function V2ProductCard({ product, index = 0 }: Props) {
   const images = useMemo(() => orderedImages(product), [product]);
 
   const primaryImage = images[0] ?? null;
   const secondaryImage = images[1] ?? null;
   const hasSecondaryImage = Boolean(secondaryImage?.image_url);
+
+  /*
+   * Shop photography intentionally uses direct Supabase URLs.
+   *
+   * The first visible row receives immediate network priority.
+   * Products farther down the page remain browser-lazy.
+   * Secondary hover photography is not requested until interaction.
+   */
+  const initialCardImage = index < 4;
+
+  const [primaryImageFailed, setPrimaryImageFailed] =
+    useState(false);
+
+  const [
+    primaryStorefrontImageFailed,
+    setPrimaryStorefrontImageFailed,
+  ] = useState(false);
+
+  const [secondaryImageRequested, setSecondaryImageRequested] =
+    useState(false);
+
+  const secondaryPreloadTarget = useRef<HTMLAnchorElement>(null);
+
+  const [secondaryImageFailed, setSecondaryImageFailed] =
+    useState(false);
+
+  const [
+    secondaryStorefrontImageFailed,
+    setSecondaryStorefrontImageFailed,
+  ] = useState(false);
+
+  const primaryImageUrl =
+    !primaryStorefrontImageFailed &&
+    primaryImage?.storefront_image_url
+      ? primaryImage.storefront_image_url
+      : primaryImage?.image_url ?? null;
+
+  const secondaryImageUrl =
+    !secondaryStorefrontImageFailed &&
+    secondaryImage?.storefront_image_url
+      ? secondaryImage.storefront_image_url
+      : secondaryImage?.image_url ?? null;
+
+  const requestSecondaryImage = useCallback(() => {
+    if (hasSecondaryImage && !secondaryImageFailed) {
+      setSecondaryImageRequested(true);
+    }
+  }, [hasSecondaryImage, secondaryImageFailed]);
+
+  /*
+   * Load the lightweight second product photograph shortly
+   * before this card reaches the viewport.
+   *
+   * Cards far down the catalogue remain untouched, while
+   * visible/near-visible cards have their hover photograph
+   * ready before the customer points at them.
+   */
+  useEffect(() => {
+    const element = secondaryPreloadTarget.current;
+
+    if (
+      !element ||
+      !hasSecondaryImage ||
+      secondaryImageFailed ||
+      secondaryImageRequested
+    ) {
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) {
+          return;
+        }
+
+        requestSecondaryImage();
+        observer.disconnect();
+      },
+      {
+        rootMargin: "500px 0px",
+        threshold: 0,
+      },
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [
+    hasSecondaryImage,
+    requestSecondaryImage,
+    secondaryImageFailed,
+    secondaryImageRequested,
+  ]);
 
   const price = useMemo(() => getPrice(product), [product]);
   const available = useMemo(() => isAvailable(product), [product]);
@@ -412,29 +511,65 @@ export default function V2ProductCard({ product }: Props) {
       <article className="st-retail-card st-product-card-canonical">
         <div className="st-retail-card__visual">
           <Link
-            href={href}
+            ref={secondaryPreloadTarget}
+              href={href}
             className="st-retail-card__image-link"
-            data-has-secondary-image={hasSecondaryImage ? "true" : "false"}
+            data-has-secondary-image={
+              hasSecondaryImage && !secondaryImageFailed ? "true" : "false"
+            }
             aria-label={`View ${product.name}`}
+            onMouseEnter={requestSecondaryImage}
+            onFocus={requestSecondaryImage}
           >
-            {primaryImage?.image_url ? (
+            {primaryImageUrl && !primaryImageFailed ? (
               <>
                 <img
-                  src={primaryImage.image_url}
+                  src={primaryImageUrl}
                   alt={primaryImage.alt_text ?? product.name}
                   className="st-retail-card__image st-retail-card__image--primary"
-                  loading="lazy"
+                  loading={initialCardImage ? "eager" : "lazy"}
+                  fetchPriority={initialCardImage ? "high" : "auto"}
                   decoding="async"
+                  onError={() => {
+                    if (
+                      !primaryStorefrontImageFailed &&
+                      primaryImage?.storefront_image_url &&
+                      primaryImage?.image_url &&
+                      primaryImage.storefront_image_url !==
+                        primaryImage.image_url
+                    ) {
+                      setPrimaryStorefrontImageFailed(true);
+                      return;
+                    }
+
+                    setPrimaryImageFailed(true);
+                  }}
                 />
 
-                {hasSecondaryImage && secondaryImage?.image_url ? (
+                {hasSecondaryImage &&
+                secondaryImageRequested &&
+                !secondaryImageFailed &&
+                secondaryImageUrl ? (
                   <img
-                    src={secondaryImage.image_url}
+                    src={secondaryImageUrl}
                     alt=""
                     aria-hidden="true"
                     className="st-retail-card__image st-retail-card__image--secondary"
-                    loading="lazy"
                     decoding="async"
+                    onError={() => {
+                      if (
+                        !secondaryStorefrontImageFailed &&
+                        secondaryImage?.storefront_image_url &&
+                        secondaryImage?.image_url &&
+                        secondaryImage.storefront_image_url !==
+                          secondaryImage.image_url
+                      ) {
+                        setSecondaryStorefrontImageFailed(true);
+                        return;
+                      }
+
+                      setSecondaryImageFailed(true);
+                    }}
                   />
                 ) : null}
               </>
@@ -635,14 +770,31 @@ export default function V2ProductCard({ product }: Props) {
                 </button>
 
                 <div className="st-retail-qv__visual">
-                  {primaryImage?.image_url ? (
-                    <img
-                      src={primaryImage.image_url}
-                      alt={primaryImage.alt_text ?? product.name}
-                    />
-                  ) : (
-                    <ImageOff />
-                  )}
+                  {primaryImageUrl && !primaryImageFailed ? (
+                  <img
+                    src={primaryImageUrl}
+                    alt={primaryImage?.alt_text ?? product.name}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    onError={() => {
+                      if (
+                        !primaryStorefrontImageFailed &&
+                        primaryImage?.storefront_image_url &&
+                        primaryImage?.image_url &&
+                        primaryImage.storefront_image_url !==
+                          primaryImage.image_url
+                      ) {
+                        setPrimaryStorefrontImageFailed(true);
+                        return;
+                      }
+
+                      setPrimaryImageFailed(true);
+                    }}
+                  />
+                ) : (
+                  <ImageOff />
+                )}
                 </div>
 
                 <div className="st-retail-qv__info">

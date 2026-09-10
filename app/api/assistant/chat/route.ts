@@ -43,6 +43,7 @@ type IncomingMessage = {
 type ProductImageRow = {
   id?: string | null;
   image_url: string | null;
+  storage_path?: string | null;
   alt_text: string | null;
   position: number;
   is_primary: boolean;
@@ -409,7 +410,42 @@ function mapVariant(variant: ProductVariantRow): AssistantVariant {
   };
 }
 
-function mapProduct(product: ProductRow): AssistantProduct {
+
+function storefrontThumbnailPath(storagePath: string) {
+  const normalized = storagePath.trim().replace(/^\/+/, "");
+  const slash = normalized.lastIndexOf("/");
+  const directory = slash >= 0 ? normalized.slice(0, slash) : "";
+  const filename = slash >= 0 ? normalized.slice(slash + 1) : normalized;
+  const dot = filename.lastIndexOf(".");
+  const basename = dot > 0 ? filename.slice(0, dot) : filename;
+
+  return directory
+    ? `${directory}/storefront/${basename}.webp`
+    : `storefront/${basename}.webp`;
+}
+
+function storefrontImageUrl(
+  supabase: ReturnType<typeof createAdminClient>,
+  storagePath: string | null | undefined,
+) {
+  const cleanStoragePath =
+    typeof storagePath === "string" ? storagePath.trim() : "";
+
+  if (!cleanStoragePath) {
+    return null;
+  }
+
+  const { data } = supabase.storage
+    .from("product-images")
+    .getPublicUrl(storefrontThumbnailPath(cleanStoragePath));
+
+  return data.publicUrl;
+}
+
+function mapProduct(
+  product: ProductRow,
+  supabase: ReturnType<typeof createAdminClient>,
+): AssistantProduct {
   const variants = (product.product_variants ?? [])
     .map(mapVariant)
     .filter((variant) => variant.currentPrice > 0)
@@ -474,9 +510,21 @@ function mapProduct(product: ProductRow): AssistantProduct {
     slug: product.slug ?? product.id,
     description: product.description,
     category: getCategoryName(product.categories),
-    imageUrl: primaryImage?.image_url ?? null,
+    imageUrl:
+      storefrontImageUrl(
+        supabase,
+        primaryImage?.storage_path,
+      ) ??
+      primaryImage?.image_url ??
+      null,
 
-    hoverImageUrl: hoverImage?.image_url ?? null,
+    hoverImageUrl:
+      storefrontImageUrl(
+        supabase,
+        hoverImage?.storage_path,
+      ) ??
+      hoverImage?.image_url ??
+      null,
     imageAlt: primaryImage?.alt_text || product.name,
     price: purchasablePrices.length > 0 ? Math.min(...purchasablePrices) : null,
     variants,
@@ -575,6 +623,7 @@ async function searchProducts(argumentsValue: Record<string, unknown>) {
           product_images (
             id,
             image_url,
+            storage_path,
             alt_text,
             position,
             is_primary,
@@ -624,7 +673,9 @@ async function searchProducts(argumentsValue: Record<string, unknown>) {
     offset += pageSize;
   }
 
-  const matchingProducts = catalogRows.map(mapProduct).filter((product) => {
+  const matchingProducts = catalogRows.map((product) =>
+    mapProduct(product, supabase),
+  ).filter((product) => {
     if (category && !product.category.toLowerCase().includes(category)) {
       return false;
     }

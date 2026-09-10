@@ -196,9 +196,7 @@ export function V3Header() {
 
     async function loadCategories() {
       try {
-        const response = await fetch("/api/storefront/header-categories", {
-          cache: "no-store",
-        });
+        const response = await fetch("/api/storefront/header-categories");
 
         if (!response.ok) {
           return;

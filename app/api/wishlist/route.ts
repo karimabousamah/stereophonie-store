@@ -17,6 +17,8 @@ type GuestSyncItem = {
 
 type ProductImageRow = {
   image_url: string | null;
+  storage_path: string | null;
+  storefront_image_url?: string | null;
   alt_text: string | null;
   position: number;
   is_primary: boolean;
@@ -53,6 +55,38 @@ type WishlistRow = {
   created_at: string;
   products: ProductRow | ProductRow[] | null;
 };
+
+
+function storefrontThumbnailPath(storagePath: string) {
+  const normalized = storagePath.trim().replace(/^\/+/, "");
+  const slash = normalized.lastIndexOf("/");
+  const directory = slash >= 0 ? normalized.slice(0, slash) : "";
+  const filename = slash >= 0 ? normalized.slice(slash + 1) : normalized;
+  const dot = filename.lastIndexOf(".");
+  const basename = dot > 0 ? filename.slice(0, dot) : filename;
+
+  return directory
+    ? `${directory}/storefront/${basename}.webp`
+    : `storefront/${basename}.webp`;
+}
+
+function storefrontImageUrl(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  storagePath: string | null | undefined,
+) {
+  const cleanStoragePath =
+    typeof storagePath === "string" ? storagePath.trim() : "";
+
+  if (!cleanStoragePath) {
+    return null;
+  }
+
+  const { data } = supabase.storage
+    .from("product-images")
+    .getPublicUrl(storefrontThumbnailPath(cleanStoragePath));
+
+  return data.publicUrl;
+}
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -168,6 +202,7 @@ export async function GET() {
         ),
         product_images (
           image_url,
+          storage_path,
           alt_text,
           position,
           is_primary
@@ -221,9 +256,19 @@ export async function GET() {
         is_featured: product.is_featured,
         is_trending: product.is_trending,
         is_new_arrival: product.is_new_arrival,
-        images: [...(product.product_images ?? [])].sort(
-          (first, second) => first.position - second.position,
-        ),
+        images: [...(product.product_images ?? [])]
+          .sort(
+            (first, second) =>
+              first.position - second.position,
+          )
+          .map((image) => ({
+            ...image,
+            storefront_image_url:
+              storefrontImageUrl(
+                supabase,
+                image.storage_path,
+              ) ?? undefined,
+          })),
         variants: product.product_variants ?? [],
       },
     ];

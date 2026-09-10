@@ -61,6 +61,46 @@ type ProductRow = {
   product_variants: V3ProductVariant[] | null;
 };
 
+type HomepageProductIndexRow = {
+  id: string;
+  created_at: string | null;
+  is_featured: boolean | null;
+  is_trending: boolean | null;
+  is_new_arrival: boolean | null;
+  new_drop_started_at: string | null;
+  availability: string | null;
+  offer_started_at: string | null;
+  discovering_started_at: string | null;
+  coming_soon_started_at: string | null;
+  categories: NamedRelation;
+  product_variants:
+    | {
+        regular_price: number | null;
+        sale_price: number | null;
+        is_active: boolean | null;
+      }[]
+    | null;
+};
+
+type HomepageProductIndex = {
+  id: string;
+  categoryName: string;
+  created_at: string | null;
+  is_featured: boolean | null;
+  is_trending: boolean | null;
+  is_new_arrival: boolean | null;
+  new_drop_started_at: string | null;
+  availability: string | null;
+  offer_started_at: string | null;
+  discovering_started_at: string | null;
+  coming_soon_started_at: string | null;
+  variants: {
+    regular_price: number | null;
+    sale_price: number | null;
+    is_active: boolean | null;
+  }[];
+};
+
 type CategoryRow = {
   id: string;
   name: string;
@@ -68,6 +108,44 @@ type CategoryRow = {
   image_url: string | null;
   homepage_theme: "light" | "dark" | null;
 };
+
+function storefrontThumbnailPath(storagePath: string) {
+  const normalized = storagePath.trim().replace(/^\/+/, "");
+  const slash = normalized.lastIndexOf("/");
+  const directory = slash >= 0 ? normalized.slice(0, slash) : "";
+  const filename = slash >= 0 ? normalized.slice(slash + 1) : normalized;
+  const dot = filename.lastIndexOf(".");
+  const basename = dot > 0 ? filename.slice(0, dot) : filename;
+
+  return directory
+    ? `${directory}/storefront/${basename}.webp`
+    : `storefront/${basename}.webp`;
+}
+
+function homepageImagesWithStorefrontUrls(
+  images: ProductRow["product_images"],
+  supabase: Awaited<ReturnType<typeof createClient>>,
+) {
+  return (images ?? []).map((image) => {
+    const storagePath =
+      typeof image.storage_path === "string"
+        ? image.storage_path.trim()
+        : "";
+
+    if (!storagePath) {
+      return image;
+    }
+
+    const { data } = supabase.storage
+      .from("product-images")
+      .getPublicUrl(storefrontThumbnailPath(storagePath));
+
+    return {
+      ...image,
+      storefront_image_url: data.publicUrl,
+    };
+  });
+}
 
 function relationName(relation: NamedRelation, fallback = "") {
   if (!relation) {
@@ -88,7 +166,10 @@ type HomepageProduct = V3Product & {
   coming_soon_started_at?: string | null;
 };
 
-function normalizeProduct(product: ProductRow): HomepageProduct {
+function normalizeProduct(
+  product: ProductRow,
+  supabase: Awaited<ReturnType<typeof createClient>>,
+): HomepageProduct {
   return {
     id: product.id,
     name: product.name,
@@ -106,7 +187,10 @@ function normalizeProduct(product: ProductRow): HomepageProduct {
     discovering_started_at: product.discovering_started_at,
     coming_soon_started_at: product.coming_soon_started_at,
     images: storefrontConfigurationImages(
-      product.product_images,
+      homepageImagesWithStorefrontUrls(
+        product.product_images,
+        supabase,
+      ),
       product.product_variants,
     ),
     variants: product.product_variants ?? [],
@@ -146,6 +230,66 @@ function isComingSoonProduct(product: HomepageProduct) {
   return product.availability === "coming_soon";
 }
 
+function normalizeProductIndex(
+  product: HomepageProductIndexRow,
+): HomepageProductIndex {
+  return {
+    id: product.id,
+    categoryName: relationName(product.categories, "Technology"),
+    created_at: product.created_at,
+    is_featured: product.is_featured,
+    is_trending: product.is_trending,
+    is_new_arrival: product.is_new_arrival,
+    new_drop_started_at: product.new_drop_started_at,
+    availability: product.availability,
+    offer_started_at: product.offer_started_at,
+    discovering_started_at: product.discovering_started_at,
+    coming_soon_started_at: product.coming_soon_started_at,
+    variants: product.product_variants ?? [],
+  };
+}
+
+function indexProductOnOffer(product: HomepageProductIndex) {
+  return product.variants.some((variant) => {
+    if (variant.is_active === false) {
+      return false;
+    }
+
+    const regular = Number(variant.regular_price ?? 0);
+    const sale = Number(variant.sale_price ?? 0);
+
+    return regular > 0 && sale > 0 && sale < regular;
+  });
+}
+
+function indexCurrentNewDrop(product: HomepageProductIndex) {
+  return isCurrentNewDrop({
+    is_new_arrival: product.is_new_arrival,
+    new_drop_started_at: product.new_drop_started_at,
+  } as V3Product);
+}
+
+function sortProductIndexByTimestamp(
+  products: HomepageProductIndex[],
+  getTimestamp: (
+    product: HomepageProductIndex,
+  ) => string | null | undefined,
+) {
+  return [...products].sort((a, b) => {
+    const aTimestamp =
+      timestampValue(getTimestamp(a)) || timestampValue(a.created_at);
+
+    const bTimestamp =
+      timestampValue(getTimestamp(b)) || timestampValue(b.created_at);
+
+    if (bTimestamp !== aTimestamp) {
+      return bTimestamp - aTimestamp;
+    }
+
+    return String(b.id).localeCompare(String(a.id));
+  });
+}
+
 type HomePageProps = {
   searchParams: Promise<{
     account?: string | string[];
@@ -165,70 +309,41 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const supabase = await createClient();
 
   const [
-    productsResult,
+    productIndexResult,
     categoriesResult,
     homepageSettingsResult,
     announcementsResult,
   ] = await Promise.all([
-    supabase
-      .from("products")
-      .select(
-        `
-          id,
-          name,
-          slug,
-          description,
-          is_featured,
-          is_trending,
-          is_new_arrival,
-          new_drop_started_at,
-          created_at,
-          availability,
-          offer_started_at,
-          discovering_started_at,
-          coming_soon_started_at,
-
-          categories (
-            name
-          ),
-
-          brands (
-            name
-          ),
-
-          product_images (
+          supabase
+        .from("products")
+        .select(
+          `
             id,
-            image_url,
-            alt_text,
-            position,
-            is_primary,
-            variant_id,
-            variant_position,
-            is_variant_primary,
-            product_image_variants (
-              variant_id,
-              position,
-              is_primary
+            created_at,
+            is_featured,
+            is_trending,
+            is_new_arrival,
+            new_drop_started_at,
+            availability,
+            offer_started_at,
+            discovering_started_at,
+            coming_soon_started_at,
+
+            categories (
+              name
+            ),
+
+            product_variants (
+              regular_price,
+              sale_price,
+              is_active
             )
-          ),
-
-          product_variants (
-            id,
-            display_position,
-            regular_price,
-            sale_price,
-            stock_quantity,
-            size,
-            variant_name,
-            is_active,
-            availability_status
-          )
-        `,
-      )
-      .eq("status", "published")
-      .order("created_at", {
-        ascending: false,
-      }),
+          `,
+        )
+        .eq("status", "published")
+        .order("created_at", {
+          ascending: false,
+        }),
 
     supabase
       .from("categories")
@@ -276,8 +391,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       }),
   ]);
 
-  if (productsResult.error) {
-    console.error("V3 homepage products could not load:", productsResult.error);
+  if (productIndexResult.error) {
+    console.error(
+      "V3 homepage product index could not load:",
+      productIndexResult.error,
+    );
   }
 
   if (categoriesResult.error) {
@@ -286,10 +404,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       categoriesResult.error,
     );
   }
-
-  const products = ((productsResult.data ?? []) as ProductRow[]).map(
-    normalizeProduct,
-  );
 
   const homepageSettings = normalizeHomepageSettings(
     homepageSettingsResult.data ?? null,
@@ -317,35 +431,207 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     homepage_theme: category.homepage_theme === "dark" ? "dark" : "light",
   }));
 
-  const latestProducts = sortProductsByTimestamp(
-    products.filter(isCurrentNewDrop),
+  const productIndex = (
+    (productIndexResult.data ?? []) as HomepageProductIndexRow[]
+  ).map(normalizeProductIndex);
+
+  const latestIndex = sortProductIndexByTimestamp(
+    productIndex.filter(indexCurrentNewDrop),
     (product) => product.new_drop_started_at,
   );
 
-  const latestFallback =
-    latestProducts.length > 0
-      ? latestProducts
-      : sortProductsByTimestamp(products, (product) => product.created_at);
+  const latestIndexFallback =
+    latestIndex.length > 0
+      ? latestIndex
+      : sortProductIndexByTimestamp(
+          productIndex,
+          (product) => product.created_at,
+        );
 
-  const offerProducts = sortProductsByTimestamp(
-    products.filter(isProductOnOffer),
+  const offerIndex = sortProductIndexByTimestamp(
+    productIndex.filter(indexProductOnOffer),
     (product) => product.offer_started_at,
   );
 
-  const featuredProducts = sortProductsByTimestamp(
-    products.filter((product) => product.is_featured || product.is_trending),
+  const featuredIndex = sortProductIndexByTimestamp(
+    productIndex.filter(
+      (product) => product.is_featured || product.is_trending,
+    ),
     (product) => product.discovering_started_at,
   );
 
-  const featuredFallback =
-    featuredProducts.length > 0
-      ? featuredProducts
-      : sortProductsByTimestamp(products, (product) => product.created_at);
+  const featuredIndexFallback =
+    featuredIndex.length > 0
+      ? featuredIndex
+      : sortProductIndexByTimestamp(
+          productIndex,
+          (product) => product.created_at,
+        );
 
-  const comingSoonProducts = sortProductsByTimestamp(
-    products.filter(isComingSoonProduct),
+  const comingSoonIndex = sortProductIndexByTimestamp(
+    productIndex.filter(
+      (product) => product.availability === "coming_soon",
+    ),
     (product) => product.coming_soon_started_at,
   );
+
+  /*
+   * Only products that can actually appear on the homepage now
+   * receive the expensive media/configuration payload.
+   */
+  const selectedProductIds = new Set<string>();
+
+  function selectProducts(
+    products: HomepageProductIndex[],
+    limit = 12,
+  ) {
+    for (const product of products.slice(0, limit)) {
+      selectedProductIds.add(product.id);
+    }
+  }
+
+  selectProducts(latestIndexFallback);
+  selectProducts(offerIndex);
+  selectProducts(featuredIndexFallback);
+  selectProducts(comingSoonIndex);
+
+  /*
+   * Preserve explicit hero selection even when that product does
+   * not belong to one of the four merchandising shelves.
+   */
+  if (homepageSettings.hero_product_id) {
+    selectedProductIds.add(homepageSettings.hero_product_id);
+  }
+
+  /*
+   * Preserve the existing catalogProducts[0] hero fallback.
+   */
+  if (productIndex[0]?.id) {
+    selectedProductIds.add(productIndex[0].id);
+  }
+
+  /*
+   * Preserve CategoryMedia exactly:
+   * productForCategory() currently selects the first published
+   * product for each category from the created_at-desc catalogue.
+   */
+  for (const category of categories) {
+    const normalizedCategory = category.name.trim().toLowerCase();
+
+    const categoryProduct = productIndex.find(
+      (product) =>
+        product.categoryName.trim().toLowerCase() === normalizedCategory,
+    );
+
+    if (categoryProduct) {
+      selectedProductIds.add(categoryProduct.id);
+    }
+  }
+
+  const selectedIds = [...selectedProductIds];
+
+  const selectedProductsResult =
+    selectedIds.length > 0
+      ? await supabase
+          .from("products")
+          .select(
+            `
+              id,
+              name,
+              slug,
+              description,
+              is_featured,
+              is_trending,
+              is_new_arrival,
+              new_drop_started_at,
+              created_at,
+              availability,
+              offer_started_at,
+              discovering_started_at,
+              coming_soon_started_at,
+
+              categories (
+                name
+              ),
+
+              brands (
+                name
+              ),
+
+              product_images (
+                id,
+                image_url,
+                storage_path,
+                alt_text,
+                position,
+                is_primary,
+                variant_id,
+                variant_position,
+                is_variant_primary,
+                product_image_variants (
+                  variant_id,
+                  position,
+                  is_primary
+                )
+              ),
+
+              product_variants (
+                id,
+                display_position,
+                regular_price,
+                sale_price,
+                stock_quantity,
+                size,
+                variant_name,
+                is_active,
+                availability_status
+              )
+            `,
+          )
+          .eq("status", "published")
+          .in("id", selectedIds)
+      : {
+          data: [] as ProductRow[],
+          error: null,
+        };
+
+  if (selectedProductsResult.error) {
+    console.error(
+      "V3 homepage selected products could not load:",
+      selectedProductsResult.error,
+    );
+  }
+
+  const selectedProducts = (
+    (selectedProductsResult.data ?? []) as ProductRow[]
+  ).map((product) => normalizeProduct(product, supabase));
+
+  const productById = new Map(
+    selectedProducts.map((product) => [product.id, product]),
+  );
+
+  function materializeProducts(indexProducts: HomepageProductIndex[]) {
+    return indexProducts
+      .slice(0, 12)
+      .map((product) => productById.get(product.id))
+      .filter((product): product is HomepageProduct => Boolean(product));
+  }
+
+  const latestProducts = materializeProducts(latestIndexFallback);
+  const offerProducts = materializeProducts(offerIndex);
+  const featuredProducts = materializeProducts(featuredIndexFallback);
+  const comingSoonProducts = materializeProducts(comingSoonIndex);
+
+  /*
+   * Reconstruct catalogProducts in the exact original catalogue order.
+   * This preserves:
+   * - configured hero lookup
+   * - newest hero fallback
+   * - first-product-per-category media fallback
+   */
+  const products = productIndex
+    .map((product) => productById.get(product.id))
+    .filter((product): product is HomepageProduct => Boolean(product));
 
   return (
     <>
@@ -362,9 +648,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       <V3Homepage
         categories={categories}
-        latestProducts={latestFallback}
+        latestProducts={latestProducts}
         offerProducts={offerProducts}
-        featuredProducts={featuredFallback}
+        featuredProducts={featuredProducts}
         comingSoonProducts={comingSoonProducts}
         catalogProducts={products}
         heroImageUrl={homepageSettings.hero_image_url}

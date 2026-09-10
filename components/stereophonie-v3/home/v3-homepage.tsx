@@ -29,7 +29,9 @@ function primaryProductImage(product: V3Product | undefined) {
   }
 
   const images = [...product.images]
-    .filter((image) => Boolean(image.image_url))
+    .filter((image) =>
+      Boolean(image.storefront_image_url || image.image_url),
+    )
     .sort((a, b) => {
       if (a.is_primary !== b.is_primary) {
         return a.is_primary ? -1 : 1;
@@ -38,7 +40,11 @@ function primaryProductImage(product: V3Product | undefined) {
       return (a.position ?? 0) - (b.position ?? 0);
     });
 
-  return images[0]?.image_url ?? null;
+  return (
+    images[0]?.storefront_image_url ??
+    images[0]?.image_url ??
+    null
+  );
 }
 
 function productForCategory(category: V3HomeCategory, products: V3Product[]) {
@@ -91,10 +97,12 @@ function CategoryMedia({
   category,
   products,
   className = "",
+  priority = false,
 }: {
   category: V3HomeCategory;
   products: V3Product[];
   className?: string;
+  priority?: boolean;
 }) {
   const image = categoryImage(category, products);
 
@@ -104,9 +112,9 @@ function CategoryMedia({
         <img
           src={image}
           alt=""
-          loading="eager"
+          loading={priority ? "eager" : "lazy"}
           decoding="async"
-          fetchPriority="auto"
+          fetchPriority={priority ? "high" : "low"}
         />
       ) : (
         <div className="st3-cat-media__empty" aria-hidden="true">
@@ -163,7 +171,7 @@ function ProductSection({
     return null;
   }
 
-  const shelfProducts = products;
+  const shelfProducts = products.slice(0, 12);
 
   return (
     <V3Reveal>
@@ -371,6 +379,7 @@ export default function V3Homepage({
                   category={first}
                   products={catalogProducts}
                   className="st3-cat-media--hero"
+                  priority
                 />
               </Link>
             </V3Reveal>

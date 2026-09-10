@@ -1,59 +1,24 @@
 import type { Metadata } from "next";
-import V2ShopPage from "@/components/stereophonie-v2/shop/v2-shop-page";
-import type {
-  StoreProductCardProduct,
-  StoreProductImage,
-  StoreProductVariant,
-} from "@/components/storefront/store-product-card";
-import { createClient } from "@/lib/supabase/server";
 
 import GamingDesktopBuilder from "@/components/storefront/gaming-desktop-builder";
+import V2ShopPage from "@/components/stereophonie-v2/shop/v2-shop-page";
+import {
+  shopSelectedAvailability,
+  shopSelectedPrice,
+  shopSelectedSort,
+  shopSingleParameter,
+} from "@/lib/storefront-shop-catalog";
+import {
+  loadShopProductBatch,
+  SHOP_PRODUCTS_PER_BATCH,
+} from "@/lib/storefront-shop-loader";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Shop",
   description:
     "Browse Stereophonie electronics, technology and accessories. Filter products by category, brand, availability and price.",
 };
-
-type NamedRelation =
-  | {
-      name: string;
-    }
-  | {
-      name: string;
-    }[]
-  | null;
-
-type ShopProductImage = StoreProductImage & {
-  id: string;
-  product_image_variants?:
-    | {
-        variant_id: string;
-        position: number;
-        is_primary: boolean;
-      }[]
-    | null;
-};
-
-type ProductRow = {
-  id: string;
-  name: string;
-  slug: string | null;
-  description: string | null;
-  is_featured: boolean | null;
-  is_trending: boolean | null;
-  is_new_arrival: boolean | null;
-  new_drop_started_at: string | null;
-  created_at: string | null;
-  categories: NamedRelation;
-  brands: NamedRelation;
-  product_images: ShopProductImage[] | null;
-  product_variants: StoreProductVariant[] | null;
-};
-
-type AvailabilityFilter = "" | "in-stock";
-
-type SortOption = "newest" | "price-asc" | "price-desc";
 
 type ShopPageProps = {
   searchParams: Promise<{
@@ -69,395 +34,24 @@ type ShopPageProps = {
   }>;
 };
 
-function singleParameter(value: string | string[] | undefined) {
-  if (Array.isArray(value)) {
-    return value[0] ?? "";
-  }
-
-  return value ?? "";
-}
-
-function relationName(relation: NamedRelation, fallback = "") {
-  if (!relation) {
-    return fallback;
-  }
-
-  if (Array.isArray(relation)) {
-    return relation[0]?.name?.trim() || fallback;
-  }
-
-  return relation.name?.trim() || fallback;
-}
-
-function categoryName(product: ProductRow) {
-  return relationName(product.categories, "Technology");
-}
-
-function brandName(product: ProductRow) {
-  return relationName(product.brands, "");
-}
-
-function numberValue(value: unknown) {
-  const parsed = typeof value === "number" ? value : Number(value);
-
-  return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function selectedPrice(value: string) {
-  const normalized = value.trim();
-
-  if (!normalized) {
-    return null;
-  }
-
-  const parsed = Number(normalized);
-
-  if (!Number.isFinite(parsed) || parsed < 0) {
-    return null;
-  }
-
-  return parsed;
-}
-
-function selectedAvailability(value: string): AvailabilityFilter {
-  return value === "in-stock" ? "in-stock" : "";
-}
-
-function selectedSort(value: string): SortOption {
-  if (value === "price-asc" || value === "price-desc") {
-    return value;
-  }
-
-  return "newest";
-}
-
-function variantPrice(variant: StoreProductVariant) {
-  const regular = numberValue(variant.regular_price);
-  const sale = numberValue(variant.sale_price);
-
-  const validSale = sale > 0 && regular > 0 && sale < regular;
-
-  return validSale ? sale : regular;
-}
-
-function productOnOffer(product: ProductRow) {
-  return (product.product_variants ?? []).some((variant) => {
-    if (variant.is_active === false) {
-      return false;
-    }
-
-    const regular = numberValue(variant.regular_price);
-
-    const sale = numberValue(variant.sale_price);
-
-    return regular > 0 && sale > 0 && sale < regular;
-  });
-}
-
-function productPrices(product: ProductRow) {
-  return (product.product_variants ?? [])
-    .filter((variant) => variant.is_active !== false)
-    .map(variantPrice)
-    .filter((price) => price > 0);
-}
-
-function lowestPrice(product: ProductRow) {
-  const prices = productPrices(product);
-
-  return prices.length > 0 ? Math.min(...prices) : null;
-}
-
-function normalizedAvailability(value: unknown) {
-  return String(value ?? "")
-    .trim()
-    .toLowerCase()
-    .replaceAll(" ", "_");
-}
-
-function productInStock(product: ProductRow) {
-  return (product.product_variants ?? []).some((variant) => {
-    if (variant.is_active === false) {
-      return false;
-    }
-
-    const status = normalizedAvailability(variant.availability_status);
-    const quantity = numberValue(variant.stock_quantity);
-
-    if (status === "coming_soon" || status === "out_of_stock") {
-      return false;
-    }
-
-    return quantity > 0 || status === "in_stock" || status === "low_stock";
-  });
-}
-
-function matchesPriceRange(
-  product: ProductRow,
-  minimum: number | null,
-  maximum: number | null,
-) {
-  if (minimum === null && maximum === null) {
-    return true;
-  }
-
-  return productPrices(product).some((price) => {
-    if (minimum !== null && price < minimum) {
-      return false;
-    }
-
-    if (maximum !== null && price > maximum) {
-      return false;
-    }
-
-    return true;
-  });
-}
-
-function matchesSearch(product: ProductRow, search: string) {
-  const query = search.trim().toLowerCase();
-
-  if (!query) {
-    return true;
-  }
-
-  const searchableValues = [
-    product.name,
-    product.description ?? "",
-    categoryName(product),
-    brandName(product),
-    ...(product.product_variants ?? []).flatMap((variant) => [
-      String(variant.size ?? ""),
-      String(
-        (variant as StoreProductVariant & { variant_name?: string })
-          .variant_name ?? "",
-      ),
-    ]),
-  ];
-
-  return searchableValues.some((value) => value.toLowerCase().includes(query));
-}
-
-function newestTimestamp(product: ProductRow) {
-  if (!product.created_at) {
-    return 0;
-  }
-
-  const timestamp = new Date(product.created_at).getTime();
-
-  return Number.isFinite(timestamp) ? timestamp : 0;
-}
-
-function sortCatalog(products: ProductRow[], sort: SortOption) {
-  const result = [...products];
-
-  if (sort === "price-asc") {
-    return result.sort((first, second) => {
-      const firstPrice = lowestPrice(first);
-      const secondPrice = lowestPrice(second);
-
-      if (firstPrice === null && secondPrice === null) {
-        return newestTimestamp(second) - newestTimestamp(first);
-      }
-
-      if (firstPrice === null) {
-        return 1;
-      }
-
-      if (secondPrice === null) {
-        return -1;
-      }
-
-      return firstPrice - secondPrice;
-    });
-  }
-
-  if (sort === "price-desc") {
-    return result.sort((first, second) => {
-      const firstPrice = lowestPrice(first);
-      const secondPrice = lowestPrice(second);
-
-      if (firstPrice === null && secondPrice === null) {
-        return newestTimestamp(second) - newestTimestamp(first);
-      }
-
-      if (firstPrice === null) {
-        return 1;
-      }
-
-      if (secondPrice === null) {
-        return -1;
-      }
-
-      return secondPrice - firstPrice;
-    });
-  }
-
-  return result.sort(
-    (first, second) => newestTimestamp(second) - newestTimestamp(first),
-  );
-}
-
-function storefrontConfigurationImages(
-  product: ProductRow,
-): StoreProductImage[] {
-  const images = [...(product.product_images ?? [])];
-
-  if (images.length <= 1) {
-    return images;
-  }
-
-  /*
-   * The administrator's FIRST configuration controls the shop card.
-   *
-   * Configuration 1:
-   *   Position 1 = normal card image
-   *   Position 2 = hover image
-   */
-  const firstConfiguration = [...(product.product_variants ?? [])]
-    .filter((variant) => variant.is_active !== false)
-    .sort((first, second) => {
-      const difference =
-        Number(first.display_position ?? 0) -
-        Number(second.display_position ?? 0);
-
-      if (difference !== 0) {
-        return difference;
-      }
-
-      /*
-       * Match Admin configuration ordering exactly.
-       *
-       * A database UUID must never decide which customer-facing
-       * configuration controls the shop-card photographs.
-       *
-       * Admin uses the configuration name as its deterministic
-       * fallback when display positions are tied, so /shop must
-       * do the same.
-       */
-      return String(first.variant_name ?? first.size ?? "").localeCompare(
-        String(second.variant_name ?? second.size ?? ""),
-        undefined,
-        {
-          numeric: true,
-        },
-      );
-    })[0];
-
-  if (!firstConfiguration?.id) {
-    return images
-      .sort(
-        (first, second) =>
-          Number(first.position ?? 0) - Number(second.position ?? 0),
-      )
-      .map((image, index) => ({
-        ...image,
-        position: index,
-        is_primary: index === 0,
-      }));
-  }
-
-  const gallery = images
-    .map((image) => ({
-      image,
-      assignment: Array.isArray(image.product_image_variants)
-        ? image.product_image_variants.find(
-            (assignment) => assignment.variant_id === firstConfiguration.id,
-          )
-        : undefined,
-    }))
-    .filter(
-      (
-        entry,
-      ): entry is {
-        image: ShopProductImage;
-        assignment: {
-          variant_id: string;
-          position: number;
-          is_primary: boolean;
-        };
-      } => Boolean(entry.assignment),
-    )
-    .sort((first, second) => {
-      /*
-       * The administrator's Main photograph is authoritative.
-       *
-       * Even if older configuration-position metadata is imperfect,
-       * Main must always become:
-       *
-       *   images[0] = normal shop-card photograph
-       *
-       * Every remaining photograph then follows the exact
-       * configuration-specific position saved by the photo manager:
-       *
-       *   images[1] = hover photograph
-       *   images[2] = third photograph
-       *   ...
-       */
-      if (first.assignment.is_primary !== second.assignment.is_primary) {
-        return first.assignment.is_primary ? -1 : 1;
-      }
-
-      const difference =
-        Number(first.assignment.position ?? 0) -
-        Number(second.assignment.position ?? 0);
-
-      if (difference !== 0) {
-        return difference;
-      }
-
-      return first.image.id.localeCompare(second.image.id);
-    });
-
-  if (gallery.length === 0) {
-    return images
-      .sort(
-        (first, second) =>
-          Number(first.position ?? 0) - Number(second.position ?? 0),
-      )
-      .map((image, index) => ({
-        ...image,
-        position: index,
-        is_primary: index === 0,
-      }));
-  }
-
-  return gallery.map(({ image }, index) => ({
-    ...image,
-    position: index,
-    is_primary: index === 0,
-  }));
-}
-
-function normalizeProduct(product: ProductRow): StoreProductCardProduct {
-  return {
-    id: product.id,
-    name: product.name,
-    slug: product.slug,
-    description: product.description,
-    categoryName: categoryName(product),
-    is_featured: product.is_featured,
-    is_trending: product.is_trending,
-    is_new_arrival: product.is_new_arrival,
-    new_drop_started_at: product.new_drop_started_at,
-    images: storefrontConfigurationImages(product),
-    variants: product.product_variants ?? [],
-  };
-}
-
-export default async function ShopPage({ searchParams }: ShopPageProps) {
+export default async function ShopPage({
+  searchParams,
+}: ShopPageProps) {
   const parameters = await searchParams;
 
   const search =
-    singleParameter(parameters.search).trim() ||
-    singleParameter(parameters.q).trim();
+    shopSingleParameter(parameters.search).trim() ||
+    shopSingleParameter(parameters.q).trim();
 
-  const category = singleParameter(parameters.category).trim();
+  const category = shopSingleParameter(
+    parameters.category,
+  ).trim();
 
   /*
    * STEREOPHONIE_GAMING_DESKTOP_BUILDER_ROUTE
    *
-   * Gaming Desktop is a custom consultation experience rather than
-   * a normal product-grid category.
+   * Gaming Desktop remains a custom consultation experience
+   * rather than a normal product-grid category.
    */
   const normalizedGamingDesktopCategory = category
     .trim()
@@ -472,83 +66,65 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   if (isGamingDesktopExperience) {
     return <GamingDesktopBuilder />;
   }
+
   const offers =
-    singleParameter(parameters.offers).trim().toLowerCase() === "true";
+    shopSingleParameter(parameters.offers)
+      .trim()
+      .toLowerCase() === "true";
 
-  const brand = singleParameter(parameters.brand).trim();
+  const brand = shopSingleParameter(
+    parameters.brand,
+  ).trim();
 
-  const availability = selectedAvailability(
-    singleParameter(parameters.availability).toLowerCase(),
+  const availability = shopSelectedAvailability(
+    shopSingleParameter(
+      parameters.availability,
+    ).toLowerCase(),
   );
 
-  const requestedMinimumPrice = selectedPrice(
-    singleParameter(parameters.minPrice),
+  const requestedMinimumPrice = shopSelectedPrice(
+    shopSingleParameter(parameters.minPrice),
   );
 
-  const requestedMaximumPrice = selectedPrice(
-    singleParameter(parameters.maxPrice),
+  const requestedMaximumPrice = shopSelectedPrice(
+    shopSingleParameter(parameters.maxPrice),
   );
 
-  const sort = selectedSort(singleParameter(parameters.sort).toLowerCase());
+  const sort = shopSelectedSort(
+    shopSingleParameter(parameters.sort).toLowerCase(),
+  );
 
   const supabase = await createClient();
 
-  const [productsResult, categoriesResult, brandsResult] = await Promise.all([
-    supabase
-      .from("products")
-      .select(
-        `
-          id,
-          name,
-          slug,
-          description,
-          is_featured,
-          is_trending,
-          is_new_arrival,
-          new_drop_started_at,
-          created_at,
-
-          categories (
-            name
-          ),
-
-          brands (
-            name
-          ),
-
-          product_images (
-            id,
-            image_url,
-            alt_text,
-            position,
-            is_primary,
-            variant_id,
-            variant_position,
-            is_variant_primary,
-            product_image_variants (
-              variant_id,
-              position,
-              is_primary
-            )
-          ),
-
-          product_variants (
-            id,
-            display_position,
-            regular_price,
-            sale_price,
-            stock_quantity,
-            size,
-            variant_name,
-            is_active,
-            availability_status
-          )
-        `,
-      )
-      .eq("status", "published")
-      .order("created_at", {
-        ascending: false,
-      }),
+  /*
+   * Product loading is now two-stage:
+   *
+   * 1. The lightweight catalogue index preserves exact
+   *    whole-catalogue filtering, searching, price bounds
+   *    and sorting.
+   *
+   * 2. The expensive image/configuration graph is fetched
+   *    only for the first visible batch.
+   */
+  const [
+    initialBatch,
+    categoriesResult,
+    brandsResult,
+  ] = await Promise.all([
+    loadShopProductBatch({
+      filters: {
+        search,
+        category,
+        offers,
+        brand,
+        availability,
+        requestedMinimumPrice,
+        requestedMaximumPrice,
+        sort,
+      },
+      offset: 0,
+      limit: SHOP_PRODUCTS_PER_BATCH,
+    }),
 
     supabase
       .from("categories")
@@ -573,10 +149,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       }),
   ]);
 
-  if (productsResult.error) {
-    console.error("Stereophonie catalog could not load:", productsResult.error);
-  }
-
   if (categoriesResult.error) {
     console.error(
       "Stereophonie categories could not load:",
@@ -585,10 +157,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   }
 
   if (brandsResult.error) {
-    console.error("Stereophonie brands could not load:", brandsResult.error);
+    console.error(
+      "Stereophonie brands could not load:",
+      brandsResult.error,
+    );
   }
-
-  const products = (productsResult.data ?? []) as ProductRow[];
 
   const categories = (categoriesResult.data ?? [])
     .map((item) => String(item.name ?? "").trim())
@@ -598,140 +171,25 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     .map((item) => String(item.name ?? "").trim())
     .filter(Boolean);
 
-  /*
-   * PRICE WINDOW
-   *
-   * The slider bounds react to:
-   * - current category
-   * - current brand
-   * - current search
-   * - stock-only selection
-   *
-   * They intentionally ignore the current price filter itself,
-   * otherwise the rail would collapse around itself.
-   */
-  const priceWindowProducts = products.filter((product) => {
-    if (offers && !productOnOffer(product)) {
-      return false;
-    }
-
-    if (
-      category &&
-      categoryName(product).toLowerCase() !== category.toLowerCase()
-    ) {
-      return false;
-    }
-
-    if (brand && brandName(product).toLowerCase() !== brand.toLowerCase()) {
-      return false;
-    }
-
-    if (availability === "in-stock" && !productInStock(product)) {
-      return false;
-    }
-
-    if (!matchesSearch(product, search)) {
-      return false;
-    }
-
-    return true;
-  });
-
-  const availablePrices = priceWindowProducts.flatMap((product) =>
-    productPrices(product),
-  );
-
-  let catalogMinimumPrice =
-    availablePrices.length > 0 ? Math.floor(Math.min(...availablePrices)) : 0;
-
-  let catalogMaximumPrice =
-    availablePrices.length > 0 ? Math.ceil(Math.max(...availablePrices)) : 5;
-
-  /*
-   * Physical Filter System requirement:
-   * MIN and MAX must always have at least $5 between them.
-   */
-  if (catalogMaximumPrice - catalogMinimumPrice < 5) {
-    catalogMaximumPrice = catalogMinimumPrice + 5;
-  }
-
-  let minimumPrice = requestedMinimumPrice;
-  let maximumPrice = requestedMaximumPrice;
-
-  if (minimumPrice !== null) {
-    minimumPrice = Math.min(
-      Math.max(minimumPrice, catalogMinimumPrice),
-      catalogMaximumPrice - 5,
-    );
-  }
-
-  if (maximumPrice !== null) {
-    maximumPrice = Math.max(
-      Math.min(maximumPrice, catalogMaximumPrice),
-      catalogMinimumPrice + 5,
-    );
-  }
-
-  if (
-    minimumPrice !== null &&
-    maximumPrice !== null &&
-    maximumPrice - minimumPrice < 5
-  ) {
-    maximumPrice = Math.min(catalogMaximumPrice, minimumPrice + 5);
-
-    if (maximumPrice - minimumPrice < 5) {
-      minimumPrice = Math.max(catalogMinimumPrice, maximumPrice - 5);
-    }
-  }
-
-  const filteredProducts = products.filter((product) => {
-    if (offers && !productOnOffer(product)) {
-      return false;
-    }
-
-    if (
-      category &&
-      categoryName(product).toLowerCase() !== category.toLowerCase()
-    ) {
-      return false;
-    }
-
-    if (brand && brandName(product).toLowerCase() !== brand.toLowerCase()) {
-      return false;
-    }
-
-    if (availability === "in-stock" && !productInStock(product)) {
-      return false;
-    }
-
-    if (!matchesPriceRange(product, minimumPrice, maximumPrice)) {
-      return false;
-    }
-
-    if (!matchesSearch(product, search)) {
-      return false;
-    }
-
-    return true;
-  });
-
-  const displayedProducts = sortCatalog(filteredProducts, sort).map(
-    normalizeProduct,
-  );
-
   return (
     <V2ShopPage
-      products={displayedProducts}
+      products={initialBatch.products}
+      totalProducts={initialBatch.totalProducts}
       categories={categories}
       brands={brands}
       selectedCategory={category}
       selectedBrand={brand}
+      selectedOffers={offers}
       selectedAvailability={availability}
       selectedSort={sort}
-      selectedMinPrice={minimumPrice}
-      selectedMaxPrice={maximumPrice}
-      minimumAvailablePrice={catalogMinimumPrice}
-      maximumAvailablePrice={catalogMaximumPrice}
+      selectedMinPrice={initialBatch.minimumPrice}
+      selectedMaxPrice={initialBatch.maximumPrice}
+      minimumAvailablePrice={
+        initialBatch.minimumAvailablePrice
+      }
+      maximumAvailablePrice={
+        initialBatch.maximumAvailablePrice
+      }
       selectedSearch={search}
     />
   );

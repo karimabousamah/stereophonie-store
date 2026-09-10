@@ -1,8 +1,12 @@
+
+import Image from "next/image";
 import Link from "next/link";
 
 export type V3ProductImage = {
   id?: string | null;
   image_url: string | null;
+  storage_path?: string | null;
+  storefront_image_url?: string | null;
   alt_text: string | null;
   position: number;
   is_primary: boolean;
@@ -209,12 +213,17 @@ export default function V3ProductCard({ product }: { product: V3Product }) {
           ) : null}
         </div>
 
-        {image?.image_url ? (
-          <img
-            src={image.image_url}
+        {image?.storefront_image_url || image?.image_url ? (
+          <Image
+            src={image.storefront_image_url || image.image_url!}
             alt={image.alt_text || product.name}
             className="st3-product-card__image"
-            loading="eager"
+            width={640}
+            height={640}
+            sizes="(max-width: 560px) 50vw, (max-width: 900px) 33vw, (max-width: 1400px) 25vw, 320px"
+            quality={75}
+            unoptimized={Boolean(image.storefront_image_url)}
+            loading="lazy"
           />
         ) : (
           <div className="st3-product-card__placeholder">

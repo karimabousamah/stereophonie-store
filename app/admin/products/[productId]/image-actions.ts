@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import sharp from "sharp";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -9,6 +10,136 @@ const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const maximumImageSize = 10 * 1024 * 1024;
 const maximumImagesPerConfiguration = 10;
+
+
+/*
+ * ============================================================
+ * STOREFRONT THUMBNAILS
+ * ============================================================
+ *
+ * Keep the original product image untouched.
+ *
+ * A lightweight WebP derivative can be generated once during
+ * upload and served directly from Supabase Storage to shop cards.
+ *
+ * No runtime Next.js image transformation is required.
+ * No database schema change is required.
+ */
+const storefrontThumbnailMaximumSize = 640;
+const storefrontThumbnailQuality = 80;
+const storefrontThumbnailCacheControl = "31536000";
+
+function storefrontThumbnailPath(storagePath: string) {
+  const normalizedPath = String(storagePath ?? "").trim();
+
+  if (!normalizedPath) {
+    throw new Error("The image storage path is missing.");
+  }
+
+  const slashIndex = normalizedPath.lastIndexOf("/");
+
+  const directory =
+    slashIndex >= 0
+      ? normalizedPath.slice(0, slashIndex)
+      : "";
+
+  const filename =
+    slashIndex >= 0
+      ? normalizedPath.slice(slashIndex + 1)
+      : normalizedPath;
+
+  const baseName =
+    filename.replace(/\.[^.]+$/, "") || "image";
+
+  const thumbnailFilename = `${baseName}.webp`;
+
+  return directory
+    ? `${directory}/storefront/${thumbnailFilename}`
+    : `storefront/${thumbnailFilename}`;
+}
+
+async function createStorefrontThumbnail(
+  input: Buffer | Uint8Array,
+) {
+  return sharp(input)
+    .rotate()
+    .resize({
+      width: storefrontThumbnailMaximumSize,
+      height: storefrontThumbnailMaximumSize,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .webp({
+      quality: storefrontThumbnailQuality,
+      alphaQuality: storefrontThumbnailQuality,
+      smartSubsample: true,
+    })
+    .toBuffer();
+}
+
+async function uploadStorefrontThumbnail({
+  supabase,
+  sourceBytes,
+  sourceStoragePath,
+}: {
+  supabase: Awaited<ReturnType<typeof requireAdministrator>>;
+  sourceBytes: Buffer | Uint8Array;
+  sourceStoragePath: string;
+}) {
+  const thumbnailPath =
+    storefrontThumbnailPath(sourceStoragePath);
+
+  const thumbnailBytes =
+    await createStorefrontThumbnail(sourceBytes);
+
+  const { error } = await supabase.storage
+    .from("product-images")
+    .upload(thumbnailPath, thumbnailBytes, {
+      contentType: "image/webp",
+      cacheControl: storefrontThumbnailCacheControl,
+      upsert: true,
+    });
+
+  if (error) {
+    throw new Error(
+      `Storefront thumbnail could not be uploaded: ${error.message}`,
+    );
+  }
+
+  return thumbnailPath;
+}
+
+/*
+ * Thumbnail generation is an optimization only.
+ *
+ * A thumbnail failure must NEVER reject a valid original upload,
+ * product save or configuration assignment.
+ */
+async function tryUploadStorefrontThumbnail({
+  supabase,
+  sourceBytes,
+  sourceStoragePath,
+}: {
+  supabase: Awaited<ReturnType<typeof requireAdministrator>>;
+  sourceBytes: Buffer | Uint8Array;
+  sourceStoragePath: string;
+}) {
+  try {
+    return await uploadStorefrontThumbnail({
+      supabase,
+      sourceBytes,
+      sourceStoragePath,
+    });
+  } catch (error) {
+    console.error(
+      "Storefront thumbnail generation failed:",
+      sourceStoragePath,
+      error,
+    );
+
+    return null;
+  }
+}
 
 async function requireAdministrator() {
   const supabase = await createClient();
@@ -171,6 +302,17 @@ export async function uploadProductImages(formData: FormData) {
       }
 
       uploadedPaths.push(storagePath);
+
+      const storefrontThumbnailStoragePath =
+        await tryUploadStorefrontThumbnail({
+          supabase,
+          sourceBytes: fileBytes,
+          sourceStoragePath: storagePath,
+        });
+
+      if (storefrontThumbnailStoragePath) {
+        uploadedPaths.push(storefrontThumbnailStoragePath);
+      }
 
       const { data: publicUrlData } = supabase.storage
         .from("product-images")
@@ -503,6 +645,44 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       }
 
       permanentStoragePaths.push(destinationPath);
+
+      try {
+        const { data: permanentOriginal, error: downloadError } =
+          await supabase.storage
+            .from("product-images")
+            .download(destinationPath);
+
+        if (downloadError || !permanentOriginal) {
+          console.error(
+            "Storefront thumbnail source download failed:",
+            destinationPath,
+            downloadError,
+          );
+        } else {
+          const permanentOriginalBytes = new Uint8Array(
+            await permanentOriginal.arrayBuffer(),
+          );
+
+          const storefrontThumbnailStoragePath =
+            await tryUploadStorefrontThumbnail({
+              supabase,
+              sourceBytes: permanentOriginalBytes,
+              sourceStoragePath: destinationPath,
+            });
+
+          if (storefrontThumbnailStoragePath) {
+            permanentStoragePaths.push(
+              storefrontThumbnailStoragePath,
+            );
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Storefront thumbnail preparation failed:",
+          destinationPath,
+          error,
+        );
+      }
 
       const temporaryPathIndex = remainingTemporaryPaths.indexOf(
         image.storage_path,

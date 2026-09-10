@@ -12,6 +12,7 @@ import {
 
 type GalleryImage = {
   src: string;
+  fallbackSrc: string | null;
   alt: string;
 
   /*
@@ -117,22 +118,29 @@ function normalizeImages(
   const seen = new Set<string>();
 
   for (const image of images ?? []) {
-    const src = readString(image, [
-      "url",
-      "src",
-      "image_url",
-      "imageUrl",
-      "public_url",
-      "publicUrl",
-      "storage_url",
-      "storageUrl",
-    ]);
+    const storefrontSrc = readString(image, [
+        "storefront_image_url",
+        "storefrontImageUrl",
+      ]);
 
-    if (!src || seen.has(src)) {
-      continue;
-    }
+      const originalSrc = readString(image, [
+        "url",
+        "src",
+        "image_url",
+        "imageUrl",
+        "public_url",
+        "publicUrl",
+        "storage_url",
+        "storageUrl",
+      ]);
 
-    seen.add(src);
+      const src = storefrontSrc ?? originalSrc;
+
+      if (!src || seen.has(src)) {
+        continue;
+      }
+
+      seen.add(src);
 
     const alt =
       readString(image, ["alt", "alt_text", "altText", "caption", "name"]) ??
@@ -203,8 +211,14 @@ function normalizeImages(
       );
 
     normalized.push({
-      src,
-      alt,
+        src,
+        fallbackSrc:
+          storefrontSrc &&
+          originalSrc &&
+          storefrontSrc !== originalSrc
+            ? originalSrc
+            : null,
+        alt,
       variantName,
       variantId,
       variantAssignments,
@@ -217,8 +231,9 @@ function normalizeImages(
 
   if (fallback && !seen.has(fallback)) {
     normalized.unshift({
-      src: fallback,
-      alt: productName,
+        src: fallback,
+        fallbackSrc: null,
+        alt: productName,
       variantName: "",
       variantId: "",
       variantAssignments: [],
@@ -269,6 +284,14 @@ export default function ProductGallery(props: ProductGalleryProps) {
     () => normalizeImages(props.images, fallback, productName),
     [props.images, fallback, productName],
   );
+
+  useEffect(() => {
+    for (const image of allImages.slice(0, 4)) {
+      const preload = new Image();
+      preload.decoding = "async";
+      preload.src = image.src;
+    }
+  }, [allImages]);
 
   /*
    * Empty means no configuration has been explicitly selected yet.
@@ -630,9 +653,18 @@ export default function ProductGallery(props: ProductGalleryProps) {
                 direction === "next" ? "is-next" : "is-previous"
               }`}
               src={outgoingImage.src}
-              alt=""
-              aria-hidden="true"
-              style={{ scale: imageScale }}
+                alt=""
+                aria-hidden="true"
+                decoding="async"
+                onError={(event) => {
+                  if (
+                    outgoingImage.fallbackSrc &&
+                    event.currentTarget.src !== outgoingImage.fallbackSrc
+                  ) {
+                    event.currentTarget.src = outgoingImage.fallbackSrc;
+                  }
+                }}
+                style={{ scale: imageScale }}
               draggable={false}
             />
           ) : null}
@@ -643,9 +675,20 @@ export default function ProductGallery(props: ProductGalleryProps) {
               transitioning ? "is-transitioning" : ""
             } ${direction === "next" ? "is-next" : "is-previous"}`}
             src={activeImage.src}
-            alt={activeImage.alt}
-            draggable={false}
-            style={{ scale: imageScale }}
+              alt={activeImage.alt}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              onError={(event) => {
+                if (
+                  activeImage.fallbackSrc &&
+                  event.currentTarget.src !== activeImage.fallbackSrc
+                ) {
+                  event.currentTarget.src = activeImage.fallbackSrc;
+                }
+              }}
+              draggable={false}
+              style={{ scale: imageScale }}
           />
         </div>
 
