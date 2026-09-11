@@ -1,12 +1,14 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { processStoreImage } from "@/lib/stereophonie-v3/images/process-store-image";
 
 const categoriesPath = "/admin/categories";
+const SHOP_CATEGORY_FILTER_TAG =
+  "storefront-shop-category-filters";
 
 function slugify(value: string) {
   return value
@@ -105,6 +107,7 @@ export async function createCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage("success", "Category created successfully.");
@@ -148,6 +151,7 @@ export async function updateCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage("success", "Category updated successfully.");
@@ -179,6 +183,7 @@ export async function toggleCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage(
@@ -227,6 +232,7 @@ export async function deleteCategory(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage("success", "Category deleted successfully.");
@@ -377,6 +383,7 @@ export async function updateCategoryHomepagePresentation(formData: FormData) {
   revalidatePath(categoriesPath);
   revalidatePath("/");
   revalidatePath("/shop");
+  revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
 
   redirectWithMessage("success", "Homepage category presentation updated.");
 }

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
+import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 
 type WishlistRequestBody = {
   action?: unknown;
@@ -16,15 +17,42 @@ type GuestSyncItem = {
 };
 
 type ProductImageRow = {
+  id: string;
   image_url: string | null;
   storage_path: string | null;
   storefront_image_url?: string | null;
   alt_text: string | null;
   position: number;
   is_primary: boolean;
+
+  /*
+   * Legacy + current configuration-specific media metadata.
+   */
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
+
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
 };
 
 type ProductVariantRow = {
+  id: string;
+
+  /*
+   * These fields define the administrator's configuration order.
+   * The first active configuration controls default card photography.
+   */
+  display_position: number | null;
+  variant_name: string | null;
+  size: string | null;
+  is_active: boolean | null;
+
   regular_price: number | null;
   sale_price: number | null;
   stock_quantity: number;
@@ -201,13 +229,27 @@ export async function GET() {
           name
         ),
         product_images (
+          id,
           image_url,
           storage_path,
           alt_text,
           position,
-          is_primary
+          is_primary,
+          variant_id,
+          variant_position,
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
         ),
         product_variants (
+          id,
+          display_position,
+          variant_name,
+          size,
+          is_active,
           regular_price,
           sale_price,
           stock_quantity,
@@ -256,19 +298,17 @@ export async function GET() {
         is_featured: product.is_featured,
         is_trending: product.is_trending,
         is_new_arrival: product.is_new_arrival,
-        images: [...(product.product_images ?? [])]
-          .sort(
-            (first, second) =>
-              first.position - second.position,
-          )
-          .map((image) => ({
-            ...image,
-            storefront_image_url:
-              storefrontImageUrl(
-                supabase,
-                image.storage_path,
-              ) ?? undefined,
-          })),
+        images: storefrontConfigurationImages(
+          product.product_images ?? [],
+          product.product_variants ?? [],
+        ).map((image) => ({
+          ...image,
+          storefront_image_url:
+            storefrontImageUrl(
+              supabase,
+              image.storage_path,
+            ) ?? undefined,
+        })),
         variants: product.product_variants ?? [],
       },
     ];

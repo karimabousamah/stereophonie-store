@@ -201,8 +201,57 @@ function clean(value: string) {
     .trim();
 }
 
+function escapeAssistantRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&");
+}
+
 function containsAny(text: string, words: string[]) {
-  return words.some((word) => text.includes(clean(word)));
+  /*
+   * ============================================================
+   * ASSISTANT_INTENT_BOUNDARY_V7
+   * ============================================================
+   *
+   * Intent keywords must match complete words / phrases.
+   *
+   * The old implementation used:
+   *
+   *   text.includes("hi")
+   *
+   * which caused:
+   *
+   *   "third" -> contains "hi" -> greeting
+   *
+   * That broke perfectly valid follow-ups such as:
+   *
+   *   "is the third one available?"
+   *
+   * Use Unicode-aware letter/number boundaries instead.
+   *
+   * This still supports complete multi-word phrases such as:
+   *
+   *   "coming soon"
+   *   "low stock"
+   *   "track my order"
+   *   "best value"
+   *
+   * while refusing partial-word collisions.
+   */
+  const normalizedText = clean(text);
+
+  return words.some((word) => {
+    const normalizedWord = clean(word);
+
+    if (!normalizedWord) {
+      return false;
+    }
+
+    const pattern = new RegExp(
+      `(?<![\\p{L}\\p{N}])${escapeAssistantRegExp(normalizedWord)}(?![\\p{L}\\p{N}])`,
+      "u",
+    );
+
+    return pattern.test(normalizedText);
+  });
 }
 
 function detectLanguage(raw: string): AssistantLanguage {

@@ -3,7 +3,7 @@ import { ArrowRight, Layers3, PackageSearch } from "lucide-react";
 
 import StoreFooter from "@/components/storefront/store-footer";
 import StoreHeader from "@/components/storefront/store-header";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type CollectionRow = {
   id: string;
@@ -25,7 +25,7 @@ function getProductLabel(count: number) {
 }
 
 export default async function CollectionsPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const [collectionsResult, productsResult] = await Promise.all([
     supabase

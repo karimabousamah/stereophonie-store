@@ -4,6 +4,7 @@ import Link from "next/link";
 import V3Reveal from "@/components/stereophonie-v3/shared/v3-reveal";
 import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
 import V3EntertainmentCategory from "@/components/stereophonie-v3/home/v3-entertainment-category";
+import ShopRoutePrefetch from "@/components/storefront/shop-route-prefetch";
 import {
   isMoviesSeriesCategory,
   stereophonieEntertainment,
@@ -12,6 +13,10 @@ import {
 import V3ProductCard, {
   type V3Product,
 } from "@/components/stereophonie-v3/shared/v3-product-card";
+
+import V3HeroMediaCarousel, {
+  type V3HeroMediaItem,
+} from "./v3-hero-media-carousel";
 
 export type V3HomeCategory = {
   id: string;
@@ -225,8 +230,9 @@ export default function V3Homepage({
   comingSoonProducts,
   catalogProducts,
   heroImageUrl,
+  heroMedia,
   heroProductId,
-  heroEyebrow,
+  heroEyebrow: _heroEyebrow,
   heroLineOne,
   heroLineTwo,
   heroLineThree,
@@ -243,6 +249,7 @@ export default function V3Homepage({
   comingSoonProducts: V3Product[];
   catalogProducts: V3Product[];
   heroImageUrl?: string | null;
+  heroMedia?: V3HeroMediaItem[];
   heroProductId?: string | null;
   heroEyebrow: string;
   heroLineOne: string;
@@ -266,6 +273,15 @@ export default function V3Homepage({
 
   const heroImage = heroImageUrl?.trim() || primaryProductImage(heroProduct);
 
+  const heroHeadline = [
+    heroLineOne,
+    heroLineTwo,
+    heroLineThree,
+  ]
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(" ");
+
   const first = categories[0];
 
   const second = categories[1];
@@ -274,45 +290,17 @@ export default function V3Homepage({
 
   return (
     <main className="st3-home-live">
+        <ShopRoutePrefetch />
       {/* ====================================================
           MAIN STORE HERO
           ==================================================== */}
 
-      <section className="st3-premium-hero">
+      <section className="st3-premium-hero st3-premium-hero--cinematic">
         <div className="st3-premium-hero__inner">
-          <div className="st3-premium-hero__copy">
-            <p className="st3-premium-hero__eyebrow">{heroEyebrow}</p>
-
-            <h1>
-              {heroLineOne}
-              <br />
-              {heroLineTwo}
-              {heroLineThree ? (
-                <>
-                  <br />
-                  {heroLineThree}
-                </>
-              ) : null}
-            </h1>
-
-            <p className="st3-premium-hero__description">{heroDescription}</p>
-
-            <div className="st3-premium-hero__actions">
-              <Link href={primaryButtonHref} className="st3-button">
-                {primaryButtonLabel}
-              </Link>
-
-              <Link href={secondaryButtonHref} className="st3-link-arrow">
-                {secondaryButtonLabel}
-                <span aria-hidden="true">›</span>
-              </Link>
-            </div>
-          </div>
-
           <div className="st3-premium-hero__visual">
-            <div className="st3-premium-hero__halo" aria-hidden="true" />
-
-            {heroImage ? (
+            {heroMedia?.length ? (
+              <V3HeroMediaCarousel items={heroMedia} />
+            ) : heroImage ? (
               <Image
                 src={heroImage}
                 alt={
@@ -323,11 +311,41 @@ export default function V3Homepage({
                 fill
                 priority
                 fetchPriority="high"
-                sizes="(max-width: 900px) 100vw, 50vw"
+                sizes="100vw"
                 quality={90}
                 className="st3-premium-hero__image"
               />
             ) : null}
+
+            <div
+              className="st3-premium-hero__readability"
+              aria-hidden="true"
+            />
+          </div>
+
+          <div className="st3-premium-hero__copy">
+            <h1>{heroHeadline}</h1>
+
+            <p className="st3-premium-hero__description">
+              {heroDescription}
+            </p>
+
+            <div className="st3-premium-hero__actions">
+              <Link
+                href={primaryButtonHref}
+                className="st3-premium-hero__primary"
+              >
+                {primaryButtonLabel}
+              </Link>
+
+              <Link
+                href={secondaryButtonHref}
+                className="st3-premium-hero__secondary"
+              >
+                {secondaryButtonLabel}
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -339,7 +357,7 @@ export default function V3Homepage({
       {categories.length ? (
         <section className="st3-cat-world">
           <V3Reveal>
-            <div className="st3-cat-intro">
+            <div className="st3-cat-intro st3-home-after-hero">
               <p>Explore Stereophonie</p>
 
               <h2>Find what fits your life.</h2>
@@ -347,93 +365,13 @@ export default function V3Homepage({
           </V3Reveal>
 
           {/* ==================================================
-              CATEGORY 01 — LARGE LIGHT CAMPAIGN
+              HOMEPAGE CATEGORIES — APPLE-LIKE 2-UP CAMPAIGNS
               ================================================== */}
 
-          {first ? (
-            <V3Reveal>
-              <Link
-                href={categoryHref(first)}
-                aria-label={`Explore ${first.name}`}
-                data-category-theme={
-                  first.homepage_theme === "dark" ? "dark" : "light"
-                }
-                className={`st3-cat-hero ${
-                  first.homepage_theme === "dark"
-                    ? "st3-cat-hero--dark"
-                    : "st3-cat-hero--light"
-                }`}
-              >
-                <div className="st3-cat-hero__copy">
-                  <h2>{first.name}</h2>
 
-                  <p>{categoryDescription(first)}</p>
-
-                  <CategoryActions
-                    category={first}
-                    inverted={first.homepage_theme === "dark"}
-                  />
-                </div>
-
-                <CategoryMedia
-                  category={first}
-                  products={catalogProducts}
-                  className="st3-cat-media--hero"
-                  priority
-                />
-              </Link>
-            </V3Reveal>
-          ) : null}
-
-          {/* ==================================================
-              CATEGORY 02 — DIFFERENT / DARK SPLIT CAMPAIGN
-              ================================================== */}
-
-          {second ? (
-            <V3Reveal>
-              <Link
-                href={categoryHref(second)}
-                aria-label={`Explore ${second.name}`}
-                data-category-theme={
-                  second.homepage_theme === "dark" ? "dark" : "light"
-                }
-                className={`st3-cat-split ${
-                  second.homepage_theme === "dark"
-                    ? "st3-cat-split--dark"
-                    : "st3-cat-split--light"
-                }`}
-              >
-                <div className="st3-cat-split__copy">
-                  <p className="st3-cat-kicker">Featured category</p>
-
-                  <h2>{second.name}</h2>
-
-                  <p className="st3-cat-split__description">
-                    {categoryDescription(second)}
-                  </p>
-
-                  <CategoryActions
-                    category={second}
-                    inverted={second.homepage_theme === "dark"}
-                  />
-                </div>
-
-                <CategoryMedia
-                  category={second}
-                  products={catalogProducts}
-                  className="st3-cat-media--split"
-                />
-              </Link>
-            </V3Reveal>
-          ) : null}
-
-          {/* ==================================================
-              REMAINING CATEGORIES — APPLE-LIKE 2-UP CAMPAIGNS
-              ================================================== */}
-
-          {gridCategories.length ? (
+          {[...(first ? [first] : []), ...(second ? [second] : []), ...gridCategories].length ? (
             <div className="st3-cat-grid">
-              {gridCategories.map((category, index) => {
+              {[...(first ? [first] : []), ...(second ? [second] : []), ...gridCategories].map((category, index) => {
                 const dark = category.homepage_theme === "dark";
 
                 const wide = index > 0 && index % 5 === 4;

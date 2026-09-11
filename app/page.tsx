@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import V3Homepage, {
   type V3HomeCategory,
 } from "@/components/stereophonie-v3/home/v3-homepage";
+import type { V3HeroMediaItem } from "@/components/stereophonie-v3/home/v3-hero-media-carousel";
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
 import V3AnnouncementBar, {
   type StorefrontAnnouncement,
 } from "@/components/stereophonie-v3/layout/v3-announcement-bar";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
-import AccountSigninSuccessToast from "@/components/storefront/account-signin-success-toast";
-import AccountSignoutSuccessToast from "@/components/storefront/account-signout-success-toast";
 import {
   isCurrentNewDrop,
   isProductOnOffer,
@@ -17,7 +17,8 @@ import {
   type V3ProductImage,
   type V3ProductVariant,
 } from "@/components/stereophonie-v3/shared/v3-product-card";
-import { createClient } from "@/lib/supabase/server";
+import HomepageAccountSuccessToasts from "@/components/storefront/homepage-account-success-toasts";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizeHomepageSettings } from "@/lib/homepage-settings";
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 
@@ -124,7 +125,7 @@ function storefrontThumbnailPath(storagePath: string) {
 
 function homepageImagesWithStorefrontUrls(
   images: ProductRow["product_images"],
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
 ) {
   return (images ?? []).map((image) => {
     const storagePath =
@@ -168,7 +169,7 @@ type HomepageProduct = V3Product & {
 
 function normalizeProduct(
   product: ProductRow,
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
 ): HomepageProduct {
   return {
     id: product.id,
@@ -290,23 +291,9 @@ function sortProductIndexByTimestamp(
   });
 }
 
-type HomePageProps = {
-  searchParams: Promise<{
-    account?: string | string[];
-  }>;
-};
+export default async function HomePage() {
 
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const resolvedSearchParams = await searchParams;
-
-  const accountState = Array.isArray(resolvedSearchParams.account)
-    ? resolvedSearchParams.account[0]
-    : resolvedSearchParams.account;
-
-  const showSigninSuccess = accountState === "logged-in";
-  const showSignoutSuccess = accountState === "signed-out";
-
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const [
     productIndexResult,
@@ -629,6 +616,58 @@ export default async function HomePage({ searchParams }: HomePageProps) {
    * - newest hero fallback
    * - first-product-per-category media fallback
    */
+  const { data: heroMediaRows, error: heroMediaError } =
+    await supabase
+      .from("homepage_hero_media")
+      .select(
+        `
+        id,
+        media_type,
+        media_url,
+        sort_order,
+        created_at
+      `,
+      )
+      .eq("is_active", true)
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("created_at", {
+        ascending: true,
+      });
+
+  if (heroMediaError) {
+    console.error(
+      "Homepage hero media could not load:",
+      heroMediaError,
+    );
+  }
+
+  const heroMedia = (heroMediaRows ?? []).flatMap((row) => {
+    const mediaType =
+      row.media_type === "image" ||
+      row.media_type === "video"
+        ? row.media_type
+        : null;
+
+    const mediaUrl =
+      typeof row.media_url === "string"
+        ? row.media_url.trim()
+        : "";
+
+    if (!mediaType || !mediaUrl) {
+      return [];
+    }
+
+    return [
+      {
+        id: String(row.id),
+        media_type: mediaType,
+        media_url: mediaUrl,
+      } satisfies V3HeroMediaItem,
+    ];
+  });
+
   const products = productIndex
     .map((product) => productById.get(product.id))
     .filter((product): product is HomepageProduct => Boolean(product));
@@ -637,9 +676,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     <>
       <V3Header />
 
-      <AccountSigninSuccessToast show={showSigninSuccess} />
-
-      <AccountSignoutSuccessToast show={showSignoutSuccess} />
+      <Suspense fallback={null}>
+        <HomepageAccountSuccessToasts />
+      </Suspense>
 
       <V3AnnouncementBar
         announcements={announcements}
@@ -654,6 +693,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         comingSoonProducts={comingSoonProducts}
         catalogProducts={products}
         heroImageUrl={homepageSettings.hero_image_url}
+        heroMedia={heroMedia}
         heroProductId={homepageSettings.hero_product_id}
         heroEyebrow={homepageSettings.hero_eyebrow}
         heroLineOne={homepageSettings.hero_line_one}

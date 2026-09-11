@@ -119,6 +119,14 @@ type AssistantProduct = {
   name: string;
   slug: string;
   description: string | null;
+
+  /*
+   * Internal searchable catalog metadata.
+   *
+   * Populated non-enumerably by mapProduct() from brand,
+   * configuration names and variant attributes.
+   */
+  catalogKnowledge?: string;
   category: string;
   imageUrl: string | null;
   hoverImageUrl: string | null;
@@ -173,6 +181,27 @@ type IncomingWishlistProduct = {
 type IncomingWishlist = {
   hydrated: boolean;
   products: IncomingWishlistProduct[];
+};
+
+/*
+ * ASSISTANT_CONVERSATION_PRODUCT_MEMORY_V5
+ *
+ * Product identity remembered by the browser from the latest
+ * assistant product cards.
+ *
+ * IMPORTANT:
+ * - only IDs / names / slugs are trusted as references
+ * - price and availability are always re-read from the LIVE catalog
+ */
+type IncomingAssistantContextProduct = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+type IncomingAssistantContext = {
+  focusedProduct: IncomingAssistantContextProduct | null;
+  displayedProducts: IncomingAssistantContextProduct[];
 };
 
 type AssistantWishlistAction =
@@ -260,6 +289,66 @@ const MAX_MESSAGE_LENGTH = 1_000;
 
 function cleanText(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeAssistantContextProduct(
+  value: unknown,
+): IncomingAssistantContextProduct | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  const id = cleanText(candidate.id);
+  const name = cleanText(candidate.name);
+  const slug = cleanText(candidate.slug);
+
+  if (!id || !name) {
+    return null;
+  }
+
+  return {
+    id,
+    name,
+    slug,
+  };
+}
+
+function normalizeAssistantContext(
+  value: unknown,
+): IncomingAssistantContext {
+  if (!value || typeof value !== "object") {
+    return {
+      focusedProduct: null,
+      displayedProducts: [],
+    };
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  const focusedProduct =
+    normalizeAssistantContextProduct(
+      candidate.focusedProduct,
+    );
+
+  const displayedProducts =
+    Array.isArray(candidate.displayedProducts)
+      ? candidate.displayedProducts
+          .map(normalizeAssistantContextProduct)
+          .filter(
+            (
+              product,
+            ): product is IncomingAssistantContextProduct =>
+              Boolean(product),
+          )
+          .slice(0, 8)
+      : [];
+
+  return {
+    focusedProduct,
+    displayedProducts,
+  };
 }
 
 function normalizeLanguage(value: unknown): Language {
@@ -448,8 +537,39 @@ function mapProduct(
 ): AssistantProduct {
   const variants = (product.product_variants ?? [])
     .map(mapVariant)
-    .filter((variant) => variant.currentPrice > 0)
-    .sort((first, second) => first.currentPrice - second.currentPrice);
+    /*
+     * ASSISTANT_LIVE_VARIANTS_V5
+     *
+     * Do NOT remove a configuration merely because it has no
+     * purchase price yet.
+     *
+     * Coming-soon products are commonly published before their
+     * final price is available. Removing currentPrice === 0 here
+     * made those products completely invisible to the assistant.
+     *
+     * The assistant knowledge layer must know about ALL published
+     * configurations:
+     *
+     * - in_stock
+     * - low_stock
+     * - out_of_stock
+     * - coming_soon
+     *
+     * Purchase eligibility remains controlled by `purchasable`.
+     */
+    .sort((first, second) => {
+      const firstPrice =
+        first.currentPrice > 0
+          ? first.currentPrice
+          : Number.POSITIVE_INFINITY;
+
+      const secondPrice =
+        second.currentPrice > 0
+          ? second.currentPrice
+          : Number.POSITIVE_INFINITY;
+
+      return firstPrice - secondPrice;
+    });
 
   const purchasablePrices = variants
     .filter((variant) => variant.purchasable)
@@ -552,17 +672,99 @@ function normalizeWords(value: string) {
 }
 
 function productMatchesQuery(product: AssistantProduct, query: string) {
-  const words = normalizeWords(query);
+  const queryWords = normalizeWords(query);
 
-  if (words.length === 0) {
+  if (queryWords.length === 0) {
     return true;
   }
 
-  const searchable = normalizeWords(
-    [product.name, product.category, product.description ?? ""].join(" "),
-  ).join(" ");
+  const searchableWords = normalizeWords(
+    [
+      product.name,
+      product.category,
+      product.description ?? "",
+      product.catalogKnowledge ?? "",
+    ].join(" "),
+  );
 
-  return words.some((word) => searchable.includes(word));
+  const searchable = searchableWords.join(" ");
+  const searchableWordSet = new Set(searchableWords);
+
+  /*
+   * A one-word search remains intentionally broad:
+   *
+   *   phone
+   *   apple
+   *   headphones
+   *
+   * But a multi-word PRODUCT query must no longer match because
+   * one generic token happens to occur somewhere in the product.
+   *
+   * Old behavior:
+   *
+   *   "iPhone 18 Pro"
+   *       ↓
+   *   ANY ONE of iPhone / 18 / Pro matches
+   *       ↓
+   *   unrelated Apple accessories can survive
+   *
+   * New behavior:
+   *
+   *   all meaningful query tokens must be represented.
+   */
+  if (queryWords.length === 1) {
+    const word = queryWords[0];
+
+    return searchableWordSet.has(word) || searchable.includes(word);
+  }
+
+  const ignoredWords = new Set([
+    "the",
+    "this",
+    "that",
+    "with",
+    "for",
+    "and",
+    "from",
+    "have",
+    "has",
+    "show",
+    "find",
+    "want",
+    "need",
+    "please",
+    "product",
+    "products",
+    "available",
+    "availability",
+    "price",
+    "cost",
+    "much",
+    "what",
+    "which",
+    "where",
+    "when",
+    "your",
+    "you",
+    "give",
+    "tell",
+    "about",
+  ]);
+
+  const meaningfulWords = queryWords.filter(
+    (word) => !ignoredWords.has(word),
+  );
+
+  const requiredWords =
+    meaningfulWords.length > 0
+      ? meaningfulWords
+      : queryWords;
+
+  return requiredWords.every(
+    (word) =>
+      searchableWordSet.has(word) ||
+      searchable.includes(word),
+  );
 }
 
 async function searchProducts(argumentsValue: Record<string, unknown>) {
@@ -727,6 +929,568 @@ function normalizeProductReference(value: string) {
     .replace(/[^a-z0-9\u0600-\u06ff\s-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+type AssistantAvailabilityCatalogFilter =
+  | "coming_soon"
+  | "low_stock"
+  | "out_of_stock"
+  | "in_stock";
+
+function meaningfulCatalogWords(value: string) {
+  const ignored = new Set([
+    "a",
+    "an",
+    "the",
+    "do",
+    "does",
+    "did",
+    "you",
+    "your",
+    "we",
+    "have",
+    "has",
+    "having",
+    "is",
+    "are",
+    "was",
+    "were",
+    "what",
+    "which",
+    "who",
+    "where",
+    "when",
+    "how",
+    "much",
+    "many",
+    "show",
+    "tell",
+    "give",
+    "find",
+    "me",
+    "please",
+    "product",
+    "products",
+    "item",
+    "items",
+    "price",
+    "cost",
+    "available",
+    "availability",
+    "currently",
+    "right",
+    "now",
+    "anything",
+    "something",
+    "about",
+    "for",
+    "of",
+    "in",
+    "on",
+    "at",
+    "to",
+    "from",
+    "with",
+    "and",
+    "or",
+    "coming",
+    "soon",
+    "stock",
+    "low",
+    "out",
+  ]);
+
+  return normalizeProductReference(value)
+    .split(" ")
+    .map((word) => word.trim())
+    .filter(
+      (word) =>
+        word.length >= 2 &&
+        !ignored.has(word),
+    );
+}
+
+function resolveExactCatalogProduct(
+  products: AssistantProduct[],
+  reference: string,
+) {
+  const normalizedReference =
+    normalizeProductReference(reference);
+
+  if (!normalizedReference) {
+    return null;
+  }
+
+  /*
+   * --------------------------------------------------------
+   * LEVEL 1 — EXACT NORMALIZED NAME
+   * --------------------------------------------------------
+   */
+  const exact = products.find(
+    (product) =>
+      normalizeProductReference(product.name) ===
+      normalizedReference,
+  );
+
+  if (exact) {
+    return exact;
+  }
+
+  /*
+   * --------------------------------------------------------
+   * LEVEL 2 — THE COMPLETE PRODUCT NAME EXISTS IN THE MESSAGE
+   *
+   * Example:
+   *
+   *   "how much is the iPhone 18 Pro"
+   *
+   * resolves:
+   *
+   *   iPhone 18 Pro
+   *
+   * without allowing Apple adapters/cases to steal the match.
+   * --------------------------------------------------------
+   */
+  const contained = products
+    .filter((product) => {
+      const normalizedName =
+        normalizeProductReference(product.name);
+
+      return (
+        normalizedName.length >= 3 &&
+        normalizedReference.includes(normalizedName)
+      );
+    })
+    .sort(
+      (first, second) =>
+        normalizeProductReference(second.name).length -
+        normalizeProductReference(first.name).length,
+    );
+
+  if (contained.length > 0) {
+    return contained[0];
+  }
+
+  /*
+   * --------------------------------------------------------
+   * LEVEL 3 — COMPLETE PRODUCT-NAME TOKEN COVERAGE
+   *
+   * Every meaningful token in the catalog product name must
+   * occur in the customer's request.
+   *
+   * iPhone 18 Pro:
+   *
+   *   iphone ✓
+   *   18     ✓
+   *   pro    ✓
+   *
+   * Apple 20W USB-C Power Adapter:
+   *
+   *   apple  ✗
+   *   20w    ✗
+   *   usb-c  ✗
+   *   power  ✗
+   *   adapter✗
+   *
+   * Therefore the adapter can never become the answer.
+   * --------------------------------------------------------
+   */
+  const requestWords = new Set(
+    normalizeProductReference(reference)
+      .split(" ")
+      .filter(Boolean),
+  );
+
+  const fullyCovered = products
+    .map((product) => {
+      const productWords =
+        normalizeProductReference(product.name)
+          .split(" ")
+          .filter((word) => word.length >= 2);
+
+      if (productWords.length < 2) {
+        return {
+          product,
+          covered: false,
+          specificity: 0,
+        };
+      }
+
+      const covered = productWords.every(
+        (word) => requestWords.has(word),
+      );
+
+      return {
+        product,
+        covered,
+        specificity: productWords.length,
+      };
+    })
+    .filter((entry) => entry.covered)
+    .sort(
+      (first, second) =>
+        second.specificity - first.specificity,
+    );
+
+  if (fullyCovered.length > 0) {
+    return fullyCovered[0].product;
+  }
+
+  return null;
+}
+
+function assistantFollowUpOrdinal(
+  rawMessage: string,
+) {
+  const normalized =
+    normalizeProductReference(rawMessage);
+
+  const mappings: Array<[RegExp, number]> = [
+    [/\b(first|1st|number 1)\b/, 1],
+    [/\b(second|2nd|number 2)\b/, 2],
+    [/\b(third|3rd|number 3)\b/, 3],
+    [/\b(fourth|4th|number 4)\b/, 4],
+    [/\b(last)\b/, -1],
+  ];
+
+  for (const [pattern, position] of mappings) {
+    if (pattern.test(normalized)) {
+      return position;
+    }
+  }
+
+  return null;
+}
+
+function isContextualProductFollowUp(
+  rawMessage: string,
+) {
+  const normalized =
+    normalizeProductReference(rawMessage);
+
+  if (!normalized) {
+    return false;
+  }
+
+  /*
+   * Explicit whole-catalog requests must NEVER inherit the
+   * previous product.
+   *
+   * Examples:
+   *   "what products are coming soon?"
+   *   "show low stock products"
+   *   "do you have anything out of stock?"
+   */
+  if (
+    /\b(products|items|anything|everything|catalog|catalogue)\b/.test(
+      normalized,
+    )
+  ) {
+    return false;
+  }
+
+  /*
+   * Ordinal / pronoun references.
+   */
+  if (
+    /\b(this one|that one|the one|it|this product|that product)\b/.test(
+      normalized,
+    ) ||
+    assistantFollowUpOrdinal(normalized) !== null
+  ) {
+    return true;
+  }
+
+  /*
+   * Very common compact ecommerce follow-ups.
+   */
+  if (
+    /^(price|price\?|cost|cost\?|stock|stock\?|availability|availability\?|details|details\?|specs|specifications)$/i.test(
+      normalized,
+    )
+  ) {
+    return true;
+  }
+
+  /*
+   * Natural follow-up sentences.
+   */
+  return (
+    /\b(how much|what price|what is the price|what s the price)\b/.test(
+      normalized,
+    ) ||
+    /\b(is it|is this|is that)\b/.test(normalized) ||
+    /\b(in stock|low stock|out of stock|coming soon|available|unavailable)\b/.test(
+      normalized,
+    ) ||
+    /\b(and the|what about|how about)\b/.test(normalized)
+  );
+}
+
+function resolveContextualCatalogProduct(
+  catalog: AssistantProduct[],
+  rawMessage: string,
+  context: IncomingAssistantContext,
+) {
+  if (!isContextualProductFollowUp(rawMessage)) {
+    return null;
+  }
+
+  const ordinal =
+    assistantFollowUpOrdinal(rawMessage);
+
+  if (
+    ordinal !== null &&
+    context.displayedProducts.length > 0
+  ) {
+    const referenced =
+      ordinal === -1
+        ? context.displayedProducts.at(-1) ?? null
+        : context.displayedProducts[ordinal - 1] ?? null;
+
+    if (referenced) {
+      const liveProduct = catalog.find(
+        (product) => product.id === referenced.id,
+      );
+
+      if (liveProduct) {
+        return liveProduct;
+      }
+
+      const bySlug = catalog.find(
+        (product) =>
+          referenced.slug &&
+          product.slug === referenced.slug,
+      );
+
+      if (bySlug) {
+        return bySlug;
+      }
+    }
+  }
+
+  if (context.focusedProduct) {
+    const focusedById = catalog.find(
+      (product) =>
+        product.id === context.focusedProduct?.id,
+    );
+
+    if (focusedById) {
+      return focusedById;
+    }
+
+    const focusedBySlug = catalog.find(
+      (product) =>
+        Boolean(context.focusedProduct?.slug) &&
+        product.slug === context.focusedProduct?.slug,
+    );
+
+    if (focusedBySlug) {
+      return focusedBySlug;
+    }
+
+    const focusedByName =
+      resolveExactCatalogProduct(
+        catalog,
+        context.focusedProduct.name,
+      );
+
+    if (focusedByName) {
+      return focusedByName;
+    }
+  }
+
+  /*
+   * If no explicit focused product survived, use the most recent
+   * displayed product as the conversational fallback.
+   */
+  const lastDisplayed =
+    context.displayedProducts.at(-1);
+
+  if (lastDisplayed) {
+    return (
+      catalog.find(
+        (product) => product.id === lastDisplayed.id,
+      ) ??
+      catalog.find(
+        (product) =>
+          Boolean(lastDisplayed.slug) &&
+          product.slug === lastDisplayed.slug,
+      ) ??
+      resolveExactCatalogProduct(
+        catalog,
+        lastDisplayed.name,
+      )
+    );
+  }
+
+  return null;
+}
+
+function detectAvailabilityCatalogFilter(
+  rawMessage: string,
+): AssistantAvailabilityCatalogFilter | null {
+  const normalized =
+    normalizeProductReference(rawMessage);
+
+  if (
+    /\bcoming soon\b/.test(normalized) ||
+    /\barriving soon\b/.test(normalized) ||
+    /\bupcoming products?\b/.test(normalized)
+  ) {
+    return "coming_soon";
+  }
+
+  if (
+    /\blow stock\b/.test(normalized) ||
+    /\blimited stock\b/.test(normalized) ||
+    /\blimited availability\b/.test(normalized)
+  ) {
+    return "low_stock";
+  }
+
+  if (
+    /\bout of stock\b/.test(normalized) ||
+    /\bsold out\b/.test(normalized) ||
+    /\bunavailable products?\b/.test(normalized)
+  ) {
+    return "out_of_stock";
+  }
+
+  if (
+    /\bin stock\b/.test(normalized) ||
+    /\bavailable now\b/.test(normalized) ||
+    /\bavailable products?\b/.test(normalized)
+  ) {
+    return "in_stock";
+  }
+
+  return null;
+}
+
+function catalogProductMatchesAvailabilityFilter(
+  product: AssistantProduct,
+  filter: AssistantAvailabilityCatalogFilter,
+) {
+  const status = assistantCatalogAvailability(product);
+
+  if (filter === "coming_soon") {
+    return status === "coming_soon";
+  }
+
+  if (filter === "low_stock") {
+    return status === "low_stock";
+  }
+
+  if (filter === "out_of_stock") {
+    return status === "out_of_stock";
+  }
+
+  /*
+   * "What is in stock?" should include:
+   *
+   * - normal in-stock products
+   * - low-stock products
+   * - mixed products that have at least one configuration
+   *   available right now
+   */
+  return (
+    status === "in_stock" ||
+    status === "low_stock" ||
+    status === "mixed"
+  );
+}
+
+function assistantProductForResponse(
+  product: AssistantProduct,
+) {
+  return {
+    ...product,
+
+    /*
+     * The browser card needs the product-level semantic status.
+     */
+    availabilityStatus:
+      assistantCatalogAvailability(product),
+  };
+}
+
+function availabilityCatalogResponse(
+  filter: AssistantAvailabilityCatalogFilter,
+  products: AssistantProduct[],
+  language: Language,
+) {
+  const visibleProducts = products.slice(0, 4);
+
+  if (language === "fr") {
+    if (filter === "coming_soon") {
+      return products.length > 0
+        ? `Oui. Voici les produits qui arrivent prochainement chez Stereophonie : ${visibleProducts.map((product) => product.name).join(", ")}.`
+        : "Aucun produit publié n’est actuellement marqué comme arrivant prochainement.";
+    }
+
+    if (filter === "low_stock") {
+      return products.length > 0
+        ? `Voici les produits actuellement disponibles avec un stock limité : ${visibleProducts.map((product) => product.name).join(", ")}.`
+        : "Aucun produit publié n’est actuellement marqué avec un stock limité.";
+    }
+
+    if (filter === "out_of_stock") {
+      return products.length > 0
+        ? `Voici les produits actuellement en rupture de stock : ${visibleProducts.map((product) => product.name).join(", ")}.`
+        : "Aucun produit publié n’est actuellement marqué en rupture de stock.";
+    }
+
+    return products.length > 0
+      ? `Voici quelques produits actuellement disponibles : ${visibleProducts.map((product) => product.name).join(", ")}.`
+      : "Je ne vois actuellement aucun produit publié disponible immédiatement.";
+  }
+
+  if (language === "ar") {
+    if (filter === "coming_soon") {
+      return products.length > 0
+        ? `نعم. هذه بعض المنتجات القادمة قريباً لدى Stereophonie: ${visibleProducts.map((product) => product.name).join("، ")}.`
+        : "لا توجد حالياً منتجات منشورة تحمل حالة قادم قريباً.";
+    }
+
+    if (filter === "low_stock") {
+      return products.length > 0
+        ? `هذه المنتجات متوفرة حالياً لكن مخزونها محدود: ${visibleProducts.map((product) => product.name).join("، ")}.`
+        : "لا توجد حالياً منتجات منشورة بحالة مخزون محدود.";
+    }
+
+    if (filter === "out_of_stock") {
+      return products.length > 0
+        ? `هذه المنتجات غير متوفرة حالياً في المخزون: ${visibleProducts.map((product) => product.name).join("، ")}.`
+        : "لا توجد حالياً منتجات منشورة تحمل حالة نفاد المخزون.";
+    }
+
+    return products.length > 0
+      ? `هذه بعض المنتجات المتوفرة حالياً: ${visibleProducts.map((product) => product.name).join("، ")}.`
+      : "لا أرى حالياً منتجات منشورة متوفرة للشراء مباشرة.";
+  }
+
+  if (filter === "coming_soon") {
+    return products.length > 0
+      ? `Yes. These products are currently listed as coming soon at Stereophonie: ${visibleProducts.map((product) => product.name).join(", ")}.`
+      : "There are currently no published products marked as coming soon.";
+  }
+
+  if (filter === "low_stock") {
+    return products.length > 0
+      ? `These products are available right now, but availability is limited: ${visibleProducts.map((product) => product.name).join(", ")}.`
+      : "There are currently no published products marked as low stock.";
+  }
+
+  if (filter === "out_of_stock") {
+    return products.length > 0
+      ? `These products are currently out of stock: ${visibleProducts.map((product) => product.name).join(", ")}.`
+      : "There are currently no published products marked as out of stock.";
+  }
+
+  return products.length > 0
+    ? `These are some products currently available to purchase: ${visibleProducts.map((product) => product.name).join(", ")}.`
+    : "I don't currently see any published products available for immediate purchase.";
 }
 
 async function prepareAddToCart(argumentsValue: Record<string, unknown>) {
@@ -1827,6 +2591,14 @@ function toRankedProduct(product: AssistantProduct): RankedAssistantProduct {
     imageAlt: product.imageAlt,
     price: product.price,
 
+    /*
+     * Product-level availability used by the assistant card.
+     *
+     * This is intentionally generated from the complete live
+     * configuration set rather than copied from one variant.
+     */
+    availabilityStatus: assistantCatalogAvailability(product),
+
     variants: product.variants.map((variant) => ({
       id: variant.id,
       size: variant.size,
@@ -1878,8 +2650,198 @@ function findComparisonProducts(
   return scored.slice(0, 4).map((entry) => entry.product);
 }
 
+type AssistantCatalogAvailability =
+  | "coming_soon"
+  | "in_stock"
+  | "low_stock"
+  | "out_of_stock"
+  | "mixed"
+  | "unavailable";
+
+function assistantCatalogAvailability(
+  product: AssistantProduct,
+): AssistantCatalogAvailability {
+  const activeVariants = product.variants ?? [];
+
+  if (activeVariants.length === 0) {
+    return "unavailable";
+  }
+
+  const comingSoon = activeVariants.filter(
+    (variant) => variant.availabilityStatus === "coming_soon",
+  );
+
+  const lowStock = activeVariants.filter(
+    (variant) =>
+      variant.availabilityStatus === "low_stock" &&
+      variant.stockQuantity > 0,
+  );
+
+  const inStock = activeVariants.filter(
+    (variant) =>
+      variant.availabilityStatus === "in_stock" &&
+      variant.stockQuantity > 0,
+  );
+
+  const outOfStock = activeVariants.filter(
+    (variant) =>
+      variant.availabilityStatus === "out_of_stock" ||
+      variant.availabilityStatus === "unavailable" ||
+      (
+        variant.stockQuantity <= 0 &&
+        variant.availabilityStatus !== "coming_soon"
+      ),
+  );
+
+  const immediatelyAvailable = inStock.length + lowStock.length;
+
+  /*
+   * Entire product is coming soon.
+   */
+  if (
+    comingSoon.length > 0 &&
+    immediatelyAvailable === 0 &&
+    outOfStock.length === 0
+  ) {
+    return "coming_soon";
+  }
+
+  /*
+   * At least one configuration can be purchased now.
+   */
+  if (immediatelyAvailable > 0) {
+    if (comingSoon.length > 0 || outOfStock.length > 0) {
+      return "mixed";
+    }
+
+    if (inStock.length === 0 && lowStock.length > 0) {
+      return "low_stock";
+    }
+
+    return "in_stock";
+  }
+
+  if (outOfStock.length > 0 && comingSoon.length > 0) {
+    return "mixed";
+  }
+
+  if (outOfStock.length > 0) {
+    return "out_of_stock";
+  }
+
+  if (comingSoon.length > 0) {
+    return "coming_soon";
+  }
+
+  return "unavailable";
+}
+
+function directCatalogProductResponse(
+  product: AssistantProduct,
+  language: Language,
+) {
+  const availability = assistantCatalogAvailability(product);
+
+  if (availability === "coming_soon") {
+    if (language === "fr") {
+      return `${product.name} est bien référencé chez Stereophonie et arrive prochainement. Il n’est pas encore disponible à l’achat — restez à l’écoute.`;
+    }
+
+    if (language === "ar") {
+      return `${product.name} موجود بالفعل ضمن منتجات Stereophonie وسيصل قريباً. المنتج غير متاح للشراء بعد — ترقّبوا توفره.`;
+    }
+
+    return `Yes — ${product.name} is already listed at Stereophonie and is coming soon. It is not available to purchase yet, so stay tuned.`;
+  }
+
+  if (availability === "out_of_stock") {
+    if (language === "fr") {
+      return `Oui, nous proposons ${product.name}, mais il est actuellement en rupture de stock.`;
+    }
+
+    if (language === "ar") {
+      return `نعم، ${product.name} موجود ضمن منتجاتنا، لكنه غير متوفر في المخزون حالياً.`;
+    }
+
+    return `Yes — we carry ${product.name}, but it is currently out of stock.`;
+  }
+
+  if (availability === "low_stock") {
+    if (language === "fr") {
+      return `Oui, ${product.name} est disponible actuellement, mais le stock est limité.`;
+    }
+
+    if (language === "ar") {
+      return `نعم، ${product.name} متوفر حالياً، لكن الكمية محدودة.`;
+    }
+
+    return `Yes — ${product.name} is available right now, but stock is limited.`;
+  }
+
+  if (availability === "mixed") {
+    if (language === "fr") {
+      return `${product.name} est bien disponible dans notre catalogue. Certaines configurations sont disponibles maintenant, tandis que d’autres sont en rupture de stock ou arrivent prochainement.`;
+    }
+
+    if (language === "ar") {
+      return `${product.name} موجود ضمن الكتالوج لدينا. بعض النسخ متوفرة الآن، بينما توجد نسخ غير متوفرة أو ستصل قريباً.`;
+    }
+
+    return `${product.name} is in our catalog. Some configurations are available now, while others are out of stock or coming soon.`;
+  }
+
+  if (availability === "in_stock") {
+    if (language === "fr") {
+      return `Oui, ${product.name} est actuellement disponible chez Stereophonie.`;
+    }
+
+    if (language === "ar") {
+      return `نعم، ${product.name} متوفر حالياً لدى Stereophonie.`;
+    }
+
+    return `Yes — ${product.name} is currently available at Stereophonie.`;
+  }
+
+  if (language === "fr") {
+    return `${product.name} est bien référencé dans notre catalogue, mais il n’est pas disponible actuellement.`;
+  }
+
+  if (language === "ar") {
+    return `${product.name} موجود ضمن الكتالوج لدينا، لكنه غير متوفر حالياً.`;
+  }
+
+  return `${product.name} is listed in our catalog, but it is not currently available.`;
+}
+
+
 function priceResponse(product: AssistantProduct, language: Language) {
-  if (product.price === null) {
+  const availability =
+    assistantCatalogAvailability(product);
+
+  /*
+   * A coming-soon product may intentionally have no purchase
+   * price yet. Explain that state rather than making it sound
+   * like an unknown/broken catalog record.
+   */
+  if (
+    availability === "coming_soon" &&
+    (
+      product.price === null ||
+      product.price <= 0
+    )
+  ) {
+    if (language === "fr") {
+      return `${product.name} arrive prochainement. Son prix d’achat n’est pas encore disponible.`;
+    }
+
+    if (language === "ar") {
+      return `${product.name} سيصل قريباً، وسعر الشراء غير متوفر بعد.`;
+    }
+
+    return `${product.name} is coming soon. Its purchase price is not available yet.`;
+  }
+
+  if (product.price === null || product.price <= 0) {
     if (language === "fr") {
       return `Le prix de ${product.name} n’est pas disponible actuellement.`;
     }
@@ -2204,6 +3166,7 @@ export async function POST(request: Request) {
       language?: unknown;
       cart?: unknown;
       wishlist?: unknown;
+      assistantContext?: unknown;
     };
 
     const incomingMessages = normalizeMessages(body.messages);
@@ -2238,6 +3201,11 @@ export async function POST(request: Request) {
     const cart = normalizeCart(body.cart);
 
     const wishlist = normalizeWishlist(body.wishlist);
+
+    const assistantContext =
+      normalizeAssistantContext(
+        body.assistantContext,
+      );
 
     /*
      * Reconstruct lightweight conversational memory
@@ -2281,6 +3249,26 @@ export async function POST(request: Request) {
     }
 
     const actions = detectLocalAction(rawMessage);
+
+    /*
+     * ASSISTANT_STATUS_INTENT_V5
+     *
+     * Catalog-status language must take priority over generic
+     * greeting/help classification.
+     *
+     * Examples:
+     *
+     *   "Do you have anything low stock?"
+     *   "What products are coming soon?"
+     *   "Show me what is out of stock."
+     *   "What do you have in stock?"
+     *
+     * These are live catalog questions even if the lightweight
+     * natural-language parser classifies their sentence structure
+     * too broadly.
+     */
+    const earlyAvailabilityCatalogFilter =
+      detectAvailabilityCatalogFilter(rawMessage);
 
     const cartActions: AssistantCartAction[] = [];
     const wishlistActions: AssistantWishlistAction[] = [];
@@ -2552,7 +3540,10 @@ export async function POST(request: Request) {
      * --------------------------------------------------------
      */
 
-    if (parsed.intent === "greeting") {
+    if (
+      parsed.intent === "greeting" &&
+      !earlyAvailabilityCatalogFilter
+    ) {
       return NextResponse.json({
         message: composeGreeting(parsed),
         products: [],
@@ -2564,7 +3555,10 @@ export async function POST(request: Request) {
       });
     }
 
-    if (parsed.intent === "help") {
+    if (
+      parsed.intent === "help" &&
+      !earlyAvailabilityCatalogFilter
+    ) {
       return NextResponse.json({
         message: composeHelpResponse(parsed),
         products: [],
@@ -2576,7 +3570,10 @@ export async function POST(request: Request) {
       });
     }
 
-    if (parsed.intent === "store_info") {
+    if (
+      parsed.intent === "store_info" &&
+      !earlyAvailabilityCatalogFilter
+    ) {
       return NextResponse.json({
         message: composeStoreInfo(parsed),
         products: [],
@@ -2599,11 +3596,249 @@ export async function POST(request: Request) {
       category: "",
       size: "",
       maximum_price: 0,
-      limit: 100,
+
+      /*
+       * ASSISTANT_FULL_CATALOG_V3
+       *
+       * The assistant must reason over the complete live published
+       * catalogue, including:
+       *
+       * - in-stock products
+       * - low-stock products
+       * - out-of-stock products
+       * - coming-soon products
+       *
+       * return_all is authoritative here. Do not impose an arbitrary
+       * storefront-sized recommendation limit on the knowledge layer.
+       */
+      limit: 5000,
       return_all: true,
     });
 
     const rankedCatalog = catalog.map(toRankedProduct);
+
+    /*
+     * ========================================================
+     * AUTHORITATIVE CATALOG RESOLUTION V4
+     * ========================================================
+     *
+     * Resolve exact named products BEFORE recommendation
+     * ranking is allowed to influence the answer.
+     *
+     * This is the critical protection for:
+     *
+     *   Do you have iPhone 18 Pro?
+     *   How much is the iPhone 18 Pro?
+     *   Is iPhone 18 Pro coming soon?
+     *
+     * A generic accessory must never outrank an exact catalog
+     * product simply because both contain a word like Apple,
+     * iPhone or Pro.
+     */
+
+    const exactCatalogProduct =
+      /*
+       * ASSISTANT_EXACT_PRODUCT_V5
+       *
+       * Resolve against the ORIGINAL customer sentence first.
+       *
+       * Example:
+       *
+       *   "How much is the iPhone 18 Pro?"
+       *
+       * The complete product name exists directly inside the raw
+       * sentence. A parser-derived partial phrase such as "Apple",
+       * "phone" or "Pro" must never replace that stronger evidence.
+       */
+      resolveExactCatalogProduct(
+        catalog,
+        rawMessage,
+      ) ??
+      (
+        parsed.productQuery
+          ? resolveExactCatalogProduct(
+              catalog,
+              parsed.productQuery,
+            )
+          : null
+      );
+
+    /*
+     * ASSISTANT_CONVERSATION_PRODUCT_MEMORY_V5
+     *
+     * Exact new product names ALWAYS win.
+     *
+     * Context is consulted only when the new message is genuinely
+     * a follow-up such as:
+     *
+     *   "price"
+     *   "stock?"
+     *   "is it coming soon?"
+     *   "what about the second one?"
+     */
+    const contextualCatalogProduct =
+      exactCatalogProduct ??
+      resolveContextualCatalogProduct(
+        catalog,
+        rawMessage,
+        assistantContext,
+      );
+
+    /*
+     * A one-word follow-up like "price" can be parsed as unknown.
+     * Once we have a verified contextual product, infer only the
+     * small set of intents that are unambiguous from the sentence.
+     */
+    const normalizedFollowUp =
+      normalizeProductReference(rawMessage);
+
+    const contextualPriceQuestion =
+      Boolean(contextualCatalogProduct) &&
+      (
+        parsed.intent === "price_question" ||
+        /^(price|cost)$/.test(normalizedFollowUp) ||
+        /\b(how much|what price|what is the price|what s the price)\b/.test(
+          normalizedFollowUp,
+        )
+      );
+
+    const contextualAvailabilityQuestion =
+      Boolean(contextualCatalogProduct) &&
+      (
+        parsed.intent === "availability" ||
+        /^(stock|availability)$/.test(normalizedFollowUp) ||
+        /\b(in stock|low stock|out of stock|coming soon|available|unavailable)\b/.test(
+          normalizedFollowUp,
+        )
+      );
+
+
+    /*
+     * Whole-catalog availability questions:
+     *
+     *   What products are coming soon?
+     *   Show me low stock products.
+     *   What is out of stock?
+     *   What do you have in stock?
+     *
+     * These are STATUS FILTERS, not fuzzy product-name searches.
+     *
+     * A specifically named product still takes priority.
+     */
+    const availabilityCatalogFilter =
+      earlyAvailabilityCatalogFilter;
+
+    if (
+      availabilityCatalogFilter &&
+      !contextualCatalogProduct
+    ) {
+      const availabilityProducts = catalog.filter(
+        (product) =>
+          catalogProductMatchesAvailabilityFilter(
+            product,
+            availabilityCatalogFilter,
+          ),
+      );
+
+      return NextResponse.json({
+        message: availabilityCatalogResponse(
+          availabilityCatalogFilter,
+          availabilityProducts,
+          language,
+        ),
+
+        products: availabilityProducts
+          .slice(0, 4)
+          .map(assistantProductForResponse),
+
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v4",
+      });
+    }
+
+    /*
+     * Exact named-product questions bypass fuzzy ranking.
+     */
+    if (
+      contextualCatalogProduct &&
+      contextualPriceQuestion
+    ) {
+      return NextResponse.json({
+        message: priceResponse(
+          contextualCatalogProduct,
+          language,
+        ),
+
+        products: [
+          assistantProductForResponse(
+            contextualCatalogProduct,
+          ),
+        ],
+
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v4",
+      });
+    }
+
+    if (
+      contextualCatalogProduct &&
+      (
+        contextualAvailabilityQuestion ||
+        availabilityCatalogFilter !== null
+      )
+    ) {
+      return NextResponse.json({
+        message: availabilityResponse(
+          contextualCatalogProduct,
+          language,
+        ),
+
+        products: [
+          assistantProductForResponse(
+            contextualCatalogProduct,
+          ),
+        ],
+
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v4",
+      });
+    }
+
+    if (
+      contextualCatalogProduct &&
+      (
+        parsed.intent === "product_search" ||
+        parsed.intent === "unknown"
+      )
+    ) {
+      return NextResponse.json({
+        message: directCatalogProductResponse(
+          contextualCatalogProduct,
+          language,
+        ),
+
+        products: [
+          assistantProductForResponse(
+            contextualCatalogProduct,
+          ),
+        ],
+
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v4",
+      });
+    }
 
     /*
      * --------------------------------------------------------
@@ -2628,7 +3863,7 @@ export async function POST(request: Request) {
           parsed,
         ),
 
-        products: comparisonProducts.slice(0, 4),
+        products: comparisonProducts.slice(0, 4).map(assistantProductForResponse),
 
         cartActions,
         wishlistActions,
@@ -2705,13 +3940,52 @@ export async function POST(request: Request) {
      * when we have an obvious top match.
      */
 
+    /*
+     * --------------------------------------------------------
+     * DIRECT PRODUCT KNOWLEDGE
+     * --------------------------------------------------------
+     *
+     * A direct catalog question such as:
+     *
+     *   "Do you have iPhone 18 Pro?"
+     *   "iPhone 18 Pro"
+     *   "show me the iPhone 18 Pro"
+     *
+     * must reflect the LIVE availability of the resolved product.
+     *
+     * This prevents a coming-soon or out-of-stock product from
+     * receiving a generic recommendation-style answer.
+     *
+     * Product cards are still returned so the customer can inspect
+     * the real catalog entry.
+     */
+    if (
+      resolvedParsed.intent === "product_search" &&
+      Boolean(resolvedParsed.productQuery) &&
+      selectedProducts.length === 1
+    ) {
+      return NextResponse.json({
+        message: directCatalogProductResponse(
+          selectedProducts[0],
+          language,
+        ),
+        products: selectedProducts.slice(0, 4).map(assistantProductForResponse),
+        cartActions,
+        wishlistActions,
+        navigationActions,
+        language,
+        engine: "stereophonie-local-v3",
+      });
+    }
+
+
     if (
       resolvedParsed.intent === "price_question" &&
       selectedProducts.length > 0
     ) {
       return NextResponse.json({
         message: priceResponse(selectedProducts[0], language),
-        products: selectedProducts.slice(0, 4),
+        products: selectedProducts.slice(0, 4).map(assistantProductForResponse),
         cartActions,
         wishlistActions,
         navigationActions,
@@ -2726,7 +4000,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json({
         message: availabilityResponse(selectedProducts[0], language),
-        products: selectedProducts.slice(0, 4),
+        products: selectedProducts.slice(0, 4).map(assistantProductForResponse),
         cartActions,
         wishlistActions,
         navigationActions,
@@ -2738,7 +4012,7 @@ export async function POST(request: Request) {
     if (resolvedParsed.intent === "offers") {
       return NextResponse.json({
         message: composeOfferResponse(ranked, resolvedParsed),
-        products: selectedProducts.slice(0, 4),
+        products: selectedProducts.slice(0, 4).map(assistantProductForResponse),
         cartActions,
         wishlistActions,
         navigationActions,
@@ -2767,7 +4041,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         message: composeRecommendationResponse(resolvedParsed, ranked),
 
-        products: selectedProducts.slice(0, 4),
+        products: selectedProducts.slice(0, 4).map(assistantProductForResponse),
 
         cartActions,
         wishlistActions,

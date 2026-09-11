@@ -213,7 +213,7 @@ export async function updateProduct(formData: FormData) {
   const submittedButtonIntent = formData.get("intent");
 
   const publishingIntent = String(
-    resolvedPublishingIntent ?? submittedButtonIntent ?? "draft",
+    submittedButtonIntent ?? resolvedPublishingIntent ?? "draft",
   );
 
   if (process.env.NODE_ENV === "development") {

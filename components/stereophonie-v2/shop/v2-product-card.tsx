@@ -3,6 +3,7 @@
 import { calculateProductAvailability } from "@/lib/stereophonie-v2/product-variants";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Check, Eye, Bookmark, ImageOff, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -278,6 +279,7 @@ function productCardBadgeClass(badge: string | null) {
 }
 
 export default function V2ProductCard({ product, index = 0 }: Props) {
+  const router = useRouter();
   const images = useMemo(() => orderedImages(product), [product]);
 
   const primaryImage = images[0] ?? null;
@@ -418,6 +420,15 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
 
   const href = product.slug ? `/shop/${product.slug}` : "/shop";
 
+
+  function prefetchProductRoute() {
+    if (!href || href === "/shop") {
+      return;
+    }
+
+    router.prefetch(href);
+  }
+
   const { hydrated, isWishlisted, toggleProduct } = useWishlist();
 
   const wishlisted = hydrated && isWishlisted(product.id);
@@ -518,8 +529,14 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
               hasSecondaryImage && !secondaryImageFailed ? "true" : "false"
             }
             aria-label={`View ${product.name}`}
-            onMouseEnter={requestSecondaryImage}
-            onFocus={requestSecondaryImage}
+            onMouseEnter={() => {
+              requestSecondaryImage();
+              prefetchProductRoute();
+            }}
+            onFocus={() => {
+              requestSecondaryImage();
+              prefetchProductRoute();
+            }}
           >
             {primaryImageUrl && !primaryImageFailed ? (
               <>
@@ -640,7 +657,12 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
             {product.categoryName || "Technology"}
           </div>
 
-          <Link href={href} className="st-retail-card__name">
+          <Link
+            href={href}
+            className="st-retail-card__name"
+            onMouseEnter={prefetchProductRoute}
+            onFocus={prefetchProductRoute}
+          >
             {product.name}
           </Link>
 
@@ -837,7 +859,12 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
 
                   {product.description ? <p>{product.description}</p> : null}
 
-                  <Link href={href} className="st-retail-qv__primary">
+                  <Link
+                    href={href}
+                    className="st-retail-qv__primary"
+                    onMouseEnter={prefetchProductRoute}
+                    onFocus={prefetchProductRoute}
+                  >
                     View product
                   </Link>
 

@@ -23,6 +23,10 @@ import { type FormEvent, useEffect, useMemo, useState } from "react";
 
 import { useCart } from "@/components/cart/cart-provider";
 import {
+  storefrontImageDisplayUrl,
+  storefrontPrimaryImageForVariant,
+} from "@/lib/storefront-product-media";
+import {
   type WishlistProduct,
   useWishlist,
 } from "@/components/wishlist/wishlist-provider";
@@ -333,8 +337,70 @@ function validEmail(value: string) {
  * rules, which previously caused the colour to appear only as
  * a narrow stripe inside a white circle.
  */
-function storefrontColourHex(value: string) {
-  return productColorwayHex(value) ?? "#8e8e93";
+function validStoredColourHex(value: unknown) {
+  const normalized = String(value ?? "").trim();
+
+  if (
+    /^#[0-9a-f]{6}$/i.test(normalized) ||
+    /^#[0-9a-f]{3}$/i.test(normalized)
+  ) {
+    return normalized;
+  }
+
+  return null;
+}
+
+function storedVariantColourHex(
+  variants: ProductVariant[],
+  attributeKey: string,
+  attributeValue: string,
+) {
+  const wantedValue = optionIdentity(attributeValue);
+
+  for (const variant of variants) {
+    const attributes = attributesRecord(variant);
+
+    if (
+      optionIdentity(
+        attributes[attributeKey] ?? "",
+      ) !== wantedValue
+    ) {
+      continue;
+    }
+
+    for (const metadataKey of [
+      "color_hex",
+      "colour_hex",
+      "swatch_hex",
+      "hex",
+    ]) {
+      const storedHex = validStoredColourHex(
+        attributes[metadataKey],
+      );
+
+      if (storedHex) {
+        return storedHex;
+      }
+    }
+  }
+
+  return null;
+}
+
+function storefrontColourHex(
+  value: string,
+  variants: ProductVariant[],
+  attributeKey: string,
+) {
+  return (
+    storedVariantColourHex(
+      variants,
+      attributeKey,
+      value,
+    ) ??
+    productColorwayHex(value) ??
+    "#8e8e93"
+  );
 }
 
 export default function ProductPurchaseControls({
@@ -492,6 +558,23 @@ export default function ProductPurchaseControls({
   const selectedPrice = selected ? getPrice(selected) : null;
   const selectedStatus = selected ? statusFor(selected) : null;
   const attributes = selected ? variantAttributes(selected) : [];
+
+  /*
+   * Customer cart photography follows the exact selected
+   * configuration's Admin-defined Main photograph.
+   */
+  const selectedPrimaryImage = selected
+    ? storefrontPrimaryImageForVariant(
+        product.images,
+        selected.id,
+      )
+    : null;
+
+  const selectedPrimaryImageUrl =
+    storefrontImageDisplayUrl(
+      selectedPrimaryImage,
+    ) ??
+    product.imageUrl;
 
   const maximumQuantity =
     selected && selectedAvailable ? Math.max(1, selected.stock_quantity) : 1;
@@ -754,7 +837,7 @@ export default function ProductPurchaseControls({
         productId: product.id,
         slug: product.slug,
         name: product.name,
-        imageUrl: product.imageUrl,
+        imageUrl: selectedPrimaryImageUrl,
         size: variantName(selected),
         variantId: selected.id,
         unitPrice: selectedPrice.current,
@@ -960,8 +1043,10 @@ export default function ProductPurchaseControls({
                                     )}
                                     style={{
                                       backgroundColor: storefrontColourHex(
-                                        option.value,
-                                      ),
+                                          option.value,
+                                          ordered,
+                                          attributeKey,
+                                        ),
                                     }}
                                     aria-hidden="true"
                                   />

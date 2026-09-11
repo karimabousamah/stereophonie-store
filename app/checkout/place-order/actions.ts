@@ -5,6 +5,7 @@ import { sendAdminOrderNotificationEmail } from "@/lib/email/send-admin-order-no
 import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
 import { getPublicStoreSettings } from "@/lib/store-settings";
 import { createClient } from "@/lib/supabase/server";
+import { storefrontPrimaryImageForVariant } from "@/lib/storefront-product-media";
 
 type CustomerDetails = {
   firstName: string;
@@ -442,11 +443,36 @@ export async function submitOrder(
 
   const receiptSkuByVariantId = new Map<string, string>();
 
+  const receiptImageByVariantId =
+    new Map<string, string | null>();
+
   if (receiptVariantIds.length > 0) {
     const { data: receiptVariants, error: receiptVariantsError } =
       await supabase
         .from("product_variants")
-        .select("id, sku")
+        .select(
+          `
+            id,
+            sku,
+            product_id,
+            products (
+              product_images (
+                id,
+                image_url,
+                position,
+                is_primary,
+                variant_id,
+                variant_position,
+                is_variant_primary,
+                product_image_variants (
+                  variant_id,
+                  position,
+                  is_primary
+                )
+              )
+            )
+          `,
+        )
         .in("id", receiptVariantIds);
 
     if (receiptVariantsError) {
@@ -460,10 +486,91 @@ export async function submitOrder(
         const sku = cleanText(variant.sku);
 
         if (variantId) {
-          receiptSkuByVariantId.set(variantId, sku);
+          receiptSkuByVariantId.set(
+            variantId,
+            sku,
+          );
+
+          const productRelation =
+            Array.isArray(variant.products)
+              ? variant.products[0]
+              : variant.products;
+
+          const productImages =
+            productRelation?.product_images ?? [];
+
+          const primaryImage =
+            storefrontPrimaryImageForVariant(
+              productImages,
+              variantId,
+            );
+
+          receiptImageByVariantId.set(
+            variantId,
+            cleanText(
+              primaryImage?.image_url,
+            ) || null,
+          );
         }
       }
     }
+  }
+
+  /*
+   * ST AUTHORITATIVE ORDER IMAGE SNAPSHOT
+   *
+   * The secure place_order RPC creates the order first.
+   *
+   * We then correct the order-item thumbnail from the
+   * authoritative Admin-selected configuration Main image.
+   *
+   * Later order-status emails read this stored snapshot.
+   */
+  try {
+    for (const item of input.items) {
+      const variantId =
+        cleanText(item.variantId);
+
+      const authoritativeImageUrl =
+        receiptImageByVariantId.get(
+          variantId,
+        );
+
+      if (
+        !variantId ||
+        !authoritativeImageUrl
+      ) {
+        continue;
+      }
+
+      const { error: orderImageError } =
+        await supabase
+          .from("order_items")
+          .update({
+            product_image_url:
+              authoritativeImageUrl,
+          })
+          .eq(
+            "order_id",
+            result.order_id,
+          )
+          .eq(
+            "variant_id",
+            variantId,
+          );
+
+      if (orderImageError) {
+        console.error(
+          `Order-item image could not be refreshed for ${variantId}:`,
+          orderImageError.message,
+        );
+      }
+    }
+  } catch (error) {
+    console.error(
+      `Order-item image snapshots could not be refreshed for ${authoritativeOrderNumber}:`,
+      error,
+    );
   }
 
   const emailResult = await sendOrderConfirmationEmail({
@@ -498,7 +605,12 @@ export async function submitOrder(
 
       quantity: item.quantity,
 
-      imageUrl: cleanText(item.imageUrl) || null,
+      imageUrl:
+        receiptImageByVariantId.get(
+          cleanText(item.variantId),
+        ) ??
+        cleanText(item.imageUrl) ??
+        null,
 
       unitPrice:
         typeof item.unitPrice === "number" && Number.isFinite(item.unitPrice)

@@ -232,7 +232,8 @@ export default function V2ShopPage({
     selectedMaxPrice !== null ||
     Boolean(selectedSearch.trim());
 
-  return (
+
+    return (
     <>
       <V3Header />
 
@@ -241,12 +242,9 @@ export default function V2ShopPage({
           <div className="st3-shop-v4__catalog-inner">
             <div className="st3-shop-v4__catalog-heading">
               <div>
-                <p>Shop</p>
-
                 <h2>Shop all products</h2>
               </div>
 
-              <span>{resultCopy(totalProducts)}</span>
             </div>
 
             <div className="st3-shop-v4__controls">

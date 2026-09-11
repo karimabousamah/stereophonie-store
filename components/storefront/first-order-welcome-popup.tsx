@@ -4,8 +4,10 @@ import { Check, Mail, X } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
+import { createClient } from "@/lib/supabase/client";
+
 type Props = {
-  shouldShow: boolean;
+  offerEnabled: boolean;
   discountPercentage: number;
 };
 
@@ -14,7 +16,7 @@ const SESSION_DISMISSED = "st-welcome-dismissed-session";
 const CLAIMED = "st-welcome-claimed";
 
 export default function FirstOrderWelcomePopup({
-  shouldShow,
+  offerEnabled,
   discountPercentage,
 }: Props) {
   const pathname = usePathname();
@@ -31,8 +33,63 @@ export default function FirstOrderWelcomePopup({
 
   const [message, setMessage] = useState("");
 
+  /*
+   * Promotional visibility only.
+   *
+   * This client-side session read is NOT used for authorization.
+   * Server-side account/admin/checkout security remains unchanged.
+   */
+  const [authReady, setAuthReady] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+
   useEffect(() => {
-    if (!shouldShow) {
+    const supabase = createClient();
+    let active = true;
+
+    async function readSession() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!active) {
+          return;
+        }
+
+        setSignedIn(Boolean(session?.user));
+      } catch {
+        if (active) {
+          setSignedIn(false);
+        }
+      } finally {
+        if (active) {
+          setAuthReady(true);
+        }
+      }
+    }
+
+    void readSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!active) {
+        return;
+      }
+
+      setSignedIn(Boolean(session?.user));
+      setAuthReady(true);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!offerEnabled || !authReady || signedIn) {
+      setVisible(false);
       return;
     }
 
@@ -69,7 +126,12 @@ export default function FirstOrderWelcomePopup({
     }, 900);
 
     return () => window.clearTimeout(timer);
-  }, [pathname, shouldShow]);
+  }, [
+    pathname,
+    offerEnabled,
+    authReady,
+    signedIn,
+  ]);
 
   function close() {
     if (closing) {

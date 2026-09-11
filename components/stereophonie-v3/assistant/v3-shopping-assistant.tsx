@@ -16,6 +16,15 @@ type AssistantProductCard = {
   hoverImageUrl?: string | null;
   imageAlt?: string;
   price?: number | null;
+
+  availabilityStatus?:
+    | "coming_soon"
+    | "in_stock"
+    | "low_stock"
+    | "out_of_stock"
+    | "mixed"
+    | "unavailable";
+
   variants?: {
     regularPrice?: number;
     salePrice?: number | null;
@@ -25,11 +34,39 @@ type AssistantProductCard = {
   }[];
 };
 
+function normalizeAssistantAvailabilityStatus(
+  value: unknown,
+): AssistantProductCard["availabilityStatus"] {
+  if (
+    value === "coming_soon" ||
+    value === "in_stock" ||
+    value === "low_stock" ||
+    value === "out_of_stock" ||
+    value === "mixed" ||
+    value === "unavailable"
+  ) {
+    return value;
+  }
+
+  return undefined;
+}
+
 type AssistantMessage = {
   id: string;
   role: "assistant" | "user";
   content: string;
   products?: AssistantProductCard[];
+};
+
+type AssistantConversationProductReference = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+type AssistantConversationContext = {
+  focusedProduct: AssistantConversationProductReference | null;
+  displayedProducts: AssistantConversationProductReference[];
 };
 
 type SuggestedAction = {
@@ -165,6 +202,11 @@ function normalizeAssistantProducts(data: unknown): AssistantProductCard[] {
 
       price: typeof product.price === "number" ? product.price : null,
 
+      availabilityStatus:
+        normalizeAssistantAvailabilityStatus(
+          product.availabilityStatus,
+        ),
+
       variants: Array.isArray(product.variants)
         ? product.variants
             .filter(
@@ -222,6 +264,19 @@ function ProductRecommendationCard({
 
   const currentPrice = product.price ?? saleVariant?.salePrice ?? null;
 
+  const availabilityLabel =
+    product.availabilityStatus === "coming_soon"
+      ? "Coming soon"
+      : product.availabilityStatus === "out_of_stock"
+        ? "Out of stock"
+        : product.availabilityStatus === "low_stock"
+          ? "Low stock"
+          : product.availabilityStatus === "mixed"
+            ? "Check availability"
+            : product.availabilityStatus === "unavailable"
+              ? "Unavailable"
+              : null;
+
   return (
     <Link
       href={`/shop/${encodeURIComponent(product.slug)}`}
@@ -265,12 +320,19 @@ function ProductRecommendationCard({
         <strong>{product.name}</strong>
 
         <span className="st3-ai-product-card__bottom">
-          <span className="st3-ai-product-card__price">
-            {currentPrice !== null
-              ? `$${currentPrice.toFixed(
-                  Number.isInteger(currentPrice) ? 0 : 2,
-                )}`
-              : "View product"}
+          <span
+            className={`st3-ai-product-card__price ${
+              product.availabilityStatus
+                ? `is-${product.availabilityStatus.replaceAll("_", "-")}`
+                : ""
+            }`}
+          >
+            {availabilityLabel ??
+              (currentPrice !== null
+                ? `$${currentPrice.toFixed(
+                    Number.isInteger(currentPrice) ? 0 : 2,
+                  )}`
+                : "View product")}
           </span>
 
           <span className="st3-ai-product-card__arrow" aria-hidden="true">
@@ -361,6 +423,117 @@ export default function V3ShoppingAssistant() {
     }, 60);
   }, [open, messages]);
 
+  function buildAssistantConversationContext(
+    currentMessages: AssistantMessage[],
+  ): AssistantConversationContext {
+    /*
+     * ========================================================
+     * ASSISTANT_REFERENCE_LIST_MEMORY_V6
+     * ========================================================
+     *
+     * We deliberately preserve TWO different kinds of memory:
+     *
+     * 1. focusedProduct
+     *    The product being discussed most recently.
+     *
+     *    Example:
+     *      show low-stock products
+     *      price of the second one
+     *      price?
+     *
+     *    "price?" must continue referring to product #2.
+     *
+     * 2. displayedProducts
+     *    The latest meaningful MULTI-PRODUCT reference list.
+     *
+     *    Example:
+     *      show low-stock products
+     *      price of the second one
+     *      is the first one available?
+     *
+     *    "first one" must still refer to product #1 from the
+     *    original low-stock list — not product #2 just because
+     *    the previous response displayed a single product card.
+     *
+     * This is the same distinction a human naturally keeps
+     * during a shopping conversation.
+     */
+
+    const assistantProductMessages =
+      currentMessages.filter(
+        (message) =>
+          message.role === "assistant" &&
+          Array.isArray(message.products) &&
+          message.products.length > 0,
+      );
+
+    const latestProductMessage =
+      assistantProductMessages.at(-1);
+
+    /*
+     * FOCUSED PRODUCT
+     * ---------------
+     * The latest answer's first card is the current subject.
+     */
+    const latestProducts =
+      (latestProductMessage?.products ?? [])
+        .filter(
+          (product) =>
+            Boolean(product.id) &&
+            Boolean(product.name),
+        )
+        .slice(0, 8)
+        .map((product) => ({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+        }));
+
+    const focusedProduct =
+      latestProducts[0] ?? null;
+
+    /*
+     * REFERENCE LIST
+     * --------------
+     * Search backwards for the newest assistant response that
+     * actually presented several choices.
+     *
+     * A later one-product answer must NOT destroy this list.
+     */
+    const latestMultiProductMessage =
+      [...assistantProductMessages]
+        .reverse()
+        .find(
+          (message) =>
+            Array.isArray(message.products) &&
+            message.products.length > 1,
+        );
+
+    const referenceSourceProducts =
+      latestMultiProductMessage?.products ??
+      latestProductMessage?.products ??
+      [];
+
+    const displayedProducts =
+      referenceSourceProducts
+        .filter(
+          (product) =>
+            Boolean(product.id) &&
+            Boolean(product.name),
+        )
+        .slice(0, 8)
+        .map((product) => ({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+        }));
+
+    return {
+      focusedProduct,
+      displayedProducts,
+    };
+  }
+
   async function sendMessage(rawValue?: string) {
     const value = (rawValue ?? input).trim();
 
@@ -394,6 +567,15 @@ export default function V3ShoppingAssistant() {
             role: message.role,
             content: message.content,
           })),
+
+          /*
+           * ASSISTANT_CONVERSATION_PRODUCT_MEMORY_V5
+           *
+           * Send verified product-card identity separately from text.
+           * The server re-loads live price/stock before answering.
+           */
+          assistantContext:
+            buildAssistantConversationContext(messages),
         }),
       });
 

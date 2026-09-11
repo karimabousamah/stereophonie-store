@@ -6,9 +6,8 @@ import GlobalStorefrontAssistant from "@/components/storefront/global-storefront
 import StoreAvailabilityGate from "@/components/storefront/store-availability-gate";
 import { StoreSettingsProvider } from "@/components/storefront/store-settings-provider";
 import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
-import { normalizeHomepageSettings } from "@/lib/homepage-settings";
 import { getPublicStoreSettings } from "@/lib/store-settings";
-import { createClient } from "@/lib/supabase/server";
+import { getPublicWelcomeOfferSettings } from "@/lib/welcome-offer-settings";
 
 import "./globals.css";
 import "../styles/stereophonie-v3.css";
@@ -79,14 +78,22 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const dynamic = "force-dynamic";
+/*
+ * Shared storefront shell uses public data only.
+ * Refresh periodically instead of forcing every navigation
+ * through a fresh dynamic root request.
+ */
+export const revalidate = 30;
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const settings = await getPublicStoreSettings();
+  const [settings, homepageSettings] = await Promise.all([
+    getPublicStoreSettings(),
+    getPublicWelcomeOfferSettings(),
+  ]);
 
   const siteUrl = "https://www.stereophoniestore.com";
 
@@ -118,26 +125,6 @@ export default async function RootLayout({
     ],
   };
 
-  const supabase = await createClient();
-
-  const [
-    {
-      data: { user },
-    },
-    homepageSettingsResult,
-  ] = await Promise.all([
-    supabase.auth.getUser(),
-    supabase
-      .from("homepage_settings")
-      .select("welcome_discount_enabled, welcome_discount_percentage")
-      .eq("id", "default")
-      .maybeSingle(),
-  ]);
-
-  const homepageSettings = normalizeHomepageSettings(
-    homepageSettingsResult.data ?? null,
-  );
-
   return (
     <html lang="en">
       <body>
@@ -155,15 +142,16 @@ export default async function RootLayout({
                 {children}
 
                 <FirstOrderWelcomePopup
-                  shouldShow={
-                    !user && homepageSettings.welcome_discount_enabled
-                  }
+                  offerEnabled={
+                      homepageSettings.welcome_discount_enabled
+                    }
                   discountPercentage={
                     homepageSettings.welcome_discount_percentage
                   }
                 />
 
                 <GlobalStorefrontAssistant />
+
               </WishlistProvider>
             </CartProvider>
           </StoreAvailabilityGate>

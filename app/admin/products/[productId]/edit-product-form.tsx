@@ -385,15 +385,30 @@ export default function EditProductForm({
 
             finalResolvedIntentInput.value = intent;
 
+            const authoritativeIntentSubmitter =
+              form.querySelector<HTMLButtonElement>(
+                "#st-authoritative-product-intent-submit",
+              );
+
+            if (!authoritativeIntentSubmitter) {
+              setProductSaveState("idle");
+              throw new Error(
+                "The authoritative product submission control could not be found.",
+              );
+            }
+
+            authoritativeIntentSubmitter.value = intent;
+
             if (process.env.NODE_ENV === "development") {
               console.log("[EDIT PRODUCT] final client intent", {
                 capturedIntent: intent,
                 resolvedIntent: finalResolvedIntentInput.value,
+                submittedIntent: authoritativeIntentSubmitter.value,
               });
             }
 
             form.dataset.photoUsageFlushed = "true";
-            form.requestSubmit();
+            form.requestSubmit(authoritativeIntentSubmitter);
           });
         }}
       >
@@ -401,6 +416,16 @@ export default function EditProductForm({
           type="hidden"
           name="resolved_intent"
           defaultValue={product.status === "published" ? "publish" : "draft"}
+        />
+
+        <button
+          id="st-authoritative-product-intent-submit"
+          type="submit"
+          name="intent"
+          value="draft"
+          className="hidden"
+          tabIndex={-1}
+          aria-hidden="true"
         />
 
         {productSaveState !== "idle" && (
@@ -821,7 +846,7 @@ export default function EditProductForm({
                   name="intent"
                   value="setup"
                   disabled={productSaveState !== "idle"}
-                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-[#e2a128] bg-[#fdb73e] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45"
+                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45 border-[#f5b335]/90 bg-[#f5b335]/10 text-[#7a4d00] shadow-[0_0_0_4px_rgba(245,179,53,0.075),0_6px_18px_rgba(196,135,27,0.055)] hover:border-[#f5b335] hover:bg-[#f5b335]/[0.13] hover:text-[#704700] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.105),0_8px_22px_rgba(196,135,27,0.075)]"
                 >
                   <Save className="h-4 w-4" />
                   Save product setup

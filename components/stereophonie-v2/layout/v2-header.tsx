@@ -421,9 +421,9 @@ export default function V2Header() {
 
     async function loadHeaderCategories() {
       try {
-        const response = await fetch("/api/storefront/header-categories", {
-          cache: "no-store",
-        });
+        const response = await fetch(
+          "/api/storefront/header-categories",
+        );
 
         if (!response.ok) {
           throw new Error(

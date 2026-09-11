@@ -51,6 +51,7 @@ type OptionLevel = {
   key: string;
   label: string;
   values: string[];
+  colorHexByValue?: Record<string, string>;
 };
 
 const availabilityOptions: {
@@ -1209,16 +1210,55 @@ function levelsFromVariants(
   const keys =
     persisted.length > 0 ? persisted : selectorKeysFromVariants(variants);
 
-  return keys.map((key) => ({
-    id: crypto.randomUUID(),
-    key,
-    label: humanizeKey(key),
-    values: uniqueValues(
+  return keys.map((key) => {
+    const normalizedKey = normalizeKey(key);
+
+    const values = uniqueValues(
       variants
         .map((variant) => clean(variant.attributes?.[key]))
         .filter(Boolean),
-    ),
-  }));
+    );
+
+    const colorHexByValue =
+      normalizedKey === "color" || normalizedKey === "colour"
+        ? Object.fromEntries(
+            variants.flatMap((variant) => {
+              const colorName = clean(variant.attributes?.[key]);
+
+              if (!colorName) {
+                return [];
+              }
+
+              const colorHex = clean(
+                variant.attributes?.color_hex ??
+                  variant.attributes?.colour_hex ??
+                  variant.attributes?.swatch_hex ??
+                  variant.attributes?.hex,
+              );
+
+              if (
+                !/^#[0-9a-f]{6}$/i.test(colorHex) &&
+                !/^#[0-9a-f]{3}$/i.test(colorHex)
+              ) {
+                return [];
+              }
+
+              return [[colorName, colorHex.toUpperCase()] as const];
+            }),
+          )
+        : undefined;
+
+    return {
+      id: crypto.randomUUID(),
+      key,
+      label: humanizeKey(key),
+      values,
+      ...(colorHexByValue &&
+      Object.keys(colorHexByValue).length > 0
+        ? { colorHexByValue }
+        : {}),
+    };
+  });
 }
 
 function combinationKey(
@@ -1255,6 +1295,77 @@ function cartesianProduct(levels: OptionLevel[]) {
   }
 
   return combinations;
+}
+
+function optionLevelColorHex(
+  level: OptionLevel,
+  value: string,
+) {
+  const wanted = optionIdentity(value);
+
+  for (const [colorName, hex] of Object.entries(
+    level.colorHexByValue ?? {},
+  )) {
+    if (optionIdentity(colorName) !== wanted) {
+      continue;
+    }
+
+    const normalizedHex = clean(hex);
+
+    if (
+      /^#[0-9a-f]{6}$/i.test(normalizedHex) ||
+      /^#[0-9a-f]{3}$/i.test(normalizedHex)
+    ) {
+      return normalizedHex.toUpperCase();
+    }
+  }
+
+  return null;
+}
+
+function attributesWithColorHex(
+  attributes: Record<string, string>,
+  levels: OptionLevel[],
+) {
+  const next = {
+    ...attributes,
+  };
+
+  const colorLevel = levels.find((level) => {
+    const normalizedKey = normalizeKey(
+      level.label || level.key,
+    );
+
+    return (
+      normalizedKey === "color" ||
+      normalizedKey === "colour"
+    );
+  });
+
+  if (!colorLevel) {
+    return next;
+  }
+
+  const colorKey = normalizeKey(
+    colorLevel.label || colorLevel.key,
+  );
+
+  const colorName = clean(next[colorKey]);
+
+  if (!colorName) {
+    return next;
+  }
+
+  const colorHex = optionLevelColorHex(
+    colorLevel,
+    colorName,
+  );
+
+  if (colorHex) {
+    next.color_hex = colorHex;
+  }
+
+  return next;
 }
 
 function generatedName(
@@ -2800,7 +2911,14 @@ export default function ElectronicsVariantEditor({
       return;
     }
 
-    const combinations = cartesianProduct(normalizedLevels);
+    const combinations = cartesianProduct(
+      normalizedLevels,
+    ).map((attributes) =>
+      attributesWithColorHex(
+        attributes,
+        normalizedLevels,
+      ),
+    );
 
     if (combinations.length > 250) {
       setHierarchyError(
@@ -2946,10 +3064,26 @@ export default function ElectronicsVariantEditor({
      * Everything else in attributes, excluding the reserved
      * hierarchy metadata, is technical metadata.
      */
-    const selectorKeys = new Set(levels.map((level) => level.key));
+    const selectorKeys = new Set(
+      levels.map((level) => normalizeKey(level.key)),
+    );
 
-    const isTechnicalKey = (key: string) =>
-      key !== configurationHierarchyKey && !selectorKeys.has(key);
+    /*
+     * Internal configuration metadata is NOT a technical specification.
+     *
+     * In particular, color_hex belongs to the exact selected colourway.
+     * Copying technical specifications from one configuration to another
+     * must never remove, replace or duplicate colour metadata.
+     */
+    const isTechnicalKey = (key: string) => {
+      const normalizedKey = normalizeKey(key);
+
+      return (
+        normalizedKey !== configurationHierarchyKey &&
+        !selectorKeys.has(normalizedKey) &&
+        !hiddenSelectorKeys.has(normalizedKey)
+      );
+    };
 
     const sourceTechnicalEntries = Object.entries(
       activeVariant.attributes ?? {},
@@ -3392,24 +3526,48 @@ export default function ElectronicsVariantEditor({
                             <ConfigurationColorPicker
                               value={null}
                               onChange={(color) => {
-                                const canonicalColorName =
-                                  canonicalizeProductColorwayName(color.name);
-
-                                const alreadySelected = level.values.some(
-                                  (value) =>
+                                  const canonicalColorName =
                                     canonicalizeProductColorwayName(
-                                      value,
-                                    ).toLocaleLowerCase() ===
-                                    canonicalColorName.toLocaleLowerCase(),
-                                );
+                                      color.name,
+                                    );
 
-                                if (alreadySelected) return;
+                                  setLevels((current) =>
+                                    current.map((currentLevel) => {
+                                      if (
+                                        currentLevel.id !== level.id
+                                      ) {
+                                        return currentLevel;
+                                      }
 
-                                updateLevelValues(level.id, [
-                                  ...level.values,
-                                  canonicalColorName,
-                                ]);
-                              }}
+                                      const alreadySelected =
+                                        currentLevel.values.some(
+                                          (value) =>
+                                            canonicalizeProductColorwayName(
+                                              value,
+                                            ).toLocaleLowerCase() ===
+                                            canonicalColorName.toLocaleLowerCase(),
+                                        );
+
+                                      return {
+                                        ...currentLevel,
+
+                                        values: alreadySelected
+                                          ? currentLevel.values
+                                          : [
+                                              ...currentLevel.values,
+                                              canonicalColorName,
+                                            ],
+
+                                        colorHexByValue: {
+                                          ...(currentLevel.colorHexByValue ??
+                                            {}),
+                                          [canonicalColorName]:
+                                            color.hex,
+                                        },
+                                      };
+                                    }),
+                                  );
+                                }}
                             />
                           </div>
                         ) : (

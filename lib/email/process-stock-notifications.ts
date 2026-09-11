@@ -8,6 +8,7 @@ import {
   EMAIL_COLORS,
 } from "@/lib/email/customer-email-ui";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { storefrontPrimaryImageForVariant } from "@/lib/storefront-product-media";
 
 type StockState = "available" | "low_stock" | "out_of_stock" | "coming_soon";
 
@@ -19,7 +20,22 @@ type ProductRow = {
 };
 
 type ProductImageRow = {
+  id?: string | null;
   image_url: string | null;
+  position?: number | null;
+  is_primary?: boolean | null;
+
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
+
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
 };
 
 type ProductVariantRow = {
@@ -688,16 +704,23 @@ export async function processStockNotificationsForProduct(
 
     admin
       .from("product_images")
-      .select("image_url")
-      .eq("product_id", productId)
-      .order("is_primary", {
-        ascending: false,
-      })
-      .order("position", {
-        ascending: true,
-      })
-      .limit(1)
-      .maybeSingle(),
+      .select(
+        `
+          id,
+          image_url,
+          position,
+          is_primary,
+          variant_id,
+          variant_position,
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
+        `,
+      )
+      .eq("product_id", productId),
   ]);
 
   if (productResult.error || !productResult.data) {
@@ -732,9 +755,23 @@ export async function processStockNotificationsForProduct(
     };
   }
 
-  const image = imageResult.data as ProductImageRow | null;
+  const productImages =
+    (imageResult.data ?? []) as ProductImageRow[];
 
-  const productImageUrl = cleanText(image?.image_url) || null;
+  /*
+   * Product-level wishlist / stock notifications use the
+   * administrator-selected global Main photograph.
+   */
+  const productPrimaryImage =
+    storefrontPrimaryImageForVariant(
+      productImages,
+      null,
+    );
+
+  const productImageUrl =
+    cleanText(
+      productPrimaryImage?.image_url,
+    ) || null;
 
   const { data: stateData, error: stateError } = await admin.rpc(
     "refresh_product_stock_notification_state",
@@ -976,8 +1013,24 @@ export async function processStockNotificationsForProduct(
 
         productName: product.name,
 
-        productImageUrl,
-
+        /*
+         * ST VARIANT RESTOCK PRIMARY IMAGE
+         *
+         * One exact restock configuration gets that
+         * configuration's Admin-defined Main image.
+         *
+         * Product-level / multi-variant alerts continue
+         * using the global Main image.
+         */
+        productImageUrl:
+          singleVariant
+            ? cleanText(
+                storefrontPrimaryImageForVariant(
+                  productImages,
+                  singleVariant.id,
+                )?.image_url,
+              ) || productImageUrl
+            : productImageUrl,
         priceLabel,
 
         optionLabel,

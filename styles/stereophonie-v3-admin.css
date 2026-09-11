@@ -125,17 +125,27 @@
 }
 
 .st3-admin [data-primary-action] {
-  border: 0;
+  border: 1px solid rgba(245, 179, 53, 0.92);
 
-  background: #fdb73e;
+  background: rgba(245, 179, 53, 0.10);
 
-  color: #000;
+  color: #7a4d00;
 
-  box-shadow: 0 7px 22px rgba(253, 183, 62, 0.22);
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.075),
+    0 6px 18px rgba(196, 135, 27, 0.055);
 }
 
 .st3-admin [data-primary-action]:hover {
-  background: #f4a91c;
+  border-color: #f5b335;
+
+  background: rgba(245, 179, 53, 0.13);
+
+  color: #704700;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.105),
+    0 8px 22px rgba(196, 135, 27, 0.075);
 }
 
 /* ==========================================================
@@ -359,17 +369,23 @@
 .st3-admin a[class~="bg-black"],
 .st3-admin button[class~="bg-black"],
 .st3-admin button[type="submit"] {
-  border-color: #f5b335 !important;
-  background: #f5b335 !important;
-  color: #1d1d1f !important;
-  box-shadow: 0 10px 26px rgba(245, 179, 53, 0.2);
+  border-color: rgba(245, 179, 53, 0.92) !important;
+  background: rgba(245, 179, 53, 0.10) !important;
+  color: #7a4d00 !important;
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.075),
+    0 6px 18px rgba(196, 135, 27, 0.055);
 }
 
 .st3-admin a[class~="bg-black"]:hover,
 .st3-admin button[class~="bg-black"]:hover,
 .st3-admin button[type="submit"]:hover {
-  background: #eaaa2b !important;
-  color: #1d1d1f !important;
+  border-color: #f5b335 !important;
+  background: rgba(245, 179, 53, 0.13) !important;
+  color: #704700 !important;
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.105),
+    0 8px 22px rgba(196, 135, 27, 0.075) !important;
 }
 
 .st3-admin button:not([type="submit"]),
@@ -783,21 +799,27 @@
 }
 
 .st3-admin .st3-admin-main button[type="submit"] {
-  background: var(--st-admin-accent) !important;
+  background: rgba(245, 179, 53, 0.10) !important;
 
-  border-color: var(--st-admin-accent) !important;
+  border-color: rgba(245, 179, 53, 0.92) !important;
 
-  color: #171719 !important;
+  color: #7a4d00 !important;
 
-  box-shadow: 0 5px 16px rgba(245, 179, 53, 0.14) !important;
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.075),
+    0 6px 18px rgba(196, 135, 27, 0.055) !important;
 }
 
 .st3-admin .st3-admin-main button[type="submit"]:hover {
-  background: var(--st-admin-accent-hover) !important;
+  background: rgba(245, 179, 53, 0.13) !important;
 
-  border-color: var(--st-admin-accent-hover) !important;
+  border-color: #f5b335 !important;
 
-  box-shadow: 0 7px 20px rgba(245, 179, 53, 0.2) !important;
+  color: #704700 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.105),
+    0 8px 22px rgba(196, 135, 27, 0.075) !important;
 
   transform: none !important;
 }

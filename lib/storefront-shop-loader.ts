@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import type {
   StoreProductCardProduct,
   StoreProductImage,
@@ -18,7 +20,7 @@ import {
   type ShopSortOption,
 } from "@/lib/storefront-shop-catalog";
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const SHOP_PRODUCTS_PER_BATCH = 50;
 
@@ -30,6 +32,85 @@ type ShopIndexRow = ShopCatalogueProduct & {
   is_new_arrival: boolean | null;
   new_drop_started_at: string | null;
 };
+
+
+/*
+ * STEREOPHONIE_SHOP_INDEX_CACHE
+ *
+ * The whole-catalogue filtering/sorting index is shared briefly
+ * between storefront requests.
+ *
+ * IMPORTANT:
+ * - only the lightweight index is cached
+ * - product images are NOT cached here
+ * - full visible product cards are NOT cached here
+ * - Stage 2 still loads current product data directly
+ *
+ * Five seconds is deliberately short so repeated navigation and
+ * Load More calls can reuse the expensive catalogue scan without
+ * turning the storefront catalogue into a long-lived snapshot.
+ */
+const loadShopCatalogueIndex = unstable_cache(
+  async (): Promise<ShopIndexRow[]> => {
+    const supabase = createAdminClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        `
+          id,
+          name,
+          slug,
+          description,
+          is_featured,
+          is_trending,
+          is_new_arrival,
+          new_drop_started_at,
+          created_at,
+
+          categories (
+            name
+          ),
+
+          brands (
+            name
+          ),
+
+          product_variants (
+            id,
+            display_position,
+            regular_price,
+            sale_price,
+            stock_quantity,
+            size,
+            variant_name,
+            is_active,
+            availability_status
+          )
+        `,
+      )
+      .eq("status", "published")
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      console.error(
+        "Stereophonie shop index could not load:",
+        error,
+      );
+
+      return [];
+    }
+
+    return (data ?? []) as ShopIndexRow[];
+  },
+  ["stereophonie-shop-catalogue-index-v1"],
+  {
+    revalidate: 5,
+    tags: ["storefront-shop-index"],
+  },
+);
 
 type ShopFullImage = StoreProductImage & {
   id: string;
@@ -110,7 +191,7 @@ function storefrontThumbnailPath(storagePath: string) {
 }
 
 type ShopSupabaseClient =
-  Awaited<ReturnType<typeof createClient>>;
+  ReturnType<typeof createAdminClient>;
 
 function normalizeProduct(
   product: ShopFullRow,
@@ -258,7 +339,7 @@ export async function loadShopProductBatch({
     Math.max(1, Math.floor(limit)),
   );
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   /*
    * Stage 1
@@ -275,66 +356,7 @@ export async function loadShopProductBatch({
    * - price filtering
    * - sorting
    */
-  const { data: indexData, error: indexError } = await supabase
-    .from("products")
-    .select(
-      `
-        id,
-        name,
-        slug,
-        description,
-        is_featured,
-        is_trending,
-        is_new_arrival,
-        new_drop_started_at,
-        created_at,
-
-        categories (
-          name
-        ),
-
-        brands (
-          name
-        ),
-
-        product_variants (
-          id,
-          display_position,
-          regular_price,
-          sale_price,
-          stock_quantity,
-          size,
-          variant_name,
-          is_active,
-          availability_status
-        )
-      `,
-    )
-    .eq("status", "published")
-    .order("created_at", {
-      ascending: false,
-    });
-
-  if (indexError) {
-    console.error(
-      "Stereophonie shop index could not load:",
-      indexError,
-    );
-
-    return {
-      products: [],
-      totalProducts: 0,
-      minimumPrice: null,
-      maximumPrice: null,
-      minimumAvailablePrice: 0,
-      maximumAvailablePrice: 5,
-      offset: safeOffset,
-      limit: safeLimit,
-      hasMore: false,
-    };
-  }
-
-  const products = (indexData ?? []) as ShopIndexRow[];
+  const products = await loadShopCatalogueIndex();
 
   const priceWindowProducts = products.filter((product) => {
     if (filters.offers && !shopProductOnOffer(product)) {

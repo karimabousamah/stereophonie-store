@@ -5888,7 +5888,7 @@ a {
 @import "../styles/stereophonie-v2/shop.css";
 @import "../styles/stereophonie-v2/product.css";
 
-@import "../styles/stereophonie-v2/arcade-game.css";
+
 
 @import "../styles/stereophonie-v2/assistant.css";
 
@@ -8346,11 +8346,39 @@ html body .st3-admin :is(.st-admin-color-custom, .st-admin-colour-custom) {
 }
 
 .st-dash-period-selector button.is-active {
-  background: #1d1d1f;
+  border: 1px solid rgba(245, 179, 53, 0.92);
 
-  color: #fff;
+  background: rgba(245, 179, 53, 0.10);
 
-  box-shadow: 0 5px 13px rgba(29, 29, 31, 0.13);
+  color: #8b5900;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.075),
+    0 6px 16px rgba(196, 135, 27, 0.055);
+}
+
+.st-dash-period-selector button.is-active:hover {
+  border-color: rgba(245, 179, 53, 0.92);
+
+  background: rgba(245, 179, 53, 0.10);
+
+  color: #8b5900;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.075),
+    0 6px 16px rgba(196, 135, 27, 0.055);
+}
+
+.st-dash-period-selector button.is-active:active {
+  border-color: #f5b335;
+
+  background: rgba(245, 179, 53, 0.14);
+
+  color: #7a4d00;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.11),
+    0 3px 10px rgba(196, 135, 27, 0.055);
 }
 
 .st-dash-chart-shell {

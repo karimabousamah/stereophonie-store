@@ -151,3 +151,186 @@ export function storefrontConfigurationImages<
     is_primary: index === 0,
   }));
 }
+
+
+/* ==========================================================
+   ST AUTHORITATIVE PRIMARY IMAGE HELPERS
+   ========================================================== */
+
+export type StorefrontResolvableImage = {
+  id?: string | null;
+  image_url?: string | null;
+  storefront_image_url?: string | null;
+  position?: number | null;
+  is_primary?: boolean | null;
+  variant_id?: string | null;
+  variant_position?: number | null;
+  is_variant_primary?: boolean | null;
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
+};
+
+function storefrontResolvableImageIdentity(
+  image: StorefrontResolvableImage,
+) {
+  return String(
+    image.id ??
+      image.storefront_image_url ??
+      image.image_url ??
+      "",
+  );
+}
+
+export function storefrontImagesForVariant<
+  TImage extends StorefrontResolvableImage,
+>(
+  images: TImage[] | null | undefined,
+  variantId: string | null | undefined,
+): TImage[] {
+  const available = [...(images ?? [])].filter((image) =>
+    Boolean(
+      String(
+        image.storefront_image_url ??
+          image.image_url ??
+          "",
+      ).trim(),
+    ),
+  );
+
+  const requestedVariantId = String(
+    variantId ?? "",
+  ).trim();
+
+  if (requestedVariantId) {
+    const configurationImages = available
+      .map((image) => {
+        const assignment =
+          Array.isArray(image.product_image_variants)
+            ? image.product_image_variants.find(
+                (candidate) =>
+                  candidate.variant_id === requestedVariantId,
+              )
+            : undefined;
+
+        const legacyVariantMatch =
+          String(image.variant_id ?? "").trim() ===
+          requestedVariantId;
+
+        if (!assignment && !legacyVariantMatch) {
+          return null;
+        }
+
+        return {
+          image,
+
+          isPrimary:
+            Boolean(assignment?.is_primary) ||
+            (
+              legacyVariantMatch &&
+              Boolean(image.is_variant_primary)
+            ),
+
+          position: Number(
+            assignment?.position ??
+              (
+                legacyVariantMatch
+                  ? image.variant_position
+                  : null
+              ) ??
+              image.position ??
+              0,
+          ),
+        };
+      })
+      .filter(
+        (
+          entry,
+        ): entry is {
+          image: TImage;
+          isPrimary: boolean;
+          position: number;
+        } => entry !== null,
+      )
+      .sort((first, second) => {
+        if (first.isPrimary !== second.isPrimary) {
+          return first.isPrimary ? -1 : 1;
+        }
+
+        if (first.position !== second.position) {
+          return first.position - second.position;
+        }
+
+        return storefrontResolvableImageIdentity(
+          first.image,
+        ).localeCompare(
+          storefrontResolvableImageIdentity(second.image),
+        );
+      });
+
+    if (configurationImages.length > 0) {
+      return configurationImages.map(({ image }) => image);
+    }
+  }
+
+  return available.sort((first, second) => {
+    if (
+      Boolean(first.is_primary) !==
+      Boolean(second.is_primary)
+    ) {
+      return first.is_primary ? -1 : 1;
+    }
+
+    const positionDifference =
+      Number(first.position ?? 0) -
+      Number(second.position ?? 0);
+
+    if (positionDifference !== 0) {
+      return positionDifference;
+    }
+
+    return storefrontResolvableImageIdentity(
+      first,
+    ).localeCompare(
+      storefrontResolvableImageIdentity(second),
+    );
+  });
+}
+
+export function storefrontPrimaryImageForVariant<
+  TImage extends StorefrontResolvableImage,
+>(
+  images: TImage[] | null | undefined,
+  variantId: string | null | undefined,
+) {
+  return storefrontImagesForVariant(
+    images,
+    variantId,
+  )[0] ?? null;
+}
+
+export function storefrontImageDisplayUrl(
+  image: StorefrontResolvableImage | null | undefined,
+) {
+  const storefrontUrl = String(
+    image?.storefront_image_url ?? "",
+  ).trim();
+
+  if (storefrontUrl) {
+    return storefrontUrl;
+  }
+
+  const originalUrl = String(
+    image?.image_url ?? "",
+  ).trim();
+
+  return originalUrl || null;
+}
+
+/* ==========================================================
+   ST AUTHORITATIVE PRIMARY IMAGE HELPERS END
+   ========================================================== */

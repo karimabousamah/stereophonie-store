@@ -1,11 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
 const brandsPath = "/admin/brands";
+const SHOP_BRAND_FILTER_TAG =
+  "storefront-shop-brand-filters";
 
 function slugify(value: string) {
   return value
@@ -104,6 +106,7 @@ export async function createBrand(formData: FormData) {
   revalidatePath(brandsPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
 
   redirectWithMessage("success", "Brand created successfully.");
 }
@@ -339,6 +342,7 @@ export async function installElectronicsBrandLibrary() {
   revalidatePath(brandsPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
 
   redirectWithMessage(
     "success",
@@ -384,6 +388,7 @@ export async function updateBrand(formData: FormData) {
   revalidatePath(brandsPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
 
   redirectWithMessage("success", "Brand updated successfully.");
 }
@@ -414,6 +419,7 @@ export async function toggleBrand(formData: FormData) {
   revalidatePath(brandsPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
 
   redirectWithMessage(
     "success",
@@ -458,6 +464,7 @@ export async function deleteBrand(formData: FormData) {
   revalidatePath(brandsPath);
   revalidatePath("/admin/products");
   revalidatePath("/shop");
+  revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
 
   redirectWithMessage("success", "Brand deleted successfully.");
 }

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { cache, Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Gamepad2, PackageCheck, Zap } from "lucide-react";
 
 import StoreProductCard from "@/components/storefront/store-product-card";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 
 import ProductConfigurationPrice from "./product-configuration-price";
@@ -89,7 +90,7 @@ function storefrontThumbnailPath(storagePath: string) {
 
 function productImagesWithStorefrontUrls(
   images: ProductImage[],
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAdminClient>,
 ) {
   return images.map((image) => {
     const storagePath = image.storage_path?.trim();
@@ -108,6 +109,85 @@ function productImagesWithStorefrontUrls(
     };
   });
 }
+
+/*
+ * One published-product lookup per server render/navigation.
+ *
+ * generateMetadata() and ProductPage() both call this function.
+ * React cache() memoizes the Promise for the current server request,
+ * so Supabase is not asked for the same product twice.
+ *
+ * This is REQUEST memoization only:
+ * stock, prices and availability are NOT cached across visitors.
+ */
+const getPublishedProductBySlug = cache(async (slug: string) => {
+  const supabase = createAdminClient();
+
+  return supabase
+    .from("products")
+    .select(
+      `
+        id,
+        name,
+        slug,
+        description,
+        status,
+        is_featured,
+        is_trending,
+        is_new_arrival,
+        category_id,
+        brand_id,
+        collection_id,
+
+        categories (
+          name
+        ),
+
+        brands (
+          name
+        ),
+
+        collections (
+          name
+        ),
+
+        product_images (
+          id,
+          image_url,
+          storage_path,
+          alt_text,
+          position,
+          is_primary,
+          variant_name,
+          variant_id,
+          variant_position,
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
+        ),
+
+        product_variants (
+          id,
+          size,
+          variant_name,
+          display_position,
+          attributes,
+          sku,
+          regular_price,
+          sale_price,
+          stock_quantity,
+          low_stock_threshold,
+          availability_status
+        )
+      `,
+    )
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single();
+});
 
 function relationName(relation: Relation, fallback: string) {
   if (!relation) {
@@ -128,27 +208,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
-  const supabase = await createClient();
-
-  const { data: product } = await supabase
-    .from("products")
-    .select(
-      `
-        name,
-        description,
-        status,
-        categories ( name ),
-        brands ( name ),
-        product_images (
-          image_url,
-          position,
-          is_primary
-        )
-      `,
-    )
-    .eq("slug", slug)
-    .eq("status", "published")
-    .maybeSingle();
+  const { data: product } =
+    await getPublishedProductBySlug(slug);
 
   if (!product) {
     return {
@@ -213,15 +274,51 @@ function productHasLowStock(
   );
 }
 
-export default async function ProductPage({
-  params,
-  searchParams,
-}: ProductPageProps) {
-  const [{ slug }, query] = await Promise.all([params, searchParams]);
+async function RelatedProductsSection({
+  product,
+  variants,
+  brandName,
+  categoryName,
+  collectionName,
+}: {
+  product: any;
+  variants: ProductVariant[];
+  brandName: string;
+  categoryName: string;
+  collectionName: string;
+}) {
+  const supabase = createAdminClient();
 
-  const supabase = await createClient();
+  const currentProductName = product.name;
+  const currentProductBrandId = product.brand_id;
+  const currentProductCategoryId = product.category_id;
+  const currentProductCollectionId = product.collection_id;
 
-  const { data: product, error } = await supabase
+  /*
+   * Start recommendation catalogue loading immediately.
+   *
+   * This request used to begin only after the complete primary
+   * product request had finished, creating an avoidable Supabase
+   * network waterfall on every product-page navigation.
+   *
+   * We fetch one additional candidate because the current product
+   * ID is not known yet. It is removed locally after resolution.
+   */
+  /*
+   * Recommendation scoring catalogue.
+   *
+   * PERFORMANCE:
+   * Do NOT download photographs and full sellable-variant graphs
+   * for as many as 121 products.
+   *
+   * The recommendation algorithm only needs product identity,
+   * taxonomy, merchandising flags, variant attributes and
+   * availability to calculate exactly the same relevance score.
+   *
+   * The final maximum-four products are hydrated separately
+   * after scoring.
+   */
+  const relatedProductsPromise = supabase
     .from("products")
     .select(
       `
@@ -230,12 +327,12 @@ export default async function ProductPage({
         slug,
         description,
         status,
-        is_featured,
-        is_trending,
-        is_new_arrival,
         category_id,
         brand_id,
         collection_id,
+        is_featured,
+        is_trending,
+        is_new_arrival,
 
         categories (
           name
@@ -245,140 +342,16 @@ export default async function ProductPage({
           name
         ),
 
-        collections (
-          name
-        ),
-
-        product_images (
-          id,
-          image_url,
-          storage_path,
-          alt_text,
-          position,
-          is_primary,
-          variant_name,
-          variant_id,
-          variant_position,
-          is_variant_primary,
-          product_image_variants (
-            variant_id,
-            position,
-            is_primary
-          )
-        ),
-
         product_variants (
-          id,
-          size,
-          variant_name,
-          display_position,
           attributes,
-          sku,
-          regular_price,
-          sale_price,
           stock_quantity,
-          low_stock_threshold,
           availability_status
         )
       `,
     )
-    .eq("slug", slug)
     .eq("status", "published")
-    .single();
+    .limit(121);
 
-  if (error || !product) {
-    notFound();
-  }
-
-  /*
-   * Stable non-null references for recommendation helpers.
-   * TypeScript does not always preserve Supabase narrowing
-   * inside nested functions, so capture the verified values.
-   */
-  const currentProductName = product.name;
-  const currentProductBrandId = product.brand_id;
-  const currentProductCategoryId = product.category_id;
-  const currentProductCollectionId = product.collection_id;
-
-  const images = productImagesWithStorefrontUrls(
-    (product.product_images as ProductImage[]) ?? [],
-    supabase,
-  ).sort(
-    (first, second) => first.position - second.position,
-  );
-
-  const primary = images.find((image) => image.is_primary) ?? images[0] ?? null;
-
-  const galleryImages = primary
-    ? [primary, ...images.filter((image) => image.id !== primary.id)]
-    : images;
-
-  const variants = ((product.product_variants as ProductVariant[]) ?? []).sort(
-    (first, second) => {
-      const firstPosition = Number(first.display_position ?? 0);
-
-      const secondPosition = Number(second.display_position ?? 0);
-
-      if (firstPosition !== secondPosition) {
-        return firstPosition - secondPosition;
-      }
-
-      return (first.variant_name?.trim() || first.size || "").localeCompare(
-        second.variant_name?.trim() || second.size || "",
-        undefined,
-        {
-          numeric: true,
-        },
-      );
-    },
-  );
-
-  const brandName = relationName(
-    product.brands as Relation,
-    "Stereophonie Select",
-  );
-
-  const categoryName = relationName(
-    product.categories as Relation,
-    "Technology",
-  );
-
-  const collectionName = relationName(
-    product.collections as Relation,
-    categoryName,
-  );
-
-  const hasPurchasableVariant = variants.some(
-    (variant) =>
-      variant.stock_quantity > 0 &&
-      (variant.availability_status === "in_stock" ||
-        variant.availability_status === "low_stock"),
-  );
-
-  const hasComingSoonVariant = variants.some(
-    (variant) => variant.availability_status === "coming_soon",
-  );
-
-  /*
-   * Product-level storefront status.
-   *
-   * Priority:
-   * 1. Any purchasable configuration -> available
-   * 2. Otherwise any Coming Soon configuration -> coming soon
-   * 3. Otherwise -> out of stock
-   */
-  const productAvailabilityStatus = hasPurchasableVariant
-    ? "in_stock"
-    : hasComingSoonVariant
-      ? "coming_soon"
-      : "out_of_stock";
-
-  const available = hasPurchasableVariant;
-
-  const firstAttributes =
-    variants.find(
-      (variant) => variant.attributes && typeof variant.attributes === "object",
-    )?.attributes ?? {};
 
   /*
    * ============================================================
@@ -1055,64 +1028,19 @@ export default async function ProductPage({
     );
   }
 
-  const { data: relatedData, error: relatedError } = await supabase
-    .from("products")
-    .select(
-      `
-        id,
-        name,
-        slug,
-        description,
-        status,
-        category_id,
-        brand_id,
-        collection_id,
-        is_featured,
-        is_trending,
-        is_new_arrival,
+  const {
+    data: relatedDataRaw,
+    error: relatedError,
+  } = await relatedProductsPromise;
 
-        categories (
-          name
-        ),
-
-        brands (
-          name
-        ),
-
-        product_images (
-          id,
-          image_url,
-          storage_path,
-          alt_text,
-          position,
-          is_primary,
-          variant_id,
-          variant_position,
-          is_variant_primary,
-          product_image_variants (
-            variant_id,
-            position,
-            is_primary
-          )
-        ),
-
-        product_variants (
-          id,
-          regular_price,
-          sale_price,
-          stock_quantity,
-          size,
-          variant_name,
-          display_position,
-          attributes,
-          is_active,
-          availability_status
-        )
-      `,
-    )
-    .eq("status", "published")
-    .neq("id", product.id)
-    .limit(120);
+  /*
+   * The old SQL query excluded the current product using .neq().
+   * Because the parallel request starts before product.id is known,
+   * preserve that exact behavior locally.
+   */
+  const relatedData = (relatedDataRaw ?? [])
+    .filter((item) => item.id !== product.id)
+    .slice(0, 120);
 
   if (relatedError) {
     console.error("Related products could not be loaded:", relatedError);
@@ -1208,50 +1136,297 @@ export default async function ProductPage({
     usedFamilies.set(candidate.candidateFamily, familyCount + 1);
   }
 
-  const relatedProducts = diversifiedRecommendations
+  /*
+   * Only the final recommendation cards need their complete
+   * storefront image + sellable variant graph.
+   *
+   * Maximum database hydration size here is four products.
+   */
+  const selectedRecommendationItems = diversifiedRecommendations
     .slice(0, 4)
-    .map(({ item }) => ({
-      id: item.id,
-      name: item.name,
-      slug: item.slug,
+    .map(({ item }) => item);
 
-      description: item.description ?? null,
+  const selectedRecommendationIds = selectedRecommendationItems.map(
+    (item) => String(item.id),
+  );
 
-      categoryName: relationName(item.categories as Relation, "Technology"),
+  let relatedDisplayData: any[] = [];
 
-      is_featured: item.is_featured,
+  if (selectedRecommendationIds.length > 0) {
+    const {
+      data: hydratedRelatedData,
+      error: hydratedRelatedError,
+    } = await supabase
+      .from("products")
+      .select(
+        `
+          id,
+          name,
+          slug,
+          description,
+          status,
+          category_id,
+          brand_id,
+          collection_id,
+          is_featured,
+          is_trending,
+          is_new_arrival,
 
-      is_trending: item.is_trending,
+          categories (
+            name
+          ),
 
-      is_new_arrival: item.is_new_arrival,
+          brands (
+            name
+          ),
 
-      images: storefrontConfigurationImages(
-          (item.product_images ?? []).map((image: any) => {
-            const storagePath =
-              typeof image.storage_path === "string"
-                ? image.storage_path.trim()
-                : "";
+          product_images (
+            id,
+            image_url,
+            storage_path,
+            alt_text,
+            position,
+            is_primary,
+            variant_id,
+            variant_position,
+            is_variant_primary,
+            product_image_variants (
+              variant_id,
+              position,
+              is_primary
+            )
+          ),
 
-            if (!storagePath) {
-              return image;
-            }
+          product_variants (
+            id,
+            regular_price,
+            sale_price,
+            stock_quantity,
+            size,
+            variant_name,
+            display_position,
+            attributes,
+            is_active,
+            availability_status
+          )
+        `,
+      )
+      .in("id", selectedRecommendationIds)
+      .eq("status", "published");
 
-            const { data } = supabase.storage
-              .from("product-images")
-              .getPublicUrl(
-                storefrontThumbnailPath(storagePath),
-              );
+    if (hydratedRelatedError) {
+      console.error(
+        "Selected related products could not be hydrated:",
+        hydratedRelatedError,
+      );
+    } else {
+      relatedDisplayData = (hydratedRelatedData ?? []) as any[];
+    }
+  }
 
-            return {
-              ...image,
-              storefront_image_url: data.publicUrl,
-            };
-          }),
-          item.product_variants ?? [],
-        ),
+  /*
+   * Supabase .in() does not guarantee the scoring order.
+   * Restore the exact order chosen by the recommendation engine.
+   */
+  const relatedDisplayById = new Map(
+    relatedDisplayData.map((item) => [String(item.id), item]),
+  );
 
-      variants: item.product_variants ?? [],
-    }));
+  const orderedRelatedDisplayData = selectedRecommendationItems
+    .map((candidate) =>
+      relatedDisplayById.get(String(candidate.id)),
+    )
+    .filter(Boolean) as any[];
+
+  const relatedProducts = orderedRelatedDisplayData.map((item) => ({
+    id: item.id,
+    name: item.name,
+    slug: item.slug,
+
+    description: item.description ?? null,
+
+    categoryName: relationName(
+      item.categories as Relation,
+      "Technology",
+    ),
+
+    is_featured: item.is_featured,
+
+    is_trending: item.is_trending,
+
+    is_new_arrival: item.is_new_arrival,
+
+    images: storefrontConfigurationImages(
+      (item.product_images ?? []).map((image: any) => {
+        const storagePath =
+          typeof image.storage_path === "string"
+            ? image.storage_path.trim()
+            : "";
+
+        if (!storagePath) {
+          return image;
+        }
+
+        const { data } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(
+            storefrontThumbnailPath(storagePath),
+          );
+
+        return {
+          ...image,
+          storefront_image_url: data.publicUrl,
+        };
+      }),
+      item.product_variants ?? [],
+    ),
+
+    variants: item.product_variants ?? [],
+  }));
+
+
+  return (
+    <>
+  {relatedProducts.length ? (
+    <section className="st-product-v5__related st-product-v5__related-explore">
+      <header>
+        <div>
+          <span>Recommended</span>
+          <h2>You may also like.</h2>
+        </div>
+      </header>
+
+      <div className="st-related-products-grid st-product-v5__related-grid">
+        {relatedProducts.map((relatedProduct, index) => (
+          <StoreProductCard
+            key={relatedProduct.id}
+            product={relatedProduct}
+            index={index}
+          />
+        ))}
+      </div>
+
+      <div
+        className="st3-home-product-shelf__scroll-hint"
+        aria-hidden="true"
+      >
+        <span className="st3-home-product-shelf__scroll-hint-mobile">
+          Swipe to explore
+        </span>
+
+        <span className="st3-home-product-shelf__scroll-hint-desktop">
+          Scroll to explore
+        </span>
+
+        <span className="st3-home-product-shelf__scroll-hint-arrow">
+          →
+        </span>
+      </div>
+
+      <Link href="/shop" className="st3-home-product-shelf__see-all">
+        <span>View all</span>
+        <span aria-hidden="true">›</span>
+      </Link>
+    </section>
+  ) : null}
+    </>
+  );
+}
+
+export default async function ProductPage({
+  params,
+  searchParams,
+}: ProductPageProps) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+
+  const supabase = createAdminClient();
+
+  const { data: product, error } =
+    await getPublishedProductBySlug(slug);
+
+  if (error || !product) {
+    notFound();
+  }
+
+  const images = productImagesWithStorefrontUrls(
+    (product.product_images as ProductImage[]) ?? [],
+    supabase,
+  ).sort(
+    (first, second) => first.position - second.position,
+  );
+
+  const primary = images.find((image) => image.is_primary) ?? images[0] ?? null;
+
+  const galleryImages = primary
+    ? [primary, ...images.filter((image) => image.id !== primary.id)]
+    : images;
+
+  const variants = ((product.product_variants as ProductVariant[]) ?? []).sort(
+    (first, second) => {
+      const firstPosition = Number(first.display_position ?? 0);
+
+      const secondPosition = Number(second.display_position ?? 0);
+
+      if (firstPosition !== secondPosition) {
+        return firstPosition - secondPosition;
+      }
+
+      return (first.variant_name?.trim() || first.size || "").localeCompare(
+        second.variant_name?.trim() || second.size || "",
+        undefined,
+        {
+          numeric: true,
+        },
+      );
+    },
+  );
+
+  const brandName = relationName(
+    product.brands as Relation,
+    "Stereophonie Select",
+  );
+
+  const categoryName = relationName(
+    product.categories as Relation,
+    "Technology",
+  );
+
+  const collectionName = relationName(
+    product.collections as Relation,
+    categoryName,
+  );
+
+  const hasPurchasableVariant = variants.some(
+    (variant) =>
+      variant.stock_quantity > 0 &&
+      (variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock"),
+  );
+
+  const hasComingSoonVariant = variants.some(
+    (variant) => variant.availability_status === "coming_soon",
+  );
+
+  /*
+   * Product-level storefront status.
+   *
+   * Priority:
+   * 1. Any purchasable configuration -> available
+   * 2. Otherwise any Coming Soon configuration -> coming soon
+   * 3. Otherwise -> out of stock
+   */
+  const productAvailabilityStatus = hasPurchasableVariant
+    ? "in_stock"
+    : hasComingSoonVariant
+      ? "coming_soon"
+      : "out_of_stock";
+
+  const available = hasPurchasableVariant;
+
+  const firstAttributes =
+    variants.find(
+      (variant) => variant.attributes && typeof variant.attributes === "object",
+    )?.attributes ?? {};
 
   return (
     <>
@@ -1344,12 +1519,23 @@ export default async function ProductPage({
                 is_new_arrival: product.is_new_arrival,
 
                 images: galleryImages.map((image) => ({
+                  id: image.id,
                   image_url:
+                    image.storefront_image_url ??
+                    image.image_url,
+                  storefront_image_url:
                     image.storefront_image_url ??
                     image.image_url,
                   alt_text: image.alt_text,
                   position: image.position,
                   is_primary: image.is_primary,
+                  variant_id: image.variant_id ?? null,
+                  variant_position:
+                    image.variant_position ?? null,
+                  is_variant_primary:
+                    image.is_variant_primary ?? null,
+                  product_image_variants:
+                    image.product_image_variants ?? null,
                 })),
 
                 variants: variants.map((variant) => ({
@@ -1438,48 +1624,15 @@ export default async function ProductPage({
             </div>
           </section>
 
-          {relatedProducts.length ? (
-            <section className="st-product-v5__related st-product-v5__related-explore">
-              <header>
-                <div>
-                  <span>Recommended</span>
-                  <h2>You may also like.</h2>
-                </div>
-              </header>
-
-              <div className="st-related-products-grid st-product-v5__related-grid">
-                {relatedProducts.map((relatedProduct, index) => (
-                  <StoreProductCard
-                    key={relatedProduct.id}
-                    product={relatedProduct}
-                    index={index}
-                  />
-                ))}
-              </div>
-
-              <div
-                className="st3-home-product-shelf__scroll-hint"
-                aria-hidden="true"
-              >
-                <span className="st3-home-product-shelf__scroll-hint-mobile">
-                  Swipe to explore
-                </span>
-
-                <span className="st3-home-product-shelf__scroll-hint-desktop">
-                  Scroll to explore
-                </span>
-
-                <span className="st3-home-product-shelf__scroll-hint-arrow">
-                  →
-                </span>
-              </div>
-
-              <Link href="/shop" className="st3-home-product-shelf__see-all">
-                <span>View all</span>
-                <span aria-hidden="true">›</span>
-              </Link>
-            </section>
-          ) : null}
+          <Suspense fallback={null}>
+            <RelatedProductsSection
+              product={product}
+              variants={variants}
+              brandName={brandName}
+              categoryName={categoryName}
+              collectionName={collectionName}
+            />
+          </Suspense>
         </div>
       </main>
 

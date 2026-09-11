@@ -293,6 +293,8 @@ export default function ProductGallery(props: ProductGalleryProps) {
     }
   }, [allImages]);
 
+
+
   /*
    * Empty means no configuration has been explicitly selected yet.
    *
@@ -304,6 +306,8 @@ export default function ProductGallery(props: ProductGalleryProps) {
 
   const [selectedVariantId, setSelectedVariantId] = useState("");
 
+
+
   useEffect(() => {
     function handleConfigurationChange(event: Event) {
       const customEvent = event as CustomEvent<{
@@ -311,11 +315,41 @@ export default function ProductGallery(props: ProductGalleryProps) {
         variantName?: string;
       }>;
 
-      setSelectedVariantId(String(customEvent.detail?.variantId ?? "").trim());
+      const nextVariantId = String(
+        customEvent.detail?.variantId ?? "",
+      ).trim();
 
-      setSelectedConfiguration(
-        String(customEvent.detail?.variantName ?? "").trim(),
-      );
+      const nextConfiguration = String(
+        customEvent.detail?.variantName ?? "",
+      ).trim();
+
+      /*
+       * Configuration changes are immediate.
+       *
+       * Keep activeIndex untouched so the customer remains on the
+       * same photograph position when changing colorway.
+       *
+       * Example:
+       * Black photo 2 -> Glacier photo 2.
+       *
+       * safeIndex already clamps automatically if the destination
+       * colorway has fewer photographs.
+       *
+       * Cancel an in-progress manual carousel animation so its
+       * directional movement cannot leak into the colorway change.
+       */
+      if (transitionTimer.current !== null) {
+        window.clearTimeout(transitionTimer.current);
+        transitionTimer.current = null;
+      }
+
+      setPreviousIndex(null);
+      setTransitioning(false);
+
+      setSelectedVariantId(nextVariantId);
+      setSelectedConfiguration(nextConfiguration);
+
+      setAutoplayResetKey((current) => current + 1);
     }
 
     window.addEventListener(
@@ -421,25 +455,6 @@ export default function ProductGallery(props: ProductGalleryProps) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  /*
-   * A different configuration can expose a completely different
-   * photograph set. Always return to the first photograph so the
-   * customer immediately sees the correct configuration image.
-   */
-  useEffect(() => {
-    setActiveIndex(0);
-    setPreviousIndex(null);
-    setDirection("next");
-    setTransitioning(false);
-
-    if (transitionTimer.current !== null) {
-      window.clearTimeout(transitionTimer.current);
-      transitionTimer.current = null;
-    }
-
-    setAutoplayResetKey((current) => current + 1);
-  }, [selectedConfiguration, selectedVariantId]);
-
   const [autoplayResetKey, setAutoplayResetKey] = useState(0);
 
   const [previousIndex, setPreviousIndex] = useState<number | null>(null);
@@ -460,23 +475,13 @@ export default function ProductGallery(props: ProductGalleryProps) {
 
   const activeImage = galleryImages[safeIndex] ?? null;
 
+
   const outgoingImage =
     previousIndex !== null
       ? (galleryImages[
           Math.min(previousIndex, Math.max(galleryImages.length - 1, 0))
         ] ?? null)
       : null;
-
-  /*
-   * When colour/configuration changes, return cleanly to the first
-   * appropriate photograph.
-   */
-  useEffect(() => {
-    setPreviousIndex(null);
-    setActiveIndex(0);
-    setTransitioning(false);
-    setAutoplayResetKey((current) => current + 1);
-  }, [selectedConfiguration, selectedVariantId]);
 
   useEffect(() => {
     return () => {

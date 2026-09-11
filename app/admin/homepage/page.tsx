@@ -2,11 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
+  ArrowDown,
   ArrowLeft,
+  ArrowUp,
   ExternalLink,
+  Film,
+  ImageIcon,
   ImageOff,
   LayoutTemplate,
   Save,
+  Trash2,
+  Upload,
   Diamond,
 } from "lucide-react";
 
@@ -20,10 +26,13 @@ import { createClient } from "@/lib/supabase/server";
 import {
   createHomepageAnnouncement,
   deleteHomepageAnnouncement,
+  deleteHomepageHeroMedia,
+  moveHomepageHeroMedia,
   toggleHomepageAnnouncement,
   updateHomepageAnnouncement,
   updateAnnouncementAppearance,
   updateHomepageSettings,
+  uploadHomepageHeroMedia,
 } from "./actions";
 
 type HomepageAdminPageProps = {
@@ -40,6 +49,16 @@ type HomepageAnnouncement = {
   link_href: string | null;
   is_active: boolean;
   sort_order: number;
+  created_at: string;
+};
+
+type HomepageHeroMedia = {
+  id: string;
+  media_type: "image" | "video";
+  media_url: string;
+  storage_path: string;
+  sort_order: number;
+  is_active: boolean;
   created_at: string;
 };
 
@@ -164,6 +183,36 @@ export default async function AdminHomepagePage({
     });
 
   const announcements = (announcementRows ?? []) as HomepageAnnouncement[];
+
+    const { data: heroMediaRows, error: heroMediaError } = await supabase
+      .from("homepage_hero_media")
+      .select(
+        `
+        id,
+        media_type,
+        media_url,
+        storage_path,
+        sort_order,
+        is_active,
+        created_at
+      `,
+      )
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("created_at", {
+        ascending: true,
+      });
+
+    if (heroMediaError) {
+      console.error(
+        "Homepage hero media could not load:",
+        heroMediaError,
+      );
+    }
+
+    const heroMedia = (heroMediaRows ?? []) as HomepageHeroMedia[];
+
 
   const activeAnnouncementCount = announcements.filter(
     (announcement) => announcement.is_active,
@@ -732,7 +781,10 @@ export default async function AdminHomepagePage({
 
           {/* === ST HOMEPAGE ANNOUNCEMENTS ADMIN END === */}
 
-          <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="mt-5 space-y-5">
+
+
+
             <form action={updateHomepageSettings} className="space-y-5">
               <section className="overflow-hidden rounded-[18px] border border-white/10 bg-[#0d0d0d]">
                 <div className="border-b border-white/10 px-5 py-4">
@@ -813,7 +865,7 @@ export default async function AdminHomepagePage({
                     <h2 className="text-xl font-semibold">Hero section</h2>
 
                     <p className="mt-1 text-sm text-white/35">
-                      Main headline, description, buttons and featured image.
+                      Manage your homepage hero text, buttons, photos and videos from one place.
                     </p>
                   </div>
                 </div>
@@ -864,7 +916,7 @@ export default async function AdminHomepagePage({
                   </label>
 
                   <div className="md:col-span-2">
-                    <FieldLabel>Custom hero image</FieldLabel>
+                    <FieldLabel>Fallback hero image</FieldLabel>
 
                     <div className="mt-3 rounded-[18px] border border-white/10 bg-black/40 p-4">
                       {settings.hero_image_url ? (
@@ -982,7 +1034,180 @@ export default async function AdminHomepagePage({
                     />
                   </label>
                 </div>
-              </section>
+
+
+                {/* ====================================================
+                    HERO MEDIA — INTEGRATED
+                    ==================================================== */}
+
+                <div className="border-t border-white/10 px-6 py-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex items-start gap-3">
+                      <Film className="mt-0.5 h-5 w-5 shrink-0 text-white/40" />
+
+                      <div>
+                        <h3 className="text-base font-semibold text-white">
+                          Hero media
+                        </h3>
+
+                        <p className="mt-1 max-w-2xl text-sm leading-6 text-white/35">
+                          Add photos and short videos for the homepage hero.
+                          They appear in the exact order shown below.
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="shrink-0 rounded-full border border-white/10 bg-black/35 px-3 py-1.5 text-[11px] font-semibold text-white/45">
+                      {heroMedia.length}{" "}
+                      {heroMedia.length === 1 ? "item" : "items"}
+                    </span>
+                  </div>
+
+                  <div className="mt-5 rounded-[16px] border border-dashed border-white/15 bg-black/30 p-4">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+                      <div className="min-w-0 flex-1">
+                        <FieldLabel>Upload photo or video</FieldLabel>
+
+                        <input
+                          type="file"
+                          name="hero_media"
+                          accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm"
+                          className="mt-3 block w-full text-sm text-white/55 file:mr-4 file:rounded-full file:border-0 file:bg-white file:px-5 file:py-3 file:text-xs file:font-semibold file:text-black hover:file:bg-white/85"
+                        />
+
+                        <p className="mt-2 text-xs leading-5 text-white/30">
+                          Images up to 10 MB · MP4 or WEBM videos up to 50 MB.
+                        </p>
+                      </div>
+
+                      <button
+                        type="submit"
+                        formAction={uploadHomepageHeroMedia}
+                        formNoValidate
+                        className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#fdb73e] px-6 text-xs font-semibold text-black transition hover:bg-[#efaa29]"
+                      >
+                        <Upload className="h-4 w-4" />
+                        Add media
+                      </button>
+                    </div>
+                  </div>
+
+                  {heroMedia.length ? (
+                    <div className="mt-5 space-y-3">
+                      {heroMedia.map((media, index) => (
+                        <article
+                          key={media.id}
+                          className="grid gap-4 rounded-[16px] border border-white/10 bg-black/25 p-4 md:grid-cols-[150px_minmax(0,1fr)_auto] md:items-center"
+                        >
+                          <div className="relative aspect-[16/9] overflow-hidden rounded-[12px] border border-white/10 bg-black">
+                            {media.media_type === "image" ? (
+                              <Image
+                                unoptimized
+                                src={media.media_url}
+                                alt={`Hero image ${index + 1}`}
+                                fill
+                                sizes="150px"
+                                className="object-contain"
+                              />
+                            ) : (
+                              <video
+                                src={media.media_url}
+                                muted
+                                playsInline
+                                preload="metadata"
+                                className="h-full w-full object-contain"
+                              />
+                            )}
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/55">
+                                {media.media_type === "video" ? (
+                                  <Film className="h-3.5 w-3.5" />
+                                ) : (
+                                  <ImageIcon className="h-3.5 w-3.5" />
+                                )}
+
+                                {media.media_type}
+                              </span>
+
+                              <span className="text-xs text-white/30">
+                                Position {index + 1}
+                              </span>
+                            </div>
+
+                            <p className="mt-2 truncate text-xs text-white/25">
+                              {media.storage_path}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2 md:justify-end">
+                            <button
+                              type="submit"
+                              formAction={moveHomepageHeroMedia}
+                              formNoValidate
+                              name="hero_media_move"
+                              value={`${media.id}:up`}
+                              disabled={index === 0}
+                              title="Move up"
+                              aria-label={`Move media ${index + 1} up`}
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/60 transition hover:border-white/25 hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                            >
+                              <ArrowUp className="h-4 w-4" />
+                            </button>
+
+                            <button
+                              type="submit"
+                              formAction={moveHomepageHeroMedia}
+                              formNoValidate
+                              name="hero_media_move"
+                              value={`${media.id}:down`}
+                              disabled={index === heroMedia.length - 1}
+                              title="Move down"
+                              aria-label={`Move media ${index + 1} down`}
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/60 transition hover:border-white/25 hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                            >
+                              <ArrowDown className="h-4 w-4" />
+                            </button>
+
+                            <button
+                              type="submit"
+                              formAction={deleteHomepageHeroMedia.bind(
+                                null,
+                                media.id,
+                              )}
+                              formNoValidate
+                              title="Delete"
+                              aria-label={`Delete media ${index + 1}`}
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-red-400/20 bg-red-400/[0.04] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.09] hover:text-red-200"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-5 rounded-[16px] border border-white/10 bg-black/20 px-5 py-5">
+                      <div className="flex items-center gap-3">
+                        <ImageIcon className="h-5 w-5 shrink-0 text-white/20" />
+
+                        <div>
+                          <p className="text-sm font-medium text-white/55">
+                            No hero media yet
+                          </p>
+
+                          <p className="mt-1 text-xs leading-5 text-white/30">
+                            The fallback hero image below remains active until
+                            you add media here.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+</section>
 
               <section className="overflow-hidden rounded-[18px] border border-white/10 bg-[#0d0d0d]">
                 <div className="border-b border-white/10 px-5 py-4">

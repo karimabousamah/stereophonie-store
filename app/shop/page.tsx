@@ -12,7 +12,16 @@ import {
   loadShopProductBatch,
   SHOP_PRODUCTS_PER_BATCH,
 } from "@/lib/storefront-shop-loader";
-import { createClient } from "@/lib/supabase/server";
+import {
+  getShopBrandFilterOptions,
+  getShopCategoryFilterOptions,
+} from "@/lib/storefront-shop-filter-options";
+
+/*
+ * Smaller first render for faster /shop navigation.
+ * Load More keeps the existing 50-product batch size.
+ */
+const SHOP_INITIAL_PRODUCTS = 24;
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -94,8 +103,6 @@ export default async function ShopPage({
     shopSingleParameter(parameters.sort).toLowerCase(),
   );
 
-  const supabase = await createClient();
-
   /*
    * Product loading is now two-stage:
    *
@@ -105,11 +112,14 @@ export default async function ShopPage({
    *
    * 2. The expensive image/configuration graph is fetched
    *    only for the first visible batch.
+   *
+   * Category and brand filter metadata are independently
+   * cached because they change far less often than products.
    */
   const [
     initialBatch,
-    categoriesResult,
-    brandsResult,
+    categories,
+    brands,
   ] = await Promise.all([
     loadShopProductBatch({
       filters: {
@@ -123,53 +133,12 @@ export default async function ShopPage({
         sort,
       },
       offset: 0,
-      limit: SHOP_PRODUCTS_PER_BATCH,
+      limit: SHOP_INITIAL_PRODUCTS,
     }),
 
-    supabase
-      .from("categories")
-      .select("id, name, sort_order")
-      .eq("is_active", true)
-      .order("sort_order", {
-        ascending: true,
-      })
-      .order("name", {
-        ascending: true,
-      }),
-
-    supabase
-      .from("brands")
-      .select("id, name, sort_order")
-      .eq("is_active", true)
-      .order("sort_order", {
-        ascending: true,
-      })
-      .order("name", {
-        ascending: true,
-      }),
+    getShopCategoryFilterOptions(),
+    getShopBrandFilterOptions(),
   ]);
-
-  if (categoriesResult.error) {
-    console.error(
-      "Stereophonie categories could not load:",
-      categoriesResult.error,
-    );
-  }
-
-  if (brandsResult.error) {
-    console.error(
-      "Stereophonie brands could not load:",
-      brandsResult.error,
-    );
-  }
-
-  const categories = (categoriesResult.data ?? [])
-    .map((item) => String(item.name ?? "").trim())
-    .filter(Boolean);
-
-  const brands = (brandsResult.data ?? [])
-    .map((item) => String(item.name ?? "").trim())
-    .filter(Boolean);
 
   return (
     <V2ShopPage

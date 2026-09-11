@@ -742,3 +742,423 @@ export async function deleteHomepageAnnouncement(formData: FormData) {
 }
 
 /* === ST HOMEPAGE ANNOUNCEMENTS ACTIONS END === */
+
+/* === ST HOMEPAGE HERO MEDIA ACTIONS START === */
+
+const HOMEPAGE_HERO_IMAGE_MAX_BYTES = 10 * 1024 * 1024;
+const HOMEPAGE_HERO_VIDEO_MAX_BYTES = 50 * 1024 * 1024;
+
+function homepageHeroMediaKind(file: File): "image" | "video" | null {
+  const type = file.type.toLowerCase();
+
+  if (
+    type === "image/jpeg" ||
+    type === "image/jpg" ||
+    type === "image/png" ||
+    type === "image/webp" ||
+    type === "image/avif"
+  ) {
+    return "image";
+  }
+
+  if (type === "video/mp4" || type === "video/webm") {
+    return "video";
+  }
+
+  return null;
+}
+
+function homepageHeroVideoExtension(file: File) {
+  const type = file.type.toLowerCase();
+
+  if (type === "video/mp4") {
+    return "mp4";
+  }
+
+  if (type === "video/webm") {
+    return "webm";
+  }
+
+  return null;
+}
+
+function readHeroMediaId(formData: FormData) {
+  const mediaId = String(formData.get("hero_media_id") ?? "").trim();
+
+  if (!mediaId) {
+    redirectWithMessage("error", "Hero media item could not be identified.");
+  }
+
+  return mediaId;
+}
+
+export async function uploadHomepageHeroMedia(formData: FormData) {
+  const { supabase } = await requireAdministrator();
+
+  const mediaInput = formData.get("hero_media");
+
+  if (!(mediaInput instanceof File) || mediaInput.size <= 0) {
+    redirectWithMessage(
+      "error",
+      "Choose an image or video to add to the hero carousel.",
+    );
+  }
+
+  const mediaType = homepageHeroMediaKind(mediaInput);
+
+  if (!mediaType) {
+    redirectWithMessage(
+      "error",
+      "Upload a JPG, PNG, WEBP, AVIF, MP4 or WEBM hero media file.",
+    );
+  }
+
+  if (
+    mediaType === "image" &&
+    mediaInput.size > HOMEPAGE_HERO_IMAGE_MAX_BYTES
+  ) {
+    redirectWithMessage("error", "Hero images must be smaller than 10 MB.");
+  }
+
+  if (
+    mediaType === "video" &&
+    mediaInput.size > HOMEPAGE_HERO_VIDEO_MAX_BYTES
+  ) {
+    redirectWithMessage("error", "Hero videos must be smaller than 50 MB.");
+  }
+
+  const { data: lastRows, error: orderError } = await supabase
+    .from("homepage_hero_media")
+    .select("sort_order")
+    .order("sort_order", {
+      ascending: false,
+    })
+    .limit(1);
+
+  if (orderError) {
+    console.error("Hero media order lookup failed:", orderError);
+
+    redirectWithMessage(
+      "error",
+      `Hero media could not be prepared: ${orderError.message}`,
+    );
+  }
+
+  const nextSortOrder =
+    typeof lastRows?.[0]?.sort_order === "number"
+      ? lastRows[0].sort_order + 1
+      : 0;
+
+  let objectPath = "";
+
+  if (mediaType === "image") {
+    let processedImage: Buffer;
+
+    try {
+      processedImage = await processStoreImage({
+        input: Buffer.from(await mediaInput.arrayBuffer()),
+        kind: "category",
+      });
+    } catch (error) {
+      console.error("Homepage hero carousel image processing failed:", error);
+
+      redirectWithMessage(
+        "error",
+        "The hero carousel image could not be processed.",
+      );
+    }
+
+    objectPath =
+      `hero-media/${Date.now()}-${crypto.randomUUID()}.webp`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("homepage-images")
+      .upload(objectPath, new Uint8Array(processedImage), {
+        contentType: "image/webp",
+        cacheControl: "31536000",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      redirectWithMessage(
+        "error",
+        `Hero image upload failed: ${uploadError.message}`,
+      );
+    }
+  } else {
+    const extension = homepageHeroVideoExtension(mediaInput);
+
+    if (!extension) {
+      redirectWithMessage(
+        "error",
+        "The selected hero video format is not supported.",
+      );
+    }
+
+    objectPath =
+      `hero-media/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+    const videoBytes = new Uint8Array(await mediaInput.arrayBuffer());
+
+    const { error: uploadError } = await supabase.storage
+      .from("homepage-images")
+      .upload(objectPath, videoBytes, {
+        contentType: mediaInput.type.toLowerCase(),
+        cacheControl: "31536000",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      redirectWithMessage(
+        "error",
+        `Hero video upload failed: ${uploadError.message}`,
+      );
+    }
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from("homepage-images")
+    .getPublicUrl(objectPath);
+
+  const { error: insertError } = await supabase
+    .from("homepage_hero_media")
+    .insert({
+      media_type: mediaType,
+      media_url: publicUrlData.publicUrl,
+      storage_path: objectPath,
+      sort_order: nextSortOrder,
+      is_active: true,
+    });
+
+  if (insertError) {
+    const { error: cleanupError } = await supabase.storage
+      .from("homepage-images")
+      .remove([objectPath]);
+
+    if (cleanupError) {
+      console.error(
+        "Hero media cleanup failed after database insert error:",
+        cleanupError,
+      );
+    }
+
+    redirectWithMessage(
+      "error",
+      `Hero media could not be saved: ${insertError.message}`,
+    );
+  }
+
+  revalidatePath("/");
+  revalidatePath(homepageAdminPath);
+
+  redirectWithMessage(
+    "success",
+    mediaType === "video"
+      ? "Hero video added successfully."
+      : "Hero image added successfully.",
+  );
+}
+
+export async function moveHomepageHeroMedia(formData: FormData) {
+  const { supabase } = await requireAdministrator();
+
+  const combinedMove = String(
+    formData.get("hero_media_move") ?? "",
+  ).trim();
+
+  const separatorIndex = combinedMove.lastIndexOf(":");
+
+  const combinedId =
+    separatorIndex > 0
+      ? combinedMove.slice(0, separatorIndex).trim()
+      : "";
+
+  const combinedDirection =
+    separatorIndex > 0
+      ? combinedMove.slice(separatorIndex + 1).trim()
+      : "";
+
+  const mediaId =
+    combinedId || readHeroMediaId(formData);
+
+  const direction = (
+    combinedDirection ||
+    String(formData.get("direction") ?? "").trim()
+  ).toLowerCase();
+
+  if (direction !== "up" && direction !== "down") {
+    redirectWithMessage(
+      "error",
+      "Hero media movement direction is invalid.",
+    );
+  }
+
+  const { data: mediaRows, error: mediaError } = await supabase
+    .from("homepage_hero_media")
+    .select("id, sort_order")
+    .order("sort_order", {
+      ascending: true,
+    })
+    .order("created_at", {
+      ascending: true,
+    });
+
+  if (mediaError) {
+    redirectWithMessage(
+      "error",
+      `Hero media order could not be loaded: ${mediaError.message}`,
+    );
+  }
+
+  const rows = mediaRows ?? [];
+
+  const currentIndex = rows.findIndex((row) => row.id === mediaId);
+
+  if (currentIndex < 0) {
+    redirectWithMessage("error", "Hero media item was not found.");
+  }
+
+  const targetIndex =
+    direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+  if (targetIndex < 0 || targetIndex >= rows.length) {
+    redirectWithMessage(
+      "success",
+      "Hero media item is already at that edge of the carousel.",
+    );
+  }
+
+  const current = rows[currentIndex];
+  const target = rows[targetIndex];
+
+  const currentOrder = current.sort_order;
+  const targetOrder = target.sort_order;
+
+  const temporarySortOrder =
+    Math.max(
+      ...rows.map((row) =>
+        typeof row.sort_order === "number" ? row.sort_order : 0,
+      ),
+      0,
+    ) + 1000;
+
+  const { error: temporaryError } = await supabase
+    .from("homepage_hero_media")
+    .update({
+      sort_order: temporarySortOrder,
+    })
+    .eq("id", current.id);
+
+  if (temporaryError) {
+    redirectWithMessage(
+      "error",
+      `Hero media could not be reordered: ${temporaryError.message}`,
+    );
+  }
+
+  const { error: targetError } = await supabase
+    .from("homepage_hero_media")
+    .update({
+      sort_order: currentOrder,
+    })
+    .eq("id", target.id);
+
+  if (targetError) {
+    await supabase
+      .from("homepage_hero_media")
+      .update({
+        sort_order: currentOrder,
+      })
+      .eq("id", current.id);
+
+    redirectWithMessage(
+      "error",
+      `Hero media could not be reordered: ${targetError.message}`,
+    );
+  }
+
+  const { error: currentError } = await supabase
+    .from("homepage_hero_media")
+    .update({
+      sort_order: targetOrder,
+    })
+    .eq("id", current.id);
+
+  if (currentError) {
+    console.error(
+      "Hero media final reorder update failed:",
+      currentError,
+    );
+
+    redirectWithMessage(
+      "error",
+      `Hero media could not be reordered: ${currentError.message}`,
+    );
+  }
+
+  revalidatePath("/");
+  revalidatePath(homepageAdminPath);
+
+  redirectWithMessage("success", "Hero media order updated.");
+}
+
+export async function deleteHomepageHeroMedia(
+  mediaIdInput: string,
+  _formData: FormData,
+) {
+  const { supabase } = await requireAdministrator();
+
+  const mediaId = String(mediaIdInput ?? "").trim();
+
+  if (!mediaId) {
+    redirectWithMessage(
+      "error",
+      "Hero media item could not be identified.",
+    );
+  }
+
+  const { data: mediaRow, error: mediaError } = await supabase
+    .from("homepage_hero_media")
+    .select("id, storage_path")
+    .eq("id", mediaId)
+    .single();
+
+  if (mediaError || !mediaRow) {
+    redirectWithMessage(
+      "error",
+      mediaError?.message ?? "Hero media item was not found.",
+    );
+  }
+
+  const { error: deleteError } = await supabase
+    .from("homepage_hero_media")
+    .delete()
+    .eq("id", mediaId);
+
+  if (deleteError) {
+    redirectWithMessage(
+      "error",
+      `Hero media could not be deleted: ${deleteError.message}`,
+    );
+  }
+
+  if (mediaRow.storage_path) {
+    const { error: storageError } = await supabase.storage
+      .from("homepage-images")
+      .remove([mediaRow.storage_path]);
+
+    if (storageError) {
+      console.error(
+        "Hero media storage cleanup failed:",
+        storageError,
+      );
+    }
+  }
+
+  revalidatePath("/");
+  revalidatePath(homepageAdminPath);
+
+  redirectWithMessage("success", "Hero media deleted successfully.");
+}
+
+/* === ST HOMEPAGE HERO MEDIA ACTIONS END === */

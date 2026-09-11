@@ -1,55 +1,84 @@
 "use client";
 
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { useEffect } from "react";
 
-import V2Footer from "@/components/stereophonie-v2/layout/v2-footer";
-import V2Header from "@/components/stereophonie-v2/layout/v2-header";
+import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
+import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
 
 export default function ShopError({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    console.error("Stereophonie shop error:", error);
+  }, [error]);
+
   return (
-    <main className="st-v2 st-v2-shop">
-      <V2Header />
+    <>
+      <V3Header />
 
-      <section className="flex min-h-[70vh] items-center bg-[#f5f5f2] px-5 py-16 sm:px-8">
-        <div className="mx-auto w-full max-w-[900px] border border-black/15 bg-white">
-          <div className="border-b border-black/10 bg-black px-6 py-4 text-white">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/45">
-              Catalog system / error
-            </p>
-          </div>
+      <main
+        style={{
+          minHeight: "60vh",
+          display: "grid",
+          placeItems: "center",
+          padding: "80px 24px",
+          background: "#fff",
+        }}
+      >
+        <section
+          style={{
+            width: "100%",
+            maxWidth: "720px",
+            textAlign: "center",
+          }}
+        >
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "clamp(32px, 5vw, 56px)",
+              lineHeight: 1,
+              letterSpacing: "-0.04em",
+            }}
+          >
+            Something went wrong.
+          </h1>
 
-          <div className="px-6 py-14 text-center sm:px-12">
-            <div className="mx-auto grid h-16 w-16 place-items-center border border-red-600/25 bg-red-600/[0.05]">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
-            </div>
+          <p
+            style={{
+              margin: "22px auto 0",
+              maxWidth: "520px",
+              color: "#777",
+              fontSize: "15px",
+              lineHeight: 1.7,
+            }}
+          >
+            We could not load the shop right now. Please try again.
+          </p>
 
-            <h1 className="mt-7 text-3xl font-semibold uppercase tracking-[-0.04em] sm:text-5xl">
-              Catalog temporarily unavailable.
-            </h1>
+          <button
+            type="button"
+            onClick={reset}
+            style={{
+              marginTop: "32px",
+              border: 0,
+              background: "#111",
+              color: "#fff",
+              padding: "14px 24px",
+              cursor: "pointer",
+              fontSize: "13px",
+              fontWeight: 700,
+            }}
+          >
+            Try again
+          </button>
+        </section>
+      </main>
 
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-black/50">
-              The product database could not be loaded correctly. Try loading
-              the catalog again.
-            </p>
-
-            <button
-              type="button"
-              onClick={reset}
-              className="mx-auto mt-8 flex min-h-13 items-center justify-center gap-3 border border-black bg-black px-7 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white hover:text-black"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Retry catalog
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <V2Footer />
-    </main>
+      <V3Footer />
+    </>
   );
 }

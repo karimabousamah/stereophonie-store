@@ -26,6 +26,14 @@ export type RankedAssistantProduct = {
   imageUrl: string | null;
   imageAlt: string;
   price: number | null;
+  availabilityStatus?:
+    | "coming_soon"
+    | "in_stock"
+    | "low_stock"
+    | "out_of_stock"
+    | "mixed"
+    | "unavailable";
+
   variants: RankedAssistantVariant[];
 };
 

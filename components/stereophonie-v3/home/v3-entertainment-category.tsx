@@ -21,6 +21,7 @@ export default function V3EntertainmentCategory({
   const [trailerReady, setTrailerReady] = useState(false);
   const [trailerLoaded, setTrailerLoaded] = useState(false);
   const [trailerPlaying, setTrailerPlaying] = useState(false);
+  const [carouselPaused, setCarouselPaused] = useState(false);
   const [posterMinimumElapsed, setPosterMinimumElapsed] = useState(false);
   const [trailerLoadEnabled, setTrailerLoadEnabled] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -418,7 +419,20 @@ export default function V3EntertainmentCategory({
             onCanPlay={(event) => {
               setTrailerLoaded(true);
 
-              void event.currentTarget.play().catch(() => {
+              const video = event.currentTarget;
+
+              /*
+               * Movies & Series uses a real pause so the trailer
+               * freezes at the exact requested timestamp.
+               */
+              if (carouselPaused) {
+                video.pause();
+                return;
+              }
+
+              video.playbackRate = 1;
+
+              void video.play().catch(() => {
                 /*
                  * Autoplay remains muted by default, so normal
                  * modern browsers should allow this. If a browser
@@ -505,29 +519,7 @@ export default function V3EntertainmentCategory({
               {active.kind} · {active.year}
             </div>
 
-            <div
-              key={`trailer-status-${active.id}`}
-              className={`st-entertainment-cinema__trailer-status ${
-                trailerReady ? "is-finished" : ""
-              }`}
-              aria-live="polite"
-            >
-              <div className="st-entertainment-cinema__trailer-status-copy">
-                <span>
-                  {trailerPlaying
-                    ? "Trailer ready"
-                    : trailerLoaded
-                      ? "Preparing trailer"
-                      : "Preparing trailer"}
-                </span>
-              </div>
-
-              <div className="st-entertainment-cinema__trailer-progress">
-                <span />
-              </div>
-            </div>
-
-            <h2 key={`cinema-title-${active.id}`}>{active.title}</h2>
+                        <h2 key={`cinema-title-${active.id}`}>{active.title}</h2>
 
             <p
               key={`cinema-tagline-${active.id}`}
@@ -557,33 +549,108 @@ export default function V3EntertainmentCategory({
               ) : null}
             </div>
 
-            {/* ==============================================
-                PRODUCT-GALLERY STYLE SELECTOR
-                ============================================== */}
 
-            <div className="st-entertainment-cinema__selector-wrap">
-              <div
-                className="st-entertainment-cinema__selector"
-                role="tablist"
-                aria-label="Choose movie or series"
-              >
-                {items.map((item, index) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    role="tab"
-                    aria-label={`Show ${item.title}`}
-                    aria-selected={index === activeIndex}
-                    className={index === activeIndex ? "is-active" : ""}
-                    onClick={() => select(index)}
-                  >
-                    <span />
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
+
+          {/* ==================================================
+              MOVIES CINEMA-LEVEL CAROUSEL CONTROLS
+              ================================================== */}
+
+          <div className="st-entertainment-cinema__selector-wrap">
+                        <div
+                          className="st-entertainment-cinema__selector st3-hero-carousel__dots"
+                          role="tablist"
+                          aria-label="Choose movie or series"
+                        >
+                          {items.map((item, index) => (
+                            <button
+                              key={item.id}
+                              type="button"
+                              role="tab"
+                              aria-label={`Show ${item.title}`}
+                              aria-selected={index === activeIndex}
+                              className={[
+                                "st3-hero-carousel__dot",
+                                index === activeIndex
+                                  ? "st3-hero-carousel__dot--active is-active"
+                                  : "",
+                              ]
+                                .filter(Boolean)
+                                .join(" ")}
+                              onClick={() => select(index)}
+                            >
+                              <span />
+                            </button>
+                          ))}
+                        </div>
+
+                        <button
+                          type="button"
+                          className="st-entertainment-cinema__playback"
+                          aria-label={
+                            carouselPaused
+                              ? "Resume Movies & Series"
+                              : "Pause Movies & Series"
+                          }
+                          title={carouselPaused ? "Resume" : "Pause"}
+                          onClick={() => {
+                            const nextPaused = !carouselPaused;
+                            const video = trailerVideoRef.current;
+
+                            setCarouselPaused(nextPaused);
+
+                            if (!video) {
+                              return;
+                            }
+
+                            if (nextPaused) {
+                              /*
+                               * Freeze at the exact current trailer timestamp.
+                               * The video element is not remounted, so Resume
+                               * continues from this same currentTime.
+                               */
+                              video.pause();
+                              return;
+                            }
+
+                            /*
+                             * Resume from the exact current trailer position.
+                             */
+                            video.playbackRate = 1;
+                            void video.play().catch(() => {});
+                          }}
+                        >
+                          {carouselPaused ? (
+                            <svg
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <path d="M8 5.4v13.2L18.5 12 8 5.4Z" />
+                            </svg>
+                          ) : (
+                            <svg
+                              viewBox="0 0 24 24"
+                              aria-hidden="true"
+                            >
+                              <rect
+                                x="6.5"
+                                y="5"
+                                width="4"
+                                height="14"
+                                rx="1.4"
+                              />
+                              <rect
+                                x="13.5"
+                                y="5"
+                                width="4"
+                                height="14"
+                                rx="1.4"
+                              />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
 
         {/* ==================================================
             SMALL ACTIVE-TITLE LABEL
