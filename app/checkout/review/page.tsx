@@ -464,7 +464,7 @@ export default function CheckoutReviewPage() {
 
           <Link href="/checkout" className="st-checkout-compact-head__action">
             <ArrowLeft className="h-4 w-4" />
-            <span>Edit details</span>
+            <span>Back</span>
           </Link>
         </section>
 

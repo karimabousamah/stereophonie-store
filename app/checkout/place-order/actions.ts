@@ -4,6 +4,7 @@ import { processStockNotificationsForVariants } from "@/lib/email/process-stock-
 import { sendAdminOrderNotificationEmail } from "@/lib/email/send-admin-order-notification";
 import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
 import { getPublicStoreSettings } from "@/lib/store-settings";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { storefrontPrimaryImageForVariant } from "@/lib/storefront-product-media";
 
@@ -230,6 +231,15 @@ export async function submitOrder(
 
   const supabase = await createClient();
 
+  /*
+   * The regular Supabase client keeps the current guest/auth session
+   * and is used for authentication plus checkout RPC calls.
+   *
+   * Trusted post-order reads/updates use the server-only admin client
+   * because orders/order_items intentionally have no public read policy.
+   */
+  const admin = createAdminClient();
+
   const {
     data: { user },
     error: userError,
@@ -402,7 +412,7 @@ export async function submitOrder(
   }
 
   const { data: authoritativeOrder, error: authoritativeOrderError } =
-    await supabase
+    await admin
       .from("orders")
       .select(
         "order_number, subtotal, discount_amount, delivery_fee, total, coupon_code, created_at, receipt_token",
@@ -448,7 +458,7 @@ export async function submitOrder(
 
   if (receiptVariantIds.length > 0) {
     const { data: receiptVariants, error: receiptVariantsError } =
-      await supabase
+      await admin
         .from("product_variants")
         .select(
           `
@@ -544,7 +554,7 @@ export async function submitOrder(
       }
 
       const { error: orderImageError } =
-        await supabase
+        await admin
           .from("order_items")
           .update({
             product_image_url:
@@ -573,51 +583,74 @@ export async function submitOrder(
     );
   }
 
-  const emailResult = await sendOrderConfirmationEmail({
-    orderNumber: authoritativeOrderNumber,
+  let emailResult:
+    | {
+        success: true;
+        emailId: string | null;
+      }
+    | {
+        success: false;
+        message: string;
+      };
 
-    fulfillmentMethod,
+  try {
+    emailResult = await sendOrderConfirmationEmail({
+      orderNumber: authoritativeOrderNumber,
 
-    customer: verifiedCustomer,
+      fulfillmentMethod,
 
-    subtotal,
+      customer: verifiedCustomer,
 
-    discountAmount,
+      subtotal,
 
-    deliveryFee,
+      discountAmount,
 
-    total,
+      deliveryFee,
 
-    couponCode: cleanText(authoritativeOrder.coupon_code) || null,
+      total,
 
-    createdAt: cleanText(authoritativeOrder.created_at) || null,
+      couponCode: cleanText(authoritativeOrder.coupon_code) || null,
 
-    paymentMethod: input.paymentMethod ?? null,
+      createdAt: cleanText(authoritativeOrder.created_at) || null,
 
-    receiptToken: cleanText(authoritativeOrder.receipt_token) || null,
+      paymentMethod: input.paymentMethod ?? null,
 
-    items: input.items.map((item) => ({
-      name: cleanText(item.name) || "Product",
+      receiptToken: cleanText(authoritativeOrder.receipt_token) || null,
 
-      size: cleanText(item.size),
+      items: input.items.map((item) => ({
+        name: cleanText(item.name) || "Product",
 
-      sku: receiptSkuByVariantId.get(cleanText(item.variantId)) || null,
+        size: cleanText(item.size),
 
-      quantity: item.quantity,
+        sku: receiptSkuByVariantId.get(cleanText(item.variantId)) || null,
 
-      imageUrl:
-        receiptImageByVariantId.get(
-          cleanText(item.variantId),
-        ) ??
-        cleanText(item.imageUrl) ??
-        null,
+        quantity: item.quantity,
 
-      unitPrice:
-        typeof item.unitPrice === "number" && Number.isFinite(item.unitPrice)
-          ? Math.max(0, item.unitPrice)
-          : 0,
-    })),
-  });
+        imageUrl:
+          receiptImageByVariantId.get(
+            cleanText(item.variantId),
+          ) ??
+          cleanText(item.imageUrl) ??
+          null,
+
+        unitPrice:
+          typeof item.unitPrice === "number" && Number.isFinite(item.unitPrice)
+            ? Math.max(0, item.unitPrice)
+            : 0,
+      })),
+    });
+  } catch (error) {
+    console.error(
+      `Order confirmation email threw after order ${authoritativeOrderNumber} was created:`,
+      error,
+    );
+
+    emailResult = {
+      success: false,
+      message:
+        "Your order was created successfully, but the confirmation email could not be sent.",
+    };
+  }
 
   if (!emailResult.success) {
     console.error(

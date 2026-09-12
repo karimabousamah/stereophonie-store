@@ -685,24 +685,63 @@ export async function sendAdminOrderNotificationEmail(
     </html>
   `;
 
-  const { data, error } = await resend.emails.send({
-    from: fromAddress,
-    to: recipients,
-    subject: `${
-      input.fulfillmentMethod === "pickup" ? "🏬 PICKUP" : "🚚 DELIVERY"
-    } · New order ${input.orderNumber} · ${money(input.total)}`,
-    html,
-  });
+  const idempotencyKey = `admin-new-order/${input.orderNumber}`;
 
-  if (error) {
-    return {
-      success: false,
-      message: error.message || "The admin order email could not be sent.",
-    };
+  let lastErrorMessage =
+    "The admin order email could not be sent.";
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const { data, error } = await resend.emails.send(
+        {
+          from: fromAddress,
+          to: recipients,
+          subject: `${
+            input.fulfillmentMethod === "pickup" ? "🏬 PICKUP" : "🚚 DELIVERY"
+          } · New order ${input.orderNumber} · ${money(input.total)}`,
+          html,
+        },
+        {
+          idempotencyKey,
+        },
+      );
+
+      if (!error) {
+        return {
+          success: true,
+          emailId: data?.id ?? null,
+        };
+      }
+
+      lastErrorMessage =
+        error.message ||
+        "The admin order email could not be sent.";
+
+      console.error(
+        `Admin order email attempt ${attempt}/3 failed for ${input.orderNumber}:`,
+        lastErrorMessage,
+      );
+    } catch (error) {
+      lastErrorMessage =
+        error instanceof Error
+          ? error.message
+          : "The admin order email could not be sent.";
+
+      console.error(
+        `Admin order email attempt ${attempt}/3 threw for ${input.orderNumber}:`,
+        error,
+      );
+    }
+
+    if (attempt < 3) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, attempt * 500),
+      );
+    }
   }
 
   return {
-    success: true,
-    emailId: data?.id ?? null,
+    success: false,
+    message: lastErrorMessage,
   };
 }
