@@ -751,17 +751,6 @@ export default function CheckoutReviewPage() {
                           : "border-black/[0.09] bg-white hover:border-[#e4ad43]/70"
                       }`}
                     >
-                      <span
-                        className={`st-checkout-payment-option__radio flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                          selectedPaymentMethod === "cash_on_delivery"
-                            ? "border-[#d79a2b] bg-[#fdb73e]"
-                            : "border-black/20 bg-white"
-                        }`}
-                      >
-                        {selectedPaymentMethod === "cash_on_delivery" ? (
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#1d1d1f]" />
-                        ) : null}
-                      </span>
 
                       <span className="st-checkout-payment-option__icon flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-[#fdb73e]/15 text-[#9a6200]">
                         <Banknote className="h-5 w-5" />
@@ -790,7 +779,6 @@ export default function CheckoutReviewPage() {
                       aria-disabled="true"
                       className="st-checkout-payment-option st-checkout-payment-option--disabled flex cursor-not-allowed items-center gap-4 rounded-[16px] border border-black/[0.07] bg-[#f7f7f9] p-4 opacity-60 sm:p-5"
                     >
-                      <span className="st-checkout-payment-option__radio h-5 w-5 shrink-0 rounded-full border border-black/25" />
 
                       <span className="st-checkout-payment-option__icon flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-black/[0.08] bg-white text-black/45">
                         <WalletCards className="h-5 w-5" />

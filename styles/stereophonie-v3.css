@@ -57511,7 +57511,7 @@ html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
 .st-checkout-review-v2
   #payment-methods
   button[aria-pressed="true"]
-  > span:nth-child(2) {
+  > .st-checkout-payment-option__icon {
   background: var(--st-checkout-mustard) !important;
   color: #1d1d1f !important;
   border-radius: 13px !important;
@@ -57520,7 +57520,7 @@ html body .st3-home-shop-products .st3-home-product-shelf__scroll-hint-arrow {
 .st-checkout-review-v2
   #payment-methods
   [aria-disabled="true"]
-  > span:nth-child(2) {
+  > .st-checkout-payment-option__icon {
   border-radius: 13px !important;
 }
 

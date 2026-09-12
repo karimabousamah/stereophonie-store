@@ -1604,24 +1604,32 @@ export default function CheckoutPage() {
       nextErrors.phone = `Enter a valid ${selectedPhoneCountry.country} number containing ${requiredLength}.`;
     }
 
-    if (!form.city.trim()) {
-      nextErrors.city = "City is required.";
-    }
+    /*
+     * CHECKOUT_PICKUP_VALIDATION_V4
+     *
+     * Delivery address fields are validated only for Delivery.
+     * Pickup customers require contact information only.
+     */
+    if (fulfillmentMethod === "delivery") {
+      if (!form.city.trim()) {
+        nextErrors.city = "City is required.";
+      }
 
-    if (!form.area.trim()) {
-      nextErrors.area = "Area is required.";
-    }
+      if (!form.area.trim()) {
+        nextErrors.area = "Area is required.";
+      }
 
-    if (!form.address.trim()) {
-      nextErrors.address = "Street address is required.";
-    }
+      if (!form.address.trim()) {
+        nextErrors.address = "Street address is required.";
+      }
 
-    if (!form.building.trim()) {
-      nextErrors.building = "Building is required.";
-    }
+      if (!form.building.trim()) {
+        nextErrors.building = "Building is required.";
+      }
 
-    if (!form.floor.trim()) {
-      nextErrors.floor = "Floor or apartment is required.";
+      if (!form.floor.trim()) {
+        nextErrors.floor = "Floor or apartment is required.";
+      }
     }
 
     setErrors(nextErrors);
@@ -1990,9 +1998,6 @@ export default function CheckoutPage() {
                           $4.00
                         </span>
 
-                        <span className="st-checkout-fulfillment__radio">
-                          <span />
-                        </span>
                       </button>
 
                       <button
@@ -2017,9 +2022,6 @@ export default function CheckoutPage() {
                           Free
                         </span>
 
-                        <span className="st-checkout-fulfillment__radio">
-                          <span />
-                        </span>
                       </button>
                     </div>
 
