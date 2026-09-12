@@ -61,6 +61,14 @@ export async function GET(request: NextRequest) {
     0,
   );
 
+  const limit = Math.max(
+    1,
+    nonNegativeInteger(
+      parameters.get("limit"),
+      SHOP_PRODUCTS_PER_BATCH,
+    ),
+  );
+
   const result = await loadShopProductBatch({
     filters: {
       search,
@@ -73,7 +81,7 @@ export async function GET(request: NextRequest) {
       sort,
     },
     offset,
-    limit: SHOP_PRODUCTS_PER_BATCH,
+    limit,
   });
 
   return NextResponse.json(result, {

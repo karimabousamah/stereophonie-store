@@ -48,6 +48,8 @@ function resultCopy(count: number) {
 
 const SHOP_PRODUCTS_PER_BATCH = 50;
 
+const SHOP_LOAD_MORE_PRODUCTS = 25;
+
 export default function V2ShopPage({
   products,
   totalProducts,
@@ -165,6 +167,11 @@ export default function V2ShopPage({
       parameters.set(
         "offset",
         String(loadedProducts.length),
+      );
+
+      parameters.set(
+        "limit",
+        String(SHOP_LOAD_MORE_PRODUCTS),
       );
 
       const response = await fetch(

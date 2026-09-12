@@ -21,7 +21,7 @@ import {
  * Smaller first render for faster /shop navigation.
  * Load More keeps the existing 50-product batch size.
  */
-const SHOP_INITIAL_PRODUCTS = 24;
+const SHOP_INITIAL_PRODUCTS = 50;
 
 export const metadata: Metadata = {
   title: "Shop",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type AvailabilityStatus =
   "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
@@ -93,19 +93,79 @@ export default function ProductConfigurationPrice({ variants }: Props) {
     initialVariant?.id ?? "",
   );
 
+  /*
+   * Product pages must always begin at the top instead of
+   * inheriting/restoring the previous page's scroll position.
+   */
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+
+    const frame = window.requestAnimationFrame(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  /*
+   * Track the exact customer-visible price of the currently
+   * selected configuration.
+   */
+  const displayedPriceRef = useRef<number | null>(
+    priceForVariant(initialVariant)?.current ?? null,
+  );
+
+
   useEffect(() => {
     function handleConfigurationChange(event: Event) {
       const customEvent = event as CustomEvent<{
         variantId?: string;
       }>;
 
-      const nextVariantId = String(customEvent.detail?.variantId ?? "").trim();
+      const nextVariantId = String(
+        customEvent.detail?.variantId ?? "",
+      ).trim();
 
       if (!nextVariantId) {
         return;
       }
 
+      const nextVariant =
+        ordered.find((variant) => variant.id === nextVariantId) ?? null;
+
+      const nextDisplayedPrice =
+        priceForVariant(nextVariant)?.current ?? null;
+
+      const previousDisplayedPrice = displayedPriceRef.current;
+
+      displayedPriceRef.current = nextDisplayedPrice;
+
       setSelectedVariantId(nextVariantId);
+
+      /*
+       * Do not move the customer when the visible price stays
+       * identical. Only a real visible price change returns the
+       * customer to the top of the product page.
+       */
+      if (previousDisplayedPrice === nextDisplayedPrice) {
+        return;
+      }
+
+      window.requestAnimationFrame(() => {
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "smooth",
+        });
+      });
     }
 
     window.addEventListener(
@@ -119,7 +179,7 @@ export default function ProductConfigurationPrice({ variants }: Props) {
         handleConfigurationChange,
       );
     };
-  }, []);
+  }, [ordered]);
 
   const selected =
     ordered.find((variant) => variant.id === selectedVariantId) ??
