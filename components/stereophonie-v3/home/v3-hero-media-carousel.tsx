@@ -38,14 +38,41 @@ export default function V3HeroMediaCarousel({
   const [pendingIndex, setPendingIndex] =
     useState<number | null>(null);
 
+  /*
+   * HERO_PERSISTENT_TWO_SLOT_V11
+   *
+   * Slot A and Slot B keep fixed JSX/DOM positions.
+   * The incoming media is never replaced after its crossfade.
+   */
+  const [activeSlot, setActiveSlot] =
+    useState<0 | 1>(0);
+
+  const [slotAIndex, setSlotAIndex] =
+    useState<number | null>(0);
+
+  const [slotBIndex, setSlotBIndex] =
+    useState<number | null>(null);
+
   const [isFading, setIsFading] = useState(false);
   const [cycleKey, setCycleKey] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-
+  /*
+   * HERO_PLAYBACK_CONTROL_REMOVED_V3
+   * Public play/pause control removed.
+   */
+  const isPaused = false;
   const activeIndexRef = useRef(0);
   const pendingIndexRef = useRef<number | null>(null);
+  const activeSlotRef = useRef<0 | 1>(0);
   const fadeStartedRef = useRef(false);
 
+
+  /*
+   * HERO_MANUAL_SELECTION_QUEUE_V3
+   *
+   * Never lose a visitor's selector click merely because
+   * the previous dissolve is still visually completing.
+   */
+  const queuedIndexRef = useRef<number | null>(null);
   const activeVideoRef =
     useRef<HTMLVideoElement | null>(null);
 
@@ -89,30 +116,43 @@ export default function V3HeroMediaCarousel({
     }
   }, []);
 
+  /*
+   * HERO_PERSISTENT_TWO_SLOT_V11
+   *
+   * The incoming slot that already loaded and played becomes
+   * the active slot itself. No second B is mounted.
+   */
   const finishFade = useCallback(() => {
     const next = pendingIndexRef.current;
 
     if (next === null) return;
 
-    /*
-     * Old video is stopped only after the visual dissolve
-     * has completely finished.
-     */
-    /*
-     * Do not explicitly pause the outgoing video here.
-     * React unmounts it immediately after the handoff.
-     * Explicit pause() can trigger Safari's native pause HUD.
-     */
+    const outgoingSlot =
+      activeSlotRef.current;
 
-    /*
-     * Promote B logically, but keep the already-playing
-     * pending B visible while permanent B initializes below it.
-     */
+    const incomingSlot: 0 | 1 =
+      outgoingSlot === 0 ? 1 : 0;
+
     activeIndexRef.current = next;
+    pendingIndexRef.current = null;
+    activeSlotRef.current = incomingSlot;
     fadeStartedRef.current = false;
+    fadeTimerRef.current = null;
 
     setActiveIndex(next);
-    setCycleKey((value) => value + 1);
+    setPendingIndex(null);
+    setActiveSlot(incomingSlot);
+    setIsFading(false);
+
+    /*
+     * Discard only the outgoing slot.
+     * The new active slot keeps the same media DOM node.
+     */
+    if (outgoingSlot === 0) {
+      setSlotAIndex(null);
+    } else {
+      setSlotBIndex(null);
+    }
   }, []);
 
   /*
@@ -166,6 +206,12 @@ export default function V3HeroMediaCarousel({
     finishFade,
   ]);
 
+  /*
+   * HERO_PERSISTENT_TWO_SLOT_V11
+   *
+   * V9's replacement-decoder handoff is intentionally removed.
+   */
+
   const prepare = useCallback(
     (requestedIndex: number) => {
       if (count <= 1) return;
@@ -202,8 +248,12 @@ export default function V3HeroMediaCarousel({
        * Do not replace a fade that is already visibly running.
        * This keeps the transition visually stable.
        */
-      if (isFading) return;
+      if (isFading) {
+        queuedIndexRef.current = next;
+        return;
+      }
 
+      queuedIndexRef.current = null;
       clearFadeTimer();
       clearFrames();
 
@@ -211,6 +261,16 @@ export default function V3HeroMediaCarousel({
 
       pendingIndexRef.current = next;
       setPendingIndex(next);
+
+      /*
+       * Load the requested media into the currently inactive
+       * permanent slot.
+       */
+      if (activeSlotRef.current === 0) {
+        setSlotBIndex(next);
+      } else {
+        setSlotAIndex(next);
+      }
     },
     [
       clearFadeTimer,
@@ -220,6 +280,47 @@ export default function V3HeroMediaCarousel({
       isFading,
     ],
   );
+
+  /*
+   * HERO_MANUAL_SELECTION_QUEUE_DRAIN_V3
+   *
+   * Wait until the existing current/pending handoff is fully
+   * settled, then perform the visitor's latest queued request.
+   */
+  useEffect(() => {
+    if (
+      isFading ||
+      pendingIndex !== null
+    ) {
+      return;
+    }
+
+    const queuedIndex =
+      queuedIndexRef.current;
+
+    if (queuedIndex === null) {
+      return;
+    }
+
+    queuedIndexRef.current = null;
+
+    const normalizedIndex =
+      wrapIndex(queuedIndex, count);
+
+    if (
+      normalizedIndex ===
+      activeIndexRef.current
+    ) {
+      return;
+    }
+
+    prepare(normalizedIndex);
+  }, [
+    count,
+    isFading,
+    pendingIndex,
+    prepare,
+  ]);
 
   const goNext = useCallback(() => {
     prepare(activeIndexRef.current + 1);
@@ -278,10 +379,14 @@ export default function V3HeroMediaCarousel({
     if (activeIndexRef.current >= count) {
       activeIndexRef.current = 0;
       pendingIndexRef.current = null;
+      activeSlotRef.current = 0;
       fadeStartedRef.current = false;
 
       setActiveIndex(0);
       setPendingIndex(null);
+      setActiveSlot(0);
+      setSlotAIndex(0);
+      setSlotBIndex(null);
       setIsFading(false);
       setCycleKey((value) => value + 1);
     }
@@ -303,16 +408,168 @@ export default function V3HeroMediaCarousel({
 
   if (!count) return null;
 
-  const activeItem =
-    items[activeIndex];
+  const slotAItem =
+    slotAIndex !== null
+      ? items[slotAIndex] ?? null
+      : null;
 
-  const pendingItem =
-    pendingIndex !== null
-      ? items[pendingIndex] ?? null
+  const slotBItem =
+    slotBIndex !== null
+      ? items[slotBIndex] ?? null
       : null;
 
   const selectedIndex =
     pendingIndex ?? activeIndex;
+
+  /*
+   * HERO_PERSISTENT_TWO_SLOT_V11
+   *
+   * Each slot owns the exact media node it mounted.
+   */
+  const renderSlotMedia = (
+    item: V3HeroMediaItem,
+    itemIndex: number,
+    slot: 0 | 1,
+  ) => {
+    const slotIsActive =
+      activeSlot === slot;
+
+    if (item.media_type === "video") {
+      return (
+        <HeroCanvasVideo
+          key={`hero-slot-${slot}-video-${item.id}-${cycleKey}`}
+          ref={
+            slotIsActive
+              ? activeVideoRef
+              : incomingVideoRef
+          }
+          src={item.media_url}
+          muted
+          playsInline
+          autoPlay
+          loop={false}
+          preload="auto"
+          disablePictureInPicture
+          disableRemotePlayback
+          controlsList="nodownload noplaybackrate nofullscreen"
+          onLoadedData={(event) => {
+            const video = event.currentTarget;
+
+            video.muted = true;
+            video.defaultMuted = true;
+            video.playbackRate = 1;
+
+            video.play().catch(() => {});
+          }}
+          onCanPlay={(event) => {
+            const video = event.currentTarget;
+
+            video.muted = true;
+            video.defaultMuted = true;
+            video.playbackRate = 1;
+
+            if (video.paused) {
+              video.play().catch(() => {});
+            }
+          }}
+          onPlaying={() => {
+            if (
+              !slotIsActive &&
+              pendingIndexRef.current === itemIndex
+            ) {
+              beginFade();
+            }
+          }}
+          onPause={(event) => {
+            const video = event.currentTarget;
+
+            const shouldPlay =
+              slotIsActive ||
+              pendingIndexRef.current === itemIndex;
+
+            if (shouldPlay && !isPaused) {
+              video.muted = true;
+              video.defaultMuted = true;
+              video.playbackRate = 1;
+
+              requestAnimationFrame(() => {
+                video.play().catch(() => {});
+              });
+            }
+          }}
+          onTimeUpdate={(event) => {
+            if (!slotIsActive) {
+              return;
+            }
+
+            const video = event.currentTarget;
+
+            if (
+              !Number.isFinite(video.duration) ||
+              video.duration <= 0
+            ) {
+              return;
+            }
+
+            const remaining =
+              video.duration - video.currentTime;
+
+            if (
+              remaining <= 1.8 &&
+              !isPaused &&
+              pendingIndexRef.current === null &&
+              !fadeStartedRef.current
+            ) {
+              goNext();
+            }
+          }}
+          onEnded={() => {
+            if (
+              slotIsActive &&
+              !isPaused &&
+              pendingIndexRef.current === null &&
+              !fadeStartedRef.current
+            ) {
+              goNext();
+            }
+          }}
+          className="st3-hero-carousel__media"
+        />
+      );
+    }
+
+    return (
+      <Image
+        key={`hero-slot-${slot}-image-${item.id}-${cycleKey}`}
+        src={item.media_url}
+        alt={
+          slotIsActive
+            ? "Stereophonie homepage hero"
+            : ""
+        }
+        fill
+        priority={
+          slotIsActive &&
+          itemIndex === 0
+        }
+        fetchPriority={
+          slotIsActive &&
+          itemIndex === 0
+            ? "high"
+            : "auto"
+        }
+        sizes="(max-width: 900px) 100vw, 50vw"
+        quality={90}
+        onLoad={
+          !slotIsActive &&
+          pendingIndexRef.current === itemIndex
+            ? beginFade
+            : undefined
+        }
+        className="st3-hero-carousel__media"
+      />
+    );
+  };
 
   return (
     <div
@@ -323,252 +580,97 @@ export default function V3HeroMediaCarousel({
       <div className="st3-hero-carousel__frame">
         <div className="st3-hero-carousel__stage">
 
-          {/* CURRENT MEDIA */}
+          {/* ==================================================
+              HERO_PERSISTENT_TWO_SLOT_V11
+              Permanent Slot A + Permanent Slot B
+              ================================================== */}
 
           <div
             className={[
               "st3-hero-carousel__layer",
-              "st3-hero-carousel__layer--current",
-              isFading ? "is-fading-out" : "",
+              activeSlot === 0
+                ? "st3-hero-carousel__layer--current"
+                : "st3-hero-carousel__layer--pending",
+              isFading && activeSlot === 0
+                ? "is-fading-out"
+                : "",
+              isFading && activeSlot !== 0
+                ? "is-fading-in"
+                : "",
             ]
               .filter(Boolean)
               .join(" ")}
+            aria-hidden={
+              activeSlot !== 0 &&
+              !isFading
+            }
           >
-            {activeItem.media_type === "video" ? (
-              <HeroCanvasVideo
-                key={`${activeItem.id}-${cycleKey}`}
-                ref={activeVideoRef}
-                src={activeItem.media_url}
-                muted
-                playsInline
-                autoPlay
-                loop={false}
-                preload="metadata"
-                disablePictureInPicture
-                disableRemotePlayback
-                controlsList="nodownload noplaybackrate nofullscreen"
-                onLoadedData={(event) => {
-                  const video = event.currentTarget;
-
-                  video.muted = true;
-                  video.defaultMuted = true;
-                  video.playbackRate = 1;
-
-                  if (
-                    pendingIndexRef.current ===
-                    activeIndexRef.current
-                  ) {
-                    const pendingVideo =
-                      incomingVideoRef.current;
-
-                    if (
-                      pendingVideo &&
-                      Number.isFinite(
-                        pendingVideo.currentTime
-                      )
-                    ) {
-                      try {
-                        video.currentTime =
-                          pendingVideo.currentTime;
-                      } catch {}
-                    }
-                  }
-
-                  if (!isPaused) {
-                    video.play().catch(() => {});
-                  }
-                }}
-                onCanPlay={(event) => {
-                  const video = event.currentTarget;
-
-                  video.muted = true;
-                  video.defaultMuted = true;
-                  video.playbackRate = 1;
-
-                  if (
-                    pendingIndexRef.current ===
-                    activeIndexRef.current
-                  ) {
-                    const pendingVideo =
-                      incomingVideoRef.current;
-
-                    if (
-                      pendingVideo &&
-                      Math.abs(
-                        video.currentTime -
-                        pendingVideo.currentTime
-                      ) > 0.15
-                    ) {
-                      try {
-                        video.currentTime =
-                          pendingVideo.currentTime;
-                      } catch {}
-                    }
-                  }
-
-                  if (!isPaused && video.paused) {
-                    video.play().catch(() => {});
-                  }
-                }}
-                onPlaying={() => {
-                  if (
-                    pendingIndexRef.current ===
-                    activeIndexRef.current
-                  ) {
-                    /*
-                     * Permanent B is now moving underneath
-                     * temporary B at effectively the same time.
-                     */
-                    requestAnimationFrame(() => {
-                      pendingIndexRef.current = null;
-
-                      setPendingIndex(null);
-                      setIsFading(false);
-                    });
-                  }
-                }}
-                onPause={(event) => {
-                  const video = event.currentTarget;
-
-                  /*
-                   * If WE did not request a pause, immediately
-                   * recover playback. This prevents Safari from
-                   * leaving a visible paused video with its own HUD.
-                   */
-                  if (!isPaused) {
-                    video.muted = true;
-                    video.defaultMuted = true;
-                    video.playbackRate = 1;
-
-                    requestAnimationFrame(() => {
-                      video.play().catch(() => {});
-                    });
-                  }
-                }}
-                onTimeUpdate={(event) => {
-                  const video = event.currentTarget;
-
-                  if (
-                    !Number.isFinite(video.duration) ||
-                    video.duration <= 0
-                  ) {
-                    return;
-                  }
-
-                  const remaining =
-                    video.duration - video.currentTime;
-
-                  /*
-                   * Begin preparing the next media BEFORE Safari
-                   * reaches the actual ended state.
-                   */
-                  if (
-                    remaining <= 1.8 &&
-                    !isPaused &&
-                    pendingIndexRef.current === null &&
-                    !fadeStartedRef.current
-                  ) {
-                    goNext();
-                  }
-
-                }}
-                onEnded={() => {
-                  if (
-                    !isPaused &&
-                    pendingIndexRef.current === null &&
-                    !fadeStartedRef.current
-                  ) {
-                    goNext();
-                  }
-                }}
-                className="st3-hero-carousel__media"
-              />
-            ) : (
-              <Image
-                key={activeItem.id}
-                src={activeItem.media_url}
-                alt="Stereophonie homepage hero"
-                fill
-                priority={activeIndex === 0}
-                fetchPriority={
-                  activeIndex === 0
-                    ? "high"
-                    : "auto"
-                }
-                sizes="(max-width: 900px) 100vw, 50vw"
-                quality={90}
-                className="st3-hero-carousel__media"
-              />
-            )}
+            {slotAItem &&
+            slotAIndex !== null
+              ? renderSlotMedia(
+                  slotAItem,
+                  slotAIndex,
+                  0,
+                )
+              : null}
           </div>
 
-          {/* PREPARED NEXT MEDIA */}
-
-          {pendingItem ? (
-            <div
-              className={[
-                "st3-hero-carousel__layer",
-                "st3-hero-carousel__layer--pending",
-                isFading ? "is-fading-in" : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              aria-hidden={!isFading}
-            >
-              {pendingItem.media_type === "video" ? (
-                <HeroCanvasVideo
-                  key={`pending-${pendingItem.id}`}
-                  ref={incomingVideoRef}
-                  src={pendingItem.media_url}
-                  muted
-                  playsInline
-                  preload="auto"
-                  loop={false}
-                  disablePictureInPicture
-                  disableRemotePlayback
-                  controlsList="nodownload noplaybackrate nofullscreen"
-                  onLoadedData={(event) => {
-                    const video = event.currentTarget;
-
-                    video.muted = true;
-                    video.defaultMuted = true;
-                    video.playbackRate = 1;
-
-                    video.play().catch(() => {});
-                  }}
-                  onCanPlay={(event) => {
-                    const video = event.currentTarget;
-
-                    video.muted = true;
-                    video.defaultMuted = true;
-                    video.playbackRate = 1;
-
-                    if (video.paused) {
-                      video.play().catch(() => {});
-                    }
-                  }}
-                  onPlaying={beginFade}
-                  className="st3-hero-carousel__media"
-                />
-              ) : (
-                <Image
-                  key={`pending-${pendingItem.id}`}
-                  src={pendingItem.media_url}
-                  alt=""
-                  fill
-                  sizes="(max-width: 900px) 100vw, 50vw"
-                  quality={90}
-                  onLoad={beginFade}
-                  className="st3-hero-carousel__media"
-                />
-              )}
-            </div>
-          ) : null}
+          <div
+            className={[
+              "st3-hero-carousel__layer",
+              activeSlot === 1
+                ? "st3-hero-carousel__layer--current"
+                : "st3-hero-carousel__layer--pending",
+              isFading && activeSlot === 1
+                ? "is-fading-out"
+                : "",
+              isFading && activeSlot !== 1
+                ? "is-fading-in"
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            aria-hidden={
+              activeSlot !== 1 &&
+              !isFading
+            }
+          >
+            {slotBItem &&
+            slotBIndex !== null
+              ? renderSlotMedia(
+                  slotBItem,
+                  slotBIndex,
+                  1,
+                )
+              : null}
+          </div>
         </div>
       </div>
 
       {count > 1 ? (
         <div className="st3-hero-carousel__controls">
+          <button
+            type="button"
+            className="st-carousel-nav-arrow st-carousel-nav-arrow--previous"
+            onClick={() => prepare(selectedIndex - 1)}
+            aria-label="Previous hero media"
+            title="Previous"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="M15 18 9 12l6-6"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
           <div
             className="st3-hero-carousel__dots"
             aria-label="Choose hero media"
@@ -598,77 +700,26 @@ export default function V3HeroMediaCarousel({
 
           <button
             type="button"
-            className="st3-hero-carousel__playback"
-            aria-label={
-              isPaused
-                ? "Resume hero carousel"
-                : "Pause hero carousel"
-            }
-            title={
-              isPaused
-                ? "Resume"
-                : "Pause"
-            }
-            onClick={() => {
-              const nextPaused = !isPaused;
-
-              setIsPaused(nextPaused);
-
-              const video = activeVideoRef.current;
-
-              if (nextPaused) {
-                clearImageTimer();
-
-                if (video) {
-                  /*
-                   * Do not call pause().
-                   * Safari can expose its native center Play HUD
-                   * whenever a visible video enters paused state.
-                   */
-                  video.playbackRate = 0.0001;
-                }
-              } else {
-                /*
-                 * Resume from the exact point where the visitor
-                 * paused the current hero media.
-                 *
-                 * For videos, DO NOT change cycleKey because it
-                 * is part of the video key and would remount the
-                 * element, restarting playback from 0:00.
-                 *
-                 * Images may still restart their display cycle.
-                 */
-                if (activeItem.media_type === "image") {
-                  setCycleKey((value) => value + 1);
-                }
-
-                if (video) {
-                  video.muted = true;
-                  video.defaultMuted = true;
-                  video.playbackRate = 1;
-
-                  video.play().catch(() => {});
-                }
-              }
-            }}
+            className="st-carousel-nav-arrow st-carousel-nav-arrow--next"
+            onClick={() => prepare(selectedIndex + 1)}
+            aria-label="Next hero media"
+            title="Next"
           >
-            {isPaused ? (
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M8 5.4v13.2L18.5 12 8 5.4Z" />
-              </svg>
-            ) : (
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <rect x="6.5" y="5" width="4" height="14" rx="1.4" />
-                <rect x="13.5" y="5" width="4" height="14" rx="1.4" />
-              </svg>
-            )}
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                d="m9 18 6-6-6-6"
+                fill="none"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
+
         </div>
       ) : null}
     </div>

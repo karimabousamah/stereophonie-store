@@ -833,7 +833,8 @@ export default function ProductPurchaseControls({
     let lastMessage = "";
 
     for (let index = 0; index < quantity; index += 1) {
-      const result = addItem({
+      const result = addItem(
+        {
         productId: product.id,
         slug: product.slug,
         name: product.name,
@@ -843,7 +844,12 @@ export default function ProductPurchaseControls({
         unitPrice: selectedPrice.current,
         regularPrice: selectedPrice.regular,
         maximumQuantity: selected.stock_quantity,
-      });
+              },
+        /* BUY_NOW_SILENT_CART_V4 */
+        {
+          openCart: openCheckout === false,
+        },
+      );
 
       if (!result.success) {
         success = false;

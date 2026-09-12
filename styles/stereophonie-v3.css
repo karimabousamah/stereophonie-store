@@ -81084,3 +81084,339 @@ html body
 }
 
 /* === ST AI CATALOG AVAILABILITY V3 END === */
+
+
+/* ==========================================================
+   ST_CAROUSEL_NAV_ARROWS_V1
+
+   Shared navigation for:
+   - Homepage Hero
+   - Movies & Series
+
+   The arrows intentionally live INSIDE each existing carousel
+   selector wrapper so all existing vertical positioning remains
+   authoritative.
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   SHARED ARROW
+   ---------------------------------------------------------- */
+
+.st-carousel-nav-arrow {
+  box-sizing: border-box !important;
+
+  position: relative !important;
+
+  width: 30px !important;
+  height: 30px !important;
+
+  min-width: 30px !important;
+  min-height: 30px !important;
+
+  flex: 0 0 30px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border:
+    1px
+    solid
+    rgba(255, 255, 255, 0.18) !important;
+
+  border-radius: 999px !important;
+
+  background:
+    rgba(18, 18, 18, 0.72) !important;
+
+  color:
+    rgba(255, 255, 255, 0.94) !important;
+
+  box-shadow:
+    0 5px 18px
+    rgba(0, 0, 0, 0.18) !important;
+
+  backdrop-filter:
+    blur(14px)
+    saturate(1.12) !important;
+
+  -webkit-backdrop-filter:
+    blur(14px)
+    saturate(1.12) !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  cursor: pointer !important;
+
+  pointer-events: auto !important;
+
+  -webkit-tap-highlight-color:
+    transparent !important;
+
+  transform:
+    translate3d(0, 0, 0) !important;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease !important;
+}
+
+
+.st-carousel-nav-arrow > svg {
+  display: block !important;
+
+  width: 15px !important;
+  height: 15px !important;
+
+  overflow: visible !important;
+
+  stroke-width: 2.1 !important;
+
+  pointer-events: none !important;
+}
+
+
+/* ----------------------------------------------------------
+   DESKTOP HOVER
+
+   Mustard follows Stereophonie's existing visual language.
+   ---------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+  .st-carousel-nav-arrow:hover {
+    background:
+      rgba(253, 183, 62, 0.96) !important;
+
+    border-color:
+      rgba(253, 183, 62, 1) !important;
+
+    color:
+      #111111 !important;
+
+    box-shadow:
+      0 6px 20px
+      rgba(0, 0, 0, 0.22) !important;
+
+    transform:
+      translate3d(0, -1px, 0) !important;
+  }
+}
+
+
+.st-carousel-nav-arrow:active {
+  transform:
+    translate3d(0, 0, 0)
+    scale(0.94) !important;
+}
+
+
+.st-carousel-nav-arrow:focus-visible {
+  outline:
+    2px
+    solid
+    #fdb73e !important;
+
+  outline-offset:
+    2px !important;
+}
+
+
+/* ----------------------------------------------------------
+   HERO CONTROL ROW
+
+   Existing left:50%, bottom and translateX positioning
+   remain untouched by this block.
+
+   This only arranges:
+       arrow / dots / arrow
+   ---------------------------------------------------------- */
+
+html body
+.st3-premium-hero--cinematic
+.st3-hero-carousel__controls {
+  display: inline-flex !important;
+
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 8px !important;
+
+  width: max-content !important;
+
+  pointer-events: auto !important;
+}
+
+
+html body
+.st3-premium-hero--cinematic
+.st3-hero-carousel__controls
+> .st3-hero-carousel__dots {
+  flex: 0 1 auto !important;
+
+  margin: 0 !important;
+}
+
+
+/* ----------------------------------------------------------
+   MOVIES & SERIES CONTROL ROW
+
+   Do NOT introduce absolute positioning on the buttons.
+   Existing selector-wrap desktop/tablet/mobile coordinates
+   remain untouched.
+   ---------------------------------------------------------- */
+
+html body
+.st3-reveal--movies-series
+.st-entertainment-cinema
+> .st-entertainment-cinema__selector-wrap {
+  display: inline-flex !important;
+
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 8px !important;
+
+  width: max-content !important;
+}
+
+
+html body
+.st3-reveal--movies-series
+.st-entertainment-cinema
+> .st-entertainment-cinema__selector-wrap
+> .st-carousel-nav-arrow {
+  position: relative !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+}
+
+
+html body
+.st3-reveal--movies-series
+.st-entertainment-cinema
+> .st-entertainment-cinema__selector-wrap
+> .st-entertainment-cinema__selector {
+  flex: 0 1 auto !important;
+
+  margin: 0 !important;
+}
+
+
+/* ----------------------------------------------------------
+   MOBILE
+
+   Same exact design, slightly tighter physical dimensions.
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .st-carousel-nav-arrow {
+    width: 28px !important;
+    height: 28px !important;
+
+    min-width: 28px !important;
+    min-height: 28px !important;
+
+    flex-basis: 28px !important;
+  }
+
+
+  .st-carousel-nav-arrow > svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+
+  html body
+  .st3-premium-hero--cinematic
+  .st3-hero-carousel__controls {
+    gap: 6px !important;
+
+    max-width:
+      calc(100% - 14px) !important;
+  }
+
+
+  html body
+  .st3-reveal--movies-series
+  .st-entertainment-cinema
+  > .st-entertainment-cinema__selector-wrap {
+    gap: 6px !important;
+
+    max-width:
+      calc(100% - 10px) !important;
+  }
+
+
+  html body
+  .st3-reveal--movies-series
+  .st-entertainment-cinema
+  > .st-entertainment-cinema__selector-wrap
+  > .st-entertainment-cinema__selector {
+    min-width: 0 !important;
+
+    max-width:
+      calc(100vw - 96px) !important;
+  }
+}
+
+
+/* ----------------------------------------------------------
+   VERY SMALL PHONES
+   ---------------------------------------------------------- */
+
+@media (max-width: 380px) {
+  .st-carousel-nav-arrow {
+    width: 27px !important;
+    height: 27px !important;
+
+    min-width: 27px !important;
+    min-height: 27px !important;
+
+    flex-basis: 27px !important;
+  }
+
+
+  html body
+  .st3-premium-hero--cinematic
+  .st3-hero-carousel__controls,
+
+  html body
+  .st3-reveal--movies-series
+  .st-entertainment-cinema
+  > .st-entertainment-cinema__selector-wrap {
+    gap: 5px !important;
+  }
+}
+
+
+/* ----------------------------------------------------------
+   ACCESSIBILITY
+   ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .st-carousel-nav-arrow {
+    transition: none !important;
+  }
+}
+
+
+/* ==========================================================
+   ST_CAROUSEL_NAV_ARROWS_V1 END
+   ========================================================== */

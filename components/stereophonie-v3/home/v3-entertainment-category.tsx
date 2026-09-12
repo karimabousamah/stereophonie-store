@@ -21,7 +21,11 @@ export default function V3EntertainmentCategory({
   const [trailerReady, setTrailerReady] = useState(false);
   const [trailerLoaded, setTrailerLoaded] = useState(false);
   const [trailerPlaying, setTrailerPlaying] = useState(false);
-  const [carouselPaused, setCarouselPaused] = useState(false);
+  /*
+   * MOVIES_PLAYBACK_CONTROL_REMOVED_V3
+   * Public play/pause control removed.
+   */
+  const carouselPaused = false;
   const [posterMinimumElapsed, setPosterMinimumElapsed] = useState(false);
   const [trailerLoadEnabled, setTrailerLoadEnabled] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -558,6 +562,28 @@ export default function V3EntertainmentCategory({
               ================================================== */}
 
           <div className="st-entertainment-cinema__selector-wrap">
+              <button
+                type="button"
+                className="st-carousel-nav-arrow st-carousel-nav-arrow--previous"
+                onClick={() => select(activeIndex - 1)}
+                aria-label="Previous movie or series"
+                title="Previous"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M15 18 9 12l6-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
                         <div
                           className="st-entertainment-cinema__selector st3-hero-carousel__dots"
                           role="tablist"
@@ -585,71 +611,28 @@ export default function V3EntertainmentCategory({
                           ))}
                         </div>
 
-                        <button
-                          type="button"
-                          className="st-entertainment-cinema__playback"
-                          aria-label={
-                            carouselPaused
-                              ? "Resume Movies & Series"
-                              : "Pause Movies & Series"
-                          }
-                          title={carouselPaused ? "Resume" : "Pause"}
-                          onClick={() => {
-                            const nextPaused = !carouselPaused;
-                            const video = trailerVideoRef.current;
+              <button
+                type="button"
+                className="st-carousel-nav-arrow st-carousel-nav-arrow--next"
+                onClick={() => select(activeIndex + 1)}
+                aria-label="Next movie or series"
+                title="Next"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="m9 18 6-6-6-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
 
-                            setCarouselPaused(nextPaused);
-
-                            if (!video) {
-                              return;
-                            }
-
-                            if (nextPaused) {
-                              /*
-                               * Freeze at the exact current trailer timestamp.
-                               * The video element is not remounted, so Resume
-                               * continues from this same currentTime.
-                               */
-                              video.pause();
-                              return;
-                            }
-
-                            /*
-                             * Resume from the exact current trailer position.
-                             */
-                            video.playbackRate = 1;
-                            void video.play().catch(() => {});
-                          }}
-                        >
-                          {carouselPaused ? (
-                            <svg
-                              viewBox="0 0 24 24"
-                              aria-hidden="true"
-                            >
-                              <path d="M8 5.4v13.2L18.5 12 8 5.4Z" />
-                            </svg>
-                          ) : (
-                            <svg
-                              viewBox="0 0 24 24"
-                              aria-hidden="true"
-                            >
-                              <rect
-                                x="6.5"
-                                y="5"
-                                width="4"
-                                height="14"
-                                rx="1.4"
-                              />
-                              <rect
-                                x="13.5"
-                                y="5"
-                                width="4"
-                                height="14"
-                                rx="1.4"
-                              />
-                            </svg>
-                          )}
-                        </button>
                       </div>
 
         {/* ==================================================

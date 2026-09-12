@@ -674,6 +674,17 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* HERO_NATIVE_VIDEO_V10E
+          Start fetching the first active Hero video from the
+          initial server-rendered document before hydration. */}
+      {heroMedia[0]?.media_type === "video" ? (
+        <link
+          rel="preload"
+          as="video"
+          href={heroMedia[0].media_url}
+        />
+      ) : null}
+
       <V3Header />
 
       <Suspense fallback={null}>

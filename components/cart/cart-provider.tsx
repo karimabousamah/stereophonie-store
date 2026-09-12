@@ -36,6 +36,16 @@ type AddCartItemInput = {
   maximumQuantity: number;
 };
 
+/*
+ * BUY_NOW_SILENT_CART_V4
+ *
+ * Cart additions open the cart by default.
+ * Buy Now may request a silent addition.
+ */
+type AddCartItemOptions = {
+  openCart?: boolean;
+};
+
 type CartContextValue = {
   items: CartItem[];
   totalItems: number;
@@ -43,7 +53,10 @@ type CartContextValue = {
   isCartOpen: boolean;
   isCartReady: boolean;
 
-  addItem: (item: AddCartItemInput) => {
+  addItem: (
+    item: AddCartItemInput,
+    options?: AddCartItemOptions,
+  ) => {
     success: boolean;
     message: string;
   };
@@ -148,7 +161,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(cartStorageKey, JSON.stringify(items));
   }, [items, isCartReady]);
 
-  const addItem = useCallback((input: AddCartItemInput) => {
+  const addItem = useCallback((
+    input: AddCartItemInput,
+    options?: AddCartItemOptions,
+  ) => {
+    /* BUY_NOW_SILENT_CART_V4 */
+    const shouldOpenCart = options?.openCart ?? true;
     if (input.maximumQuantity < 1) {
       return {
         success: false,
@@ -165,7 +183,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
 
     if (existingItem && existingItem.quantity >= input.maximumQuantity) {
-      setIsCartOpen(true);
+      if (shouldOpenCart) {
+        setIsCartOpen(true);
+      }
 
       return {
         success: false,
@@ -210,7 +230,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     setItems(nextItems);
 
-    setIsCartOpen(true);
+    if (shouldOpenCart) {
+      setIsCartOpen(true);
+    }
 
     return {
       success: true,
