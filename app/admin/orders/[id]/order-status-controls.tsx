@@ -254,6 +254,8 @@ export default function OrderStatusControls({
 
       if (!result.success) {
         setSelectedStatus(previousStatus);
+      } else if (status === "completed") {
+        setSelectedPaymentStatus("paid");
       }
 
       setMessage(result.message);

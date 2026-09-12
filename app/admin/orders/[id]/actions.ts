@@ -171,6 +171,16 @@ export async function updateOrderStatus(
     .update({
       status,
       status_updated_at: updatedAt,
+
+      /*
+       * Completing either a delivery or pickup order
+       * automatically records its payment as paid.
+       */
+      ...(status === "completed"
+        ? {
+            payment_status: "paid" as const,
+          }
+        : {}),
     })
     .eq("id", orderId);
 
