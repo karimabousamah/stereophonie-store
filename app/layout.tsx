@@ -4,6 +4,7 @@ import FirstOrderWelcomePopup from "@/components/storefront/first-order-welcome-
 import { CartProvider } from "@/components/cart/cart-provider";
 import GlobalStorefrontAssistant from "@/components/storefront/global-storefront-assistant";
 import StoreAvailabilityGate from "@/components/storefront/store-availability-gate";
+import StorefrontRouteScrollReset from "@/components/storefront/storefront-route-scroll-reset";
 import { StoreSettingsProvider } from "@/components/storefront/store-settings-provider";
 import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
 import { getPublicStoreSettings } from "@/lib/store-settings";
@@ -136,6 +137,8 @@ export default async function RootLayout({
         />
 
         <StoreSettingsProvider settings={settings}>
+          <StorefrontRouteScrollReset />
+
           <StoreAvailabilityGate>
             <CartProvider>
               <WishlistProvider>

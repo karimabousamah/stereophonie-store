@@ -350,11 +350,21 @@ export default function V3EntertainmentCategory({
           `[data-entertainment-index="${safe}"]`,
         );
 
-        target?.scrollIntoView({
-          behavior: "smooth",
-          inline: "center",
-          block: "nearest",
-        });
+        if (target) {
+          /*
+           * This rail only needs horizontal movement.
+           * scrollIntoView() can also move the document vertically
+           * on mobile Safari, which causes homepage jump/teleport.
+           */
+          const centeredLeft =
+            target.offsetLeft -
+            (rail.clientWidth - target.clientWidth) / 2;
+
+          rail.scrollTo({
+            left: Math.max(0, centeredLeft),
+            behavior: "smooth",
+          });
+        }
       }
 
       /*
