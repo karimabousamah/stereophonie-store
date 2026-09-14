@@ -172,7 +172,7 @@ export async function uploadProductImageDirectly({
         bucketName,
         objectName: storagePath,
         contentType: file.type,
-        cacheControl: "3600",
+        cacheControl: "31536000",
       },
 
       onError(error) {

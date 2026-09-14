@@ -334,3 +334,60 @@
 }
 
 /* === ST ANNOUNCEMENT BACKGROUND MODE FINAL CASCADE FIX END === */
+
+/* ============================================================
+   ST ANNOUNCEMENT — NO WALLPAPER MUSTARD TEXT FINAL
+   ============================================================ */
+
+/*
+ * Admin setting:
+ * Announcement appearance -> No wallpaper
+ *
+ * Only the "none" background mode receives mustard typography.
+ *
+ * Animated wallpaper and Still wallpaper retain their existing
+ * announcement typography without any visual change.
+ */
+
+[data-announcement-background-mode="none"] .text {
+  color: #D99000 !important;
+
+  -webkit-text-fill-color: #D99000 !important;
+
+  text-shadow: none !important;
+}
+
+
+/*
+ * Keep an optional announcement CTA/link in the same mustard
+ * family when No wallpaper is selected.
+ */
+
+[data-announcement-background-mode="none"] .link,
+[data-announcement-background-mode="none"] .link:link,
+[data-announcement-background-mode="none"] .link:visited,
+[data-announcement-background-mode="none"] .link:hover,
+[data-announcement-background-mode="none"] .link:focus,
+[data-announcement-background-mode="none"] .link:focus-visible,
+[data-announcement-background-mode="none"] .link:active {
+  color: #D99000 !important;
+
+  -webkit-text-fill-color: #D99000 !important;
+}
+
+
+/*
+ * Any icon inside the optional link follows the same color.
+ */
+
+[data-announcement-background-mode="none"] .link svg,
+[data-announcement-background-mode="none"] .link svg * {
+  color: #D99000 !important;
+
+  stroke: currentColor !important;
+}
+
+
+/* ============================================================
+   END ST ANNOUNCEMENT — NO WALLPAPER MUSTARD TEXT FINAL
+   ============================================================ */

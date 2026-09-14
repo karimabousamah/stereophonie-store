@@ -36,7 +36,7 @@ export default function V2Footer() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Instagram"
-                  >
+    >
                     <FaInstagram />
                   </a>
 

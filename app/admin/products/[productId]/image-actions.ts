@@ -293,7 +293,7 @@ export async function uploadProductImages(formData: FormData) {
         .from("product-images")
         .upload(storagePath, fileBytes, {
           contentType: file.type,
-          cacheControl: "3600",
+          cacheControl: "31536000",
           upsert: false,
         });
 
@@ -1981,8 +1981,9 @@ export async function moveProductImage(formData: FormData) {
       const { error: updateError } = await supabase
         .from("product_image_variants")
         .update({
-          position: index,
-        })
+            position: index,
+            is_primary: index === 0,
+          })
         .eq("variant_id", variantId)
         .eq("image_id", assignment.image_id);
 
@@ -2083,8 +2084,9 @@ export async function moveProductImage(formData: FormData) {
     const { error: updateError } = await supabase
       .from("product_images")
       .update({
-        position: index,
-      })
+          position: index,
+          is_primary: index === 0,
+        })
       .eq("product_id", productId)
       .eq("id", image.id);
 

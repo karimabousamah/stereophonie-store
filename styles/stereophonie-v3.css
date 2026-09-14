@@ -65647,11 +65647,11 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
     will-change: height, opacity, transform;
 
     transition:
-      height 850ms cubic-bezier(0.22, 1, 0.36, 1),
-      margin-top 720ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 580ms ease,
-      transform 720ms cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 850ms !important;
+      height 400ms cubic-bezier(0.55, 0.02, 0.72, 0.18),
+      margin-top 360ms cubic-bezier(0.55, 0.02, 0.72, 0.18),
+      opacity 300ms ease-in,
+      transform 360ms cubic-bezier(0.55, 0.02, 0.72, 0.18),
+      visibility 0s linear 400ms !important;
   }
 
   /*
@@ -80988,7 +80988,15 @@ main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
   .st-filter-v4__bar:not(.is-mobile-open) {
     height: 0 !important;
     min-height: 0 !important;
-    max-height: 0 !important;
+
+    /*
+     * Do not force max-height to 0 here.
+     *
+     * height itself already animates to 0. A simultaneous
+     * max-height: 0 clamps the rendered box immediately and prevents
+     * the closing height transition from being visible.
+     */
+    max-height: none !important;
 
     margin-top: 0 !important;
     margin-bottom: 0 !important;
@@ -81420,3 +81428,667 @@ html body
 /* ==========================================================
    ST_CAROUSEL_NAV_ARROWS_V1 END
    ========================================================== */
+
+/* STOREFRONT HEADER — SOLID MUSTARD UTILITY CONTROLS FINAL */
+
+/*
+ * Desktop storefront utility controls:
+ * - Store location
+ * - Instagram
+ * - TikTok
+ * - Facebook
+ *
+ * Solid mustard at rest.
+ * Absolutely no visual hover movement, glow, recolor or scaling.
+ */
+
+[data-store-location-cta="true"] {
+  background: #FDB73E !important;
+  border-color: #FDB73E !important;
+  color: #171717 !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  transform: none !important;
+
+  transition: none !important;
+}
+
+[data-store-location-cta="true"] * {
+  color: #171717 !important;
+  stroke: currentColor !important;
+}
+
+[data-store-location-cta="true"]:hover,
+[data-store-location-cta="true"]:focus,
+[data-store-location-cta="true"]:focus-visible,
+[data-store-location-cta="true"]:active {
+  background: #FDB73E !important;
+  border-color: #FDB73E !important;
+  color: #171717 !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  transform: none !important;
+
+  opacity: 1 !important;
+}
+
+[data-store-location-cta="true"]:hover *,
+[data-store-location-cta="true"]:focus *,
+[data-store-location-cta="true"]:focus-visible *,
+[data-store-location-cta="true"]:active * {
+  color: #171717 !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+}
+
+
+/* Instagram / TikTok / Facebook */
+
+[data-header-social="instagram"],
+[data-header-social="tiktok"],
+[data-header-social="facebook"] {
+  background: #FDB73E !important;
+  border-color: #FDB73E !important;
+  color: #171717 !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  transform: none !important;
+
+  opacity: 1 !important;
+
+  transition: none !important;
+}
+
+[data-header-social="instagram"] *,
+[data-header-social="tiktok"] *,
+[data-header-social="facebook"] * {
+  color: #171717 !important;
+  fill: currentColor;
+  stroke: currentColor !important;
+
+  transform: none !important;
+}
+
+[data-header-social="instagram"]:hover,
+[data-header-social="instagram"]:focus,
+[data-header-social="instagram"]:focus-visible,
+[data-header-social="instagram"]:active,
+
+[data-header-social="tiktok"]:hover,
+[data-header-social="tiktok"]:focus,
+[data-header-social="tiktok"]:focus-visible,
+[data-header-social="tiktok"]:active,
+
+[data-header-social="facebook"]:hover,
+[data-header-social="facebook"]:focus,
+[data-header-social="facebook"]:focus-visible,
+[data-header-social="facebook"]:active {
+  background: #FDB73E !important;
+  border-color: #FDB73E !important;
+  color: #171717 !important;
+
+  box-shadow: none !important;
+  filter: none !important;
+
+  transform: none !important;
+
+  opacity: 1 !important;
+}
+
+/* END STOREFRONT HEADER — SOLID MUSTARD UTILITY CONTROLS FINAL */
+
+/* === ST3 REAL DESKTOP HEADER MUSTARD CONTROLS START === */
+
+/*
+ * Authoritative styling for the ACTUAL V3 desktop header.
+ *
+ * Store location:
+ *   .st3-header__visit-us
+ *
+ * Social buttons:
+ *   .st3-header__socials > a
+ *
+ * Preserve existing dimensions and layout.
+ * Only replace the surface / interaction language.
+ */
+
+@media (min-width: 1101px) {
+
+  /* ========================================================
+     STORE LOCATION — SOLID MUSTARD
+     ======================================================== */
+
+  html body .st3-header__visit-us,
+  html body .st3-header__visit-us:link,
+  html body .st3-header__visit-us:visited,
+  html body .st3-header__visit-us:hover,
+  html body .st3-header__visit-us:focus,
+  html body .st3-header__visit-us:focus-visible,
+  html body .st3-header__visit-us:active {
+    background: #FDB73E !important;
+    background-color: #FDB73E !important;
+    background-image: none !important;
+
+    border-color: #FDB73E !important;
+
+    color: #171717 !important;
+    -webkit-text-fill-color: #171717 !important;
+
+    box-shadow: none !important;
+    filter: none !important;
+
+    transform: none !important;
+
+    opacity: 1 !important;
+
+    transition: none !important;
+
+    outline: none !important;
+  }
+
+  html body .st3-header__visit-us *,
+  html body .st3-header__visit-us:hover *,
+  html body .st3-header__visit-us:focus *,
+  html body .st3-header__visit-us:focus-visible *,
+  html body .st3-header__visit-us:active * {
+    color: #171717 !important;
+    -webkit-text-fill-color: #171717 !important;
+
+    stroke: currentColor !important;
+
+    transform: none !important;
+    filter: none !important;
+
+    transition: none !important;
+  }
+
+  /*
+   * Completely disable the historical mustard hover aura.
+   */
+
+  html body .st3-header__visit-us::before,
+  html body .st3-header__visit-us:hover::before,
+  html body .st3-header__visit-us:focus::before,
+  html body .st3-header__visit-us:focus-visible::before,
+  html body .st3-header__visit-us:active::before {
+    content: none !important;
+    display: none !important;
+
+    opacity: 0 !important;
+
+    background: transparent !important;
+
+    box-shadow: none !important;
+    filter: none !important;
+
+    transform: none !important;
+
+    transition: none !important;
+  }
+
+
+  /* ========================================================
+     INSTAGRAM / TIKTOK / FACEBOOK — SOLID MUSTARD
+     ======================================================== */
+
+  html body .st3-header__socials > a,
+  html body .st3-header__socials > a:link,
+  html body .st3-header__socials > a:visited,
+  html body .st3-header__socials > a:hover,
+  html body .st3-header__socials > a:focus,
+  html body .st3-header__socials > a:focus-visible,
+  html body .st3-header__socials > a:active {
+    background: #FDB73E !important;
+    background-color: #FDB73E !important;
+    background-image: none !important;
+
+    border: 1px solid #FDB73E !important;
+
+    color: #171717 !important;
+    -webkit-text-fill-color: #171717 !important;
+
+    box-shadow: none !important;
+    filter: none !important;
+
+    transform: none !important;
+
+    opacity: 1 !important;
+
+    outline: none !important;
+
+    transition: none !important;
+  }
+
+  html body .st3-header__socials > a *,
+  html body .st3-header__socials > a:hover *,
+  html body .st3-header__socials > a:focus *,
+  html body .st3-header__socials > a:focus-visible *,
+  html body .st3-header__socials > a:active * {
+    color: #171717 !important;
+    -webkit-text-fill-color: #171717 !important;
+
+    stroke: currentColor !important;
+
+    transform: none !important;
+    filter: none !important;
+
+    transition: none !important;
+  }
+
+  /*
+   * SVG handling:
+   * preserve each social logo's actual drawing method while
+   * forcing the visible icon to the same dark neutral color.
+   */
+
+  html body .st3-header__socials > a svg {
+    color: #171717 !important;
+
+    transform: none !important;
+    filter: none !important;
+
+    transition: none !important;
+  }
+
+  html body .st3-header__socials > a svg path,
+  html body .st3-header__socials > a svg circle,
+  html body .st3-header__socials > a svg rect,
+  html body .st3-header__socials > a svg line,
+  html body .st3-header__socials > a svg polyline,
+  html body .st3-header__socials > a svg polygon {
+    color: #171717 !important;
+
+    transition: none !important;
+    transform: none !important;
+  }
+
+  /*
+   * Kill the existing shared hover aura on every social button.
+   */
+
+  html body .st3-header__socials > a::before,
+  html body .st3-header__socials > a:hover::before,
+  html body .st3-header__socials > a:focus::before,
+  html body .st3-header__socials > a:focus-visible::before,
+  html body .st3-header__socials > a:active::before {
+    content: none !important;
+    display: none !important;
+
+    opacity: 0 !important;
+
+    background: transparent !important;
+
+    box-shadow: none !important;
+    filter: none !important;
+
+    transform: none !important;
+
+    transition: none !important;
+  }
+}
+
+/* === ST3 REAL DESKTOP HEADER MUSTARD CONTROLS END === */
+
+/* === ST PRODUCT CONFIGURATION TRUE COMPACT GEOMETRY START === */
+
+/*
+ * PRODUCT PAGE ONLY
+ *
+ * The oversized white gaps were caused by the physical height /
+ * vertical padding of the option groups, not simply their margins.
+ *
+ * This block resets the group geometry while preserving:
+ * - swatch sizes
+ * - option button sizes
+ * - selected states
+ * - availability logic
+ * - commerce controls
+ */
+
+
+/* ==========================================================
+   DESKTOP / LAPTOP
+   ========================================================== */
+
+@media (min-width: 641px) {
+
+  /*
+   * Remove artificial height from every configuration group.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group {
+    box-sizing: border-box !important;
+
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+
+    padding-top: 0 !important;
+    padding-bottom: 30px !important;
+
+    align-content: start !important;
+    justify-content: flex-start !important;
+  }
+
+
+  /*
+   * Configuration groups after the first.
+   *
+   * Keep a clean separator, but remove the huge vertical void.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group
+  + .st-purchase-apple__group {
+    min-height: 0 !important;
+    height: auto !important;
+
+    margin-top: 28px !important;
+
+    padding-top: 28px !important;
+    padding-bottom: 30px !important;
+
+    border-top: 1px solid rgba(29, 29, 31, 0.10) !important;
+  }
+
+
+  /*
+   * Last configuration does not need a giant empty tail.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group:last-child {
+    min-height: 0 !important;
+    height: auto !important;
+
+    padding-bottom: 26px !important;
+  }
+
+
+  /*
+   * Heading -> controls.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__heading {
+    min-height: 0 !important;
+
+    margin: 0 0 15px !important;
+    padding: 0 !important;
+  }
+
+
+  /*
+   * Option rows themselves should size only to their contents.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__options {
+    min-height: 0 !important;
+    height: auto !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    align-content: start !important;
+  }
+
+
+  /*
+   * Whole configurator should wrap its real content only.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple {
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    align-content: start !important;
+    justify-content: flex-start !important;
+  }
+
+
+  /*
+   * Purchase section must not distribute children vertically.
+   *
+   * This prevents the final Storage group and Coming Soon /
+   * commerce state from being pushed apart.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-v6 {
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+
+    align-content: start !important;
+    justify-content: flex-start !important;
+
+    row-gap: 14px !important;
+  }
+
+
+  /*
+   * Reset any inherited spacing on direct children after
+   * the configuration selector.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-v6
+  > * {
+    flex-grow: 0 !important;
+  }
+
+
+  /*
+   * Availability / status box.
+   *
+   * Multiple historical versions used different status class
+   * names, so target the known purchase architecture plus the
+   * visible commerce controls.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-v6__signal,
+  html body
+  .st-product-v5
+  .st-purchase-v6__state,
+  html body
+  .st-product-v5
+  .st-purchase-v6__status,
+  html body
+  .st-product-v5
+  .st-purchase-v6__availability,
+  html body
+  .st-product-v5
+  .st-purchase-v6__notice {
+    min-height: 0 !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+
+  /*
+   * CTA stack stays compact.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-v6__commerce,
+  html body
+  .st-product-v5
+  .st-purchase-v6__notify,
+  html body
+  .st-product-v5
+  .st-purchase-v6__disabled,
+  html body
+  .st-product-v5
+  .st-purchase-v6__save {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+
+/* ==========================================================
+   TABLET
+   ========================================================== */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group {
+    padding-bottom: 24px !important;
+  }
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group
+  + .st-purchase-apple__group {
+    margin-top: 22px !important;
+    padding-top: 22px !important;
+    padding-bottom: 24px !important;
+  }
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group:last-child {
+    padding-bottom: 22px !important;
+  }
+
+  html body
+  .st-product-v5
+  .st-purchase-v6 {
+    row-gap: 12px !important;
+  }
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+/*
+ * Existing <=640px mobile product configuration rules remain
+ * authoritative and are intentionally not changed here.
+ */
+
+
+/* === ST PRODUCT CONFIGURATION TRUE COMPACT GEOMETRY END === */
+
+/* === ST PRODUCT COLOUR DIVIDER COMPACT GAP START === */
+
+/*
+ * PRODUCT DETAIL PAGE ONLY
+ *
+ * Final vertical-rhythm correction:
+ *
+ *   Colour swatches
+ *        ↓
+ *   horizontal separator
+ *        ↓
+ *   Storage
+ *
+ * The previous geometry fix correctly tightened the overall
+ * purchase area, but the FIRST configuration group still keeps
+ * too much space beneath its swatches.
+ *
+ * Only that first-group tail is reduced here.
+ */
+
+@media (min-width: 641px) {
+
+  /*
+   * First configuration group = Colour in the current product.
+   *
+   * Do not alter its heading, swatches, width or selected state.
+   * Only pull its lower edge / divider upward.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group:first-child {
+    min-height: 0 !important;
+    height: auto !important;
+
+    margin-bottom: 0 !important;
+
+    padding-bottom: 14px !important;
+  }
+
+
+  /*
+   * The second group owns the separator through its top border.
+   *
+   * Keep enough breathing room after the divider before Storage,
+   * but remove the old oversized pre-divider gap.
+   */
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group:first-child
+  + .st-purchase-apple__group {
+    margin-top: 14px !important;
+
+    padding-top: 24px !important;
+
+    border-top:
+      1px solid rgba(29, 29, 31, 0.10) !important;
+  }
+}
+
+
+/*
+ * Tablet receives the same architecture with slightly
+ * tighter measurements.
+ */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group:first-child {
+    padding-bottom: 12px !important;
+  }
+
+  html body
+  .st-product-v5
+  .st-purchase-apple__group:first-child
+  + .st-purchase-apple__group {
+    margin-top: 12px !important;
+    padding-top: 20px !important;
+  }
+}
+
+
+/*
+ * Existing mobile <=640px rules remain untouched.
+ */
+
+
+/* === ST PRODUCT COLOUR DIVIDER COMPACT GAP END === */

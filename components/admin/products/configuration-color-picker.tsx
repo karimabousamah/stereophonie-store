@@ -314,7 +314,10 @@ const presetColors = Array.from(
 
 function swatchStyle(hex: string) {
   if (hex !== "transparent") {
-    return { backgroundColor: hex };
+    return {
+      backgroundColor: hex,
+      "--st-admin-product-swatch": hex,
+    } as React.CSSProperties;
   }
 
   return {
@@ -332,7 +335,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
   const [customColors, setCustomColors] = useState<AdminCustomColorway[]>([]);
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [newColorName, setNewColorName] = useState("");
-  const [newColorHex, setNewColorHex] = useState("#FDB73E");
+  const [newColorHex, setNewColorHex] = useState("#202223");
   const [creatorError, setCreatorError] = useState("");
   const [isSaving, startSaving] = useTransition();
   const [deletingColorwayId, setDeletingColorwayId] = useState<string | null>(
@@ -440,7 +443,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
       });
 
       setNewColorName("");
-      setNewColorHex("#FDB73E");
+      setNewColorHex("#202223");
       closePicker();
     });
   }
@@ -473,20 +476,20 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
   const validHex = /^#[0-9A-Fa-f]{6}$/.test(newColorHex);
 
   return (
-    <div className="relative w-fit">
+    <div className="st-admin-color-picker-v2 relative w-fit">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
-        className="flex h-10 min-w-[190px] max-w-[245px] items-center gap-2.5 rounded-[10px] border border-black/10 bg-white px-3 text-left transition hover:border-black/20 hover:bg-[#fafafa] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b335]/25"
+        className="st-admin-color-value-trigger-final"
       >
         <span
-          className="h-5 w-5 shrink-0 rounded-full border border-black/10"
+          className="st-admin-color-trigger-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
           style={swatchStyle(value?.hex ?? "#e5e5e7")}
           aria-hidden="true"
         />
 
-        <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-[#1d1d1f]">
+        <span className="min-w-0 flex-1 whitespace-normal break-words text-[12px] font-semibold text-[#1d1d1f]">
           {value?.name || "Choose a color"}
         </span>
 
@@ -499,7 +502,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
       </button>
 
       {open ? (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-[100] w-[470px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_22px_60px_rgba(0,0,0,0.16)]">
+        <div className="st-admin-color-popup-final absolute left-0 top-[calc(100%+8px)] z-[100] w-[280px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_22px_60px_rgba(0,0,0,0.16)]">
           {creatorOpen ? (
             <>
               <div className="flex items-center gap-2 border-b border-black/[0.07] bg-white p-3">
@@ -510,7 +513,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                     setCreatorError("");
                   }}
                   aria-label="Back to colors"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] text-black/40 transition hover:border-black/20 hover:bg-white hover:text-black"
+                  className="st-admin-color-popup-close-v2 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] text-black/40 transition hover:border-black/20 hover:bg-white hover:text-black"
                 >
                   <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
                 </button>
@@ -528,130 +531,130 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                   type="button"
                   onClick={closePicker}
                   aria-label="Close color selector"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-[#fdb73e]/70 hover:bg-[#fff8e9] hover:text-black"
+                  className="st-admin-color-popup-close-v2 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-black/30 hover:bg-[#eeeeef] hover:text-black"
                 >
                   <X className="h-4 w-4" strokeWidth={1.8} />
                 </button>
               </div>
 
-              <div className="p-4">
-                <div className="flex gap-4">
-                  <label className="relative flex h-[145px] w-[145px] shrink-0 cursor-pointer flex-col items-center justify-center rounded-[18px] border border-black/[0.08] bg-[#fafafa] p-3 transition hover:border-[#fdb73e]/55 hover:bg-white hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
-                    <span className="relative grid h-[82px] w-[82px] place-items-center rounded-full border border-black/10 bg-white shadow-[0_8px_20px_rgba(0,0,0,0.10)]">
-                      <span
-                        className="h-[68px] w-[68px] rounded-full border border-black/[0.08]"
-                        style={{
-                          backgroundColor: validHex ? newColorHex : "#FDB73E",
-                        }}
-                      />
+              <div className="st-admin-color-creator-v5">
+                <label className="st-admin-color-creator-wheel-v5">
+                  <span className="st-admin-color-creator-wheel-swatch-v5">
+                    <span
+                      style={{
+                        backgroundColor: validHex
+                          ? newColorHex
+                          : "#202223",
+                      }}
+                    />
+                  </span>
 
-                      <span className="pointer-events-none absolute inset-[-5px] rounded-full border border-[#fdb73e]/0 transition group-hover:border-[#fdb73e]/30" />
-                    </span>
-
-                    <span className="pointer-events-none mt-3 inline-flex h-8 items-center justify-center gap-1.5 rounded-[9px] border border-black/[0.08] bg-white px-3 text-[9px] font-semibold text-black/60 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-                      <Palette
-                        className="h-3.5 w-3.5 text-[#b87500]"
-                        strokeWidth={1.8}
-                      />
+                  <span className="st-admin-color-creator-wheel-copy-v5">
+                    <strong>Choose color</strong>
+                    <small>
+                      <Palette aria-hidden="true" strokeWidth={1.8} />
                       Open color wheel
-                    </span>
+                    </small>
+                  </span>
 
+                  <input
+                    type="color"
+                    value={validHex ? newColorHex : "#202223"}
+                    onChange={(event) => {
+                      setNewColorHex(event.target.value.toUpperCase());
+                      setCreatorError("");
+                    }}
+                    className="st-admin-color-creator-native-v5"
+                    aria-label="Choose custom color"
+                  />
+                </label>
+
+                <div className="st-admin-color-creator-fields-v5">
+                  <label>
+                    <span>Colorway name</span>
                     <input
-                      type="color"
-                      value={validHex ? newColorHex : "#FDB73E"}
+                      value={newColorName}
                       onChange={(event) => {
-                        setNewColorHex(event.target.value.toUpperCase());
+                        setNewColorName(event.target.value);
                         setCreatorError("");
                       }}
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                      aria-label="Choose custom color"
+                      placeholder="e.g. Desert Titanium"
+                      maxLength={80}
+                      autoFocus
+                      className="st-admin-color-creator-input-v5"
                     />
                   </label>
 
-                  <div className="min-w-0 flex-1">
-                    <label className="block">
-                      <span className="text-[10px] font-semibold text-black/55">
-                        Colorway name
-                      </span>
+                  <label>
+                    <span>HEX</span>
+
+                    <div className="st-admin-color-creator-hex-v5">
+                      <span
+                        className="st-admin-color-creator-hex-swatch-v5"
+                        style={{
+                          backgroundColor: validHex
+                            ? newColorHex
+                            : "#202223",
+                        }}
+                        aria-hidden="true"
+                      />
 
                       <input
-                        value={newColorName}
+                        value={newColorHex}
                         onChange={(event) => {
-                          setNewColorName(event.target.value);
+                          setNewColorHex(event.target.value.toUpperCase());
                           setCreatorError("");
                         }}
-                        placeholder="e.g. Desert Titanium"
-                        maxLength={80}
-                        autoFocus
-                        className="mt-1.5 h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] px-3 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 focus:border-[#e4a42d] focus:bg-white"
+                        maxLength={7}
+                        spellCheck={false}
+                        aria-label="HEX color value"
+                        className="st-admin-color-creator-input-v5 st-admin-color-creator-hex-input-v5"
                       />
-                    </label>
-
-                    <label className="mt-3 block">
-                      <span className="text-[10px] font-semibold text-black/55">
-                        HEX
-                      </span>
-
-                      <div className="relative mt-1.5">
-                        <span
-                          className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 rounded-full border border-black/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]"
-                          style={{
-                            backgroundColor: validHex ? newColorHex : "#FDB73E",
-                          }}
-                        />
-
-                        <input
-                          value={newColorHex}
-                          onChange={(event) => {
-                            setNewColorHex(event.target.value.toUpperCase());
-                            setCreatorError("");
-                          }}
-                          maxLength={7}
-                          spellCheck={false}
-                          aria-label="HEX color value"
-                          className="h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] !pl-11 pr-3 font-mono text-[12px] font-semibold uppercase text-[#1d1d1f] outline-none transition focus:border-[#e4a42d] focus:bg-white focus:ring-0"
-                        />
-                      </div>
-                    </label>
-
-                    <div className="mt-3 flex items-center gap-2 rounded-[10px] border border-black/[0.07] bg-white px-3 py-2">
-                      <span
-                        className="h-7 w-7 shrink-0 rounded-full border border-black/10"
-                        style={{
-                          backgroundColor: validHex ? newColorHex : "#FDB73E",
-                        }}
-                      />
-
-                      <div className="min-w-0">
-                        <p className="truncate text-[11px] font-semibold text-[#1d1d1f]">
-                          {newColorName.trim() || "Untitled colorway"}
-                        </p>
-                        <p className="font-mono text-[9px] uppercase text-black/35">
-                          {newColorHex}
-                        </p>
-                      </div>
                     </div>
-                  </div>
+                  </label>
+                </div>
+
+                <div className="st-admin-color-creator-preview-v5">
+                  <span
+                    className="st-admin-color-creator-preview-swatch-v5"
+                    style={{
+                      backgroundColor: validHex
+                        ? newColorHex
+                        : "#202223",
+                    }}
+                    aria-hidden="true"
+                  />
+
+                  <span className="st-admin-color-creator-preview-copy-v5">
+                    <strong>
+                      {newColorName.trim() || "Untitled colorway"}
+                    </strong>
+                    <small>{newColorHex}</small>
+                  </span>
                 </div>
 
                 {creatorError ? (
-                  <p className="mt-3 rounded-[10px] border border-red-200 bg-red-50 px-3 py-2 text-[10px] leading-4 text-red-600">
+                  <p className="st-admin-color-creator-error-v5">
                     {creatorError}
                   </p>
                 ) : null}
 
-                <div className="mt-4 flex items-center justify-between gap-3 border-t border-black/[0.07] pt-3">
-                  <p className="text-[9px] leading-4 text-black/35">
+                <div className="st-admin-color-creator-footer-v5">
+                  <p>
                     Saved colors remain available for future products.
                   </p>
 
                   <button
                     type="button"
                     onClick={saveColorway}
-                    disabled={isSaving || !newColorName.trim() || !validHex}
-                    className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[10px] bg-[#fdb73e] px-4 text-[10px] font-bold text-[#1d1d1f] transition hover:bg-[#f3ac2c] disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={
+                      isSaving ||
+                      !newColorName.trim() ||
+                      !validHex
+                    }
+                    className="st-admin-color-creator-save-v5"
                   >
-                    <Check className="h-3.5 w-3.5" strokeWidth={2} />
+                    <Check aria-hidden="true" strokeWidth={2} />
                     {isSaving ? "Saving..." : "Save Colorway"}
                   </button>
                 </div>
@@ -671,7 +674,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Search colors..."
-                    className="h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] pl-10 pr-4 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 hover:border-black/15 focus:border-[#e4a42d] focus:bg-white focus:ring-0"
+                    className="h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] pl-10 pr-4 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 hover:border-black/15 focus:border-[#202223] focus:bg-white focus:ring-0"
                   />
                 </div>
 
@@ -679,7 +682,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                   type="button"
                   onClick={closePicker}
                   aria-label="Close color selector"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-[#fdb73e]/70 hover:bg-[#fff8e9] hover:text-black hover:shadow-[0_0_0_3px_rgba(253,183,62,0.14),0_0_18px_rgba(253,183,62,0.20)]"
+                  className="st-admin-color-popup-close-v2 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-black/30 hover:bg-[#eeeeef] hover:text-black hover:shadow-[0_0_0_3px_rgba(253,183,62,0.14),0_0_18px_rgba(253,183,62,0.20)]"
                 >
                   <X className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
                 </button>
@@ -687,7 +690,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
 
               <div className="max-h-[300px] overflow-y-auto p-3">
                 {filteredColors.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 gap-2">
                     {filteredColors.map((color) => {
                       const selected =
                         value?.name === color.name &&
@@ -708,9 +711,9 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                         return (
                           <div
                             key={`${color.name}-${color.hex}`}
-                            className={`flex h-10 min-w-0 items-center rounded-[10px] border transition ${
+                            className={`st-admin-color-row-v2 flex h-10 min-w-0 items-center rounded-[8px] border transition ${
                               selected
-                                ? "border-[#e2a12d] bg-[#fff8e9]"
+                                ? "border-[#202223] bg-[#f1f2f2]"
                                 : "border-black/[0.07] bg-[#fafafa] hover:border-black/15 hover:bg-white"
                             }`}
                           >
@@ -720,18 +723,18 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                               className="flex min-w-0 flex-1 items-center gap-2.5 self-stretch rounded-l-[9px] px-3 text-left text-[11px] font-medium text-black/70"
                             >
                               <span
-                                className="h-5 w-5 shrink-0 rounded-full border border-black/10"
+                                className="st-admin-color-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
                                 style={swatchStyle(color.hex)}
                                 aria-hidden="true"
                               />
 
-                              <span className="min-w-0 flex-1 truncate">
+                              <span className="min-w-0 flex-1 whitespace-normal break-words">
                                 {color.name}
                               </span>
 
                               {selected ? (
                                 <Check
-                                  className="h-3.5 w-3.5 shrink-0 text-[#bf7e08]"
+                                  className="h-3.5 w-3.5 shrink-0 text-[#202223]"
                                   aria-hidden="true"
                                 />
                               ) : null}
@@ -745,7 +748,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                               disabled={deleting}
                               aria-label={`Delete ${customColorway.name}`}
                               title="Delete saved colorway"
-                              className="mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] text-black/25 transition hover:bg-red-50 hover:text-red-500 disabled:cursor-wait disabled:opacity-35"
+                              className="st-admin-color-row-delete-v2 mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-transparent bg-transparent text-black/35 transition disabled:cursor-wait disabled:opacity-35"
                             >
                               <Trash2
                                 className="h-3.5 w-3.5"
@@ -762,25 +765,25 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                           key={`${color.name}-${color.hex}`}
                           type="button"
                           onClick={() => chooseColor(color)}
-                          className={`flex h-10 min-w-0 items-center gap-2.5 rounded-[10px] border px-3 text-left text-[11px] font-medium transition ${
+                          className={`st-admin-color-row-v2 flex h-10 min-w-0 items-center gap-2.5 rounded-[8px] border px-3 text-left text-[11px] font-medium transition ${
                             selected
-                              ? "border-[#e2a12d] bg-[#fff8e9] text-[#1d1d1f]"
+                              ? "border-[#202223] bg-[#f1f2f2] text-[#1d1d1f]"
                               : "border-black/[0.07] bg-[#fafafa] text-black/70 hover:border-black/15 hover:bg-white"
                           }`}
                         >
                           <span
-                            className="h-5 w-5 shrink-0 rounded-full border border-black/10"
+                            className="st-admin-color-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
                             style={swatchStyle(color.hex)}
                             aria-hidden="true"
                           />
 
-                          <span className="min-w-0 flex-1 truncate">
+                          <span className="min-w-0 flex-1 whitespace-normal break-words">
                             {color.name}
                           </span>
 
                           {selected ? (
                             <Check
-                              className="h-3.5 w-3.5 shrink-0 text-[#bf7e08]"
+                              className="h-3.5 w-3.5 shrink-0 text-[#202223]"
                               aria-hidden="true"
                             />
                           ) : null}
@@ -801,7 +804,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                 <button
                   type="button"
                   onClick={openCreator}
-                  className="flex h-10 w-full items-center justify-center gap-2 rounded-[10px] border border-[#fdb73e]/40 bg-[#fff9ec] text-[10px] font-semibold text-[#9b6500] transition hover:border-[#fdb73e] hover:bg-[#fff5dd]"
+                  className="st-admin-color-create-v2 flex h-10 w-full items-center justify-center gap-2 rounded-[8px] border border-black/15 bg-white text-[10px] font-semibold text-[#202223] transition"
                 >
                   <Plus className="h-3.5 w-3.5" strokeWidth={2} />
                   Create new colorway

@@ -181,7 +181,7 @@ const sections = [
         </p>
 
         <p>
-          Contact us at thenitastyle@gmail.com or through WhatsApp at +961 3 161
+          Contact us at info@stereophoniestore.com or through WhatsApp at +961 3 161
           285.
         </p>
       </>

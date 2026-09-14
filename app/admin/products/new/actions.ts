@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import sharp from "sharp";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -19,6 +20,7 @@ type VariantInput = {
   display_position?: number;
   attributes: Record<string, string>;
   sku: string;
+  barcode: string;
   regular_price: number | "";
   sale_price: number | "" | null;
   stock_quantity: number;
@@ -52,13 +54,141 @@ type DirectUploadedImage = {
   is_primary: boolean;
 };
 
+/* === ST NEW PRODUCT STOREFRONT THUMBNAILS START === */
+
+/*
+ * Keep New Product media behavior identical to Edit Product:
+ *
+ * - original product image remains untouched
+ * - one lightweight storefront WebP is generated once
+ * - storefront cards/pages can request the smaller derivative
+ * - thumbnail failure never invalidates an otherwise valid product
+ */
+
+const storefrontThumbnailMaximumSize = 640;
+const storefrontThumbnailQuality = 80;
+const storefrontThumbnailCacheControl = "31536000";
+
+function storefrontThumbnailPath(storagePath: string) {
+  const normalizedPath = String(storagePath ?? "").trim();
+
+  if (!normalizedPath) {
+    throw new Error("The image storage path is missing.");
+  }
+
+  const slashIndex = normalizedPath.lastIndexOf("/");
+
+  const directory =
+    slashIndex >= 0
+      ? normalizedPath.slice(0, slashIndex)
+      : "";
+
+  const filename =
+    slashIndex >= 0
+      ? normalizedPath.slice(slashIndex + 1)
+      : normalizedPath;
+
+  const baseName =
+    filename.replace(/\.[^.]+$/, "") || "image";
+
+  const thumbnailFilename = `${baseName}.webp`;
+
+  return directory
+    ? `${directory}/storefront/${thumbnailFilename}`
+    : `storefront/${thumbnailFilename}`;
+}
+
+async function createStorefrontThumbnail(
+  input: Buffer | Uint8Array,
+) {
+  return sharp(input)
+    .rotate()
+    .resize({
+      width: storefrontThumbnailMaximumSize,
+      height: storefrontThumbnailMaximumSize,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .webp({
+      quality: storefrontThumbnailQuality,
+      alphaQuality: storefrontThumbnailQuality,
+      smartSubsample: true,
+    })
+    .toBuffer();
+}
+
+async function tryUploadStorefrontThumbnail({
+  supabase,
+  sourceBytes,
+  sourceStoragePath,
+}: {
+  supabase: any;
+  sourceBytes: Buffer | Uint8Array;
+  sourceStoragePath: string;
+}) {
+  try {
+    const thumbnailPath =
+      storefrontThumbnailPath(sourceStoragePath);
+
+    const thumbnailBytes =
+      await createStorefrontThumbnail(sourceBytes);
+
+    const { error } = await supabase.storage
+      .from("product-images")
+      .upload(thumbnailPath, thumbnailBytes, {
+        contentType: "image/webp",
+        cacheControl: storefrontThumbnailCacheControl,
+        upsert: true,
+      });
+
+    if (error) {
+      console.error(
+        "Storefront thumbnail upload failed:",
+        thumbnailPath,
+        error,
+      );
+
+      return null;
+    }
+
+    return thumbnailPath;
+  } catch (error) {
+    console.error(
+      "Storefront thumbnail preparation failed:",
+      sourceStoragePath,
+      error,
+    );
+
+    return null;
+  }
+}
+
+/* === ST NEW PRODUCT STOREFRONT THUMBNAILS END === */
+
 const validImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const maximumImageSize = 10 * 1024 * 1024;
 const maximumImagesPerConfiguration = 10;
 
+class ProductSubmissionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ProductSubmissionError";
+  }
+}
+
 function redirectWithError(message: string): never {
-  redirect(`/admin/products/new?error=${encodeURIComponent(message)}`);
+  throw new ProductSubmissionError(message);
+}
+
+function isNextRedirectError(error: unknown) {
+  return Boolean(
+    error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      typeof (error as { digest?: unknown }).digest === "string" &&
+      (error as { digest: string }).digest.startsWith("NEXT_REDIRECT"),
+  );
 }
 
 function createSlug(name: string) {
@@ -104,7 +234,7 @@ async function removeUploadedFiles(
   await supabase.storage.from("product-images").remove(storagePaths);
 }
 
-export async function createProduct(formData: FormData) {
+async function createProductUnsafe(formData: FormData) {
   const supabase = await createClient();
 
   const { data: claimsData } = await supabase.auth.getClaims();
@@ -653,6 +783,7 @@ export async function createProduct(formData: FormData) {
         : 0,
       attributes: variant.attributes ?? {},
       sku: variant.sku.trim() || null,
+      barcode: String(variant.barcode ?? "").trim() || null,
       regular_price:
         Number.isFinite(Number(variant.regular_price)) &&
         Number(variant.regular_price) > 0
@@ -750,6 +881,51 @@ export async function createProduct(formData: FormData) {
         }
 
         uploadedStoragePaths.push(destinationPath);
+
+        /*
+         * Generate the same lightweight storefront WebP used by
+         * the existing-product image manager.
+         *
+         * The original file stays authoritative for the gallery.
+         * This derivative exists only for fast storefront rendering.
+         */
+        try {
+          const { data: permanentOriginal, error: downloadError } =
+            await supabase.storage
+              .from("product-images")
+              .download(destinationPath);
+
+          if (downloadError || !permanentOriginal) {
+            console.error(
+              "Storefront thumbnail source download failed:",
+              destinationPath,
+              downloadError,
+            );
+          } else {
+            const permanentOriginalBytes = new Uint8Array(
+              await permanentOriginal.arrayBuffer(),
+            );
+
+            const storefrontThumbnailStoragePath =
+              await tryUploadStorefrontThumbnail({
+                supabase,
+                sourceBytes: permanentOriginalBytes,
+                sourceStoragePath: destinationPath,
+              });
+
+            if (storefrontThumbnailStoragePath) {
+              uploadedStoragePaths.push(
+                storefrontThumbnailStoragePath,
+              );
+            }
+          }
+        } catch (error) {
+          console.error(
+            "Storefront thumbnail preparation failed:",
+            destinationPath,
+            error,
+          );
+        }
 
         const temporaryIndex = temporaryStoragePaths.indexOf(
           image.storage_path,
@@ -879,7 +1055,7 @@ export async function createProduct(formData: FormData) {
           .from("product-images")
           .upload(storagePath, fileBuffer, {
             contentType: file.type,
-            cacheControl: "3600",
+            cacheControl: "31536000",
             upsert: false,
           });
 
@@ -888,6 +1064,23 @@ export async function createProduct(formData: FormData) {
         }
 
         uploadedStoragePaths.push(storagePath);
+
+        /*
+         * Legacy Shared-image uploads also receive the same
+         * lightweight storefront derivative.
+         */
+        const storefrontThumbnailStoragePath =
+          await tryUploadStorefrontThumbnail({
+            supabase,
+            sourceBytes: fileBuffer,
+            sourceStoragePath: storagePath,
+          });
+
+        if (storefrontThumbnailStoragePath) {
+          uploadedStoragePaths.push(
+            storefrontThumbnailStoragePath,
+          );
+        }
 
         const { data: publicUrlData } = supabase.storage
           .from("product-images")
@@ -950,8 +1143,54 @@ export async function createProduct(formData: FormData) {
   revalidatePath("/");
 
   redirect(
-    `/admin/products/${product.id}?setup=1&saved=${
+    `/admin/products/${product.id}?saved=${
       publishingIntent === "publish" ? "published" : "draft"
-    }#product-images`,
+    }`,
   );
+}
+
+
+export type CreateProductResult =
+  | {
+      ok: true;
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
+export async function createProduct(
+  formData: FormData,
+): Promise<CreateProductResult> {
+  try {
+    await createProductUnsafe(formData);
+
+    return {
+      ok: true,
+    };
+  } catch (error) {
+    if (isNextRedirectError(error)) {
+      throw error;
+    }
+
+    if (error instanceof ProductSubmissionError) {
+      return {
+        ok: false,
+        error: error.message,
+      };
+    }
+
+    console.error(
+      "Unexpected product creation failure:",
+      error,
+    );
+
+    return {
+      ok: false,
+      error:
+        error instanceof Error && error.message
+          ? error.message
+          : "The product could not be saved. Your product editor has been kept intact.",
+    };
+  }
 }

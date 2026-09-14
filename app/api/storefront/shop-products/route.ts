@@ -4,6 +4,7 @@ import {
   loadShopProductBatch,
   SHOP_PRODUCTS_PER_BATCH,
 } from "@/lib/storefront-shop-loader";
+import { storefrontServiceIsAvailable } from "@/lib/storefront-service-health";
 import {
   shopSelectedAvailability,
   shopSelectedPrice,
@@ -69,24 +70,64 @@ export async function GET(request: NextRequest) {
     ),
   );
 
-  const result = await loadShopProductBatch({
-    filters: {
-      search,
-      category,
-      offers,
-      brand,
-      availability,
-      requestedMinimumPrice,
-      requestedMaximumPrice,
-      sort,
-    },
-    offset,
-    limit,
-  });
+  const storefrontAvailable =
+    await storefrontServiceIsAvailable();
 
-  return NextResponse.json(result, {
-    headers: {
-      "Cache-Control": "private, no-store",
-    },
-  });
+  if (!storefrontAvailable) {
+    return NextResponse.json(
+      {
+        error:
+          "The Stereophonie catalogue is temporarily unavailable.",
+      },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control": "private, no-store",
+          "Retry-After": "30",
+        },
+      },
+    );
+  }
+
+  try {
+    const result = await loadShopProductBatch({
+      filters: {
+        search,
+        category,
+        offers,
+        brand,
+        availability,
+        requestedMinimumPrice,
+        requestedMaximumPrice,
+        sort,
+      },
+      offset,
+      limit,
+    });
+
+    return NextResponse.json(result, {
+      headers: {
+        "Cache-Control": "private, no-store",
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Stereophonie shop products API failed:",
+      error,
+    );
+
+    return NextResponse.json(
+      {
+        error:
+          "The Stereophonie catalogue is temporarily unavailable.",
+      },
+      {
+        status: 503,
+        headers: {
+          "Cache-Control": "private, no-store",
+          "Retry-After": "30",
+        },
+      },
+    );
+  }
 }

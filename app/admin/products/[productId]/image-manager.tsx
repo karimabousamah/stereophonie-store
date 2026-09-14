@@ -324,11 +324,7 @@ export default function ImageManager({
           );
 
           if (firstAssignment && secondAssignment) {
-            if (firstAssignment.is_primary !== secondAssignment.is_primary) {
-              return firstAssignment.is_primary ? -1 : 1;
-            }
-
-            const difference =
+const difference =
               Number(firstAssignment.position ?? 0) -
               Number(secondAssignment.position ?? 0);
 
@@ -457,7 +453,9 @@ export default function ImageManager({
                   ? {
                       ...assignment,
                       position: nextPositionByImageId.get(image.id) ?? 0,
-                    }
+                    is_primary:
+                      nextPositionByImageId.get(image.id) === 0,
+                  }
                   : assignment,
             ),
           }));
@@ -507,7 +505,9 @@ export default function ImageManager({
               ? {
                   ...image,
                   position: nextPositionByImageId.get(image.id) ?? 0,
-                }
+                    is_primary:
+                      nextPositionByImageId.get(image.id) === 0,
+                  }
               : image,
           );
         });
@@ -1045,803 +1045,751 @@ export default function ImageManager({
     setPreviewUrls(processedFiles.map((file) => URL.createObjectURL(file)));
   }
 
+
   return (
-    <div className="space-y-6">
-      {successMessage && (
-        <div role="status" className="st-admin-notice st-admin-notice--success">
-          <CheckCircle2 className="st-admin-notice__icon" aria-hidden="true" />
-
-          <div>
-            <strong>Images updated</strong>
-            <p>{successMessage}</p>
-          </div>
-        </div>
-      )}
-
-      <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-        <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
-              04 · Product media
-            </p>
-
-            <h2 className="mt-2 text-xl font-semibold">Manage images</h2>
-
-            <p className="mt-2 text-sm leading-6 text-white/35">
-              Add, remove, reorder and connect images to the correct product
-              configuration.
-            </p>
-          </div>
-
-          <div className="border border-white/10 bg-black/20 px-4 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/30">
-              Image usage
-            </p>
-
-            <p className="mt-1 text-sm font-semibold">
-              {maximumImagesPerConfiguration} max / configuration
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5">
-          {liveConfigurations.length > 0 ? (
-            <section className="mb-5 border border-white/10 bg-black/20 p-4 sm:p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
-                    Image configuration
-                  </p>
-
-                  <p className="mt-1 text-sm font-semibold text-white">
-                    Choose the configuration gallery you want to manage.
-                  </p>
-                </div>
-
-                {liveConfigurations.length > 1 ? (
-                  <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
-                    {liveConfigurations.map((configuration, index) => {
-                      const active =
-                        configuration.id === selectedGalleryConfigurationId;
-
-                      const count = managedImages.filter((image) =>
-                        image.product_image_variants?.some(
-                          (assignment) =>
-                            assignment.variant_id === configuration.id,
-                        ),
-                      ).length;
-
-                      return (
-                        <button
-                          key={configuration.id}
-                          type="button"
-                          onClick={() => {
-                            setSelectedGalleryConfigurationId(configuration.id);
-                            setVisualConfigurationId(configuration.id);
-                            setImageOperationErrorMessage("");
-                          }}
-                          className={`shrink-0 border px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.11em] transition ${
-                            active
-                              ? "border-[#e2a128] bg-[#fdb73e] text-black"
-                              : "border-white/10 bg-black/30 text-white/45 hover:border-white/30 hover:text-white"
-                          }`}
-                        >
-                          {configuration.variant_name ||
-                            configuration.fallbackLabel ||
-                            `Configuration ${index + 1}`}
-                          <span className="ml-2 opacity-55">{count}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : null}
-              </div>
-
-              {selectedGalleryConfigurationId ? (
-                <p className="mt-4 border border-[#fdb73e]/25 bg-[#fdb73e]/[0.05] px-4 py-3 text-xs leading-5 text-white/50">
-                  Uploads and ordering below are focused on{" "}
-                  <strong className="text-white">
-                    {liveConfigurations.find(
-                      (configuration) =>
-                        configuration.id === selectedGalleryConfigurationId,
-                    )?.variant_name || "this configuration"}
-                  </strong>
-                  .
-                </p>
-              ) : null}
-            </section>
-          ) : null}
-
-          <form
-            ref={uploadFormRef}
-            action={finalizeDirectProductImageUploads}
-            onSubmit={handleDirectUploadSubmit}
-            className="border border-white/10 bg-black/20 p-5"
-          >
-            <input type="hidden" name="product_id" value={productId} />
-
-            <input
-              ref={directUploadedImagesInputRef}
-              type="hidden"
-              name="direct_uploaded_images"
-              defaultValue="[]"
-            />
-
-            <input
-              ref={fileInputRef}
-              id="new-product-images"
-              type="file"
-              accept="image/*"
-              multiple
-              className="sr-only"
-              onChange={(event) => {
-                void selectFiles(event.target.files);
-
-                event.currentTarget.value = "";
-              }}
-            />
-
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <div className="flex items-center gap-3">
-                  <ImagePlus className="h-5 w-5 text-white/55" />
-
-                  <p className="font-semibold">Add new images</p>
-                </div>
-
-                <p className="mt-2 text-sm leading-6 text-white/35">
-                  Upload any supported image format. Each file can be up to 10
-                  MB.
-                </p>
-              </div>
-
-              <label
-                htmlFor="new-product-images"
-                aria-disabled={isUploading}
-                className={`inline-flex items-center justify-center gap-3 border border-white/15 px-5 py-4 text-xs font-semibold uppercase tracking-[0.16em] transition ${
-                  isUploading
-                    ? "cursor-not-allowed opacity-40"
-                    : "cursor-pointer text-white/65 hover:border-white hover:bg-white hover:text-black"
-                }`}
-              >
-                <ImagePlus className="h-4 w-4" />
-                Select images
-              </label>
+    <div className="st-admin-existing-media-v2">
+      <div className="st-admin-media-manager">
+        {liveConfigurations.length > 0 ? (
+          <div className="st-admin-media-manager__configuration-bar">
+            <div className="st-admin-media-manager__configuration-label">
+              <strong>Configuration gallery</strong>
+              <span>
+                Select the exact configuration whose customer gallery you want
+                to manage.
+              </span>
             </div>
 
-            {uploadError && (
-              <div className="mt-5 border border-red-400/25 bg-red-400/[0.07] px-4 py-3 text-sm text-red-200">
-                {uploadError}
-              </div>
-            )}
+            <div className="st-admin-media-manager__configuration-tabs">
+              {liveConfigurations.map((configuration, index) => {
+                const active =
+                  configuration.id === selectedGalleryConfigurationId;
 
-            {selectedFiles.length > 0 && (
-              <div className="mt-6">
-                <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="font-semibold">
-                      {selectedFiles.length}{" "}
-                      {selectedFiles.length === 1
-                        ? "image selected"
-                        : "images selected"}
-                    </p>
+                const count = managedImages.filter((image) => {
+                  const assignments = image.product_image_variants ?? [];
 
-                    <p className="mt-1 text-xs text-white/35">
-                      These files have not been uploaded yet.
-                    </p>
-                  </div>
+                  if (assignments.length === 0) {
+                    return true;
+                  }
 
+                  return assignments.some(
+                    (assignment) =>
+                      assignment.variant_id === configuration.id,
+                  );
+                }).length;
+
+                return (
                   <button
+                    key={configuration.id}
                     type="button"
-                    onClick={clearSelectedFiles}
-                    disabled={isUploading}
-                    className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-transparent px-5 text-[10px] font-semibold uppercase tracking-[0.13em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.06] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-35"
+                    onClick={() => {
+                      setSelectedGalleryConfigurationId(configuration.id);
+                      setVisualConfigurationId(configuration.id);
+                    }}
+                    className={
+                      active
+                        ? "st-admin-media-manager__configuration-tab is-active"
+                        : "st-admin-media-manager__configuration-tab"
+                    }
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    Clear selection
+                    <span>
+                      {configuration.variant_name ||
+                        configuration.fallbackLabel ||
+                        `Configuration ${index + 1}`}
+                    </span>
+                    <small>{count}</small>
                   </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
+        <form
+          onSubmit={handleDirectUploadSubmit}
+          className="st-admin-existing-media-v2__upload"
+        >
+          <div className="st-admin-existing-media-v2__upload-head">
+            <div>
+              <strong>Add images</strong>
+              <span>
+                Upload product images, then assign them to one or more exact
+                configurations.
+              </span>
+            </div>
+
+            <label
+              className={
+                isUploading
+                  ? "st-admin-existing-media-v2__select is-disabled"
+                  : "st-admin-existing-media-v2__select"
+              }
+              aria-disabled={isUploading}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                disabled={isUploading}
+                onChange={(event) => {
+                  const files = Array.from(event.currentTarget.files ?? []);
+                  setSelectedFiles(files);
+
+                  previewUrls.forEach((previewUrl) => {
+                    URL.revokeObjectURL(previewUrl);
+                  });
+
+                  setPreviewUrls(
+                    files.map((file) => URL.createObjectURL(file)),
+                  );
+
+                  setSelectedVariantIds(files.map(() => []));
+                  setUploadError("");
+                }}
+              />
+              Add images
+            </label>
+          </div>
+
+          {uploadError ? (
+            <div className="st-admin-media-manager__error">{uploadError}</div>
+          ) : null}
+
+          {selectedFiles.length > 0 ? (
+            <div className="st-admin-existing-media-v2__pending">
+              <div className="st-admin-existing-media-v2__pending-head">
+                <div>
+                  <strong>
+                    {selectedFiles.length}{" "}
+                    {selectedFiles.length === 1 ? "image" : "images"} ready
+                  </strong>
+                  <span>
+                    Leave configuration assignment empty to share an image with
+                    every configuration.
+                  </span>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
-                  {selectedFiles.map((file, index) => (
-                    <article
-                      key={`${file.name}-${file.size}-${index}`}
-                      className="overflow-hidden border border-white/10 bg-[#101010]"
-                    >
-                      <div className="aspect-[4/3] overflow-hidden bg-[#f5f5f7]">
+                <button
+                  type="button"
+                  onClick={clearSelectedFiles}
+                  disabled={isUploading}
+                  className="st-admin-existing-media-v2__secondary"
+                >
+                  Clear
+                </button>
+              </div>
+
+              <div className="st-admin-existing-media-v2__pending-grid">
+                {selectedFiles.map((file, index) => (
+                  <article
+                    key={`${file.name}-${file.lastModified}-${index}`}
+                    className="st-admin-media-item"
+                  >
+                    <div className="st-admin-media-item__preview">
+                      {previewUrls[index] ? (
                         <img
                           src={previewUrls[index]}
-                          alt={`New product image ${index + 1}`}
-                          className="h-full w-full object-contain p-3"
+                          alt={file.name}
                         />
-                      </div>
+                      ) : null}
 
-                      <div className="p-3">
-                        <p className="truncate text-sm font-semibold">
-                          {file.name}
-                        </p>
+                      <span className="st-admin-media-item__position">
+                        {index + 1}
+                      </span>
+                    </div>
 
-                        <p className="mt-1 text-xs text-white/35">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
+                    <div className="st-admin-media-item__body">
+                      <strong className="st-admin-media-item__file">
+                        {file.name}
+                      </strong>
 
-                        <div className="mt-4">
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                              Image usage
-                            </span>
+                      <details className="st-admin-media-item__usage">
+                        <summary>
+                          <span>Edit usage</span>
+                          <small>
+                            {(selectedVariantIds[index] ?? []).length === 0
+                              ? "All configurations"
+                              : `${(selectedVariantIds[index] ?? []).length} selected`}
+                          </small>
+                        </summary>
 
-                            <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-white/25">
-                              {(selectedVariantIds[index] ?? []).length === 0
-                                ? "Shared"
-                                : `${(selectedVariantIds[index] ?? []).length} selected`}
-                            </span>
-                          </div>
+                        <div className="st-admin-media-item__usage-panel">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedVariantIds((current) =>
+                                current.map((value, candidateIndex) =>
+                                  candidateIndex === index ? [] : value,
+                                ),
+                              );
+                            }}
+                            className="st-admin-existing-media-v2__shared"
+                          >
+                            Shared with all configurations
+                          </button>
 
-                          <div className="mt-2 max-h-48 space-y-1 overflow-y-auto border border-white/10 bg-black/40 p-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedVariantIds((current) => {
-                                  const next = current.map((ids) => [...ids]);
-
-                                  while (next.length <= index) {
-                                    next.push([]);
-                                  }
-
-                                  next[index] = [];
-                                  return next;
-                                });
-                              }}
-                              className={`flex min-h-10 w-full items-center justify-between gap-3 border px-3 text-left text-[10px] font-semibold uppercase tracking-[0.1em] transition ${
-                                (selectedVariantIds[index] ?? []).length === 0
-                                  ? "border-white bg-white text-black"
-                                  : "border-white/10 bg-black/20 text-white/45 hover:border-white/30 hover:text-white"
-                              }`}
-                            >
-                              <span>Shared with all configurations</span>
-
-                              {(selectedVariantIds[index] ?? []).length ===
-                              0 ? (
-                                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                              ) : null}
-                            </button>
-
+                          <div className="st-admin-media-item__configuration-list">
                             {liveConfigurations.map((configuration) => {
-                              const selectable =
-                                configuration.persisted &&
-                                Boolean(configuration.id) &&
-                                Boolean(configuration.variant_name);
-
-                              const checked = (
+                              const selected = (
                                 selectedVariantIds[index] ?? []
                               ).includes(configuration.id);
 
                               return (
-                                <label
-                                  key={configuration.id}
-                                  className={`flex min-h-10 items-center gap-3 border px-3 text-[10px] font-semibold uppercase tracking-[0.1em] transition ${
-                                    !selectable
-                                      ? "cursor-not-allowed border-white/5 bg-black/10 text-white/20"
-                                      : checked
-                                        ? "cursor-pointer border-white/45 bg-white/10 text-white"
-                                        : "cursor-pointer border-white/10 bg-black/20 text-white/45 hover:border-white/30 hover:text-white"
-                                  }`}
-                                >
+                                <label key={configuration.id}>
                                   <input
                                     type="checkbox"
-                                    checked={checked}
-                                    disabled={!selectable}
-                                    onChange={(event) => {
-                                      setSelectedVariantIds((current) => {
-                                        const next = current.map((ids) => [
-                                          ...ids,
-                                        ]);
+                                    checked={selected}
+                                    onChange={() => {
+                                      setSelectedVariantIds((current) =>
+                                        current.map((value, candidateIndex) => {
+                                          if (candidateIndex !== index) {
+                                            return value;
+                                          }
 
-                                        while (next.length <= index) {
-                                          next.push([]);
-                                        }
-
-                                        const ids = new Set(next[index] ?? []);
-
-                                        if (event.target.checked) {
-                                          ids.add(configuration.id);
-                                        } else {
-                                          ids.delete(configuration.id);
-                                        }
-
-                                        next[index] = Array.from(ids);
-                                        return next;
-                                      });
+                                          return selected
+                                            ? value.filter(
+                                                (variantId) =>
+                                                  variantId !==
+                                                  configuration.id,
+                                              )
+                                            : [...value, configuration.id];
+                                        }),
+                                      );
                                     }}
-                                    className="h-3.5 w-3.5 shrink-0 accent-white"
                                   />
 
-                                  <span className="min-w-0 flex-1">
-                                    {selectable
-                                      ? configuration.variant_name
-                                      : `${configuration.fallbackLabel} — save changes first`}
+                                  <span>
+                                    {configuration.variant_name ||
+                                      configuration.fallbackLabel}
                                   </span>
                                 </label>
                               );
                             })}
                           </div>
-
-                          <p className="mt-2 text-[10px] leading-4 text-white/25">
-                            Leave this image Shared for every configuration, or
-                            select every exact configuration that should use it.
-                          </p>
                         </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+                      </details>
+                    </div>
+                  </article>
+                ))}
+              </div>
 
-                {uploadProgress && (
-                  <div className="mt-5 border border-white/10 bg-black/30 p-4">
-                    <div className="flex items-center justify-between gap-4 text-xs">
-                      <p className="min-w-0 truncate text-white/55">
+              <div className="st-admin-existing-media-v2__upload-footer">
+                {uploadProgress ? (
+                  <div className="st-admin-existing-media-v2__progress">
+                    <div>
+                      <span>
                         {uploadProgress.currentFileName || "Finalizing images"}
-                      </p>
-
-                      <p className="shrink-0 font-semibold text-white">
-                        {uploadProgress.percentage}%
-                      </p>
+                      </span>
+                      <strong>{uploadProgress.percentage}%</strong>
                     </div>
 
-                    <div className="mt-3 h-2 overflow-hidden bg-white/10">
-                      <div
-                        className="h-full bg-white transition-[width] duration-200"
+                    <div>
+                      <span
                         style={{
                           width: `${uploadProgress.percentage}%`,
                         }}
                       />
                     </div>
                   </div>
+                ) : (
+                  <span />
                 )}
 
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className="mt-5 inline-flex items-center justify-center gap-3 border border-white bg-white px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-white disabled:cursor-not-allowed disabled:border-white/20 disabled:bg-white/10 disabled:text-white/30"
+                  className="st-admin-existing-media-v2__primary"
                 >
-                  <Upload className="h-4 w-4" />
-
                   {isUploading
                     ? `Uploading ${uploadProgress?.percentage ?? 0}%`
-                    : "Upload selected images"}
+                    : "Upload images"}
                 </button>
               </div>
-            )}
-          </form>
-        </div>
-      </section>
+            </div>
+          ) : null}
+        </form>
 
-      {selectedGalleryConfigurationId &&
-      selectedConfigurationImages.length > 0 ? (
-        <section className="mb-5 overflow-hidden border border-white/10 bg-[#0d0d0d]">
-          <div className="flex flex-col gap-5 p-5 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
-                Photo usage
-              </p>
-
-              <h3 className="mt-2 text-lg font-semibold text-white">
-                Save photo usage for this gallery
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-white/40">
-                Choose which configurations can use each image below. You can
-                make changes to several images first, then save every photo
-                usage setting together with this one button.
-              </p>
-
-              <p className="mt-2 text-xs leading-5 text-white/30">
-                Selected gallery:{" "}
-                <strong className="font-semibold text-white/60">
-                  {liveConfigurations.find(
+        <div className="st-admin-existing-media-v2__toolbar">
+          <div>
+            <strong>
+              {selectedGalleryConfigurationId
+                ? liveConfigurations.find(
                     (configuration) =>
                       configuration.id === selectedGalleryConfigurationId,
-                  )?.variant_name || "Current configuration"}
-                </strong>
-                {" · "}
-                {selectedConfigurationImages.length}{" "}
-                {selectedConfigurationImages.length === 1 ? "image" : "images"}
-              </p>
+                  )?.variant_name || "Selected configuration"
+                : "Product images"}
+            </strong>
 
-              {photoUsageSavedMessage ? (
-                <p className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-emerald-300">
-                  <CheckCircle2 className="h-4 w-4" />
-                  {photoUsageSavedMessage}
-                </p>
-              ) : null}
-            </div>
-
-            <button
-              type="button"
-              disabled={Boolean(pendingImageOperation)}
-              onClick={() => {
-                void handleSaveConfigurationPhotoUsage();
-              }}
-              className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 border border-[#e2a128] bg-[#fdb73e] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <Save className="h-4 w-4" />
-
-              {pendingImageOperation === "Saving photo usage…"
-                ? "Saving photo usage…"
-                : "Save photo usage"}
-            </button>
+            <span>
+              {selectedGalleryConfigurationId
+                ? `${selectedConfigurationImages.length} image${
+                    selectedConfigurationImages.length === 1 ? "" : "s"
+                  } in this gallery`
+                : `${orderedImages.length} uploaded image${
+                    orderedImages.length === 1 ? "" : "s"
+                  }`}
+            </span>
           </div>
-        </section>
-      ) : null}
 
-      <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-        <div className="border-b border-white/10 px-5 py-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
-            Existing media
-          </p>
+          <div className="st-admin-existing-media-v2__toolbar-actions">
+            {selectedGalleryConfigurationId &&
+            managedImages.length > 0 ? (
+              <button
+                type="button"
+                disabled={Boolean(pendingImageOperation)}
+                onClick={() => {
+                  void handleSaveConfigurationPhotoUsage();
+                }}
+                className="st-admin-existing-media-v2__secondary"
+              >
+                {pendingImageOperation === "Saving photo usage…"
+                  ? "Saving..."
+                  : "Save usage"}
+              </button>
+            ) : null}
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="mt-2 text-xl font-semibold">Current images</h2>
             {managedImages.length > 0 ? (
               <button
                 type="button"
-                className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-transparent px-5 text-[10px] font-semibold uppercase tracking-[0.13em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.06] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-35"
                 disabled={Boolean(pendingImageOperation)}
-                onClick={() => void handleClearAllPhotographs()}
+                onClick={() => {
+                  void handleClearAllPhotographs();
+                }}
+                className="st-admin-existing-media-v2__danger"
               >
-                <Trash2 className="h-3.5 w-3.5" />
-                Clear all images
+                Clear all
               </button>
             ) : null}
           </div>
-
-          <p className="mt-2 text-sm leading-6 text-white/35">
-            The image marked Main appears first on product cards and product
-            pages.
-          </p>
         </div>
 
-        <div className="p-5">
-          {orderedImages.length === 0 ? (
-            <div className="flex min-h-[190px] flex-col items-center justify-center border border-dashed border-white/15 bg-black/20 px-6 text-center">
-              <ImageOff className="h-8 w-8 text-white/25" />
+        {photoUsageSavedMessage ? (
+          <div className="st-admin-existing-media-v2__success">
+            {photoUsageSavedMessage}
+          </div>
+        ) : null}
 
-              <h3 className="mt-5 text-lg font-semibold">No images</h3>
+        {imageOperationErrorMessage ? (
+          <div className="st-admin-media-manager__error">
+            {imageOperationErrorMessage}
+          </div>
+        ) : null}
 
-              <p className="mt-2 max-w-md text-sm leading-6 text-white/35">
-                Upload at least one image so the product can be displayed
-                correctly on the storefront.
-              </p>
+        {pendingImageOperation ? (
+          <div className="st-admin-existing-media-v2__activity">
+            {pendingImageOperation}
+          </div>
+        ) : null}
+
+        {orderedImages.length === 0 ? (
+          <div className="st-admin-media-manager__empty">
+            <div className="st-admin-media-manager__empty-icon">
+              <ImageOff />
             </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {pendingImageOperation ? (
-                <div
-                  role="status"
-                  aria-live="polite"
-                  className="pointer-events-none fixed bottom-6 right-6 z-[100] inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-2 text-[10px] font-semibold text-black shadow-lg"
-                >
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#fdb73e]" />
-                  {pendingImageOperation}
-                </div>
-              ) : null}
 
-              {imageOperationErrorMessage ? (
-                <div
-                  role="alert"
-                  className="fixed bottom-6 right-6 z-[101] max-w-sm rounded-xl border border-red-500/20 bg-white px-4 py-3 text-xs font-medium text-red-600 shadow-lg"
-                >
-                  {imageOperationErrorMessage}
-                </div>
-              ) : null}
+            <strong>No product images yet</strong>
+            <span>
+              Add images above. They can be shared or assigned to exact product
+              configurations.
+            </span>
+          </div>
+        ) : (
+          <div className="st-admin-media-manager__grid st-admin-existing-media-v2__grid">
+            {selectedConfigurationImages.map((image, index) => {
+              const assignments = (image.product_image_variants ?? []).sort(
+                (first, second) =>
+                  Number(first.position ?? 0) -
+                  Number(second.position ?? 0),
+              );
 
-              {selectedConfigurationImages.map((image, index) => {
-                const assignments = [
-                  ...(image.product_image_variants ?? []),
-                ].sort((first, second) => {
-                  const firstConfiguration =
-                    configurationPosition.get(first.variant_id) ?? 9999;
+              const isShared = assignments.length === 0;
 
-                  const secondConfiguration =
-                    configurationPosition.get(second.variant_id) ?? 9999;
+              const sharedIndex = isShared
+                ? sharedImages.findIndex(
+                    (candidate) => candidate.id === image.id,
+                  )
+                : -1;
 
-                  if (firstConfiguration !== secondConfiguration) {
-                    return firstConfiguration - secondConfiguration;
-                  }
+              const hasConfigurationMain = assignments.some(
+                (assignment) => assignment.is_primary,
+              );
 
-                  return first.position - second.position;
-                });
-
-                const isShared = assignments.length === 0;
-
-                const sharedIndex = isShared
-                  ? sharedImages.findIndex(
-                      (candidate) => candidate.id === image.id,
+              const activeAssignment =
+                selectedGalleryConfigurationId
+                  ? assignments.find(
+                      (assignment) =>
+                        assignment.variant_id ===
+                        selectedGalleryConfigurationId,
                     )
-                  : -1;
+                  : undefined;
 
-                const hasConfigurationMain = assignments.some(
-                  (assignment) => assignment.is_primary,
+              const activeConfigurationImages =
+                selectedGalleryConfigurationId
+                  ? orderedImages.filter((candidate) =>
+                      candidate.product_image_variants?.some(
+                        (assignment) =>
+                          assignment.variant_id ===
+                          selectedGalleryConfigurationId,
+                      ),
+                    )
+                  : [];
+
+              const activeConfigurationIndex =
+                activeConfigurationImages.findIndex(
+                  (candidate) => candidate.id === image.id,
                 );
 
-                return (
-                  <article
-                    key={image.id}
-                    className={`overflow-hidden border bg-[#101010] ${
-                      image.is_primary
-                        ? "border-emerald-400/45"
-                        : "border-white/10"
-                    }`}
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden bg-[#f5f5f7]">
-                      {image.image_url ? (
-                        <img
-                          src={image.image_url}
-                          alt={
-                            image.alt_text ||
-                            `${productName} image ${index + 1}`
-                          }
-                          className="h-full w-full object-contain p-3"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <ImageOff className="h-8 w-8 text-white/25" />
-                        </div>
-                      )}
+              const isActiveMain = index === 0;
 
-                      <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/80 to-transparent p-3">
-                        <span className="border border-white/15 bg-black/60 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-                          {isShared
-                            ? `Shared · Position ${sharedIndex + 1}`
-                            : `${assignments.length} configuration${
-                                assignments.length === 1 ? "" : "s"
-                              }`}
-                        </span>
-
-                        {(isShared
-                          ? image.is_primary
-                          : hasConfigurationMain) && (
-                          <span className="inline-flex items-center gap-2 border border-emerald-300/30 bg-emerald-300 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black">
-                            <Star className="h-3 w-3 fill-current" />
-                            Main
-                          </span>
-                        )}
+              return (
+                <article
+                  key={image.id}
+                  className={
+                    isActiveMain
+                      ? "st-admin-media-item is-main"
+                      : "st-admin-media-item"
+                  }
+                  data-admin-product-image-card="true"
+                >
+                  <div className="st-admin-media-item__preview">
+                    {image.image_url ? (
+                      <img
+                        src={image.image_url}
+                        alt={
+                          image.alt_text ||
+                          `${productName} image ${index + 1}`
+                        }
+                      />
+                    ) : (
+                      <div className="st-admin-existing-media-v2__missing">
+                        <ImageOff />
                       </div>
-                    </div>
+                    )}
 
-                    <div className="space-y-4 p-4">
+                    <span className="st-admin-media-item__position">
+                      {index + 1}
+                    </span>
+
+                    {isActiveMain ? (
+<form
+                      onSubmit={(event) =>
+                        void handleImageOperation(
+                          event,
+                          "primary",
+                        )
+                      }
+                      className="st-admin-media-item__main-form"
+                    >
+                      <input
+                        type="hidden"
+                        name="product_id"
+                        value={productId}
+                      />
+
+                      <input
+                        type="hidden"
+                        name="image_id"
+                        value={image.id}
+                      />
+
+                      {!isShared && activeAssignment ? (
+                        <input
+                          type="hidden"
+                          name="variant_id"
+                          value={activeAssignment.variant_id}
+                        />
+                      ) : null}
+
+                      <button
+                        type="submit"
+                        data-secondary-action="true"
+                        className="st-admin-media-item__main"
+                        disabled={
+                          isActiveMain ||
+                          (!isShared && !activeAssignment)
+                        }
+                        title={isActiveMain ? "Main image" : "Set as Main"}
+                        aria-label={
+                          "Main image"
+                        }
+                      >
+                          <span className="st-admin-media-main-indicator-v2" aria-hidden="true" />
+                          Main
+                      </button>
+                    </form>
+) : null}
+                  </div>
+
+                  <div className="st-admin-media-item__body">
+                    <details className="st-admin-media-item__usage">
+                      <summary>
+                        <span>Edit usage</span>
+                        <small>
+                          {isShared
+                            ? "All configurations"
+                            : `${assignments.length} selected`}
+                        </small>
+                      </summary>
+
                       <form
                         data-photo-usage-form="true"
                         onSubmit={(event) =>
                           void handleImageOperation(event, "usage")
                         }
-                        className="border border-white/10 bg-black/20 p-3"
+                        className="st-admin-media-item__usage-panel"
                       >
                         <input
                           type="hidden"
                           name="product_id"
                           value={productId}
                         />
+                        <input
+                          type="hidden"
+                          name="image_id"
+                          value={image.id}
+                        />
+
+                        <button
+                          type="button"
+                          className="st-admin-existing-media-v2__shared"
+                          onClick={(event) => {
+                            const form = event.currentTarget.closest("form");
+
+                            if (!form) {
+                              return;
+                            }
+
+                            form
+                              .querySelectorAll<HTMLInputElement>(
+                                'input[name="variant_ids"]',
+                              )
+                              .forEach((input) => {
+                                input.checked = false;
+                              });
+                          }}
+                        >
+                          Shared with all configurations
+                        </button>
+
+                        <div className="st-admin-media-item__configuration-list">
+                          {configurations.map((configuration) => {
+                            const checked = assignments.some(
+                              (assignment) =>
+                                assignment.variant_id === configuration.id,
+                            );
+
+                            return (
+                              <label key={configuration.id}>
+                                <input
+                                  type="checkbox"
+                                  name="variant_ids"
+                                  value={configuration.id}
+                                  defaultChecked={checked}
+                                />
+
+                                <span>{configuration.variant_name}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </form>
+                    </details>
+
+
+                    <div className="st-admin-media-item__actions">
+                      <form
+                        onSubmit={(event) =>
+                          void handleImageOperation(event, "move")
+                        }
+                      >
+                        <input type="hidden" name="product_id" value={productId} />
                         <input type="hidden" name="image_id" value={image.id} />
-
-                        <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                          Image usage
-                        </p>
-
-                        {(() => {
-                          const assignedVariantIds = new Set(
-                            (image.product_image_variants ?? []).map(
-                              (assignment) => assignment.variant_id,
-                            ),
-                          );
-
-                          const isShared = assignedVariantIds.size === 0;
-
-                          return (
-                            <>
-                              <div
-                                className={`mt-3 border p-3 ${
-                                  isShared
-                                    ? "border-emerald-300/30 bg-emerald-300/[0.05]"
-                                    : "border-white/10 bg-black/20"
-                                }`}
-                              >
-                                <p className="text-xs font-semibold text-white/75">
-                                  {isShared
-                                    ? "Shared with all configurations"
-                                    : "Configuration-specific image"}
-                                </p>
-
-                                <p className="mt-1 text-[10px] leading-4 text-white/30">
-                                  Leave every option unchecked to share this
-                                  image with every configuration.
-                                </p>
-                              </div>
-
-                              <div className="mt-3 max-h-56 space-y-2 overflow-y-auto pr-1">
-                                {configurations.map((configuration) => {
-                                  const checked = assignedVariantIds.has(
-                                    configuration.id,
-                                  );
-
-                                  return (
-                                    <label
-                                      key={configuration.id}
-                                      className={`flex cursor-pointer items-center gap-3 border px-3 py-2.5 transition ${
-                                        checked
-                                          ? "border-white/35 bg-white/[0.07]"
-                                          : "border-white/10 bg-black/20 hover:border-white/25"
-                                      }`}
-                                    >
-                                      <input
-                                        type="checkbox"
-                                        name="variant_ids"
-                                        value={configuration.id}
-                                        defaultChecked={checked}
-                                        className="h-4 w-4 accent-white"
-                                      />
-
-                                      <span className="min-w-0 flex-1 text-xs text-white/70">
-                                        {configuration.variant_name}
-                                      </span>
-                                    </label>
-                                  );
-                                })}
-                              </div>
-
-                              <div className="mt-3 flex items-center justify-between gap-3">
-                                <span className="text-[10px] text-white/30">
-                                  {isShared
-                                    ? "Used by every configuration"
-                                    : `${assignedVariantIds.size} selected`}
-                                </span>
-                              </div>
-                            </>
-                          );
-                        })()}
+                        {!isShared && activeAssignment ? (
+                          <input
+                            type="hidden"
+                            name="variant_id"
+                            value={activeAssignment.variant_id}
+                          />
+                        ) : null}
+                        <input type="hidden" name="direction" value="left" />
+                        <button
+                          type="submit"
+                          data-secondary-action="true"
+                          disabled={
+                            isShared
+                              ? sharedIndex <= 0
+                              : !activeAssignment ||
+                                activeConfigurationIndex <= 0
+                          }
+                          title="Move image earlier"
+                          aria-label="Move image earlier"
+                        >
+                          <ArrowLeft />
+                        </button>
                       </form>
 
-                      {isShared ? (
-                        <div className="space-y-3 border border-white/10 bg-black/20 p-3">
-                          <div className="flex items-center justify-between gap-3">
-                            <div>
-                              <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                                Shared gallery
-                              </p>
+                      <form
+                        onSubmit={(event) =>
+                          void handleImageOperation(event, "move")
+                        }
+                      >
+                        <input type="hidden" name="product_id" value={productId} />
+                        <input type="hidden" name="image_id" value={image.id} />
+                        {!isShared && activeAssignment ? (
+                          <input
+                            type="hidden"
+                            name="variant_id"
+                            value={activeAssignment.variant_id}
+                          />
+                        ) : null}
+                        <input type="hidden" name="direction" value="right" />
+                        <button
+                          type="submit"
+                          data-secondary-action="true"
+                          disabled={
+                            isShared
+                              ? sharedIndex >= sharedImages.length - 1
+                              : !activeAssignment ||
+                                activeConfigurationIndex >=
+                                  activeConfigurationImages.length - 1
+                          }
+                          title="Move image later"
+                          aria-label="Move image later"
+                        >
+                          <ArrowRight />
+                        </button>
+                      </form>
 
-                              <p className="mt-1 text-xs text-white/65">
-                                Position {sharedIndex + 1} of{" "}
-                                {sharedImages.length}
-                              </p>
-                            </div>
+                      <form
+                        action={deleteProductImage}
+                        onSubmit={(event) => {
+                          const confirmed = window.confirm(
+                            "Delete this image permanently?",
+                          );
+                          if (!confirmed) {
+                            event.preventDefault();
+                          }
+                        }}
+                      >
+                        <input type="hidden" name="product_id" value={productId} />
+                        <input type="hidden" name="image_id" value={image.id} />
+                        <button
+                          type="submit"
+                          data-secondary-action="true"
+                          className="is-danger"
+                          title="Delete image"
+                          aria-label="Delete image"
+                        >
+                          <Trash2 />
+                        </button>
+                      </form>
+                    </div>
 
-                            {image.is_primary && (
-                              <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-300">
-                                <Star className="h-3 w-3 fill-current" />
-                                Main
-                              </span>
-                            )}
-                          </div>
+                    {isShared ? (
+                      <div className="st-admin-existing-media-v2__controls">
+                        <form
+                          onSubmit={(event) =>
+                            void handleImageOperation(event, "move")
+                          }
+                        >
+                          <input
+                            type="hidden"
+                            name="product_id"
+                            value={productId}
+                          />
+                          <input
+                            type="hidden"
+                            name="image_id"
+                            value={image.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="direction"
+                            value="left"
+                          />
 
-                          <div className="grid grid-cols-3 gap-2">
-                            <form
-                              onSubmit={(event) =>
-                                void handleImageOperation(event, "move")
-                              }
-                            >
-                              <input
-                                type="hidden"
-                                name="product_id"
-                                value={productId}
-                              />
+                          <button
+                            type="submit"
+                            disabled={sharedIndex <= 0}
+                            aria-label="Move shared image earlier"
+                          >
+                            <ArrowLeft />
+                          </button>
+                        </form>
 
-                              <input
-                                type="hidden"
-                                name="image_id"
-                                value={image.id}
-                              />
+                        <form
+                          onSubmit={(event) =>
+                            void handleImageOperation(event, "move")
+                          }
+                        >
+                          <input
+                            type="hidden"
+                            name="product_id"
+                            value={productId}
+                          />
+                          <input
+                            type="hidden"
+                            name="image_id"
+                            value={image.id}
+                          />
+                          <input
+                            type="hidden"
+                            name="direction"
+                            value="right"
+                          />
 
-                              <input
-                                type="hidden"
-                                name="direction"
-                                value="left"
-                              />
+                          <button
+                            type="submit"
+                            disabled={
+                              sharedIndex >= sharedImages.length - 1
+                            }
+                            aria-label="Move shared image later"
+                          >
+                            <ArrowRight />
+                          </button>
+                        </form>
 
-                              <button
-                                type="submit"
-                                disabled={sharedIndex <= 0}
-                                aria-label="Move shared image earlier"
-                                className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
-                              >
-                                <ArrowLeft className="h-3.5 w-3.5" />
-                              </button>
-                            </form>
+                        <form
+                          onSubmit={(event) =>
+                            void handleImageOperation(event, "primary")
+                          }
+                        >
+                          <input
+                            type="hidden"
+                            name="product_id"
+                            value={productId}
+                          />
+                          <input
+                            type="hidden"
+                            name="image_id"
+                            value={image.id}
+                          />
 
-                            <form
-                              onSubmit={(event) =>
-                                void handleImageOperation(event, "move")
-                              }
-                            >
-                              <input
-                                type="hidden"
-                                name="product_id"
-                                value={productId}
-                              />
+                          <button
+                            type="submit"
+                            disabled={image.is_primary}
+                            aria-label="Set shared image as Main"
+                            className={
+                              image.is_primary ? "is-main" : undefined
+                            }
+                          >
+                            <Star />
+                          </button>
+                        </form>
+                      </div>
+                    ) : (
+                      <details className="st-admin-existing-media-v2__galleries">
+                        <summary>
+                          Configuration galleries
+                          <small>{assignments.length}</small>
+                        </summary>
 
-                              <input
-                                type="hidden"
-                                name="image_id"
-                                value={image.id}
-                              />
-
-                              <input
-                                type="hidden"
-                                name="direction"
-                                value="right"
-                              />
-
-                              <button
-                                type="submit"
-                                disabled={
-                                  sharedIndex >= sharedImages.length - 1
-                                }
-                                aria-label="Move shared image later"
-                                className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
-                              >
-                                <ArrowRight className="h-3.5 w-3.5" />
-                              </button>
-                            </form>
-
-                            <form
-                              onSubmit={(event) =>
-                                void handleImageOperation(event, "primary")
-                              }
-                            >
-                              <input
-                                type="hidden"
-                                name="product_id"
-                                value={productId}
-                              />
-
-                              <input
-                                type="hidden"
-                                name="image_id"
-                                value={image.id}
-                              />
-
-                              <button
-                                type="submit"
-                                disabled={image.is_primary}
-                                aria-label="Set shared image as Main"
-                                className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.05] hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/25 disabled:bg-emerald-400/[0.05] disabled:text-emerald-300"
-                              >
-                                <Star
-                                  className={`h-3.5 w-3.5 ${
-                                    image.is_primary ? "fill-current" : ""
-                                  }`}
-                                />
-                              </button>
-                            </form>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <div>
-                            <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                              Exact configuration galleries
-                            </p>
-
-                            <p className="mt-1 text-[10px] leading-4 text-white/30">
-                              The same image can have a different position and
-                              Main state in every configuration.
-                            </p>
-                          </div>
-
+                        <div>
                           {assignments.map((assignment) => {
-                            const configurationLabel =
-                              configurationName.get(assignment.variant_id) ||
-                              "Unknown configuration";
+                            const label =
+                              configurationName.get(
+                                assignment.variant_id,
+                              ) || "Unknown configuration";
 
                             const configurationImages = orderedImages
                               .map((candidate) => ({
@@ -1873,38 +1821,27 @@ export default function ImageManager({
 
                             const configurationIndex =
                               configurationImages.findIndex(
-                                (candidate) => candidate.image.id === image.id,
+                                (candidate) =>
+                                  candidate.image.id === image.id,
                               );
 
                             return (
-                              <div
-                                key={assignment.variant_id}
-                                className="border border-white/10 bg-black/20 p-3"
-                              >
-                                <div className="flex items-start justify-between gap-3">
-                                  <div className="min-w-0">
-                                    <p className="truncate text-xs font-semibold text-white/75">
-                                      {configurationLabel}
-                                    </p>
-
-                                    <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-white/30">
-                                      Position {configurationIndex + 1} of{" "}
-                                      {configurationImages.length}
-                                    </p>
-                                  </div>
-
-                                  {assignment.is_primary && (
-                                    <span className="inline-flex shrink-0 items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-emerald-300">
-                                      <Star className="h-3 w-3 fill-current" />
-                                      Main
-                                    </span>
-                                  )}
+                              <section key={assignment.variant_id}>
+                                <div>
+                                  <strong>{label}</strong>
+                                  <span>
+                                    Position {configurationIndex + 1} of{" "}
+                                    {configurationImages.length}
+                                  </span>
                                 </div>
 
-                                <div className="mt-3 grid grid-cols-3 gap-2">
+                                <div className="st-admin-existing-media-v2__controls">
                                   <form
                                     onSubmit={(event) =>
-                                      void handleImageOperation(event, "move")
+                                      void handleImageOperation(
+                                        event,
+                                        "move",
+                                      )
                                     }
                                   >
                                     <input
@@ -1912,19 +1849,16 @@ export default function ImageManager({
                                       name="product_id"
                                       value={productId}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="image_id"
                                       value={image.id}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="variant_id"
                                       value={assignment.variant_id}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="direction"
@@ -1934,16 +1868,18 @@ export default function ImageManager({
                                     <button
                                       type="submit"
                                       disabled={configurationIndex <= 0}
-                                      aria-label={`Move image earlier in ${configurationLabel}`}
-                                      className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                                      aria-label={`Move image earlier in ${label}`}
                                     >
-                                      <ArrowLeft className="h-3.5 w-3.5" />
+                                      <ArrowLeft />
                                     </button>
                                   </form>
 
                                   <form
                                     onSubmit={(event) =>
-                                      void handleImageOperation(event, "move")
+                                      void handleImageOperation(
+                                        event,
+                                        "move",
+                                      )
                                     }
                                   >
                                     <input
@@ -1951,19 +1887,16 @@ export default function ImageManager({
                                       name="product_id"
                                       value={productId}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="image_id"
                                       value={image.id}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="variant_id"
                                       value={assignment.variant_id}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="direction"
@@ -1976,10 +1909,9 @@ export default function ImageManager({
                                         configurationIndex >=
                                         configurationImages.length - 1
                                       }
-                                      aria-label={`Move image later in ${configurationLabel}`}
-                                      className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+                                      aria-label={`Move image later in ${label}`}
                                     >
-                                      <ArrowRight className="h-3.5 w-3.5" />
+                                      <ArrowRight />
                                     </button>
                                   </form>
 
@@ -1996,13 +1928,11 @@ export default function ImageManager({
                                       name="product_id"
                                       value={productId}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="image_id"
                                       value={image.id}
                                     />
-
                                     <input
                                       type="hidden"
                                       name="variant_id"
@@ -2012,63 +1942,65 @@ export default function ImageManager({
                                     <button
                                       type="submit"
                                       disabled={assignment.is_primary}
-                                      aria-label={`Set as Main for ${configurationLabel}`}
-                                      className="flex h-9 w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.05] hover:text-emerald-300 disabled:cursor-default disabled:border-emerald-400/25 disabled:bg-emerald-400/[0.05] disabled:text-emerald-300"
+                                      aria-label={`Set as Main for ${label}`}
+                                      className={
+                                        assignment.is_primary
+                                          ? "is-main"
+                                          : undefined
+                                      }
                                     >
-                                      <Star
-                                        className={`h-3.5 w-3.5 ${
-                                          assignment.is_primary
-                                            ? "fill-current"
-                                            : ""
-                                        }`}
-                                      />
+                                      <Star />
                                     </button>
                                   </form>
                                 </div>
-                              </div>
+                              </section>
                             );
                           })}
                         </div>
-                      )}
+                      </details>
+                    )}
 
-                      <form
-                        action={deleteProductImage}
-                        onSubmit={(event) => {
-                          const confirmed = window.confirm(
-                            "Delete this image permanently?",
-                          );
+                    <form
+                      action={deleteProductImage}
+                      onSubmit={(event) => {
+                        const confirmed = window.confirm(
+                          "Delete this image permanently?",
+                        );
 
-                          if (!confirmed) {
-                            event.preventDefault();
-                          }
-                        }}
+                        if (!confirmed) {
+                          event.preventDefault();
+                        }
+                      }}
+                    >
+                      <input
+                        type="hidden"
+                        name="product_id"
+                        value={productId}
+                      />
+                      <input
+                        type="hidden"
+                        name="image_id"
+                        value={image.id}
+                      />
+
+                      <button
+                        type="submit"
+                        aria-label="Delete image"
+                        title="Delete image"
+                        className="st-admin-existing-media-v2__delete"
                       >
-                        <input
-                          type="hidden"
-                          name="product_id"
-                          value={productId}
-                        />
-
-                        <input type="hidden" name="image_id" value={image.id} />
-
-                        <button
-                          type="submit"
-                          aria-label="Delete image"
-                          title="Delete image"
-                          className="flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-red-400/20 bg-red-400/[0.025] px-3 text-[9px] font-semibold uppercase tracking-[0.13em] text-red-300/65 transition hover:border-red-400/40 hover:bg-red-400/[0.07] hover:text-red-300"
-                        >
-                          <Trash2 className="h-3.5 w-3.5 shrink-0" />
-                          <span>Delete image</span>
-                        </button>
-                      </form>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
+                        <Trash2 />
+                        <span>Delete image</span>
+                      </button>
+                    </form>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
+
 }

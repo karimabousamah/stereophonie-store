@@ -572,27 +572,6 @@ export default function V3EntertainmentCategory({
               ================================================== */}
 
           <div className="st-entertainment-cinema__selector-wrap">
-              <button
-                type="button"
-                className="st-carousel-nav-arrow st-carousel-nav-arrow--previous"
-                onClick={() => select(activeIndex - 1)}
-                aria-label="Previous movie or series"
-                title="Previous"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="M15 18 9 12l6-6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
 
                         <div
                           className="st-entertainment-cinema__selector st3-hero-carousel__dots"
@@ -620,28 +599,6 @@ export default function V3EntertainmentCategory({
                             </button>
                           ))}
                         </div>
-
-              <button
-                type="button"
-                className="st-carousel-nav-arrow st-carousel-nav-arrow--next"
-                onClick={() => select(activeIndex + 1)}
-                aria-label="Next movie or series"
-                title="Next"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="m9 18 6-6-6-6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
 
                       </div>
 

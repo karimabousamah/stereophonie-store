@@ -27,6 +27,13 @@ import ElectronicsVariantEditor, {
   type AdminElectronicsVariant,
 } from "@/components/admin/products/electronics-variant-editor";
 
+import {
+  ProductCard,
+  ProductSidebarCard,
+  ProductWorkspace,
+} from "@/components/admin/products/v2/product-workspace";
+import ProductSaveBar from "@/components/admin/products/v2/product-save-bar";
+
 import { deleteProduct, updateProduct } from "./actions";
 
 type AvailabilityStatus =
@@ -39,6 +46,7 @@ type ExistingVariant = {
   display_position: number | null;
   attributes: Record<string, string> | null;
   sku: string | null;
+  barcode: string | null;
   regular_price: number | null;
   sale_price: number | null;
   stock_quantity: number;
@@ -59,6 +67,7 @@ function createInitialVariants(
         display_position: 0,
         attributes: {},
         sku: "",
+        barcode: "",
         regular_price: "",
         sale_price: "",
         stock_quantity: 0,
@@ -76,6 +85,7 @@ function createInitialVariants(
     attributes: variant.attributes ?? {},
     sku: variant.sku ?? "",
 
+    barcode: variant.barcode ?? "",
     regular_price:
       variant.regular_price === null || variant.regular_price === undefined
         ? ""
@@ -90,32 +100,6 @@ function createInitialVariants(
     low_stock_threshold: variant.low_stock_threshold ?? 2,
     availability_status: variant.availability_status,
   }));
-}
-
-function SectionHeader({
-  number,
-  title,
-  description,
-}: {
-  number: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex gap-3 border-b border-white/10 px-5 py-4">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.035] text-[10px] font-semibold text-white/40">
-        {number}
-      </span>
-
-      <div>
-        <h2 className="text-xl font-semibold tracking-[-0.02em]">{title}</h2>
-
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-white/35">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
 }
 
 type EditProductFormProps = {
@@ -283,8 +267,10 @@ export default function EditProductForm({
   }, [variants]);
   return (
     <div>
-      <form
+      <div className="st-admin-edit-composition-v2">
+<form
         id="st-edit-product-form"
+          className="st-admin-product-editor-form"
         action={updateProduct}
         onSubmit={(event) => {
           const form = event.currentTarget;
@@ -428,7 +414,7 @@ export default function EditProductForm({
           aria-hidden="true"
         />
 
-        {productSaveState !== "idle" && (
+        {false && (
           <div
             className="fixed inset-0 z-[9999] flex items-center justify-center px-5"
             style={{
@@ -589,6 +575,7 @@ export default function EditProductForm({
 
               attributes: variant.attributes,
               sku: variant.sku,
+              barcode: variant.barcode ?? "",
               regular_price: variant.regular_price,
               sale_price: variant.sale_price,
               stock_quantity: variant.stock_quantity,
@@ -599,7 +586,7 @@ export default function EditProductForm({
         />
 
         {errorMessage && (
-          <div className="mb-7 flex items-start gap-4 rounded-[20px] border border-red-400/30 bg-red-400/[0.07] p-5">
+          <div className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[20px] border border-red-400/30 bg-red-400/[0.07] p-5">
             <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
 
             <div>
@@ -614,23 +601,214 @@ export default function EditProductForm({
           </div>
         )}
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
-          <div className="space-y-7">
-            <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-              <SectionHeader
-                number="01"
-                title="Product information"
-                description="Update the product name, description, category and brand."
+        <ProductWorkspace
+            actionBar={
+              <ProductSaveBar
+                productName={productName}
+                isSubmitting={productSaveState !== "idle"}
+                progress={
+                  productSaveState === "idle"
+                    ? 0
+                    : productSaveState === "publish"
+                      ? 78
+                      : 68
+                }
+                statusText={
+                  productSaveState === "publish"
+                    ? "Publishing changes..."
+                    : productSaveState === "setup"
+                      ? "Saving changes..."
+                      : productSaveState === "draft"
+                        ? "Saving draft..."
+                        : product.status === "published"
+                          ? "Published product"
+                          : "Draft product"
+                }
+                onDraft={() => undefined}
+                onPublish={() => undefined}
+                formId="st-edit-product-form"
               />
+            }
+            sidebar={
+              <>
+                <ProductSidebarCard title="Status">
+                  <div className="st-admin-product-status-summary-v2">
+                    <span
+                      className={`st-admin-product-status-summary-v2__dot ${
+                        product.status === "published"
+                          ? "is-published"
+                          : "is-draft"
+                      }`}
+                    />
 
-              <div className="space-y-5 p-5">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                  >
-                    Product name
-                  </label>
+                    <div>
+                      <strong>
+                        {product.status === "published"
+                          ? "Published"
+                          : product.status === "archived"
+                            ? "Archived"
+                            : "Draft"}
+                      </strong>
+
+                      <small>
+                        Use Save draft or Publish live in the fixed header.
+                      </small>
+                    </div>
+                  </div>
+                </ProductSidebarCard>
+
+                <ProductSidebarCard title="Product organization">
+                  <div className="st-admin-product-sidebar-stack-v2 st-admin-product-organization-v2">
+                    <div>
+                      <label className="st-admin-product-sidebar-label-v2">
+                        Brand
+                      </label>
+
+                      <ProductBrandPicker
+                        brands={brands}
+                        defaultValue={product.brandId}
+                        onBrandChange={(brand) => {
+                          setSelectedBrandName(
+                            brand?.name ?? "",
+                          );
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="st-admin-product-sidebar-label-v2">
+                        Category
+                      </label>
+
+                      <ProductCategoryPicker
+                        categories={categories}
+                        defaultValue={product.categoryId}
+                        onCategoryChange={(category) => {
+                          const nextCategoryId =
+                            category?.id ?? "";
+
+                          setSelectedCategoryId(
+                            nextCategoryId,
+                          );
+
+                          setSelectedCategoryName(
+                            category?.name ?? "",
+                          );
+
+                          if (
+                            nextCategoryId !==
+                            selectedCategoryId
+                          ) {
+                            setSelectedSubcategoryId("");
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                </ProductSidebarCard>
+
+                <ProductSidebarCard title="Store placement">
+                  <div className="st-admin-placement-compact-v2 st-admin-product-placement-v2">
+                    <label className="st-admin-placement-compact-v2__row">
+                      <span>
+                        <strong>Featured</strong>
+                        <small>
+                          Prioritize this product in featured storefront areas.
+                        </small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        key={`featured-${productOutOfStock}`}
+                        name="is_featured"
+                        disabled={productOutOfStock}
+                        defaultChecked={
+                          productOutOfStock
+                            ? false
+                            : product.isFeatured
+                        }
+                      />
+                    </label>
+
+                    <label className="st-admin-placement-compact-v2__row">
+                      <span>
+                        <strong>Trending</strong>
+                        <small>
+                          Include it in highlighted and trending selections.
+                        </small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        key={`trending-${productOutOfStock}`}
+                        name="is_trending"
+                        disabled={productOutOfStock}
+                        defaultChecked={
+                          productOutOfStock
+                            ? false
+                            : product.isTrending
+                        }
+                      />
+                    </label>
+
+                    <label className="st-admin-placement-compact-v2__row">
+                      <span>
+                        <strong>New arrival</strong>
+                        <small>
+                          Present this product as recently added.
+                        </small>
+                      </span>
+
+                      <input
+                        type="checkbox"
+                        key={`new-arrival-${productOutOfStock}`}
+                        name="is_new_arrival"
+                        disabled={productOutOfStock}
+                        defaultChecked={
+                          productOutOfStock
+                            ? false
+                            : product.isNewArrival
+                        }
+                      />
+                    </label>
+
+                    {productOutOfStock ? (
+                      <p className="st-admin-placement-compact-v2__note">
+                        Store placement is disabled while every sellable
+                        configuration is unavailable.
+                      </p>
+                    ) : null}
+                  </div>
+                </ProductSidebarCard>
+
+                <ProductSidebarCard title="Summary">
+                  <dl className="st-admin-product-summary-v2">
+                    <div>
+                      <dt>Configurations</dt>
+                      <dd>{variants.length}</dd>
+                    </div>
+
+                    <div>
+                      <dt>Available</dt>
+                      <dd>{availableConfigurations}</dd>
+                    </div>
+
+                    <div>
+                      <dt>Total stock</dt>
+                      <dd>{totalStock}</dd>
+                    </div>
+                  </dl>
+                </ProductSidebarCard>
+              </>
+            }
+          >
+            <ProductCard
+              title="Product information"
+              description="Edit the customer-facing product information and specifications."
+            >
+              <div className="st-admin-product-information-v2">
+                <label className="st-admin-product-field-v2">
+                  <span>Title</span>
 
                   <input
                     id="name"
@@ -638,373 +816,105 @@ export default function EditProductForm({
                     type="text"
                     required
                     value={productName}
-                    onChange={(event) => setProductName(event.target.value)}
-                    className="mt-3 w-full border border-white/10 bg-black/30 px-4 py-4 text-white outline-none transition focus:border-white/55"
+                    onChange={(event) =>
+                      setProductName(
+                        event.target.value,
+                      )
+                    }
                   />
-                </div>
+                </label>
 
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                  >
-                    Description
-                  </label>
+                <label className="st-admin-product-field-v2">
+                  <span>Description</span>
 
                   <textarea
                     id="description"
                     name="description"
-                    rows={7}
+                    rows={6}
                     defaultValue={product.description}
                     placeholder="Describe the product."
-                    className="mt-3 w-full resize-y border border-white/10 bg-black/30 px-4 py-4 leading-7 text-white outline-none transition placeholder:text-white/20 focus:border-white/55"
+                  className="st-admin-product-description-focus-real"
+                  onFocus={(event) => {
+                    const field = event.currentTarget;
+
+                    field.style.setProperty("border-color", "#202223", "important");
+                    field.style.setProperty(
+                      "box-shadow",
+                      "0 0 0 1px #202223",
+                      "important",
+                    );
+                    field.style.setProperty("outline", "none", "important");
+                  }}
+                  onBlur={(event) => {
+                    const field = event.currentTarget;
+
+                    field.style.removeProperty("border-color");
+                    field.style.removeProperty("box-shadow");
+                    field.style.removeProperty("outline");
+                  }}
                   />
-                </div>
+                </label>
 
                 <div
                   id="st-product-information-specifications"
                   data-admin-product-specifications-target="true"
                 />
-
-                <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 md:items-start">
-                  <div className="min-w-0">
-                    <label
-                      htmlFor="brand"
-                      className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                    >
-                      Brand
-                    </label>
-
-                    <ProductBrandPicker
-                      brands={brands}
-                      defaultValue={product.brandId}
-                      onBrandChange={(brand) =>
-                        setSelectedBrandName(brand?.name ?? "")
-                      }
-                    />
-                  </div>
-
-                  <div className="min-w-0">
-                    <label
-                      htmlFor="category"
-                      className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                    >
-                      Category
-                    </label>
-
-                    <ProductCategoryPicker
-                      categories={categories}
-                      defaultValue={product.categoryId}
-                      onCategoryChange={(category) => {
-                        const nextCategoryId = category?.id ?? "";
-
-                        setSelectedCategoryId(nextCategoryId);
-                        setSelectedCategoryName(category?.name ?? "");
-
-                        if (nextCategoryId !== selectedCategoryId) {
-                          setSelectedSubcategoryId("");
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
               </div>
-            </section>
+            </ProductCard>
 
-            <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-              <SectionHeader
-                number="02"
-                title="Product configurations"
-                description="Manage every sellable electronics configuration, its technical attributes, SKU, stock and availability."
+
+
+            <ProductCard
+              title="Configurations"
+              description="Manage options, pricing, inventory, SKU, barcode and availability."
+            >
+              <div id="inventory" />
+
+              <ElectronicsVariantEditor
+                variants={variants}
+                onChange={setVariants}
+                categoryName={selectedCategoryName}
+                brandName={selectedBrandName}
+                saveExistingConfigurationIntent={
+                  product.status === "published"
+                    ? "publish"
+                    : "draft"
+                }
               />
-
-              <div className="p-5">
-                <div id="inventory" className="scroll-mt-[110px]" />
-
-                <ElectronicsVariantEditor
-                  variants={variants}
-                  onChange={setVariants}
-                  categoryName={selectedCategoryName}
-                  brandName={selectedBrandName}
-                  saveExistingConfigurationIntent={
-                    product.status === "published" ? "publish" : "draft"
-                  }
-                />
-              </div>
-            </section>
-
-            <section className="st-admin-store-placement overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-              <SectionHeader
-                number="03"
-                title="Store placement"
-                description="Choose where this product should receive extra visibility in the storefront."
-              />
-
-              <div className="st-admin-placement-grid">
-                <label className="st-admin-placement-card">
-                  <input
-                    type="checkbox"
-                    key={`featured-${productOutOfStock}`}
-                    name="is_featured"
-                    disabled={productOutOfStock}
-                    defaultChecked={
-                      productOutOfStock ? false : product.isFeatured
-                    }
-                    className="sr-only"
-                  />
-
-                  <span className="st-admin-placement-card__surface">
-                    <span className="st-admin-placement-card__icon">
-                      <Star className="h-5 w-5" />
-                    </span>
-
-                    <span className="st-admin-placement-card__copy">
-                      <strong>Featured</strong>
-                      <small>
-                        Give this product priority in featured storefront areas.
-                      </small>
-                    </span>
-                  </span>
-                </label>
-
-                <label className="st-admin-placement-card">
-                  <input
-                    type="checkbox"
-                    key={`trending-${productOutOfStock}`}
-                    name="is_trending"
-                    disabled={productOutOfStock}
-                    defaultChecked={
-                      productOutOfStock ? false : product.isTrending
-                    }
-                    className="sr-only"
-                  />
-
-                  <span className="st-admin-placement-card__surface">
-                    <span className="st-admin-placement-card__icon">
-                      <TrendingUp className="h-5 w-5" />
-                    </span>
-
-                    <span className="st-admin-placement-card__copy">
-                      <strong>Trending</strong>
-                      <small>
-                        Include this product in highlighted and trending
-                        selections.
-                      </small>
-                    </span>
-                  </span>
-                </label>
-
-                <label className="st-admin-placement-card">
-                  <input
-                    type="checkbox"
-                    key={`new-arrival-${productOutOfStock}`}
-                    name="is_new_arrival"
-                    disabled={productOutOfStock}
-                    defaultChecked={
-                      productOutOfStock ? false : product.isNewArrival
-                    }
-                    className="sr-only"
-                  />
-
-                  <span className="st-admin-placement-card__surface">
-                    <span className="st-admin-placement-card__icon">
-                      <Diamond className="h-5 w-5" />
-                    </span>
-
-                    <span className="st-admin-placement-card__copy">
-                      <strong>New arrival</strong>
-                      <small>
-                        Present this item as recently added to the catalogue.
-                      </small>
-                    </span>
-                  </span>
-                </label>
-              </div>
-            </section>
-
-            <section className="overflow-hidden rounded-[24px] border border-[#fdb73e]/25 bg-[#0d0d0d]">
-              <div className="flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
-                <div className="max-w-2xl">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
-                    Setup checkpoint
-                  </p>
-
-                  <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-white">
-                    Save product setup
-                  </h2>
-
-                  <p className="mt-2 text-sm leading-6 text-white/40">
-                    Save product information, configurations and store placement
-                    before managing images. The current Live or Draft status
-                    will stay exactly as it is.
-                  </p>
-                </div>
-
-                <button
-                  id="st-save-product-setup"
-                  type="submit"
-                  name="intent"
-                  value="setup"
-                  disabled={productSaveState !== "idle"}
-                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45 border-[#f5b335]/90 bg-[#f5b335]/10 text-[#7a4d00] shadow-[0_0_0_4px_rgba(245,179,53,0.075),0_6px_18px_rgba(196,135,27,0.055)] hover:border-[#f5b335] hover:bg-[#f5b335]/[0.13] hover:text-[#704700] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.105),0_8px_22px_rgba(196,135,27,0.075)]"
-                >
-                  <Save className="h-4 w-4" />
-                  Save product setup
-                </button>
-              </div>
-            </section>
-          </div>
-
-          <aside>
-            <section className="rounded-[18px] border border-white/10 bg-[#101010] p-5 xl:sticky xl:top-[92px]">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
-                Product summary
-              </p>
-
-              <h2 className="mt-2 text-xl font-semibold">Save changes</h2>
-
-              <div className="mt-6 space-y-3">
-                <div className="rounded-[16px] border border-white/10 bg-black/20 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.15em] text-white/30">
-                    Product
-                  </p>
-
-                  <p className="mt-2 truncate font-semibold">
-                    {productName || "Untitled product"}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-[16px] border border-white/10 bg-black/20 p-4">
-                    <p className="text-[10px] uppercase tracking-[0.13em] text-white/30">
-                      Configurations
-                    </p>
-
-                    <p className="mt-2 text-xl font-semibold">
-                      {variants.length}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[16px] border border-white/10 bg-black/20 p-4">
-                    <p className="text-[10px] uppercase tracking-[0.13em] text-white/30">
-                      Available
-                    </p>
-
-                    <p className="mt-2 text-xl font-semibold">
-                      {availableConfigurations}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[16px] border border-white/10 bg-black/20 p-4">
-                    <p className="text-[10px] uppercase tracking-[0.13em] text-white/30">
-                      Stock
-                    </p>
-
-                    <p className="mt-2 text-xl font-semibold">{totalStock}</p>
-                  </div>
-                </div>
-              </div>
-
-              {variants.length > 0 && (
-                <div className="mt-5 overflow-hidden rounded-[16px] border border-white/10 bg-black/20">
-                  <div className="border-b border-white/10 px-4 py-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/30">
-                      Configuration overview
-                    </p>
-                  </div>
-
-                  <div className="divide-y divide-white/10">
-                    {variants.map((variant, index) => (
-                      <div
-                        key={variant.clientId}
-                        className="flex items-center justify-between gap-4 px-4 py-3"
-                      >
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">
-                            {variant.variant_name.trim() ||
-                              `Configuration ${index + 1}`}
-                          </p>
-
-                          {variant.sku ? (
-                            <p className="mt-1 truncate text-[10px] uppercase tracking-[0.12em] text-white/30">
-                              SKU {variant.sku}
-                            </p>
-                          ) : null}
-                        </div>
-
-                        <p className="shrink-0 text-xs text-white/45">
-                          {variant.stock_quantity} in stock
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-7 border-t border-white/10 pt-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
-                  Publishing
-                </p>
-
-                <div className="mt-4 space-y-3">
-                  <button
-                    id="st-save-existing-product-draft"
-                    type="submit"
-                    name="intent"
-                    disabled={productSaveState !== "idle"}
-                    value="draft"
-                    className="flex w-full items-center justify-between rounded-full border border-white/15 bg-white/[0.025] px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-white transition hover:border-white hover:bg-white hover:text-black"
-                  >
-                    <span className="flex items-center gap-3">
-                      <EyeOff className="h-4 w-4" />
-                      Save as draft
-                    </span>
-
-                    <Save className="h-4 w-4" />
-                  </button>
-
-                  <button
-                    id="st-save-existing-product-publish"
-                    type="submit"
-                    name="intent"
-                    disabled={productSaveState !== "idle"}
-                    value="publish"
-                    className="flex w-full items-center justify-between rounded-full border border-emerald-300 bg-emerald-300 px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-emerald-300"
-                  >
-                    <span className="flex items-center gap-3">
-                      <Eye className="h-4 w-4" />
-                      Save and publish
-                    </span>
-
-                    <Send className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </section>
-          </aside>
-        </div>
-      </form>
+            </ProductCard>
+          </ProductWorkspace>
+        </form>
 
       {mediaManager ? (
         <div
-          id="product-images"
-          className="mt-7 scroll-mt-[110px]"
-          data-admin-product-media-section="04"
+          className="st-admin-edit-product-media-v2"
+          data-admin-edit-product-media="true"
         >
-          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="04"
-              title="Product Images"
-              description="Upload, arrange and assign images to the saved product configurations."
-            />
-
-            <div className="p-5">{mediaManager}</div>
-          </section>
+        <ProductCard
+                      title="Media"
+                      description="Manage product images, order and configuration assignment."
+                    >
+                      {mediaManager ? (
+                        <div
+                          id="product-images"
+                          data-admin-product-media-section="v2"
+                        >
+                          {mediaManager}
+                        </div>
+                      ) : (
+                        <div className="st-admin-product-media-empty-v2">
+                          No media manager is available for this product.
+                        </div>
+                      )}
+                    </ProductCard>
         </div>
       ) : null}
+      </div>
+
 
       <section
         data-admin-danger-zone="true"
+        hidden
         className="mt-7 overflow-hidden rounded-[20px] border border-red-200 bg-[#fffafa]"
       >
         <div className="border-b border-red-100 px-5 py-5 sm:px-6">

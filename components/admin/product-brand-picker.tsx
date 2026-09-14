@@ -327,7 +327,7 @@ export default function ProductBrandPicker({
       ? createPortal(
           <div
             ref={dropdownRef}
-            className="fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
+            className="st-admin-brand-picker__dropdown fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
             style={{
               top: position.top,
               left: position.left,
@@ -337,7 +337,7 @@ export default function ProductBrandPicker({
             aria-label="Choose product brand"
           >
             <div className="border-b border-black/[0.07] p-3">
-              <div className="flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
+              <div className="st-admin-brand-directory-search-v2 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
                 <Search className="h-[17px] w-[17px] shrink-0 text-black/42" />
 
                 <input
@@ -388,25 +388,6 @@ export default function ProductBrandPicker({
             </div>
 
             <div className="max-h-[330px] overflow-y-auto overscroll-contain p-2">
-              {!normalizedQuery ? (
-                <button
-                  type="button"
-                  onClick={() => chooseBrand(null)}
-                  className={`mb-1 flex min-h-[46px] w-full items-center justify-between rounded-[12px] px-3.5 text-left transition ${
-                    !selectedId
-                      ? "bg-[#fff6df] text-[#8a5900]"
-                      : "text-black/62 hover:bg-black/[0.035] hover:text-black"
-                  }`}
-                >
-                  <span className="text-[13px] font-semibold">No brand</span>
-
-                  {!selectedId ? (
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#fdb73e] text-black">
-                      <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
-                    </span>
-                  ) : null}
-                </button>
-              ) : null}
 
               {filteredBrands.length > 0 ? (
                 <div role="listbox" aria-label="Available brands">
@@ -510,79 +491,46 @@ export default function ProductBrandPicker({
       : null;
 
   return (
-    <div className="relative mt-3 w-full">
+    <div className="st-admin-brand-picker relative w-full">
       <input type="hidden" name={name} value={selectedId} />
 
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => {
-          setOpen((current) => !current);
-          setError("");
-          setCreationMessage("");
+        <button
+          ref={triggerRef}
+          type="button"
+          className={`st-admin-brand-picker__trigger ${
+            open ? "is-open" : ""
+          }`}
+          onClick={() => {
+            setOpen((current) => !current);
+            setError("");
+            setCreationMessage("");
 
-          if (!open) {
-            requestAnimationFrame(updatePosition);
-          }
-        }}
-        className={`group relative flex min-h-[52px] w-full items-center justify-between gap-4 rounded-[13px] border px-4 text-left outline-none transition ${
-          open
-            ? "border-[#d59a2e]/70 bg-white shadow-[0_0_0_4px_rgba(253,183,62,0.09),0_6px_18px_rgba(0,0,0,0.045)]"
-            : "border-black/10 bg-[#111111] text-white hover:border-white/25 hover:bg-[#151515]"
-        }`}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-      >
-        <span className="flex min-w-0 items-center gap-3">
-          <span
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
-              open
-                ? "bg-[#fdb73e] text-black"
-                : "bg-white/[0.07] text-white/55 group-hover:bg-white/[0.10] group-hover:text-white/75"
-            }`}
-          >
+            if (!open) {
+              requestAnimationFrame(updatePosition);
+            }
+          }}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+        >
+          <span className="st-admin-brand-picker__trigger-icon">
             <Search className="h-4 w-4" />
           </span>
 
-          <span className="min-w-0">
-            <small
-              className={`block text-[9px] font-semibold uppercase tracking-[0.17em] transition ${
-                open ? "text-black/38" : "text-white/28"
-              }`}
-            >
-              Brand
-            </small>
-
-            <strong
-              className={`mt-0.5 block truncate text-[13px] font-semibold ${
-                open
-                  ? "text-[#1d1d1f]"
-                  : selectedBrand
-                    ? "text-white"
-                    : "text-white/50"
-              }`}
-            >
-              {selectedBrand?.name ?? "Select brand"}
-            </strong>
+          <span className="st-admin-brand-picker__trigger-copy">
+            <small>Brand</small>
+            <strong>{selectedBrand?.name ?? "Select brand"}</strong>
           </span>
-        </span>
 
-        <ChevronDown
-          className={`h-4 w-4 shrink-0 transition duration-200 ${
-            open
-              ? "rotate-180 text-[#9a6500]"
-              : "text-white/38 group-hover:text-white/65"
-          }`}
-        />
-      </button>
+          <ChevronDown className="st-admin-brand-picker__chevron h-4 w-4" />
+        </button>
       {selectedBrand ? (
         <button
           type="button"
           onClick={() => chooseBrand(null)}
-          className="mt-2 inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/42 transition hover:border-[#fdb73e]/35 hover:bg-[#fdb73e]/[0.08] hover:text-[#f4bd55] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fdb73e]/25"
+          className="st-admin-organization-clear-chip-v2"
         >
-          <X className="h-3 w-3" />
-          Clear brand
+          <span>Clear brand</span>
+          <X aria-hidden="true" />
         </button>
       ) : null}
 

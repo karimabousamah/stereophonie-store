@@ -546,17 +546,12 @@ export async function loadShopProductBatch({
       fullError,
     );
 
-    return {
-      products: [],
-      totalProducts,
-      minimumPrice,
-      maximumPrice,
-      minimumAvailablePrice: catalogMinimumPrice,
-      maximumAvailablePrice: catalogMaximumPrice,
-      offset: safeOffset,
-      limit: safeLimit,
-      hasMore: safeOffset < totalProducts,
-    };
+    throw new Error(
+      "Stereophonie storefront catalogue is temporarily unavailable.",
+      {
+        cause: fullError,
+      },
+    );
   }
 
   const normalizedById = new Map(

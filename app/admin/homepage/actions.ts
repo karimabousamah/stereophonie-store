@@ -959,32 +959,23 @@ export async function uploadHomepageHeroMedia(formData: FormData) {
   );
 }
 
-export async function moveHomepageHeroMedia(formData: FormData) {
+export async function moveHomepageHeroMedia(
+  mediaIdInput: string,
+  directionInput: "up" | "down",
+) {
   const { supabase } = await requireAdministrator();
 
-  const combinedMove = String(
-    formData.get("hero_media_move") ?? "",
-  ).trim();
+  const mediaId = String(mediaIdInput ?? "").trim();
+  const direction = String(directionInput ?? "")
+    .trim()
+    .toLowerCase();
 
-  const separatorIndex = combinedMove.lastIndexOf(":");
-
-  const combinedId =
-    separatorIndex > 0
-      ? combinedMove.slice(0, separatorIndex).trim()
-      : "";
-
-  const combinedDirection =
-    separatorIndex > 0
-      ? combinedMove.slice(separatorIndex + 1).trim()
-      : "";
-
-  const mediaId =
-    combinedId || readHeroMediaId(formData);
-
-  const direction = (
-    combinedDirection ||
-    String(formData.get("direction") ?? "").trim()
-  ).toLowerCase();
+  if (!mediaId) {
+    redirectWithMessage(
+      "error",
+      "Hero media item could not be identified.",
+    );
+  }
 
   if (direction !== "up" && direction !== "down") {
     redirectWithMessage(

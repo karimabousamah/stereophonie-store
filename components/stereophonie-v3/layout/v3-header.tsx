@@ -352,7 +352,8 @@ export function V3Header() {
               title="Store location"
               onMouseEnter={closePanel}
               onFocus={closePanel}
-            >
+      data-store-location-cta="true"
+    >
               <VisitUsIcon />
               <span>Store location</span>
             </a>

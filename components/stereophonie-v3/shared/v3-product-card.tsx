@@ -222,7 +222,6 @@ export default function V3ProductCard({ product }: { product: V3Product }) {
             height={640}
             sizes="(max-width: 560px) 50vw, (max-width: 900px) 33vw, (max-width: 1400px) 25vw, 320px"
             quality={75}
-            unoptimized={Boolean(image.storefront_image_url)}
             loading="lazy"
           />
         ) : (

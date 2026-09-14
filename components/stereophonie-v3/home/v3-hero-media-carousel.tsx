@@ -649,27 +649,6 @@ export default function V3HeroMediaCarousel({
 
       {count > 1 ? (
         <div className="st3-hero-carousel__controls">
-          <button
-            type="button"
-            className="st-carousel-nav-arrow st-carousel-nav-arrow--previous"
-            onClick={() => prepare(selectedIndex - 1)}
-            aria-label="Previous hero media"
-            title="Previous"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path
-                d="M15 18 9 12l6-6"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
 
           <div
             className="st3-hero-carousel__dots"
@@ -697,28 +676,6 @@ export default function V3HeroMediaCarousel({
             />
             ))}
           </div>
-
-          <button
-            type="button"
-            className="st-carousel-nav-arrow st-carousel-nav-arrow--next"
-            onClick={() => prepare(selectedIndex + 1)}
-            aria-label="Next hero media"
-            title="Next"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path
-                d="m9 18 6-6-6-6"
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
 
         </div>
       ) : null}

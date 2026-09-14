@@ -27,6 +27,13 @@ import ElectronicsVariantEditor, {
   type AdminElectronicsVariant,
 } from "@/components/admin/products/electronics-variant-editor";
 
+import ProductSaveBar from "@/components/admin/products/v2/product-save-bar";
+import {
+  ProductCard,
+  ProductSidebarCard,
+  ProductWorkspace,
+} from "@/components/admin/products/v2/product-workspace";
+
 type Category = {
   id: string;
   name: string;
@@ -52,6 +59,7 @@ function createInitialVariants(): AdminElectronicsVariant[] {
       display_position: 0,
       attributes: {},
       sku: "",
+      barcode: "",
       regular_price: "",
       sale_price: "",
       stock_quantity: 0,
@@ -93,7 +101,6 @@ export default function ProductForm({
   errorMessage,
 }: ProductFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
-  const allowServerSubmissionRef = useRef(false);
   const directUploadedImagesInputRef = useRef<HTMLInputElement>(null);
 
   /*
@@ -284,13 +291,285 @@ export default function ProductForm({
     setSubmissionPhase("stopping");
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    const form = event.currentTarget;
 
-    if (allowServerSubmissionRef.current) {
-      allowServerSubmissionRef.current = false;
+  function clearProductValidation() {
+    const form = formRef.current;
+
+    if (!form) {
       return;
     }
+
+    form
+      .querySelectorAll<HTMLElement>(
+        "[data-admin-validation-error]",
+      )
+      .forEach((element) => {
+        element.removeAttribute(
+          "data-admin-validation-error",
+        );
+
+        element.classList.remove(
+          "st-admin-validation-invalid-v2",
+        );
+      });
+  }
+
+  function markProductValidation(
+    selector: string,
+    message: string,
+  ) {
+    const form = formRef.current;
+
+    if (!form) {
+      return null;
+    }
+
+    const target =
+      form.querySelector<HTMLElement>(
+        selector,
+      );
+
+    if (!target) {
+      return null;
+    }
+
+    target.setAttribute(
+      "data-admin-validation-error",
+      message,
+    );
+
+    target.classList.add(
+      "st-admin-validation-invalid-v2",
+    );
+
+    return target;
+  }
+
+  function focusValidationTarget(
+    target: HTMLElement | null,
+  ) {
+    if (!target) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      const focusable =
+        target.matches(
+          "input, textarea, select, button",
+        )
+          ? target
+          : target.querySelector<HTMLElement>(
+              "input, textarea, select, button",
+            );
+
+      focusable?.focus({
+        preventScroll: true,
+      });
+    });
+  }
+
+  function validateProductBeforeSubmission(
+    intent: "draft" | "publish",
+  ) {
+    clearProductValidation();
+
+    let firstInvalid: HTMLElement | null =
+      null;
+
+    const register = (
+      selector: string,
+      message: string,
+    ) => {
+      const target =
+        markProductValidation(
+          selector,
+          message,
+        );
+
+      if (!firstInvalid && target) {
+        firstInvalid = target;
+      }
+    };
+
+    if (!productName.trim()) {
+      register(
+        "#name",
+        intent === "publish"
+          ? "Enter a product title before publishing."
+          : "Enter a product title before saving this draft.",
+      );
+    }
+
+    if (!selectedCategoryId) {
+      register(
+        ".st-admin-category-picker",
+        intent === "publish"
+          ? "Select a category before publishing."
+          : "Select a category before saving this draft.",
+      );
+    }
+
+    if (variants.length === 0) {
+      register(
+        ".st-admin-config-table-section-v2",
+        "Create at least one product configuration.",
+      );
+    }
+
+    if (
+      intent === "publish" &&
+      variants.length > 0
+    ) {
+      const validAvailability = new Set([
+        "in_stock",
+        "low_stock",
+        "out_of_stock",
+        "coming_soon",
+      ]);
+
+      for (
+        let index = 0;
+        index < variants.length;
+        index += 1
+      ) {
+        const variant = variants[index];
+
+        const label =
+          variant.variant_name.trim() ||
+          `Configuration ${index + 1}`;
+
+        if (
+          !validAvailability.has(
+            String(
+              variant.availability_status,
+            ),
+          )
+        ) {
+          register(
+            ".st-admin-config-table-section-v2",
+            `Choose customer availability for ${label}.`,
+          );
+          break;
+        }
+
+        const regularPrice =
+          Number(variant.regular_price);
+
+        if (
+          variant.availability_status !==
+            "coming_soon" &&
+          (!Number.isFinite(regularPrice) ||
+            regularPrice <= 0)
+        ) {
+          register(
+            ".st-admin-config-table-section-v2",
+            `Enter a valid regular price for ${label}.`,
+          );
+          break;
+        }
+
+        const saleText =
+          variant.sale_price === "" ||
+          variant.sale_price === null ||
+          variant.sale_price === undefined
+            ? ""
+            : String(
+                variant.sale_price,
+              ).trim();
+
+        if (saleText) {
+          const salePrice =
+            Number(saleText);
+
+          if (
+            !Number.isFinite(salePrice) ||
+            salePrice < 0
+          ) {
+            register(
+              ".st-admin-config-table-section-v2",
+              `Enter a valid sale price for ${label}.`,
+            );
+            break;
+          }
+
+          if (
+            Number.isFinite(
+              regularPrice,
+            ) &&
+            regularPrice > 0 &&
+            salePrice >= regularPrice
+          ) {
+            register(
+              ".st-admin-config-table-section-v2",
+              `The sale price for ${label} must be lower than its regular price.`,
+            );
+            break;
+          }
+        }
+
+        const stock =
+          Number(
+            variant.stock_quantity,
+          );
+
+        const lowStock =
+          Number(
+            variant.low_stock_threshold,
+          );
+
+        if (
+          !Number.isFinite(stock) ||
+          stock < 0
+        ) {
+          register(
+            ".st-admin-config-table-section-v2",
+            `Enter a valid stock quantity for ${label}.`,
+          );
+          break;
+        }
+
+        if (
+          !Number.isFinite(lowStock) ||
+          lowStock < 0
+        ) {
+          register(
+            ".st-admin-config-table-section-v2",
+            `Enter a valid low-stock threshold for ${label}.`,
+          );
+          break;
+        }
+      }
+
+      if (
+        !placementSelection.featured &&
+        !placementSelection.trending &&
+        !placementSelection.newArrival
+      ) {
+        register(
+          ".st-admin-product-placement-v2",
+          "Select at least one store placement before publishing.",
+        );
+      }
+    }
+
+    if (firstInvalid) {
+      focusValidationTarget(
+        firstInvalid,
+      );
+
+      return false;
+    }
+
+    return true;
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const form = event.currentTarget;
 
     const nativeEvent = event.nativeEvent as SubmitEvent;
 
@@ -321,6 +600,15 @@ export default function ProductForm({
     event.preventDefault();
 
     if (isSubmitting) {
+      return;
+    }
+
+    if (
+      !validateProductBeforeSubmission(
+        submissionIntent,
+      )
+    ) {
+      setSubmissionError("");
       return;
     }
 
@@ -433,9 +721,24 @@ export default function ProductForm({
        * existing Next.js Server Action. The Stop control is therefore
        * disabled rather than pretending a database request can be undone.
        */
-      allowServerSubmissionRef.current = true;
+      const serverFormData =
+        new FormData(form);
 
-      form.requestSubmit(submitter ?? undefined);
+      const result =
+        await createProduct(
+          serverFormData,
+        );
+
+      if (!result.ok) {
+        setSubmissionError(
+          result.error,
+        );
+
+        resetSubmissionExperience();
+        return;
+      }
+
+      resetSubmissionExperience();
     } catch (error) {
       /*
        * Next.js Server Actions implement redirect() by throwing
@@ -526,10 +829,15 @@ export default function ProductForm({
   })();
 
   return (
-    <form ref={formRef} action={createProduct} onSubmit={handleSubmit}>
-      {isSubmitting && (
+    <form
+      id="st-admin-new-product-form"
+          className="st-admin-product-editor-form"
+      ref={formRef}
+      onSubmit={handleSubmit}
+    >
+      {false && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/70 px-5 backdrop-blur-md"
+          className="st-admin-product-submission-overlay fixed inset-0 z-[100] flex items-center justify-center bg-white/70 px-5 backdrop-blur-md"
           aria-live="polite"
           aria-busy="true"
         >
@@ -665,6 +973,7 @@ export default function ProductForm({
             display_position: Number(variant.display_position ?? 0),
             attributes: variant.attributes,
             sku: variant.sku,
+            barcode: variant.barcode ?? "",
             regular_price: variant.regular_price,
             sale_price: variant.sale_price,
             stock_quantity: variant.stock_quantity,
@@ -676,81 +985,78 @@ export default function ProductForm({
       />
 
       {(errorMessage || submissionError) && (
-        <div className="mb-7 flex items-start gap-4 rounded-2xl border border-red-400/30 bg-red-400/[0.07] p-5">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
+        <div
+          className="st-admin-product-error-v2"
+          role="alert"
+        >
+          <AlertCircle
+            aria-hidden="true"
+          />
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-red-300">
+            <strong>
               Product not saved
-            </p>
+            </strong>
 
-            <p className="mt-2 text-sm leading-6 text-white/65">
-              {submissionError || errorMessage}
+            <p>
+              {submissionError ||
+                errorMessage}
             </p>
           </div>
         </div>
       )}
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
-        <div className="space-y-7">
-          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="01"
-              title="Product information"
-              description="Add the essential product details, category and manufacturer."
-            />
+      <ProductWorkspace
+        actionBar={
+          <ProductSaveBar
+            productName={productName}
+            isSubmitting={isSubmitting}
+            progress={processingPercentage}
+            statusText={
+              submissionPhase === "uploading"
+                ? uploadFileName
+                  ? `Preparing ${uploadFileName}`
+                  : "Preparing product media"
+                : pendingIntentRef.current === "publish"
+                  ? "Publishing product"
+                  : "Saving draft"
+            }
+            onDraft={() => {
+              pendingIntentRef.current = "draft";
 
-            <div className="space-y-5 p-5">
-              <div>
-                <label
-                  htmlFor="name"
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                >
-                  Product name
-                </label>
+              if (resolvedIntentInputRef.current) {
+                resolvedIntentInputRef.current.value = "draft";
+              }
+            }}
+            onPublish={() => {
+              pendingIntentRef.current = "publish";
 
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={productName}
-                  onChange={(event) => setProductName(event.target.value)}
-                  placeholder="Galaxy S26 Ultra"
-                  className="mt-3 w-full border border-white/10 bg-black/30 px-4 py-4 text-white outline-none transition placeholder:text-white/20 focus:border-white/55"
-                />
+              if (resolvedIntentInputRef.current) {
+                resolvedIntentInputRef.current.value = "publish";
+              }
+            }}
+          />
+        }
+        sidebar={
+          <>
+            <ProductSidebarCard title="Status">
+              <div className="st-admin-product-status-v2">
+                <span />
+
+                <div>
+                  <strong>Draft</strong>
+                  <p>
+                    Hidden from customers until this product is
+                    published successfully.
+                  </p>
+                </div>
               </div>
+            </ProductSidebarCard>
 
-              <div>
-                <label
-                  htmlFor="description"
-                  className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                >
-                  Description
-                </label>
-
-                <textarea
-                  id="description"
-                  name="description"
-                  rows={7}
-                  placeholder="Describe the key specifications, compatibility, warranty and what is included."
-                  className="mt-3 w-full resize-y border border-white/10 bg-black/30 px-4 py-4 leading-7 text-white outline-none transition placeholder:text-white/20 focus:border-white/55"
-                />
-              </div>
-
-              <div
-                id="st-product-information-specifications"
-                data-admin-product-specifications-target="true"
-              />
-
-              <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 md:items-start">
-                <div className="min-w-0">
-                  <label
-                    htmlFor="brand"
-                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                  >
-                    Brand
-                  </label>
+            <ProductSidebarCard title="Product organization">
+              <div className="st-admin-product-organization-v2">
+                <div>
+                  <label>Brand</label>
 
                   <ProductBrandPicker
                     brands={brands}
@@ -760,13 +1066,8 @@ export default function ProductForm({
                   />
                 </div>
 
-                <div className="min-w-0">
-                  <label
-                    htmlFor="category"
-                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em] text-white/55"
-                  >
-                    Category
-                  </label>
+                <div>
+                  <label>Category</label>
 
                   <ProductCategoryPicker
                     categories={categories}
@@ -778,414 +1079,197 @@ export default function ProductForm({
                   />
                 </div>
               </div>
-            </div>
-          </section>
+            </ProductSidebarCard>
 
-          <section className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="02"
-              title="Product configurations"
-              description="Create every sellable version of this product and define its technical specifications, SKU, stock and availability."
-            />
+            <ProductSidebarCard title="Store placement">
+              <div className="st-admin-product-placement-v2">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="is_featured"
+                    disabled={productOutOfStock}
+                    checked={
+                      productOutOfStock
+                        ? false
+                        : placementSelection.featured
+                    }
+                    onChange={(event) =>
+                      setPlacementSelection((current) => ({
+                        ...current,
+                        featured: event.target.checked,
+                      }))
+                    }
+                  />
 
-            <div className="p-5">
-              <ElectronicsVariantEditor
-                variants={variants}
-                onChange={setVariants}
-                categoryName={selectedCategoryName}
-                brandName={selectedBrandName}
-              />
-            </div>
-          </section>
-
-          <section className="st-admin-store-placement overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]">
-            <SectionHeader
-              number="03"
-              title="Store placement"
-              description="Choose where this product should receive extra visibility in the storefront."
-            />
-
-            <div className="st-admin-placement-grid">
-              <label className="st-admin-placement-card">
-                <input
-                  type="checkbox"
-                  name="is_featured"
-                  disabled={productOutOfStock}
-                  checked={
-                    productOutOfStock ? false : placementSelection.featured
-                  }
-                  onChange={(event) =>
-                    setPlacementSelection((current) => ({
-                      ...current,
-                      featured: event.target.checked,
-                    }))
-                  }
-                  className="sr-only"
-                />
-
-                <span
-                  className={`st-admin-placement-card__surface ${
-                    !productOutOfStock && placementSelection.featured
-                      ? "is-selected"
-                      : ""
-                  }`}
-                >
-                  <span className="st-admin-placement-card__icon">
-                    <Star className="h-5 w-5" />
-                  </span>
-
-                  <span className="st-admin-placement-card__copy">
+                  <span>
                     <strong>Featured</strong>
                     <small>
-                      Give this product priority in featured storefront areas.
+                      Priority placement in featured areas.
                     </small>
                   </span>
-                </span>
-              </label>
+                </label>
 
-              <label className="st-admin-placement-card">
-                <input
-                  type="checkbox"
-                  name="is_trending"
-                  disabled={productOutOfStock}
-                  checked={
-                    productOutOfStock ? false : placementSelection.trending
-                  }
-                  onChange={(event) =>
-                    setPlacementSelection((current) => ({
-                      ...current,
-                      trending: event.target.checked,
-                    }))
-                  }
-                  className="sr-only"
-                />
+                <label>
+                  <input
+                    type="checkbox"
+                    name="is_trending"
+                    disabled={productOutOfStock}
+                    checked={
+                      productOutOfStock
+                        ? false
+                        : placementSelection.trending
+                    }
+                    onChange={(event) =>
+                      setPlacementSelection((current) => ({
+                        ...current,
+                        trending: event.target.checked,
+                      }))
+                    }
+                  />
 
-                <span
-                  className={`st-admin-placement-card__surface ${
-                    !productOutOfStock && placementSelection.trending
-                      ? "is-selected"
-                      : ""
-                  }`}
-                >
-                  <span className="st-admin-placement-card__icon">
-                    <TrendingUp className="h-5 w-5" />
-                  </span>
-
-                  <span className="st-admin-placement-card__copy">
+                  <span>
                     <strong>Trending</strong>
                     <small>
-                      Include this product in highlighted and trending
-                      selections.
+                      Include in highlighted selections.
                     </small>
                   </span>
-                </span>
-              </label>
+                </label>
 
-              <label className="st-admin-placement-card">
-                <input
-                  type="checkbox"
-                  name="is_new_arrival"
-                  disabled={productOutOfStock}
-                  checked={
-                    productOutOfStock ? false : placementSelection.newArrival
-                  }
-                  onChange={(event) =>
-                    setPlacementSelection((current) => ({
-                      ...current,
-                      newArrival: event.target.checked,
-                    }))
-                  }
-                  className="sr-only"
-                />
+                <label>
+                  <input
+                    type="checkbox"
+                    name="is_new_arrival"
+                    disabled={productOutOfStock}
+                    checked={
+                      productOutOfStock
+                        ? false
+                        : placementSelection.newArrival
+                    }
+                    onChange={(event) =>
+                      setPlacementSelection((current) => ({
+                        ...current,
+                        newArrival: event.target.checked,
+                      }))
+                    }
+                  />
 
-                <span
-                  className={`st-admin-placement-card__surface ${
-                    !productOutOfStock && placementSelection.newArrival
-                      ? "is-selected"
-                      : ""
-                  }`}
-                >
-                  <span className="st-admin-placement-card__icon">
-                    <Diamond className="h-5 w-5" />
-                  </span>
-
-                  <span className="st-admin-placement-card__copy">
+                  <span>
                     <strong>New arrival</strong>
                     <small>
-                      Present this item as recently added to the catalogue.
+                      Mark the product as recently added.
                     </small>
                   </span>
-                </span>
-              </label>
-            </div>
-          </section>
-
-          <section className="overflow-hidden rounded-[24px] border border-[#fdb73e]/25 bg-[#0d0d0d]">
-            <div className="flex flex-col gap-5 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-2xl">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fdb73e]">
-                  Setup checkpoint
-                </p>
-
-                <h2 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-white">
-                  Save product setup
-                </h2>
-
-                <p className="mt-2 text-sm leading-6 text-white/40">
-                  Save product information, configurations and store placement
-                  first. Product Images will open immediately afterward so
-                  images can be assigned to the saved configurations.
-                </p>
+                </label>
               </div>
+            </ProductSidebarCard>
 
-              <button
-                id="st-create-product-setup"
-                type="submit"
-                value="draft"
-                formNoValidate
-                disabled={isSubmitting}
-                onClick={() => {
-                  pendingIntentRef.current = "draft";
+            <ProductSidebarCard title="Summary">
+              <dl className="st-admin-product-summary-v2">
+                <div>
+                  <dt>Configurations</dt>
+                  <dd>{variants.length}</dd>
+                </div>
 
-                  if (resolvedIntentInputRef.current) {
-                    resolvedIntentInputRef.current.value = "draft";
-                  }
-                }}
-                className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-full border border-[#e2a128] bg-[#fdb73e] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.15em] text-black transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-45"
-              >
-                <Save className="h-4 w-4" />
-                Save product setup
-              </button>
-            </div>
-          </section>
+                <div>
+                  <dt>Available</dt>
+                  <dd>{availableConfigurations}</dd>
+                </div>
 
-          <section
-            id="product-images"
-            data-admin-product-media-section="04"
-            className="overflow-hidden rounded-[24px] border border-white/10 bg-[#0d0d0d]"
-          >
-            <SectionHeader
-              number="04"
-              title="Product Images"
-              description="Upload clear product images, choose the main image and arrange their order."
-            />
+                <div>
+                  <dt>Total stock</dt>
+                  <dd>{totalStock}</dd>
+                </div>
+              </dl>
+            </ProductSidebarCard>
+          </>
+        }
+      >
+        <ProductCard
+          title="Product information"
+          description="Add the core information customers need to understand this product."
+        >
+          <div className="st-admin-product-information-v2">
+            <div>
+              <label htmlFor="name">Title</label>
 
-            <div className="p-5">
-              <ImageUploader
-                disabled={isSubmitting}
-                configurations={variants.map((variant, index) => ({
-                  clientId: variant.clientId,
-                  variant_name: variant.variant_name,
-                  attributes: variant.attributes,
-                  fallbackLabel: `Configuration ${index + 1}`,
-                }))}
-                onImagesChange={handleImagesChange}
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={productName}
+                onChange={(event) =>
+                  setProductName(event.target.value)
+                }
+                placeholder="Galaxy S26 Ultra"
               />
             </div>
-          </section>
-        </div>
 
-        <aside>
-          <section className="rounded-[18px] border border-white/10 bg-[#101010] p-5 xl:sticky xl:top-[92px]">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
-              Product summary
-            </p>
+            <div>
+              <label htmlFor="description">Description</label>
 
-            <h2 className="mt-2 text-xl font-semibold">Save product</h2>
+              <textarea
+                id="description"
+                name="description"
+                rows={5}
+                placeholder="Describe the product, important specifications, compatibility, warranty and what is included."
+              className="st-admin-product-description-focus-real"
+              onFocus={(event) => {
+                const field = event.currentTarget;
 
-            <div className="mt-6 space-y-3">
-              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/30">
-                  Product
-                </p>
+                field.style.setProperty("border-color", "#202223", "important");
+                field.style.setProperty(
+                  "box-shadow",
+                  "0 0 0 1px #202223",
+                  "important",
+                );
+                field.style.setProperty("outline", "none", "important");
+              }}
+              onBlur={(event) => {
+                const field = event.currentTarget;
 
-                <p className="mt-2 truncate font-semibold">
-                  {productName || "Untitled product"}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-white/30">
-                    Configurations
-                  </p>
-
-                  <p className="mt-2 text-xl font-semibold">
-                    {variants.length}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-white/30">
-                    Available
-                  </p>
-
-                  <p className="mt-2 text-xl font-semibold">
-                    {availableConfigurations}
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-white/30">
-                    Stock
-                  </p>
-
-                  <p className="mt-2 text-xl font-semibold">{totalStock}</p>
-                </div>
-              </div>
+                field.style.removeProperty("border-color");
+                field.style.removeProperty("box-shadow");
+                field.style.removeProperty("outline");
+              }}
+              />
             </div>
 
-            {variants.length > 0 && (
-              <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
-                <div className="border-b border-white/10 px-4 py-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.17em] text-white/30">
-                    Configuration overview
-                  </p>
-                </div>
+            <div
+              id="st-product-information-specifications"
+              data-admin-product-specifications-target="true"
+            />
+          </div>
+        </ProductCard>
 
-                <div className="divide-y divide-white/10">
-                  {variants.map((variant, index) => (
-                    <div
-                      key={variant.clientId}
-                      className="flex items-center justify-between gap-4 px-4 py-3"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">
-                          {variant.variant_name.trim() ||
-                            `Configuration ${index + 1}`}
-                        </p>
+        <ProductCard
+          title="Media"
+          description="Upload product images and connect them to the correct configurations."
+        >
+          <ImageUploader
+            disabled={isSubmitting}
+            configurations={variants.map((variant, index) => ({
+              clientId: variant.clientId,
+              variant_name: variant.variant_name,
+              attributes: variant.attributes,
+              fallbackLabel: `Configuration ${index + 1}`,
+            }))}
+            onImagesChange={handleImagesChange}
+          />
+        </ProductCard>
 
-                        {variant.sku ? (
-                          <p className="mt-1 truncate text-[10px] uppercase tracking-[0.12em] text-white/30">
-                            SKU {variant.sku}
-                          </p>
-                        ) : null}
-                      </div>
-
-                      <div className="shrink-0 text-right">
-                        <p className="text-xs text-white/45">
-                          {variant.availability_status
-                            .replaceAll("_", " ")
-                            .replace(/\b\w/g, (character) =>
-                              character.toUpperCase(),
-                            )}
-                        </p>
-
-                        <p className="mt-1 text-[10px] text-white/25">
-                          Stock {variant.stock_quantity}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {isSubmitting && (
-              <div className="mt-6 rounded-2xl border border-sky-400/25 bg-sky-400/[0.06] p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-300">
-                      {pendingIntentRef.current === "draft"
-                        ? "Saving draft"
-                        : selectedImages.length > 0
-                          ? "Preparing images"
-                          : "Publishing product"}
-                    </p>
-
-                    <p className="mt-2 truncate text-xs text-white/45">
-                      {uploadFileName ||
-                        (pendingIntentRef.current === "draft"
-                          ? "Saving safely to Draft products"
-                          : selectedImages.length > 0
-                            ? "Preparing product images"
-                            : "Preparing product submission")}
-                    </p>
-                  </div>
-
-                  <p className="text-sm font-semibold text-sky-200">
-                    {uploadPercentage}%
-                  </p>
-                </div>
-
-                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10">
-                  <div
-                    className="h-full bg-sky-300 transition-[width] duration-200"
-                    style={{
-                      width: `${uploadPercentage}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="mt-7 border-t border-white/10 pt-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
-                Customer visibility
-              </p>
-
-              <div className="mt-4 space-y-3">
-                <button
-                  type="submit"
-                  value="draft"
-                  formNoValidate
-                  onClick={() => {
-                    pendingIntentRef.current = "draft";
-
-                    if (resolvedIntentInputRef.current) {
-                      resolvedIntentInputRef.current.value = "draft";
-                    }
-                  }}
-                  disabled={isSubmitting}
-                  className="group flex w-full items-center justify-between rounded-full border border-white/15 bg-white/[0.025] px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-white transition hover:border-white hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <span className="flex items-center gap-3">
-                    <EyeOff className="h-4 w-4" />
-                    Save as draft
-                  </span>
-
-                  <Save className="h-4 w-4" />
-                </button>
-
-                <button
-                  type="submit"
-                  value="publish"
-                  onClick={() => {
-                    pendingIntentRef.current = "publish";
-
-                    if (resolvedIntentInputRef.current) {
-                      resolvedIntentInputRef.current.value = "publish";
-                    }
-                  }}
-                  disabled={isSubmitting}
-                  className="group flex w-full items-center justify-between rounded-full border border-emerald-300 bg-emerald-300 px-5 py-4 text-xs font-semibold uppercase tracking-[0.17em] text-black transition hover:bg-transparent hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <span className="flex items-center gap-3">
-                    <Eye className="h-4 w-4" />
-                    Publish live
-                  </span>
-
-                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                </button>
-              </div>
-
-              <div className="mt-5 space-y-3">
-                <div className="flex gap-3 text-xs leading-5 text-white/35">
-                  <EyeOff className="mt-0.5 h-4 w-4 shrink-0" />
-
-                  <p>Draft keeps the product hidden from customers.</p>
-                </div>
-
-                <div className="flex gap-3 text-xs leading-5 text-white/35">
-                  <Send className="mt-0.5 h-4 w-4 shrink-0" />
-
-                  <p>Publish Live makes it visible on the storefront.</p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </aside>
-      </div>
+        <ProductCard
+          title="Configurations"
+          description="Manage options, pricing, inventory, SKU, availability and technical specifications."
+        >
+          <ElectronicsVariantEditor
+            variants={variants}
+            onChange={setVariants}
+            categoryName={selectedCategoryName}
+            brandName={selectedBrandName}
+          />
+        </ProductCard>
+      </ProductWorkspace>
     </form>
   );
 }

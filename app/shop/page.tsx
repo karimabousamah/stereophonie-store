@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import GamingDesktopBuilder from "@/components/storefront/gaming-desktop-builder";
+import StorefrontServiceUnavailable from "@/components/storefront/storefront-service-unavailable";
 import V2ShopPage from "@/components/stereophonie-v2/shop/v2-shop-page";
 import {
   shopSelectedAvailability,
@@ -12,6 +13,7 @@ import {
   loadShopProductBatch,
   SHOP_PRODUCTS_PER_BATCH,
 } from "@/lib/storefront-shop-loader";
+import { storefrontServiceIsAvailable } from "@/lib/storefront-service-health";
 import {
   getShopBrandFilterOptions,
   getShopCategoryFilterOptions,
@@ -116,6 +118,19 @@ export default async function ShopPage({
    * Category and brand filter metadata are independently
    * cached because they change far less often than products.
    */
+  const storefrontAvailable =
+    await storefrontServiceIsAvailable();
+
+  if (!storefrontAvailable) {
+    return (
+      <StorefrontServiceUnavailable
+        title="The shop is temporarily unavailable."
+        description="We could not load the Stereophonie catalogue right now. Please try again shortly or contact us directly on WhatsApp."
+        retryHref="/shop"
+      />
+    );
+  }
+
   const [
     initialBatch,
     categories,

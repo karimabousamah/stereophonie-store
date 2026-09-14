@@ -153,39 +153,105 @@ export async function uploadImagesBeforeProductSubmission(
   let completedBytes = 0;
 
   const uploadedPaths: string[] = [];
-  const payload: DirectUploadedImagePayload[] = [];
 
-  try {
-    for (let index = 0; index < orderedImages.length; index += 1) {
+  /*
+   * Preserve exact payload ordering even though transfers now finish
+   * independently.
+   */
+  const payload: DirectUploadedImagePayload[] =
+    new Array(orderedImages.length);
+
+  /*
+   * Per-file progress lets concurrent XHR uploads report one accurate
+   * aggregate percentage instead of jumping backwards.
+   */
+  const uploadedBytesByIndex = orderedImages.map(() => 0);
+
+  const reportAggregateProgress = (
+    index: number,
+    currentFileName: string,
+    bytesUploaded: number,
+  ) => {
+    uploadedBytesByIndex[index] = Math.max(
+      0,
+      Math.min(
+        bytesUploaded,
+        orderedImages[index]?.file.size ?? 0,
+      ),
+    );
+
+    const aggregateUploadedBytes =
+      uploadedBytesByIndex.reduce(
+        (total, value) => total + value,
+        0,
+      );
+
+    const percentage =
+      totalBytes > 0
+        ? Math.round(
+            (aggregateUploadedBytes / totalBytes) * 100,
+          )
+        : 0;
+
+    options.onProgress?.({
+      currentFileName,
+      percentage: Math.min(percentage, 100),
+    });
+  };
+
+  /*
+   * Three concurrent transfers are fast enough to remove the old
+   * one-file-at-a-time bottleneck without flooding Supabase or the
+   * administrator's upstream connection.
+   */
+  const maximumConcurrentUploads = 3;
+
+  let nextUploadIndex = 0;
+
+  async function uploadWorker() {
+    while (true) {
+      const index = nextUploadIndex;
+      nextUploadIndex += 1;
+
+      if (index >= orderedImages.length) {
+        return;
+      }
+
       const image = orderedImages[index];
 
-      const storagePath = createTemporaryProductImagePath(image.file);
+      const storagePath =
+        createTemporaryProductImagePath(image.file);
 
       await uploadProductImageDirectly({
         file: image.file,
         storagePath,
         onProgress(progress) {
-          const uploadedBytes = completedBytes + progress.bytesUploaded;
-
-          const percentage =
-            totalBytes > 0 ? Math.round((uploadedBytes / totalBytes) * 100) : 0;
-
-          options.onProgress?.({
-            currentFileName: image.file.name,
-            percentage: Math.min(percentage, 100),
-          });
+          reportAggregateProgress(
+            index,
+            image.file.name,
+            progress.bytesUploaded,
+          );
         },
       });
 
       uploadedPaths.push(storagePath);
-      completedBytes += image.file.size;
 
-      payload.push({
+      uploadedBytesByIndex[index] = image.file.size;
+
+      reportAggregateProgress(
+        index,
+        image.file.name,
+        image.file.size,
+      );
+
+      payload[index] = {
         storage_path: storagePath,
         configuration_ids: Array.from(
           new Set(
             image.configurationIds
-              .map((configurationId) => configurationId.trim())
+              .map((configurationId) =>
+                configurationId.trim(),
+              )
               .filter(Boolean),
           ),
         ),
@@ -195,7 +261,38 @@ export async function uploadImagesBeforeProductSubmission(
         position: index,
         alt_text: image.altText.trim(),
         is_primary: image.isPrimary,
-      });
+      };
+    }
+  }
+
+  try {
+    /*
+     * Wait for every worker to settle before cleanup.
+     *
+     * This matters on failure: no still-running upload can finish AFTER
+     * cleanup and leave an orphaned temporary object in storage.
+     */
+    const workerCount = Math.min(
+      maximumConcurrentUploads,
+      orderedImages.length,
+    );
+
+    const workerResults = await Promise.allSettled(
+      Array.from(
+        { length: workerCount },
+        () => uploadWorker(),
+      ),
+    );
+
+    const rejectedWorker = workerResults.find(
+      (
+        result,
+      ): result is PromiseRejectedResult =>
+        result.status === "rejected",
+    );
+
+    if (rejectedWorker) {
+      throw rejectedWorker.reason;
     }
 
     options.onProgress?.({

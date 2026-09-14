@@ -309,6 +309,7 @@ export default function V3AnnouncementBar({
             : styles.backgroundNone,
       ].join(" ")}
       aria-label="Store announcements"
+      data-announcement-background-mode={backgroundMode}
     >
       {hasMultiple && backgroundMode === "animated" ? (
         <>

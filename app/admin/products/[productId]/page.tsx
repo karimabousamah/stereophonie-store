@@ -1,11 +1,6 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
-  ArrowLeft,
   CheckCircle2,
-  Eye,
-  EyeOff,
-  PackageSearch,
 } from "lucide-react";
 
 import AdminShell from "@/components/admin/admin-shell";
@@ -34,6 +29,7 @@ type ProductVariant = {
   display_position: number | null;
   attributes: Record<string, string> | null;
   sku: string | null;
+  barcode: string | null;
   regular_price: number | null;
   sale_price: number | null;
   stock_quantity: number;
@@ -109,6 +105,7 @@ export default async function EditProductPage({
           display_position,
           attributes,
           sku,
+          barcode,
           regular_price,
           sale_price,
           stock_quantity,
@@ -214,7 +211,6 @@ export default async function EditProductPage({
 
   const setupSaved = resolvedSearchParams.setup_saved === "true";
 
-  const isLive = product.status === "published";
 
   return (
     <AdminShell
@@ -224,81 +220,12 @@ export default async function EditProductPage({
     >
       <div className="px-5 py-6 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
-          <header className="mb-8 border-b border-white/10 pb-8">
-            <Link
-              href="/admin/products"
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/40 transition hover:text-white"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to products
-            </Link>
 
-            <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <div className="flex items-center gap-3">
-                  <PackageSearch className="h-5 w-5 text-white/55" />
-
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/40">
-                    Catalogue management
-                  </p>
-                </div>
-
-                <h1 className="mt-3 max-w-4xl text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
-                  {product.name}
-                </h1>
-
-                <div className="mt-5 flex flex-wrap items-center gap-3">
-                  <span
-                    data-admin-product-status={
-                      isLive ? "published" : product.status
-                    }
-                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] ${
-                      isLive
-                        ? "border-emerald-400/25 bg-emerald-400/[0.07] text-emerald-300"
-                        : product.status === "archived"
-                          ? "border-red-400/25 bg-red-400/[0.07] text-red-300"
-                          : "border-white/10 bg-white/[0.04] text-white/50"
-                    }`}
-                  >
-                    {isLive ? (
-                      <Eye className="h-3.5 w-3.5" />
-                    ) : (
-                      <EyeOff className="h-3.5 w-3.5" />
-                    )}
-
-                    {product.status}
-                  </span>
-
-                  <span className="text-sm text-white/35">
-                    Product ID: {product.id}
-                  </span>
-                </div>
-              </div>
-
-              <div className="rounded-[18px] border border-white/10 bg-white/[0.025] px-5 py-4">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/30">
-                  Current visibility
-                </p>
-
-                <div className="mt-2 flex items-center gap-2">
-                  <span
-                    className={`h-2 w-2 rounded-full ${
-                      isLive ? "bg-emerald-400" : "bg-white/30"
-                    }`}
-                  />
-
-                  <p className="text-sm font-semibold">
-                    {isLive ? "Visible to customers" : "Hidden from customers"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </header>
 
           {savedStatus && (
             <div
               data-admin-product-success="true"
-              className="mb-7 flex items-start gap-4 rounded-[18px] border border-emerald-400/25 bg-emerald-400/[0.07] p-5"
+              className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[18px] border border-emerald-400/25 bg-emerald-400/[0.07] p-5"
             >
               <CheckCircle2 className="h-5 w-5 shrink-0 self-center text-emerald-300" />
 
@@ -319,7 +246,7 @@ export default async function EditProductPage({
           )}
 
           {setupSaved && (
-            <div className="mb-7 flex items-start gap-4 rounded-[18px] border border-[#fdb73e]/30 bg-[#fdb73e]/[0.07] p-5">
+            <div className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[18px] border border-[#fdb73e]/30 bg-[#fdb73e]/[0.07] p-5">
               <CheckCircle2 className="h-5 w-5 shrink-0 self-center text-[#fdb73e]" />
 
               <div>

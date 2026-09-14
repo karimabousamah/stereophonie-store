@@ -15,6 +15,7 @@ type VariantInput = {
   display_position?: number;
   attributes: Record<string, string>;
   sku: string;
+  barcode: string;
   regular_price: number | "";
   sale_price: number | "";
   stock_quantity: number;
@@ -424,6 +425,7 @@ export async function updateProduct(formData: FormData) {
         attributes: variant.attributes ?? {},
         sku: variant.sku.trim() || null,
 
+        barcode: String(variant.barcode ?? "").trim() || null,
         regular_price:
           Number.isFinite(configurationRegularPrice) &&
           configurationRegularPrice > 0

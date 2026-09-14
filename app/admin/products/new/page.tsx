@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, PackagePlus, ShieldCheck } from "lucide-react";
 
 import AdminShell from "@/components/admin/admin-shell";
 import { createClient } from "@/lib/supabase/server";
@@ -72,53 +70,8 @@ export default async function NewProductPage({
       pageTitle="Add product"
       pageDescription="Add product information, configurations and store placement, then manage product images."
     >
-      <div className="px-5 py-6 sm:px-7 sm:py-7">
+      <div className="px-4 py-4 sm:px-6 sm:py-5">
         <div className="mx-auto max-w-[1540px]">
-          <header className="mb-8 border-b border-white/10 pb-8">
-            <Link
-              href="/admin/products"
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/40 transition hover:text-white"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to products
-            </Link>
-
-            <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <div className="flex items-center gap-3">
-                  <PackagePlus className="h-5 w-5 text-white/55" />
-
-                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40">
-                    Catalog
-                  </p>
-                </div>
-
-                <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                  Add product
-                </h1>
-
-                <p className="mt-5 max-w-3xl text-base leading-7 text-white/45">
-                  Enter the essentials first, then add configurations such as
-                  storage, colour, connectivity, SKU and stock.
-                </p>
-              </div>
-
-              <div className="flex max-w-md items-start gap-3 rounded-[18px] border border-emerald-400/20 bg-emerald-400/[0.05] px-5 py-4">
-                <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
-
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">
-                    Controlled publishing
-                  </p>
-
-                  <p className="mt-1 text-sm leading-6 text-white/45">
-                    Saving as draft keeps the product hidden. Only Publish Live
-                    makes it visible.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </header>
 
           <ProductForm
             categories={categoriesResult.data ?? []}

@@ -110,7 +110,7 @@ const sections = [
           security, accounting, dispute-resolution, or legal purposes.
         </p>
 
-        <p>Privacy enquiries can be sent to thenitastyle@gmail.com.</p>
+        <p>Privacy enquiries can be sent to info@stereophoniestore.com.</p>
       </>
     ),
   },

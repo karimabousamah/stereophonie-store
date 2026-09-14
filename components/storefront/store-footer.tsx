@@ -26,7 +26,7 @@ export default function StoreFooter() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label="Instagram"
-                  >
+    >
                     IG
                   </a>
 
@@ -34,7 +34,7 @@ export default function StoreFooter() {
                     href="https://www.tiktok.com/@stereophoniestore?_r=1&_t=ZS-98jTbFPraRc"
                     target="_blank"
                     rel="noreferrer"
-                  >
+    >
                     TikTok
                   </a>
 

@@ -335,15 +335,7 @@ export default function V3Homepage({
                 href={primaryButtonHref}
                 className="st3-premium-hero__primary"
               >
-                {primaryButtonLabel}
-              </Link>
-
-              <Link
-                href={secondaryButtonHref}
-                className="st3-premium-hero__secondary"
-              >
-                {secondaryButtonLabel}
-                <span aria-hidden="true">→</span>
+                Shop All Products
               </Link>
             </div>
           </div>

@@ -1145,10 +1145,12 @@ export default async function AdminHomepagePage({
                           <div className="flex items-center gap-2 md:justify-end">
                             <button
                               type="submit"
-                              formAction={moveHomepageHeroMedia}
+                              formAction={moveHomepageHeroMedia.bind(
+                                null,
+                                media.id,
+                                "up",
+                              )}
                               formNoValidate
-                              name="hero_media_move"
-                              value={`${media.id}:up`}
                               disabled={index === 0}
                               title="Move up"
                               aria-label={`Move media ${index + 1} up`}
@@ -1159,10 +1161,12 @@ export default async function AdminHomepagePage({
 
                             <button
                               type="submit"
-                              formAction={moveHomepageHeroMedia}
+                              formAction={moveHomepageHeroMedia.bind(
+                                null,
+                                media.id,
+                                "down",
+                              )}
                               formNoValidate
-                              name="hero_media_move"
-                              value={`${media.id}:down`}
                               disabled={index === heroMedia.length - 1}
                               title="Move down"
                               aria-label={`Move media ${index + 1} down`}

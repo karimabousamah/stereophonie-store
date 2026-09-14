@@ -17,8 +17,27 @@ import { processImageBeforeUpload } from "@/lib/stereophonie-v3/images/process-u
 
 type SelectedImage = {
   id: string;
+
+  /*
+   * `file` becomes the fully prepared storefront upload file.
+   *
+   * The card itself is inserted immediately using previewUrl,
+   * before this preparation work finishes.
+   */
   file: File;
+
   previewUrl: string;
+
+  /*
+   * Instant-preview pipeline state.
+   *
+   * true  = local preview is already visible while the expensive
+   *         product-image preparation continues in the background.
+   *
+   * false = file is ready for the direct upload pipeline.
+   */
+  isPreparing: boolean;
+
   /*
    * Empty array = Shared with all configurations.
    *
@@ -175,20 +194,36 @@ export default function ImageUploader({
       return;
     }
 
-    const prepared: DirectUploadSelectedImage[] = images.map(
-      (image, absoluteIndex) => ({
-        file: image.file,
-        configurationIds: Array.from(
-          new Set(
-            image.configurationIds
-              .map((configurationId) => clean(configurationId))
-              .filter(Boolean),
+    /*
+     * Never expose half-prepared files to the product submission
+     * pipeline.
+     *
+     * Save / Publish is also guarded by native form validation below,
+     * so pending local previews can never accidentally be persisted as
+     * their unprocessed originals.
+     */
+    const readyImages = images.filter((image) => !image.isPreparing);
+
+    const prepared: DirectUploadSelectedImage[] = readyImages.map(
+      (image) => {
+        const absoluteIndex = images.findIndex(
+          (candidate) => candidate.id === image.id,
+        );
+
+        return {
+          file: image.file,
+          configurationIds: Array.from(
+            new Set(
+              image.configurationIds
+                .map((configurationId) => clean(configurationId))
+                .filter(Boolean),
+            ),
           ),
-        ),
-        altText: "",
-        isPrimary: absoluteIndex === 0,
-        position: absoluteIndex,
-      }),
+          altText: "",
+          isPrimary: absoluteIndex === 0,
+          position: absoluteIndex,
+        };
+      },
     );
 
     onImagesChange(prepared);
@@ -203,7 +238,9 @@ export default function ImageUploader({
 
     const files = Array.from(selectedFiles);
 
-    const invalidType = files.find((file) => !allowedTypes.includes(file.type));
+    const invalidType = files.find(
+      (file) => !allowedTypes.includes(file.type),
+    );
 
     if (invalidType) {
       setErrorMessage(
@@ -213,45 +250,126 @@ export default function ImageUploader({
       return;
     }
 
-    const oversizedFile = files.find((file) => file.size > maximumFileSize);
+    const oversizedFile = files.find(
+      (file) => file.size > maximumFileSize,
+    );
 
     if (oversizedFile) {
-      setErrorMessage(`${oversizedFile.name} is larger than 10 MB.`);
-
-      return;
-    }
-
-    let processedFiles: File[];
-
-    try {
-      setErrorMessage("Preparing images…");
-
-      processedFiles = await Promise.all(
-        files.map((file) => processImageBeforeUpload(file, "product")),
-      );
-    } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "The images could not be prepared.",
+        `${oversizedFile.name} is larger than 10 MB.`,
       );
 
       return;
     }
 
-    setErrorMessage("");
-
-    const newImages: SelectedImage[] = processedFiles.map((file) => ({
+    /*
+     * ========================================================
+     * INSTANT LOCAL PREVIEW
+     * ========================================================
+     *
+     * Do NOT wait for image processing before rendering cards.
+     *
+     * URL.createObjectURL() is effectively immediate because the
+     * browser displays the selected local file directly.
+     */
+    const pendingImages: SelectedImage[] = files.map((file) => ({
       id: crypto.randomUUID(),
       file,
       previewUrl: URL.createObjectURL(file),
-      configurationIds: activeConfigurationId ? [activeConfigurationId] : [],
+      isPreparing: true,
+      configurationIds: activeConfigurationId
+        ? [activeConfigurationId]
+        : [],
     }));
 
-    setImages((current) => [...current, ...newImages]);
+    setImages((current) => [
+      ...current,
+      ...pendingImages,
+    ]);
 
+    /*
+     * Allow the same physical file to be selected again later.
+     */
     if (inputRef.current) {
       inputRef.current.value = "";
+    }
+
+    /*
+     * ========================================================
+     * BACKGROUND PREPARATION
+     * ========================================================
+     *
+     * All selected images are processed concurrently.
+     *
+     * Their existing local preview URLs stay mounted, so there is
+     * no visual flash or blank state when the prepared File replaces
+     * the original File in application state.
+     */
+    const results = await Promise.allSettled(
+      pendingImages.map(async (pendingImage) => ({
+        id: pendingImage.id,
+        file: await processImageBeforeUpload(
+          pendingImage.file,
+          "product",
+        ),
+      })),
+    );
+
+    const preparedById = new Map<string, File>();
+    const failedIds = new Set<string>();
+
+    results.forEach((result, index) => {
+      const id = pendingImages[index]?.id;
+
+      if (!id) {
+        return;
+      }
+
+      if (result.status === "fulfilled") {
+        preparedById.set(
+          result.value.id,
+          result.value.file,
+        );
+      } else {
+        failedIds.add(id);
+      }
+    });
+
+    setImages((current) => {
+      const next: SelectedImage[] = [];
+
+      for (const image of current) {
+        if (failedIds.has(image.id)) {
+          URL.revokeObjectURL(image.previewUrl);
+          continue;
+        }
+
+        const preparedFile = preparedById.get(image.id);
+
+        if (preparedFile) {
+          next.push({
+            ...image,
+            file: preparedFile,
+            isPreparing: false,
+          });
+
+          continue;
+        }
+
+        next.push(image);
+      }
+
+      return next;
+    });
+
+    if (failedIds.size > 0) {
+      setErrorMessage(
+        failedIds.size === 1
+          ? "One image could not be prepared and was removed."
+          : `${failedIds.size} images could not be prepared and were removed.`,
+      );
+    } else {
+      setErrorMessage("");
     }
   }
 
@@ -391,6 +509,14 @@ export default function ImageUploader({
       )
     : images;
 
+  /*
+   * Save / Publish must never submit while a visible local preview is
+   * still being converted into its authoritative storefront image.
+   */
+  const preparingImageCount = images.filter(
+    (image) => image.isPreparing,
+  ).length;
+
   function visiblePosition(imageId: string) {
     return visibleImages.findIndex((image) => image.id === imageId);
   }
@@ -404,71 +530,34 @@ export default function ImageUploader({
   }
 
   return (
-    <div>
-      {configurations.length > 0 ? (
-        <section className="mb-5 rounded-[18px] border border-white/10 bg-black/20 p-4 sm:p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
-                Image configuration
-              </p>
-
-              <p className="mt-1 text-sm font-semibold text-white">
-                Choose a configuration, then upload its images.
-              </p>
-            </div>
-
-            {configurations.length > 1 ? (
-              <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
-                {configurations.map((configuration, index) => {
-                  const active =
-                    configuration.clientId === activeConfigurationId;
-
-                  return (
-                    <button
-                      key={configuration.clientId}
-                      type="button"
-                      disabled={disabled}
-                      onClick={() => {
-                        setActiveConfigurationId(configuration.clientId);
-                        setErrorMessage("");
-                      }}
-                      className={`shrink-0 rounded-full border px-4 py-2.5 text-[9px] font-bold uppercase tracking-[0.11em] transition ${
-                        active
-                          ? "border-[#e2a128] bg-[#fdb73e] text-black"
-                          : "border-white/10 bg-black/25 text-white/45 hover:border-white/30 hover:text-white"
-                      }`}
-                    >
-                      {configurationLabel({
-                        ...configuration,
-                        fallbackLabel:
-                          configuration.fallbackLabel ||
-                          `Configuration ${index + 1}`,
-                      })}
-                      <span className="ml-2 opacity-55">
-                        {configurationImageCount(configuration.clientId)}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
-
-          {activeConfiguration ? (
-            <div className="mt-4 rounded-xl border border-[#fdb73e]/25 bg-[#fdb73e]/[0.06] px-4 py-3">
-              <p className="text-xs leading-5 text-white/55">
-                New images will automatically be added to{" "}
-                <strong className="font-semibold text-white">
-                  {configurationLabel(activeConfiguration)}
-                </strong>
-                . Their initial order will be exactly the order in which you
-                selected them from your computer.
-              </p>
-            </div>
-          ) : null}
-        </section>
-      ) : null}
+    <div
+      className="st-admin-media-manager"
+      data-admin-media-manager="true"
+      data-media-preparing={
+        preparingImageCount > 0 ? "true" : "false"
+      }
+    >
+      {/*
+       * Native form-validation guard.
+       *
+       * The field is valid whenever all images are ready.
+       * While image preparation is running it becomes required + empty,
+       * preventing Save/Publish from racing the preparation pipeline.
+       */}
+      <input
+        type="text"
+        className="sr-only"
+        aria-hidden="true"
+        tabIndex={-1}
+        readOnly
+        required
+        name="_product_media_ready"
+        value={
+          preparingImageCount === 0
+            ? "ready"
+            : ""
+        }
+      />
 
       <input
         ref={inputRef}
@@ -483,8 +572,62 @@ export default function ImageUploader({
         }}
       />
 
+      {configurations.length > 0 ? (
+        <div className="st-admin-media-manager__configuration-bar">
+          <div className="st-admin-media-manager__configuration-label">
+            <strong>Media for</strong>
+
+            <span>
+              Select a configuration before adding images.
+            </span>
+          </div>
+
+          <div className="st-admin-media-manager__configuration-tabs">
+            {configurations.map((configuration, index) => {
+              const active =
+                configuration.clientId ===
+                activeConfigurationId;
+
+              return (
+                <button
+                  key={configuration.clientId}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => {
+                    setActiveConfigurationId(
+                      configuration.clientId,
+                    );
+                    setErrorMessage("");
+                  }}
+                  className={
+                    active
+                      ? "st-admin-media-manager__configuration-tab is-active"
+                      : "st-admin-media-manager__configuration-tab"
+                  }
+                >
+                  <span>
+                    {configurationLabel({
+                      ...configuration,
+                      fallbackLabel:
+                        configuration.fallbackLabel ||
+                        `Configuration ${index + 1}`,
+                    })}
+                  </span>
+
+                  <small>
+                    {configurationImageCount(
+                      configuration.clientId,
+                    )}
+                  </small>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
       {errorMessage ? (
-        <div className="mb-5 rounded-2xl border border-red-400/20 bg-red-400/[0.06] px-4 py-3 text-sm text-red-200">
+        <div className="st-admin-media-manager__error">
           {errorMessage}
         </div>
       ) : null}
@@ -492,243 +635,315 @@ export default function ImageUploader({
       {images.length === 0 ? (
         <label
           htmlFor="product-image-files"
-          className="group flex min-h-[190px] cursor-pointer flex-col items-center justify-center rounded-[16px] border border-dashed border-white/15 bg-black/20 px-5 text-center transition hover:border-white/35 hover:bg-white/[0.025]"
+          className="st-admin-media-manager__empty"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-            <ImagePlus className="h-6 w-6" />
+          <div className="st-admin-media-manager__empty-icon">
+            <ImagePlus />
           </div>
 
-          <p className="mt-6 text-lg font-semibold">Upload product images</p>
+          <div>
+            <strong>Add media</strong>
 
-          <p className="mt-2 max-w-lg text-sm leading-6 text-white/40">
-            {activeConfiguration
-              ? `Upload images for ${configurationLabel(activeConfiguration)}. They will keep the exact order in which you select them.`
-              : "Upload product images in the exact order customers should see them."}
-          </p>
+            <p>
+              {activeConfiguration
+                ? `Images will be assigned to ${configurationLabel(
+                    activeConfiguration,
+                  )}.`
+                : "Upload the product images customers should see."}
+            </p>
+          </div>
 
-          <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65">
-            <Upload className="h-4 w-4" />
-            Select images
+          <span>
+            <Upload />
+            Add files
           </span>
         </label>
       ) : (
         <>
-          <div className="mb-5 flex flex-col gap-4 rounded-[20px] border border-white/10 bg-black/20 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="st-admin-media-manager__toolbar">
             <div>
-              <p className="font-semibold">
-                {images.length} {images.length === 1 ? "image" : "images"}
-              </p>
+              <strong>
+                {visibleImages.length}{" "}
+                {visibleImages.length === 1
+                  ? "image"
+                  : "images"}
+              </strong>
 
-              <p className="mt-1 text-xs leading-5 text-white/35">
+              <span>
                 {activeConfiguration
-                  ? `${configurationLabel(activeConfiguration)} gallery · ${visibleImages.length} image${visibleImages.length === 1 ? "" : "s"}. The first image is Main.`
-                  : "Arrange the images in the order customers should see them."}
-              </p>
+                  ? configurationLabel(
+                      activeConfiguration,
+                    )
+                  : "Product media"}
+              </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="st-admin-media-manager__toolbar-actions">
               <button
                 type="button"
-                disabled={disabled || images.length === 0}
+                disabled={
+                  disabled ||
+                  images.length === 0
+                }
                 onClick={() => {
                   if (
                     window.confirm(
                       `Clear all ${images.length} selected image${
-                        images.length === 1 ? "" : "s"
+                        images.length === 1
+                          ? ""
+                          : "s"
                       }?`,
                     )
                   ) {
                     clearAllImages();
                   }
                 }}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-red-400/20 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-red-300/70 transition hover:border-red-400/40 hover:bg-red-400/[0.07] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
+                className="st-admin-media-manager__clear"
               >
-                <Trash2 className="h-3.5 w-3.5" />
-                Clear all images
+                <Trash2 />
+                Clear
               </button>
 
               <label
                 htmlFor="product-image-files"
-                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/65 transition hover:bg-white hover:text-black"
+                className="st-admin-media-manager__add"
               >
-                <ImagePlus className="h-4 w-4" />
-                Add images
+                <ImagePlus />
+                Add media
               </label>
             </div>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {visibleImages.map((image, visibleIndex) => {
-              const absoluteIndex = images.findIndex(
-                (candidate) => candidate.id === image.id,
-              );
+          <div className="st-admin-media-manager__grid">
+            {visibleImages.map(
+              (image, visibleIndex) => {
+                const absoluteIndex =
+                  images.findIndex(
+                    (candidate) =>
+                      candidate.id === image.id,
+                  );
 
-              const isShared = image.configurationIds.length === 0;
+                const isShared =
+                  image.configurationIds.length ===
+                  0;
 
-              const selectedConfigurations = image.configurationIds
-                .map((configurationId) =>
-                  configurationById.get(configurationId),
-                )
-                .filter(
-                  (
-                    configuration,
-                  ): configuration is ImageUploaderConfiguration =>
-                    Boolean(configuration),
-                );
+                const selectedConfigurations =
+                  image.configurationIds
+                    .map((configurationId) =>
+                      configurationById.get(
+                        configurationId,
+                      ),
+                    )
+                    .filter(
+                      (
+                        configuration,
+                      ): configuration is ImageUploaderConfiguration =>
+                        Boolean(configuration),
+                    );
 
-              const currentLabel = isShared
-                ? "Shared with all configurations"
-                : selectedConfigurations
-                    .map((configuration) => configurationLabel(configuration))
-                    .join(" · ");
+                const currentLabel = isShared
+                  ? "All configurations"
+                  : selectedConfigurations
+                      .map((configuration) =>
+                        configurationLabel(
+                          configuration,
+                        ),
+                      )
+                      .join(", ");
 
-              return (
-                <article
-                  key={image.id}
-                  className={`overflow-hidden rounded-[12px] border bg-[#101010] transition ${
-                    absoluteIndex === 0
-                      ? "border-emerald-400/25"
-                      : "border-white/10"
-                  }`}
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-white">
-                    <img
-                      src={image.previewUrl}
-                      alt={`Product image ${visibleIndex + 1}`}
-                      className="h-full w-full object-contain"
-                    />
+                return (
+                  <article
+                    key={image.id}
+                    className={
+                      visibleIndex === 0
+                        ? "st-admin-media-item is-main"
+                        : "st-admin-media-item"
+                    }
+                    data-admin-product-image-card="true"
+                  >
+                    <div className="st-admin-media-item__preview">
+                      <img
+                        src={image.previewUrl}
+                        alt={`Product image ${
+                          visibleIndex + 1
+                        }`}
+                      />
 
-                    <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
-                      <span className="rounded-full border border-black/10 bg-white/90 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-black shadow-sm backdrop-blur">
-                        {String(visibleIndex + 1).padStart(2, "0")}
+                      <span className="st-admin-media-item__position">
+                        {visibleIndex + 1}
                       </span>
 
                       {visibleIndex === 0 ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/15 bg-emerald-50/95 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.11em] text-emerald-700 shadow-sm">
-                          <Star className="h-3 w-3 fill-current" />
+                        <span className="st-admin-media-item__main">
+                          <Star />
                           Main
                         </span>
                       ) : null}
+
+                      {image.isPreparing ? (
+                        <span
+                          className="st-admin-media-item__preparing"
+                          aria-live="polite"
+                        >
+                          Preparing…
+                        </span>
+                      ) : null}
                     </div>
-                  </div>
 
-                  <div className="p-4">
-                    <p className="truncate text-sm font-semibold">
-                      {image.file.name}
-                    </p>
+                    <div className="st-admin-media-item__body">
+                      <div className="st-admin-media-item__file">
+                        <strong>
+                          {image.file.name}
+                        </strong>
 
-                    <p className="mt-1 text-xs text-white/30">
-                      {(image.file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
+                        <span>
+                          {(
+                            image.file.size /
+                            1024 /
+                            1024
+                          ).toFixed(2)}{" "}
+                          MB
+                        </span>
+                      </div>
 
-                    <div className="mt-4">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                        Image usage
-                      </p>
+                      <details className="st-admin-media-item__usage">
+                        <summary>
+                          <span>
+                            {currentLabel}
+                          </span>
 
-                      <button
-                        type="button"
-                        disabled={disabled}
-                        onClick={() => makeShared(image.id)}
-                        className={`mt-2 w-full rounded-xl border px-3 py-3 text-left text-xs transition ${
-                          isShared
-                            ? "border-emerald-300/35 bg-emerald-300/[0.07] text-emerald-200"
-                            : "border-white/10 bg-black/30 text-white/45 hover:border-white/25 hover:text-white/70"
-                        }`}
-                      >
-                        Shared with all configurations
-                      </button>
+                          <small>
+                            Edit usage
+                          </small>
+                        </summary>
 
-                      {configurations.length > 0 ? (
-                        <div className="mt-2 max-h-48 space-y-1.5 overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-2">
-                          {configurations.map((configuration, index) => {
-                            const checked = image.configurationIds.includes(
-                              configuration.clientId,
-                            );
+                        <div className="st-admin-media-item__usage-panel">
+                          <button
+                            type="button"
+                            disabled={disabled}
+                            onClick={() =>
+                              makeShared(image.id)
+                            }
+                            className={
+                              isShared
+                                ? "st-admin-media-item__shared is-active"
+                                : "st-admin-media-item__shared"
+                            }
+                          >
+                            Shared with all configurations
+                          </button>
 
-                            return (
-                              <label
-                                key={configuration.clientId}
-                                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition ${
-                                  checked
-                                    ? "border-white/20 bg-white/[0.06]"
-                                    : "border-transparent hover:bg-white/[0.03]"
-                                }`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  disabled={disabled}
-                                  checked={checked}
-                                  onChange={() =>
-                                    toggleConfiguration(
-                                      image.id,
+                          {configurations.length >
+                          0 ? (
+                            <div className="st-admin-media-item__configuration-list">
+                              {configurations.map(
+                                (
+                                  configuration,
+                                  index,
+                                ) => {
+                                  const checked =
+                                    image.configurationIds.includes(
                                       configuration.clientId,
-                                    )
-                                  }
-                                  className="h-4 w-4 accent-white"
-                                />
+                                    );
 
-                                <span className="min-w-0 truncate text-xs text-white/65">
-                                  {configurationLabel({
-                                    ...configuration,
-                                    fallbackLabel:
-                                      configuration.fallbackLabel ||
-                                      `Configuration ${index + 1}`,
-                                  })}
-                                </span>
-                              </label>
-                            );
-                          })}
+                                  return (
+                                    <label
+                                      key={
+                                        configuration.clientId
+                                      }
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        disabled={
+                                          disabled
+                                        }
+                                        checked={
+                                          checked
+                                        }
+                                        onChange={() =>
+                                          toggleConfiguration(
+                                            image.id,
+                                            configuration.clientId,
+                                          )
+                                        }
+                                      />
+
+                                      <span>
+                                        {configurationLabel(
+                                          {
+                                            ...configuration,
+                                            fallbackLabel:
+                                              configuration.fallbackLabel ||
+                                              `Configuration ${
+                                                index +
+                                                1
+                                              }`,
+                                          },
+                                        )}
+                                      </span>
+                                    </label>
+                                  );
+                                },
+                              )}
+                            </div>
+                          ) : null}
                         </div>
-                      ) : (
-                        <p className="mt-2 text-[10px] leading-4 text-white/25">
-                          Create product configurations to assign this image to
-                          specific versions.
-                        </p>
-                      )}
+                      </details>
 
-                      <p className="mt-2 line-clamp-2 text-[10px] leading-4 text-white/25">
-                        {currentLabel}
-                      </p>
+                      <div className="st-admin-media-item__actions">
+                        <button
+                          type="button"
+                          disabled={
+                            disabled ||
+                            visibleIndex === 0
+                          }
+                          onClick={() =>
+                            moveImage(
+                              image.id,
+                              "left",
+                            )
+                          }
+                          title="Move image earlier"
+                        >
+                          <ArrowLeft />
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={
+                            disabled ||
+                            visibleIndex ===
+                              visibleImages.length -
+                                1
+                          }
+                          onClick={() =>
+                            moveImage(
+                              image.id,
+                              "right",
+                            )
+                          }
+                          title="Move image later"
+                        >
+                          <ArrowRight />
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={disabled}
+                          onClick={() =>
+                            removeImage(image.id)
+                          }
+                          title="Remove image"
+                          className="is-danger"
+                        >
+                          <Trash2 />
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="mt-4 flex items-center gap-2">
-                      <button
-                        type="button"
-                        disabled={disabled || visibleIndex === 0}
-                        onClick={() => moveImage(image.id, "left")}
-                        title="Move image earlier"
-                        className="flex h-9 flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
-                      >
-                        <ArrowLeft className="h-3.5 w-3.5" />
-                      </button>
-
-                      <button
-                        type="button"
-                        disabled={
-                          disabled || visibleIndex === visibleImages.length - 1
-                        }
-                        onClick={() => moveImage(image.id, "right")}
-                        title="Move image later"
-                        className="flex h-9 flex-1 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-white/45 transition hover:border-white/25 hover:bg-white/[0.05] hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
-                      >
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
-
-                      <button
-                        type="button"
-                        disabled={disabled}
-                        onClick={() => removeImage(image.id)}
-                        title="Remove image"
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-red-400/15 bg-red-400/[0.025] text-red-300/55 transition hover:border-red-400/35 hover:bg-red-400/[0.07] hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-20"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
+                  </article>
+                );
+              },
+            )}
           </div>
         </>
       )}

@@ -31,6 +31,7 @@ export type AdminElectronicsVariant = {
   display_position?: number;
   attributes: Record<string, string>;
   sku: string;
+  barcode?: string;
   regular_price: number | "";
   sale_price: number | "";
   stock_quantity: number;
@@ -820,7 +821,7 @@ function SearchableOptionValuePicker({
       ? createPortal(
           <div
             ref={dropdownRef}
-            className="fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
+            className="st-admin-option-directory-v2 fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
             style={{
               top: position.top,
               left: position.left,
@@ -830,7 +831,7 @@ function SearchableOptionValuePicker({
             aria-label={`Choose ${level.label}`}
           >
             <div className="border-b border-black/[0.07] p-3">
-              <div className="flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
+              <div className="st-admin-option-directory-search-v2 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
                 <Search className="h-[17px] w-[17px] shrink-0 text-black/42" />
 
                 <input
@@ -897,7 +898,7 @@ function SearchableOptionValuePicker({
                         onClick={() => toggleValue(value)}
                         className={`mb-1 flex min-h-[46px] w-full items-center justify-between gap-4 rounded-[12px] px-3.5 text-left transition ${
                           selectedValue
-                            ? "bg-[#fff6df] text-[#7b5000]"
+                            ? "st-admin-option-directory-selected-v2"
                             : active
                               ? "bg-black/[0.045] text-black"
                               : "text-black/72 hover:bg-black/[0.035] hover:text-black"
@@ -908,7 +909,7 @@ function SearchableOptionValuePicker({
                         </span>
 
                         {selectedValue ? (
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#fdb73e] text-black shadow-[0_4px_12px_rgba(253,183,62,0.25)]">
+                          <span className="st-admin-option-directory-check-v2">
                             <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
                           </span>
                         ) : (
@@ -940,10 +941,10 @@ function SearchableOptionValuePicker({
                 <button
                   type="button"
                   onClick={createRequestedValue}
-                  className="group flex min-h-[48px] w-full items-center justify-between gap-4 rounded-[13px] border border-[#e0a535]/55 bg-[#fffaf0] px-3.5 text-left transition hover:border-[#d29525] hover:bg-[#fff5dd] hover:shadow-[0_8px_24px_rgba(253,183,62,0.16)]"
+                  className="st-admin-option-create-v2 group flex min-h-[48px] w-full items-center justify-between gap-4 rounded-[13px] border px-3.5 text-left transition"
                 >
                   <span className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fdb73e] text-black shadow-[0_5px_14px_rgba(253,183,62,0.25)]">
+                    <span className="st-admin-option-create-v2__icon">
                       <Plus className="h-4 w-4" strokeWidth={2.2} />
                     </span>
 
@@ -966,7 +967,7 @@ function SearchableOptionValuePicker({
       : null;
 
   return (
-    <div className="relative mt-3 w-full">
+    <div className="st-admin-option-value-picker-v2 relative w-full">
       <button
         ref={triggerRef}
         type="button"
@@ -977,11 +978,7 @@ function SearchableOptionValuePicker({
             requestAnimationFrame(updatePosition);
           }
         }}
-        className={`group relative flex min-h-[52px] w-full items-center justify-between gap-4 rounded-[13px] border px-4 text-left outline-none transition ${
-          open
-            ? "border-[#d59a2e]/70 bg-white shadow-[0_0_0_4px_rgba(253,183,62,0.09),0_6px_18px_rgba(0,0,0,0.045)]"
-            : "border-black/10 bg-[#111111] text-white hover:border-white/25 hover:bg-[#151515]"
-        }`}
+        className="st-admin-option-value-trigger-final"
         aria-haspopup="listbox"
         aria-expanded={open}
       >
@@ -1033,18 +1030,25 @@ function SearchableOptionValuePicker({
       </button>
 
       {selected.length > 0 ? (
-        <div className="mt-2 flex flex-wrap gap-1.5">
+        <div className="st-admin-option-selected-values-v2">
           {selected.map((value) => (
-            <button
+            <span
               key={value}
-              type="button"
-              onClick={() => toggleValue(value)}
-              className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/42 transition hover:border-[#fdb73e]/35 hover:bg-[#fdb73e]/[0.08] hover:text-[#f4bd55] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fdb73e]/25"
-              aria-label={`Remove ${value}`}
+              className="st-admin-option-selected-chip-v2"
             >
-              <X className="h-3 w-3" />
-              {value}
-            </button>
+              <span className="st-admin-option-selected-chip-v2__label">
+                {value}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => toggleValue(value)}
+                className="st-admin-option-selected-chip-v2__remove"
+                aria-label={`Remove ${value}`}
+              >
+                <X />
+              </button>
+            </span>
           ))}
         </div>
       ) : null}
@@ -3005,6 +3009,7 @@ export default function ElectronicsVariantEditor({
       id: null,
       variant_name: `${variant.variant_name} Copy`,
       sku: "",
+      barcode: "",
       display_position: orderedVariants.length,
       attributes: {
         ...(variant.attributes ?? {}),
@@ -3369,695 +3374,1046 @@ export default function ElectronicsVariantEditor({
     : -1;
 
   return (
-    <div className="space-y-6">
-      <section className="overflow-visible rounded-[24px] border border-black/10 bg-white">
-        <header className="border-b border-black/[0.07] px-5 py-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d99100]">
-            Product setup
-          </p>
-
-          <h3 className="mt-2 text-2xl font-semibold text-black">
-            Set up customer choices
-          </h3>
-          <div className="mt-3 rounded-[14px] border border-black/[0.07] bg-[#fafafa] px-4 py-3">
-            <div className="flex items-start gap-3">
-              <span className="mt-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#fdb73e] text-[10px] font-bold leading-none text-black">
-                1
-              </span>
-
-              <div className="min-w-0">
-                <p className="text-xs font-semibold text-black">
-                  Start by choosing what the customer selects first.
-                </p>
-
-                <p className="mt-0.5 text-[11px] leading-5 text-black/45">
-                  For example: Color, Storage, Screen Size or RAM. Then select
-                  every available choice for that option.
-                </p>
-              </div>
-            </div>
+    <div className="st-admin-config-editor-v2">
+      <section className="st-admin-config-options-v2">
+        <div className="st-admin-config-section-heading-v2">
+          <div>
+            <h3>Options</h3>
+            <p>
+              Define the choices customers select before buying.
+            </p>
           </div>
 
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-black/45">
-            Choose what the customer selects before buying. Add only the options
-            this product actually needs.
-          </p>
-        </header>
+          <span>
+            {levels.length} option
+            {levels.length === 1 ? "" : "s"}
+          </span>
+        </div>
 
-        <div className="p-5">
-          {levels.length > 0 ? (
-            <div className="space-y-3">
-              {levels.map((level, index) => {
-                const presetLevel = isPresetHierarchyLabel(level.label);
-                const colorLevel =
-                  level.key === "color" || level.key === "colour";
+        {levels.length > 0 ? (
+          <div className="st-admin-config-options-list-v2">
+            {levels.map((level, index) => {
+              const presetLevel =
+                isPresetHierarchyLabel(level.label);
 
-                return (
-                  <div
-                    key={level.id}
-                    className="rounded-[16px] border border-black/[0.08] bg-white p-4 shadow-[0_1px_0_rgba(0,0,0,0.02)]"
-                  >
-                    <div className="grid gap-3 lg:grid-cols-[190px_minmax(0,1fr)_auto] lg:items-start">
-                      <div>
-                        <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-black/40">
-                          Step {index + 1}
-                        </span>
+              const colorLevel =
+                level.key === "color" ||
+                level.key === "colour";
 
-                        <select
-                          value={presetLevel ? level.label : "__custom__"}
-                          onChange={(event) => {
-                            const value = event.target.value;
+              return (
+                <div
+                  key={level.id}
+                  className="st-admin-config-option-row-v2"
+                >
+                  <div className="st-admin-config-option-name-v2">
+                    <select
+                      value={
+                        presetLevel
+                          ? level.label
+                          : "__custom__"
+                      }
+                      onChange={(event) => {
+                        const value =
+                          event.target.value;
 
-                            if (value === "__custom__") {
-                              if (presetLevel) {
-                                renameLevel(level.id, "Custom Option");
-                              }
+                        if (
+                          value === "__custom__"
+                        ) {
+                          if (presetLevel) {
+                            renameLevel(
+                              level.id,
+                              "Custom Option",
+                            );
+                          }
 
-                              return;
-                            }
+                          return;
+                        }
 
-                            renameLevel(level.id, value);
-                          }}
-                          className="mt-2 min-h-11 w-full rounded-xl border border-black/10 bg-white px-3 text-sm font-medium text-black outline-none transition focus:border-[#f5b335]"
-                        >
-                          {hierarchyPresetLabels.map((label) => (
-                            <option key={label} value={label}>
-                              {label}
-                            </option>
-                          ))}
+                        renameLevel(
+                          level.id,
+                          value,
+                        );
+                      }}
+                    >
+                      {hierarchyPresetLabels.map(
+                        (label) => (
+                          <option
+                            key={label}
+                            value={label}
+                          >
+                            {label}
+                          </option>
+                        ),
+                      )}
 
-                          <option value="__custom__">Custom option</option>
-                        </select>
+                      <option value="__custom__">
+                        Custom option
+                      </option>
+                    </select>
 
-                        {!presetLevel ? (
-                          <input
-                            value={
-                              level.label === "Custom Option" ? "" : level.label
-                            }
-                            onChange={(event) =>
-                              renameLevel(
-                                level.id,
-                                event.target.value || "Custom Option",
-                              )
-                            }
-                            placeholder="Type option name"
-                            className="mt-2 min-h-10 w-full rounded-xl border border-black/10 bg-white px-3 text-sm text-black outline-none transition placeholder:text-black/30 focus:border-[#f5b335]"
-                          />
-                        ) : null}
-                      </div>
+                    {!presetLevel ? (
+                      <input
+                        value={
+                          level.label ===
+                          "Custom Option"
+                            ? ""
+                            : level.label
+                        }
+                        onChange={(event) =>
+                          renameLevel(
+                            level.id,
+                            event.target.value ||
+                              "Custom Option",
+                          )
+                        }
+                        placeholder="Option name"
+                      />
+                    ) : null}
+                  </div>
 
-                      <div className="min-w-0">
-                        <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-black/40">
-                          Available choices
-                        </span>
+                  <div className="st-admin-config-option-values-v2">
+                    {colorLevel ? (
+                      <>
+                        <ConfigurationColorPicker
+                          value={null}
+                          onChange={(color) => {
+                            const canonicalColorName =
+                              canonicalizeProductColorwayName(
+                                color.name,
+                              );
 
-                        {colorLevel ? (
-                          <div className="mt-2">
-                            {level.values.length > 0 ? (
-                              <div className="mb-3 flex flex-wrap gap-2">
-                                {level.values.map((value) => (
-                                  <span
-                                    key={value}
-                                    className="inline-flex min-h-9 items-center gap-2 rounded-full border border-black/10 bg-white px-3 text-xs font-medium text-black"
-                                  >
-                                    {canonicalizeProductColorwayName(value)}
+                            setLevels(
+                              (current) =>
+                                current.map(
+                                  (
+                                    currentLevel,
+                                  ) => {
+                                    if (
+                                      currentLevel.id !==
+                                      level.id
+                                    ) {
+                                      return currentLevel;
+                                    }
 
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        updateLevelValues(
-                                          level.id,
-                                          level.values.filter(
-                                            (item) => item !== value,
-                                          ),
-                                        )
-                                      }
-                                      className="grid h-5 w-5 place-items-center rounded-full text-black/35 transition hover:bg-black/[0.06] hover:text-black"
-                                      aria-label={`Remove ${canonicalizeProductColorwayName(
-                                        value,
-                                      )}`}
-                                    >
-                                      ×
-                                    </button>
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="mb-3 text-xs text-black/40">
-                                No colors selected yet.
-                              </p>
-                            )}
+                                    const alreadySelected =
+                                      currentLevel.values.some(
+                                        (
+                                          value,
+                                        ) =>
+                                          canonicalizeProductColorwayName(
+                                            value,
+                                          ).toLocaleLowerCase() ===
+                                          canonicalColorName.toLocaleLowerCase(),
+                                      );
 
-                            <div className="mb-3 rounded-xl border border-[#fdb73e]/25 bg-[#fff9ec] px-3 py-2.5">
-                              <p className="text-[11px] leading-5 text-black/60">
-                                <strong className="font-semibold text-black/75">
-                                  Colorway rule:
-                                </strong>{" "}
-                                Every color name must start with a capital
-                                letter. For Apple, Samsung, Huawei, Xiaomi,
-                                Google and other branded products, use the
-                                manufacturer&apos;s exact official colorway
-                                name. The customer-facing color swatch will use
-                                the matching Stereophonie manufacturer-reference
-                                palette.
-                              </p>
-                            </div>
+                                    return {
+                                      ...currentLevel,
 
-                            <ConfigurationColorPicker
-                              value={null}
-                              onChange={(color) => {
-                                  const canonicalColorName =
-                                    canonicalizeProductColorwayName(
-                                      color.name,
-                                    );
-
-                                  setLevels((current) =>
-                                    current.map((currentLevel) => {
-                                      if (
-                                        currentLevel.id !== level.id
-                                      ) {
-                                        return currentLevel;
-                                      }
-
-                                      const alreadySelected =
-                                        currentLevel.values.some(
-                                          (value) =>
-                                            canonicalizeProductColorwayName(
-                                              value,
-                                            ).toLocaleLowerCase() ===
-                                            canonicalColorName.toLocaleLowerCase(),
-                                        );
-
-                                      return {
-                                        ...currentLevel,
-
-                                        values: alreadySelected
+                                      values:
+                                        alreadySelected
                                           ? currentLevel.values
                                           : [
                                               ...currentLevel.values,
                                               canonicalColorName,
                                             ],
 
-                                        colorHexByValue: {
+                                      colorHexByValue:
+                                        {
                                           ...(currentLevel.colorHexByValue ??
                                             {}),
+
                                           [canonicalColorName]:
                                             color.hex,
                                         },
-                                      };
-                                    }),
-                                  );
-                                }}
-                            />
+                                    };
+                                  },
+                                ),
+                            );
+                          }}
+                        />
+
+{level.values.length >
+                        0 ? (
+                          <div className="st-admin-config-value-pills-v2">
+                            {level.values.map(
+                              (value) => (
+                                <span key={value}>
+                                  {canonicalizeProductColorwayName(
+                                    value,
+                                  )}
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      updateLevelValues(
+                                        level.id,
+                                        level.values.filter(
+                                          (
+                                            item,
+                                          ) =>
+                                            item !==
+                                            value,
+                                        ),
+                                      )
+                                    }
+                                    className="st-admin-color-chip-remove-v2"
+                                      aria-label={`Remove ${canonicalizeProductColorwayName(
+                                      value,
+                                    )}`}
+                                  >
+                                    <X />
+                                  </button>
+                                </span>
+                              ),
+                            )}
                           </div>
-                        ) : (
-                          <div className="mt-2">
-                            <SearchableOptionValuePicker
-                              level={level}
-                              onChange={(values) =>
-                                updateLevelValues(level.id, values)
-                              }
-                            />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex shrink-0 overflow-hidden rounded-xl border border-black/10 bg-white">
-                        <button
-                          type="button"
-                          onClick={() => moveLevel(level.id, "up")}
-                          disabled={index === 0}
-                          className="grid h-11 w-11 place-items-center border-r border-black/10 text-black/45 transition hover:bg-black/[0.04] hover:text-black disabled:opacity-20"
-                          aria-label={`Move ${level.label} earlier`}
-                        >
-                          <ArrowUp className="h-4 w-4" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => moveLevel(level.id, "down")}
-                          disabled={index === levels.length - 1}
-                          className="grid h-11 w-11 place-items-center border-r border-black/10 text-black/45 transition hover:bg-black/[0.04] hover:text-black disabled:opacity-20"
-                          aria-label={`Move ${level.label} later`}
-                        >
-                          <ArrowDown className="h-4 w-4" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => removeLevel(level.id)}
-                          className="grid h-11 w-11 place-items-center text-red-400 transition hover:bg-red-50 hover:text-red-600"
-                          aria-label={`Remove ${level.label}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
+                        ) : null}
+                      </>
+                    ) : (
+                      <SearchableOptionValuePicker
+                        level={level}
+                        onChange={(values) =>
+                          updateLevelValues(
+                            level.id,
+                            values,
+                          )
+                        }
+                      />
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="rounded-[18px] border border-dashed border-black/15 bg-[#fafafa] p-6 text-sm text-black/40">
-              No product options yet.
-            </div>
-          )}
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
-            <select
-              value={
-                hierarchyPresetLabels.includes(
-                  newLevelName as (typeof hierarchyPresetLabels)[number],
-                )
-                  ? newLevelName
-                  : newLevelName
-                    ? "__custom__"
-                    : ""
-              }
-              onChange={(event) => {
-                const value = event.target.value;
+                  <div className="st-admin-config-option-actions-v2">
+                    <button
+                      type="button"
+                      disabled={index === 0}
+                      onClick={() =>
+                        moveLevel(
+                          level.id,
+                          "up",
+                        )
+                      }
+                      aria-label={`Move ${level.label} earlier`}
+                    >
+                      <ArrowUp />
+                    </button>
 
-                setNewLevelName(
-                  value === "__custom__" ? "Custom Option" : value,
-                );
+                    <button
+                      type="button"
+                      disabled={
+                        index ===
+                        levels.length - 1
+                      }
+                      onClick={() =>
+                        moveLevel(
+                          level.id,
+                          "down",
+                        )
+                      }
+                      aria-label={`Move ${level.label} later`}
+                    >
+                      <ArrowDown />
+                    </button>
 
-                setHierarchyError("");
-              }}
-              className="min-h-11 rounded-xl border border-black/10 bg-white px-4 text-sm font-medium text-black outline-none transition focus:border-[#f5b335]"
-            >
-              <option value="">Choose what the customer selects...</option>
+                    <button className="st-admin-destructive-control-v2"
+                      type="button"
+                      onClick={() =>
+                        removeLevel(level.id)
+                      }
+                      aria-label={`Remove ${level.label}`}
+                    >
+                      <Trash2 />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="st-admin-config-empty-options-v2">
+            No customer options yet. Add
+            Storage, Color, Size, RAM or another
+            option only when the product needs it.
+          </div>
+        )}
 
-              {hierarchyPresetLabels.map((label) => (
-                <option key={label} value={label}>
+        <div className="st-admin-config-option-builder-v2">
+          <select
+            value={
+              hierarchyPresetLabels.includes(
+                newLevelName as
+                  (typeof hierarchyPresetLabels)[number],
+              )
+                ? newLevelName
+                : newLevelName
+                  ? "__custom__"
+                  : ""
+            }
+            onChange={(event) => {
+              const value =
+                event.target.value;
+
+              setNewLevelName(
+                value === "__custom__"
+                  ? "Custom Option"
+                  : value,
+              );
+
+              setHierarchyError("");
+            }}
+          >
+            <option value="">
+              Add product option...
+            </option>
+
+            {hierarchyPresetLabels.map(
+              (label) => (
+                <option
+                  key={label}
+                  value={label}
+                >
                   {label}
                 </option>
-              ))}
+              ),
+            )}
 
-              <option value="__custom__">Custom option</option>
-            </select>
+            <option value="__custom__">
+              Custom option
+            </option>
+          </select>
 
-            <button
-              type="button"
-              onClick={addLevel}
-              disabled={!clean(newLevelName)}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-black transition hover:border-[#f5b335] hover:bg-[#fff8e8] disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Plus className="h-4 w-4" />
-              Add option
-            </button>
+          <button
+            type="button"
+            onClick={addLevel}
+            disabled={
+              !clean(newLevelName)
+            }
+          >
+            <Plus />
+            Add option
+          </button>
 
-            <button
-              type="button"
-              onClick={generateCombinations}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#f5b335]/50 bg-[#fff8e8] px-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#b97500] transition hover:bg-[#f5b335] hover:text-black"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Generate configurations
-            </button>
-          </div>
-
-          {hierarchyError ? (
-            <p className="mt-3 text-sm text-red-500">{hierarchyError}</p>
-          ) : null}
-
-          {levels.length > 0 ? (
-            <div className="mt-5 rounded-[16px] border border-black/[0.07] bg-[#fafafa] px-4 py-3 text-xs text-black/45">
-              Customers choose:{" "}
-              <strong className="font-semibold text-black/70">
-                {levels.map((level) => level.label).join(" → ")}
-              </strong>
-            </div>
-          ) : null}
+          <button
+            type="button"
+            onClick={
+              generateCombinations
+            }
+            disabled={
+              levels.length === 0
+            }
+          >
+            <RefreshCw />
+            Generate configurations
+          </button>
         </div>
+
+        {hierarchyError ? (
+          <p className="st-admin-config-error-v2">
+            {hierarchyError}
+          </p>
+        ) : null}
+
+        {levels.length > 0 ? (
+          <p className="st-admin-config-choice-order-v2">
+            Customer selection order:{" "}
+            <strong>
+              {levels
+                .map(
+                  (level) =>
+                    level.label,
+                )
+                .join(" → ")}
+            </strong>
+          </p>
+        ) : null}
       </section>
 
-      <section className="overflow-hidden border border-white/10 bg-[#0d0d0d]">
-        <header className="flex flex-col gap-4 border-b border-white/10 p-5 lg:flex-row lg:items-center lg:justify-between">
+      <section className="st-admin-config-table-section-v2">
+        <div className="st-admin-config-section-heading-v2">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">
-              Final combinations
+            <h3>Configurations</h3>
+            <p>
+              Edit the important inventory fields
+              directly without opening every
+              configuration.
             </p>
-
-            <h3 className="mt-2 text-2xl font-semibold">
-              {orderedVariants.length} sellable configuration
-              {orderedVariants.length === 1 ? "" : "s"}
-            </h3>
           </div>
 
           <button
             type="button"
-            onClick={addManualConfiguration}
-            className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white hover:bg-white hover:text-black"
+            onClick={
+              addManualConfiguration
+            }
+            className="st-admin-config-add-manual-v2"
           >
-            <CirclePlus className="h-4 w-4" />
-            Add manually
+            <CirclePlus />
+            Add configuration
           </button>
-        </header>
+        </div>
 
-        <div className="grid lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="border-b border-black/[0.07] bg-white lg:border-b-0 lg:border-r lg:border-black/[0.07]">
-            {orderedVariants.map((variant, index) => {
-              const active = activeVariant?.clientId === variant.clientId;
+        <div className="st-admin-config-table-scroll-v2">
+          <div className="st-admin-config-table-v2">
+            <div className="st-admin-config-table-header-v2">
+              <span>Configuration</span>
+              <span>Price</span>
+              <span>Sale</span>
+              <span>Stock</span>
+              <span>SKU</span>
+              <span>Barcode</span>
+              <span>Availability</span>
+            </div>
 
-              return (
-                <button
-                  key={variant.clientId}
-                  type="button"
-                  onClick={() => setActiveClientId(variant.clientId)}
-                  className={`group block w-full border-b border-black/[0.06] px-4 py-3 text-left transition ${
-                    active
-                      ? "bg-[#fff8e8] text-black"
-                      : "bg-white text-black hover:bg-[#fafafa]"
-                  }`}
-                >
-                  <span className="block text-[8px] font-semibold uppercase tracking-[0.14em] text-black/35">
-                    Configuration {index + 1}
-                  </span>
+            {orderedVariants.map(
+              (variant, index) => {
+                const active =
+                  activeVariant?.clientId ===
+                  variant.clientId;
 
-                  <strong className="mt-1 block truncate text-[13px] font-semibold tracking-[-0.01em]">
-                    {clean(variant.variant_name) ||
-                      `Configuration ${index + 1}`}
-                  </strong>
+                const unavailable =
+                  variant.availability_status ===
+                    "out_of_stock" ||
+                  variant.availability_status ===
+                    "coming_soon";
 
-                  <span className="mt-1.5 block truncate text-[9px] font-medium tracking-[0.04em] text-black/35">
-                    {variant.sku || "No SKU"}
-                  </span>
-                </button>
-              );
-            })}
-          </aside>
+                const label =
+                  clean(
+                    variant.variant_name,
+                  ) ||
+                  `Configuration ${
+                    index + 1
+                  }`;
 
-          {activeVariant ? (
-            <div className="min-w-0 p-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex border border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => moveVariant(activeVariant.clientId, "up")}
-                    disabled={activeIndex <= 0}
-                    className="grid h-11 w-11 place-items-center border-r border-white/10 text-white/45 hover:bg-white hover:text-black disabled:opacity-20"
+                return (
+                  <div
+                    key={
+                      variant.clientId
+                    }
+                    className={`st-admin-config-table-row-v2 ${
+                      active
+                        ? "is-active"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      setActiveClientId(
+                        variant.clientId,
+                      )
+                    }
                   >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
+                    <button
+                      type="button"
+                      className="st-admin-config-table-name-v2"
+                      onClick={(
+                        event,
+                      ) => {
+                        event.stopPropagation();
 
-                  <span className="flex h-11 items-center px-4 text-xs text-white/35">
-                    {activeIndex + 1} / {orderedVariants.length}
-                  </span>
+                        setActiveClientId(
+                          variant.clientId,
+                        );
+                      }}
+                    >
+                      <strong>
+                        {label}
+                      </strong>
 
-                  <button
-                    type="button"
-                    onClick={() => moveVariant(activeVariant.clientId, "down")}
-                    disabled={activeIndex >= orderedVariants.length - 1}
-                    className="grid h-11 w-11 place-items-center border-l border-white/10 text-white/45 hover:bg-white hover:text-black disabled:opacity-20"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateVariant(activeVariant.clientId, {
-                      variant_name:
-                        generatedName(activeVariant.attributes, levels) ||
-                        activeVariant.variant_name,
-                    })
-                  }
-                  className="inline-flex min-h-11 items-center gap-2 border border-white/15 px-4 text-[10px] font-semibold uppercase tracking-[0.11em] text-white/60 hover:bg-white hover:text-black"
-                >
-                  <Check className="h-4 w-4" />
-                  Generate name
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => duplicateVariant(activeVariant)}
-                  className="inline-flex min-h-11 items-center gap-2 border border-white/15 px-4 text-[10px] font-semibold uppercase tracking-[0.11em] text-white hover:bg-white hover:text-black"
-                >
-                  <Copy className="h-4 w-4" />
-                  Duplicate
-                </button>
-
-                {orderedVariants.length > 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => removeVariant(activeVariant.clientId)}
-                    className="inline-flex min-h-11 items-center gap-2 border border-red-400/20 px-4 text-[10px] font-semibold uppercase tracking-[0.11em] text-red-300 hover:bg-red-400/10"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Remove
-                  </button>
-                ) : null}
-              </div>
-
-              {levels.length > 0 ? (
-                <section className="mt-7 border-t border-white/10 pt-6">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                    Hierarchy values
-                  </p>
-
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    {levels.map((level) => (
-                      <label
-                        key={level.id}
-                        className="border border-white/10 bg-black/20 p-4"
-                      >
-                        <span className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/35">
-                          {level.label}
-                        </span>
-
-                        <select
-                          value={activeVariant.attributes[level.key] ?? ""}
-                          onChange={(event) =>
-                            updateHierarchyValue(
-                              activeVariant.clientId,
-                              level.key,
-                              event.target.value,
-                            )
-                          }
-                          className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-3 text-sm text-white outline-none focus:border-white/45"
-                        >
-                          <option value="">Select {level.label}</option>
-
-                          {level.values.map((value) => (
-                            <option key={value} value={value}>
-                              {value}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    ))}
-                  </div>
-                </section>
-              ) : null}
-
-              <section className="mt-7 border-t border-white/10 pt-6">
-                <div className="grid gap-5 md:grid-cols-2">
-                  <label>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                      Configuration name
-                    </span>
-
-                    <input
-                      value={activeVariant.variant_name}
-                      onChange={(event) =>
-                        updateVariant(activeVariant.clientId, {
-                          variant_name: event.target.value,
-                        })
-                      }
-                      className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50"
-                    />
-                  </label>
-
-                  <label>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">
-                      SKU
-                    </span>
-
-                    <input
-                      value={activeVariant.sku}
-                      onChange={(event) =>
-                        updateVariant(activeVariant.clientId, {
-                          sku: event.target.value,
-                        })
-                      }
-                      placeholder="Optional internal SKU"
-                      className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50"
-                    />
-                  </label>
-                </div>
-              </section>
-
-              <section className="mt-7 border-t border-white/10 pt-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                  Pricing
-                </p>
-
-                <div className="mt-4 grid gap-5 md:grid-cols-2">
-                  <label>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.13em] text-white/40">
-                      Regular price
-                    </span>
+                      <small>
+                        Configuration{" "}
+                        {index + 1}
+                      </small>
+                    </button>
 
                     <input
                       type="number"
                       min="0"
                       step="0.01"
-                      value={activeVariant.regular_price}
-                      onChange={(event) =>
-                        updateVariant(activeVariant.clientId, {
-                          regular_price:
-                            event.target.value === ""
-                              ? ""
-                              : Math.max(0, Number(event.target.value)),
-                        })
-                      }
-                      className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50"
-                    />
-                  </label>
-
-                  <label>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.13em] text-white/40">
-                      Sale price
-                    </span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={activeVariant.sale_price}
-                      onChange={(event) =>
-                        updateVariant(activeVariant.clientId, {
-                          sale_price:
-                            event.target.value === ""
-                              ? ""
-                              : Math.max(0, Number(event.target.value)),
-                        })
-                      }
-                      placeholder="Optional"
-                      className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50"
-                    />
-                  </label>
-                </div>
-              </section>
-
-              <section className="mt-7 border-t border-white/10 pt-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                  Inventory
-                </p>
-
-                <div className="mt-4 grid gap-5 md:grid-cols-2">
-                  <label>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.13em] text-white/40">
-                      Stock quantity
-                    </span>
-
-                    <input
-                      type="number"
-                      min="0"
-                      disabled={
-                        activeVariant.availability_status === "out_of_stock" ||
-                        activeVariant.availability_status === "coming_soon"
-                      }
                       value={
-                        activeVariant.availability_status === "out_of_stock" ||
-                        activeVariant.availability_status === "coming_soon"
-                          ? 0
-                          : activeVariant.stock_quantity
+                        variant.regular_price
                       }
-                      onChange={(event) =>
-                        updateVariant(activeVariant.clientId, {
-                          stock_quantity: Math.max(
-                            0,
-                            Number(event.target.value) || 0,
-                          ),
-                        })
+                      aria-label={`Regular price for ${label}`}
+                      onFocus={() =>
+                        setActiveClientId(
+                          variant.clientId,
+                        )
                       }
-                      className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50 disabled:opacity-30"
+                      onClick={(
+                        event,
+                      ) =>
+                        event.stopPropagation()
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        updateVariant(
+                          variant.clientId,
+                          {
+                            regular_price:
+                              event.target
+                                .value ===
+                              ""
+                                ? ""
+                                : Math.max(
+                                    0,
+                                    Number(
+                                      event
+                                        .target
+                                        .value,
+                                    ),
+                                  ),
+                          },
+                        )
+                      }
                     />
-                  </label>
-
-                  <label>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.13em] text-white/40">
-                      Low-stock threshold
-                    </span>
 
                     <input
                       type="number"
                       min="0"
-                      value={activeVariant.low_stock_threshold}
-                      onChange={(event) =>
-                        updateVariant(activeVariant.clientId, {
-                          low_stock_threshold: Math.max(
-                            0,
-                            Number(event.target.value) || 0,
-                          ),
-                        })
+                      step="0.01"
+                      value={
+                        variant.sale_price
                       }
-                      className="mt-3 min-h-11 w-full border border-white/10 bg-black/30 px-4 text-white outline-none focus:border-white/50"
+                      placeholder="—"
+                      aria-label={`Sale price for ${label}`}
+                      onFocus={() =>
+                        setActiveClientId(
+                          variant.clientId,
+                        )
+                      }
+                      onClick={(
+                        event,
+                      ) =>
+                        event.stopPropagation()
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        updateVariant(
+                          variant.clientId,
+                          {
+                            sale_price:
+                              event.target
+                                .value ===
+                              ""
+                                ? ""
+                                : Math.max(
+                                    0,
+                                    Number(
+                                      event
+                                        .target
+                                        .value,
+                                    ),
+                                  ),
+                          },
+                        )
+                      }
                     />
-                  </label>
-                </div>
-              </section>
 
-              <section className="mt-7 border-t border-white/10 pt-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-white/35">
-                  Customer availability
-                </p>
+                    <input
+                      type="number"
+                      min="0"
+                      disabled={unavailable}
+                      value={
+                        unavailable
+                          ? 0
+                          : variant.stock_quantity
+                      }
+                      aria-label={`Stock for ${label}`}
+                      onFocus={() =>
+                        setActiveClientId(
+                          variant.clientId,
+                        )
+                      }
+                      onClick={(
+                        event,
+                      ) =>
+                        event.stopPropagation()
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        updateVariant(
+                          variant.clientId,
+                          {
+                            stock_quantity:
+                              Math.max(
+                                0,
+                                Number(
+                                  event
+                                    .target
+                                    .value,
+                                ) ||
+                                  0,
+                              ),
+                          },
+                        )
+                      }
+                    />
 
-                <div className="mt-4 grid grid-cols-4 gap-2">
-                  {availabilityOptions.map((option) => {
-                    const selected =
-                      activeVariant.availability_status === option.value;
+                    <input
+                      value={
+                        variant.sku
+                      }
+                      placeholder="SKU"
+                      autoComplete="off"
+                      aria-label={`SKU for ${label}`}
+                      onFocus={() =>
+                        setActiveClientId(
+                          variant.clientId,
+                        )
+                      }
+                      onClick={(
+                        event,
+                      ) =>
+                        event.stopPropagation()
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        updateVariant(
+                          variant.clientId,
+                          {
+                            sku:
+                              event.target
+                                .value,
+                          },
+                        )
+                      }
+                    />
 
-                    const statusStyle =
-                      option.value === "in_stock"
-                        ? selected
-                          ? "border-[#238636] bg-[#238636] text-white shadow-[0_6px_16px_rgba(35,134,54,0.18)]"
-                          : "border-[#b7dfbf] bg-[#f2fbf4] text-[#237a35] hover:border-[#238636]"
-                        : option.value === "low_stock"
-                          ? selected
-                            ? "border-[#d79a12] bg-[#e9ad25] text-[#251900] shadow-[0_6px_16px_rgba(215,154,18,0.18)]"
-                            : "border-[#f1d68d] bg-[#fff9e8] text-[#9a6a00] hover:border-[#d79a12]"
-                          : option.value === "out_of_stock"
-                            ? selected
-                              ? "border-[#cf3b36] bg-[#cf3b36] text-white shadow-[0_6px_16px_rgba(207,59,54,0.18)]"
-                              : "border-[#efbbb8] bg-[#fff4f3] text-[#b52e29] hover:border-[#cf3b36]"
-                            : selected
-                              ? "border-[#3678d4] bg-[#3678d4] text-white shadow-[0_6px_16px_rgba(54,120,212,0.18)]"
-                              : "border-[#b9d2f2] bg-[#f3f8ff] text-[#316cad] hover:border-[#3678d4]";
+                    <input
+                      value={
+                        variant.barcode ??
+                        ""
+                      }
+                      placeholder="Barcode"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      aria-label={`Barcode for ${label}`}
+                      onFocus={() =>
+                        setActiveClientId(
+                          variant.clientId,
+                        )
+                      }
+                      onClick={(
+                        event,
+                      ) =>
+                        event.stopPropagation()
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        updateVariant(
+                          variant.clientId,
+                          {
+                            barcode:
+                              event.target
+                                .value,
+                          },
+                        )
+                      }
+                    />
 
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() =>
-                          updateVariant(activeVariant.clientId, {
-                            availability_status: option.value,
-                          })
+                    <select
+                      value={
+                        variant.availability_status
+                      }
+                      aria-label={`Availability for ${label}`}
+                      onFocus={() =>
+                        setActiveClientId(
+                          variant.clientId,
+                        )
+                      }
+                      onClick={(
+                        event,
+                      ) =>
+                        event.stopPropagation()
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        updateVariant(
+                          variant.clientId,
+                          {
+                            availability_status:
+                              event.target
+                                .value as AvailabilityStatus,
+                          },
+                        )
+                      }
+                    >
+                      {availabilityOptions.map(
+                        (option) => (
+                          <option
+                            key={
+                              option.value
+                            }
+                            value={
+                              option.value
+                            }
+                          >
+                            {
+                              option.label
+                            }
+                          </option>
+                        ),
+                      )}
+                    </select>
+                  </div>
+                );
+              },
+            )}
+          </div>
+        </div>
+      </section>
+
+      {activeVariant ? (
+        <section className="st-admin-config-detail-v2">
+          <div className="st-admin-config-section-heading-v2">
+            <div>
+              <h3>
+                Configuration details
+              </h3>
+              <p>
+                Advanced controls for the
+                selected configuration.
+              </p>
+            </div>
+
+            <span>
+              {activeIndex + 1} of{" "}
+              {orderedVariants.length}
+            </span>
+          </div>
+
+          <div className="st-admin-config-detail-toolbar-v2">
+            <button
+              type="button"
+              disabled={
+                activeIndex <= 0
+              }
+              onClick={() =>
+                moveVariant(
+                  activeVariant.clientId,
+                  "up",
+                )
+              }
+            >
+              <ChevronLeft />
+              Earlier
+            </button>
+
+            <button
+              type="button"
+              disabled={
+                activeIndex >=
+                orderedVariants.length -
+                  1
+              }
+              onClick={() =>
+                moveVariant(
+                  activeVariant.clientId,
+                  "down",
+                )
+              }
+            >
+              Later
+              <ChevronRight />
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                updateVariant(
+                  activeVariant.clientId,
+                  {
+                    variant_name:
+                      generatedName(
+                        activeVariant.attributes,
+                        levels,
+                      ) ||
+                      activeVariant.variant_name,
+                  },
+                )
+              }
+            >
+              <Check />
+              Generate name
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                duplicateVariant(
+                  activeVariant,
+                )
+              }
+            >
+              <Copy />
+              Duplicate
+            </button>
+
+            {orderedVariants.length >
+            1 ? (
+              <button className="st-admin-destructive-control-v2"
+                type="button"
+                onClick={() =>
+                  removeVariant(
+                    activeVariant.clientId,
+                  )
+                }
+              >
+                <Trash2 />
+                Remove
+              </button>
+            ) : null}
+          </div>
+
+          {levels.length > 0 ? (
+            <div className="st-admin-config-detail-block-v2">
+              <h4>Option values</h4>
+
+              <div className="st-admin-config-detail-grid-v2">
+                {levels.map(
+                  (level) => (
+                    <label
+                      key={
+                        level.id
+                      }
+                    >
+                      <span>
+                        {
+                          level.label
                         }
-                        aria-pressed={selected}
-                        className={`inline-flex min-h-10 items-center justify-center rounded-[11px] border px-4 text-[11px] font-semibold transition ${statusStyle}`}
+                      </span>
+
+                      <select
+                        value={
+                          activeVariant
+                            .attributes[
+                            level.key
+                          ] ?? ""
+                        }
+                        onChange={(
+                          event,
+                        ) =>
+                          updateHierarchyValue(
+                            activeVariant.clientId,
+                            level.key,
+                            event
+                              .target
+                              .value,
+                          )
+                        }
                       >
-                        {option.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
+                        <option value="">
+                          Select{" "}
+                          {
+                            level.label
+                          }
+                        </option>
+
+                        {level.values.map(
+                          (
+                            value,
+                          ) => (
+                            <option
+                              key={
+                                value
+                              }
+                              value={
+                                value
+                              }
+                            >
+                              {
+                                value
+                              }
+                            </option>
+                          ),
+                        )}
+                      </select>
+                    </label>
+                  ),
+                )}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="st-admin-config-detail-block-v2">
+            <h4>Identity</h4>
+
+            <div className="st-admin-config-detail-grid-v2">
+              <label>
+                <span>
+                  Configuration name
+                </span>
+
+                <input
+                  value={
+                    activeVariant.variant_name
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    updateVariant(
+                      activeVariant.clientId,
+                      {
+                        variant_name:
+                          event
+                            .target
+                            .value,
+                      },
+                    )
+                  }
+                />
+              </label>
+
+              <label>
+                <span>SKU</span>
+
+                <input
+                  value={
+                    activeVariant.sku
+                  }
+                  placeholder="Optional internal SKU"
+                  autoComplete="off"
+                  onChange={(
+                    event,
+                  ) =>
+                    updateVariant(
+                      activeVariant.clientId,
+                      {
+                        sku:
+                          event
+                            .target
+                            .value,
+                      },
+                    )
+                  }
+                />
+              </label>
+
+              <label>
+                <span>
+                  Barcode
+                </span>
+
+                <input
+                  value={
+                    activeVariant.barcode ??
+                    ""
+                  }
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="UPC, EAN, GTIN or custom barcode"
+                  onChange={(
+                    event,
+                  ) =>
+                    updateVariant(
+                      activeVariant.clientId,
+                      {
+                        barcode:
+                          event
+                            .target
+                            .value,
+                      },
+                    )
+                  }
+                />
+              </label>
+
+              <label>
+                <span>
+                  Low-stock threshold
+                </span>
+
+                <input
+                  type="number"
+                  min="0"
+                  value={
+                    activeVariant.low_stock_threshold
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    updateVariant(
+                      activeVariant.clientId,
+                      {
+                        low_stock_threshold:
+                          Math.max(
+                            0,
+                            Number(
+                              event
+                                .target
+                                .value,
+                            ) ||
+                              0,
+                          ),
+                      },
+                    )
+                  }
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="st-admin-config-detail-block-v2">
+            <h4>
+              Availability
+            </h4>
+
+            <div className="st-admin-config-availability-v2">
+              {availabilityOptions.map(
+                (option) => {
+                  const selected =
+                    activeVariant.availability_status ===
+                    option.value;
+
+                  return (
+                    <button
+                      key={
+                        option.value
+                      }
+                      type="button"
+                      aria-pressed={
+                        selected
+                      }
+                      className={
+                        selected
+                          ? "is-selected"
+                          : ""
+                      }
+                      onClick={() =>
+                        updateVariant(
+                          activeVariant.clientId,
+                          {
+                            availability_status:
+                              option.value,
+                          },
+                        )
+                      }
+                    >
+                      {
+                        option.label
+                      }
+                    </button>
+                  );
+                },
+              )}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
               {specificationsPortalTarget
                 ? createPortal(
                     <section className="mt-7 border-t border-white/10 pt-6">
-                      <div className="mb-5 overflow-hidden rounded-[16px] border border-[#fdb73e]/25 bg-[#fdb73e]/[0.045]">
-                        <div className="border-b border-white/[0.07] px-4 py-4">
+                      <div className="st-admin-spec-paste-v2">
+                        <div className="st-admin-spec-paste-v2__header">
                           <div className="flex items-start justify-between gap-4">
                             <div>
                               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#fdb73e]">
                                 Quick paste specifications
                               </p>
 
-                              <p className="mt-1.5 max-w-2xl text-[11px] leading-5 text-white/40">
+                              <p className="st-admin-spec-paste-v2__description">
                                 Paste a specification table or feature list from
                                 Google or another source. Top-level sections are
                                 preserved automatically, including nested
@@ -4065,11 +4421,11 @@ export default function ElectronicsVariantEditor({
                               </p>
                             </div>
 
-                            <Copy className="mt-0.5 h-4 w-4 shrink-0 text-[#fdb73e]/70" />
+                            <Copy className="st-admin-spec-paste-v2__icon" />
                           </div>
                         </div>
 
-                        <div className="p-4">
+                        <div className="st-admin-spec-paste-v2__body">
                           <textarea
                             value={bulkTechnicalSpecs}
                             onChange={(event) => {
@@ -4111,13 +4467,45 @@ Performance and Hardware
 Processor: Apple A19 Pro chipset
 RAM: 12 GB RAM
 Storage Options: 256GB, 512GB, and 1TB`}
-                            className="w-full resize-y border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-[#fdb73e]/60"
+                            className="st-admin-spec-paste-v2__textarea st-admin-spec-paste-focus-final st-admin-spec-paste-focus-real"
+                          onFocus={(event) => {
+                            const field = event.currentTarget;
+
+                            field.style.setProperty("border-color", "#202223", "important");
+                            field.style.setProperty(
+                              "box-shadow",
+                              "0 0 0 1px #202223",
+                              "important",
+                            );
+                            field.style.setProperty("outline", "none", "important");
+
+                            const shell = field.closest(".st-admin-spec-paste-v2");
+
+                            if (shell instanceof HTMLElement) {
+                              shell.style.setProperty("box-shadow", "none", "important");
+                              shell.style.setProperty("outline", "none", "important");
+                            }
+                          }}
+                          onBlur={(event) => {
+                            const field = event.currentTarget;
+
+                            field.style.removeProperty("border-color");
+                            field.style.removeProperty("box-shadow");
+                            field.style.removeProperty("outline");
+
+                            const shell = field.closest(".st-admin-spec-paste-v2");
+
+                            if (shell instanceof HTMLElement) {
+                              shell.style.removeProperty("box-shadow");
+                              shell.style.removeProperty("outline");
+                            }
+                          }}
                           />
 
-                          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <p className="text-[10px] leading-4 text-white/30">
+                          <div className="st-admin-spec-paste-v2__footer">
+                            <p className="st-admin-spec-paste-v2__format">
                               Format:{" "}
-                              <span className="text-white/50">
+                              <span>
                                 Google table, bullet list, or Title: value
                               </span>{" "}
                               · Nested details stay inside their parent
@@ -4128,7 +4516,7 @@ Storage Options: 256GB, 512GB, and 1TB`}
                               type="button"
                               onClick={parseBulkTechnicalSpecifications}
                               disabled={!bulkTechnicalSpecs.trim()}
-                              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] border border-[#e3a32d] bg-[#fdb73e] px-5 text-[10px] font-semibold uppercase tracking-[0.08em] text-black transition hover:bg-[#ffc45b] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-35"
+                              className="st-admin-spec-paste-v2__parse"
                             >
                               <Plus className="h-3.5 w-3.5" />
                               Parse specifications
@@ -4145,14 +4533,14 @@ Storage Options: 256GB, 512GB, and 1TB`}
                             setCustomSpecError("");
                           }}
                           placeholder="Technical metadata — e.g. Charging standard"
-                          className="min-h-11 flex-1 border border-white/10 bg-black/30 px-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/45"
+                          className="st-admin-spec-add-v2__input"
                         />
 
                         <div className="flex w-full shrink-0 flex-col gap-0 sm:w-[181px]">
                           <button
                             type="button"
                             onClick={addCustomSpecification}
-                            className="inline-flex min-h-11 w-full items-center justify-center gap-2 border border-white/15 px-5 text-[10px] font-semibold uppercase tracking-[0.11em] text-white transition hover:bg-white hover:text-black"
+                            className="st-admin-spec-add-v2__button"
                           >
                             <Plus className="h-4 w-4 shrink-0" />
                             <span>Add technical spec</span>
@@ -4163,7 +4551,7 @@ Storage Options: 256GB, 512GB, and 1TB`}
                               <button
                                 type="button"
                                 onClick={applyTechnicalSpecificationsToAll}
-                                className="inline-flex h-8 w-full items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap border border-[#e3a32d] bg-[#fdb73e] px-2 !text-[9px] font-semibold uppercase !tracking-[0.035em] leading-none text-black transition hover:bg-[#ffc45b] active:scale-[0.99] mt-2"
+                                className="st-admin-spec-add-v2__button st-admin-spec-add-v2__button--secondary"
                               >
                                 <Copy className="h-3.5 w-3.5 shrink-0" />
                                 <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
@@ -4184,21 +4572,21 @@ Storage Options: 256GB, 512GB, and 1TB`}
                       {technicalSpecsMessage ? (
                         <p
                           role="status"
-                          className="mt-2 text-right text-[10px] font-semibold text-[#d99a24]"
+                          className="st-admin-spec-message-v2"
                         >
                           {technicalSpecsMessage}
                         </p>
                       ) : null}
 
                       {technicalAttributes.length > 0 ? (
-                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                        <div className="st-admin-spec-grid-v2">
                           {technicalAttributes.map(([key, value]) => (
                             <div
                               key={key}
-                              className="border border-white/10 bg-black/20 p-4"
+                              className="st-admin-spec-item-v2"
                             >
-                              <div className="flex items-center justify-between gap-3">
-                                <span className="text-[9px] font-semibold uppercase tracking-[0.13em] text-white/35">
+                              <div className="st-admin-spec-item-v2__header">
+                                <span className="st-admin-spec-item-v2__label">
                                   {key}
                                 </span>
 
@@ -4215,7 +4603,7 @@ Storage Options: 256GB, 512GB, and 1TB`}
                                       attributes,
                                     });
                                   }}
-                                  className="text-white/30 hover:text-red-300"
+                                  className="st-admin-spec-item-v2__remove"
                                 >
                                   <X className="h-4 w-4" />
                                 </button>
@@ -4230,7 +4618,7 @@ Storage Options: 256GB, 512GB, and 1TB`}
                                     event.target.value,
                                   )
                                 }
-                                className="mt-3 min-h-10 w-full border border-white/10 bg-black/30 px-3 text-sm text-white outline-none focus:border-white/45"
+                                className="st-admin-spec-item-v2__value"
                               />
                             </div>
                           ))}
@@ -4240,10 +4628,6 @@ Storage Options: 256GB, 512GB, and 1TB`}
                     specificationsPortalTarget,
                   )
                 : null}
-            </div>
-          ) : null}
-        </div>
-      </section>
     </div>
   );
 }

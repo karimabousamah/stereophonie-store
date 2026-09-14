@@ -26,7 +26,7 @@ export type PublicStoreSettings = {
 
 export const defaultPublicStoreSettings: PublicStoreSettings = {
   storeName: "Stereophonie",
-  supportEmail: "info@stereophonie.com",
+  supportEmail: "info@stereophoniestore.com",
   whatsappNumber: "+961 3 161 285",
   instagramHandle: "@stereophoniestore",
 
