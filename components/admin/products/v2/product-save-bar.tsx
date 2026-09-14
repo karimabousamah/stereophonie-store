@@ -88,6 +88,7 @@ export default function ProductSaveBar({
         <div className="st-admin-product-fixed-header__actions">
           <button
             type="submit"
+            name="intent"
             value="draft"
             formNoValidate
             disabled={isSubmitting}
@@ -101,6 +102,7 @@ export default function ProductSaveBar({
 
           <button
             type="submit"
+            name="intent"
             value="publish"
             disabled={isSubmitting}
             onClick={onPublish}

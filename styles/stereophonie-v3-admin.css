@@ -24583,3 +24583,220 @@ textarea.st-admin-spec-paste-v2__textarea:focus-visible {
 /* ============================================================
    END ADMIN V2 — SIDEBAR FINAL POLISH
    ============================================================ */
+
+/* === ADMIN PRODUCT MAIN + SELECT AUTHORITY START === */
+
+/*
+ * MAIN PRODUCT IMAGE
+ *
+ * Keep the compact Main sticker visible.
+ * Remove only the legacy decorative star / indicator.
+ *
+ * Gallery position #1 remains authoritative underneath.
+ */
+.st3-admin
+.st-admin-media-manager
+.st-admin-media-item__main,
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__main {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+}
+
+/* New Product legacy star icon */
+.st3-admin
+.st-admin-media-manager
+.st-admin-media-item__main
+svg,
+
+/* Edit Product legacy star icon */
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__main
+svg,
+
+/*
+ * PRODUCT EDITOR NATIVE SELECTS
+ *
+ * Neutral at rest.
+ * Black while focused.
+ *
+ * This scope applies to Add Product, Edit Live Product
+ * and Edit Draft Product because all use the shared V2
+ * product-editor architecture.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+select {
+  border-color: #d1d1d1 !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus-visible {
+  border-color: #202223 !important;
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Custom button-based option selectors.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-value-trigger-final:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-value-trigger-final:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-color-value-trigger-final:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-color-value-trigger-final:focus-visible {
+  border-color: #202223 !important;
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* === ADMIN PRODUCT MAIN + SELECT AUTHORITY END === */
+
+/* === ADMIN PRODUCT MAIN STICKER CONSISTENCY FINAL === */
+
+/*
+ * Add Product and Edit Product use the exact same Main badge.
+ * It is informational only; gallery position #1 remains authoritative.
+ */
+html body
+.st3-admin
+.st-admin-media-manager
+.st-admin-media-item__main,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__main {
+  position: absolute !important;
+  top: 7px !important;
+  right: 7px !important;
+
+  display: inline-flex !important;
+  width: auto !important;
+  height: 20px !important;
+  min-height: 20px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 0 !important;
+
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  border-radius: 5px !important;
+
+  background: rgba(255, 255, 255, 0.94) !important;
+
+  padding: 0 6px !important;
+
+  color: #303030 !important;
+
+  font-size: 8px !important;
+  font-weight: 650 !important;
+
+  line-height: 1 !important;
+
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/*
+ * No decorative icon belongs inside the informational Main badge.
+ */
+html body
+.st3-admin
+.st-admin-media-item__main
+svg,
+html body
+.st3-admin
+.st-admin-media-main-indicator-v2 {
+  display: none !important;
+}
+
+/* === ADMIN APPLICATION TEXT SELECTION FINAL === */
+
+/*
+ * The Admin is application UI, not a document.
+ *
+ * Prevent accidental blue text-selection across headings,
+ * cards, sidebar items, buttons, labels and other interface chrome.
+ */
+html body .st3-admin,
+html body .st3-admin * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/*
+ * Real editable/copyable surfaces remain selectable.
+ *
+ * This preserves normal editing, barcode scanning/copying,
+ * descriptions, specifications, SKU fields and native selects.
+ */
+html body .st3-admin input,
+html body .st3-admin textarea,
+html body .st3-admin select,
+html body .st3-admin option,
+html body .st3-admin [contenteditable="true"],
+html body .st3-admin code,
+html body .st3-admin pre,
+html body .st3-admin .select-text,
+html body .st3-admin [data-selectable="true"] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
+
+/*
+ * Images should never create browser drag-selection artifacts
+ * while an administrator is arranging media.
+ */
+html body .st3-admin img,
+html body .st3-admin svg {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* === END ADMIN APPLICATION TEXT SELECTION FINAL === */

@@ -172,14 +172,6 @@ export default function ProductSearch({
           <strong>{outOfStockTotal}</strong>
         </button>
 
-        <button
-          type="button"
-          className={status === "archived" ? "is-active" : ""}
-          onClick={() => setStatus("archived")}
-        >
-          <span>Archived</span>
-          <strong>{archivedTotal}</strong>
-        </button>
       </div>
 
       <label className="st-admin-directory-search__field">

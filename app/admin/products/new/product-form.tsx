@@ -724,6 +724,29 @@ export default function ProductForm({
       const serverFormData =
         new FormData(form);
 
+      /*
+       * FINAL AUTHORITATIVE PUBLICATION INTENT
+       *
+       * Do not rely on button serialization, portal behavior,
+       * hidden-input timing or a previous React render.
+       *
+       * The exact intent chosen by the administrator is stamped
+       * directly onto the exact FormData object handed to the
+       * Server Action.
+       *
+       * Save draft  -> draft
+       * Publish live -> publish
+       */
+      serverFormData.set(
+        "intent",
+        submissionIntent,
+      );
+
+      serverFormData.set(
+        "resolved_intent",
+        submissionIntent,
+      );
+
       const result =
         await createProduct(
           serverFormData,

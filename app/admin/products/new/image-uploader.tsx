@@ -305,72 +305,107 @@ export default function ImageUploader({
      * no visual flash or blank state when the prepared File replaces
      * the original File in application state.
      */
-    const results = await Promise.allSettled(
-      pendingImages.map(async (pendingImage) => ({
-        id: pendingImage.id,
-        file: await processImageBeforeUpload(
-          pendingImage.file,
-          "product",
-        ),
-      })),
-    );
-
+    /*
+     * Keep image processing intentionally bounded.
+     *
+     * Processing many high-resolution images at exactly the same
+     * moment can temporarily exhaust the image-processing route.
+     * Two concurrent jobs keeps the uploader quick without creating
+     * an avoidable CPU / memory spike.
+     *
+     * Most importantly: a preparation failure must NEVER remove an
+     * administrator-selected product image. If optimization fails,
+     * preserve the original file and continue the upload normally.
+     */
     const preparedById = new Map<string, File>();
-    const failedIds = new Set<string>();
+    const fallbackIds = new Set<string>();
 
-    results.forEach((result, index) => {
-      const id = pendingImages[index]?.id;
+    const preparationConcurrency = 2;
 
-      if (!id) {
-        return;
-      }
+    for (
+      let start = 0;
+      start < pendingImages.length;
+      start += preparationConcurrency
+    ) {
+      const batch = pendingImages.slice(
+        start,
+        start + preparationConcurrency,
+      );
 
-      if (result.status === "fulfilled") {
-        preparedById.set(
-          result.value.id,
-          result.value.file,
-        );
-      } else {
-        failedIds.add(id);
-      }
-    });
+      const results = await Promise.allSettled(
+        batch.map(async (pendingImage) => ({
+          id: pendingImage.id,
+          file: await processImageBeforeUpload(
+            pendingImage.file,
+            "product",
+          ),
+        })),
+      );
 
-    setImages((current) => {
-      const next: SelectedImage[] = [];
+      results.forEach((result, index) => {
+        const pendingImage = batch[index];
 
-      for (const image of current) {
-        if (failedIds.has(image.id)) {
-          URL.revokeObjectURL(image.previewUrl);
-          continue;
+        if (!pendingImage) {
+          return;
         }
 
+        if (result.status === "fulfilled") {
+          preparedById.set(
+            result.value.id,
+            result.value.file,
+          );
+          return;
+        }
+
+        /*
+         * The original JPEG / PNG / WebP is already validated above.
+         * Keep it instead of silently deleting the administrator's
+         * selected media.
+         */
+        fallbackIds.add(pendingImage.id);
+
+        console.warn(
+          "[ADMIN PRODUCT MEDIA] Image preparation failed; using original file.",
+          {
+            fileName: pendingImage.file.name,
+            reason:
+              result.reason instanceof Error
+                ? result.reason.message
+                : String(result.reason ?? "Unknown image preparation error"),
+          },
+        );
+      });
+    }
+
+    setImages((current) =>
+      current.map((image) => {
         const preparedFile = preparedById.get(image.id);
 
         if (preparedFile) {
-          next.push({
+          return {
             ...image,
             file: preparedFile,
             isPreparing: false,
-          });
-
-          continue;
+          };
         }
 
-        next.push(image);
-      }
+        if (fallbackIds.has(image.id)) {
+          return {
+            ...image,
+            isPreparing: false,
+          };
+        }
 
-      return next;
-    });
+        return image;
+      }),
+    );
 
-    if (failedIds.size > 0) {
-      setErrorMessage(
-        failedIds.size === 1
-          ? "One image could not be prepared and was removed."
-          : `${failedIds.size} images could not be prepared and were removed.`,
-      );
-    } else {
-      setErrorMessage("");
-    }
+    /*
+     * A failed optimization is now a transparent fallback rather
+     * than destructive user-facing failure. Every selected valid
+     * image remains in the product gallery.
+     */
+    setErrorMessage("");
   }
 
   function clearAllImages() {

@@ -1471,53 +1471,10 @@ const difference =
                     </span>
 
                     {isActiveMain ? (
-<form
-                      onSubmit={(event) =>
-                        void handleImageOperation(
-                          event,
-                          "primary",
-                        )
-                      }
-                      className="st-admin-media-item__main-form"
-                    >
-                      <input
-                        type="hidden"
-                        name="product_id"
-                        value={productId}
-                      />
-
-                      <input
-                        type="hidden"
-                        name="image_id"
-                        value={image.id}
-                      />
-
-                      {!isShared && activeAssignment ? (
-                        <input
-                          type="hidden"
-                          name="variant_id"
-                          value={activeAssignment.variant_id}
-                        />
-                      ) : null}
-
-                      <button
-                        type="submit"
-                        data-secondary-action="true"
-                        className="st-admin-media-item__main"
-                        disabled={
-                          isActiveMain ||
-                          (!isShared && !activeAssignment)
-                        }
-                        title={isActiveMain ? "Main image" : "Set as Main"}
-                        aria-label={
-                          "Main image"
-                        }
-                      >
-                          <span className="st-admin-media-main-indicator-v2" aria-hidden="true" />
-                          Main
-                      </button>
-                    </form>
-) : null}
+                      <span className="st-admin-media-item__main">
+                        Main
+                      </span>
+                    ) : null}
                   </div>
 
                   <div className="st-admin-media-item__body">

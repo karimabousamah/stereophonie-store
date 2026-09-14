@@ -3373,8 +3373,104 @@ export default function ElectronicsVariantEditor({
       )
     : -1;
 
+  function applyNeutralSelectFocus(
+    event: React.FocusEvent<HTMLDivElement>,
+  ) {
+    const target = event.target;
+
+    if (!(target instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    target.style.setProperty(
+      "border-color",
+      "#202223",
+      "important",
+    );
+
+    target.style.setProperty(
+      "box-shadow",
+      "0 0 0 1px #202223",
+      "important",
+    );
+
+    target.style.setProperty(
+      "outline",
+      "none",
+      "important",
+    );
+
+    target.style.setProperty(
+      "--tw-ring-color",
+      "transparent",
+      "important",
+    );
+
+    target.style.setProperty(
+      "--tw-ring-offset-shadow",
+      "0 0 #0000",
+      "important",
+    );
+
+    target.style.setProperty(
+      "--tw-ring-shadow",
+      "0 0 #0000",
+      "important",
+    );
+  }
+
+  function clearNeutralSelectFocus(
+    event: React.FocusEvent<HTMLDivElement>,
+  ) {
+    const target = event.target;
+
+    if (!(target instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    target.style.setProperty(
+      "border-color",
+      "#d1d1d1",
+      "important",
+    );
+
+    target.style.setProperty(
+      "box-shadow",
+      "none",
+      "important",
+    );
+
+    target.style.setProperty(
+      "outline",
+      "none",
+      "important",
+    );
+
+    target.style.setProperty(
+      "--tw-ring-color",
+      "transparent",
+      "important",
+    );
+
+    target.style.setProperty(
+      "--tw-ring-offset-shadow",
+      "0 0 #0000",
+      "important",
+    );
+
+    target.style.setProperty(
+      "--tw-ring-shadow",
+      "0 0 #0000",
+      "important",
+    );
+  }
+
   return (
-    <div className="st-admin-config-editor-v2">
+    <div
+      className="st-admin-config-editor-v2"
+      onFocusCapture={applyNeutralSelectFocus}
+      onBlurCapture={clearNeutralSelectFocus}
+    >
       <section className="st-admin-config-options-v2">
         <div className="st-admin-config-section-heading-v2">
           <div>
@@ -4028,7 +4124,18 @@ export default function ElectronicsVariantEditor({
                       }
                       onChange={(
                         event,
-                      ) =>
+                      ) => {
+                        /*
+                         * The compact table and Configuration Details
+                         * represent one exact configuration state.
+                         *
+                         * Make the edited row authoritative immediately
+                         * so its detail panel always mirrors this value.
+                         */
+                        setActiveClientId(
+                          variant.clientId,
+                        );
+
                         updateVariant(
                           variant.clientId,
                           {
@@ -4036,8 +4143,8 @@ export default function ElectronicsVariantEditor({
                               event.target
                                 .value as AvailabilityStatus,
                           },
-                        )
-                      }
+                        );
+                      }}
                     >
                       {availabilityOptions.map(
                         (option) => (
