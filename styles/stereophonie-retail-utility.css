@@ -9439,3 +9439,370 @@ html
   }
 }
 /* === ST MOBILE CART FULL VIEWPORT BACKDROP END === */
+
+/* ==========================================================
+   STOREFRONT — ROUTE TRANSITION ISLAND V42.1
+   ========================================================== */
+
+@keyframes stStorefrontTransitionSpinV421 {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes stStorefrontTransitionEnterV421 {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.st-storefront-transition-layer {
+  position: fixed;
+  z-index: 2147482000;
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
+.st-storefront-transition-layer.is-exiting {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-10px) scale(0.97);
+}
+
+.st-storefront-transition-island {
+  box-sizing: border-box;
+  min-width: 132px;
+  max-width: min(330px, calc(100vw - 28px));
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 13px;
+  overflow: hidden;
+  border: 1px solid rgba(199, 128, 0, 0.48);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.98);
+  color: #1d1d1f;
+  box-shadow:
+    0 9px 28px rgba(29, 29, 31, 0.11),
+    0 2px 7px rgba(166, 106, 0, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: stStorefrontTransitionEnterV421 260ms
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.st-storefront-transition-island__spinner,
+.st-storefront-transition-island__complete {
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+  display: grid;
+  place-items: center;
+  color: #a66a00;
+}
+
+.st-storefront-transition-island__spinner {
+  transform-origin: 50% 50%;
+  animation: stStorefrontTransitionSpinV421 720ms linear infinite !important;
+}
+
+.st-storefront-transition-island__spinner svg,
+.st-storefront-transition-island__complete svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+}
+
+.st-storefront-transition-island__label {
+  min-width: 0;
+  overflow: hidden;
+  color: #3a3a3c;
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-storefront-transition-island__label strong {
+  color: #8a5900;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .st-storefront-transition-layer {
+    top: max(9px, env(safe-area-inset-top));
+  }
+
+  .st-storefront-transition-island {
+    min-width: 112px;
+    max-width: calc(100vw - 22px);
+    min-height: 34px;
+    gap: 7px;
+    padding: 7px 11px;
+  }
+
+  .st-storefront-transition-island__spinner,
+  .st-storefront-transition-island__complete,
+  .st-storefront-transition-island__spinner svg,
+  .st-storefront-transition-island__complete svg {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+  }
+
+  .st-storefront-transition-island__label {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-storefront-transition-island {
+    animation: none;
+  }
+
+  .st-storefront-transition-layer {
+    transition: opacity 120ms linear;
+  }
+
+  .st-storefront-transition-island__spinner {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================
+   END STOREFRONT — ROUTE TRANSITION ISLAND V42.1
+   ========================================================== */
+
+/* ==========================================================
+   STOREFRONT — ADMIN-MOTION ISLAND AUTHORITY V43D
+   ========================================================== */
+
+.st-storefront-transition-layer {
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  display: flex !important;
+
+  width: auto !important;
+  max-width: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  transform-origin: top center !important;
+  transform: none;
+
+  transition: none !important;
+}
+
+.st-storefront-transition-layer.is-exiting {
+  opacity: initial;
+  transform: none;
+}
+
+.st-storefront-transition-island {
+  position: relative !important;
+
+  box-sizing: border-box !important;
+
+  width: auto;
+  min-width: 0 !important;
+  max-width: min(330px, calc(100vw - 28px)) !important;
+
+  height: 42px !important;
+  min-height: 42px !important;
+
+  margin-top: 8px !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid rgba(199, 128, 0, 0.48) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255, 255, 255, 0.985) !important;
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 10px 30px rgba(29, 29, 31, 0.11),
+    0 2px 8px rgba(166, 106, 0, 0.09) !important;
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  animation: none !important;
+
+  will-change: width, transform, opacity;
+}
+
+.st-storefront-transition-island__content {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 14px;
+}
+
+.st-storefront-transition-island__state {
+  display: flex;
+
+  width: 100%;
+  min-width: 0;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  white-space: nowrap;
+}
+
+.st-storefront-transition-island__icon {
+  display: inline-flex;
+
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #a66a00;
+}
+
+.st-storefront-transition-island__spinner {
+  display: inline-flex !important;
+
+  width: 18px !important;
+  height: 18px !important;
+
+  align-items: center;
+  justify-content: center;
+
+  transform-origin: 50% 50%;
+  will-change: transform;
+
+  animation: none !important;
+}
+
+.st-storefront-transition-island__icon svg,
+.st-storefront-transition-island__spinner svg {
+  display: block;
+
+  width: 17px !important;
+  height: 17px !important;
+
+  min-width: 0 !important;
+
+  stroke-width: 1.9;
+}
+
+.st-storefront-transition-island__icon--complete {
+  color: #a66a00;
+}
+
+.st-storefront-transition-island__label {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #3a3a3c !important;
+
+  font-size: 11px !important;
+  font-weight: 550 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.01em !important;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-storefront-transition-island__label strong {
+  color: #8a5900 !important;
+  font-weight: 700 !important;
+}
+
+.st-storefront-transition-island__sheen {
+  position: absolute;
+
+  top: -45%;
+  bottom: -45%;
+  left: 0;
+
+  z-index: 1;
+
+  width: 46px;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(253, 183, 62, 0.13),
+      transparent
+    );
+
+  filter: blur(1px);
+  rotate: 18deg;
+
+  will-change: transform;
+}
+
+@media (max-width: 640px) {
+  .st-storefront-transition-island {
+    height: 38px !important;
+    min-height: 38px !important;
+    margin-top: 6px !important;
+    max-width: calc(100vw - 22px) !important;
+  }
+
+  .st-storefront-transition-island__content {
+    padding: 0 12px;
+  }
+
+  .st-storefront-transition-island__label {
+    font-size: 10px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-storefront-transition-island__sheen {
+    display: none;
+  }
+}
+
+/* ==========================================================
+   END STOREFRONT — ADMIN-MOTION ISLAND AUTHORITY V43D
+   ========================================================== */

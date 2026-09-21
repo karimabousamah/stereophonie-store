@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
-  ArrowLeft,
   ArrowUpRight,
   ImageIcon,
   PackageOpen,
@@ -10,8 +9,12 @@ import {
 
 import AdminShell from "@/components/admin/admin-shell";
 import { createClient } from "@/lib/supabase/server";
+import {
+  storefrontConfigurationImages,
+} from "@/lib/storefront-product-media";
 
 import ProductSearch from "@/components/admin/product-search";
+import ProductDirectoryThumbnail from "@/components/admin/products/product-directory-thumbnail";
 export default async function AdminProductsPage({
   searchParams,
 }: {
@@ -25,7 +28,13 @@ export default async function AdminProductsPage({
   const savedState = resolvedSearchParams.saved ?? "";
 
   const initialProductFilter =
-    resolvedSearchParams.filter === "archived" ? "archived" : "all";
+    resolvedSearchParams.filter === "live"
+      ? "published"
+      : resolvedSearchParams.filter === "draft"
+        ? "draft"
+        : resolvedSearchParams.filter === "archived"
+          ? "archived"
+          : "all";
 
   const supabase = await createClient();
 
@@ -67,6 +76,7 @@ export default async function AdminProductsPage({
         id,
         variant_name,
         size,
+        display_position,
         sku,
         regular_price,
         sale_price,
@@ -84,26 +94,107 @@ export default async function AdminProductsPage({
 
   const productIds = (products ?? []).map((product) => product.id);
 
-  const { data: primaryImages, error: primaryImagesError } =
-    productIds.length > 0
-      ? await supabase
-          .from("product_images")
-          .select("product_id, image_url, alt_text, position, is_primary")
-          .in("product_id", productIds)
-          .eq("is_primary", true)
-          .order("position", { ascending: true })
-      : {
-          data: [],
-          error: null,
-        };
+  /*
+   * Use the same authoritative configuration-media hierarchy as the
+   * storefront. The administrator's first configuration by
+   * display_position controls the directory thumbnail, and that
+   * configuration's explicit Main image wins.
+   *
+   * Product-level image order remains the legacy fallback.
+   */
+  /*
+   * product_images can exceed Supabase/PostgREST's maximum rows per
+   * response across the full catalog.
+   *
+   * Loading every product in one unpaginated request silently truncates
+   * the result and makes later products appear to have no media.
+   *
+   * Page through the complete result so every product can resolve its
+   * first configuration's explicit Main image.
+   */
+  const directoryImagePageSize = 500;
 
-  if (primaryImagesError) {
-    console.error("Product primary images query error:", primaryImagesError);
+  let directoryImages: Array<{
+    id: string;
+    product_id: string;
+    image_url: string | null;
+    storage_path: string | null;
+    alt_text: string | null;
+    position: number;
+    is_primary: boolean;
+    product_image_variants: Array<{
+      variant_id: string;
+      position: number;
+      is_primary: boolean;
+    }> | null;
+  }> = [];
+
+  let directoryImagesError: { message: string } | null = null;
+
+  if (productIds.length > 0) {
+    for (let from = 0; ; from += directoryImagePageSize) {
+      const to = from + directoryImagePageSize - 1;
+
+      const pageResult = await supabase
+        .from("product_images")
+        .select(
+          `
+          id,
+          product_id,
+          image_url,
+          storage_path,
+          alt_text,
+          position,
+          is_primary,
+          variant_id,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
+        `,
+        )
+        .in("product_id", productIds)
+        .order("product_id", { ascending: true })
+        .order("position", { ascending: true })
+        .range(from, to);
+
+      if (pageResult.error) {
+        directoryImagesError = pageResult.error;
+        break;
+      }
+
+      const pageImages = pageResult.data ?? [];
+
+      directoryImages.push(...pageImages);
+
+      if (pageImages.length < directoryImagePageSize) {
+        break;
+      }
+    }
   }
 
-  const primaryImageByProductId = new Map(
-    (primaryImages ?? []).map((image) => [String(image.product_id), image]),
-  );
+  if (directoryImagesError) {
+    console.error(
+      "Product directory images query error:",
+      directoryImagesError,
+    );
+  }
+
+  type DirectoryImage = (typeof directoryImages)[number];
+
+  const directoryImagesByProductId =
+    new Map<string, DirectoryImage[]>();
+
+  for (const image of directoryImages) {
+    const productId = String(image.product_id);
+
+    const productImages: DirectoryImage[] =
+      directoryImagesByProductId.get(productId) ?? [];
+
+    productImages.push(image);
+    directoryImagesByProductId.set(productId, productImages);
+  }
 
   const categoryIds = Array.from(
     new Set(
@@ -164,37 +255,18 @@ export default async function AdminProductsPage({
       pageTitle="Products"
       pageDescription="Manage electronics, product images, configurations, pricing and inventory."
     >
-      <div className="px-5 py-6 sm:px-7 sm:py-7">
-        <div className="mx-auto max-w-[1540px]">
-          <header className="rounded-[18px] border border-white/10 bg-white/[0.035] px-5 py-4 backdrop-blur-xl sm:px-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <Link
-                  href="/admin"
-                  className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/45 transition hover:text-white"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Dashboard
-                </Link>
+      <div className="st-admin-products-v2">
+        <div className="st-admin-products-v2__inner">
+          <div className="st-admin-products-v2__actions">
 
-                <p className="mt-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/40">
-                  Product catalog
-                </p>
-
-                <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                  Products
-                </h1>
-              </div>
-
-              <Link
-                href="/admin/products/new"
-                className="group inline-flex items-center justify-center gap-3 rounded-full border border-white bg-white px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-black transition duration-300 hover:bg-transparent hover:text-white"
-              >
-                <Plus className="h-4 w-4 transition duration-300 group-hover:rotate-90" />
-                Add product
-              </Link>
-            </div>
-          </header>
+            <Link
+              href="/admin/products/new"
+              className="st-admin-products-v2__add"
+            >
+              <Plus aria-hidden="true" />
+              <span>Add product</span>
+            </Link>
+          </div>
 
           {savedState === "draft" ? (
             <div className="mt-6 flex items-center justify-between gap-5 rounded-[18px] border border-emerald-500/20 bg-[#effbf5] px-5 py-4 text-[#16815d]">
@@ -231,7 +303,7 @@ export default async function AdminProductsPage({
             </div>
           ) : null}
 
-          <section className="mt-6 overflow-hidden rounded-[22px] border border-white/10 bg-white/[0.025]">
+          <section className="st-admin-products-v2__directory">
             {!products?.length ? (
               <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/[0.04]">
@@ -256,7 +328,7 @@ export default async function AdminProductsPage({
                 </Link>
               </div>
             ) : (
-              <div className="divide-y divide-white/10">
+              <div className="st-admin-products-v2__directory-content">
                 <ProductSearch
                   total={products.length}
                   liveTotal={
@@ -367,8 +439,56 @@ export default async function AdminProductsPage({
                         ? (brandNameById.get(String(product.brand_id)) ?? null)
                         : null;
 
+                      const productImages =
+                        directoryImagesByProductId.get(String(product.id)) ?? [];
+
                       const primaryImage =
-                        primaryImageByProductId.get(String(product.id)) ?? null;
+                        storefrontConfigurationImages(
+                          productImages,
+                          variants,
+                        )[0] ?? null;
+
+                      const primaryOriginalUrl =
+                        primaryImage?.image_url?.trim() || null;
+
+                      const primaryStoragePath =
+                        primaryImage?.storage_path?.trim() || null;
+
+                      let primaryThumbnailUrl: string | null = null;
+
+                      if (primaryStoragePath) {
+                        const slashIndex =
+                          primaryStoragePath.lastIndexOf("/");
+
+                        const directory =
+                          slashIndex >= 0
+                            ? primaryStoragePath.slice(0, slashIndex)
+                            : "";
+
+                        const filename =
+                          slashIndex >= 0
+                            ? primaryStoragePath.slice(slashIndex + 1)
+                            : primaryStoragePath;
+
+                        const dotIndex = filename.lastIndexOf(".");
+
+                        const baseName =
+                          dotIndex > 0
+                            ? filename.slice(0, dotIndex)
+                            : filename;
+
+                        const thumbnailPath = directory
+                          ? `${directory}/storefront/${baseName}.webp`
+                          : `storefront/${baseName}.webp`;
+
+                        const { data: thumbnailData } =
+                          supabase.storage
+                            .from("product-images")
+                            .getPublicUrl(thumbnailPath);
+
+                        primaryThumbnailUrl =
+                          thumbnailData.publicUrl || null;
+                      }
 
                       const statusLabel =
                         product.status === "published"
@@ -405,11 +525,15 @@ export default async function AdminProductsPage({
                             className="st-admin-products-directory__product st-admin-products-directory__edit-link"
                           >
                             <div className="st-admin-products-directory__image">
-                              {primaryImage?.image_url ? (
-                                <img
-                                  src={primaryImage.image_url}
+                              {primaryOriginalUrl ? (
+                                <ProductDirectoryThumbnail
+                                  src={
+                                    primaryThumbnailUrl ??
+                                    primaryOriginalUrl
+                                  }
+                                  fallbackSrc={primaryOriginalUrl}
                                   alt={
-                                    primaryImage.alt_text ||
+                                    primaryImage?.alt_text ||
                                     `${product.name} product image`
                                   }
                                 />
@@ -438,7 +562,6 @@ export default async function AdminProductsPage({
                                     : "is-draft"
                               }`}
                             >
-                              <i aria-hidden="true" />
                               {statusLabel}
                             </span>
                           </div>

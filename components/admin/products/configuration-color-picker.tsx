@@ -10,7 +10,13 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 import {
   canonicalizeProductColorwayName,
@@ -330,6 +336,8 @@ function swatchStyle(hex: string) {
 }
 
 export default function ConfigurationColorPicker({ value, onChange }: Props) {
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [customColors, setCustomColors] = useState<AdminCustomColorway[]>([]);
@@ -354,6 +362,47 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleOutsidePointer(event: MouseEvent) {
+      const target = event.target as Node;
+
+      if (pickerRef.current?.contains(target)) {
+        return;
+      }
+
+      setOpen(false);
+      setQuery("");
+      setCreatorOpen(false);
+      setCreatorError("");
+    }
+
+    function handleEscape(event: globalThis.KeyboardEvent) {
+      if (event.key !== "Escape") return;
+
+      setOpen(false);
+      setQuery("");
+      setCreatorOpen(false);
+      setCreatorError("");
+      triggerRef.current?.focus();
+    }
+
+    document.addEventListener("mousedown", handleOutsidePointer);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleOutsidePointer,
+      );
+      document.removeEventListener(
+        "keydown",
+        handleEscape,
+      );
+    };
+  }, [open]);
 
   const filteredColors = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -476,8 +525,12 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
   const validHex = /^#[0-9A-Fa-f]{6}$/.test(newColorHex);
 
   return (
-    <div className="st-admin-color-picker-v2 relative w-fit">
+    <div
+      ref={pickerRef}
+      className="st-admin-color-picker-v2 relative w-fit"
+    >
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
@@ -531,7 +584,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                   type="button"
                   onClick={closePicker}
                   aria-label="Close color selector"
-                  className="st-admin-color-popup-close-v2 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-black/30 hover:bg-[#eeeeef] hover:text-black"
+                  className="st-admin-popup-bare-close-v44"
                 >
                   <X className="h-4 w-4" strokeWidth={1.8} />
                 </button>
@@ -662,8 +715,8 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
             </>
           ) : (
             <>
-              <div className="flex items-center gap-2 border-b border-black/[0.07] bg-white p-3">
-                <div className="relative min-w-0 flex-1">
+              <div className="border-b border-black/[0.07] bg-white p-3">
+                <div className="st-admin-search-shell-v44-4 relative w-full min-w-0">
                   <Search
                     className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35"
                     strokeWidth={1.8}
@@ -674,18 +727,24 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder="Search colors..."
-                    className="h-10 w-full rounded-[10px] border border-black/10 bg-[#f7f7f8] pl-10 pr-4 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 hover:border-black/15 focus:border-[#202223] focus:bg-white focus:ring-0"
+                    className="h-10 w-full rounded-[10px] border border-black/10 bg-white pl-10 pr-10 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 hover:border-black/15 focus:border-[#202223] focus:bg-white focus:ring-0"
                   />
-                </div>
 
-                <button
-                  type="button"
-                  onClick={closePicker}
-                  aria-label="Close color selector"
-                  className="st-admin-color-popup-close-v2 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] p-0 text-black/40 transition-all duration-200 hover:border-black/30 hover:bg-[#eeeeef] hover:text-black hover:shadow-[0_0_0_3px_rgba(253,183,62,0.14),0_0_18px_rgba(253,183,62,0.20)]"
-                >
-                  <X className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
-                </button>
+                  {query ? (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    aria-label="Clear color search"
+                    className="st-admin-search-clear-v47"
+                  >
+                    <X
+                      className="h-4 w-4"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
+                  </button>
+                ) : null}
+                </div>
               </div>
 
               <div className="max-h-[300px] overflow-y-auto p-3">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -12,6 +12,8 @@ type ProductSaveBarProps = {
   statusText: string;
   onDraft: () => void;
   onPublish: () => void;
+  onDelete?: () => void;
+  deletePending?: boolean;
   formId?: string;
 };
 
@@ -22,20 +24,62 @@ export default function ProductSaveBar({
   statusText,
   onDraft,
   onPublish,
+  onDelete,
+  deletePending = false,
   formId = "st-admin-new-product-form",
 }: ProductSaveBarProps) {
   const [mounted, setMounted] = useState(false);
+  const [deleteConfirmationOpen,
+    setDeleteConfirmationOpen,
+  ] = useState(false);
 
   useEffect(() => {
-    document.body.classList.add(
+    const body = document.body;
+
+    body.classList.add(
       "st-admin-product-editor-active",
+    );
+
+    const syncSidebarEdge = () => {
+      const sidebar =
+        document.querySelector<HTMLElement>(
+          ".st3-admin-sidebar",
+        );
+
+      if (!sidebar) {
+        return;
+      }
+
+      const sidebarEdge =
+        sidebar.getBoundingClientRect().right;
+
+      body.style.setProperty(
+        "--st-admin-product-sidebar-edge",
+        `${Math.round(sidebarEdge)}px`,
+      );
+    };
+
+    syncSidebarEdge();
+
+    window.addEventListener(
+      "resize",
+      syncSidebarEdge,
     );
 
     setMounted(true);
 
     return () => {
-      document.body.classList.remove(
+      window.removeEventListener(
+        "resize",
+        syncSidebarEdge,
+      );
+
+      body.classList.remove(
         "st-admin-product-editor-active",
+      );
+
+      body.style.removeProperty(
+        "--st-admin-product-sidebar-edge",
       );
     };
   }, []);
@@ -86,6 +130,88 @@ export default function ProductSaveBar({
         </div>
 
         <div className="st-admin-product-fixed-header__actions">
+            {onDelete ? (
+              <div
+                className={[
+                  "st-admin-product-fixed-header__delete-shell",
+                  deleteConfirmationOpen
+                    ? "is-confirming"
+                    : "is-idle",
+                ].join(" ")}
+                data-delete-confirmation={
+                  deleteConfirmationOpen ? "open" : "closed"
+                }
+              >
+                <button
+                  type="button"
+                  data-destructive-trigger="true"
+                  disabled={
+                    isSubmitting ||
+                    deletePending ||
+                    deleteConfirmationOpen
+                  }
+                  onClick={() =>
+                    setDeleteConfirmationOpen(true)
+                  }
+                  className="st-admin-product-fixed-header__delete"
+                  aria-label="Delete product"
+                  aria-hidden={deleteConfirmationOpen}
+                  tabIndex={deleteConfirmationOpen ? -1 : 0}
+                >
+                  <Trash2 aria-hidden="true" />
+                  <span>Delete product</span>
+                </button>
+
+                <div
+                  className="st-admin-product-fixed-header__delete-confirm"
+                  role="group"
+                  aria-label="Confirm product deletion"
+                  aria-hidden={!deleteConfirmationOpen}
+                >
+                  <span
+                    className="st-admin-product-fixed-header__delete-question"
+                  >
+                    Delete permanently?
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={
+                      deletePending ||
+                      !deleteConfirmationOpen
+                    }
+                    onClick={() =>
+                      setDeleteConfirmationOpen(false)
+                    }
+                    className="st-admin-product-fixed-header__delete-cancel"
+                    tabIndex={deleteConfirmationOpen ? 0 : -1}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    data-destructive="true"
+                    disabled={
+                      deletePending ||
+                      !deleteConfirmationOpen
+                    }
+                    onClick={onDelete}
+                    className="st-admin-product-fixed-header__delete-confirm-button"
+                    tabIndex={deleteConfirmationOpen ? 0 : -1}
+                  >
+                    <Trash2 aria-hidden="true" />
+
+                    <span>
+                      {deletePending
+                        ? "Deleting..."
+                        : "Delete"}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
           <button
             type="submit"
             name="intent"

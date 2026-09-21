@@ -87,7 +87,6 @@ export default function ImageManager({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadFormRef = useRef<HTMLFormElement>(null);
   const directUploadedImagesInputRef = useRef<HTMLInputElement>(null);
-  const allowServerSubmissionRef = useRef(false);
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -100,6 +99,8 @@ export default function ImageManager({
    */
   const [managedImages, setManagedImages] = useState<ProductImage[]>(images);
   const [pendingImageOperation, setPendingImageOperation] = useState("");
+  const [pendingMovementImageId, setPendingMovementImageId] = useState("");
+  const [pendingMovementDirection, setPendingMovementDirection] = useState("");
   const [imageOperationErrorMessage, setImageOperationErrorMessage] =
     useState("");
 
@@ -225,9 +226,14 @@ export default function ImageManager({
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadError, setUploadError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isPreparingSelectedImages, setIsPreparingSelectedImages] =
+    useState(false);
   const [uploadProgress, setUploadProgress] = useState<{
     currentFileName: string;
     percentage: number;
+    currentIndex?: number;
+    totalFiles?: number;
+    isFinalizing?: boolean;
   } | null>(null);
 
   /*
@@ -347,7 +353,7 @@ const difference =
 
   async function handleImageOperation(
     event: FormEvent<HTMLFormElement>,
-    operation: "usage" | "move" | "primary",
+    operation: "usage" | "move" | "primary" | "delete",
   ) {
     event.preventDefault();
 
@@ -373,9 +379,17 @@ const difference =
         ? "Saving image usage…"
         : operation === "move"
           ? "Updating image order…"
-          : "Updating Main image…";
+          : operation === "primary"
+            ? "Updating Main image…"
+            : "Deleting image…";
 
     setPendingImageOperation(operationLabel);
+
+    if (operation === "move") {
+      setPendingMovementImageId(imageId);
+      setPendingMovementDirection(direction);
+    }
+
     setImageOperationErrorMessage("");
 
     /*
@@ -383,6 +397,12 @@ const difference =
      * roll back instantly without disturbing the surrounding product editor.
      */
     const previousImages = managedImages;
+
+    if (operation === "delete" && imageId) {
+      setManagedImages((currentImages) =>
+        currentImages.filter((image) => image.id !== imageId),
+      );
+    }
 
     /*
      * ========================================================
@@ -653,7 +673,9 @@ const difference =
           ? await updateProductImageVariantName(formData)
           : operation === "move"
             ? await moveProductImage(formData)
-            : await setPrimaryProductImage(formData);
+            : operation === "primary"
+              ? await setPrimaryProductImage(formData)
+              : await deleteProductImage(formData);
 
       if (
         !result ||
@@ -690,6 +712,8 @@ const difference =
       });
 
       setPendingImageOperation("");
+      setPendingMovementImageId("");
+      setPendingMovementDirection("");
     }
   }
 
@@ -851,17 +875,45 @@ const difference =
     }
   }
 
-  async function handleDirectUploadSubmit(event: FormEvent<HTMLFormElement>) {
-    if (allowServerSubmissionRef.current) {
-      allowServerSubmissionRef.current = false;
+  function removeSelectedFile(index: number) {
+    if (isUploading || isPreparingSelectedImages) {
       return;
     }
 
+    const previewUrl = previewUrls[index];
+
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    setSelectedFiles((current) =>
+      current.filter((_, candidateIndex) => candidateIndex !== index),
+    );
+
+    setSelectedVariantIds((current) =>
+      current.filter((_, candidateIndex) => candidateIndex !== index),
+    );
+
+    setPreviewUrls((current) =>
+      current.filter((_, candidateIndex) => candidateIndex !== index),
+    );
+
+    if (selectedFiles.length <= 1 && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  async function handleDirectUploadSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setUploadError("");
 
     if (selectedFiles.length === 0) {
       setUploadError("Select at least one image.");
+      return;
+    }
+
+    if (isPreparingSelectedImages) {
+      setUploadError("Please wait while the selected images are prepared.");
       return;
     }
 
@@ -880,6 +932,9 @@ const difference =
     setUploadProgress({
       currentFileName: selectedFiles[0]?.name ?? "",
       percentage: 0,
+      currentIndex: 1,
+      totalFiles: selectedFiles.length,
+      isFinalizing: false,
     });
 
     const totalBytes = selectedFiles.reduce(
@@ -918,6 +973,9 @@ const difference =
             setUploadProgress({
               currentFileName: file.name,
               percentage: Math.min(percentage, 100),
+              currentIndex: index + 1,
+              totalFiles: selectedFiles.length,
+              isFinalizing: false,
             });
           },
         });
@@ -945,6 +1003,9 @@ const difference =
       setUploadProgress({
         currentFileName: "",
         percentage: 100,
+        currentIndex: selectedFiles.length,
+        totalFiles: selectedFiles.length,
+        isFinalizing: true,
       });
 
       if (!directUploadedImagesInputRef.current) {
@@ -953,17 +1014,42 @@ const difference =
 
       directUploadedImagesInputRef.current.value = JSON.stringify(payload);
 
-      const form = uploadFormRef.current;
+      const finalizationData = new FormData();
+      finalizationData.set("product_id", productId);
+      finalizationData.set("direct_uploaded_images", JSON.stringify(payload));
+      finalizationData.set("_client_image_operation", "1");
 
-      if (!form) {
-        throw new Error("The image upload form could not be submitted.");
+      const result = await finalizeDirectProductImageUploads(finalizationData);
+
+      if (
+        !result ||
+        typeof result !== "object" ||
+        !("images" in result) ||
+        !Array.isArray(result.images)
+      ) {
+        throw new Error(
+          "The images were saved, but the refreshed gallery could not be loaded.",
+        );
       }
 
-      allowServerSubmissionRef.current = true;
-      form.requestSubmit();
-    } catch (error) {
-      allowServerSubmissionRef.current = false;
+      setManagedImages(result.images as ProductImage[]);
 
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+
+      setSelectedFiles([]);
+      setSelectedVariantIds([]);
+      setPreviewUrls([]);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      directUploadedImagesInputRef.current.value = "[]";
+
+      setUploadProgress(null);
+      setUploadError("");
+      setIsUploading(false);
+    } catch (error) {
       await removeDirectlyUploadedImages(uploadedPaths);
 
       if (directUploadedImagesInputRef.current) {
@@ -1011,9 +1097,8 @@ const difference =
     let processedFiles: File[];
 
     try {
-      setUploadError(
-        "Preparing images… removing background and standardizing layout.",
-      );
+      setIsPreparingSelectedImages(true);
+      setUploadError("");
 
       processedFiles = await Promise.all(
         selected.map((file) => processImageBeforeUpload(file, "product")),
@@ -1026,6 +1111,8 @@ const difference =
       );
 
       return;
+    } finally {
+      setIsPreparingSelectedImages(false);
     }
 
     previewUrls.forEach((previewUrl) => {
@@ -1105,9 +1192,23 @@ const difference =
         ) : null}
 
         <form
+          ref={uploadFormRef}
           onSubmit={handleDirectUploadSubmit}
           className="st-admin-existing-media-v2__upload"
         >
+
+            <input
+              type="hidden"
+              name="product_id"
+              value={productId}
+            />
+
+            <input
+              ref={directUploadedImagesInputRef}
+              type="hidden"
+              name="direct_uploaded_images"
+              defaultValue="[]"
+            />
           <div className="st-admin-existing-media-v2__upload-head">
             <div>
               <strong>Add images</strong>
@@ -1132,19 +1233,7 @@ const difference =
                 multiple
                 disabled={isUploading}
                 onChange={(event) => {
-                  const files = Array.from(event.currentTarget.files ?? []);
-                  setSelectedFiles(files);
-
-                  previewUrls.forEach((previewUrl) => {
-                    URL.revokeObjectURL(previewUrl);
-                  });
-
-                  setPreviewUrls(
-                    files.map((file) => URL.createObjectURL(file)),
-                  );
-
-                  setSelectedVariantIds(files.map(() => []));
-                  setUploadError("");
+                  void selectFiles(event.currentTarget.files);
                 }}
               />
               Add images
@@ -1153,6 +1242,18 @@ const difference =
 
           {uploadError ? (
             <div className="st-admin-media-manager__error">{uploadError}</div>
+          ) : null}
+
+          {isPreparingSelectedImages ? (
+            <div
+              className="st-admin-existing-media-v2__preparing-status"
+              aria-live="polite"
+            >
+              <span className="st-admin-existing-media-v2__activity-spinner" />
+              <span>
+                Preparing images… removing background and standardizing layout.
+              </span>
+            </div>
           ) : null}
 
           {selectedFiles.length > 0 ? (
@@ -1164,15 +1265,18 @@ const difference =
                     {selectedFiles.length === 1 ? "image" : "images"} ready
                   </strong>
                   <span>
-                    Leave configuration assignment empty to share an image with
-                    every configuration.
+                    Choose usage, then upload. New images are added to the end
+                    of the saved gallery.
                   </span>
                 </div>
 
                 <button
                   type="button"
                   onClick={clearSelectedFiles}
-                  disabled={isUploading}
+                  disabled={
+                    isUploading ||
+                    isPreparingSelectedImages
+                  }
                   className="st-admin-existing-media-v2__secondary"
                 >
                   Clear
@@ -1180,97 +1284,170 @@ const difference =
               </div>
 
               <div className="st-admin-existing-media-v2__pending-grid">
-                {selectedFiles.map((file, index) => (
-                  <article
-                    key={`${file.name}-${file.lastModified}-${index}`}
-                    className="st-admin-media-item"
-                  >
-                    <div className="st-admin-media-item__preview">
-                      {previewUrls[index] ? (
-                        <img
-                          src={previewUrls[index]}
-                          alt={file.name}
-                        />
-                      ) : null}
+                {selectedFiles.map((file, index) => {
+                  const assignedVariantIds =
+                    selectedVariantIds[index] ?? [];
 
-                      <span className="st-admin-media-item__position">
-                        {index + 1}
-                      </span>
-                    </div>
+                  const currentUsageLabel =
+                    assignedVariantIds.length === 0
+                      ? "All configurations"
+                      : assignedVariantIds
+                          .map((variantId) => {
+                            const configuration =
+                              liveConfigurations.find(
+                                (candidate) =>
+                                  candidate.id === variantId,
+                              );
 
-                    <div className="st-admin-media-item__body">
-                      <strong className="st-admin-media-item__file">
-                        {file.name}
-                      </strong>
+                            return (
+                              configuration?.variant_name ||
+                              configuration?.fallbackLabel ||
+                              ""
+                            );
+                          })
+                          .filter(Boolean)
+                          .join(", ");
 
-                      <details className="st-admin-media-item__usage">
-                        <summary>
-                          <span>Edit usage</span>
-                          <small>
-                            {(selectedVariantIds[index] ?? []).length === 0
-                              ? "All configurations"
-                              : `${(selectedVariantIds[index] ?? []).length} selected`}
-                          </small>
-                        </summary>
+                  return (
+                    <article
+                      key={`${file.name}-${file.lastModified}-${index}`}
+                      className="st-admin-media-item"
+                      data-admin-product-image-card="true"
+                    >
+                      <div className="st-admin-media-item__preview">
+                        {previewUrls[index] ? (
+                          <img
+                            src={previewUrls[index]}
+                            alt={`Product image ${index + 1}`}
+                          />
+                        ) : null}
 
-                        <div className="st-admin-media-item__usage-panel">
+                      </div>
+
+                      <div className="st-admin-media-item__body">
+                        <div className="st-admin-media-item__file">
+                          <strong>{file.name}</strong>
+                          <span>
+                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                          </span>
+                        </div>
+
+                        <details className="st-admin-media-item__usage">
+                          <summary>
+                            <span>{currentUsageLabel}</span>
+                            <small>Edit usage</small>
+                          </summary>
+
+                          <div className="st-admin-media-item__usage-panel">
+                            <button
+                              type="button"
+                              disabled={
+                                isUploading ||
+                                isPreparingSelectedImages
+                              }
+                              onClick={() => {
+                                setSelectedVariantIds((current) =>
+                                  current.map(
+                                    (value, candidateIndex) =>
+                                      candidateIndex === index
+                                        ? []
+                                        : value,
+                                  ),
+                                );
+                              }}
+                              className={
+                                assignedVariantIds.length === 0
+                                  ? "st-admin-existing-media-v2__shared is-active"
+                                  : "st-admin-existing-media-v2__shared"
+                              }
+                            >
+                              Shared with all configurations
+                            </button>
+
+                            {liveConfigurations.length > 0 ? (
+                              <div className="st-admin-media-item__configuration-list">
+                                {liveConfigurations.map(
+                                  (configuration) => {
+                                    const selected =
+                                      assignedVariantIds.includes(
+                                        configuration.id,
+                                      );
+
+                                    return (
+                                      <label key={configuration.id}>
+                                        <input
+                                          type="checkbox"
+                                          disabled={
+                                            isUploading ||
+                                            isPreparingSelectedImages
+                                          }
+                                          checked={selected}
+                                          onChange={() => {
+                                            setSelectedVariantIds(
+                                              (current) =>
+                                                current.map(
+                                                  (
+                                                    value,
+                                                    candidateIndex,
+                                                  ) => {
+                                                    if (
+                                                      candidateIndex !==
+                                                      index
+                                                    ) {
+                                                      return value;
+                                                    }
+
+                                                    return selected
+                                                      ? value.filter(
+                                                          (
+                                                            variantId,
+                                                          ) =>
+                                                            variantId !==
+                                                            configuration.id,
+                                                        )
+                                                      : [
+                                                          ...value,
+                                                          configuration.id,
+                                                        ];
+                                                  },
+                                                ),
+                                            );
+                                          }}
+                                        />
+
+                                        <span>
+                                          {configuration.variant_name ||
+                                            configuration.fallbackLabel}
+                                        </span>
+                                      </label>
+                                    );
+                                  },
+                                )}
+                              </div>
+                            ) : null}
+                          </div>
+                        </details>
+
+                        <div className="st-admin-media-item__actions">
                           <button
                             type="button"
-                            onClick={() => {
-                              setSelectedVariantIds((current) =>
-                                current.map((value, candidateIndex) =>
-                                  candidateIndex === index ? [] : value,
-                                ),
-                              );
-                            }}
-                            className="st-admin-existing-media-v2__shared"
+                            disabled={
+                              isUploading ||
+                              isPreparingSelectedImages
+                            }
+                            onClick={() =>
+                              removeSelectedFile(index)
+                            }
+                            title="Remove image"
+                            className="is-danger"
                           >
-                            Shared with all configurations
+                            <Trash2 />
                           </button>
-
-                          <div className="st-admin-media-item__configuration-list">
-                            {liveConfigurations.map((configuration) => {
-                              const selected = (
-                                selectedVariantIds[index] ?? []
-                              ).includes(configuration.id);
-
-                              return (
-                                <label key={configuration.id}>
-                                  <input
-                                    type="checkbox"
-                                    checked={selected}
-                                    onChange={() => {
-                                      setSelectedVariantIds((current) =>
-                                        current.map((value, candidateIndex) => {
-                                          if (candidateIndex !== index) {
-                                            return value;
-                                          }
-
-                                          return selected
-                                            ? value.filter(
-                                                (variantId) =>
-                                                  variantId !==
-                                                  configuration.id,
-                                              )
-                                            : [...value, configuration.id];
-                                        }),
-                                      );
-                                    }}
-                                  />
-
-                                  <span>
-                                    {configuration.variant_name ||
-                                      configuration.fallbackLabel}
-                                  </span>
-                                </label>
-                              );
-                            })}
-                          </div>
                         </div>
-                      </details>
-                    </div>
-                  </article>
-                ))}
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
 
               <div className="st-admin-existing-media-v2__upload-footer">
@@ -1278,7 +1455,14 @@ const difference =
                   <div className="st-admin-existing-media-v2__progress">
                     <div>
                       <span>
-                        {uploadProgress.currentFileName || "Finalizing images"}
+                        {uploadProgress.isFinalizing
+                          ? "Finalizing images…"
+                          : `Uploading ${
+                              uploadProgress.currentIndex ?? 1
+                            } of ${
+                              uploadProgress.totalFiles ??
+                              selectedFiles.length
+                            } images`}
                       </span>
                       <strong>{uploadProgress.percentage}%</strong>
                     </div>
@@ -1297,11 +1481,16 @@ const difference =
 
                 <button
                   type="submit"
-                  disabled={isUploading}
+                  disabled={
+                    isUploading ||
+                    isPreparingSelectedImages
+                  }
                   className="st-admin-existing-media-v2__primary"
                 >
                   {isUploading
-                    ? `Uploading ${uploadProgress?.percentage ?? 0}%`
+                    ? uploadProgress?.isFinalizing
+                      ? "Finalizing…"
+                      : "Uploading…"
                     : "Upload images"}
                 </button>
               </div>
@@ -1375,11 +1564,27 @@ const difference =
           </div>
         ) : null}
 
-        {pendingImageOperation ? (
-          <div className="st-admin-existing-media-v2__activity">
-            {pendingImageOperation}
+        <div
+          className="st-admin-existing-media-v2__activity-slot"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <div
+            className={`st-admin-existing-media-v2__activity${
+              pendingImageOperation ? " is-visible" : ""
+            }`}
+          >
+            {pendingImageOperation ? (
+              <>
+                <span
+                  className="st-admin-existing-media-v2__activity-spinner"
+                  aria-hidden="true"
+                />
+                <span>{pendingImageOperation}</span>
+              </>
+            ) : null}
           </div>
-        ) : null}
+        </div>
 
         {orderedImages.length === 0 ? (
           <div className="st-admin-media-manager__empty">
@@ -1572,16 +1777,32 @@ const difference =
                         <button
                           type="submit"
                           data-secondary-action="true"
+                          data-movement-pending={
+                            pendingMovementImageId === image.id &&
+                            pendingMovementDirection === "left"
+                              ? "true"
+                              : undefined
+                          }
                           disabled={
-                            isShared
+                            (pendingMovementImageId === image.id &&
+                              pendingMovementDirection === "left") ||
+                            (isShared
                               ? sharedIndex <= 0
                               : !activeAssignment ||
-                                activeConfigurationIndex <= 0
+                                activeConfigurationIndex <= 0)
                           }
                           title="Move image earlier"
                           aria-label="Move image earlier"
                         >
-                          <ArrowLeft />
+                          {pendingMovementImageId === image.id &&
+                          pendingMovementDirection === "left" ? (
+                            <span
+                              className="st-admin-existing-media-v2__arrow-spinner"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <ArrowLeft />
+                          )}
                         </button>
                       </form>
 
@@ -1603,29 +1824,48 @@ const difference =
                         <button
                           type="submit"
                           data-secondary-action="true"
+                          data-movement-pending={
+                            pendingMovementImageId === image.id &&
+                            pendingMovementDirection === "right"
+                              ? "true"
+                              : undefined
+                          }
                           disabled={
-                            isShared
+                            (pendingMovementImageId === image.id &&
+                              pendingMovementDirection === "right") ||
+                            (isShared
                               ? sharedIndex >= sharedImages.length - 1
                               : !activeAssignment ||
                                 activeConfigurationIndex >=
-                                  activeConfigurationImages.length - 1
+                                  activeConfigurationImages.length - 1)
                           }
                           title="Move image later"
                           aria-label="Move image later"
                         >
-                          <ArrowRight />
+                          {pendingMovementImageId === image.id &&
+                          pendingMovementDirection === "right" ? (
+                            <span
+                              className="st-admin-existing-media-v2__arrow-spinner"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <ArrowRight />
+                          )}
                         </button>
                       </form>
 
                       <form
-                        action={deleteProductImage}
                         onSubmit={(event) => {
                           const confirmed = window.confirm(
                             "Delete this image permanently?",
                           );
+
                           if (!confirmed) {
                             event.preventDefault();
+                            return;
                           }
+
+                          void handleImageOperation(event, "delete");
                         }}
                       >
                         <input type="hidden" name="product_id" value={productId} />
@@ -1918,7 +2158,6 @@ const difference =
                     )}
 
                     <form
-                      action={deleteProductImage}
                       onSubmit={(event) => {
                         const confirmed = window.confirm(
                           "Delete this image permanently?",
@@ -1926,7 +2165,10 @@ const difference =
 
                         if (!confirmed) {
                           event.preventDefault();
+                          return;
                         }
+
+                        void handleImageOperation(event, "delete");
                       }}
                     >
                       <input

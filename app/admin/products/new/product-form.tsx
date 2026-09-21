@@ -33,6 +33,7 @@ import {
   ProductSidebarCard,
   ProductWorkspace,
 } from "@/components/admin/products/v2/product-workspace";
+import { smoothScrollProductResultToTop } from "@/components/admin/product-save-result-scroll";
 
 type Category = {
   id: string;
@@ -64,7 +65,7 @@ function createInitialVariants(): AdminElectronicsVariant[] {
       sale_price: "",
       stock_quantity: 0,
       low_stock_threshold: 2,
-      availability_status: "",
+      availability_status: "in_stock",
     },
   ];
 }
@@ -644,7 +645,7 @@ export default function ProductForm({
        * The short minimum display time also prevents a photo-less draft
        * from flashing too quickly to be perceived.
        */
-      await waitForProcessingPaint(650);
+      await waitForProcessingPaint();
 
       if (cancelSubmissionRef.current) {
         resetSubmissionExperience();
@@ -714,7 +715,7 @@ export default function ProductForm({
        * boundary, a fast submission can navigate before the administrator
        * ever sees the processing experience.
        */
-      await waitForProcessingPaint(450);
+      await waitForProcessingPaint();
 
       /*
        * After this point the browser is handing the completed form to the
@@ -758,6 +759,13 @@ export default function ProductForm({
         );
 
         resetSubmissionExperience();
+
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            smoothScrollProductResultToTop();
+          });
+        });
+
         return;
       }
 
@@ -789,6 +797,12 @@ export default function ProductForm({
       );
 
       resetSubmissionExperience();
+
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          smoothScrollProductResultToTop();
+        });
+      });
     }
   }
 
@@ -1063,15 +1077,16 @@ export default function ProductForm({
         sidebar={
           <>
             <ProductSidebarCard title="Status">
-              <div className="st-admin-product-status-v2">
-                <span />
-
+              <div
+                className="st-admin-product-status-summary-v2 is-draft"
+                data-admin-product-effective-status="draft"
+              >
                 <div>
                   <strong>Draft</strong>
-                  <p>
-                    Hidden from customers until this product is
-                    published successfully.
-                  </p>
+                  <small>
+                    Hidden from customers until this product is published
+                    successfully.
+                  </small>
                 </div>
               </div>
             </ProductSidebarCard>

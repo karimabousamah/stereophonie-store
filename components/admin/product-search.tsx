@@ -104,17 +104,91 @@ export default function ProductSearch({
     <section
       className="st-admin-directory-search st-admin-product-directory-v2"
       aria-label="Product directory"
+      data-product-filter={status}
     >
-      <div className="st-admin-directory-search__heading">
-        <div>
-          <span>Product directory</span>
+      <div className="st-admin-product-directory-v2__toolbar">
+        <label className="st-admin-directory-search__field">
+          <span
+            className="st-admin-directory-search__icon"
+            aria-hidden="true"
+          >
+            <Search />
+          </span>
 
-          <strong>Find a product</strong>
+          <input
+            ref={inputRef}
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search products, SKU, category or brand"
+            aria-label="Search products"
+            autoComplete="off"
+            spellCheck={false}
+          />
+
+          {query ? (
+            <button
+              type="button"
+              onClick={clearSearch}
+              aria-label="Clear product search"
+            >
+              <X />
+            </button>
+          ) : null}
+        </label>
+
+        <div
+          className="st-admin-product-directory-v2__filters"
+          aria-label="Filter products"
+        >
+          <button
+            type="button"
+            className={status === "all" ? "is-active" : ""}
+            onClick={() => setStatus("all")}
+          >
+            <span>All</span>
+            <strong>{total}</strong>
+          </button>
+
+          <button
+            type="button"
+            className={status === "published" ? "is-active" : ""}
+            onClick={() => setStatus("published")}
+          >
+            <span>Live</span>
+            <strong>{liveTotal}</strong>
+          </button>
+
+          <button
+            type="button"
+            className={status === "draft" ? "is-active" : ""}
+            onClick={() => setStatus("draft")}
+          >
+            <span>Drafts</span>
+            <strong>{draftTotal}</strong>
+          </button>
+
+          <button
+            type="button"
+            className={status === "coming_soon" ? "is-active" : ""}
+            onClick={() => setStatus("coming_soon")}
+          >
+            <span>Coming soon</span>
+            <strong>{comingSoonTotal}</strong>
+          </button>
+
+          <button
+            type="button"
+            className={status === "out_of_stock" ? "is-active" : ""}
+            onClick={() => setStatus("out_of_stock")}
+          >
+            <span>Out of stock</span>
+            <strong>{outOfStockTotal}</strong>
+          </button>
         </div>
 
         <div className="st-admin-directory-search__count">
           <strong>{normalizedQuery ? visibleCount : directoryTotal}</strong>
-
           <span>
             {(normalizedQuery ? visibleCount : directoryTotal) === 1
               ? "product"
@@ -122,84 +196,6 @@ export default function ProductSearch({
           </span>
         </div>
       </div>
-
-      <div
-        className="st-admin-product-directory-v2__filters"
-        aria-label="Filter products"
-      >
-        <button
-          type="button"
-          className={status === "all" ? "is-active" : ""}
-          onClick={() => setStatus("all")}
-        >
-          <span>All products</span>
-          <strong>{total}</strong>
-        </button>
-
-        <button
-          type="button"
-          className={status === "published" ? "is-active" : ""}
-          onClick={() => setStatus("published")}
-        >
-          <span>Live</span>
-          <strong>{liveTotal}</strong>
-        </button>
-
-        <button
-          type="button"
-          className={status === "draft" ? "is-active" : ""}
-          onClick={() => setStatus("draft")}
-        >
-          <span>Drafts</span>
-          <strong>{draftTotal}</strong>
-        </button>
-
-        <button
-          type="button"
-          className={status === "coming_soon" ? "is-active" : ""}
-          onClick={() => setStatus("coming_soon")}
-        >
-          <span>Coming Soon</span>
-          <strong>{comingSoonTotal}</strong>
-        </button>
-
-        <button
-          type="button"
-          className={status === "out_of_stock" ? "is-active" : ""}
-          onClick={() => setStatus("out_of_stock")}
-        >
-          <span>Out of stock</span>
-          <strong>{outOfStockTotal}</strong>
-        </button>
-
-      </div>
-
-      <label className="st-admin-directory-search__field">
-        <span className="st-admin-directory-search__icon" aria-hidden="true">
-          <Search />
-        </span>
-
-        <input
-          ref={inputRef}
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search iPhone, Samsung, headphones, gaming..."
-          aria-label="Search products"
-          autoComplete="off"
-          spellCheck={false}
-        />
-
-        {query ? (
-          <button
-            type="button"
-            onClick={clearSearch}
-            aria-label="Clear product search"
-          >
-            <X />
-          </button>
-        ) : null}
-      </label>
 
       {normalizedQuery ? (
         <p className="st-admin-directory-search__status">

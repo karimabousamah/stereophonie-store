@@ -88,6 +88,7 @@ function MetricCard({
   value,
   description,
   tone,
+  href,
 }: {
   icon: React.ComponentType<{
     className?: string;
@@ -96,9 +97,10 @@ function MetricCard({
   value: string;
   description: string;
   tone: "green" | "blue" | "orange" | "rose" | "violet";
+  href?: string;
 }) {
-  return (
-    <article className={`st-dash-intel-metric is-${tone}`}>
+  const content = (
+    <>
       <div className="st-dash-intel-metric__icon">
         <Icon />
       </div>
@@ -108,6 +110,24 @@ function MetricCard({
       <strong>{value}</strong>
 
       <small>{description}</small>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        prefetch
+        className={`st-dash-intel-metric st-dash-intel-metric--link is-${tone}`}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <article className={`st-dash-intel-metric is-${tone}`}>
+      {content}
     </article>
   );
 }
@@ -333,32 +353,9 @@ export default function DashboardClient({
       pageTitle="Dashboard"
       pageDescription="A concise view of store health, catalogue quality and business performance."
     >
-      <main className="st-dash-intel">
-        <section className="st-dash-intel-hero">
-          <div>
-            <span>Commerce overview</span>
-
-            <h1>Store dashboard</h1>
-
-            <p>
-              A focused overview of your catalogue quality and recent commercial
-              performance.
-            </p>
-          </div>
-
-          <div className="st-dash-intel-hero__status">
-            <i />
-            Store operational
-          </div>
-        </section>
-
-        <section className="st-dash-intel-section">
-          <div className="st-dash-intel-section__heading">
-            <div>
-              <span>Key metrics</span>
-              <h2>Today at a glance</h2>
-            </div>
-          </div>
+      <main className="st-dash-intel st-admin-dashboard-v2">
+        <section className="st-dash-intel-section st-dash-overview-section-v2">
+          <h2 className="st-admin-dashboard-v2__overview-title">Overview</h2>
 
           <div className="st-dash-intel-metrics">
             <MetricCard
@@ -367,6 +364,7 @@ export default function DashboardClient({
               value={String(statistics.liveProducts)}
               description="Visible on the storefront"
               tone="green"
+              href="/admin/products?filter=live"
             />
 
             <MetricCard
@@ -375,6 +373,7 @@ export default function DashboardClient({
               value={String(statistics.draftProducts)}
               description="Hidden from customers"
               tone="blue"
+              href="/admin/products?filter=draft"
             />
 
             <MetricCard
@@ -383,6 +382,7 @@ export default function DashboardClient({
               value={String(statistics.pendingOrders)}
               description="Awaiting admin action"
               tone="orange"
+              href="/admin/orders"
             />
 
             <MetricCard
@@ -391,6 +391,7 @@ export default function DashboardClient({
               value={String(statistics.pendingStockAlerts)}
               description="Customers waiting for stock"
               tone="rose"
+              href="/admin/stock-alerts"
             />
 
             <MetricCard
@@ -403,100 +404,158 @@ export default function DashboardClient({
           </div>
         </section>
 
-        <section className="st-dash-intel-section">
-          <div className="st-dash-intel-section__heading st-dash-intel-section__heading--split">
-            <div>
-              <span>Catalogue intelligence</span>
 
-              <h2>What needs attention</h2>
+<section className="st-dash-intel-section st-dash-performance-section-v2">
+  <DashboardLivePerformance orders={paidOrders} />
+</section>
+<section className="st-admin-action-center">
+          <div className="st-admin-action-center__header">
+            <div className="st-admin-action-center__heading">
+              <span>Action center</span>
+
+              <h2>Needs your attention</h2>
 
               <p>
-                Only catalogue-quality issues are shown here. Orders, stock
-                alerts, customers and coupons remain in their dedicated
-                sections.
+                Review catalogue issues that may affect product quality or
+                storefront organization.
               </p>
             </div>
 
             <div
-              className={`st-dash-health-score ${
+              className={`st-admin-action-center__summary ${
                 attentionCount === 0 ? "is-clear" : ""
               }`}
             >
-              {attentionCount === 0 ? <CheckCircle2 /> : <Sparkles />}
+              <strong>{attentionCount}</strong>
 
               <div>
-                <strong>
-                  {attentionCount === 0
-                    ? "Catalogue clear"
-                    : `${attentionCount} ${
-                        attentionCount === 1 ? "item" : "items"
-                      }`}
-                </strong>
-
                 <span>
                   {attentionCount === 0
-                    ? "No catalogue issues detected"
-                    : "Worth reviewing"}
+                    ? "Everything clear"
+                    : attentionCount === 1
+                      ? "Item to review"
+                      : "Items to review"}
                 </span>
+
+                <small>
+                  {attentionCount === 0
+                    ? "No catalogue action needed"
+                    : "Across catalogue checks"}
+                </small>
               </div>
             </div>
           </div>
 
-          {attentionCount === 0 ? (
-            <div className="st-dash-attention-clear">
-              <div>
-                <CheckCircle2 />
+          <div className="st-admin-action-center__layout">
+            <div className="st-admin-action-center__priority">
+              <div className="st-admin-action-center__subheader">
+                <div>
+                  <span>Priority</span>
+                  <strong>Open issues</strong>
+                </div>
+
+                <small>
+                  {attentionItems.filter((item) => item.count > 0).length} active
+                </small>
               </div>
 
-              <strong>Everything looks organised.</strong>
+              <div className="st-admin-action-center__issue-list">
+                {attentionItems
+                  .filter((item) => item.count > 0)
+                  .map((item) => {
+                    const Icon = item.icon;
 
-              <p>
-                Published products have the essential catalogue information we
-                currently check.
-              </p>
-            </div>
-          ) : (
-            <div className="st-dash-attention-grid">
-              {attentionItems.map((item) => {
-                const Icon = item.icon;
+                    return (
+                      <Link
+                        href={item.href}
+                        key={item.title}
+                        className="st-admin-action-center__issue"
+                      >
+                        <span className="st-admin-action-center__icon">
+                          <Icon />
+                        </span>
 
-                return (
-                  <Link
-                    href={item.href}
-                    key={item.title}
-                    className={`st-dash-attention-card ${
-                      item.count === 0 ? "is-clear" : ""
-                    }`}
-                  >
-                    <div className="st-dash-attention-card__top">
-                      <div className="st-dash-attention-card__icon">
-                        <Icon />
-                      </div>
+                        <div className="st-admin-action-center__issue-copy">
+                          <strong>{item.title}</strong>
+                          <span>{item.description}</span>
+                        </div>
 
-                      <strong>{item.count}</strong>
-                    </div>
+                        <strong className="st-admin-action-center__count">
+                          {item.count}
+                        </strong>
 
-                    <h3>{item.title}</h3>
+                        <span className="st-admin-action-center__review">
+                          Review
+                          <ArrowRight />
+                        </span>
+                      </Link>
+                    );
+                  })}
 
-                    <p>
-                      {item.count === 0
-                        ? "No issue detected."
-                        : item.description}
-                    </p>
-
-                    <span>
-                      {item.count === 0 ? "All clear" : "Review products"}
-
-                      {item.count > 0 ? <ArrowRight /> : <CheckCircle2 />}
+                {attentionCount === 0 ? (
+                  <div className="st-admin-action-center__empty">
+                    <span className="st-admin-action-center__icon">
+                      <CheckCircle2 />
                     </span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </section>
 
-        <DashboardLivePerformance orders={paidOrders} />
+                    <div>
+                      <strong>Catalogue is in good shape</strong>
+
+                      <span>
+                        No catalogue issues currently require your attention.
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            <aside className="st-admin-action-center__checks">
+              <div className="st-admin-action-center__subheader">
+                <div>
+                  <span>Status</span>
+                  <strong>Catalogue checks</strong>
+                </div>
+
+                <small>
+                  {attentionItems.filter((item) => item.count === 0).length}/
+                  {attentionItems.length} clear
+                </small>
+              </div>
+
+              <div className="st-admin-action-center__check-list">
+                {attentionItems.map((item) => {
+                  const Icon = item.icon;
+                  const clear = item.count === 0;
+
+                  return (
+                    <Link
+                      href={item.href}
+                      key={item.title}
+                      className={`st-admin-action-center__check ${
+                        clear ? "is-clear" : "needs-review"
+                      }`}
+                    >
+                      <span className="st-admin-action-center__check-icon">
+                        <Icon />
+                      </span>
+
+                      <span className="st-admin-action-center__check-name">
+                        {item.title}
+                      </span>
+
+                      <strong>
+                        {clear ? "Clear" : item.count}
+                      </strong>
+
+                      {clear ? <CheckCircle2 /> : <ArrowRight />}
+                    </Link>
+                  );
+                })}
+              </div>
+            </aside>
+          </div>
+        </section>
       </main>
     </AdminShell>
   );

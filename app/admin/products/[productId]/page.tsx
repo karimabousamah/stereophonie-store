@@ -1,9 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import {
   CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 
 import AdminShell from "@/components/admin/admin-shell";
+import ProductSaveResultScroll from "@/components/admin/product-save-result-scroll";
 import { createClient } from "@/lib/supabase/server";
 
 import EditProductForm from "./edit-product-form";
@@ -218,6 +220,12 @@ export default async function EditProductPage({
       pageTitle="Edit product"
       pageDescription="Update product information, images, inventory, visibility and merchandising."
     >
+      <ProductSaveResultScroll
+        active={Boolean(
+          savedStatus || resolvedSearchParams.error,
+        )}
+      />
+
       <div className="px-5 py-6 sm:px-7 sm:py-7">
         <div className="mx-auto max-w-[1540px]">
 
@@ -257,6 +265,25 @@ export default async function EditProductPage({
                 <p className="mt-2 text-sm leading-6 text-white/65">
                   Product information, configurations and store placement were
                   saved. The current publication status was preserved.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div
+              data-admin-product-error="true"
+              className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[20px] border border-red-400/30 bg-red-400/[0.07] p-5"
+            >
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-red-300">
+                  Product not saved
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-white/65">
+                  {errorMessage}
                 </p>
               </div>
             </div>

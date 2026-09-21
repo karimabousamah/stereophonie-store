@@ -456,35 +456,32 @@ export default function ProductBrandPicker({
             ) : null}
 
             {canCreate ? (
-              <div className="border-t border-black/[0.07] bg-[#fafafa] p-2.5">
-                <button
-                  type="button"
-                  onClick={() => void createRequestedBrand()}
-                  disabled={creating}
-                  className="group flex min-h-[48px] w-full items-center justify-between gap-4 rounded-[13px] border border-[#e0a535]/55 bg-[#fffaf0] px-3.5 text-left transition hover:border-[#d29525] hover:bg-[#fff5dd] hover:shadow-[0_8px_24px_rgba(253,183,62,0.16)] disabled:cursor-wait disabled:opacity-60"
-                >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fdb73e] text-black shadow-[0_5px_14px_rgba(253,183,62,0.25)]">
-                      {creating ? (
-                        <LoaderCircle className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Plus className="h-4 w-4" strokeWidth={2.2} />
-                      )}
-                    </span>
+                <div className="st-admin-picker-create-footer-v40">
+                  <button
+                    type="button"
+                    onClick={() => void createRequestedBrand()}
+                    disabled={creating}
+                    className="st-admin-picker-create-action-v40"
+                  >
+                    <span className="st-admin-picker-create-content-v40">
+                      <span className="st-admin-picker-create-icon-v40">
+                        {creating ? (
+                          <LoaderCircle className="st-admin-picker-create-spinner-v40" />
+                        ) : (
+                          <Plus className="h-4 w-4" strokeWidth={2.2} />
+                        )}
+                      </span>
 
-                    <span className="min-w-0">
-                      <strong className="block truncate text-[12px] font-semibold text-[#1d1d1f]">
-                        {creating ? "Creating brand..." : `Add “${cleanQuery}”`}
-                      </strong>
-
-                      <small className="mt-0.5 block text-[10px] font-medium text-black/38">
-                        Create and select automatically
-                      </small>
+                      <span className="st-admin-picker-create-copy-v40">
+                        <strong>
+                          {creating ? "Creating brand..." : `Add “${cleanQuery}”`}
+                        </strong>
+                        <small>Create and select automatically</small>
+                      </span>
                     </span>
-                  </span>
-                </button>
-              </div>
-            ) : null}
+                  </button>
+                </div>
+              ) : null}
           </div>,
           document.body,
         )

@@ -153,14 +153,14 @@ function AdminNavigation({ pathname }: { pathname: string }) {
                     aria-current={isActive ? "page" : undefined}
                     className={`st3-admin-nav-link group relative flex items-center justify-between overflow-hidden rounded-2xl px-3 py-3 text-sm transition duration-300 ${
                       isActive
-                        ? "is-active bg-[#fff3da] text-[#7c4d00]"
+                        ? "is-active bg-[#f4f4f5] text-[#202223]"
                         : "text-black/55 hover:bg-[#f5f5f7] hover:text-black"
                     }`}
                   >
                     {isActive ? (
                       <motion.div
                         layoutId="active-admin-navigation"
-                        className="absolute inset-0 rounded-2xl border border-[#f5b335]/35 bg-[#fff3da] shadow-[0_8px_24px_rgba(168,103,0,0.08)]"
+                        className="absolute inset-0 rounded-2xl border border-black/[0.16] bg-[#f4f4f5] shadow-[0_5px_16px_rgba(0,0,0,0.04)]"
                         transition={{
                           type: "spring",
                           stiffness: 420,
@@ -229,7 +229,7 @@ export default function AdminShell({
             <Link
               href="/"
               target="_blank"
-              className="group mb-3 flex items-center justify-between rounded-2xl border border-black/[0.09] bg-[#f7f7f8] px-4 py-3 text-sm text-black/55 transition hover:border-[#f5b335]/45 hover:bg-[#fff8e9] hover:text-black"
+              className="group mb-3 flex items-center justify-between rounded-2xl border border-black/[0.09] bg-[#f7f7f8] px-4 py-3 text-sm text-black/55 transition hover:border-black/20 hover:bg-[#f1f1f2] hover:text-black"
             >
               <span className="flex items-center gap-3">
                 <Store className="h-[18px] w-[18px]" />
@@ -240,8 +240,8 @@ export default function AdminShell({
             </Link>
 
             <div className="flex items-center gap-3 px-2 py-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#f5b335]/35 bg-[#fff3da]">
-                <CircleUserRound className="h-5 w-5 text-[#8a5800]" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-black/[0.10] bg-[#f4f4f5]">
+                <CircleUserRound className="h-5 w-5 text-black/60" />
               </div>
 
               <div className="min-w-0">
@@ -256,42 +256,40 @@ export default function AdminShell({
         </aside>
 
         <div className="st3-admin-content min-w-0">
-          <header className="st3-admin-toolbar sticky top-0 z-30 border-b border-black/[0.08] bg-white/90 backdrop-blur-xl">
-            <div className="flex min-h-[68px] items-center justify-between gap-4 px-6">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-black/35">
-                  <Home className="h-3 w-3" />
+          <header className="st3-admin-toolbar st-admin-v2-page-header">
+            <div className="st-admin-v2-page-header__inner">
+              <div className="st-admin-v2-page-header__identity">
+                <div className="st-admin-v2-page-header__breadcrumb">
+                  <Home />
 
                   <span>Admin</span>
 
-                  <ChevronRight className="h-3 w-3" />
+                  <ChevronRight />
 
-                  <span className="truncate text-black/55">{pageTitle}</span>
+                  <span>{pageTitle}</span>
                 </div>
 
-                <h1 className="mt-1 truncate text-xl font-semibold tracking-[-0.025em]">
-                  {pageTitle}
-                </h1>
+                <div className="st-admin-v2-page-header__title-row">
+                  <h1 className="st-admin-v2-page-header__title">
+                    {pageTitle}
+                  </h1>
+
+                  {pageDescription ? (
+                    <p className="st-admin-v2-page-header__description">
+                      {pageDescription}
+                    </p>
+                  ) : null}
+                </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-emerald-600/15 bg-emerald-50 px-3 py-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
-
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                    Store operational
-                  </span>
+              <div className="st-admin-v2-page-header__actions">
+                <div className="st-admin-v2-page-header__status">
+<span>Store operational</span>
                 </div>
 
                 <AdminNotificationsButton />
               </div>
             </div>
-
-            {pageDescription ? (
-              <div className="border-t border-black/[0.06] px-6 py-2.5 text-xs text-black/45">
-                {pageDescription}
-              </div>
-            ) : null}
           </header>
 
           <main className="st3-admin-main min-w-0">{children}</main>

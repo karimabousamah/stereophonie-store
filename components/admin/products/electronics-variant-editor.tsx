@@ -831,7 +831,7 @@ function SearchableOptionValuePicker({
             aria-label={`Choose ${level.label}`}
           >
             <div className="border-b border-black/[0.07] p-3">
-              <div className="st-admin-option-directory-search-v2 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
+              <div className="st-admin-option-directory-search-v2 st-admin-search-shell-v44-4 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
                 <Search className="h-[17px] w-[17px] shrink-0 text-black/42" />
 
                 <input
@@ -849,18 +849,25 @@ function SearchableOptionValuePicker({
                   aria-expanded="true"
                   aria-autocomplete="list"
                 />
-
                 {query ? (
                   <button
                     type="button"
                     onClick={() => {
                       setQuery("");
-                      searchRef.current?.focus();
+                      setActiveIndex(-1);
+
+                      requestAnimationFrame(() => {
+                        searchRef.current?.focus();
+                      });
                     }}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-black/35 transition hover:bg-black/[0.055] hover:text-black/70"
+                    className="st-admin-search-clear-v47"
                     aria-label={`Clear ${level.label} search`}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <X
+                      className="h-3.5 w-3.5"
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
                   </button>
                 ) : null}
               </div>
@@ -937,25 +944,20 @@ function SearchableOptionValuePicker({
             </div>
 
             {canCreate ? (
-              <div className="border-t border-black/[0.07] bg-[#fafafa] p-2.5">
+              <div className="st-admin-picker-create-footer-v40">
                 <button
                   type="button"
                   onClick={createRequestedValue}
-                  className="st-admin-option-create-v2 group flex min-h-[48px] w-full items-center justify-between gap-4 rounded-[13px] border px-3.5 text-left transition"
+                  className="st-admin-picker-create-action-v40"
                 >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="st-admin-option-create-v2__icon">
+                  <span className="st-admin-picker-create-content-v40">
+                    <span className="st-admin-picker-create-icon-v40">
                       <Plus className="h-4 w-4" strokeWidth={2.2} />
                     </span>
 
-                    <span className="min-w-0">
-                      <strong className="block truncate text-[12px] font-semibold text-[#1d1d1f]">
-                        Add “{cleanQuery}”
-                      </strong>
-
-                      <small className="mt-0.5 block text-[10px] font-medium text-black/38">
-                        Create and select automatically
-                      </small>
+                    <span className="st-admin-picker-create-copy-v40">
+                      <strong>Add “{cleanQuery}”</strong>
+                      <small>Create and select automatically</small>
                     </span>
                   </span>
                 </button>
@@ -2327,12 +2329,45 @@ function specificationTextFromClipboardHtml(html: string) {
 
     const label = cleanClipboardSpecificationText(cells[0]?.textContent);
 
-    const value = cleanClipboardSpecificationText(
-      cells
-        .slice(1)
-        .map((cell) => cell.textContent ?? "")
-        .join(" "),
-    );
+    const value = cells
+      .slice(1)
+      .map((cell) => {
+        const listItems = Array.from(
+          cell.querySelectorAll("li"),
+        )
+          .map((item) =>
+            cleanClipboardSpecificationText(item.textContent),
+          )
+          .filter(Boolean);
+
+        if (listItems.length > 1) {
+          return Array.from(new Set(listItems))
+            .map((item) => `• ${item}`)
+            .join(" · ");
+        }
+
+        const structuredBlocks = Array.from(
+          cell.querySelectorAll(
+            ":scope > p, :scope > div, :scope > span",
+          ),
+        )
+          .map((element) =>
+            cleanClipboardSpecificationText(element.textContent),
+          )
+          .filter(Boolean);
+
+        const uniqueStructuredBlocks = Array.from(
+          new Set(structuredBlocks),
+        );
+
+        if (uniqueStructuredBlocks.length > 1) {
+          return uniqueStructuredBlocks.join(" · ");
+        }
+
+        return cleanClipboardSpecificationText(cell.textContent);
+      })
+      .filter(Boolean)
+      .join(" · ");
 
     if (!label || !value || label.length > 100) {
       continue;
@@ -2385,12 +2420,45 @@ function specificationTextFromClipboardHtml(html: string) {
 
     const label = cleanClipboardSpecificationText(cells[0]?.textContent);
 
-    const value = cleanClipboardSpecificationText(
-      cells
-        .slice(1)
-        .map((cell) => cell.textContent ?? "")
-        .join(" "),
-    );
+    const value = cells
+      .slice(1)
+      .map((cell) => {
+        const listItems = Array.from(
+          cell.querySelectorAll("li"),
+        )
+          .map((item) =>
+            cleanClipboardSpecificationText(item.textContent),
+          )
+          .filter(Boolean);
+
+        if (listItems.length > 1) {
+          return Array.from(new Set(listItems))
+            .map((item) => `• ${item}`)
+            .join(" · ");
+        }
+
+        const structuredBlocks = Array.from(
+          cell.querySelectorAll(
+            ":scope > p, :scope > div, :scope > span",
+          ),
+        )
+          .map((element) =>
+            cleanClipboardSpecificationText(element.textContent),
+          )
+          .filter(Boolean);
+
+        const uniqueStructuredBlocks = Array.from(
+          new Set(structuredBlocks),
+        );
+
+        if (uniqueStructuredBlocks.length > 1) {
+          return uniqueStructuredBlocks.join(" · ");
+        }
+
+        return cleanClipboardSpecificationText(cell.textContent);
+      })
+      .filter(Boolean)
+      .join(" · ");
 
     if (!label || !value || label.length > 100) {
       continue;
@@ -2540,6 +2608,7 @@ export default function ElectronicsVariantEditor({
 
   const [customSpecError, setCustomSpecError] = useState("");
   const [technicalSpecsMessage, setTechnicalSpecsMessage] = useState("");
+  const [technicalSpecsExpanded, setTechnicalSpecsExpanded] = useState(true);
   const orderedVariants = useMemo(
     () =>
       [...variants].sort(
@@ -3853,8 +3922,7 @@ export default function ElectronicsVariantEditor({
               <span>Price</span>
               <span>Sale</span>
               <span>Stock</span>
-              <span>SKU</span>
-              <span>Barcode</span>
+              <span>Low stock</span>
               <span>Availability</span>
             </div>
 
@@ -4044,12 +4112,13 @@ export default function ElectronicsVariantEditor({
                     />
 
                     <input
+                      type="number"
+                      min="0"
                       value={
-                        variant.sku
+                        variant.low_stock_threshold
                       }
-                      placeholder="SKU"
-                      autoComplete="off"
-                      aria-label={`SKU for ${label}`}
+                      aria-label={`Low-stock threshold for ${label}`}
+                      title="Low-stock threshold"
                       onFocus={() =>
                         setActiveClientId(
                           variant.clientId,
@@ -4066,42 +4135,14 @@ export default function ElectronicsVariantEditor({
                         updateVariant(
                           variant.clientId,
                           {
-                            sku:
-                              event.target
-                                .value,
-                          },
-                        )
-                      }
-                    />
-
-                    <input
-                      value={
-                        variant.barcode ??
-                        ""
-                      }
-                      placeholder="Barcode"
-                      inputMode="numeric"
-                      autoComplete="off"
-                      aria-label={`Barcode for ${label}`}
-                      onFocus={() =>
-                        setActiveClientId(
-                          variant.clientId,
-                        )
-                      }
-                      onClick={(
-                        event,
-                      ) =>
-                        event.stopPropagation()
-                      }
-                      onChange={(
-                        event,
-                      ) =>
-                        updateVariant(
-                          variant.clientId,
-                          {
-                            barcode:
-                              event.target
-                                .value,
+                            low_stock_threshold:
+                              Math.max(
+                                0,
+                                Number(
+                                  event.target
+                                    .value,
+                                ) || 0,
+                              ),
                           },
                         )
                       }
@@ -4277,7 +4318,7 @@ export default function ElectronicsVariantEditor({
             <div className="st-admin-config-detail-block-v2">
               <h4>Option values</h4>
 
-              <div className="st-admin-config-detail-grid-v2">
+              <div className="st-admin-config-option-values-grid-v22-1">
                 {levels.map(
                   (level) => (
                     <label
@@ -4347,7 +4388,7 @@ export default function ElectronicsVariantEditor({
             <h4>Identity</h4>
 
             <div className="st-admin-config-detail-grid-v2">
-              <label>
+              <label className="st-admin-config-identity-name-v2">
                 <span>
                   Configuration name
                 </span>
@@ -4426,92 +4467,16 @@ export default function ElectronicsVariantEditor({
                 />
               </label>
 
-              <label>
-                <span>
-                  Low-stock threshold
-                </span>
 
-                <input
-                  type="number"
-                  min="0"
-                  value={
-                    activeVariant.low_stock_threshold
-                  }
-                  onChange={(
-                    event,
-                  ) =>
-                    updateVariant(
-                      activeVariant.clientId,
-                      {
-                        low_stock_threshold:
-                          Math.max(
-                            0,
-                            Number(
-                              event
-                                .target
-                                .value,
-                            ) ||
-                              0,
-                          ),
-                      },
-                    )
-                  }
-                />
-              </label>
             </div>
           </div>
 
-          <div className="st-admin-config-detail-block-v2">
-            <h4>
-              Availability
-            </h4>
-
-            <div className="st-admin-config-availability-v2">
-              {availabilityOptions.map(
-                (option) => {
-                  const selected =
-                    activeVariant.availability_status ===
-                    option.value;
-
-                  return (
-                    <button
-                      key={
-                        option.value
-                      }
-                      type="button"
-                      aria-pressed={
-                        selected
-                      }
-                      className={
-                        selected
-                          ? "is-selected"
-                          : ""
-                      }
-                      onClick={() =>
-                        updateVariant(
-                          activeVariant.clientId,
-                          {
-                            availability_status:
-                              option.value,
-                          },
-                        )
-                      }
-                    >
-                      {
-                        option.label
-                      }
-                    </button>
-                  );
-                },
-              )}
-            </div>
-          </div>
-        </section>
+          </section>
       ) : null}
 
               {specificationsPortalTarget
                 ? createPortal(
-                    <section className="mt-7 border-t border-white/10 pt-6">
+                    <section className="st-admin-specifications-portal-v27">
                       <div className="st-admin-spec-paste-v2">
                         <div className="st-admin-spec-paste-v2__header">
                           <div className="flex items-start justify-between gap-4">
@@ -4575,39 +4540,7 @@ Processor: Apple A19 Pro chipset
 RAM: 12 GB RAM
 Storage Options: 256GB, 512GB, and 1TB`}
                             className="st-admin-spec-paste-v2__textarea st-admin-spec-paste-focus-final st-admin-spec-paste-focus-real"
-                          onFocus={(event) => {
-                            const field = event.currentTarget;
-
-                            field.style.setProperty("border-color", "#202223", "important");
-                            field.style.setProperty(
-                              "box-shadow",
-                              "0 0 0 1px #202223",
-                              "important",
-                            );
-                            field.style.setProperty("outline", "none", "important");
-
-                            const shell = field.closest(".st-admin-spec-paste-v2");
-
-                            if (shell instanceof HTMLElement) {
-                              shell.style.setProperty("box-shadow", "none", "important");
-                              shell.style.setProperty("outline", "none", "important");
-                            }
-                          }}
-                          onBlur={(event) => {
-                            const field = event.currentTarget;
-
-                            field.style.removeProperty("border-color");
-                            field.style.removeProperty("box-shadow");
-                            field.style.removeProperty("outline");
-
-                            const shell = field.closest(".st-admin-spec-paste-v2");
-
-                            if (shell instanceof HTMLElement) {
-                              shell.style.removeProperty("box-shadow");
-                              shell.style.removeProperty("outline");
-                            }
-                          }}
-                          />
+/>
 
                           <div className="st-admin-spec-paste-v2__footer">
                             <p className="st-admin-spec-paste-v2__format">
@@ -4632,7 +4565,7 @@ Storage Options: 256GB, 512GB, and 1TB`}
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                      <div className="st-admin-spec-add-row-v26">
                         <input
                           value={customSpecName}
                           onChange={(event) => {
@@ -4643,7 +4576,7 @@ Storage Options: 256GB, 512GB, and 1TB`}
                           className="st-admin-spec-add-v2__input"
                         />
 
-                        <div className="flex w-full shrink-0 flex-col gap-0 sm:w-[181px]">
+                        <div className="st-admin-spec-add-actions-v26">
                           <button
                             type="button"
                             onClick={addCustomSpecification}
@@ -4654,18 +4587,16 @@ Storage Options: 256GB, 512GB, and 1TB`}
                           </button>
 
                           {orderedVariants.length > 1 ? (
-                            <>
-                              <button
-                                type="button"
-                                onClick={applyTechnicalSpecificationsToAll}
-                                className="st-admin-spec-add-v2__button st-admin-spec-add-v2__button--secondary"
-                              >
-                                <Copy className="h-3.5 w-3.5 shrink-0" />
-                                <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
-                                  Apply specs to all
-                                </span>
-                              </button>
-                            </>
+                            <button
+                              type="button"
+                              onClick={applyTechnicalSpecificationsToAll}
+                              className="st-admin-spec-add-v2__button st-admin-spec-add-v2__button--secondary"
+                            >
+                              <Copy className="h-3.5 w-3.5 shrink-0" />
+                              <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
+                                Apply specs to all
+                              </span>
+                            </button>
                           ) : null}
                         </div>
                       </div>
@@ -4686,49 +4617,90 @@ Storage Options: 256GB, 512GB, and 1TB`}
                       ) : null}
 
                       {technicalAttributes.length > 0 ? (
-                        <div className="st-admin-spec-grid-v2">
-                          {technicalAttributes.map(([key, value]) => (
-                            <div
-                              key={key}
-                              className="st-admin-spec-item-v2"
+                        <div className="st-admin-spec-list-v26">
+                          <button
+                            type="button"
+                            className="st-admin-spec-disclosure-v26"
+                            aria-expanded={technicalSpecsExpanded}
+                            onClick={() =>
+                              setTechnicalSpecsExpanded((current) => !current)
+                            }
+                          >
+                            <span>
+                              {technicalSpecsExpanded
+                                ? "Hide specifications"
+                                : "Show specifications"}
+                            </span>
+                            <small>{technicalAttributes.length}</small>
+                            <span
+                              className={`st-admin-spec-disclosure-v26__chevron ${
+                                technicalSpecsExpanded ? "is-expanded" : ""
+                              }`}
+                              aria-hidden="true"
                             >
-                              <div className="st-admin-spec-item-v2__header">
-                                <span className="st-admin-spec-item-v2__label">
-                                  {key}
-                                </span>
+                              ↓
+                            </span>
+                          </button>
 
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const attributes = {
-                                      ...activeVariant.attributes,
-                                    };
+                          <div
+                            className={`st-admin-spec-collapse-v26 ${
+                              technicalSpecsExpanded ? "is-expanded" : ""
+                            }`}
+                          >
+                            <div className="st-admin-spec-collapse-v26__inner">
+                              <div className="st-admin-spec-grid-v2">
+                                {technicalAttributes.map(([key, value]) => (
+                                  <div
+                                    key={key}
+                                    className="st-admin-spec-item-v2"
+                                  >
+                                    <div className="st-admin-spec-item-v2__header">
+                                      <span className="st-admin-spec-item-v2__label">
+                                        {key}
+                                      </span>
+                                    </div>
 
-                                    delete attributes[key];
+                                    <div className="st-admin-spec-item-v29__field">
+                                      <input
+                                        value={value}
+                                        onChange={(event) =>
+                                          updateAttribute(
+                                            activeVariant.clientId,
+                                            key,
+                                            event.target.value,
+                                          )
+                                        }
+                                        className="st-admin-spec-item-v2__value st-admin-spec-item-v29__input"
+                                      />
 
-                                    updateVariant(activeVariant.clientId, {
-                                      attributes,
-                                    });
-                                  }}
-                                  className="st-admin-spec-item-v2__remove"
-                                >
-                                  <X className="h-4 w-4" />
-                                </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const attributes = {
+                                            ...activeVariant.attributes,
+                                          };
+
+                                          delete attributes[key];
+
+                                          updateVariant(
+                                            activeVariant.clientId,
+                                            {
+                                              attributes,
+                                            },
+                                          );
+                                        }}
+                                        className="st-admin-spec-item-v29__remove"
+                                        aria-label={`Remove ${key} specification`}
+                                        title={`Remove ${key}`}
+                                      >
+                                        <X aria-hidden="true" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
-
-                              <input
-                                value={value}
-                                onChange={(event) =>
-                                  updateAttribute(
-                                    activeVariant.clientId,
-                                    key,
-                                    event.target.value,
-                                  )
-                                }
-                                className="st-admin-spec-item-v2__value"
-                              />
                             </div>
-                          ))}
+                          </div>
                         </div>
                       ) : null}
                     </section>,

@@ -383,14 +383,14 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       uploadedImagesJson,
     ) as DirectUploadedExistingProductImage[];
   } catch {
-    redirectWithError(
+    imageOperationError(formData,
       productId,
       "The uploaded image information could not be processed.",
     );
   }
 
   if (!Array.isArray(uploadedImages) || uploadedImages.length === 0) {
-    redirectWithError(productId, "Select at least one image.");
+    imageOperationError(formData, productId, "Select at least one image.");
   }
 
   const { data: product, error: productError } = await supabase
@@ -400,7 +400,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     .single();
 
   if (productError || !product) {
-    redirectWithError(
+    imageOperationError(formData,
       productId,
       productError?.message ?? "The product could not be found.",
     );
@@ -415,7 +415,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     });
 
   if (imagesError) {
-    redirectWithError(productId, imagesError.message);
+    imageOperationError(formData, productId, imagesError.message);
   }
 
   const { data: productConfigurations, error: productConfigurationsError } =
@@ -425,7 +425,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       .eq("product_id", productId);
 
   if (productConfigurationsError) {
-    redirectWithError(productId, productConfigurationsError.message);
+    imageOperationError(formData, productId, productConfigurationsError.message);
   }
 
   const validConfigurationsById = new Map(
@@ -453,21 +453,21 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     const position = Number(image.position);
 
     if (!storagePath || !storagePath.startsWith("temporary/")) {
-      redirectWithError(
+      imageOperationError(formData,
         productId,
         "A image has an invalid temporary storage path.",
       );
     }
 
     if (!allowedImageTypes.has(contentType)) {
-      redirectWithError(
+      imageOperationError(formData,
         productId,
         `${originalName || "A image"} is not supported. Use JPEG, PNG or WebP.`,
       );
     }
 
     if (!Number.isFinite(size) || size <= 0 || size > maximumImageSize) {
-      redirectWithError(
+      imageOperationError(formData,
         productId,
         `${originalName || "A image"} has an invalid file size.`,
       );
@@ -478,11 +478,11 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       position < 0 ||
       position >= uploadedImages.length
     ) {
-      redirectWithError(productId, "The image order is invalid.");
+      imageOperationError(formData, productId, "The image order is invalid.");
     }
 
     if (submittedPositions.has(position)) {
-      redirectWithError(
+      imageOperationError(formData,
         productId,
         "The image order contains duplicate positions.",
       );
@@ -498,7 +498,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
 
     for (const variantId of imageVariantIds) {
       if (!validConfigurationsById.has(variantId)) {
-        redirectWithError(
+        imageOperationError(formData,
           productId,
           "A image is assigned to a product configuration that no longer exists.",
         );
@@ -534,7 +534,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       .eq("product_id", productId);
 
   if (assignmentCountError) {
-    redirectWithError(productId, assignmentCountError.message);
+    imageOperationError(formData, productId, assignmentCountError.message);
   }
 
   const photographCountByConfiguration = new Map(
@@ -587,7 +587,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
       if (nextCount > maximumImagesPerConfiguration) {
         const configuration = validConfigurationsById.get(configurationId);
 
-        redirectWithError(
+        imageOperationError(formData,
           productId,
           `${configuration?.variant_name || "This configuration"} can have a maximum of ${maximumImagesPerConfiguration} images. Shared images count toward every configuration.`,
         );
@@ -809,12 +809,16 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
     const message =
       error instanceof Error ? error.message : "The images could not be saved.";
 
-    redirectWithError(productId, message);
+    imageOperationError(formData, productId, message);
   }
 
-  await refreshProductPages(productId);
+  if (!isClientImageOperation(formData)) {
+    await refreshProductPages(productId);
+  }
 
-  redirectWithSuccess(
+  return finishImageOperation(
+    formData,
+    supabase,
     productId,
     uploadedImages.length === 1
       ? "Image uploaded successfully."
@@ -2077,21 +2081,83 @@ export async function moveProductImage(formData: FormData) {
   /*
    * Keep shared images in deterministic order without
    * changing configuration-specific junction positions.
+   *
+   * IMPORTANT:
+   * product_images allows only one product-level Main image.
+   *
+   * Never promote the new first image while the previous Main
+   * can still be true. Clear Main first, move every participating
+   * image to temporary positions, write the final positions, then
+   * promote exactly the first shared image.
    */
+  const { error: clearSharedPrimaryError } = await supabase
+    .from("product_images")
+    .update({
+      is_primary: false,
+    })
+    .eq("product_id", productId);
+
+  if (clearSharedPrimaryError) {
+    imageOperationError(
+      formData,
+      productId,
+      clearSharedPrimaryError.message,
+    );
+  }
+
   for (let index = 0; index < reordered.length; index += 1) {
     const image = reordered[index];
 
-    const { error: updateError } = await supabase
+    const { error: temporaryPositionError } = await supabase
       .from("product_images")
       .update({
-          position: index,
-          is_primary: index === 0,
-        })
+        position: 100000 + index,
+      })
       .eq("product_id", productId)
       .eq("id", image.id);
 
-    if (updateError) {
-      imageOperationError(formData, productId, updateError.message);
+    if (temporaryPositionError) {
+      imageOperationError(
+        formData,
+        productId,
+        temporaryPositionError.message,
+      );
+    }
+  }
+
+  for (let index = 0; index < reordered.length; index += 1) {
+    const image = reordered[index];
+
+    const { error: positionError } = await supabase
+      .from("product_images")
+      .update({
+        position: index,
+      })
+      .eq("product_id", productId)
+      .eq("id", image.id);
+
+    if (positionError) {
+      imageOperationError(
+        formData,
+        productId,
+        positionError.message,
+      );
+    }
+  }
+
+  const nextPrimaryImage = reordered[0];
+
+  if (nextPrimaryImage) {
+    const { error: primaryError } = await supabase
+      .from("product_images")
+      .update({
+        is_primary: true,
+      })
+      .eq("product_id", productId)
+      .eq("id", nextPrimaryImage.id);
+
+    if (primaryError) {
+      imageOperationError(formData, productId, primaryError.message);
     }
   }
 
@@ -2115,6 +2181,10 @@ export async function deleteProductImage(formData: FormData) {
   const imageId = String(formData.get("image_id") ?? "").trim();
 
   if (!productId || !imageId) {
+    if (isClientImageOperation(formData)) {
+      throw new Error("The image request is incomplete.");
+    }
+
     redirect("/admin/products");
   }
 
@@ -2126,7 +2196,8 @@ export async function deleteProductImage(formData: FormData) {
     .single();
 
   if (imageError || !image) {
-    redirectWithError(
+    imageOperationError(
+      formData,
       productId,
       imageError?.message ?? "The image could not be found.",
     );
@@ -2138,7 +2209,11 @@ export async function deleteProductImage(formData: FormData) {
       .remove([image.storage_path]);
 
     if (storageError) {
-      redirectWithError(productId, storageError.message);
+      imageOperationError(
+        formData,
+        productId,
+        storageError.message,
+      );
     }
   }
 
@@ -2149,7 +2224,11 @@ export async function deleteProductImage(formData: FormData) {
     .eq("product_id", productId);
 
   if (deleteError) {
-    redirectWithError(productId, deleteError.message);
+    imageOperationError(
+      formData,
+      productId,
+      deleteError.message,
+    );
   }
 
   const { data: remainingImages } = await supabase
@@ -2184,7 +2263,14 @@ export async function deleteProductImage(formData: FormData) {
     }
   }
 
-  await refreshProductPages(productId);
+  if (!isClientImageOperation(formData)) {
+    await refreshProductPages(productId);
+  }
 
-  redirectWithSuccess(productId, "Image deleted.");
+  return finishImageOperation(
+    formData,
+    supabase,
+    productId,
+    "Image deleted.",
+  );
 }

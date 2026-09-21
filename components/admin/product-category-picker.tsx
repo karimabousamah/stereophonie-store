@@ -381,35 +381,34 @@ export default function ProductCategoryPicker({
             ) : null}
 
             {canCreate ? (
-              <div className="border-t border-black/[0.07] bg-[#fafafa] p-2.5">
-                <button
-                  type="button"
-                  onClick={() => void createRequestedCategory()}
-                  disabled={creating}
-                  className="st-admin-category-picker__option"
-                >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fdb73e] text-black">
-                      {creating ? (
-                        <LoaderCircle className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Plus className="h-4 w-4" strokeWidth={2.2} />
-                      )}
-                    </span>
+                <div className="st-admin-picker-create-footer-v40">
+                  <button
+                    type="button"
+                    onClick={() => void createRequestedCategory()}
+                    disabled={creating}
+                    className="st-admin-picker-create-action-v40"
+                  >
+                    <span className="st-admin-picker-create-content-v40">
+                      <span className="st-admin-picker-create-icon-v40">
+                        {creating ? (
+                          <LoaderCircle className="st-admin-picker-create-spinner-v40" />
+                        ) : (
+                          <Plus className="h-4 w-4" strokeWidth={2.2} />
+                        )}
+                      </span>
 
-                    <span className="min-w-0 text-left">
-                      <strong className="block truncate">
-                        {creating
-                          ? "Creating category..."
-                          : `Add “${query.replace(/\s+/g, " ").trim()}”`}
-                      </strong>
-
-                      <small>Create and select automatically</small>
+                      <span className="st-admin-picker-create-copy-v40">
+                        <strong>
+                          {creating
+                            ? "Creating category..."
+                            : `Add “${query.replace(/\s+/g, " ").trim()}”`}
+                        </strong>
+                        <small>Create and select automatically</small>
+                      </span>
                     </span>
-                  </span>
-                </button>
-              </div>
-            ) : null}
+                  </button>
+                </div>
+              ) : null}
           </div>,
           document.body,
         )

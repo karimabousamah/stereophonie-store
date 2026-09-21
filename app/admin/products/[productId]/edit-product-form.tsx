@@ -139,9 +139,13 @@ export default function EditProductForm({
   errorMessage,
   mediaManager,
 }: EditProductFormProps) {
-  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
-
   const [deletePending, startDeleteTransition] = useTransition();
+
+  const [placementSelection, setPlacementSelection] = useState({
+    featured: product.isFeatured,
+    trending: product.isTrending,
+    newArrival: product.isNewArrival,
+  });
 
   const [productSaveState, setProductSaveState] = useState<
     "idle" | "draft" | "publish" | "setup"
@@ -265,6 +269,46 @@ export default function EditProductForm({
 
     return !allComingSoon && !hasAvailableConfiguration;
   }, [variants]);
+
+  const productEffectiveStatus = useMemo(() => {
+    if (product.status !== "published") {
+      return {
+        tone: "draft",
+        label: product.status === "archived" ? "Archived" : "Draft",
+      };
+    }
+
+    const allComingSoon =
+      variants.length > 0 &&
+      variants.every(
+        (variant) => variant.availability_status === "coming_soon",
+      );
+
+    if (allComingSoon) {
+      return {
+        tone: "coming-soon",
+        label: "Coming soon",
+      };
+    }
+
+    const allOutOfStock =
+      variants.length > 0 &&
+      variants.every(
+        (variant) => Number(variant.stock_quantity ?? 0) <= 0,
+      );
+
+    if (allOutOfStock) {
+      return {
+        tone: "out-of-stock",
+        label: "Out of stock",
+      };
+    }
+
+    return {
+      tone: "live",
+      label: "Published",
+    };
+  }, [product.status, variants]);
   return (
     <div>
       <div className="st-admin-edit-composition-v2">
@@ -585,22 +629,6 @@ export default function EditProductForm({
           )}
         />
 
-        {errorMessage && (
-          <div className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[20px] border border-red-400/30 bg-red-400/[0.07] p-5">
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
-
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-red-300">
-                Product not saved
-              </p>
-
-              <p className="mt-2 text-sm leading-6 text-white/65">
-                {errorMessage}
-              </p>
-            </div>
-          </div>
-        )}
-
         <ProductWorkspace
             actionBar={
               <ProductSaveBar
@@ -626,29 +654,20 @@ export default function EditProductForm({
                 }
                 onDraft={() => undefined}
                 onPublish={() => undefined}
+                onDelete={permanentlyDeleteProduct}
+                deletePending={deletePending}
                 formId="st-edit-product-form"
               />
             }
             sidebar={
               <>
                 <ProductSidebarCard title="Status">
-                  <div className="st-admin-product-status-summary-v2">
-                    <span
-                      className={`st-admin-product-status-summary-v2__dot ${
-                        product.status === "published"
-                          ? "is-published"
-                          : "is-draft"
-                      }`}
-                    />
-
+                  <div
+                    className={`st-admin-product-status-summary-v2 is-${productEffectiveStatus.tone}`}
+                    data-admin-product-effective-status={productEffectiveStatus.tone}
+                  >
                     <div>
-                      <strong>
-                        {product.status === "published"
-                          ? "Published"
-                          : product.status === "archived"
-                            ? "Archived"
-                            : "Draft"}
-                      </strong>
+                      <strong>{productEffectiveStatus.label}</strong>
 
                       <small>
                         Use Save draft or Publish live in the fixed header.
@@ -719,13 +738,18 @@ export default function EditProductForm({
 
                       <input
                         type="checkbox"
-                        key={`featured-${productOutOfStock}`}
                         name="is_featured"
                         disabled={productOutOfStock}
-                        defaultChecked={
+                        checked={
                           productOutOfStock
                             ? false
-                            : product.isFeatured
+                            : placementSelection.featured
+                        }
+                        onChange={(event) =>
+                          setPlacementSelection((current) => ({
+                            ...current,
+                            featured: event.target.checked,
+                          }))
                         }
                       />
                     </label>
@@ -740,13 +764,18 @@ export default function EditProductForm({
 
                       <input
                         type="checkbox"
-                        key={`trending-${productOutOfStock}`}
                         name="is_trending"
                         disabled={productOutOfStock}
-                        defaultChecked={
+                        checked={
                           productOutOfStock
                             ? false
-                            : product.isTrending
+                            : placementSelection.trending
+                        }
+                        onChange={(event) =>
+                          setPlacementSelection((current) => ({
+                            ...current,
+                            trending: event.target.checked,
+                          }))
                         }
                       />
                     </label>
@@ -761,13 +790,18 @@ export default function EditProductForm({
 
                       <input
                         type="checkbox"
-                        key={`new-arrival-${productOutOfStock}`}
                         name="is_new_arrival"
                         disabled={productOutOfStock}
-                        defaultChecked={
+                        checked={
                           productOutOfStock
                             ? false
-                            : product.isNewArrival
+                            : placementSelection.newArrival
+                        }
+                        onChange={(event) =>
+                          setPlacementSelection((current) => ({
+                            ...current,
+                            newArrival: event.target.checked,
+                          }))
                         }
                       />
                     </label>
@@ -995,7 +1029,7 @@ export default function EditProductForm({
             <button
               type="button"
               data-destructive-trigger="true"
-              onClick={() => setDeleteConfirmationOpen(true)}
+              onClick={permanentlyDeleteProduct}
               className="mt-4 inline-flex min-h-10 w-fit items-center justify-center gap-2 rounded-[11px] border border-[#c9342f] bg-[#c9342f] px-4 text-[10px] font-semibold uppercase tracking-[0.13em] text-white transition hover:bg-[#ab2925]"
             >
               <Trash2 className="h-3.5 w-3.5" />
@@ -1003,91 +1037,9 @@ export default function EditProductForm({
             </button>
           </div>
         </div>
-
-        {deleteConfirmationOpen ? (
-          <div
-            className="st-admin-product-delete-confirmation"
-            aria-live="polite"
-          >
-            <button
-              type="button"
-              aria-label="Cancel product deletion"
-              disabled={deletePending}
-              onClick={() => setDeleteConfirmationOpen(false)}
-              className="st-admin-product-delete-confirmation__backdrop"
-            />
-
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="delete-product-dialog-title"
-              aria-describedby="delete-product-dialog-description"
-              className="relative z-10 w-full max-w-[470px] overflow-hidden rounded-[22px] border border-black/10 bg-white text-[#1d1d1f] shadow-[0_30px_100px_rgba(0,0,0,0.22)]"
-            >
-              <div className="border-b border-black/[0.07] px-6 py-5">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#b42318]">
-                  Permanent action
-                </p>
-
-                <h2
-                  id="delete-product-dialog-title"
-                  className="mt-2 pr-5 text-[22px] font-semibold tracking-[-0.035em]"
-                >
-                  Delete this product permanently?
-                </h2>
-              </div>
-
-              <div className="px-6 py-5">
-                <p
-                  id="delete-product-dialog-description"
-                  className="text-[13px] leading-6 text-[#6e6e73]"
-                >
-                  You are about to permanently delete{" "}
-                  <strong className="font-semibold text-[#1d1d1f]">
-                    {product.name}
-                  </strong>
-                  . Its configurations, image records and uploaded product files
-                  will also be removed.
-                </p>
-
-                <div className="mt-4 rounded-[14px] border border-red-100 bg-[#fff6f6] px-4 py-3">
-                  <strong className="block text-xs font-semibold text-[#a42620]">
-                    This cannot be undone.
-                  </strong>
-
-                  <p className="mt-1 text-[11px] leading-5 text-[#8c5a57]">
-                    If you may need this product again later, cancel and use
-                    Archive instead.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col-reverse gap-2 border-t border-black/[0.07] bg-[#fafafa] px-6 py-4 sm:flex-row sm:justify-end">
-                <button
-                  type="button"
-                  disabled={deletePending}
-                  onClick={() => setDeleteConfirmationOpen(false)}
-                  className="inline-flex min-h-10 items-center justify-center rounded-[11px] border border-black/10 bg-white px-5 text-[11px] font-semibold text-[#1d1d1f] transition hover:bg-[#f2f2f3] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button"
-                  data-destructive="true"
-                  disabled={deletePending}
-                  onClick={permanentlyDeleteProduct}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[11px] border border-[#c9342f] bg-[#c9342f] px-5 text-[11px] font-semibold text-white transition hover:bg-[#ab2925] disabled:cursor-wait disabled:opacity-60"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-
-                  {deletePending ? "Deleting product..." : "Delete permanently"}
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : null}
       </section>
+
+
     </div>
   );
 }

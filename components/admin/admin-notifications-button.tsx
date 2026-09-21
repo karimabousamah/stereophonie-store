@@ -283,16 +283,16 @@ export default function AdminNotificationsButton() {
         }`}
         aria-expanded={open}
         aria-haspopup="dialog"
-        className={`relative flex h-11 w-11 items-center justify-center border transition ${
+        className={`st-admin-v2-notifications-trigger relative flex h-11 w-11 items-center justify-center border transition ${
           open
             ? "border-white/35 bg-white text-black"
             : "border-white/10 text-white/55 hover:border-white/30 hover:bg-white/[0.04] hover:text-white"
         }`}
       >
-        <Bell className="h-[18px] w-[18px]" />
+        <Bell className="st-admin-v2-notifications-bell h-[18px] w-[18px]" />
 
         {!loading && total > 0 ? (
-          <span className="absolute -right-1.5 -top-1.5 flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#080808] bg-amber-400 px-1 text-[9px] font-bold leading-none text-black">
+          <span className="st-admin-v2-notifications-badge absolute -right-1.5 -top-1.5 flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#080808] bg-amber-400 px-1 text-[9px] font-bold leading-none text-black">
             {total > 99 ? "99+" : total}
           </span>
         ) : null}
@@ -301,7 +301,7 @@ export default function AdminNotificationsButton() {
       <div
         role="dialog"
         aria-label="Admin notifications"
-        className={`absolute right-0 top-[calc(100%+14px)] z-50 w-[min(410px,calc(100vw-32px))] origin-top-right border border-white/10 bg-[#101010] shadow-[0_30px_100px_rgba(0,0,0,0.65)] transition duration-200 ${
+        className={`st-admin-v2-notifications-panel absolute right-0 top-[calc(100%+14px)] z-50 w-[min(410px,calc(100vw-32px))] origin-top-right border border-white/10 bg-[#101010] shadow-[0_30px_100px_rgba(0,0,0,0.65)] transition duration-200 ${
           open
             ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
             : "pointer-events-none -translate-y-2 scale-[0.98] opacity-0"
@@ -347,7 +347,7 @@ export default function AdminNotificationsButton() {
 
         {loading ? (
           <div className="flex min-h-[220px] flex-col items-center justify-center px-6 text-center">
-            <Loader2 className="h-6 w-6 animate-spin text-white/50" />
+            <Loader2 className="st-admin-v2-notifications-loading-spinner h-6 w-6 animate-spin text-white/50" />
 
             <p className="mt-4 text-xs font-semibold uppercase tracking-[0.17em] text-white/35">
               Loading notifications
@@ -418,12 +418,12 @@ export default function AdminNotificationsButton() {
                         markCategorySeen(item.key);
                         setOpen(false);
                       }}
-                      className="group flex items-start gap-4 px-5 py-5 transition hover:bg-white/[0.045]"
+                      className="st-admin-v2-notification-item group flex items-start gap-4 px-5 py-5 transition"
                     >
                       <div
                         className={`flex h-10 w-10 shrink-0 items-center justify-center border ${
                           item.tone === "amber"
-                            ? "border-amber-400/20 bg-amber-400/[0.07] text-amber-300"
+                            ? "border-[#d9dbdd] bg-[#f6f6f7] text-[#6d7175]"
                             : item.tone === "red"
                               ? "border-red-400/20 bg-red-400/[0.07] text-red-300"
                               : item.tone === "blue"
@@ -459,7 +459,7 @@ export default function AdminNotificationsButton() {
           </div>
         )}
 
-        <div className="border-t border-white/10 bg-black/20 px-5 py-3">
+        <div className="st-admin-v2-notifications-footer border-t px-5 py-3">
           <p className="text-[9px] uppercase tracking-[0.14em] text-white/25">
             Data refreshes whenever the panel opens
           </p>

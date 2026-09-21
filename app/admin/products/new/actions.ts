@@ -1016,23 +1016,39 @@ async function createProductUnsafe(formData: FormData) {
          * Zero rows = Shared.
          * One or more rows = exact configuration assignments.
          */
-        for (const variantId of configurationVariantIds) {
+        const junctionRows = configurationVariantIds.map((variantId) => {
           const position = nextConfigurationPosition.get(variantId) ?? 0;
 
+          return {
+            image_id: insertedImage.id,
+            variant_id: variantId,
+            position,
+            is_primary: position === 0,
+          };
+        });
+
+        if (junctionRows.length > 0) {
+          /*
+           * Persist every configuration assignment for this image in one
+           * database request instead of one sequential request per variant.
+           *
+           * Positions are calculated from the same authoritative map and
+           * are advanced only after the entire insert succeeds.
+           */
           const { error: junctionError } = await supabase
             .from("product_image_variants")
-            .insert({
-              image_id: insertedImage.id,
-              variant_id: variantId,
-              position,
-              is_primary: position === 0,
-            });
+            .insert(junctionRows);
 
           if (junctionError) {
             throw new Error(junctionError.message);
           }
 
-          nextConfigurationPosition.set(variantId, position + 1);
+          for (const row of junctionRows) {
+            nextConfigurationPosition.set(
+              row.variant_id,
+              row.position + 1,
+            );
+          }
         }
       }
     } else {

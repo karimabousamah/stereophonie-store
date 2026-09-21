@@ -82092,3 +82092,33 @@ html body
 
 
 /* === ST PRODUCT COLOUR DIVIDER COMPACT GAP END === */
+
+
+/* ============================================================
+   STOREFRONT — V3 HEADER SEARCH SPINNER V42.1
+   ============================================================ */
+
+@keyframes stV3HeaderSearchSpinV421 {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+html body .st3-utility-spin {
+  transform-origin: 50% 50% !important;
+  animation: stV3HeaderSearchSpinV421 720ms linear infinite !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st3-utility-spin {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   END STOREFRONT — V3 HEADER SEARCH SPINNER V42.1
+   ============================================================ */

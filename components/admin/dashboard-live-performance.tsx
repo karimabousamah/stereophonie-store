@@ -364,10 +364,10 @@ export default function DashboardLivePerformance({ orders }: Props) {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#f5b335" stopOpacity=".22" />
+                    <stop offset="0%" stopColor="#202223" stopOpacity=".22" />
                     <stop
                       offset="100%"
-                      stopColor="#f5b335"
+                      stopColor="#202223"
                       stopOpacity=".015"
                     />
                   </linearGradient>
@@ -380,7 +380,7 @@ export default function DashboardLivePerformance({ orders }: Props) {
                 <polyline
                   points={chart.polyline}
                   fill="none"
-                  stroke="#e89a12"
+                  stroke="#202223"
                   strokeWidth="3"
                   vectorEffect="non-scaling-stroke"
                   strokeLinecap="round"
@@ -401,7 +401,7 @@ export default function DashboardLivePerformance({ orders }: Props) {
                       cy={point.y}
                       r="4"
                       fill="#ffffff"
-                      stroke="#e89a12"
+                      stroke="#202223"
                       strokeWidth="2.5"
                       vectorEffect="non-scaling-stroke"
                     />

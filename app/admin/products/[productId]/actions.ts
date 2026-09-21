@@ -551,6 +551,14 @@ export async function deleteProduct(formData: FormData) {
     redirect("/admin/products");
   }
 
+  /*
+   * Capture storage paths before deleting the database product.
+   *
+   * Database relationships are responsible for cascading or
+   * nulling product references. Storage objects are not part of
+   * that database transaction, so their paths must be retained
+   * here for cleanup after the product row is successfully gone.
+   */
   const { data: productImages, error: imagesError } = await supabase
     .from("product_images")
     .select("storage_path")
@@ -560,22 +568,29 @@ export async function deleteProduct(formData: FormData) {
     redirectWithError(productId, imagesError.message);
   }
 
-  const storagePaths = (productImages ?? [])
-    .map((image) => image.storage_path)
-    .filter(
-      (path): path is string => typeof path === "string" && path.length > 0,
-    );
+  const storagePaths = Array.from(
+    new Set(
+      (productImages ?? [])
+        .map((image) => image.storage_path)
+        .filter(
+          (path): path is string =>
+            typeof path === "string" && path.length > 0,
+        ),
+    ),
+  );
 
-  if (storagePaths.length > 0) {
-    const { error: storageError } = await supabase.storage
-      .from("product-images")
-      .remove(storagePaths);
-
-    if (storageError) {
-      redirectWithError(productId, storageError.message);
-    }
-  }
-
+  /*
+   * Delete the product before touching Storage.
+   *
+   * This is deliberately database-first: if a database constraint
+   * or policy prevents deletion, the product and all of its media
+   * files remain intact instead of leaving a broken product whose
+   * Storage objects were already removed.
+   *
+   * Existing foreign-key behavior handles dependent database rows:
+   * product media/configurations and customer product state cascade,
+   * while historical order references are preserved through SET NULL.
+   */
   const { error: deleteError } = await supabase
     .from("products")
     .delete()
@@ -585,9 +600,34 @@ export async function deleteProduct(formData: FormData) {
     redirectWithError(productId, deleteError.message);
   }
 
+  /*
+   * The database product is now deleted successfully.
+   * Clean up its physical Storage objects afterward.
+   *
+   * Storage cleanup failure must not pretend that the product deletion
+   * failed: at this point the database deletion has already succeeded.
+   * Log the orphaned paths so the administrator is not redirected back
+   * to an editor for a product that no longer exists.
+   */
+  if (storagePaths.length > 0) {
+    const { error: storageError } = await supabase.storage
+      .from("product-images")
+      .remove(storagePaths);
+
+    if (storageError) {
+      console.error(
+        `Product ${productId} was deleted, but some product image files could not be removed from Storage:`,
+        storageError,
+        storagePaths,
+      );
+    }
+  }
+
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath(`/shop/${productId}`);
 
   redirect("/admin/products?deleted=true");
 }
