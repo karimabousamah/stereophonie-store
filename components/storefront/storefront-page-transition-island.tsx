@@ -7,9 +7,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type TransitionPhase = "hidden" | "loading" | "complete" | "exiting";
 
-const MINIMUM_VISIBLE_MS = 260;
-const COMPLETE_VISIBLE_MS = 420;
-const EXIT_DURATION_MS = 220;
+const MINIMUM_VISIBLE_MS = 650;
+const COMPLETE_VISIBLE_MS = 450;
+const EXIT_DURATION_MS = 180;
 const SAFETY_TIMEOUT_MS = 12000;
 
 function normalizeRouteKey(pathname: string, search: string) {
@@ -47,6 +47,39 @@ function getDestinationLabel(anchor: HTMLAnchorElement, url: URL) {
     .slice(0, 34);
 }
 
+function syncIslandToHeaderEdge() {
+  /*
+   * The current storefront uses the V3 fixed header.
+   * Keep the V2 selector only as a compatibility fallback.
+   */
+  const header =
+    document.querySelector<HTMLElement>(".st3-header") ??
+    document.querySelector<HTMLElement>(".st-v2-header");
+
+  if (!header) {
+    document.documentElement.style.removeProperty(
+      "--st-island-header-edge",
+    );
+    return;
+  }
+
+  const headerRect = header.getBoundingClientRect();
+
+  /*
+   * Anchor the transition layer to the real visible bottom edge
+   * of whichever storefront header is currently mounted.
+   */
+  const headerEdge = Math.max(
+    0,
+    Math.round(headerRect.bottom),
+  );
+
+  document.documentElement.style.setProperty(
+    "--st-island-header-edge",
+    `${headerEdge}px`,
+  );
+}
+
 export default function StorefrontPageTransitionIsland() {
   const reduceMotion = useReducedMotion();
   const pathname = usePathname();
@@ -72,6 +105,21 @@ export default function StorefrontPageTransitionIsland() {
   const updatePhase = useCallback((nextPhase: TransitionPhase) => {
     phaseRef.current = nextPhase;
     setPhase(nextPhase);
+  }, []);
+
+  useEffect(() => {
+    syncIslandToHeaderEdge();
+
+    const frame = window.requestAnimationFrame(() => {
+      syncIslandToHeaderEdge();
+    });
+
+    window.addEventListener("resize", syncIslandToHeaderEdge);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", syncIslandToHeaderEdge);
+    };
   }, []);
 
   const clearTimers = useCallback(() => {
@@ -266,8 +314,8 @@ export default function StorefrontPageTransitionIsland() {
               ? { opacity: 0 }
               : {
                   opacity: 0,
-                  y: -52,
-                  scale: 0.78,
+                  y: -64,
+                  scale: 0.96,
                 }
           }
           animate={
@@ -278,8 +326,8 @@ export default function StorefrontPageTransitionIsland() {
               : exiting
                 ? {
                     opacity: 0,
-                    y: -58,
-                    scale: 0.82,
+                    y: -64,
+                    scale: 0.96,
                   }
                 : {
                     opacity: 1,
@@ -292,10 +340,10 @@ export default function StorefrontPageTransitionIsland() {
               ? { opacity: 0 }
               : {
                   opacity: 0,
-                  y: -58,
-                  scale: 0.82,
+                  y: -64,
+                  scale: 0.96,
                   transition: {
-                    duration: 0.3,
+                    duration: EXIT_DURATION_MS / 1000,
                     ease: [0.4, 0, 1, 1],
                   },
                 }

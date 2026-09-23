@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import { cache, Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -7,6 +8,7 @@ import { Gamepad2, PackageCheck, Zap } from "lucide-react";
 import StoreProductCard from "@/components/storefront/store-product-card";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
+import { STOREFRONT_RECOMMENDATION_CACHE_TAG } from "@/lib/storefront-cache-tags";
 
 import ProductConfigurationPrice from "./product-configuration-price";
 import ProductGallery from "./product-gallery";
@@ -298,6 +300,56 @@ function productHasLowStock(
   );
 }
 
+const loadRecommendationCatalogue = unstable_cache(
+  async () => {
+    const supabase = createAdminClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        `
+          id,
+          name,
+          slug,
+          description,
+          status,
+          category_id,
+          brand_id,
+          collection_id,
+          is_featured,
+          is_trending,
+          is_new_arrival,
+
+          categories (
+            name
+          ),
+
+          brands (
+            name
+          ),
+
+          product_variants (
+            attributes,
+            stock_quantity,
+            availability_status
+          )
+        `,
+      )
+      .eq("status", "published");
+
+    if (error) {
+      throw error;
+    }
+
+    return data ?? [];
+  },
+  ["stereophonie-product-recommendation-catalogue-v1"],
+  {
+    revalidate: 3600,
+    tags: [STOREFRONT_RECOMMENDATION_CACHE_TAG],
+  },
+);
+
 async function RelatedProductsSection({
   product,
   variants,
@@ -342,39 +394,8 @@ async function RelatedProductsSection({
    * The final maximum-four products are hydrated separately
    * after scoring.
    */
-  const relatedProductsPromise = supabase
-    .from("products")
-    .select(
-      `
-        id,
-        name,
-        slug,
-        description,
-        status,
-        category_id,
-        brand_id,
-        collection_id,
-        is_featured,
-        is_trending,
-        is_new_arrival,
-
-        categories (
-          name
-        ),
-
-        brands (
-          name
-        ),
-
-        product_variants (
-          attributes,
-          stock_quantity,
-          availability_status
-        )
-      `,
-    )
-    .eq("status", "published")
-    .limit(121);
+  const relatedProductsPromise =
+    loadRecommendationCatalogue();
 
 
   /*
@@ -1052,23 +1073,17 @@ async function RelatedProductsSection({
     );
   }
 
-  const {
-    data: relatedDataRaw,
-    error: relatedError,
-  } = await relatedProductsPromise;
+  const relatedDataRaw = await relatedProductsPromise;
 
   /*
-   * The old SQL query excluded the current product using .neq().
-   * Because the parallel request starts before product.id is known,
-   * preserve that exact behavior locally.
+   * The shared recommendation catalogue is cached independently
+   * from the live product-detail lookup.
+   *
+   * Exclude the current product locally before scoring candidates.
    */
   const relatedData = (relatedDataRaw ?? [])
     .filter((item) => item.id !== product.id)
     .slice(0, 120);
-
-  if (relatedError) {
-    console.error("Related products could not be loaded:", relatedError);
-  }
 
   const scoredRelatedProducts = ((relatedData ?? []) as any[])
     .filter(isCandidateAvailable)

@@ -1,6 +1,11 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import {
+  SHOP_CATALOGUE_CACHE_TAG,
+  STOREFRONT_CATEGORY_CACHE_TAG,
+  STOREFRONT_RECOMMENDATION_CACHE_TAG,
+} from "@/lib/storefront-cache-tags";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -108,6 +113,9 @@ export async function createCategory(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_CATEGORY_CACHE_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage("success", "Category created successfully.");
@@ -152,6 +160,9 @@ export async function updateCategory(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_CATEGORY_CACHE_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage("success", "Category updated successfully.");
@@ -184,6 +195,9 @@ export async function toggleCategory(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_CATEGORY_CACHE_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage(
@@ -233,6 +247,9 @@ export async function deleteCategory(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_CATEGORY_CACHE_TAG, "max");
   revalidatePath("/");
 
   redirectWithMessage("success", "Category deleted successfully.");
@@ -384,6 +401,9 @@ export async function updateCategoryHomepagePresentation(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/shop");
   revalidateTag(SHOP_CATEGORY_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_CATEGORY_CACHE_TAG, "max");
 
   redirectWithMessage("success", "Homepage category presentation updated.");
 }

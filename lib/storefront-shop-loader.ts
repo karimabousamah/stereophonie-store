@@ -24,6 +24,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const SHOP_PRODUCTS_PER_BATCH = 50;
 
+export { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-cache-tags";
+import { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-cache-tags";
+
 type ShopIndexVariant = StoreProductVariant;
 
 type ShopIndexRow = ShopCatalogueProduct & {
@@ -107,8 +110,8 @@ const loadShopCatalogueIndex = unstable_cache(
   },
   ["stereophonie-shop-catalogue-index-v1"],
   {
-    revalidate: 5,
-    tags: ["storefront-shop-index"],
+    revalidate: 3600,
+    tags: [SHOP_CATALOGUE_CACHE_TAG],
   },
 );
 
@@ -139,6 +142,112 @@ type ShopFullRow = {
   product_images: ShopFullImage[] | null;
   product_variants: StoreProductVariant[] | null;
 };
+
+/*
+ * STEREOPHONIE_SHOP_CARD_CACHE
+ *
+ * The product-card graph is substantially more expensive than the
+ * lightweight filtering index because it contains the complete
+ * storefront image/configuration relationships required by:
+ *
+ * - primary and secondary card photographs
+ * - quick view
+ * - configuration colours
+ * - pricing
+ * - availability
+ * - stock badges
+ *
+ * Build this graph once and share it between shop/category requests.
+ * Product and image mutations invalidate SHOP_CATALOGUE_CACHE_TAG,
+ * so normal storefront navigation does not need to repeat this
+ * relational Supabase query.
+ */
+const loadShopProductCards = unstable_cache(
+  async (): Promise<StoreProductCardProduct[]> => {
+    const supabase = createAdminClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        `
+          id,
+          name,
+          slug,
+          description,
+          is_featured,
+          is_trending,
+          is_new_arrival,
+          new_drop_started_at,
+          created_at,
+
+          categories (
+            name
+          ),
+
+          brands (
+            name
+          ),
+
+          product_images (
+            id,
+            image_url,
+            storage_path,
+            alt_text,
+            position,
+            is_primary,
+            variant_id,
+            variant_position,
+            is_variant_primary,
+            product_image_variants (
+              variant_id,
+              position,
+              is_primary
+            )
+          ),
+
+          product_variants (
+            id,
+            display_position,
+            regular_price,
+            sale_price,
+            stock_quantity,
+            size,
+            variant_name,
+            attributes,
+            is_active,
+            availability_status
+          )
+        `,
+      )
+      .eq("status", "published")
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (error) {
+      console.error(
+        "Stereophonie shop product-card cache could not load:",
+        error,
+      );
+
+      throw new Error(
+        "Stereophonie storefront catalogue is temporarily unavailable.",
+        {
+          cause: error,
+        },
+      );
+    }
+
+    return ((data ?? []) as ShopFullRow[]).map((product) =>
+      normalizeProduct(product, supabase),
+    );
+  },
+  ["stereophonie-shop-product-cards-v1"],
+  {
+    revalidate: 3600,
+    tags: [SHOP_CATALOGUE_CACHE_TAG],
+  },
+);
 
 export type ShopBatchFilters = {
   search: string;
@@ -339,8 +448,6 @@ export async function loadShopProductBatch({
     Math.max(1, Math.floor(limit)),
   );
 
-  const supabase = createAdminClient();
-
   /*
    * Stage 1
    * -------
@@ -482,91 +589,20 @@ export async function loadShopProductBatch({
   /*
    * Stage 2
    * -------
-   * Only the current visible batch receives the expensive
-   * photograph/configuration graph.
+   * The expensive storefront card graph is shared between requests.
+   *
+   * Filtering and sorting still come from the lightweight catalogue
+   * index above. We only select the IDs belonging to this requested
+   * page from the cached card graph, preserving the exact caller order.
    */
-  const { data: fullData, error: fullError } = await supabase
-    .from("products")
-    .select(
-      `
-        id,
-        name,
-        slug,
-        description,
-        is_featured,
-        is_trending,
-        is_new_arrival,
-        new_drop_started_at,
-        created_at,
+  const cardProducts = await loadShopProductCards();
 
-        categories (
-          name
-        ),
-
-        brands (
-          name
-        ),
-
-        product_images (
-          id,
-          image_url,
-          storage_path,
-          alt_text,
-          position,
-          is_primary,
-          variant_id,
-          variant_position,
-          is_variant_primary,
-          product_image_variants (
-            variant_id,
-            position,
-            is_primary
-          )
-        ),
-
-        product_variants (
-          id,
-          display_position,
-          regular_price,
-          sale_price,
-          stock_quantity,
-          size,
-          variant_name,
-          is_active,
-          availability_status
-        )
-      `,
-    )
-    .eq("status", "published")
-    .in("id", batchIds);
-
-  if (fullError) {
-    console.error(
-      "Stereophonie shop batch could not load:",
-      fullError,
-    );
-
-    throw new Error(
-      "Stereophonie storefront catalogue is temporarily unavailable.",
-      {
-        cause: fullError,
-      },
-    );
-  }
-
-  const normalizedById = new Map(
-    ((fullData ?? []) as ShopFullRow[]).map((product) => [
-      product.id,
-      normalizeProduct(product, supabase),
-    ]),
+  const cardProductById = new Map(
+    cardProducts.map((product) => [product.id, product]),
   );
 
-  /*
-   * Supabase .in() does not promise caller-ID ordering.
-   * Rebuild the exact order produced by shopSortCatalog().
-   */
   const batchProducts = batchIds
-    .map((id) => normalizedById.get(id))
+    .map((id) => cardProductById.get(id))
     .filter(
       (product): product is StoreProductCardProduct =>
         Boolean(product),

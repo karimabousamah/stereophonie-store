@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 
 import { StereophonieShopPage } from "@/app/shop/page";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { STOREFRONT_CATEGORY_CACHE_TAG } from "@/lib/storefront-cache-tags";
 
 const SITE_URL = "https://www.stereophoniestore.com";
 
@@ -30,15 +32,49 @@ type CategoryRow = {
   description: string | null;
 };
 
-async function getCategoryBySlug(slug: string) {
-  const supabase = createAdminClient();
+const loadActiveCategories = unstable_cache(
+  async (): Promise<CategoryRow[]> => {
+    const supabase = createAdminClient();
 
-  return supabase
-    .from("categories")
-    .select("id, name, slug, description")
-    .eq("slug", slug)
-    .eq("is_active", true)
-    .maybeSingle();
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id, name, slug, description")
+      .eq("is_active", true);
+
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []) as CategoryRow[];
+  },
+  ["stereophonie-active-category-pages-v1"],
+  {
+    revalidate: 3600,
+    tags: [STOREFRONT_CATEGORY_CACHE_TAG],
+  },
+);
+
+async function getCategoryBySlug(slug: string) {
+  try {
+    const categories = await loadActiveCategories();
+
+    return {
+      data:
+        categories.find((category) => category.slug === slug) ??
+        null,
+      error: null,
+    };
+  } catch (error) {
+    console.error(
+      "Stereophonie category page lookup failed:",
+      error,
+    );
+
+    return {
+      data: null,
+      error,
+    };
+  }
 }
 
 function categoryDescription(category: CategoryRow) {

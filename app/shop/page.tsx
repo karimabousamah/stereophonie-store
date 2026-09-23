@@ -13,7 +13,6 @@ import {
   loadShopProductBatch,
   SHOP_PRODUCTS_PER_BATCH,
 } from "@/lib/storefront-shop-loader";
-import { storefrontServiceIsAvailable } from "@/lib/storefront-service-health";
 import {
   getShopBrandFilterOptions,
   getShopCategoryFilterOptions,
@@ -123,26 +122,18 @@ export async function StereophonieShopPage({
    * Category and brand filter metadata are independently
    * cached because they change far less often than products.
    */
-  const storefrontAvailable =
-    await storefrontServiceIsAvailable();
+  let initialBatch;
+  let categories;
+  let brands;
 
-  if (!storefrontAvailable) {
-    return (
-      <StorefrontServiceUnavailable
-        title="The shop is temporarily unavailable."
-        description="We could not load the Stereophonie catalogue right now. Please try again shortly or contact us directly on WhatsApp."
-        retryHref="/shop"
-      />
-    );
-  }
-
-  const [
-    initialBatch,
-    categories,
-    brands,
-  ] = await Promise.all([
-    loadShopProductBatch({
-      filters: {
+  try {
+    [
+      initialBatch,
+      categories,
+      brands,
+    ] = await Promise.all([
+      loadShopProductBatch({
+        filters: {
         search,
         category,
         offers,
@@ -156,9 +147,23 @@ export async function StereophonieShopPage({
       limit: SHOP_INITIAL_PRODUCTS,
     }),
 
-    getShopCategoryFilterOptions(),
-    getShopBrandFilterOptions(),
-  ]);
+      getShopCategoryFilterOptions(),
+      getShopBrandFilterOptions(),
+    ]);
+  } catch (error) {
+    console.error(
+      "Stereophonie shop catalogue load failed:",
+      error,
+    );
+
+    return (
+      <StorefrontServiceUnavailable
+        title="The shop is temporarily unavailable."
+        description="We could not load the Stereophonie catalogue right now. Please try again shortly or contact us directly on WhatsApp."
+        retryHref="/shop"
+      />
+    );
+  }
 
   return (
     <V2ShopPage

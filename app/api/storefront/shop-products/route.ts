@@ -4,7 +4,6 @@ import {
   loadShopProductBatch,
   SHOP_PRODUCTS_PER_BATCH,
 } from "@/lib/storefront-shop-loader";
-import { storefrontServiceIsAvailable } from "@/lib/storefront-service-health";
 import {
   shopSelectedAvailability,
   shopSelectedPrice,
@@ -69,25 +68,6 @@ export async function GET(request: NextRequest) {
       SHOP_PRODUCTS_PER_BATCH,
     ),
   );
-
-  const storefrontAvailable =
-    await storefrontServiceIsAvailable();
-
-  if (!storefrontAvailable) {
-    return NextResponse.json(
-      {
-        error:
-          "The Stereophonie catalogue is temporarily unavailable.",
-      },
-      {
-        status: 503,
-        headers: {
-          "Cache-Control": "private, no-store",
-          "Retry-After": "30",
-        },
-      },
-    );
-  }
 
   try {
     const result = await loadShopProductBatch({

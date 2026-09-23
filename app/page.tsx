@@ -451,14 +451,6 @@ export default async function HomePage() {
     (product) => product.new_drop_started_at,
   );
 
-  const latestIndexFallback =
-    latestIndex.length > 0
-      ? latestIndex
-      : sortProductIndexByTimestamp(
-          productIndex,
-          (product) => product.created_at,
-        );
-
   const offerIndex = sortProductIndexByTimestamp(
     productIndex.filter(indexProductOnOffer),
     (product) => product.offer_started_at,
@@ -466,18 +458,12 @@ export default async function HomePage() {
 
   const featuredIndex = sortProductIndexByTimestamp(
     productIndex.filter(
-      (product) => product.is_featured || product.is_trending,
+      (product) =>
+        (product.is_featured || product.is_trending) &&
+        !indexCurrentNewDrop(product),
     ),
     (product) => product.discovering_started_at,
   );
-
-  const featuredIndexFallback =
-    featuredIndex.length > 0
-      ? featuredIndex
-      : sortProductIndexByTimestamp(
-          productIndex,
-          (product) => product.created_at,
-        );
 
   const comingSoonIndex = sortProductIndexByTimestamp(
     productIndex.filter(
@@ -501,9 +487,9 @@ export default async function HomePage() {
     }
   }
 
-  selectProducts(latestIndexFallback);
+  selectProducts(latestIndex);
   selectProducts(offerIndex);
-  selectProducts(featuredIndexFallback);
+  selectProducts(featuredIndex);
   selectProducts(comingSoonIndex);
 
   /*
@@ -628,9 +614,9 @@ export default async function HomePage() {
       .filter((product): product is HomepageProduct => Boolean(product));
   }
 
-  const latestProducts = materializeProducts(latestIndexFallback);
+  const latestProducts = materializeProducts(latestIndex);
   const offerProducts = materializeProducts(offerIndex);
-  const featuredProducts = materializeProducts(featuredIndexFallback);
+  const featuredProducts = materializeProducts(featuredIndex);
   const comingSoonProducts = materializeProducts(comingSoonIndex);
 
   /*

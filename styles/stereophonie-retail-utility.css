@@ -9806,3 +9806,78 @@ html
 /* ==========================================================
    END STOREFRONT — ADMIN-MOTION ISLAND AUTHORITY V43D
    ========================================================== */
+
+@media (max-width: 800px) {
+  .st-storefront-transition-layer {
+    top: 0 !important;
+  }
+}
+
+/* ==========================================================
+   STOREFRONT DYNAMIC ISLAND — HEADER REVEAL AUTHORITY V47
+
+   Rest position:
+   10px below the measured storefront header.
+
+   Motion itself belongs to Framer Motion:
+   hidden -> y -64
+   visible -> y 0
+   exiting -> y -64
+
+   The header remains visually above the island.
+   ========================================================== */
+
+.st-storefront-transition-layer {
+  top: var(--st-island-header-edge, 0px) !important;
+  bottom: auto !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  width: 100% !important;
+  height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  overflow: visible !important;
+  pointer-events: none !important;
+
+  /*
+   * Critical:
+   * do not use transform !important here.
+   * Framer Motion must own translateY.
+   */
+  transform: none;
+
+  transition: none !important;
+
+  /*
+   * V2 header is z-index 50.
+   * Island stays underneath it.
+   */
+  z-index: 49 !important;
+}
+
+.st-storefront-transition-layer
+  .st-storefront-transition-island {
+  margin-top: 10px !important;
+}
+
+@media (max-width: 800px) {
+  .st-storefront-transition-layer {
+    top: var(--st-island-header-edge, 0px) !important;
+  }
+
+  .st-storefront-transition-layer
+    .st-storefront-transition-island {
+    margin-top: 10px !important;
+  }
+}
+
+/* ==========================================================
+   END STOREFRONT DYNAMIC ISLAND — HEADER REVEAL AUTHORITY V47
+   ========================================================== */

@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { processStockNotificationsForProduct } from "@/lib/email/process-stock-notifications";
+import { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-shop-loader";
 import { createClient } from "@/lib/supabase/server";
 
 type AvailabilityStatus =
@@ -500,6 +501,7 @@ export async function updateProduct(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/shop");
   revalidatePath(`/shop/${productId}`);
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
 
   if (productStatus === "archived" && !isSetupIntent) {
     redirect("/admin/products?filter=archived");
@@ -538,6 +540,7 @@ export async function archiveProduct(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
 
   redirect("/admin/products?filter=archived");
 }
@@ -628,6 +631,7 @@ export async function deleteProduct(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/shop");
   revalidatePath(`/shop/${productId}`);
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
 
   redirect("/admin/products?deleted=true");
 }

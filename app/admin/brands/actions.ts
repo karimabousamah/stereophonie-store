@@ -1,6 +1,11 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import {
+  SHOP_CATALOGUE_CACHE_TAG,
+  STOREFRONT_CATEGORY_CACHE_TAG,
+  STOREFRONT_RECOMMENDATION_CACHE_TAG,
+} from "@/lib/storefront-cache-tags";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -107,6 +112,8 @@ export async function createBrand(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirectWithMessage("success", "Brand created successfully.");
 }
@@ -343,6 +350,8 @@ export async function installElectronicsBrandLibrary() {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirectWithMessage(
     "success",
@@ -389,6 +398,8 @@ export async function updateBrand(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirectWithMessage("success", "Brand updated successfully.");
 }
@@ -420,6 +431,8 @@ export async function toggleBrand(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirectWithMessage(
     "success",
@@ -465,6 +478,8 @@ export async function deleteBrand(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidateTag(SHOP_BRAND_FILTER_TAG, "max");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirectWithMessage("success", "Brand deleted successfully.");
 }

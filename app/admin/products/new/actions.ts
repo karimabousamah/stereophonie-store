@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import sharp from "sharp";
 
+import { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-shop-loader";
 import { createClient } from "@/lib/supabase/server";
 
 type AvailabilityStatus =
@@ -1157,6 +1158,7 @@ async function createProductUnsafe(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/");
+  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
 
   redirect(
     `/admin/products/${product.id}?saved=${

@@ -82122,3 +82122,114 @@ html body .st3-utility-spin {
 /* ============================================================
    END STOREFRONT — V3 HEADER SEARCH SPINNER V42.1
    ============================================================ */
+
+/* === ST HOMEPAGE LOWER PRODUCT SECTION SPACING V4 START === */
+
+/*
+ * HOMEPAGE PRODUCT-SECTION RHYTHM — V4
+ *
+ * Tighter vertical rhythm requested after visual browser review.
+ *
+ * 1. Movies & Series -> Just arrived is tightened further.
+ * 2. Product shelf -> product shelf spacing is tightened slightly.
+ * 3. Coming soon -> footer breathing room remains unchanged.
+ *
+ * Product cards, shelf geometry, controls, footer design,
+ * performance and commerce behaviour remain untouched.
+ */
+
+
+/* ------------------------------------------------------------
+   ALL HOMEPAGE PRODUCT SECTIONS
+   ------------------------------------------------------------ */
+
+html body .st3-home-live
+  .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+  > .st3-products-section.st3-home-shop-products {
+  padding-top: 38px !important;
+  padding-bottom: 0 !important;
+}
+
+
+/* ------------------------------------------------------------
+   PRODUCT SHELF -> PRODUCT SHELF
+
+   Just arrived -> More for less
+   More for less -> Worth discovering
+   Worth discovering -> Coming soon
+   ------------------------------------------------------------ */
+
+html body .st3-home-live
+  .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+  + .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+  > .st3-products-section.st3-home-shop-products {
+  padding-top: 48px !important;
+  margin-top: 0 !important;
+}
+
+
+/* ------------------------------------------------------------
+   LAST PRODUCT SHELF -> FOOTER
+
+   Preserve the already-approved professional breathing room.
+   ------------------------------------------------------------ */
+
+html body .st3-home-live
+  .st3-reveal:has(> .st3-products-section.st3-home-shop-products):last-child
+  > .st3-products-section.st3-home-shop-products {
+  padding-bottom: 40px !important;
+}
+
+
+/* ------------------------------------------------------------
+   TABLET
+   ------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    > .st3-products-section.st3-home-shop-products {
+    padding-top: 32px !important;
+  }
+
+  html body .st3-home-live
+    .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    + .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    > .st3-products-section.st3-home-shop-products {
+    padding-top: 38px !important;
+  }
+
+  html body .st3-home-live
+    .st3-reveal:has(> .st3-products-section.st3-home-shop-products):last-child
+    > .st3-products-section.st3-home-shop-products {
+    padding-bottom: 32px !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   MOBILE
+   ------------------------------------------------------------ */
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    > .st3-products-section.st3-home-shop-products {
+    padding-top: 28px !important;
+  }
+
+  html body .st3-home-live
+    .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    + .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    > .st3-products-section.st3-home-shop-products {
+    padding-top: 32px !important;
+  }
+
+  html body .st3-home-live
+    .st3-reveal:has(> .st3-products-section.st3-home-shop-products):last-child
+    > .st3-products-section.st3-home-shop-products {
+    padding-bottom: 26px !important;
+  }
+}
+
+/* === ST HOMEPAGE LOWER PRODUCT SECTION SPACING V4 END === */
