@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const maximumImageSize = 10 * 1024 * 1024;
-const maximumImagesPerConfiguration = 10;
+const maximumImagesPerConfiguration = 15;
 
 
 /*
@@ -512,7 +512,7 @@ export async function finalizeDirectProductImageUploads(formData: FormData) {
 
   /*
    * ==========================================================
-   * MAXIMUM 10 IMAGES PER EXACT CONFIGURATION
+   * MAXIMUM 15 IMAGES PER EXACT CONFIGURATION
    * ==========================================================
    *
    * Existing Shared images count toward every configuration.

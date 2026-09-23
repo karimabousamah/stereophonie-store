@@ -168,7 +168,7 @@ async function tryUploadStorefrontThumbnail({
 const validImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 const maximumImageSize = 10 * 1024 * 1024;
-const maximumImagesPerConfiguration = 10;
+const maximumImagesPerConfiguration = 15;
 
 class ProductSubmissionError extends Error {
   constructor(message: string) {
@@ -530,7 +530,7 @@ async function createProductUnsafe(formData: FormData) {
 
   /*
    * ==========================================================
-   * MAXIMUM 10 IMAGES PER EXACT CONFIGURATION
+   * MAXIMUM 15 IMAGES PER EXACT CONFIGURATION
    * ==========================================================
    *
    * There is intentionally no product-wide image limit.

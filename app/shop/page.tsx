@@ -45,7 +45,12 @@ type ShopPageProps = {
   }>;
 };
 
-export default async function ShopPage({
+export default async function ShopPage(props: ShopPageProps) {
+  return StereophonieShopPage(props);
+}
+
+
+export async function StereophonieShopPage({
   searchParams,
 }: ShopPageProps) {
   const parameters = await searchParams;

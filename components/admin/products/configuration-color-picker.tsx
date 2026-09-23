@@ -1,45 +1,46 @@
 "use client";
 
 import {
-  ArrowLeft,
-  Check,
-  ChevronDown,
-  Palette,
-  Plus,
-  Search,
-  Trash2,
-  X,
+ ArrowLeft,
+ Check,
+ ChevronDown,
+ Palette,
+ Plus,
+ Search,
+ Trash2,
+ X,
 } from "lucide-react";
 import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
+ useEffect,
+ useMemo,
+ useRef,
+ useState,
+ useTransition,
 } from "react";
+import { createPortal } from "react-dom";
 
 import {
-  canonicalizeProductColorwayName,
-  normalizeProductColorway,
-  productColorwayHex,
-  productColorways,
+ canonicalizeProductColorwayName,
+ normalizeProductColorway,
+ productColorwayHex,
+ productColorways,
 } from "@/lib/product-colorways";
 
 import {
-  createCustomColorway,
-  deleteCustomColorway,
-  listCustomColorways,
-  type AdminCustomColorway,
+ createCustomColorway,
+ deleteCustomColorway,
+ listCustomColorways,
+ type AdminCustomColorway,
 } from "./configuration-colorway-actions";
 
 export type ConfigurationColorValue = {
-  name: string;
-  hex: string;
+ name: string;
+ hex: string;
 };
 
 type Props = {
-  value?: ConfigurationColorValue | null;
-  onChange: (value: ConfigurationColorValue) => void;
+ value?: ConfigurationColorValue | null;
+ onChange: (value: ConfigurationColorValue) => void;
 };
 
 const rawPresetColors: ConfigurationColorValue[] = [
@@ -309,531 +310,510 @@ const rawPresetColors: ConfigurationColorValue[] = [
 ];
 
 const presetColors = Array.from(
-  new Map(
-    [...rawPresetColors, ...productColorways].map((colorway) => {
-      const normalized = normalizeProductColorway(colorway);
+ new Map(
+ [...rawPresetColors, ...productColorways].map((colorway) => {
+ const normalized = normalizeProductColorway(colorway);
 
-      return [normalized.name.toLocaleLowerCase(), normalized] as const;
+ return [normalized.name.toLocaleLowerCase(), normalized] as const;
     }),
   ).values(),
 );
 
 function swatchStyle(hex: string) {
-  if (hex !== "transparent") {
-    return {
-      backgroundColor: hex,
+ if (hex !== "transparent") {
+ return {
+ backgroundColor: hex,
       "--st-admin-product-swatch": hex,
     } as React.CSSProperties;
   }
 
-  return {
-    backgroundColor: "#ffffff",
-    backgroundImage:
+ return {
+ backgroundColor: "#ffffff",
+ backgroundImage:
       "linear-gradient(45deg, #d1d1d6 25%, transparent 25%), linear-gradient(-45deg, #d1d1d6 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d1d1d6 75%), linear-gradient(-45deg, transparent 75%, #d1d1d6 75%)",
-    backgroundSize: "8px 8px",
-    backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
+ backgroundSize: "8px 8px",
+ backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
   };
 }
 
 export default function ConfigurationColorPicker({ value, onChange }: Props) {
-  const pickerRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [customColors, setCustomColors] = useState<AdminCustomColorway[]>([]);
-  const [creatorOpen, setCreatorOpen] = useState(false);
-  const [newColorName, setNewColorName] = useState("");
-  const [newColorHex, setNewColorHex] = useState("#202223");
-  const [creatorError, setCreatorError] = useState("");
-  const [isSaving, startSaving] = useTransition();
-  const [deletingColorwayId, setDeletingColorwayId] = useState<string | null>(
-    null,
+ const pickerRef = useRef<HTMLDivElement>(null);
+ const triggerRef = useRef<HTMLButtonElement>(null);
+ const popupRef = useRef<HTMLDivElement>(null);
+ const [popupPosition, setPopupPosition] = useState({ left: 0, top: 0 });
+ const [open, setOpen] = useState(false);
+ const [query, setQuery] = useState("");
+ const [customColors, setCustomColors] = useState<AdminCustomColorway[]>([]);
+ const [creatorOpen, setCreatorOpen] = useState(false);
+ const [newColorName, setNewColorName] = useState("");
+ const [newColorHex, setNewColorHex] = useState("#202223");
+ const [creatorError, setCreatorError] = useState("");
+ const [isSaving, startSaving] = useTransition();
+ const [deletingColorwayId, setDeletingColorwayId] = useState<string | null>(
+ null,
   );
 
-  useEffect(() => {
-    let active = true;
+ useEffect(() => {
+ let active = true;
 
-    void listCustomColorways().then((result) => {
-      if (!active || !result.ok) return;
-      setCustomColors(result.colorways);
+ void listCustomColorways().then((result) => {
+ if (!active || !result.ok) return;
+ setCustomColors(result.colorways);
     });
 
-    return () => {
-      active = false;
+ return () => {
+ active = false;
     };
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
+ useEffect(() => {
+ if (!open) return;
 
-    function handleOutsidePointer(event: MouseEvent) {
-      const target = event.target as Node;
+ function handleOutsidePointer(event: MouseEvent) {
+ const target = event.target as Node;
 
-      if (pickerRef.current?.contains(target)) {
-        return;
+ if (
+ pickerRef.current?.contains(target) ||
+ popupRef.current?.contains(target)
+      ) {
+ return;
       }
 
-      setOpen(false);
-      setQuery("");
-      setCreatorOpen(false);
-      setCreatorError("");
+ setOpen(false);
+ setQuery("");
+ setCreatorOpen(false);
+ setCreatorError("");
     }
 
-    function handleEscape(event: globalThis.KeyboardEvent) {
-      if (event.key !== "Escape") return;
+ function handleEscape(event: globalThis.KeyboardEvent) {
+ if (event.key !== "Escape") return;
 
-      setOpen(false);
-      setQuery("");
-      setCreatorOpen(false);
-      setCreatorError("");
-      triggerRef.current?.focus();
+ setOpen(false);
+ setQuery("");
+ setCreatorOpen(false);
+ setCreatorError("");
+ triggerRef.current?.focus();
     }
 
-    document.addEventListener("mousedown", handleOutsidePointer);
-    document.addEventListener("keydown", handleEscape);
+ document.addEventListener("mousedown", handleOutsidePointer);
+ document.addEventListener("keydown", handleEscape);
 
-    return () => {
-      document.removeEventListener(
+ return () => {
+ document.removeEventListener(
         "mousedown",
-        handleOutsidePointer,
+ handleOutsidePointer,
       );
-      document.removeEventListener(
+ document.removeEventListener(
         "keydown",
-        handleEscape,
+ handleEscape,
       );
     };
   }, [open]);
 
-  const filteredColors = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
+ useEffect(() => {
+ if (!open) return;
 
-    const allColors = Array.from(
-      new Map(
-        [...customColors, ...presetColors].map((color) => [
-          color.name.toLocaleLowerCase(),
+ function updatePopupPosition() {
+ const trigger = triggerRef.current;
+ if (!trigger) return;
+
+ const rect = trigger.getBoundingClientRect();
+ const popupWidth = 280;
+ const viewportPadding = 16;
+
+ const preferredLeft = rect.left;
+ const maxLeft = Math.max(
+ viewportPadding,
+ window.innerWidth - popupWidth - viewportPadding,
+      );
+
+ setPopupPosition({
+ left: Math.min(Math.max(preferredLeft, viewportPadding), maxLeft),
+ top: rect.bottom + 8,
+      });
+    }
+
+ updatePopupPosition();
+
+ window.addEventListener("resize", updatePopupPosition);
+ window.addEventListener("scroll", updatePopupPosition, true);
+
+ return () => {
+ window.removeEventListener("resize", updatePopupPosition);
+ window.removeEventListener("scroll", updatePopupPosition, true);
+    };
+  }, [open]);
+
+ const filteredColors = useMemo(() => {
+ const normalized = query.trim().toLowerCase();
+
+ const allColors = Array.from(
+ new Map(
+ [...customColors, ...presetColors].map((color) => [
+ color.name.toLocaleLowerCase(),
           {
-            name: color.name,
-            hex: color.hex,
+ name: color.name,
+ hex: color.hex,
           },
         ]),
       ).values(),
     );
 
-    if (!normalized) {
-      return allColors;
+ if (!normalized) {
+ return allColors;
     }
 
-    return allColors.filter((color) =>
-      color.name.toLowerCase().includes(normalized),
+ return allColors.filter((color) =>
+ color.name.toLowerCase().includes(normalized),
     );
   }, [customColors, query]);
 
-  function closePicker() {
-    setOpen(false);
-    setQuery("");
-    setCreatorOpen(false);
-    setCreatorError("");
+ function closePicker() {
+ setOpen(false);
+ setQuery("");
+ setCreatorOpen(false);
+ setCreatorError("");
   }
 
-  function chooseColor(color: ConfigurationColorValue) {
-    const customColor = customColors.find(
+ function chooseColor(color: ConfigurationColorValue) {
+ const customColor = customColors.find(
       (item) =>
-        item.name.toLocaleLowerCase() === color.name.toLocaleLowerCase(),
+ item.name.toLocaleLowerCase() === color.name.toLocaleLowerCase(),
     );
 
-    const name = customColor
+ const name = customColor
       ? customColor.name
       : canonicalizeProductColorwayName(color.name);
 
-    onChange({
-      name,
-      hex: customColor
+ onChange({
+ name,
+ hex: customColor
         ? customColor.hex
         : (productColorwayHex(name) ?? color.hex),
     });
 
-    closePicker();
+ closePicker();
   }
 
-  function openCreator() {
-    if (query.trim()) {
-      setNewColorName(query.trim());
+ function openCreator() {
+ if (query.trim()) {
+ setNewColorName(query.trim());
     }
 
-    setCreatorError("");
-    setCreatorOpen(true);
+ setCreatorError("");
+ setCreatorOpen(true);
   }
 
-  function saveColorway() {
-    setCreatorError("");
+ function saveColorway() {
+ setCreatorError("");
 
-    startSaving(async () => {
-      const result = await createCustomColorway(newColorName, newColorHex);
+ startSaving(async () => {
+ const result = await createCustomColorway(newColorName, newColorHex);
 
-      if (!result.ok) {
-        setCreatorError(result.error);
-        return;
+ if (!result.ok) {
+ setCreatorError(result.error);
+ return;
       }
 
-      setCustomColors((current) => {
-        const remaining = current.filter(
+ setCustomColors((current) => {
+ const remaining = current.filter(
           (color) =>
-            color.id !== result.colorway.id &&
-            color.name.toLocaleLowerCase() !==
-              result.colorway.name.toLocaleLowerCase(),
+ color.id !== result.colorway.id &&
+ color.name.toLocaleLowerCase() !==
+ result.colorway.name.toLocaleLowerCase(),
         );
 
-        return [result.colorway, ...remaining];
+ return [result.colorway, ...remaining];
       });
 
-      onChange({
-        name: result.colorway.name,
-        hex: result.colorway.hex,
+ onChange({
+ name: result.colorway.name,
+ hex: result.colorway.hex,
       });
 
-      setNewColorName("");
-      setNewColorHex("#202223");
-      closePicker();
+ setNewColorName("");
+ setNewColorHex("#202223");
+ closePicker();
     });
   }
 
-  async function removeCustomColorway(colorway: AdminCustomColorway) {
-    const confirmed = window.confirm(
+ async function removeCustomColorway(colorway: AdminCustomColorway) {
+ const confirmed = window.confirm(
       `Delete "${colorway.name}" from the saved colorway library?`,
     );
 
-    if (!confirmed) {
-      return;
+ if (!confirmed) {
+ return;
     }
 
-    setDeletingColorwayId(colorway.id);
+ setDeletingColorwayId(colorway.id);
 
-    const result = await deleteCustomColorway(colorway.id);
+ const result = await deleteCustomColorway(colorway.id);
 
-    setDeletingColorwayId(null);
+ setDeletingColorwayId(null);
 
-    if (!result.ok) {
-      window.alert(result.error);
-      return;
+ if (!result.ok) {
+ window.alert(result.error);
+ return;
     }
 
-    setCustomColors((current) =>
-      current.filter((item) => item.id !== colorway.id),
+ setCustomColors((current) =>
+ current.filter((item) => item.id !== colorway.id),
     );
   }
 
-  const validHex = /^#[0-9A-Fa-f]{6}$/.test(newColorHex);
+ const validHex = /^#[0-9A-Fa-f]{6}$/.test(newColorHex);
 
-  return (
+ const colorPopup = open ? (
     <div
-      ref={pickerRef}
-      className="st-admin-color-picker-v2 relative w-fit"
+ ref={popupRef}
+ className={`st-admin-colorway-portal-v60 ${
+ creatorOpen ? "st-admin-color-popup-final" : ""
+      }`}
+ style={{
+ left: `${popupPosition.left}px`,
+ top: `${popupPosition.top}px`,
+      }}
     >
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => setOpen((current) => !current)}
-        aria-expanded={open}
-        className="st-admin-color-value-trigger-final"
-      >
-        <span
-          className="st-admin-color-trigger-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
-          style={swatchStyle(value?.hex ?? "#e5e5e7")}
-          aria-hidden="true"
-        />
+      {creatorOpen ? (
+        <>
+          <div className="flex items-center gap-2 border-b border-black/[0.07] bg-white p-3">
+            <button
+ type="button"
+ onClick={() => {
+ setCreatorOpen(false);
+ setCreatorError("");
+              }}
+ aria-label="Back to colors"
+ className="st-admin-color-popup-close-v2 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] text-black/40 transition hover:border-black/20 hover:bg-white hover:text-black"
+            >
+              <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
+            </button>
 
-        <span className="min-w-0 flex-1 whitespace-normal break-words text-[12px] font-semibold text-[#1d1d1f]">
-          {value?.name || "Choose a color"}
-        </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold text-[#202223]">
+ Create colorway
+              </p>
+              <p className="mt-0.5 text-[9px] text-black/42">
+ Add a reusable color to the library
+              </p>
+            </div>
 
-        <ChevronDown
-          className={`h-3.5 w-3.5 shrink-0 text-black/35 transition ${
-            open ? "rotate-180" : ""
-          }`}
-          aria-hidden="true"
-        />
-      </button>
+            <button
+ type="button"
+ onClick={closePicker}
+ aria-label="Close color selector"
+ className="st-admin-popup-bare-close-v44"
+            >
+              <X className="h-4 w-4" strokeWidth={1.8} />
+            </button>
+          </div>
 
-      {open ? (
-        <div className="st-admin-color-popup-final absolute left-0 top-[calc(100%+8px)] z-[100] w-[280px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_22px_60px_rgba(0,0,0,0.16)]">
-          {creatorOpen ? (
-            <>
-              <div className="flex items-center gap-2 border-b border-black/[0.07] bg-white p-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCreatorOpen(false);
-                    setCreatorError("");
+          <div className="st-admin-color-creator-body-v5">
+            <div className="st-admin-color-creator-fields-v5">
+              <label>
+                <span>Colorway name</span>
+                <input
+ value={newColorName}
+ onChange={(event) => {
+ setNewColorName(event.target.value);
+ setCreatorError("");
                   }}
-                  aria-label="Back to colors"
-                  className="st-admin-color-popup-close-v2 flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-black/10 bg-[#f7f7f8] text-black/40 transition hover:border-black/20 hover:bg-white hover:text-black"
-                >
-                  <ArrowLeft className="h-4 w-4" strokeWidth={1.8} />
-                </button>
+ placeholder="e.g. Desert Titanium"
+ maxLength={80}
+ autoFocus
+ className="st-admin-color-creator-input-v5"
+                />
+              </label>
 
-                <div className="min-w-0 flex-1">
-                  <p className="text-[11px] font-semibold text-[#1d1d1f]">
-                    Create new colorway
-                  </p>
-                  <p className="mt-0.5 text-[10px] text-black/40">
-                    Save a custom color to your product library.
-                  </p>
-                </div>
+              <div className="st-admin-colorway-creator-color-v63">
+              <label className="st-admin-colorway-creator-label-v63">
+                Color
+              </label>
 
+              <label
+                className="st-admin-colorway-creator-wheel-v63"
+                title="Choose an exact color"
+              >
+                <span
+                  className="st-admin-colorway-creator-wheel-preview-v63"
+                  style={{ backgroundColor: newColorHex }}
+                  aria-hidden="true"
+                />
+
+                <span className="st-admin-colorway-creator-wheel-copy-v63">
+                  <strong>Choose exact color</strong>
+                  <small>Open the color wheel</small>
+                </span>
+
+                <input
+                  type="color"
+                  value={validHex ? newColorHex : "#202223"}
+                  onChange={(event) => {
+                    setNewColorHex(event.target.value.toUpperCase());
+                  }}
+                  className="st-admin-colorway-creator-native-color-v63"
+                  aria-label="Choose exact color"
+                />
+              </label>
+            </div>
+
+            <div className="st-admin-colorway-creator-hex-field-v63">
+              <label className="st-admin-colorway-creator-label-v63">
+                HEX
+              </label>
+
+              <div className="st-admin-color-creator-hex-v5">
+                <span
+                  className="st-admin-color-creator-hex-swatch-v5"
+                  style={{ backgroundColor: validHex ? newColorHex : "#202223" }}
+                  aria-hidden="true"
+                />
+
+                <input
+                  value={newColorHex}
+                  onChange={(event) => {
+                    const nextValue = event.target.value
+                      .trim()
+                      .toUpperCase();
+
+                    setNewColorHex(
+                      nextValue.startsWith("#")
+                        ? nextValue
+                        : `#${nextValue}`,
+                    );
+                  }}
+                  className="st-admin-color-creator-input-v5 st-admin-color-creator-hex-input-v5"
+                  placeholder="#202223"
+                  autoComplete="off"
+                  spellCheck={false}
+                  aria-label="HEX"
+                />
+              </div>
+            </div>
+            </div>
+
+            <div className="st-admin-color-creator-preview-v5">
+              <span
+ className="st-admin-color-creator-preview-swatch-v5"
+ style={{
+ backgroundColor: validHex
+                    ? newColorHex
+                    : "#202223",
+                }}
+ aria-hidden="true"
+              />
+
+              <span className="st-admin-color-creator-preview-copy-v5">
+                <strong>
+                  {newColorName.trim() || "Untitled colorway"}
+                </strong>
+                <small>{newColorHex}</small>
+              </span>
+            </div>
+
+            {creatorError ? (
+              <p className="st-admin-color-creator-error-v5">
+                {creatorError}
+              </p>
+            ) : null}
+
+            <div className="st-admin-color-creator-footer-v5">
+              <p>
+ Saved colors remain available for future products.
+              </p>
+
+              <button
+ type="button"
+ onClick={saveColorway}
+ disabled={
+ isSaving ||
+                  !newColorName.trim() ||
+                  !validHex
+                }
+ className="st-admin-color-creator-save-v5"
+              >
+                <Check aria-hidden="true" strokeWidth={2} />
+                {isSaving ? "Saving..." : "Save Colorway"}
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="st-admin-colorway-search-section-v60">
+            <div className="st-admin-colorway-search-shell-v60">
+              <Search
+ className="st-admin-colorway-search-icon-v60"
+ strokeWidth={1.8}
+ aria-hidden="true"
+              />
+
+              <input
+ value={query}
+ onChange={(event) => setQuery(event.target.value)}
+ placeholder="Search colors..."
+ autoComplete="off"
+ className="st-admin-colorway-search-input-v60"
+ aria-label="Search colors"
+              />
+
+              {query ? (
                 <button
-                  type="button"
-                  onClick={closePicker}
-                  aria-label="Close color selector"
-                  className="st-admin-popup-bare-close-v44"
+ type="button"
+ onMouseDown={(event) => event.preventDefault()}
+ onClick={() => setQuery("")}
+ className="st-admin-colorway-search-clear-v60"
+ aria-label="Clear color search"
                 >
-                  <X className="h-4 w-4" strokeWidth={1.8} />
+                  <X
+ className="h-3.5 w-3.5"
+ strokeWidth={1.8}
+ aria-hidden="true"
+                  />
                 </button>
-              </div>
+              ) : null}
+            </div>
+          </div>
 
-              <div className="st-admin-color-creator-v5">
-                <label className="st-admin-color-creator-wheel-v5">
-                  <span className="st-admin-color-creator-wheel-swatch-v5">
-                    <span
-                      style={{
-                        backgroundColor: validHex
-                          ? newColorHex
-                          : "#202223",
-                      }}
-                    />
-                  </span>
+          <div className="max-h-[300px] overflow-y-auto p-3">
+            {filteredColors.length > 0 ? (
+              <div className="grid grid-cols-1 gap-2">
+                {filteredColors.map((color) => {
+ const selected =
+ value?.name === color.name &&
+                    value?.hex.toLowerCase() === color.hex.toLowerCase();
 
-                  <span className="st-admin-color-creator-wheel-copy-v5">
-                    <strong>Choose color</strong>
-                    <small>
-                      <Palette aria-hidden="true" strokeWidth={1.8} />
-                      Open color wheel
-                    </small>
-                  </span>
+ const customColorway = customColors.find(
+                    (item) =>
+ item.name.toLocaleLowerCase() ===
+                        color.name.toLocaleLowerCase() &&
+                      item.hex.toLocaleLowerCase() ===
+                        color.hex.toLocaleLowerCase(),
+                  );
 
-                  <input
-                    type="color"
-                    value={validHex ? newColorHex : "#202223"}
-                    onChange={(event) => {
-                      setNewColorHex(event.target.value.toUpperCase());
-                      setCreatorError("");
-                    }}
-                    className="st-admin-color-creator-native-v5"
-                    aria-label="Choose custom color"
-                  />
-                </label>
+ if (customColorway) {
+ const deleting =
+ deletingColorwayId === customColorway.id;
 
-                <div className="st-admin-color-creator-fields-v5">
-                  <label>
-                    <span>Colorway name</span>
-                    <input
-                      value={newColorName}
-                      onChange={(event) => {
-                        setNewColorName(event.target.value);
-                        setCreatorError("");
-                      }}
-                      placeholder="e.g. Desert Titanium"
-                      maxLength={80}
-                      autoFocus
-                      className="st-admin-color-creator-input-v5"
-                    />
-                  </label>
-
-                  <label>
-                    <span>HEX</span>
-
-                    <div className="st-admin-color-creator-hex-v5">
-                      <span
-                        className="st-admin-color-creator-hex-swatch-v5"
-                        style={{
-                          backgroundColor: validHex
-                            ? newColorHex
-                            : "#202223",
-                        }}
-                        aria-hidden="true"
-                      />
-
-                      <input
-                        value={newColorHex}
-                        onChange={(event) => {
-                          setNewColorHex(event.target.value.toUpperCase());
-                          setCreatorError("");
-                        }}
-                        maxLength={7}
-                        spellCheck={false}
-                        aria-label="HEX color value"
-                        className="st-admin-color-creator-input-v5 st-admin-color-creator-hex-input-v5"
-                      />
-                    </div>
-                  </label>
-                </div>
-
-                <div className="st-admin-color-creator-preview-v5">
-                  <span
-                    className="st-admin-color-creator-preview-swatch-v5"
-                    style={{
-                      backgroundColor: validHex
-                        ? newColorHex
-                        : "#202223",
-                    }}
-                    aria-hidden="true"
-                  />
-
-                  <span className="st-admin-color-creator-preview-copy-v5">
-                    <strong>
-                      {newColorName.trim() || "Untitled colorway"}
-                    </strong>
-                    <small>{newColorHex}</small>
-                  </span>
-                </div>
-
-                {creatorError ? (
-                  <p className="st-admin-color-creator-error-v5">
-                    {creatorError}
-                  </p>
-                ) : null}
-
-                <div className="st-admin-color-creator-footer-v5">
-                  <p>
-                    Saved colors remain available for future products.
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={saveColorway}
-                    disabled={
-                      isSaving ||
-                      !newColorName.trim() ||
-                      !validHex
-                    }
-                    className="st-admin-color-creator-save-v5"
-                  >
-                    <Check aria-hidden="true" strokeWidth={2} />
-                    {isSaving ? "Saving..." : "Save Colorway"}
-                  </button>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="border-b border-black/[0.07] bg-white p-3">
-                <div className="st-admin-search-shell-v44-4 relative w-full min-w-0">
-                  <Search
-                    className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-black/35"
-                    strokeWidth={1.8}
-                    aria-hidden="true"
-                  />
-
-                  <input
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Search colors..."
-                    className="h-10 w-full rounded-[10px] border border-black/10 bg-white pl-10 pr-10 text-[12px] text-[#1d1d1f] outline-none transition placeholder:text-black/30 hover:border-black/15 focus:border-[#202223] focus:bg-white focus:ring-0"
-                  />
-
-                  {query ? (
-                  <button
-                    type="button"
-                    onClick={() => setQuery("")}
-                    aria-label="Clear color search"
-                    className="st-admin-search-clear-v47"
-                  >
-                    <X
-                      className="h-4 w-4"
-                      strokeWidth={1.8}
-                      aria-hidden="true"
-                    />
-                  </button>
-                ) : null}
-                </div>
-              </div>
-
-              <div className="max-h-[300px] overflow-y-auto p-3">
-                {filteredColors.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-2">
-                    {filteredColors.map((color) => {
-                      const selected =
-                        value?.name === color.name &&
-                        value?.hex.toLowerCase() === color.hex.toLowerCase();
-
-                      const customColorway = customColors.find(
-                        (item) =>
-                          item.name.toLocaleLowerCase() ===
-                            color.name.toLocaleLowerCase() &&
-                          item.hex.toLocaleLowerCase() ===
-                            color.hex.toLocaleLowerCase(),
-                      );
-
-                      if (customColorway) {
-                        const deleting =
-                          deletingColorwayId === customColorway.id;
-
-                        return (
-                          <div
-                            key={`${color.name}-${color.hex}`}
-                            className={`st-admin-color-row-v2 flex h-10 min-w-0 items-center rounded-[8px] border transition ${
-                              selected
-                                ? "border-[#202223] bg-[#f1f2f2]"
-                                : "border-black/[0.07] bg-[#fafafa] hover:border-black/15 hover:bg-white"
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => chooseColor(color)}
-                              className="flex min-w-0 flex-1 items-center gap-2.5 self-stretch rounded-l-[9px] px-3 text-left text-[11px] font-medium text-black/70"
-                            >
-                              <span
-                                className="st-admin-color-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
-                                style={swatchStyle(color.hex)}
-                                aria-hidden="true"
-                              />
-
-                              <span className="min-w-0 flex-1 whitespace-normal break-words">
-                                {color.name}
-                              </span>
-
-                              {selected ? (
-                                <Check
-                                  className="h-3.5 w-3.5 shrink-0 text-[#202223]"
-                                  aria-hidden="true"
-                                />
-                              ) : null}
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                void removeCustomColorway(customColorway)
-                              }
-                              disabled={deleting}
-                              aria-label={`Delete ${customColorway.name}`}
-                              title="Delete saved colorway"
-                              className="st-admin-color-row-delete-v2 mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-transparent bg-transparent text-black/35 transition disabled:cursor-wait disabled:opacity-35"
-                            >
-                              <Trash2
-                                className="h-3.5 w-3.5"
-                                strokeWidth={1.8}
-                                aria-hidden="true"
-                              />
-                            </button>
-                          </div>
-                        );
-                      }
-
-                      return (
+ return (
+                      <div
+ key={`${color.name}-${color.hex}`}
+ className={`st-admin-color-row-v2 flex h-10 min-w-0 items-center rounded-[8px] border transition ${
+ selected
+                            ? "border-[#202223] bg-[#f1f2f2]"
+                            : "border-black/[0.07] bg-[#fafafa] hover:border-black/15 hover:bg-white"
+                        }`}
+                      >
                         <button
-                          key={`${color.name}-${color.hex}`}
-                          type="button"
-                          onClick={() => chooseColor(color)}
-                          className={`st-admin-color-row-v2 flex h-10 min-w-0 items-center gap-2.5 rounded-[8px] border px-3 text-left text-[11px] font-medium transition ${
-                            selected
-                              ? "border-[#202223] bg-[#f1f2f2] text-[#1d1d1f]"
-                              : "border-black/[0.07] bg-[#fafafa] text-black/70 hover:border-black/15 hover:bg-white"
-                          }`}
+ type="button"
+ onClick={() => chooseColor(color)}
+ className="flex min-w-0 flex-1 items-center gap-2.5 self-stretch rounded-l-[9px] px-3 text-left text-[11px] font-medium text-black/70"
                         >
                           <span
-                            className="st-admin-color-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
-                            style={swatchStyle(color.hex)}
-                            aria-hidden="true"
+ className="st-admin-color-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
+ style={swatchStyle(color.hex)}
+ aria-hidden="true"
                           />
 
                           <span className="min-w-0 flex-1 whitespace-normal break-words">
@@ -842,37 +822,120 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
 
                           {selected ? (
                             <Check
-                              className="h-3.5 w-3.5 shrink-0 text-[#202223]"
-                              aria-hidden="true"
+ className="h-3.5 w-3.5 shrink-0 text-[#202223]"
+ aria-hidden="true"
                             />
                           ) : null}
                         </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="px-4 py-8 text-center">
-                    <p className="text-[12px] font-medium text-black/45">
-                      No matching colors.
-                    </p>
-                  </div>
-                )}
-              </div>
 
-              <div className="border-t border-black/[0.07] bg-white p-3">
-                <button
-                  type="button"
-                  onClick={openCreator}
-                  className="st-admin-color-create-v2 flex h-10 w-full items-center justify-center gap-2 rounded-[8px] border border-black/15 bg-white text-[10px] font-semibold text-[#202223] transition"
-                >
-                  <Plus className="h-3.5 w-3.5" strokeWidth={2} />
-                  Create new colorway
-                </button>
+                        <button
+ type="button"
+ onClick={() =>
+ void removeCustomColorway(customColorway)
+                          }
+ disabled={deleting}
+ aria-label={`Delete ${customColorway.name}`}
+ title="Delete saved colorway"
+ className="st-admin-color-row-delete-v2mr-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] border border-transparent bg-transparent text-black/35 transition disabled:cursor-wait disabled:opacity-35"
+                        >
+                          <Trash2
+ className="h-3.5 w-3.5"
+ strokeWidth={1.8}
+ aria-hidden="true"
+                          />
+                        </button>
+                      </div>
+                    );
+                  }
+
+ return (
+                    <button
+ key={`${color.name}-${color.hex}`}
+ type="button"
+ onClick={() => chooseColor(color)}
+ className={`st-admin-color-row-v2 flex h-10 min-w-0 items-center gap-2.5 rounded-[8px] border px-3 text-left text-[11px] font-medium transition ${
+ selected
+                          ? "border-[#202223] bg-[#f1f2f2] text-[#1d1d1f]"
+                          : "border-black/[0.07] bg-[#fafafa] text-black/70 hover:border-black/15 hover:bg-white"
+                      }`}
+                    >
+                      <span
+ className="st-admin-color-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
+ style={swatchStyle(color.hex)}
+ aria-hidden="true"
+                      />
+
+                      <span className="min-w-0 flex-1 whitespace-normal break-words">
+                        {color.name}
+                      </span>
+
+                      {selected ? (
+                        <Check
+ className="h-3.5 w-3.5 shrink-0 text-[#202223]"
+ aria-hidden="true"
+                        />
+                      ) : null}
+                    </button>
+                  );
+                })}
               </div>
-            </>
-          )}
-        </div>
-      ) : null}
+            ) : (
+              <div className="px-4 py-8 text-center">
+                <p className="text-[12px] font-medium text-black/45">
+ No matching colors.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-black/[0.07] bg-white p-3">
+            <button
+ type="button"
+ onClick={openCreator}
+ className="st-admin-color-create-v2 flex h-10 w-full items-center justify-center gap-2 rounded-[8px] border border-black/15 bg-white text-[10px] font-semibold text-[#202223] transition"
+            >
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+ Create new colorway
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  ) : null;
+
+ return (
+    <div
+ ref={pickerRef}
+ className="st-admin-color-picker-v2 relative w-fit"
+    >
+      <button
+ ref={triggerRef}
+ type="button"
+ onClick={() => setOpen((current) => !current)}
+ aria-expanded={open}
+ className="st-admin-color-value-trigger-final"
+      >
+        <span
+ className="st-admin-color-trigger-swatch-final h-5 w-5 shrink-0 rounded-full border border-black/10"
+ style={swatchStyle(value?.hex ?? "#e5e5e7")}
+ aria-hidden="true"
+        />
+
+        <span className="min-w-0 flex-1 whitespace-normal break-words text-[12px] font-semibold text-[#1d1d1f]">
+          {value?.name || "Choose a color"}
+        </span>
+
+        <ChevronDown
+ className={`h-3.5 w-3.5 shrink-0 text-black/35 transition ${
+ open ? "rotate-180" : ""
+          }`}
+ aria-hidden="true"
+        />
+      </button>
+
+      {typeof document !== "undefined" && colorPopup
+        ? createPortal(colorPopup, document.body)
+        : null}
     </div>
   );
 }

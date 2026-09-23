@@ -221,7 +221,7 @@ export async function generateMetadata({
   const brand = relationName(product.brands as Relation, "");
   const category = relationName(product.categories as Relation, "Technology");
 
-  const title = [product.name, brand, "Stereophonie"]
+  const title = [product.name, brand]
     .filter(Boolean)
     .join(" | ");
 
@@ -229,32 +229,56 @@ export async function generateMetadata({
     product.description?.trim() ||
     `Shop ${product.name} in ${category} at Stereophonie.`;
 
-  const images = (
-    (product.product_images as {
-      image_url: string | null;
-      position: number;
-      is_primary: boolean;
-    }[]) ?? []
-  )
-    .filter((image) => Boolean(image.image_url))
-    .sort((first, second) => {
-      if (first.is_primary !== second.is_primary) {
-        return first.is_primary ? -1 : 1;
-      }
+  const supabase = createAdminClient();
 
-      return first.position - second.position;
-    });
+  const images = productImagesWithStorefrontUrls(
+    (product.product_images as ProductImage[]) ?? [],
+    supabase,
+  ).sort((first, second) => {
+    if (first.is_primary !== second.is_primary) {
+      return first.is_primary ? -1 : 1;
+    }
 
-  const primaryImage = images[0]?.image_url ?? undefined;
+    return first.position - second.position;
+  });
+
+  const primaryImage =
+    images[0]?.storefront_image_url ??
+    images[0]?.image_url ??
+    undefined;
+
+  const canonicalUrl = `https://www.stereophoniestore.com/shop/${encodeURIComponent(
+    product.slug ?? slug,
+  )}`;
 
   return {
     title,
     description: description.slice(0, 160),
 
+    alternates: {
+      canonical: canonicalUrl,
+    },
+
     openGraph: {
       title,
       description: description.slice(0, 200),
       type: "website",
+      url: canonicalUrl,
+      siteName: "Stereophonie",
+      images: primaryImage
+        ? [
+            {
+              url: primaryImage,
+              alt: product.name,
+            },
+          ]
+        : undefined,
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: description.slice(0, 200),
       images: primaryImage ? [primaryImage] : undefined,
     },
   };
@@ -1428,8 +1452,141 @@ export default async function ProductPage({
       (variant) => variant.attributes && typeof variant.attributes === "object",
     )?.attributes ?? {};
 
+  /*
+   * Google product data follows the same initial configuration and
+   * price semantics as the customer-visible product price.
+   */
+  const initialVariant =
+    variants.find(
+      (variant) =>
+        variant.stock_quantity > 0 &&
+        (variant.availability_status === "in_stock" ||
+          variant.availability_status === "low_stock"),
+    ) ??
+    variants[0] ??
+    null;
+
+  const validPositivePrice = (value: number | null) =>
+    typeof value === "number" && Number.isFinite(value) && value > 0;
+
+  const regularPrice =
+    initialVariant && validPositivePrice(initialVariant.regular_price)
+      ? Number(initialVariant.regular_price)
+      : null;
+
+  const rawSalePrice =
+    initialVariant && validPositivePrice(initialVariant.sale_price)
+      ? Number(initialVariant.sale_price)
+      : null;
+
+  const salePrice =
+    regularPrice !== null &&
+    rawSalePrice !== null &&
+    rawSalePrice < regularPrice
+      ? rawSalePrice
+      : null;
+
+  const googlePrice = salePrice ?? regularPrice;
+
+  const productUrl = `https://www.stereophoniestore.com/shop/${encodeURIComponent(
+    product.slug ?? slug,
+  )}`;
+
+  const googleImages = galleryImages
+    .map(
+      (image) =>
+        image.storefront_image_url ??
+        image.image_url,
+    )
+    .filter((image): image is string => Boolean(image));
+
+  const googleAvailability =
+    initialVariant?.availability_status === "coming_soon"
+      ? "https://schema.org/PreOrder"
+      : initialVariant &&
+          initialVariant.stock_quantity > 0 &&
+          (initialVariant.availability_status === "in_stock" ||
+            initialVariant.availability_status === "low_stock")
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock";
+
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "@id": `${productUrl}#product`,
+    name: product.name,
+    url: productUrl,
+    description:
+      product.description?.trim() ||
+      `${product.name} by ${brandName}.`,
+    image: googleImages,
+    brand: {
+      "@type": "Brand",
+      name: brandName,
+    },
+    category: categoryName,
+    ...(initialVariant?.sku?.trim()
+      ? {
+          sku: initialVariant.sku.trim(),
+        }
+      : {}),
+    ...(googlePrice !== null
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: productUrl,
+            priceCurrency: "USD",
+            price: googlePrice.toFixed(2),
+            availability: googleAvailability,
+          },
+        }
+      : {}),
+  };
+
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.stereophoniestore.com/",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Shop",
+        item: "https://www.stereophoniestore.com/shop",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.name,
+        item: productUrl,
+      },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productStructuredData).replace(/</g, "\\u003c"),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbStructuredData).replace(
+            /</g,
+            "\\u003c",
+          ),
+        }}
+      />
+
       <V3Header />
 
       <main className="st-product-v5">

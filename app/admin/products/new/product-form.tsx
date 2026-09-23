@@ -64,7 +64,7 @@ function createInitialVariants(): AdminElectronicsVariant[] {
       regular_price: "",
       sale_price: "",
       stock_quantity: 0,
-      low_stock_threshold: 2,
+      low_stock_threshold: 5,
       availability_status: "in_stock",
     },
   ];
@@ -868,8 +868,53 @@ export default function ProductForm({
   return (
     <form
       id="st-admin-new-product-form"
-          className="st-admin-product-editor-form"
+      className="st-admin-product-editor-form"
       ref={formRef}
+      onKeyDown={(event) => {
+        if (event.key !== "Enter" || event.defaultPrevented) {
+          return;
+        }
+
+        const target = event.target;
+
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
+
+        /*
+         * Prevent accidental Save Draft / Publish from ordinary
+         * single-line fields.
+         *
+         * Controls with intentional Enter behavior remain untouched,
+         * including textareas, buttons, links, selects and comboboxes.
+         */
+        if (
+          target instanceof HTMLTextAreaElement ||
+          target instanceof HTMLButtonElement ||
+          target instanceof HTMLSelectElement ||
+          target.closest('[role="combobox"]') ||
+          target.closest('[role="button"]') ||
+          target.closest("a[href]")
+        ) {
+          return;
+        }
+
+        if (target instanceof HTMLInputElement) {
+          const type = target.type.toLowerCase();
+
+          if (
+            type === "submit" ||
+            type === "button" ||
+            type === "checkbox" ||
+            type === "radio" ||
+            type === "file"
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+        }
+      }}
       onSubmit={handleSubmit}
     >
       {false && (

@@ -303,10 +303,7 @@ function statusFor(variant: ProductVariant) {
     };
   }
 
-  if (
-    variant.availability_status === "low_stock" ||
-    variant.stock_quantity <= variant.low_stock_threshold
-  ) {
+  if (variant.availability_status === "low_stock") {
     return {
       className: "is-low",
       title: "LOW STOCK",

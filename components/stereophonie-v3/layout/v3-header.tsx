@@ -76,6 +76,26 @@ type HeaderPanel =
 
 type OpenHeaderPanel = Exclude<HeaderPanel, null>;
 
+function storefrontCategoryHref(
+  category: {
+    name: string;
+    slug?: string | null;
+  },
+  parameters = "",
+) {
+  const slug = category.slug?.trim();
+
+  const baseUrl = slug
+    ? `/shop/category/${encodeURIComponent(slug)}`
+    : `/shop?category=${encodeURIComponent(category.name)}`;
+
+  if (!parameters) {
+    return baseUrl;
+  }
+
+  return `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}${parameters}`;
+}
+
 export function V3Header() {
   const { instagramHandle } = useStoreSettings();
 
@@ -390,7 +410,7 @@ export function V3Header() {
                 return (
                   <Link
                     key={category.id}
-                    href={`/shop?category=${encodeURIComponent(category.name)}`}
+                    href={storefrontCategoryHref(category)}
                     className={`st3-header__nav-item ${
                       active ? "st3-header__nav-item--active" : ""
                     }`}
@@ -610,7 +630,7 @@ export function V3Header() {
                       {visibleCategories.map((category) => (
                         <Link
                           key={category.id}
-                          href={`/shop?category=${encodeURIComponent(category.name)}`}
+                          href={storefrontCategoryHref(category)}
                           className="st3-mega__primary-link"
                           onClick={closePanel}
                         >
@@ -721,21 +741,21 @@ export function V3Header() {
                     <p className="st3-mega__eyebrow">Explore</p>
                     <div className="st3-mega__links">
                       <Link
-                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}`}
+                        href={storefrontCategoryHref(activeCategory)}
                         className="st3-mega__primary-link"
                         onClick={closePanel}
                       >
                         {activeCategory.name}
                       </Link>
                       <Link
-                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}&sort=newest`}
+                        href={storefrontCategoryHref(activeCategory, "sort=newest")}
                         className="st3-mega__primary-link"
                         onClick={closePanel}
                       >
                         Newest
                       </Link>
                       <Link
-                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}&offers=true`}
+                        href={storefrontCategoryHref(activeCategory, "offers=true")}
                         className="st3-mega__primary-link st3-mega__accent"
                         onClick={closePanel}
                       >
@@ -747,7 +767,7 @@ export function V3Header() {
                     <p className="st3-mega__eyebrow">{activeCategory.name}</p>
                     <div className="st3-mega__secondary-links">
                       <Link
-                        href={`/shop?category=${encodeURIComponent(activeCategory.name)}`}
+                        href={storefrontCategoryHref(activeCategory)}
                         className="st3-mega__secondary-link"
                         onClick={closePanel}
                       >
@@ -825,7 +845,7 @@ export function V3Header() {
               {categories.map((category) => (
                 <Link
                   key={category.id}
-                  href={`/shop?category=${encodeURIComponent(category.name)}`}
+                  href={storefrontCategoryHref(category)}
                   className="st3-mobile__link"
                   onClick={closeMobileCategoryMenu}
                 >

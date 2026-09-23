@@ -1,383 +1,387 @@
 "use client";
 
 import {
-  Check,
-  ChevronDown,
-  LoaderCircle,
-  Plus,
-  Search,
-  X,
+ Check,
+ ChevronDown,
+ LoaderCircle,
+ Plus,
+ Search,
+ X,
 } from "lucide-react";
 import {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent,
+ useEffect,
+ useLayoutEffect,
+ useMemo,
+ useRef,
+ useState,
+ type KeyboardEvent,
 } from "react";
 import { createPortal } from "react-dom";
 
 import { createBrandInline } from "@/components/admin/product-brand-picker-actions";
 
 export type ProductBrandOption = {
-  id: string;
-  name: string;
+ id: string;
+ name: string;
 };
 
 type ProductBrandPickerProps = {
-  brands: ProductBrandOption[];
-  defaultValue?: string;
-  name?: string;
-  onBrandChange?: (brand: ProductBrandOption | null) => void;
+ brands: ProductBrandOption[];
+ defaultValue?: string;
+ name?: string;
+ onBrandChange?: (brand: ProductBrandOption | null) => void;
 };
 
 type FloatingPosition = {
-  top: number;
-  left: number;
-  width: number;
+ top: number;
+ left: number;
+ width: number;
 };
 
 function normalize(value: string) {
-  return value.trim().replace(/\s+/g, " ").toLocaleLowerCase();
+ return value.trim().replace(/\s+/g, " ").toLocaleLowerCase();
 }
 
 export default function ProductBrandPicker({
-  brands,
-  defaultValue = "",
-  name = "brand_id",
-  onBrandChange,
+ brands,
+ defaultValue = "",
+ name = "brand_id",
+ onBrandChange,
 }: ProductBrandPickerProps) {
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+ const triggerRef = useRef<HTMLButtonElement>(null);
+ const searchRef = useRef<HTMLInputElement>(null);
+ const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [options, setOptions] = useState<ProductBrandOption[]>(brands);
-  const [selectedId, setSelectedId] = useState(defaultValue);
+ const [options, setOptions] = useState<ProductBrandOption[]>(brands);
+ const [selectedId, setSelectedId] = useState(defaultValue);
 
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
+ const [query, setQuery] = useState("");
+ const [open, setOpen] = useState(false);
+ const [activeIndex, setActiveIndex] = useState(-1);
 
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState("");
-  const [creationMessage, setCreationMessage] = useState("");
-  const [mounted, setMounted] = useState(false);
+ const [creating, setCreating] = useState(false);
+ const [error, setError] = useState("");
+ const [creationMessage, setCreationMessage] = useState("");
+ const [mounted, setMounted] = useState(false);
 
-  const [position, setPosition] = useState<FloatingPosition>({
-    top: 0,
-    left: 0,
-    width: 360,
+ const [position, setPosition] = useState<FloatingPosition>({
+ top: 0,
+ left: 0,
+ width: 360,
   });
 
-  useEffect(() => {
-    setMounted(true);
+ useEffect(() => {
+ setMounted(true);
   }, []);
 
-  useEffect(() => {
-    setOptions(brands);
+ useEffect(() => {
+ setOptions(brands);
   }, [brands]);
 
-  useEffect(() => {
-    setSelectedId(defaultValue);
+ useEffect(() => {
+ setSelectedId(defaultValue);
   }, [defaultValue]);
 
-  const selectedBrand =
-    options.find((brand) => brand.id === selectedId) ?? null;
+ const selectedBrand =
+ options.find((brand) => brand.id === selectedId) ?? null;
 
-  const cleanQuery = query.trim();
-  const normalizedQuery = normalize(cleanQuery);
+ const cleanQuery = query.trim();
+ const normalizedQuery = normalize(cleanQuery);
 
-  const filteredBrands = useMemo(() => {
-    if (!normalizedQuery) {
-      return options;
+ const filteredBrands = useMemo(() => {
+ if (!normalizedQuery) {
+ return options;
     }
 
-    return options.filter((brand) =>
-      normalize(brand.name).includes(normalizedQuery),
+ return options.filter((brand) =>
+ normalize(brand.name).includes(normalizedQuery),
     );
   }, [options, normalizedQuery]);
 
-  const exactMatch = useMemo(() => {
-    if (!normalizedQuery) {
-      return null;
+ const exactMatch = useMemo(() => {
+ if (!normalizedQuery) {
+ return null;
     }
 
-    return (
-      options.find((brand) => normalize(brand.name) === normalizedQuery) ?? null
+ return (
+ options.find((brand) => normalize(brand.name) === normalizedQuery) ?? null
     );
   }, [options, normalizedQuery]);
 
-  const canCreate = Boolean(cleanQuery && !exactMatch);
+ const canCreate = Boolean(cleanQuery && !exactMatch);
 
-  function updatePosition() {
-    const trigger = triggerRef.current;
+ function updatePosition() {
+ const trigger = triggerRef.current;
 
-    if (!trigger) {
-      return;
+ if (!trigger) {
+ return;
     }
 
-    const rect = trigger.getBoundingClientRect();
+ const rect = trigger.getBoundingClientRect();
 
-    const viewportPadding = 16;
-    const desiredWidth = Math.max(rect.width, 390);
-    const maximumWidth = Math.min(desiredWidth, window.innerWidth - 32);
+ const viewportPadding = 16;
+ const desiredWidth = Math.max(rect.width, 390);
+ const maximumWidth = Math.min(desiredWidth, window.innerWidth - 32);
 
-    let left = rect.left;
+ let left = rect.left;
 
-    if (left + maximumWidth > window.innerWidth - viewportPadding) {
-      left = window.innerWidth - maximumWidth - viewportPadding;
+ if (left + maximumWidth > window.innerWidth - viewportPadding) {
+ left = window.innerWidth - maximumWidth - viewportPadding;
     }
 
-    if (left < viewportPadding) {
-      left = viewportPadding;
+ if (left < viewportPadding) {
+ left = viewportPadding;
     }
 
-    setPosition({
-      top: rect.bottom + 8,
-      left,
-      width: maximumWidth,
+ setPosition({
+ top: rect.bottom + 8,
+ left,
+ width: maximumWidth,
     });
   }
 
-  useLayoutEffect(() => {
-    if (!open) {
-      return;
+ useLayoutEffect(() => {
+ if (!open) {
+ return;
     }
 
-    updatePosition();
+ updatePosition();
 
-    const handleViewportChange = () => updatePosition();
+ const handleViewportChange = () => updatePosition();
 
-    window.addEventListener("resize", handleViewportChange);
-    window.addEventListener("scroll", handleViewportChange, true);
+ window.addEventListener("resize", handleViewportChange);
+ window.addEventListener("scroll", handleViewportChange, true);
 
-    return () => {
-      window.removeEventListener("resize", handleViewportChange);
-      window.removeEventListener("scroll", handleViewportChange, true);
+ return () => {
+ window.removeEventListener("resize", handleViewportChange);
+ window.removeEventListener("scroll", handleViewportChange, true);
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) {
-      return;
+ useEffect(() => {
+ if (!open) {
+ return;
     }
 
-    const timeout = window.setTimeout(() => {
-      searchRef.current?.focus();
+ const timeout = window.setTimeout(() => {
+ searchRef.current?.focus();
     }, 30);
 
-    function handlePointerDown(event: MouseEvent) {
-      const target = event.target as Node;
+ function handlePointerDown(event: MouseEvent) {
+ const target = event.target as Node;
 
-      if (
-        triggerRef.current?.contains(target) ||
-        dropdownRef.current?.contains(target)
+ if (
+ triggerRef.current?.contains(target) ||
+ dropdownRef.current?.contains(target)
       ) {
-        return;
+ return;
       }
 
-      setOpen(false);
-      setActiveIndex(-1);
+ setOpen(false);
+ setActiveIndex(-1);
     }
 
-    function handleEscape(event: globalThis.KeyboardEvent) {
-      if (event.key !== "Escape") {
-        return;
+ function handleEscape(event: globalThis.KeyboardEvent) {
+ if (event.key !== "Escape") {
+ return;
       }
 
-      setOpen(false);
-      setActiveIndex(-1);
-      triggerRef.current?.focus();
+ setOpen(false);
+ setActiveIndex(-1);
+ triggerRef.current?.focus();
     }
 
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleEscape);
+ document.addEventListener("mousedown", handlePointerDown);
+ document.addEventListener("keydown", handleEscape);
 
-    return () => {
-      window.clearTimeout(timeout);
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleEscape);
+ return () => {
+ window.clearTimeout(timeout);
+ document.removeEventListener("mousedown", handlePointerDown);
+ document.removeEventListener("keydown", handleEscape);
     };
   }, [open]);
 
-  useEffect(() => {
-    setActiveIndex(-1);
+ useEffect(() => {
+ setActiveIndex(-1);
   }, [normalizedQuery]);
 
-  function chooseBrand(brand: ProductBrandOption | null) {
-    setSelectedId(brand?.id ?? "");
-    setQuery("");
-    setOpen(false);
-    setActiveIndex(-1);
-    setError("");
-    setCreationMessage("");
+ function chooseBrand(brand: ProductBrandOption | null) {
+ setSelectedId(brand?.id ?? "");
+ setQuery("");
+ setOpen(false);
+ setActiveIndex(-1);
+ setError("");
+ setCreationMessage("");
 
-    onBrandChange?.(brand);
+ onBrandChange?.(brand);
 
-    requestAnimationFrame(() => {
-      triggerRef.current?.focus();
+ requestAnimationFrame(() => {
+ triggerRef.current?.focus();
     });
   }
 
-  async function createRequestedBrand() {
-    const requestedName = cleanQuery;
+ async function createRequestedBrand() {
+ const requestedName = cleanQuery;
 
-    if (!requestedName || creating) {
-      return;
+ if (!requestedName || creating) {
+ return;
     }
 
-    setCreating(true);
-    setError("");
-    setCreationMessage("");
+ setCreating(true);
+ setError("");
+ setCreationMessage("");
 
-    try {
-      const result = await createBrandInline(requestedName);
+ try {
+ const result = await createBrandInline(requestedName);
 
-      if (!result.ok) {
-        setError(result.error);
-        return;
+ if (!result.ok) {
+ setError(result.error);
+ return;
       }
 
-      const nextBrand = result.brand;
+ const nextBrand = result.brand;
 
-      setOptions((current) => {
-        if (current.some((brand) => brand.id === nextBrand.id)) {
-          return current;
+ setOptions((current) => {
+ if (current.some((brand) => brand.id === nextBrand.id)) {
+ return current;
         }
 
-        return [...current, nextBrand].sort((a, b) =>
-          a.name.localeCompare(b.name),
+ return [...current, nextBrand].sort((a, b) =>
+ a.name.localeCompare(b.name),
         );
       });
 
-      setSelectedId(nextBrand.id);
-      setQuery("");
-      setActiveIndex(-1);
+ setSelectedId(nextBrand.id);
+ setQuery("");
+ setActiveIndex(-1);
 
-      setCreationMessage(
-        result.created
+ setCreationMessage(
+ result.created
           ? `${nextBrand.name} was created and selected.`
           : `${nextBrand.name} already existed and was selected.`,
       );
 
-      onBrandChange?.(nextBrand);
+ onBrandChange?.(nextBrand);
 
-      window.setTimeout(() => {
-        setOpen(false);
-        triggerRef.current?.focus();
+ window.setTimeout(() => {
+ setOpen(false);
+ triggerRef.current?.focus();
       }, 450);
     } catch {
-      setError("The brand could not be created. Please try again.");
+ setError("The brand could not be created. Please try again.");
     } finally {
-      setCreating(false);
+ setCreating(false);
     }
   }
 
-  function handleSearchKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
+ function handleSearchKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+ if (event.key === "ArrowDown") {
+ event.preventDefault();
 
-      if (filteredBrands.length === 0) {
-        return;
+ if (filteredBrands.length === 0) {
+ return;
       }
 
-      setActiveIndex((current) =>
-        current < filteredBrands.length - 1 ? current + 1 : 0,
+ setActiveIndex((current) =>
+ current < filteredBrands.length - 1 ? current + 1 : 0,
       );
 
-      return;
+ return;
     }
 
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
+ if (event.key === "ArrowUp") {
+ event.preventDefault();
 
-      if (filteredBrands.length === 0) {
-        return;
+ if (filteredBrands.length === 0) {
+ return;
       }
 
-      setActiveIndex((current) =>
-        current > 0 ? current - 1 : filteredBrands.length - 1,
+ setActiveIndex((current) =>
+ current > 0 ? current - 1 : filteredBrands.length - 1,
       );
 
-      return;
+ return;
     }
 
-    if (event.key === "Enter") {
-      event.preventDefault();
+ if (event.key === "Enter") {
+ event.preventDefault();
 
-      if (activeIndex >= 0 && filteredBrands[activeIndex]) {
-        chooseBrand(filteredBrands[activeIndex]);
-        return;
+ if (activeIndex >= 0 && filteredBrands[activeIndex]) {
+ chooseBrand(filteredBrands[activeIndex]);
+ return;
       }
 
-      if (filteredBrands.length === 1) {
-        chooseBrand(filteredBrands[0]);
-        return;
+ if (filteredBrands.length === 1) {
+ chooseBrand(filteredBrands[0]);
+ return;
       }
 
-      if (canCreate) {
-        void createRequestedBrand();
+ if (canCreate) {
+ void createRequestedBrand();
       }
     }
   }
 
-  const dropdown =
-    mounted && open
+ const dropdown =
+ mounted && open
       ? createPortal(
           <div
-            ref={dropdownRef}
-            className="st-admin-brand-picker__dropdown fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
-            style={{
-              top: position.top,
-              left: position.left,
-              width: position.width,
+ ref={dropdownRef}
+ className="st-admin-brand-picker__dropdown fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
+ style={{
+ top: position.top,
+ left: position.left,
+ width: position.width,
             }}
-            role="dialog"
-            aria-label="Choose product brand"
+ role="dialog"
+ aria-label="Choose product brand"
           >
             <div className="border-b border-black/[0.07] p-3">
-              <div className="st-admin-brand-directory-search-v2 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
+              <div className="st-admin-picker-search-final st-admin-option-directory-search-v2 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
                 <Search className="h-[17px] w-[17px] shrink-0 text-black/42" />
 
                 <input
-                  ref={searchRef}
-                  value={query}
-                  onChange={(event) => {
-                    setQuery(event.target.value);
-                    setError("");
-                    setCreationMessage("");
+ ref={searchRef}
+ value={query}
+ onChange={(event) => {
+ setQuery(event.target.value);
+ setError("");
+ setCreationMessage("");
                   }}
-                  onKeyDown={handleSearchKeyDown}
-                  placeholder="Search brands..."
-                  autoComplete="off"
-                  className="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-[14px] font-medium text-[#1d1d1f] outline-none ring-0 shadow-none placeholder:text-black/35 focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none st-admin-product-brand-picker__search-input"
-                  aria-label="Search brands"
-                  role="combobox"
-                  aria-expanded="true"
-                  aria-autocomplete="list"
+ onKeyDown={handleSearchKeyDown}
+ placeholder="Search brands..."
+ autoComplete="off"
+ className="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-[14px] font-medium text-[#1d1d1f] outline-none ring-0 shadow-none placeholder:text-black/35 focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none st-admin-product-brand-picker__search-input st-admin-picker-search-input-final"
+ aria-label="Search brands"
+ role="combobox"
+ aria-expanded="true"
+ aria-autocomplete="list"
                 />
 
                 {query ? (
                   <button
-                    type="button"
-                    onClick={() => {
-                      setQuery("");
-                      setError("");
-                      setCreationMessage("");
-                      searchRef.current?.focus();
+ type="button"
+ onClick={() => {
+ setQuery("");
+ setError("");
+ setCreationMessage("");
+ searchRef.current?.focus();
                     }}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-black/35 transition hover:bg-black/[0.055] hover:text-black/70"
-                    aria-label="Clear brand search"
+ className="st-admin-picker-search-clear-final"
+ aria-label="Clear brand search"
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <X
+ className="h-3.5 w-3.5"
+ strokeWidth={1.8}
+ aria-hidden="true"
+                    />
                   </button>
                 ) : null}
               </div>
 
               <div className="mt-2.5 flex items-center justify-between gap-4 px-1">
                 <span className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/35">
-                  Brand directory
+ Brand directory
                 </span>
 
                 <span className="text-[11px] font-medium text-black/38">
@@ -392,19 +396,19 @@ export default function ProductBrandPicker({
               {filteredBrands.length > 0 ? (
                 <div role="listbox" aria-label="Available brands">
                   {filteredBrands.map((brand, index) => {
-                    const selected = brand.id === selectedId;
-                    const active = index === activeIndex;
+ const selected = brand.id === selectedId;
+ const active = index === activeIndex;
 
-                    return (
+ return (
                       <button
-                        key={brand.id}
-                        type="button"
-                        role="option"
-                        aria-selected={selected}
-                        onMouseEnter={() => setActiveIndex(index)}
-                        onClick={() => chooseBrand(brand)}
-                        className={`mb-1 flex min-h-[46px] w-full items-center justify-between gap-4 rounded-[12px] px-3.5 text-left transition ${
-                          selected
+ key={brand.id}
+ type="button"
+ role="option"
+ aria-selected={selected}
+ onMouseEnter={() => setActiveIndex(index)}
+ onClick={() => chooseBrand(brand)}
+ className={`mb-1 flex min-h-[46px] w-full items-center justify-between gap-4 rounded-[12px] px-3.5 text-left transition ${
+ selected
                             ? "bg-[#fff6df] text-[#7b5000]"
                             : active
                               ? "bg-black/[0.045] text-black"
@@ -421,7 +425,7 @@ export default function ProductBrandPicker({
                           </span>
                         ) : (
                           <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-black/22">
-                            Select
+ Select
                           </span>
                         )}
                       </button>
@@ -433,11 +437,11 @@ export default function ProductBrandPicker({
                   <Search className="mx-auto h-5 w-5 text-black/20" />
 
                   <p className="mt-3 text-[13px] font-semibold text-black/65">
-                    No matching brand
+ No matching brand
                   </p>
 
                   <p className="mt-1 text-[12px] leading-5 text-black/40">
-                    You can create this brand without leaving the product.
+ You can create this brand without leaving the product.
                   </p>
                 </div>
               )}
@@ -458,10 +462,10 @@ export default function ProductBrandPicker({
             {canCreate ? (
                 <div className="st-admin-picker-create-footer-v40">
                   <button
-                    type="button"
-                    onClick={() => void createRequestedBrand()}
-                    disabled={creating}
-                    className="st-admin-picker-create-action-v40"
+ type="button"
+ onClick={() => void createRequestedBrand()}
+ disabled={creating}
+ className="st-admin-picker-create-action-v40"
                   >
                     <span className="st-admin-picker-create-content-v40">
                       <span className="st-admin-picker-create-icon-v40">
@@ -483,48 +487,48 @@ export default function ProductBrandPicker({
                 </div>
               ) : null}
           </div>,
-          document.body,
+ document.body,
         )
       : null;
 
-  return (
-    <div className="st-admin-brand-picker relative w-full">
+ return (
+    <div className="st-admin-category-picker">
       <input type="hidden" name={name} value={selectedId} />
 
         <button
-          ref={triggerRef}
-          type="button"
-          className={`st-admin-brand-picker__trigger ${
-            open ? "is-open" : ""
+ ref={triggerRef}
+ type="button"
+ className={`st-admin-category-picker__trigger ${
+ open ? "is-open" : ""
           }`}
-          onClick={() => {
-            setOpen((current) => !current);
-            setError("");
-            setCreationMessage("");
+ onClick={() => {
+ setOpen((current) => !current);
+ setError("");
+ setCreationMessage("");
 
-            if (!open) {
-              requestAnimationFrame(updatePosition);
+ if (!open) {
+ requestAnimationFrame(updatePosition);
             }
           }}
-          aria-haspopup="listbox"
-          aria-expanded={open}
+ aria-haspopup="listbox"
+ aria-expanded={open}
         >
-          <span className="st-admin-brand-picker__trigger-icon">
+          <span className="st-admin-category-picker__trigger-icon">
             <Search className="h-4 w-4" />
           </span>
 
-          <span className="st-admin-brand-picker__trigger-copy">
+          <span className="st-admin-category-picker__trigger-copy">
             <small>Brand</small>
             <strong>{selectedBrand?.name ?? "Select brand"}</strong>
           </span>
 
-          <ChevronDown className="st-admin-brand-picker__chevron h-4 w-4" />
+          <ChevronDown className="st-admin-category-picker__chevron h-4 w-4" />
         </button>
       {selectedBrand ? (
         <button
-          type="button"
-          onClick={() => chooseBrand(null)}
-          className="st-admin-organization-clear-chip-v2"
+ type="button"
+ onClick={() => chooseBrand(null)}
+ className="st-admin-organization-clear-chip-v2"
         >
           <span>Clear brand</span>
           <X aria-hidden="true" />

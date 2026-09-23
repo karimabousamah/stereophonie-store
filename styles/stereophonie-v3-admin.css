@@ -38564,3 +38564,4570 @@ html body
 }
 
 /* END ADMIN V2 — TRUE SEARCH CLEAR X V48 */
+
+
+/* ============================================================
+   ADMIN V2 — NEUTRAL TEXT SELECTION V52
+   Keep Admin V2 text selection neutral, including popup roots
+   rendered outside the main admin tree.
+   ============================================================ */
+
+.st3-admin ::selection,
+.st-admin-option-directory-v2 ::selection,
+.st-admin-color-popup-final ::selection,
+.st-admin-product-brand-picker__dropdown ::selection,
+.st-admin-product-category-picker__dropdown ::selection,
+.st-admin-picker-create-footer-v40 ::selection,
+.st-admin-barcode-scanner-input-v52::selection {
+  background: rgba(29, 29, 31, 0.18) !important;
+  color: inherit !important;
+}
+
+.st3-admin ::-moz-selection,
+.st-admin-option-directory-v2 ::-moz-selection,
+.st-admin-color-popup-final ::-moz-selection,
+.st-admin-product-brand-picker__dropdown ::-moz-selection,
+.st-admin-product-category-picker__dropdown ::-moz-selection,
+.st-admin-picker-create-footer-v40 ::-moz-selection,
+.st-admin-barcode-scanner-input-v52::-moz-selection {
+  background: rgba(29, 29, 31, 0.18) !important;
+  color: inherit !important;
+}
+
+/* END ADMIN V2 — NEUTRAL TEXT SELECTION V52 */
+
+/* ============================================================
+   ADMIN V2 — POPUP SELECTION + MOTIONLESS SEARCH X V53
+   Final authority for:
+   1. neutral gray text selection inside Admin popup inputs
+   2. completely stationary search-clear X
+   3. red X only on hover/focus
+   ============================================================ */
+
+/*
+ * Portal popups can live outside .st3-admin.
+ * Target the popup inputs themselves so Safari cannot fall back
+ * to the storefront/global mustard selection color.
+ */
+.st-admin-product-brand-picker__dropdown input::selection,
+.st-admin-product-category-picker__dropdown input::selection,
+.st-admin-option-directory-v2 input::selection,
+.st-admin-color-popup-final input::selection,
+.st-admin-product-brand-picker__dropdown textarea::selection,
+.st-admin-product-category-picker__dropdown textarea::selection,
+.st-admin-option-directory-v2 textarea::selection,
+.st-admin-color-popup-final textarea::selection {
+  background: rgba(29, 29, 31, 0.18) !important;
+  color: inherit !important;
+}
+
+.st-admin-product-brand-picker__dropdown input::-moz-selection,
+.st-admin-product-category-picker__dropdown input::-moz-selection,
+.st-admin-option-directory-v2 input::-moz-selection,
+.st-admin-color-popup-final input::-moz-selection,
+.st-admin-product-brand-picker__dropdown textarea::-moz-selection,
+.st-admin-product-category-picker__dropdown textarea::-moz-selection,
+.st-admin-option-directory-v2 textarea::-moz-selection,
+.st-admin-color-popup-final textarea::-moz-selection {
+  background: rgba(29, 29, 31, 0.18) !important;
+  color: inherit !important;
+}
+
+/*
+ * Search-clear X.
+ *
+ * The only transform allowed is the permanent -50% Y centering.
+ * Hover/focus/active must never move, scale or rotate the control.
+ */
+button.st-admin-search-clear-v47,
+.st3-admin button.st-admin-search-clear-v47,
+.st-admin-option-directory-v2 button.st-admin-search-clear-v47,
+.st-admin-color-popup-final button.st-admin-search-clear-v47 {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+
+  color: rgba(29, 29, 31, 0.48) !important;
+
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: none !important;
+
+  transition: color 120ms ease !important;
+}
+
+/*
+ * Neutral state remains stationary.
+ * Hover/focus changes COLOR ONLY.
+ */
+button.st-admin-search-clear-v47:hover,
+button.st-admin-search-clear-v47:focus,
+button.st-admin-search-clear-v47:focus-visible,
+.st3-admin button.st-admin-search-clear-v47:hover,
+.st3-admin button.st-admin-search-clear-v47:focus,
+.st3-admin button.st-admin-search-clear-v47:focus-visible,
+.st-admin-option-directory-v2 button.st-admin-search-clear-v47:hover,
+.st-admin-option-directory-v2 button.st-admin-search-clear-v47:focus,
+.st-admin-option-directory-v2 button.st-admin-search-clear-v47:focus-visible,
+.st-admin-color-popup-final button.st-admin-search-clear-v47:hover,
+.st-admin-color-popup-final button.st-admin-search-clear-v47:focus,
+.st-admin-color-popup-final button.st-admin-search-clear-v47:focus-visible {
+  color: #d92d20 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: none !important;
+}
+
+button.st-admin-search-clear-v47:active,
+.st3-admin button.st-admin-search-clear-v47:active,
+.st-admin-option-directory-v2 button.st-admin-search-clear-v47:active,
+.st-admin-color-popup-final button.st-admin-search-clear-v47:active {
+  color: #b42318 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: none !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Global Admin rules animate button SVGs.
+ * Kill that animation specifically for this X.
+ */
+button.st-admin-search-clear-v47 svg,
+button.st-admin-search-clear-v47:hover svg,
+button.st-admin-search-clear-v47:focus svg,
+button.st-admin-search-clear-v47:focus-visible svg,
+button.st-admin-search-clear-v47:active svg,
+.st3-admin button.st-admin-search-clear-v47 svg,
+.st3-admin button.st-admin-search-clear-v47:hover svg,
+.st-admin-option-directory-v2 button.st-admin-search-clear-v47 svg,
+.st-admin-option-directory-v2 button.st-admin-search-clear-v47:hover svg,
+.st-admin-color-popup-final button.st-admin-search-clear-v47 svg,
+.st-admin-color-popup-final button.st-admin-search-clear-v47:hover svg {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: none !important;
+
+  transition: none !important;
+}
+
+/* END ADMIN V2 — POPUP SELECTION + MOTIONLESS SEARCH X V53 */
+
+
+/* ============================================================
+   ADMIN V2 — FINAL POPUP SEARCH AUTHORITY V54
+
+   Final geometry authority for option + Colorway search clear
+   controls. Each X is positioned against its OWN search field,
+   never against the popup body.
+
+   Hover changes color only. No translation, scale or rotation.
+   ============================================================ */
+
+/*
+ * Establish the correct containing block.
+ */
+.st-admin-option-search-shell-v54,
+.st-admin-color-search-shell-v54 {
+  position: relative !important;
+}
+
+/*
+ * Search clear button geometry.
+ *
+ * Use inset-block positioning instead of top:50% so the X does
+ * not inherit an incorrect vertical containing block.
+ */
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47 {
+  position: absolute !important;
+
+  top: 0 !important;
+  right: 7px !important;
+  bottom: 0 !important;
+  left: auto !important;
+
+  width: 30px !important;
+  height: auto !important;
+  min-width: 30px !important;
+  min-height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: rgba(29, 29, 31, 0.58) !important;
+
+  outline: 0 !important;
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  z-index: 40 !important;
+
+  cursor: pointer !important;
+
+  transition: color 120ms ease !important;
+}
+
+/*
+ * Hover/focus/active = COLOR ONLY.
+ */
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:hover,
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:focus,
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:focus-visible,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:hover,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:focus,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:focus-visible {
+  color: #d92d20 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:active,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:active {
+  color: #b42318 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Lock Lucide X itself.
+ */
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47
+  > svg,
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:hover
+  > svg,
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:focus
+  > svg,
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:focus-visible
+  > svg,
+.st-admin-option-search-shell-v54
+  > button.st-admin-search-clear-v47:active
+  > svg,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47
+  > svg,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:hover
+  > svg,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:focus
+  > svg,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:focus-visible
+  > svg,
+.st-admin-color-search-shell-v54
+  > button.st-admin-search-clear-v47:active
+  > svg {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  transition: none !important;
+
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  pointer-events: none !important;
+}
+
+/*
+ * Brand + Category popup selection.
+ *
+ * These selectors intentionally target editable controls in the
+ * portal roots directly. This prevents the storefront/global
+ * mustard selection authority from leaking into Admin V2.
+ */
+.st-admin-product-brand-picker__dropdown input::selection,
+.st-admin-product-category-picker__dropdown input::selection,
+.st-admin-product-brand-picker__dropdown textarea::selection,
+.st-admin-product-category-picker__dropdown textarea::selection {
+  background-color: #d5d5d7 !important;
+  background: #d5d5d7 !important;
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+.st-admin-product-brand-picker__dropdown input::-moz-selection,
+.st-admin-product-category-picker__dropdown input::-moz-selection,
+.st-admin-product-brand-picker__dropdown textarea::-moz-selection,
+.st-admin-product-category-picker__dropdown textarea::-moz-selection {
+  background-color: #d5d5d7 !important;
+  background: #d5d5d7 !important;
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+/* END ADMIN V2 — FINAL POPUP SEARCH AUTHORITY V54 */
+
+
+/* ============================================================
+   ADMIN V2 — POPUP INPUT SELECTION + COLORWAY X V55.1
+   ============================================================ */
+
+/*
+ * Brand + Category text-selection color.
+ *
+ * Safari's native text selection must not inherit the storefront
+ * mustard accent. These are the real picker search-input classes.
+ */
+html body input.st-admin-product-brand-picker__search-input::selection,
+html body input.st-admin-category-picker__search-input::selection {
+  background: #d5d5d7 !important;
+  background-color: #d5d5d7 !important;
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+html body input.st-admin-product-brand-picker__search-input::-moz-selection,
+html body input.st-admin-category-picker__search-input::-moz-selection {
+  background: #d5d5d7 !important;
+  background-color: #d5d5d7 !important;
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+/*
+ * Colorway search X.
+ *
+ * Match the already-correct normal option search X:
+ * - bare control
+ * - no background / box / border
+ * - gray at rest
+ * - red on hover/focus
+ * - no movement
+ * - only visible while query exists (handled by JSX)
+ */
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47 {
+  all: unset !important;
+
+  box-sizing: border-box !important;
+
+  position: absolute !important;
+  top: 0 !important;
+  right: 7px !important;
+  bottom: 0 !important;
+  left: auto !important;
+
+  width: 30px !important;
+  min-width: 30px !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  color: rgba(29, 29, 31, 0.58) !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  cursor: pointer !important;
+  z-index: 50 !important;
+
+  transition: color 120ms ease !important;
+}
+
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:hover,
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:focus,
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:focus-visible {
+  color: #d92d20 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:active {
+  color: #b42318 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47
+> svg,
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:hover
+> svg,
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:focus
+> svg,
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:focus-visible
+> svg,
+html body
+.st-admin-color-search-shell-v54
+> button.st-admin-search-clear-v47:active
+> svg {
+  display: block !important;
+
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  background: transparent !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  transition: none !important;
+  pointer-events: none !important;
+}
+
+/* END ADMIN V2 — POPUP INPUT SELECTION + COLORWAY X V55.1 */
+
+/* ==========================================================
+   ADMIN V2 — COLORWAY PORTAL + SEARCH V60.4
+   ========================================================== */
+
+html body .st-admin-colorway-portal-v60 {
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  width: 280px !important;
+  max-width: calc(100vw - 32px) !important;
+  overflow: hidden !important;
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 9px !important;
+  background: #ffffff !important;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.14) !important;
+}
+
+html body .st-admin-colorway-search-section-v60 {
+  padding: 12px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+  background: #ffffff !important;
+}
+
+html body .st-admin-colorway-search-shell-v60 {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 38px !important;
+  padding: 0 9px !important;
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 7px !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html body .st-admin-colorway-search-shell-v60:focus-within {
+  border-color: #202223 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 1px #202223 !important;
+}
+
+html body .st-admin-colorway-search-icon-v60 {
+  width: 15px !important;
+  height: 15px !important;
+  flex: 0 0 15px !important;
+  color: rgba(0, 0, 0, 0.42) !important;
+}
+
+html body
+  .st-admin-colorway-search-shell-v60
+  > input.st-admin-colorway-search-input-v60,
+html body
+  .st-admin-colorway-search-shell-v60
+  > input.st-admin-colorway-search-input-v60:hover,
+html body
+  .st-admin-colorway-search-shell-v60
+  > input.st-admin-colorway-search-input-v60:focus,
+html body
+  .st-admin-colorway-search-shell-v60
+  > input.st-admin-colorway-search-input-v60:focus-visible,
+html body
+  .st-admin-colorway-search-shell-v60
+  > input.st-admin-colorway-search-input-v60:active {
+  display: block !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #1d1d1f !important;
+  font: inherit !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 18px !important;
+  transform: none !important;
+}
+
+html body .st-admin-colorway-search-input-v60::placeholder {
+  color: rgba(0, 0, 0, 0.38) !important;
+  opacity: 1 !important;
+}
+
+html body
+  .st-admin-colorway-search-shell-v60
+  > button.st-admin-colorway-search-clear-v60,
+html body
+  .st-admin-colorway-search-shell-v60
+  > button.st-admin-colorway-search-clear-v60:focus,
+html body
+  .st-admin-colorway-search-shell-v60
+  > button.st-admin-colorway-search-clear-v60:focus-visible,
+html body
+  .st-admin-colorway-search-shell-v60
+  > button.st-admin-colorway-search-clear-v60:active {
+  all: unset !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(0, 0, 0, 0.46) !important;
+  cursor: pointer !important;
+  transform: none !important;
+  transition: color 120ms ease !important;
+}
+
+html body
+  .st-admin-colorway-search-shell-v60
+  > button.st-admin-colorway-search-clear-v60:hover {
+  all: unset !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #d72c2c !important;
+  cursor: pointer !important;
+  transform: none !important;
+}
+
+html body .st-admin-colorway-search-clear-v60 svg {
+  display: block !important;
+  width: 14px !important;
+  height: 14px !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* END ADMIN V2 — COLORWAY PORTAL + SEARCH V60.4 */
+
+/* ADMIN V2 — COLORWAY DELETE ICON V61 */
+
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1 {
+  display:flex !important;
+  width:28px !important;
+  height:28px !important;
+  min-width:28px !important;
+  min-height:28px !important;
+  flex:0 0 28px !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+
+  background:transparent !important;
+  color:rgba(0,0,0,.35) !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+
+  cursor:pointer !important;
+
+  transition:color 140ms ease !important;
+}
+
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:hover:not(:disabled),
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:focus:not(:disabled),
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:focus-visible:not(:disabled),
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:active:not(:disabled) {
+  margin:0 !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+
+  background:transparent !important;
+  color:#d92d20 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1 svg {
+  display:block !important;
+
+  width:14px !important;
+  height:14px !important;
+
+  margin:0 !important;
+
+  color:currentColor !important;
+  stroke:currentColor !important;
+
+  transform:none !important;
+
+  transition:color 140ms ease, stroke 140ms ease !important;
+}
+
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:hover:not(:disabled) svg,
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:focus:not(:disabled) svg,
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:focus-visible:not(:disabled) svg,
+html body .st-admin-colorway-portal-v60
+button.st-admin-color-row-delete-v2mr-1:active:not(:disabled) svg {
+  color:#d92d20 !important;
+  stroke:#d92d20 !important;
+  transform:none !important;
+}
+
+/* END ADMIN V2 — COLORWAY DELETE ICON V61 */
+
+/* ADMIN V2 — COLORWAY CREATOR PORTAL AUTHORITY V62 */
+
+/*
+   V60 renders this popup directly under document.body.
+   Therefore the historical creator rules scoped through
+   .st-admin-product-editor-form cannot reach it.
+
+   These rules intentionally target ONLY:
+   .st-admin-colorway-portal-v60.st-admin-color-popup-final
+
+   The approved Choose Colorway directory remains untouched.
+*/
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final {
+  box-sizing:border-box !important;
+  width:280px !important;
+  max-width:calc(100vw - 32px) !important;
+
+  overflow:hidden !important;
+
+  border:1px solid #c9c9c9 !important;
+  border-radius:9px !important;
+
+  background:#ffffff !important;
+
+  box-shadow:0 12px 34px rgba(0,0,0,.14) !important;
+
+  color:#202223 !important;
+  font-size:12px !important;
+  line-height:1.3 !important;
+}
+
+/* Creator header */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child {
+  box-sizing:border-box !important;
+
+  display:grid !important;
+  grid-template-columns:34px minmax(0,1fr) 28px !important;
+
+  width:100% !important;
+
+  align-items:center !important;
+  gap:8px !important;
+
+  margin:0 !important;
+  padding:9px 10px !important;
+
+  border:0 !important;
+  border-bottom:1px solid #eceeef !important;
+
+  background:#ffffff !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child
+> button:first-child {
+  box-sizing:border-box !important;
+
+  display:flex !important;
+
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  min-height:34px !important;
+
+  align-items:center !important;
+  justify-content:center !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  border:1px solid #d9dbdd !important;
+  border-radius:7px !important;
+
+  background:#f7f7f8 !important;
+  color:#6d7175 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child
+> button:first-child:hover {
+  border-color:#c8cbcf !important;
+  background:#f1f2f3 !important;
+  color:#303030 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child
+> button:first-child svg {
+  width:14px !important;
+  height:14px !important;
+
+  margin:0 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child
+> div {
+  display:flex !important;
+  flex-direction:column !important;
+
+  min-width:0 !important;
+
+  gap:2px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child
+> div strong {
+  margin:0 !important;
+
+  color:#303030 !important;
+
+  font-size:11px !important;
+  font-weight:650 !important;
+  line-height:1.15 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child
+> div span,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:first-child
+> div small {
+  margin:0 !important;
+
+  color:#8c9196 !important;
+
+  font-size:8px !important;
+  font-weight:500 !important;
+  line-height:1.2 !important;
+}
+
+/* Creator close X */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-popup-bare-close-v44 {
+  display:flex !important;
+
+  width:28px !important;
+  height:32px !important;
+  min-width:28px !important;
+  min-height:32px !important;
+
+  align-items:center !important;
+  justify-content:center !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+
+  background:transparent !important;
+  color:#6d7175 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+
+  cursor:pointer !important;
+
+  transition:color 140ms ease !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-popup-bare-close-v44:hover {
+  border:0 !important;
+
+  background:transparent !important;
+  color:#d92d20 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-popup-bare-close-v44 svg {
+  width:14px !important;
+  height:14px !important;
+
+  color:currentColor !important;
+  stroke:currentColor !important;
+}
+
+/* Creator body */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+> div:nth-child(2) {
+  box-sizing:border-box !important;
+
+  display:flex !important;
+  flex-direction:column !important;
+
+  width:100% !important;
+
+  gap:10px !important;
+
+  margin:0 !important;
+  padding:11px !important;
+
+  background:#ffffff !important;
+}
+
+/* Field labels */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+label {
+  box-sizing:border-box !important;
+
+  display:block !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+
+  color:#616161 !important;
+
+  font-size:8.5px !important;
+  font-weight:600 !important;
+  line-height:1.2 !important;
+}
+
+/* Inputs */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-input-v5 {
+  box-sizing:border-box !important;
+
+  display:block !important;
+
+  width:100% !important;
+  height:32px !important;
+
+  min-width:0 !important;
+  min-height:32px !important;
+
+  margin:5px 0 0 !important;
+  padding:0 9px !important;
+
+  border:1px solid #c9c9c9 !important;
+  border-radius:6px !important;
+
+  background:#ffffff !important;
+  color:#303030 !important;
+
+  font-size:10px !important;
+  font-weight:500 !important;
+  line-height:32px !important;
+
+  outline:0 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-input-v5::placeholder {
+  color:#a0a3a6 !important;
+  opacity:1 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-input-v5:focus {
+  border-color:#8c9196 !important;
+
+  outline:0 !important;
+
+  box-shadow:0 0 0 1px rgba(32,34,35,.06) !important;
+}
+
+/* HEX field */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-hex-v5 {
+  position:relative !important;
+
+  display:block !important;
+
+  width:100% !important;
+
+  margin:5px 0 0 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-hex-swatch-v5 {
+  position:absolute !important;
+
+  left:8px !important;
+  top:50% !important;
+  z-index:2 !important;
+
+  width:17px !important;
+  height:17px !important;
+
+  margin:0 !important;
+
+  border:1px solid rgba(0,0,0,.1) !important;
+  border-radius:50% !important;
+
+  transform:translateY(-50%) !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-hex-input-v5 {
+  margin:0 !important;
+  padding-left:34px !important;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace !important;
+
+  text-transform:uppercase !important;
+}
+
+/* Preview */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-preview-v5 {
+  box-sizing:border-box !important;
+
+  display:grid !important;
+  grid-template-columns:25px minmax(0,1fr) !important;
+
+  width:100% !important;
+  min-width:0 !important;
+  min-height:40px !important;
+
+  align-items:center !important;
+  gap:8px !important;
+
+  margin:0 !important;
+  padding:7px 8px !important;
+
+  border:1px solid #eceeef !important;
+  border-radius:7px !important;
+
+  background:#fafafa !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-preview-swatch-v5 {
+  display:block !important;
+
+  width:25px !important;
+  height:25px !important;
+
+  margin:0 !important;
+
+  border:1px solid rgba(0,0,0,.1) !important;
+  border-radius:50% !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-preview-copy-v5 {
+  display:flex !important;
+  flex-direction:column !important;
+
+  min-width:0 !important;
+
+  gap:2px !important;
+
+  margin:0 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-preview-copy-v5 strong {
+  overflow:hidden !important;
+
+  margin:0 !important;
+
+  color:#303030 !important;
+
+  font-size:9px !important;
+  font-weight:650 !important;
+  line-height:1.15 !important;
+
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-preview-copy-v5 small {
+  margin:0 !important;
+
+  color:#8c9196 !important;
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace !important;
+
+  font-size:7.5px !important;
+  line-height:1 !important;
+}
+
+/* Error */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-error-v5 {
+  box-sizing:border-box !important;
+
+  width:100% !important;
+
+  margin:0 !important;
+  padding:7px 8px !important;
+
+  border:1px solid #f0c5c1 !important;
+  border-radius:6px !important;
+
+  background:#fff4f3 !important;
+  color:#b42318 !important;
+
+  font-size:8px !important;
+  line-height:1.3 !important;
+}
+
+/* Footer */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-footer-v5 {
+  box-sizing:border-box !important;
+
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+
+  width:100% !important;
+
+  align-items:center !important;
+  gap:8px !important;
+
+  margin:0 !important;
+  padding:9px 0 0 !important;
+
+  border:0 !important;
+  border-top:1px solid #eceeef !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-footer-v5 > p {
+  min-width:0 !important;
+
+  margin:0 !important;
+
+  color:#8c9196 !important;
+
+  font-size:7.5px !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+}
+
+/* Save */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-save-v5 {
+  box-sizing:border-box !important;
+
+  display:inline-flex !important;
+
+  width:auto !important;
+  height:29px !important;
+
+  min-width:0 !important;
+  min-height:29px !important;
+
+  align-items:center !important;
+  justify-content:center !important;
+
+  gap:4px !important;
+
+  margin:0 !important;
+  padding:0 10px !important;
+
+  border:1px solid #202223 !important;
+  border-radius:6px !important;
+
+  background:#ffffff !important;
+  color:#202223 !important;
+
+  font-size:8.5px !important;
+  font-weight:650 !important;
+  line-height:1 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+
+  cursor:pointer !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-save-v5:hover:not(:disabled) {
+  border-color:#202223 !important;
+
+  background:#f5f5f5 !important;
+  color:#202223 !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-save-v5 svg {
+  width:9px !important;
+  height:9px !important;
+
+  margin:0 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-save-v5:disabled {
+  border-color:#d9dbdd !important;
+
+  background:#f1f2f2 !important;
+  color:#a0a3a6 !important;
+
+  opacity:1 !important;
+
+  cursor:not-allowed !important;
+}
+
+/* END ADMIN V2 — COLORWAY CREATOR PORTAL AUTHORITY V62 */
+
+/* ADMIN V2 — COLORWAY CREATOR COLOR WHEEL V63 */
+
+/*
+ * Creator-only authority.
+ * Does NOT target the approved Choose Colorway directory.
+ */
+
+/* Freeze creator close X completely */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:hover,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus-visible,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:active {
+  margin:0 !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+  outline:0 !important;
+
+  background:transparent !important;
+
+  box-shadow:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  animation:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44 {
+  color:#6d7175 !important;
+  transition:color 140ms ease !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:hover,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus-visible {
+  color:#d92d20 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44 svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:hover svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus-visible svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:active svg {
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  animation:none !important;
+
+  color:currentColor !important;
+  stroke:currentColor !important;
+
+  transition:color 140ms ease, stroke 140ms ease !important;
+}
+
+
+/* Creator field sections */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-color-v63,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-hex-field-v63 {
+  box-sizing:border-box !important;
+
+  display:block !important;
+
+  width:100% !important;
+  min-width:0 !important;
+
+  margin:0 !important;
+  padding:0 !important;
+}
+
+
+/* Match Colorway name label */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-label-v63 {
+  box-sizing:border-box !important;
+
+  display:block !important;
+
+  width:100% !important;
+
+  margin:0 0 5px !important;
+  padding:0 !important;
+
+  color:#616161 !important;
+
+  font-size:8.5px !important;
+  font-weight:600 !important;
+  line-height:1.2 !important;
+}
+
+
+/* Give HEX proper breathing room */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-hex-field-v63 {
+  margin-top:3px !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-hex-field-v63
+.st-admin-color-creator-hex-v5 {
+  margin:0 !important;
+}
+
+
+/* Exact-color control */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-wheel-v63 {
+  position:relative !important;
+
+  box-sizing:border-box !important;
+
+  display:grid !important;
+  grid-template-columns:34px minmax(0,1fr) 26px !important;
+
+  width:100% !important;
+  min-width:0 !important;
+  min-height:44px !important;
+
+  align-items:center !important;
+  gap:9px !important;
+
+  margin:0 !important;
+  padding:5px 7px !important;
+
+  overflow:hidden !important;
+
+  border:1px solid #c9c9c9 !important;
+  border-radius:7px !important;
+
+  background:#ffffff !important;
+  color:#303030 !important;
+
+  cursor:pointer !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-wheel-v63:hover {
+  border-color:#aeb1b4 !important;
+  background:#fafafa !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+
+/* Large live color swatch */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-wheel-preview-v63 {
+  box-sizing:border-box !important;
+
+  display:block !important;
+
+  width:32px !important;
+  height:32px !important;
+
+  margin:0 !important;
+
+  border:1px solid rgba(0,0,0,.12) !important;
+  border-radius:50% !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.22) !important;
+}
+
+
+/* Wheel copy */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-wheel-copy-v63 {
+  display:flex !important;
+  flex-direction:column !important;
+
+  min-width:0 !important;
+
+  gap:2px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-wheel-copy-v63 strong {
+  overflow:hidden !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#303030 !important;
+
+  font-size:9px !important;
+  font-weight:650 !important;
+  line-height:1.2 !important;
+
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-wheel-copy-v63 small {
+  overflow:hidden !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:#8c9196 !important;
+
+  font-size:7.5px !important;
+  font-weight:500 !important;
+  line-height:1.2 !important;
+
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+
+/*
+ * Native browser color input.
+ *
+ * It remains a genuine input[type=color], so clicking it opens
+ * Safari/Chrome/macOS's precise color chooser.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-native-color-v63 {
+  box-sizing:border-box !important;
+
+  display:block !important;
+
+  width:26px !important;
+  height:26px !important;
+  min-width:26px !important;
+  min-height:26px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  overflow:hidden !important;
+
+  border:1px solid #d7d9dc !important;
+  border-radius:6px !important;
+
+  background:transparent !important;
+
+  outline:0 !important;
+
+  cursor:pointer !important;
+
+  box-shadow:none !important;
+  transform:none !important;
+
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-native-color-v63::-webkit-color-swatch-wrapper {
+  padding:2px !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-native-color-v63::-webkit-color-swatch {
+  border:0 !important;
+  border-radius:4px !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-native-color-v63::-moz-color-swatch {
+  border:0 !important;
+  border-radius:4px !important;
+}
+
+
+/* HEX keeps same visual language as Colorway name */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-hex-field-v63
+.st-admin-color-creator-hex-input-v5 {
+  margin:0 !important;
+
+  border-color:#c9c9c9 !important;
+
+  background:#ffffff !important;
+  color:#303030 !important;
+
+  font-size:10px !important;
+  font-weight:500 !important;
+
+  box-shadow:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-hex-field-v63
+.st-admin-color-creator-hex-input-v5:focus {
+  border-color:#8c9196 !important;
+
+  outline:0 !important;
+
+  box-shadow:0 0 0 1px rgba(32,34,35,.06) !important;
+}
+
+/* END ADMIN V2 — COLORWAY CREATOR COLOR WHEEL V63 */
+/* ADMIN V2 — COLORWAY CREATOR FIELD RHYTHM V64 */
+
+/*
+ * Creator-only spacing authority.
+ *
+ * Purpose:
+ * - give Color its own visual section
+ * - give HEX its own visual section
+ * - match label treatment across all three creator fields
+ * - let the popup become naturally taller
+ *
+ * This intentionally does NOT target the Choose Colorway directory.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-color-v63 {
+  margin-top:8px !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-hex-field-v63 {
+  margin-top:10px !important;
+}
+
+
+/*
+ * Color and HEX labels use the same visual language
+ * as the existing Colorway name label.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-label-v63 {
+  display:block !important;
+
+  width:100% !important;
+
+  margin:0 0 6px !important;
+  padding:0 !important;
+
+  color:#616161 !important;
+
+  font-size:8.5px !important;
+  font-weight:600 !important;
+  line-height:1.2 !important;
+
+  letter-spacing:0 !important;
+}
+
+
+/*
+ * Keep the exact-color control separated from its label.
+ * Geometry/functionality of the native color picker is unchanged.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-wheel-v63 {
+  margin:0 !important;
+}
+
+
+/*
+ * HEX starts cleanly beneath its own label.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-colorway-creator-hex-field-v63
+.st-admin-color-creator-hex-v5 {
+  margin:0 !important;
+}
+
+
+/*
+ * Give the live preview its own breathing room after HEX.
+ * This increases creator height naturally rather than forcing
+ * a fixed popup height.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-preview-v5 {
+  margin-top:8px !important;
+}
+
+
+/*
+ * Preserve a clean separation between preview/error content
+ * and the creator footer.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+.st-admin-color-creator-footer-v5 {
+  margin-top:8px !important;
+}
+
+
+/*
+ * Keep creator X absolutely motionless in every interaction state.
+ * Only its color is allowed to change.
+ */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:hover,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus-visible,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:active {
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  animation:none !important;
+
+  box-shadow:none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44 svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:hover svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:focus-visible svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-popup-bare-close-v44:active svg {
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  animation:none !important;
+}
+
+/* END ADMIN V2 — COLORWAY CREATOR FIELD RHYTHM V64 */
+
+/* ==========================================================
+   ADMIN V2 — BRAND + CATEGORY SEARCH CLEAR V71
+
+   Brand closed control now uses the literal Category wrapper
+   and Category trigger architecture.
+
+   Only the portal search-clear behavior remains shared here.
+   ========================================================== */
+
+/*
+ * BRAND + CATEGORY SEARCH X
+ *
+ * Intentionally scoped ONLY to these two portal roots.
+ * Colorway and non-color option pickers are not targeted.
+ */
+
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final {
+  all: unset !important;
+
+  box-sizing: border-box !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  flex: 0 0 22px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: rgba(29, 29, 31, 0.52) !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+
+  cursor: pointer !important;
+
+  transition: color 120ms ease !important;
+}
+
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:hover,
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:focus,
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:focus-visible,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:hover,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:focus,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:focus-visible {
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #d92d20 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+}
+
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:active,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:active {
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+}
+
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final > svg,
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:hover > svg,
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:focus > svg,
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:focus-visible > svg,
+html body
+.st-admin-brand-picker__dropdown
+button.st-admin-picker-search-clear-final:active > svg,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final > svg,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:hover > svg,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:focus > svg,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:focus-visible > svg,
+html body
+.st-admin-category-picker__dropdown
+button.st-admin-picker-search-clear-final:active > svg {
+  display: block !important;
+
+  width: 14px !important;
+  height: 14px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+  transition: none !important;
+
+  pointer-events: none !important;
+}
+
+/* END ADMIN V2 — BRAND + CATEGORY SEARCH CLEAR V71 */
+
+/* ==========================================================
+   ADMIN V2 — COLORWAY CONTROLS V75
+
+   Directory create button:
+   - restore original 40px height
+   - preserve stationary icon + text
+
+   Creator back button:
+   - preserve existing visual design
+   - button and arrow never move on hover/focus/active
+   ========================================================== */
+
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:hover,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:focus,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:focus-visible,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:active {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  grid-template-columns: 10px max-content !important;
+
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 0 !important;
+  column-gap: 5px !important;
+
+  margin: 0 !important;
+  padding: 0 10px !important;
+
+  text-align: center !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  animation: none !important;
+  box-shadow: none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2 > svg,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:hover > svg,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:focus > svg,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:focus-visible > svg,
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:active > svg {
+  display: block !important;
+
+  width: 10px !important;
+  height: 10px !important;
+  min-width: 10px !important;
+  min-height: 10px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  animation: none !important;
+  transition: none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2 {
+  border-color: #d4d6d8 !important;
+  background: #ffffff !important;
+
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease !important;
+}
+
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:hover:not(:disabled),
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:focus-visible:not(:disabled) {
+  border-color: #aeb1b4 !important;
+  background: #f1f2f2 !important;
+}
+
+html body
+.st-admin-colorway-portal-v60:not(.st-admin-color-popup-final)
+button.st-admin-color-create-v2:active:not(:disabled) {
+  border-color: #aeb1b4 !important;
+  background: #e8eaea !important;
+}
+
+
+/* Creator back button — stationary in every interaction state */
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:hover,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:focus,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:focus-visible,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  animation: none !important;
+}
+
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2 > svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:hover > svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:focus > svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:focus-visible > svg,
+html body
+.st-admin-colorway-portal-v60.st-admin-color-popup-final
+button.st-admin-color-popup-close-v2:active > svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  animation: none !important;
+  transition: none !important;
+}
+
+/* END ADMIN V2 — COLORWAY CONTROLS V75 */
+
+/* ============================================================
+   ADMIN V2 — PRECISE INTERACTION SYSTEM V78
+
+   One neutral active language for the product editor.
+
+   IMPORTANT:
+   - Popup search-bar architecture is NOT changed.
+   - Search inputs keep their approved pre-V77 appearance.
+   - No dimensions change on focus.
+   - Utility X / trash / arrow controls are excluded.
+   - Add Product, Edit Live and Edit Draft share this authority.
+   ============================================================ */
+
+.st3-admin .st-admin-product-editor-form {
+  --st-v78-active-border: #202223;
+  --st-v78-active-ring: rgba(32, 34, 35, 0.10);
+  --st-v78-active-shadow: 0 0 0 1px rgba(32, 34, 35, 0.10);
+}
+
+/* ------------------------------------------------------------
+   1. STANDARD EDITABLE FIELDS
+   ------------------------------------------------------------ */
+
+.st3-admin
+  .st-admin-product-editor-form
+  input:not(
+    [type="hidden"],
+    [type="checkbox"],
+    [type="radio"],
+    [type="file"],
+    [type="range"],
+    [type="color"],
+    [type="button"],
+    [type="submit"]
+  ):focus,
+.st3-admin
+  .st-admin-product-editor-form
+  input:not(
+    [type="hidden"],
+    [type="checkbox"],
+    [type="radio"],
+    [type="file"],
+    [type="range"],
+    [type="color"],
+    [type="button"],
+    [type="submit"]
+  ):focus-visible,
+.st3-admin
+  .st-admin-product-editor-form
+  textarea:focus,
+.st3-admin
+  .st-admin-product-editor-form
+  textarea:focus-visible,
+.st3-admin
+  .st-admin-product-editor-form
+  select:focus,
+.st3-admin
+  .st-admin-product-editor-form
+  select:focus-visible {
+  border-color: var(--st-v78-active-border) !important;
+  outline: none !important;
+  box-shadow: var(--st-v78-active-shadow) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+}
+
+/* ------------------------------------------------------------
+   2. BRAND + CATEGORY
+   V71 already gives both the same physical architecture.
+   ------------------------------------------------------------ */
+
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-category-picker__trigger:focus,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-category-picker__trigger:focus-visible,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-category-picker__trigger.is-open,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-category-picker__trigger[aria-expanded="true"] {
+  border-color: var(--st-v78-active-border) !important;
+  outline: none !important;
+  box-shadow: var(--st-v78-active-shadow) !important;
+}
+
+/* ------------------------------------------------------------
+   3. CHOOSE COLOR / SELECT SIZE / SELECT OPTION
+   ------------------------------------------------------------ */
+
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-option-value-trigger-final:focus,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-option-value-trigger-final:focus-visible,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-option-value-trigger-final[aria-expanded="true"],
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-color-value-trigger-final:focus,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-color-value-trigger-final:focus-visible,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-color-value-trigger-final[aria-expanded="true"] {
+  border-color: var(--st-v78-active-border) !important;
+  outline: none !important;
+  box-shadow: var(--st-v78-active-shadow) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+}
+
+/* ------------------------------------------------------------
+   4. QUICK PASTE
+   The whole Quick Paste card gets the exact same dark active
+   perimeter when its textarea is being used.
+   ------------------------------------------------------------ */
+
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-spec-paste-v2:focus-within {
+  border-color: var(--st-v78-active-border) !important;
+  outline: none !important;
+  box-shadow: var(--st-v78-active-shadow) !important;
+}
+
+/*
+ * Do not paint a second inner ring around the textarea.
+ * The Quick Paste CARD is the active perimeter.
+ */
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-spec-paste-v2
+  textarea:focus,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-spec-paste-v2
+  textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ------------------------------------------------------------
+   5. TECHNICAL SPECIFICATION VALUE FIELD
+   ------------------------------------------------------------ */
+
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-spec-item-v29__field:focus-within {
+  border-color: var(--st-v78-active-border) !important;
+  outline: none !important;
+  box-shadow: var(--st-v78-active-shadow) !important;
+}
+
+/* ------------------------------------------------------------
+   6. CONFIGURATION OPTION-NAME SELECT
+   ------------------------------------------------------------ */
+
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-config-option-name-v2
+  > select:focus,
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-config-option-name-v2
+  > select:focus-visible {
+  border-color: var(--st-v78-active-border) !important;
+  outline: none !important;
+  box-shadow: var(--st-v78-active-shadow) !important;
+}
+
+/* ------------------------------------------------------------
+   7. STORE PLACEMENT KEYBOARD ACTIVE STATE
+   ------------------------------------------------------------ */
+
+.st3-admin
+  .st-admin-product-editor-form
+  .st-admin-product-placement-v2
+  label:has(input:focus-visible) {
+  outline: none !important;
+  box-shadow: var(--st-v78-active-shadow) !important;
+}
+
+/* ------------------------------------------------------------
+   8. POPUP ENTRANCE MOTION
+
+   Visual motion only.
+   Does NOT modify the search field.
+   Does NOT modify popup contents.
+   Does NOT change picker state.
+   ------------------------------------------------------------ */
+
+@keyframes stAdminV78PopupEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.988);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+html body .st-admin-brand-picker__dropdown,
+html body .st-admin-product-brand-picker__dropdown,
+html body .st-admin-category-picker__dropdown,
+html body .st-admin-product-category-picker__dropdown,
+html body .st-admin-option-directory-v2,
+html body .st-admin-colorway-portal-v60 {
+  transform-origin: top center;
+  animation: stAdminV78PopupEnter 165ms
+    cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* ------------------------------------------------------------
+   9. POPUP SEARCH PROTECTION
+
+   V77 accidentally treated the inner search input as an ordinary
+   editor field. V78 explicitly prevents the additional inner
+   focus rectangle.
+
+   The approved popup search shell remains responsible for the
+   search control appearance.
+   ------------------------------------------------------------ */
+
+html body
+  .st-admin-option-directory-v2
+  input:focus,
+html body
+  .st-admin-option-directory-v2
+  input:focus-visible,
+html body
+  .st-admin-brand-picker__dropdown
+  input:focus,
+html body
+  .st-admin-brand-picker__dropdown
+  input:focus-visible,
+html body
+  .st-admin-product-brand-picker__dropdown
+  input:focus,
+html body
+  .st-admin-product-brand-picker__dropdown
+  input:focus-visible,
+html body
+  .st-admin-category-picker__dropdown
+  input:focus,
+html body
+  .st-admin-category-picker__dropdown
+  input:focus-visible,
+html body
+  .st-admin-product-category-picker__dropdown
+  input:focus,
+html body
+  .st-admin-product-category-picker__dropdown
+  input:focus-visible,
+html body
+  .st-admin-colorway-search-input-v60:focus,
+html body
+  .st-admin-colorway-search-input-v60:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/*
+ * Preserve approved bare utility controls.
+ */
+html body
+  :is(
+    .st-admin-search-clear-v47,
+    .st-admin-colorway-search-clear-v60,
+    .st-admin-popup-bare-close-v44,
+    .st-admin-color-popup-close-v2,
+    .st-admin-color-row-delete-v2,
+    .st-admin-spec-item-v29__remove
+  ):focus,
+html body
+  :is(
+    .st-admin-search-clear-v47,
+    .st-admin-colorway-search-clear-v60,
+    .st-admin-popup-bare-close-v44,
+    .st-admin-color-popup-close-v2,
+    .st-admin-color-row-delete-v2,
+    .st-admin-spec-item-v29__remove
+  ):focus-visible {
+  outline: none !important;
+}
+
+/* ------------------------------------------------------------
+   10. REDUCED MOTION
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st-admin-brand-picker__dropdown,
+  html body .st-admin-product-brand-picker__dropdown,
+  html body .st-admin-category-picker__dropdown,
+  html body .st-admin-product-category-picker__dropdown,
+  html body .st-admin-option-directory-v2,
+  html body .st-admin-colorway-portal-v60 {
+    animation: none !important;
+  }
+}
+
+/* END ADMIN V2 — PRECISE INTERACTION SYSTEM V78 */
+
+/* ============================================================
+   ADMIN V2 — ONE ACTIVE PERIMETER AUTHORITY V79
+
+   ONE interaction language for:
+   - Add Product
+   - Edit Live Product
+   - Edit Draft Product
+
+   Active field/select/selector:
+   - 1px #202223 physical border
+   - 1px #202223 outer ring
+   - no mustard
+   - no gray focus ring
+   - no dimensional movement
+
+   Popup search:
+   - the OUTER search shell receives the perimeter
+   - the inner text input never paints a second rectangle
+
+   Utility controls such as X, delete, reorder and arrows remain
+   outside this field-perimeter system.
+   ============================================================ */
+
+.st3-admin .st-admin-product-editor-form {
+  --st-admin-active-border-v79: #202223;
+  --st-admin-active-ring-v79: 0 0 0 1px #202223;
+}
+
+/* ============================================================
+   1. EVERY NATIVE EDITABLE FIELD
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+input:not(
+  [type="hidden"],
+  [type="checkbox"],
+  [type="radio"],
+  [type="file"],
+  [type="range"],
+  [type="color"],
+  [type="button"],
+  [type="submit"]
+):focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+input:not(
+  [type="hidden"],
+  [type="checkbox"],
+  [type="radio"],
+  [type="file"],
+  [type="range"],
+  [type="color"],
+  [type="button"],
+  [type="submit"]
+):focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+textarea:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus-visible {
+  border-color: var(--st-admin-active-border-v79) !important;
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   2. BRAND + CATEGORY CLOSED SELECTORS
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-category-picker__trigger:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-category-picker__trigger:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-category-picker__trigger.is-open,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-category-picker__trigger[aria-expanded="true"],
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-brand-picker__trigger:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-brand-picker__trigger:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-brand-picker__trigger.is-open,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-brand-picker__trigger[aria-expanded="true"] {
+  border-color: var(--st-admin-active-border-v79) !important;
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   3. CHOOSE COLOR + SELECT SIZE / ROUND / OPTION
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-value-trigger-final:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-value-trigger-final:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-value-trigger-final[aria-expanded="true"],
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-color-value-trigger-final:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-color-value-trigger-final:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-color-value-trigger-final[aria-expanded="true"] {
+  border-color: var(--st-admin-active-border-v79) !important;
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   4. OPTION-NAME SELECT
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-name-v2
+> select:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-name-v2
+> select:focus-visible {
+  border-color: var(--st-admin-active-border-v79) !important;
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/* ============================================================
+   5. QUICK PASTE
+   Whole Quick Paste card owns the active perimeter.
+   Kill every old inner textarea focus perimeter.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2:focus-within {
+  border-color: var(--st-admin-active-border-v79) !important;
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-focus-real:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-focus-real:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-focus-final:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-focus-final:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   6. TECHNICAL SPECIFICATION VALUE CONTROL
+   Outer field owns the active perimeter.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-item-v29__field:focus-within {
+  border-color: var(--st-admin-active-border-v79) !important;
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-item-v29__field
+> input:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-item-v29__field
+> input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/* ============================================================
+   7. STORE PLACEMENT
+   Hidden checkbox focus paints the field-style row perimeter.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-product-placement-v2
+label:has(input:focus-visible) {
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+}
+
+
+/* ============================================================
+   8. POPUP SEARCH — ONE OUTER PERIMETER
+   Never draw the ugly inner input rectangle.
+   ============================================================ */
+
+html body
+.st-admin-brand-picker__dropdown
+.st-admin-picker-search-final:focus-within,
+html body
+.st-admin-product-brand-picker__dropdown
+.st-admin-picker-search-final:focus-within,
+html body
+.st-admin-category-picker__dropdown
+.st-admin-picker-search-final:focus-within,
+html body
+.st-admin-product-category-picker__dropdown
+.st-admin-picker-search-final:focus-within,
+html body
+.st-admin-option-directory-v2
+.st-admin-option-directory-search-v2:focus-within,
+html body
+.st-admin-colorway-portal-v60
+.st-admin-option-directory-search-v2:focus-within,
+html body
+.st-admin-colorway-portal-v60
+.st-admin-picker-search-final:focus-within {
+  border-color: #202223 !important;
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 1px #202223 !important;
+
+  -webkit-box-shadow:
+    0 0 0 1px #202223 !important;
+
+  background: #fff !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/* Popup search text inputs are intentionally visually naked.
+   The parent shell above owns the entire active perimeter. */
+
+html body
+.st-admin-brand-picker__dropdown
+.st-admin-picker-search-final
+input:focus,
+html body
+.st-admin-brand-picker__dropdown
+.st-admin-picker-search-final
+input:focus-visible,
+html body
+.st-admin-product-brand-picker__dropdown
+.st-admin-picker-search-final
+input:focus,
+html body
+.st-admin-product-brand-picker__dropdown
+.st-admin-picker-search-final
+input:focus-visible,
+html body
+.st-admin-category-picker__dropdown
+.st-admin-picker-search-final
+input:focus,
+html body
+.st-admin-category-picker__dropdown
+.st-admin-picker-search-final
+input:focus-visible,
+html body
+.st-admin-product-category-picker__dropdown
+.st-admin-picker-search-final
+input:focus,
+html body
+.st-admin-product-category-picker__dropdown
+.st-admin-picker-search-final
+input:focus-visible,
+html body
+.st-admin-option-directory-v2
+.st-admin-option-directory-search-v2
+input:focus,
+html body
+.st-admin-option-directory-v2
+.st-admin-option-directory-search-v2
+input:focus-visible,
+html body
+.st-admin-colorway-portal-v60
+input.st-admin-colorway-search-input-v60:focus,
+html body
+.st-admin-colorway-portal-v60
+input.st-admin-colorway-search-input-v60:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   9. FIELD-STYLE BUTTONS
+   Controls that behave as selectors/actions inside the editor
+   receive the same keyboard perimeter without touching utility
+   X / trash / reorder / arrow buttons.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-add-v2__button:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2__parse:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-disclosure-v26:focus-visible {
+  border-color: var(--st-admin-active-border-v79) !important;
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v79) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/* ============================================================
+   10. NO GEOMETRY CHANGE WHILE ACTIVE
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  input,
+  textarea,
+  select,
+  .st-admin-category-picker__trigger,
+  .st-admin-brand-picker__trigger,
+  .st-admin-option-value-trigger-final,
+  .st-admin-color-value-trigger-final
+):focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  input,
+  textarea,
+  select,
+  .st-admin-category-picker__trigger,
+  .st-admin-brand-picker__trigger,
+  .st-admin-option-value-trigger-final,
+  .st-admin-color-value-trigger-final
+):focus-visible {
+  transform: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — ONE ACTIVE PERIMETER AUTHORITY V79
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — FINAL PERIMETER + QUICK PASTE V80
+
+   Final authority for:
+   - selected configuration perimeter
+   - open / active selector perimeter
+   - Quick Paste single-perimeter architecture
+   - Description -> Quick Paste vertical rhythm
+
+   No popup search architecture changes.
+   No control dimensions changed.
+   ============================================================ */
+
+.st3-admin .st-admin-product-editor-form {
+  --st-admin-active-border-v80: #202223;
+  --st-admin-active-ring-v80: 0 0 0 1px #202223;
+}
+
+
+/* ============================================================
+   1. SELECTED CONFIGURATION
+
+   The row itself owns exactly the same 1px border + 1px ring
+   used by the rest of the active product-editor controls.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2.is-active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2[aria-selected="true"] {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--st-admin-active-border-v80) !important;
+
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  filter: none !important;
+}
+
+/* Old selected-row pseudo decoration must not create a second edge. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2.is-active::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2[aria-selected="true"]::before {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+
+/* ============================================================
+   2. OPEN / ACTIVE SELECTORS
+
+   Every custom selector that exposes aria-expanded receives the
+   exact same active perimeter while its popup is open.
+
+   Utility buttons are deliberately excluded.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button[aria-expanded="true"]:not(
+  .st-admin-spec-disclosure-v26
+):not(
+  .st-admin-spec-item-v29__remove
+):not(
+  .st-admin-search-clear-v47
+) {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--st-admin-active-border-v80) !important;
+
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   3. NATIVE SELECTORS
+
+   Availability and every native product-editor select use the
+   same perimeter while actually focused.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus-visible {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--st-admin-active-border-v80) !important;
+
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   4. QUICK PASTE — REMOVE INNER GRAY RECTANGLE
+
+   The textarea remains completely editable, scrollable and
+   resizable. It simply stops drawing its own visual perimeter.
+
+   The Quick Paste CARD is the only perimeter.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus-visible {
+  border: 0 !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-color: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* Quick Paste outer card receives THE active perimeter. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2:focus-within {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--st-admin-active-border-v80) !important;
+
+  outline: none !important;
+
+  box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  -webkit-box-shadow:
+    var(--st-admin-active-ring-v80) !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   5. DESCRIPTION -> QUICK PASTE RHYTHM
+
+   Remove the historical 22px specification-portal offset.
+   The specification section participates in the same editor
+   spacing rhythm as Title -> Description.
+
+   We deliberately change spacing only — not card dimensions.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+#st-product-information-specifications
+> section.st-admin-specifications-portal-v27 {
+  margin-top: 0 !important;
+}
+
+
+/* The parent information layout owns the regular field gap. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-product-information-v2
+> #st-product-information-specifications {
+  margin-top: 0 !important;
+}
+
+
+/* Do not reintroduce the old 22px offset on mobile. */
+@media (max-width: 640px) {
+  html body
+  .st3-admin
+  .st-admin-product-editor-form
+  #st-product-information-specifications
+  > section.st-admin-specifications-portal-v27 {
+    margin-top: 0 !important;
+  }
+}
+
+
+/* ============================================================
+   END ADMIN V2 — FINAL PERIMETER + QUICK PASTE V80
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — FINAL VISUAL PERIMETER AUTHORITY V81
+
+   PURPOSE
+   1. Remove legacy mustard/orange focus from native selects.
+   2. Give focused native selects the same neutral dark perimeter.
+   3. Keep unfocused native selects neutral gray.
+   4. Remove Quick Paste textarea's own inner rectangle.
+   5. Make Quick Paste outer card the sole active perimeter.
+   6. Preserve V80 active configuration-row behavior.
+
+   This block intentionally sits LAST in the stylesheet.
+   ============================================================ */
+
+
+/* ============================================================
+   1. NATIVE SELECTS — NEUTRAL RESTING STATE
+
+   Explicitly kill old mustard/orange focus variables, outlines,
+   rings and shadows inherited from earlier admin generations.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:not(:focus):not(:focus-visible) {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #d1d1d1 !important;
+
+  outline: 0 !important;
+  outline-color: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   2. NATIVE SELECTS — ACTIVE STATE
+
+   One consistent neutral dark perimeter:
+   1px border + 1px exterior ring.
+
+   No mustard/orange.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+select:active:focus {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   3. OPTION-EDITOR SELECTS — EXTRA-SPECIFIC AUTHORITY
+
+   These are the controls visible in Options:
+   - Color
+   - Add product option...
+   and any equivalent native option selector.
+
+   Higher specificity deliberately defeats historical mustard
+   rules without changing dimensions or behavior.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-editor-v2
+select:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-editor-v2
+select:focus-visible {
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   4. QUICK PASTE — TEXTAREA MUST BE VISUALLY BORDERLESS
+
+   The textarea remains:
+   - editable
+   - selectable
+   - scrollable
+   - resizable
+
+   It simply owns NO visual rectangle.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus-visible {
+  border: none !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* Kill any textarea pseudo-decoration from an older authority. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea::after {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+
+/* ============================================================
+   5. QUICK PASTE — OUTER CARD IS THE ONLY PERIMETER
+
+   Resting state remains its normal neutral card.
+   Focus anywhere inside -> same dark active perimeter used by
+   configuration rows and selectors.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2:focus-within {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+  outline-color: transparent !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   6. ACTIVE CONFIGURATION — PRESERVE CORRECT V80 FIX
+
+   Explicit final authority so later rules cannot accidentally
+   restore mustard or duplicate the selected-row perimeter.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2.is-active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2[aria-selected="true"] {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2.is-active::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-row-v2[aria-selected="true"]::before {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — FINAL VISUAL PERIMETER AUTHORITY V81
+   ============================================================ */
+
+
+/* ============================================================
+   ADMIN V2 — CONTROL FOCUS AUTHORITY V82
+
+   Final ownership:
+   - Option-name native select owns its own active perimeter.
+   - Quick Paste outer card owns the Quick Paste perimeter.
+   - Quick Paste textarea never owns a visual rectangle.
+
+   This authority intentionally changes focus presentation only.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. OPTION NAME — NATIVE SELECT IS THE PHYSICAL CONTROL
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-name-v2
+> select:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-name-v2
+> select:focus-visible {
+  border: 1px solid #202223 !important;
+  border-color: #202223 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   2. QUICK PASTE TEXTAREA — CONTENT SURFACE ONLY
+
+   V29 originally gave this textarea its own border/ring.
+   The card now owns that visual responsibility.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus-visible {
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   3. QUICK PASTE — OUTER CARD IS THE PHYSICAL CONTROL
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-spec-paste-v2:focus-within {
+  border: 1px solid #202223 !important;
+  border-color: #202223 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — CONTROL FOCUS AUTHORITY V82
+   ============================================================ */
+
+
+/* ============================================================
+   ADMIN V2 — OPTION NAME DIRECTORY + QUICK PASTE V83
+
+   Structural correction:
+   - Product option-name controls are custom buttons/listboxes.
+   - No browser-native option popup is used for these controls.
+   - Quick Paste textarea owns its own visual perimeter.
+   - Quick Paste card does not become a giant focus rectangle.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   OPTION NAME — CLOSED CONTROL
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-name-trigger-final {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 10px !important;
+  align-items: center !important;
+  gap: 7px !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+
+  margin: 0 !important;
+  padding: 0 8px !important;
+
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 5px !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+  color: #202223 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  text-align: left !important;
+
+  cursor: pointer !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-name-trigger-final:hover {
+  border-color: #202223 !important;
+  background: #f3f4f4 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-name-trigger-final:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-name-trigger-final:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-name-trigger-final[aria-expanded="true"] {
+  border-color: #202223 !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+.st-admin-option-name-trigger-final__value,
+.st-admin-option-name-trigger-final__placeholder {
+  display: block !important;
+
+  min-width: 0 !important;
+
+  overflow: hidden !important;
+
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.st-admin-option-name-trigger-final__value {
+  color: #202223 !important;
+}
+
+.st-admin-option-name-trigger-final__placeholder {
+  color: #7a7d80 !important;
+}
+
+.st-admin-option-name-trigger-final__chevron {
+  width: 10px !important;
+  height: 10px !important;
+
+  color: #4f5357 !important;
+  stroke: #4f5357 !important;
+
+  transition: transform 140ms ease !important;
+}
+
+.st-admin-option-name-trigger-final__chevron.is-open {
+  transform: rotate(180deg) !important;
+}
+
+
+/* ------------------------------------------------------------
+   OPTION NAME — PORTAL DIRECTORY
+   ------------------------------------------------------------ */
+
+.st-admin-option-name-directory-final {
+  position: fixed !important;
+  z-index: 10000 !important;
+
+  box-sizing: border-box !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 9px !important;
+
+  background: #ffffff !important;
+  color: #202223 !important;
+
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.14) !important;
+}
+
+.st-admin-option-name-directory-final__list {
+  padding: 5px !important;
+}
+
+.st-admin-option-name-directory-final__option {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 14px !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  width: 100% !important;
+  min-height: 34px !important;
+
+  margin: 0 !important;
+  padding: 5px 10px !important;
+
+  border: 0 !important;
+  border-radius: 6px !important;
+
+  outline: none !important;
+
+  background: transparent !important;
+  color: #202223 !important;
+
+  box-shadow: none !important;
+
+  font-size: 10px !important;
+  font-weight: 500 !important;
+
+  text-align: left !important;
+
+  cursor: pointer !important;
+}
+
+.st-admin-option-name-directory-final__option:hover,
+.st-admin-option-name-directory-final__option:focus,
+.st-admin-option-name-directory-final__option:focus-visible {
+  outline: none !important;
+
+  background: #f1f2f2 !important;
+
+  box-shadow: none !important;
+}
+
+.st-admin-option-name-directory-final__option[aria-selected="true"] {
+  background: #202223 !important;
+  color: #ffffff !important;
+}
+
+.st-admin-option-name-directory-final__option[aria-selected="true"] * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+.st-admin-option-name-directory-final__separator {
+  height: 1px !important;
+
+  margin: 4px 5px !important;
+
+  background: #e5e5e5 !important;
+}
+
+
+/* ------------------------------------------------------------
+   QUICK PASTE — CARD IS ONLY A CARD
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-spec-paste-v2:focus-within {
+  outline: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   QUICK PASTE — TEXTAREA OWNS ITS PERIMETER
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea {
+  box-sizing: border-box !important;
+
+  border: 1px solid #d8dadd !important;
+  border-radius: 7px !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:hover:not(:focus):not(:focus-visible) {
+  border: 1px solid #bfc3c7 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus-visible {
+  border: 1px solid #202223 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — OPTION NAME DIRECTORY + QUICK PASTE V83
+   ============================================================ */
+
+
+/* ============================================================
+   ADMIN V2 — UNIFIED PROFESSIONAL DIRECTORY SELECTORS V82
+
+   Used by:
+   - Availability
+   - Configuration Details option values
+
+   Visual reference:
+   - Screen Size / option directory popup
+
+   Portal popup deliberately lives outside .st3-admin.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   CLOSED CONTROL
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-unified-directory-trigger-final {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 30px !important;
+  min-height: 30px !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 11px !important;
+  align-items: center !important;
+  gap: 7px !important;
+
+  margin: 0 !important;
+  padding: 0 8px !important;
+
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 5px !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+  color: #202223 !important;
+
+  box-shadow: none !important;
+
+  text-align: left !important;
+
+  cursor: pointer !important;
+
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    box-shadow 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-unified-directory-trigger-final:hover {
+  border-color: #202223 !important;
+  background: #f3f4f4 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-unified-directory-trigger-final:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-unified-directory-trigger-final:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-unified-directory-trigger-final[aria-expanded="true"] {
+  border-color: #202223 !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 1px #202223 !important;
+
+  -webkit-box-shadow:
+    0 0 0 1px #202223 !important;
+
+  transform: none !important;
+}
+
+.st-admin-unified-directory-trigger-final__value,
+.st-admin-unified-directory-trigger-final__placeholder {
+  display: block !important;
+
+  min-width: 0 !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+}
+
+.st-admin-unified-directory-trigger-final__value {
+  color: #202223 !important;
+}
+
+.st-admin-unified-directory-trigger-final__placeholder {
+  color: #8b8d90 !important;
+}
+
+.st-admin-unified-directory-trigger-final__chevron {
+  width: 10px !important;
+  height: 10px !important;
+
+  color: #4f5357 !important;
+  stroke: #4f5357 !important;
+
+  transition: transform 140ms ease !important;
+}
+
+.st-admin-unified-directory-trigger-final__chevron.is-open {
+  transform: rotate(180deg) !important;
+}
+
+
+/* ------------------------------------------------------------
+   PORTAL
+   ------------------------------------------------------------ */
+
+html body
+.st-admin-unified-directory-final {
+  box-sizing: border-box !important;
+
+  max-width: calc(100vw - 32px) !important;
+  max-height: min(560px, calc(100vh - 32px)) !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 12px !important;
+
+  background: #ffffff !important;
+  color: #202223 !important;
+
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.15),
+    0 5px 16px rgba(0, 0, 0, 0.06) !important;
+
+  transform-origin: top center !important;
+
+  animation:
+    stAdminV82DirectoryEnter 150ms
+    cubic-bezier(0.2, 0.8, 0.2, 1)
+    both !important;
+}
+
+@keyframes stAdminV82DirectoryEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.988);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ------------------------------------------------------------
+   SEARCH
+   ------------------------------------------------------------ */
+
+.st-admin-unified-directory-final__search-wrap {
+  padding: 12px 12px 9px !important;
+}
+
+.st-admin-unified-directory-final__search {
+  position: relative !important;
+
+  box-sizing: border-box !important;
+
+  min-height: 42px !important;
+
+  display: grid !important;
+  grid-template-columns: 20px minmax(0, 1fr) 28px !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  padding: 0 7px 0 11px !important;
+
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 8px !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+}
+
+.st-admin-unified-directory-final__search:focus-within {
+  border-color: #202223 !important;
+
+  box-shadow:
+    0 0 0 1px #202223 !important;
+}
+
+.st-admin-unified-directory-final__search
+> svg {
+  width: 18px !important;
+  height: 18px !important;
+
+  color: #202223 !important;
+  stroke: #202223 !important;
+}
+
+.st-admin-unified-directory-final__search
+> input {
+  width: 100% !important;
+  min-width: 0 !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  color: #202223 !important;
+
+  box-shadow: none !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.st-admin-unified-directory-final__search
+> input::placeholder {
+  color: #a1a1a4 !important;
+}
+
+.st-admin-unified-directory-final__search
+> input:focus,
+.st-admin-unified-directory-final__search
+> input:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.st-admin-unified-directory-final__clear {
+  width: 28px !important;
+  height: 28px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  background: transparent !important;
+  color: rgba(29, 29, 31, 0.48) !important;
+
+  box-shadow: none !important;
+
+  cursor: pointer !important;
+}
+
+.st-admin-unified-directory-final__clear:hover {
+  color: #d92d20 !important;
+}
+
+.st-admin-unified-directory-final__clear
+svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  transform: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   DIRECTORY HEADING
+   ------------------------------------------------------------ */
+
+.st-admin-unified-directory-final__heading {
+  min-height: 43px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+
+  padding: 0 16px !important;
+
+  border-bottom: 1px solid #ededed !important;
+
+  color: #a1a1a4 !important;
+}
+
+.st-admin-unified-directory-final__heading
+> span {
+  font-size: 10px !important;
+  font-weight: 650 !important;
+
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase !important;
+}
+
+.st-admin-unified-directory-final__heading
+> small {
+  flex: none !important;
+
+  font-size: 10px !important;
+  font-weight: 500 !important;
+
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   DIRECTORY LIST
+   ------------------------------------------------------------ */
+
+.st-admin-unified-directory-final__list {
+  max-height: 390px !important;
+
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+
+  padding: 7px !important;
+}
+
+.st-admin-unified-directory-final__option {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-height: 46px !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 14px !important;
+
+  margin: 0 !important;
+  padding: 8px 11px !important;
+
+  border: 0 !important;
+  border-radius: 8px !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+  color: #202223 !important;
+
+  box-shadow: none !important;
+
+  text-align: left !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background-color 110ms ease,
+    color 110ms ease !important;
+}
+
+.st-admin-unified-directory-final__option:hover,
+.st-admin-unified-directory-final__option:focus,
+.st-admin-unified-directory-final__option:focus-visible {
+  outline: none !important;
+
+  background: #f1f2f2 !important;
+
+  box-shadow: none !important;
+}
+
+.st-admin-unified-directory-final__option[
+  aria-selected="true"
+] {
+  background: #202223 !important;
+  color: #ffffff !important;
+}
+
+.st-admin-unified-directory-final__option[
+  aria-selected="true"
+] * {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+.st-admin-unified-directory-final__option-copy {
+  min-width: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+.st-admin-unified-directory-final__option-copy
+> strong {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  color: inherit !important;
+
+  font-size: 11px !important;
+  font-weight: 550 !important;
+  line-height: 1.2 !important;
+}
+
+.st-admin-unified-directory-final__option-copy
+> small {
+  color: #8a8a8d !important;
+
+  font-size: 9px !important;
+  font-weight: 450 !important;
+  line-height: 1.3 !important;
+}
+
+.st-admin-unified-directory-final__option-action {
+  min-width: 58px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 5px !important;
+
+  color: #b0b0b2 !important;
+
+  font-size: 9px !important;
+  font-weight: 650 !important;
+
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase !important;
+}
+
+.st-admin-unified-directory-final__option-action
+svg {
+  width: 13px !important;
+  height: 13px !important;
+
+  flex: none !important;
+}
+
+.st-admin-unified-directory-final__empty {
+  padding: 28px 14px !important;
+
+  color: #929295 !important;
+
+  font-size: 11px !important;
+  font-weight: 500 !important;
+
+  text-align: center !important;
+}
+
+
+/* ------------------------------------------------------------
+   PORTAL TEXT SELECTION
+   ------------------------------------------------------------ */
+
+.st-admin-unified-directory-final ::selection {
+  background: rgba(29, 29, 31, 0.18) !important;
+  color: inherit !important;
+}
+
+.st-admin-unified-directory-final ::-moz-selection {
+  background: rgba(29, 29, 31, 0.18) !important;
+  color: inherit !important;
+}
+
+
+/* ------------------------------------------------------------
+   REDUCED MOTION
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  .st-admin-unified-directory-final {
+    animation: none !important;
+  }
+
+  .st-admin-unified-directory-trigger-final__chevron {
+    transition: none !important;
+  }
+}
+
+
+/* ============================================================
+   END ADMIN V2 — UNIFIED PROFESSIONAL DIRECTORY SELECTORS V82
+   ============================================================ */

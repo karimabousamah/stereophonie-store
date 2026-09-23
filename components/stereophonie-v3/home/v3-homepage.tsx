@@ -87,12 +87,24 @@ function categoryHref(category: V3HomeCategory) {
     return "/movies-series";
   }
 
+  const slug = category.slug?.trim();
+
+  if (slug) {
+    return `/shop/category/${encodeURIComponent(slug)}`;
+  }
+
   return `/shop?category=${encodeURIComponent(category.name)}`;
 }
 
 function categoryExploreHref(category: V3HomeCategory) {
   if (isMoviesSeriesCategory(category)) {
     return "/movies-series";
+  }
+
+  const slug = category.slug?.trim();
+
+  if (slug) {
+    return `/shop/category/${encodeURIComponent(slug)}?sort=newest`;
   }
 
   return `/shop?category=${encodeURIComponent(category.name)}&sort=newest`;

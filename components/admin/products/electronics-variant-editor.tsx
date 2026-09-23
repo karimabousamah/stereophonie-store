@@ -1,19 +1,19 @@
 "use client";
 
 import {
-  ArrowDown,
-  ArrowUp,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  CirclePlus,
-  Copy,
-  Plus,
-  RefreshCw,
-  Trash2,
-  X,
-  Search,
-  ChevronDown,
+ ArrowDown,
+ ArrowUp,
+ Check,
+ ChevronLeft,
+ ChevronRight,
+ CirclePlus,
+ Copy,
+ Plus,
+ RefreshCw,
+ Trash2,
+ X,
+ Search,
+ ChevronDown,
 } from "lucide-react";
 import { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
@@ -25,60 +25,60 @@ type AvailabilityStatus =
   "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
 
 export type AdminElectronicsVariant = {
-  clientId: string;
-  id?: string | null;
-  variant_name: string;
-  display_position?: number;
-  attributes: Record<string, string>;
-  sku: string;
-  barcode?: string;
-  regular_price: number | "";
-  sale_price: number | "";
-  stock_quantity: number;
-  low_stock_threshold: number;
-  availability_status: AvailabilityStatus | "";
+ clientId: string;
+ id?: string | null;
+ variant_name: string;
+ display_position?: number;
+ attributes: Record<string, string>;
+ sku: string;
+ barcode?: string;
+ regular_price: number | "";
+ sale_price: number | "";
+ stock_quantity: number;
+ low_stock_threshold: number;
+ availability_status: AvailabilityStatus | "";
 };
 
 type ElectronicsVariantEditorProps = {
-  variants: AdminElectronicsVariant[];
-  onChange: (variants: AdminElectronicsVariant[]) => void;
-  categoryName?: string;
-  brandName?: string;
-  saveExistingConfigurationIntent?: "publish" | "draft";
+ variants: AdminElectronicsVariant[];
+ onChange: (variants: AdminElectronicsVariant[]) => void;
+ categoryName?: string;
+ brandName?: string;
+ saveExistingConfigurationIntent?: "publish" | "draft";
 };
 
 type OptionLevel = {
-  id: string;
-  key: string;
-  label: string;
-  values: string[];
-  colorHexByValue?: Record<string, string>;
+ id: string;
+ key: string;
+ label: string;
+ values: string[];
+ colorHexByValue?: Record<string, string>;
 };
 
 const availabilityOptions: {
-  value: AvailabilityStatus;
-  label: string;
-  description: string;
+ value: AvailabilityStatus;
+ label: string;
+ description: string;
 }[] = [
   {
-    value: "in_stock",
-    label: "In stock",
-    description: "Available and ready to purchase.",
+ value: "in_stock",
+ label: "In stock",
+ description: "Available and ready to purchase.",
   },
   {
-    value: "low_stock",
-    label: "Low stock",
-    description: "Available, but inventory is running low.",
+ value: "low_stock",
+ label: "Low stock",
+ description: "Available, but inventory is running low.",
   },
   {
-    value: "out_of_stock",
-    label: "Out of stock",
-    description: "Visible to customers but cannot be purchased.",
+ value: "out_of_stock",
+ label: "Out of stock",
+ description: "Visible to customers but cannot be purchased.",
   },
   {
-    value: "coming_soon",
-    label: "Coming soon",
-    description: "Visible before this configuration becomes available.",
+ value: "coming_soon",
+ label: "Coming soon",
+ description: "Visible before this configuration becomes available.",
   },
 ];
 
@@ -100,7 +100,7 @@ const hierarchyPresetLabels = [
 ] as const;
 
 const optionValuePresets: Record<string, string[]> = {
-  storage: [
+ storage: [
     "1GB",
     "2GB",
     "4GB",
@@ -138,7 +138,7 @@ const optionValuePresets: Record<string, string[]> = {
     "100TB",
   ],
 
-  ram: [
+ ram: [
     "1GB",
     "2GB",
     "3GB",
@@ -165,7 +165,7 @@ const optionValuePresets: Record<string, string[]> = {
     "2TB",
   ],
 
-  screen_size: [
+ screen_size: [
     '1.2"',
     '1.3"',
     '1.4"',
@@ -281,7 +281,7 @@ const optionValuePresets: Record<string, string[]> = {
     '100"',
   ],
 
-  size: [
+ size: [
     "XXXS",
     "XXS",
     "XS",
@@ -322,7 +322,7 @@ const optionValuePresets: Record<string, string[]> = {
     "100m",
   ],
 
-  capacity: [
+ capacity: [
     "50mAh",
     "100mAh",
     "200mAh",
@@ -363,7 +363,7 @@ const optionValuePresets: Record<string, string[]> = {
     "20L",
   ],
 
-  connectivity: [
+ connectivity: [
     "Wi-Fi",
     "Wi-Fi 4",
     "Wi-Fi 5",
@@ -432,7 +432,7 @@ const optionValuePresets: Record<string, string[]> = {
     "LoRaWAN",
   ],
 
-  material: [
+ material: [
     "Plastic",
     "Recycled Plastic",
     "Polycarbonate",
@@ -469,7 +469,7 @@ const optionValuePresets: Record<string, string[]> = {
     "Brass",
   ],
 
-  generation: [
+ generation: [
     "1st Generation",
     "2nd Generation",
     "3rd Generation",
@@ -502,7 +502,7 @@ const optionValuePresets: Record<string, string[]> = {
     "Gen 10",
   ],
 
-  band_size: [
+ band_size: [
     "XS",
     "S",
     "S/M",
@@ -526,7 +526,7 @@ const optionValuePresets: Record<string, string[]> = {
     "250mm",
   ],
 
-  case_size: [
+ case_size: [
     "20mm",
     "22mm",
     "24mm",
@@ -552,321 +552,321 @@ const optionValuePresets: Record<string, string[]> = {
     "52mm",
   ],
 
-  model: [],
+ model: [],
 };
 
 function presetsForLevel(level: OptionLevel) {
-  const key = normalizeKey(level.label || level.key);
+ const key = normalizeKey(level.label || level.key);
 
-  return optionValuePresets[key] ?? [];
+ return optionValuePresets[key] ?? [];
 }
 
 function SearchableOptionValuePicker({
-  level,
-  onChange,
+ level,
+ onChange,
 }: {
-  level: OptionLevel;
-  onChange: (values: string[]) => void;
+ level: OptionLevel;
+ onChange: (values: string[]) => void;
 }) {
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
+ const triggerRef = useRef<HTMLButtonElement>(null);
+ const dropdownRef = useRef<HTMLDivElement>(null);
+ const searchRef = useRef<HTMLInputElement>(null);
 
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const [position, setPosition] = useState({
-    top: 0,
-    left: 0,
-    width: 390,
+ const [query, setQuery] = useState("");
+ const [open, setOpen] = useState(false);
+ const [mounted, setMounted] = useState(false);
+ const [activeIndex, setActiveIndex] = useState(-1);
+ const [position, setPosition] = useState({
+ top: 0,
+ left: 0,
+ width: 390,
   });
 
-  const selected = uniqueValues(level.values.map(clean).filter(Boolean));
-  const presets = presetsForLevel(level);
+ const selected = uniqueValues(level.values.map(clean).filter(Boolean));
+ const presets = presetsForLevel(level);
 
-  const cleanQuery = clean(query);
-  const normalizedQuery = optionIdentity(cleanQuery);
+ const cleanQuery = clean(query);
+ const normalizedQuery = optionIdentity(cleanQuery);
 
-  const allValues = useMemo(
+ const allValues = useMemo(
     () => uniqueValues([...selected, ...presets]),
-    [selected, presets],
+ [selected, presets],
   );
 
-  const filteredValues = useMemo(() => {
-    if (!normalizedQuery) {
-      return allValues;
+ const filteredValues = useMemo(() => {
+ if (!normalizedQuery) {
+ return allValues;
     }
 
-    return allValues.filter((value) =>
-      optionIdentity(value).includes(normalizedQuery),
+ return allValues.filter((value) =>
+ optionIdentity(value).includes(normalizedQuery),
     );
   }, [allValues, normalizedQuery]);
 
-  const exactMatch = normalizedQuery
+ const exactMatch = normalizedQuery
     ? (allValues.find((value) => optionIdentity(value) === normalizedQuery) ??
-      null)
+ null)
     : null;
 
-  const canCreate = Boolean(cleanQuery && !exactMatch);
+ const canCreate = Boolean(cleanQuery && !exactMatch);
 
-  useEffect(() => {
-    setMounted(true);
+ useEffect(() => {
+ setMounted(true);
   }, []);
 
-  function isSelected(value: string) {
-    return selected.some(
+ function isSelected(value: string) {
+ return selected.some(
       (selectedValue) =>
-        optionIdentity(selectedValue) === optionIdentity(value),
+ optionIdentity(selectedValue) === optionIdentity(value),
     );
   }
 
-  function updatePosition() {
-    const trigger = triggerRef.current;
+ function updatePosition() {
+ const trigger = triggerRef.current;
 
-    if (!trigger) {
-      return;
+ if (!trigger) {
+ return;
     }
 
-    const rect = trigger.getBoundingClientRect();
+ const rect = trigger.getBoundingClientRect();
 
-    const viewportPadding = 16;
-    const desiredWidth = Math.max(rect.width, 390);
-    const maximumWidth = Math.min(desiredWidth, window.innerWidth - 32);
+ const viewportPadding = 16;
+ const desiredWidth = Math.max(rect.width, 390);
+ const maximumWidth = Math.min(desiredWidth, window.innerWidth - 32);
 
-    let left = rect.left;
+ let left = rect.left;
 
-    if (left + maximumWidth > window.innerWidth - viewportPadding) {
-      left = window.innerWidth - maximumWidth - viewportPadding;
+ if (left + maximumWidth > window.innerWidth - viewportPadding) {
+ left = window.innerWidth - maximumWidth - viewportPadding;
     }
 
-    if (left < viewportPadding) {
-      left = viewportPadding;
+ if (left < viewportPadding) {
+ left = viewportPadding;
     }
 
-    setPosition({
-      top: rect.bottom + 8,
-      left,
-      width: maximumWidth,
+ setPosition({
+ top: rect.bottom + 8,
+ left,
+ width: maximumWidth,
     });
   }
 
-  useLayoutEffect(() => {
-    if (!open) {
-      return;
+ useLayoutEffect(() => {
+ if (!open) {
+ return;
     }
 
-    updatePosition();
+ updatePosition();
 
-    const handleViewportChange = () => updatePosition();
+ const handleViewportChange = () => updatePosition();
 
-    window.addEventListener("resize", handleViewportChange);
-    window.addEventListener("scroll", handleViewportChange, true);
+ window.addEventListener("resize", handleViewportChange);
+ window.addEventListener("scroll", handleViewportChange, true);
 
-    return () => {
-      window.removeEventListener("resize", handleViewportChange);
-      window.removeEventListener("scroll", handleViewportChange, true);
+ return () => {
+ window.removeEventListener("resize", handleViewportChange);
+ window.removeEventListener("scroll", handleViewportChange, true);
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) {
-      return;
+ useEffect(() => {
+ if (!open) {
+ return;
     }
 
-    const timeout = window.setTimeout(() => {
-      searchRef.current?.focus();
+ const timeout = window.setTimeout(() => {
+ searchRef.current?.focus();
     }, 30);
 
-    function handlePointerDown(event: MouseEvent) {
-      const target = event.target as Node;
+ function handlePointerDown(event: MouseEvent) {
+ const target = event.target as Node;
 
-      if (
-        triggerRef.current?.contains(target) ||
-        dropdownRef.current?.contains(target)
+ if (
+ triggerRef.current?.contains(target) ||
+ dropdownRef.current?.contains(target)
       ) {
-        return;
+ return;
       }
 
-      setOpen(false);
-      setActiveIndex(-1);
+ setOpen(false);
+ setActiveIndex(-1);
     }
 
-    function handleEscape(event: globalThis.KeyboardEvent) {
-      if (event.key !== "Escape") {
-        return;
+ function handleEscape(event: globalThis.KeyboardEvent) {
+ if (event.key !== "Escape") {
+ return;
       }
 
-      setOpen(false);
-      setActiveIndex(-1);
-      triggerRef.current?.focus();
+ setOpen(false);
+ setActiveIndex(-1);
+ triggerRef.current?.focus();
     }
 
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleEscape);
+ document.addEventListener("mousedown", handlePointerDown);
+ document.addEventListener("keydown", handleEscape);
 
-    return () => {
-      window.clearTimeout(timeout);
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleEscape);
+ return () => {
+ window.clearTimeout(timeout);
+ document.removeEventListener("mousedown", handlePointerDown);
+ document.removeEventListener("keydown", handleEscape);
     };
   }, [open]);
 
-  useEffect(() => {
-    setActiveIndex(-1);
+ useEffect(() => {
+ setActiveIndex(-1);
   }, [normalizedQuery]);
 
-  function toggleValue(value: string) {
-    if (isSelected(value)) {
-      onChange(
-        selected.filter(
+ function toggleValue(value: string) {
+ if (isSelected(value)) {
+ onChange(
+ selected.filter(
           (selectedValue) =>
-            optionIdentity(selectedValue) !== optionIdentity(value),
+ optionIdentity(selectedValue) !== optionIdentity(value),
         ),
       );
     } else {
-      onChange(uniqueValues([...selected, value]));
+ onChange(uniqueValues([...selected, value]));
     }
 
     /*
      * Unlike Brand, keep the directory open because this is
      * intentionally a multi-select control.
      */
-    setQuery("");
-    setActiveIndex(-1);
+ setQuery("");
+ setActiveIndex(-1);
 
-    requestAnimationFrame(() => {
-      searchRef.current?.focus();
+ requestAnimationFrame(() => {
+ searchRef.current?.focus();
     });
   }
 
-  function createRequestedValue() {
-    const requestedValue = cleanQuery;
+ function createRequestedValue() {
+ const requestedValue = cleanQuery;
 
-    if (!requestedValue) {
-      return;
+ if (!requestedValue) {
+ return;
     }
 
-    const existing =
-      allValues.find(
+ const existing =
+ allValues.find(
         (value) => optionIdentity(value) === optionIdentity(requestedValue),
       ) ?? null;
 
-    if (existing) {
-      if (!isSelected(existing)) {
-        onChange(uniqueValues([...selected, existing]));
+ if (existing) {
+ if (!isSelected(existing)) {
+ onChange(uniqueValues([...selected, existing]));
       }
     } else {
-      onChange(uniqueValues([...selected, requestedValue]));
+ onChange(uniqueValues([...selected, requestedValue]));
     }
 
-    setQuery("");
-    setActiveIndex(-1);
+ setQuery("");
+ setActiveIndex(-1);
 
-    requestAnimationFrame(() => {
-      searchRef.current?.focus();
+ requestAnimationFrame(() => {
+ searchRef.current?.focus();
     });
   }
 
-  function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
+ function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+ if (event.key === "ArrowDown") {
+ event.preventDefault();
 
-      if (filteredValues.length === 0) {
-        return;
+ if (filteredValues.length === 0) {
+ return;
       }
 
-      setActiveIndex((current) =>
-        current < filteredValues.length - 1 ? current + 1 : 0,
+ setActiveIndex((current) =>
+ current < filteredValues.length - 1 ? current + 1 : 0,
       );
 
-      return;
+ return;
     }
 
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
+ if (event.key === "ArrowUp") {
+ event.preventDefault();
 
-      if (filteredValues.length === 0) {
-        return;
+ if (filteredValues.length === 0) {
+ return;
       }
 
-      setActiveIndex((current) =>
-        current > 0 ? current - 1 : filteredValues.length - 1,
+ setActiveIndex((current) =>
+ current > 0 ? current - 1 : filteredValues.length - 1,
       );
 
-      return;
+ return;
     }
 
-    if (event.key === "Enter") {
-      event.preventDefault();
+ if (event.key === "Enter") {
+ event.preventDefault();
 
-      if (activeIndex >= 0 && filteredValues[activeIndex]) {
-        toggleValue(filteredValues[activeIndex]);
-        return;
+ if (activeIndex >= 0 && filteredValues[activeIndex]) {
+ toggleValue(filteredValues[activeIndex]);
+ return;
       }
 
-      if (filteredValues.length === 1) {
-        toggleValue(filteredValues[0]);
-        return;
+ if (filteredValues.length === 1) {
+ toggleValue(filteredValues[0]);
+ return;
       }
 
-      if (canCreate) {
-        createRequestedValue();
+ if (canCreate) {
+ createRequestedValue();
       }
     }
   }
 
-  const dropdown =
-    mounted && open
+ const dropdown =
+ mounted && open
       ? createPortal(
           <div
-            ref={dropdownRef}
-            className="st-admin-option-directory-v2 fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
-            style={{
-              top: position.top,
-              left: position.left,
-              width: position.width,
+ ref={dropdownRef}
+ className="st-admin-option-directory-v2 fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
+ style={{
+ top: position.top,
+ left: position.left,
+ width: position.width,
             }}
-            role="dialog"
-            aria-label={`Choose ${level.label}`}
+ role="dialog"
+ aria-label={`Choose ${level.label}`}
           >
             <div className="border-b border-black/[0.07] p-3">
-              <div className="st-admin-option-directory-search-v2 st-admin-search-shell-v44-4 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
+              <div className="st-admin-option-directory-search-v2 st-admin-search-shell-v44-4 st-admin-option-search-shell-v54 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
                 <Search className="h-[17px] w-[17px] shrink-0 text-black/42" />
 
                 <input
-                  ref={searchRef}
-                  value={query}
-                  onChange={(event) => {
-                    setQuery(event.target.value);
+ ref={searchRef}
+ value={query}
+ onChange={(event) => {
+ setQuery(event.target.value);
                   }}
-                  onKeyDown={handleSearchKeyDown}
-                  placeholder={`Search ${level.label.toLowerCase()}...`}
-                  autoComplete="off"
-                  className="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-[14px] font-medium text-[#1d1d1f] outline-none ring-0 shadow-none placeholder:text-black/35 focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none st-admin-product-brand-picker__search-input"
-                  aria-label={`Search ${level.label}`}
-                  role="combobox"
-                  aria-expanded="true"
-                  aria-autocomplete="list"
+ onKeyDown={handleSearchKeyDown}
+ placeholder={`Search ${level.label.toLowerCase()}...`}
+ autoComplete="off"
+ className="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-[14px] font-medium text-[#1d1d1f] outline-none ring-0 shadow-none placeholder:text-black/35 focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none st-admin-product-brand-picker__search-input"
+ aria-label={`Search ${level.label}`}
+ role="combobox"
+ aria-expanded="true"
+ aria-autocomplete="list"
                 />
                 {query ? (
                   <button
-                    type="button"
-                    onClick={() => {
-                      setQuery("");
-                      setActiveIndex(-1);
+ type="button"
+ onClick={() => {
+ setQuery("");
+ setActiveIndex(-1);
 
-                      requestAnimationFrame(() => {
-                        searchRef.current?.focus();
+ requestAnimationFrame(() => {
+ searchRef.current?.focus();
                       });
                     }}
-                    className="st-admin-search-clear-v47"
-                    aria-label={`Clear ${level.label} search`}
+ className="st-admin-search-clear-v47"
+ aria-label={`Clear ${level.label} search`}
                   >
                     <X
-                      className="h-3.5 w-3.5"
-                      strokeWidth={1.8}
-                      aria-hidden="true"
+ className="h-3.5 w-3.5"
+ strokeWidth={1.8}
+ aria-hidden="true"
                     />
                   </button>
                 ) : null}
@@ -887,24 +887,24 @@ function SearchableOptionValuePicker({
             <div className="max-h-[330px] overflow-y-auto overscroll-contain p-2">
               {filteredValues.length > 0 ? (
                 <div
-                  role="listbox"
-                  aria-label={`Available ${level.label}`}
-                  aria-multiselectable="true"
+ role="listbox"
+ aria-label={`Available ${level.label}`}
+ aria-multiselectable="true"
                 >
                   {filteredValues.map((value, index) => {
-                    const selectedValue = isSelected(value);
-                    const active = index === activeIndex;
+ const selectedValue = isSelected(value);
+ const active = index === activeIndex;
 
-                    return (
+ return (
                       <button
-                        key={value}
-                        type="button"
-                        role="option"
-                        aria-selected={selectedValue}
-                        onMouseEnter={() => setActiveIndex(index)}
-                        onClick={() => toggleValue(value)}
-                        className={`mb-1 flex min-h-[46px] w-full items-center justify-between gap-4 rounded-[12px] px-3.5 text-left transition ${
-                          selectedValue
+ key={value}
+ type="button"
+ role="option"
+ aria-selected={selectedValue}
+ onMouseEnter={() => setActiveIndex(index)}
+ onClick={() => toggleValue(value)}
+ className={`mb-1 flex min-h-[46px] w-full items-center justify-between gap-4 rounded-[12px] px-3.5 text-left transition ${
+ selectedValue
                             ? "st-admin-option-directory-selected-v2"
                             : active
                               ? "bg-black/[0.045] text-black"
@@ -921,7 +921,7 @@ function SearchableOptionValuePicker({
                           </span>
                         ) : (
                           <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-black/22">
-                            Select
+ Select
                           </span>
                         )}
                       </button>
@@ -933,11 +933,11 @@ function SearchableOptionValuePicker({
                   <Search className="mx-auto h-5 w-5 text-black/20" />
 
                   <p className="mt-3 text-[13px] font-semibold text-black/65">
-                    No matching {level.label.toLowerCase()}
+ No matching {level.label.toLowerCase()}
                   </p>
 
                   <p className="mt-1 text-[12px] leading-5 text-black/40">
-                    You can add this choice without leaving the product.
+ You can add this choice without leaving the product.
                   </p>
                 </div>
               )}
@@ -946,9 +946,9 @@ function SearchableOptionValuePicker({
             {canCreate ? (
               <div className="st-admin-picker-create-footer-v40">
                 <button
-                  type="button"
-                  onClick={createRequestedValue}
-                  className="st-admin-picker-create-action-v40"
+ type="button"
+ onClick={createRequestedValue}
+ className="st-admin-picker-create-action-v40"
                 >
                   <span className="st-admin-picker-create-content-v40">
                     <span className="st-admin-picker-create-icon-v40">
@@ -964,30 +964,30 @@ function SearchableOptionValuePicker({
               </div>
             ) : null}
           </div>,
-          document.body,
+ document.body,
         )
       : null;
 
-  return (
+ return (
     <div className="st-admin-option-value-picker-v2 relative w-full">
       <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => {
-          setOpen((current) => !current);
+ ref={triggerRef}
+ type="button"
+ onClick={() => {
+ setOpen((current) => !current);
 
-          if (!open) {
-            requestAnimationFrame(updatePosition);
+ if (!open) {
+ requestAnimationFrame(updatePosition);
           }
         }}
-        className="st-admin-option-value-trigger-final"
-        aria-haspopup="listbox"
-        aria-expanded={open}
+ className="st-admin-option-value-trigger-final"
+ aria-haspopup="listbox"
+ aria-expanded={open}
       >
         <span className="flex min-w-0 items-center gap-3">
           <span
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
-              open
+ className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
+ open
                 ? "bg-[#fdb73e] text-black"
                 : "bg-white/[0.07] text-white/55 group-hover:bg-white/[0.10] group-hover:text-white/75"
             }`}
@@ -997,16 +997,16 @@ function SearchableOptionValuePicker({
 
           <span className="min-w-0">
             <small
-              className={`block text-[9px] font-semibold uppercase tracking-[0.17em] transition ${
-                open ? "text-black/38" : "text-white/28"
+ className={`block text-[9px] font-semibold uppercase tracking-[0.17em] transition ${
+ open ? "text-black/38" : "text-white/28"
               }`}
             >
               {level.label}
             </small>
 
             <strong
-              className={`mt-0.5 block truncate text-[13px] font-semibold ${
-                open
+ className={`mt-0.5 block truncate text-[13px] font-semibold ${
+ open
                   ? "text-[#1d1d1f]"
                   : selected.length
                     ? "text-white"
@@ -1015,7 +1015,7 @@ function SearchableOptionValuePicker({
             >
               {selected.length
                 ? `${selected.length} ${
-                    selected.length === 1 ? "choice" : "choices"
+ selected.length === 1 ? "choice" : "choices"
                   } selected`
                 : `Select ${level.label.toLowerCase()}`}
             </strong>
@@ -1023,8 +1023,8 @@ function SearchableOptionValuePicker({
         </span>
 
         <ChevronDown
-          className={`h-4 w-4 shrink-0 transition duration-200 ${
-            open
+ className={`h-4 w-4 shrink-0 transition duration-200 ${
+ open
               ? "rotate-180 text-[#9a6500]"
               : "text-white/38 group-hover:text-white/65"
           }`}
@@ -1035,18 +1035,18 @@ function SearchableOptionValuePicker({
         <div className="st-admin-option-selected-values-v2">
           {selected.map((value) => (
             <span
-              key={value}
-              className="st-admin-option-selected-chip-v2"
+ key={value}
+ className="st-admin-option-selected-chip-v2"
             >
               <span className="st-admin-option-selected-chip-v2__label">
                 {value}
               </span>
 
               <button
-                type="button"
-                onClick={() => toggleValue(value)}
-                className="st-admin-option-selected-chip-v2__remove"
-                aria-label={`Remove ${value}`}
+ type="button"
+ onClick={() => toggleValue(value)}
+ className="st-admin-option-selected-chip-v2__remove"
+ aria-label={`Remove ${value}`}
               >
                 <X />
               </button>
@@ -1060,16 +1060,243 @@ function SearchableOptionValuePicker({
   );
 }
 
-function isPresetHierarchyLabel(value: string) {
-  const normalized = clean(value).toLowerCase();
 
-  return hierarchyPresetLabels.some(
+function OptionNamePicker({
+  value,
+  onChange,
+  placeholder = "Add product option...",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState({
+    top: 0,
+    left: 0,
+    width: 220,
+  });
+
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const preset =
+    hierarchyPresetLabels.find(
+      (label) => optionIdentity(label) === optionIdentity(value),
+    ) ?? "";
+
+  const customSelected =
+    Boolean(clean(value)) && !preset;
+
+  function updatePosition() {
+    const trigger = triggerRef.current;
+
+    if (!trigger) {
+      return;
+    }
+
+    const rect = trigger.getBoundingClientRect();
+    const viewportPadding = 12;
+    const preferredWidth = Math.max(rect.width, 220);
+    const width = Math.min(
+      preferredWidth,
+      window.innerWidth - viewportPadding * 2,
+    );
+
+    const left = Math.min(
+      Math.max(viewportPadding, rect.left),
+      Math.max(
+        viewportPadding,
+        window.innerWidth - width - viewportPadding,
+      ),
+    );
+
+    setPosition({
+      top: rect.bottom + 6,
+      left,
+      width,
+    });
+  }
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    updatePosition();
+
+    function handleViewportChange() {
+      updatePosition();
+    }
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as Node;
+
+      if (
+        triggerRef.current?.contains(target) ||
+        dropdownRef.current?.contains(target)
+      ) {
+        return;
+      }
+
+      setOpen(false);
+    }
+
+    function handleEscape(event: globalThis.KeyboardEvent) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      setOpen(false);
+      triggerRef.current?.focus();
+    }
+
+    window.addEventListener("resize", handleViewportChange);
+    window.addEventListener("scroll", handleViewportChange, true);
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("scroll", handleViewportChange, true);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
+
+  function choose(nextValue: string) {
+    onChange(nextValue);
+    setOpen(false);
+
+    requestAnimationFrame(() => {
+      triggerRef.current?.focus();
+    });
+  }
+
+  const displayValue =
+    preset ||
+    (customSelected ? "Custom option" : "") ||
+    placeholder;
+
+  const dropdown =
+    mounted && open
+      ? createPortal(
+          <div
+            ref={dropdownRef}
+            className="st-admin-option-name-directory-final"
+            style={{
+              top: position.top,
+              left: position.left,
+              width: position.width,
+            }}
+            role="listbox"
+            aria-label="Choose product option"
+          >
+            <div className="st-admin-option-name-directory-final__list">
+              {hierarchyPresetLabels.map((label) => {
+                const selected =
+                  optionIdentity(label) === optionIdentity(preset);
+
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    className="st-admin-option-name-directory-final__option"
+                    onClick={() => choose(label)}
+                  >
+                    <span>{label}</span>
+
+                    {selected ? (
+                      <Check
+                        className="h-3.5 w-3.5"
+                        strokeWidth={2.5}
+                      />
+                    ) : null}
+                  </button>
+                );
+              })}
+
+              <div className="st-admin-option-name-directory-final__separator" />
+
+              <button
+                type="button"
+                role="option"
+                aria-selected={customSelected}
+                className="st-admin-option-name-directory-final__option"
+                onClick={() => choose("__custom__")}
+              >
+                <span>Custom option</span>
+
+                {customSelected ? (
+                  <Check
+                    className="h-3.5 w-3.5"
+                    strokeWidth={2.5}
+                  />
+                ) : null}
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="st-admin-option-name-trigger-final"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => {
+          setOpen((current) => !current);
+
+          if (!open) {
+            requestAnimationFrame(updatePosition);
+          }
+        }}
+      >
+        <span
+          className={
+            clean(value)
+              ? "st-admin-option-name-trigger-final__value"
+              : "st-admin-option-name-trigger-final__placeholder"
+          }
+        >
+          {displayValue}
+        </span>
+
+        <ChevronDown
+          className={
+            open
+              ? "st-admin-option-name-trigger-final__chevron is-open"
+              : "st-admin-option-name-trigger-final__chevron"
+          }
+        />
+      </button>
+
+      {dropdown}
+    </>
+  );
+}
+
+function isPresetHierarchyLabel(value: string) {
+ const normalized = clean(value).toLowerCase();
+
+ return hierarchyPresetLabels.some(
     (label) => label.toLowerCase() === normalized,
   );
 }
 
 const hiddenSelectorKeys = new Set([
-  configurationHierarchyKey,
+ configurationHierarchyKey,
   "color_hex",
   "colour_hex",
   "color_name",
@@ -1096,11 +1323,11 @@ const preferredAttributeOrder = [
 ];
 
 function clean(value: unknown) {
-  return String(value ?? "").trim();
+ return String(value ?? "").trim();
 }
 
 function normalizeKey(value: string) {
-  return value
+ return value
     .trim()
     .toLowerCase()
     .replace(/&/g, "and")
@@ -1109,158 +1336,158 @@ function normalizeKey(value: string) {
 }
 
 function humanizeKey(value: string) {
-  return value
+ return value
     .replace(/_/g, " ")
     .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function optionIdentity(value: string) {
-  return clean(value).toLowerCase();
+ return clean(value).toLowerCase();
 }
 
 function uniqueValues(values: string[]) {
-  const seen = new Set<string>();
+ const seen = new Set<string>();
 
-  return values.filter((value) => {
-    const normalized = optionIdentity(value);
+ return values.filter((value) => {
+ const normalized = optionIdentity(value);
 
-    if (!normalized || seen.has(normalized)) {
-      return false;
+ if (!normalized || seen.has(normalized)) {
+ return false;
     }
 
-    seen.add(normalized);
-    return true;
+ seen.add(normalized);
+ return true;
   });
 }
 
 function selectorKeysFromVariants(variants: AdminElectronicsVariant[]) {
-  const found: string[] = [];
+ const found: string[] = [];
 
-  for (const variant of variants) {
-    for (const key of Object.keys(variant.attributes ?? {})) {
-      const normalized = normalizeKey(key);
+ for (const variant of variants) {
+ for (const key of Object.keys(variant.attributes ?? {})) {
+ const normalized = normalizeKey(key);
 
-      if (
+ if (
         !normalized ||
-        hiddenSelectorKeys.has(normalized) ||
-        found.includes(normalized)
+ hiddenSelectorKeys.has(normalized) ||
+ found.includes(normalized)
       ) {
-        continue;
+ continue;
       }
 
-      found.push(normalized);
+ found.push(normalized);
     }
   }
 
-  return found.sort((first, second) => {
-    const firstPriority = preferredAttributeOrder.indexOf(first);
-    const secondPriority = preferredAttributeOrder.indexOf(second);
+ return found.sort((first, second) => {
+ const firstPriority = preferredAttributeOrder.indexOf(first);
+ const secondPriority = preferredAttributeOrder.indexOf(second);
 
-    const firstRank =
-      firstPriority === -1 ? Number.MAX_SAFE_INTEGER : firstPriority;
-    const secondRank =
-      secondPriority === -1 ? Number.MAX_SAFE_INTEGER : secondPriority;
+ const firstRank =
+ firstPriority === -1 ? Number.MAX_SAFE_INTEGER : firstPriority;
+ const secondRank =
+ secondPriority === -1 ? Number.MAX_SAFE_INTEGER : secondPriority;
 
-    if (firstRank !== secondRank) {
-      return firstRank - secondRank;
+ if (firstRank !== secondRank) {
+ return firstRank - secondRank;
     }
 
-    return found.indexOf(first) - found.indexOf(second);
+ return found.indexOf(first) - found.indexOf(second);
   });
 }
 
 function persistedHierarchyKeys(variants: AdminElectronicsVariant[]) {
-  for (const variant of variants) {
-    const raw = clean(variant.attributes?.[configurationHierarchyKey]);
+ for (const variant of variants) {
+ const raw = clean(variant.attributes?.[configurationHierarchyKey]);
 
-    if (!raw) {
-      continue;
+ if (!raw) {
+ continue;
     }
 
-    try {
-      const parsed = JSON.parse(raw);
+ try {
+ const parsed = JSON.parse(raw);
 
-      if (!Array.isArray(parsed)) {
-        continue;
+ if (!Array.isArray(parsed)) {
+ continue;
       }
 
-      const keys = parsed
+ const keys = parsed
         .map((value) => normalizeKey(String(value ?? "")))
         .filter(
           (key, index, allKeys) =>
-            Boolean(key) &&
+ Boolean(key) &&
             !hiddenSelectorKeys.has(key) &&
-            allKeys.indexOf(key) === index,
+ allKeys.indexOf(key) === index,
         );
 
-      if (keys.length > 0) {
-        return keys;
+ if (keys.length > 0) {
+ return keys;
       }
     } catch {
       // Legacy products fall back to inferred configuration keys.
     }
   }
 
-  return [];
+ return [];
 }
 
 function hierarchyMetadata(levels: OptionLevel[]) {
-  return JSON.stringify(levels.map((level) => level.key));
+ return JSON.stringify(levels.map((level) => level.key));
 }
 
 function levelsFromVariants(
-  variants: AdminElectronicsVariant[],
+ variants: AdminElectronicsVariant[],
 ): OptionLevel[] {
-  const persisted = persistedHierarchyKeys(variants);
+ const persisted = persistedHierarchyKeys(variants);
 
-  const keys =
-    persisted.length > 0 ? persisted : selectorKeysFromVariants(variants);
+ const keys =
+ persisted.length > 0 ? persisted : selectorKeysFromVariants(variants);
 
-  return keys.map((key) => {
-    const normalizedKey = normalizeKey(key);
+ return keys.map((key) => {
+ const normalizedKey = normalizeKey(key);
 
-    const values = uniqueValues(
-      variants
+ const values = uniqueValues(
+ variants
         .map((variant) => clean(variant.attributes?.[key]))
         .filter(Boolean),
     );
 
-    const colorHexByValue =
-      normalizedKey === "color" || normalizedKey === "colour"
+ const colorHexByValue =
+ normalizedKey === "color" || normalizedKey === "colour"
         ? Object.fromEntries(
-            variants.flatMap((variant) => {
-              const colorName = clean(variant.attributes?.[key]);
+ variants.flatMap((variant) => {
+ const colorName = clean(variant.attributes?.[key]);
 
-              if (!colorName) {
-                return [];
+ if (!colorName) {
+ return [];
               }
 
-              const colorHex = clean(
-                variant.attributes?.color_hex ??
-                  variant.attributes?.colour_hex ??
-                  variant.attributes?.swatch_hex ??
-                  variant.attributes?.hex,
+ const colorHex = clean(
+ variant.attributes?.color_hex ??
+ variant.attributes?.colour_hex ??
+ variant.attributes?.swatch_hex ??
+ variant.attributes?.hex,
               );
 
-              if (
+ if (
                 !/^#[0-9a-f]{6}$/i.test(colorHex) &&
                 !/^#[0-9a-f]{3}$/i.test(colorHex)
               ) {
-                return [];
+ return [];
               }
 
-              return [[colorName, colorHex.toUpperCase()] as const];
+ return [[colorName, colorHex.toUpperCase()] as const];
             }),
           )
         : undefined;
 
-    return {
-      id: crypto.randomUUID(),
-      key,
-      label: humanizeKey(key),
-      values,
+ return {
+ id: crypto.randomUUID(),
+ key,
+ label: humanizeKey(key),
+ values,
       ...(colorHexByValue &&
-      Object.keys(colorHexByValue).length > 0
+ Object.keys(colorHexByValue).length > 0
         ? { colorHexByValue }
         : {}),
     };
@@ -1268,10 +1495,10 @@ function levelsFromVariants(
 }
 
 function combinationKey(
-  attributes: Record<string, string>,
-  levels: OptionLevel[],
+ attributes: Record<string, string>,
+ levels: OptionLevel[],
 ) {
-  return levels
+ return levels
     .map(
       (level) => `${level.key}:${optionIdentity(attributes[level.key] ?? "")}`,
     )
@@ -1279,129 +1506,129 @@ function combinationKey(
 }
 
 function cartesianProduct(levels: OptionLevel[]) {
-  if (levels.length === 0) {
-    return [] as Record<string, string>[];
+ if (levels.length === 0) {
+ return [] as Record<string, string>[];
   }
 
-  let combinations: Record<string, string>[] = [{}];
+ let combinations: Record<string, string>[] = [{}];
 
-  for (const level of levels) {
-    const values = uniqueValues(level.values.map(clean).filter(Boolean));
+ for (const level of levels) {
+ const values = uniqueValues(level.values.map(clean).filter(Boolean));
 
-    if (values.length === 0) {
-      return [];
+ if (values.length === 0) {
+ return [];
     }
 
-    combinations = combinations.flatMap((combination) =>
-      values.map((value) => ({
+ combinations = combinations.flatMap((combination) =>
+ values.map((value) => ({
         ...combination,
-        [level.key]: value,
+ [level.key]: value,
       })),
     );
   }
 
-  return combinations;
+ return combinations;
 }
 
 function optionLevelColorHex(
-  level: OptionLevel,
-  value: string,
+ level: OptionLevel,
+ value: string,
 ) {
-  const wanted = optionIdentity(value);
+ const wanted = optionIdentity(value);
 
-  for (const [colorName, hex] of Object.entries(
-    level.colorHexByValue ?? {},
+ for (const [colorName, hex] of Object.entries(
+ level.colorHexByValue ?? {},
   )) {
-    if (optionIdentity(colorName) !== wanted) {
-      continue;
+ if (optionIdentity(colorName) !== wanted) {
+ continue;
     }
 
-    const normalizedHex = clean(hex);
+ const normalizedHex = clean(hex);
 
-    if (
+ if (
       /^#[0-9a-f]{6}$/i.test(normalizedHex) ||
       /^#[0-9a-f]{3}$/i.test(normalizedHex)
     ) {
-      return normalizedHex.toUpperCase();
+ return normalizedHex.toUpperCase();
     }
   }
 
-  return null;
+ return null;
 }
 
 function attributesWithColorHex(
-  attributes: Record<string, string>,
-  levels: OptionLevel[],
+ attributes: Record<string, string>,
+ levels: OptionLevel[],
 ) {
-  const next = {
+ const next = {
     ...attributes,
   };
 
-  const colorLevel = levels.find((level) => {
-    const normalizedKey = normalizeKey(
-      level.label || level.key,
+ const colorLevel = levels.find((level) => {
+ const normalizedKey = normalizeKey(
+ level.label || level.key,
     );
 
-    return (
-      normalizedKey === "color" ||
-      normalizedKey === "colour"
+ return (
+ normalizedKey === "color" ||
+ normalizedKey === "colour"
     );
   });
 
-  if (!colorLevel) {
-    return next;
+ if (!colorLevel) {
+ return next;
   }
 
-  const colorKey = normalizeKey(
-    colorLevel.label || colorLevel.key,
+ const colorKey = normalizeKey(
+ colorLevel.label || colorLevel.key,
   );
 
-  const colorName = clean(next[colorKey]);
+ const colorName = clean(next[colorKey]);
 
-  if (!colorName) {
-    return next;
+ if (!colorName) {
+ return next;
   }
 
-  const colorHex = optionLevelColorHex(
-    colorLevel,
-    colorName,
+ const colorHex = optionLevelColorHex(
+ colorLevel,
+ colorName,
   );
 
-  if (colorHex) {
-    next.color_hex = colorHex;
+ if (colorHex) {
+ next.color_hex = colorHex;
   }
 
-  return next;
+ return next;
 }
 
 function generatedName(
-  attributes: Record<string, string>,
-  levels: OptionLevel[],
+ attributes: Record<string, string>,
+ levels: OptionLevel[],
 ) {
-  return levels
+ return levels
     .map((level) => clean(attributes[level.key]))
     .filter(Boolean)
     .join(" / ");
 }
 
 function defaultVariant(
-  attributes: Record<string, string>,
-  levels: OptionLevel[],
-  position: number,
+ attributes: Record<string, string>,
+ levels: OptionLevel[],
+ position: number,
 ): AdminElectronicsVariant {
-  return {
-    clientId: crypto.randomUUID(),
-    id: null,
-    variant_name:
-      generatedName(attributes, levels) || `Configuration ${position + 1}`,
-    display_position: position,
-    attributes,
-    sku: "",
-    regular_price: "",
-    sale_price: "",
-    stock_quantity: 0,
-    low_stock_threshold: 2,
-    availability_status: "in_stock",
+ return {
+ clientId: crypto.randomUUID(),
+ id: null,
+ variant_name:
+ generatedName(attributes, levels) || `Configuration ${position + 1}`,
+ display_position: position,
+ attributes,
+ sku: "",
+ regular_price: "",
+ sale_price: "",
+ stock_quantity: 0,
+ low_stock_threshold: 5,
+ availability_status: "in_stock",
   };
 }
 
@@ -1606,8 +1833,8 @@ const bulkTechnicalSpecificationSectionLabels = [
 ].sort((first, second) => second.length - first.length);
 
 function cleanClipboardSpecificationText(value: unknown) {
-  return (
-    String(value ?? "")
+ return (
+ String(value ?? "")
       .replace(/\u00a0/g, " ")
       /*
        * Google AI Mode citation/reference markers.
@@ -1628,11 +1855,11 @@ function cleanClipboardSpecificationText(value: unknown) {
 }
 
 function escapeSpecificationRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+ return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function specificationLabelIdentity(value: string) {
-  return cleanClipboardSpecificationText(value)
+ return cleanClipboardSpecificationText(value)
     .replace(/[:\-–—]+$/g, "")
     .replace(/[^a-zA-Z0-9]+/g, " ")
     .trim()
@@ -1640,45 +1867,45 @@ function specificationLabelIdentity(value: string) {
 }
 
 function looksLikeTechnicalSpecificationLabel(value: string) {
-  const label = cleanClipboardSpecificationText(value)
+ const label = cleanClipboardSpecificationText(value)
     .replace(/^[•●▪◦*\-–—\d.)\s]+/, "")
     .replace(/[:\-–—]+$/g, "")
     .trim();
 
-  if (!label || label.length > 80) {
-    return false;
+ if (!label || label.length > 80) {
+ return false;
   }
 
-  if (/^[\d.,%+*/()[\]{}]+$/.test(label)) {
-    return false;
+ if (/^[\d.,%+*/()[\]{}]+$/.test(label)) {
+ return false;
   }
 
-  const words = label.split(/\s+/).filter(Boolean);
+ const words = label.split(/\s+/).filter(Boolean);
 
-  if (words.length === 0 || words.length > 9) {
-    return false;
+ if (words.length === 0 || words.length > 9) {
+ return false;
   }
 
   /*
    * Product specification titles are normally concise noun phrases.
    * Avoid interpreting full prose sentences as labels.
    */
-  if (/[.!?]$/.test(label) || /[,;]{2,}/.test(label)) {
-    return false;
+ if (/[.!?]$/.test(label) || /[,;]{2,}/.test(label)) {
+ return false;
   }
 
-  const alphabeticCharacters = (label.match(/[A-Za-z]/g) ?? []).length;
+ const alphabeticCharacters = (label.match(/[A-Za-z]/g) ?? []).length;
 
-  if (alphabeticCharacters < 2) {
-    return false;
+ if (alphabeticCharacters < 2) {
+ return false;
   }
 
-  return true;
+ return true;
 }
 
 function cleanTechnicalSpecificationLine(value: string) {
-  return (
-    String(value ?? "")
+ return (
+ String(value ?? "")
       .replace(/\u00a0/g, " ")
       .replace(/[\u200B-\u200D\uFEFF]/g, "")
       .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
@@ -1691,7 +1918,7 @@ function cleanTechnicalSpecificationLine(value: string) {
        *
        * Spreadsheet/specification-table clipboard data frequently uses:
        *
-       *   Label<TAB>Value
+       * Label<TAB>Value
        *
        * Previously [ \t]+ collapsed those tabs into spaces before the parser
        * could inspect them.
@@ -1703,46 +1930,46 @@ function cleanTechnicalSpecificationLine(value: string) {
 }
 
 function isLikelySpecificationPageJunk(value: string) {
-  const text = cleanTechnicalSpecificationLine(value);
-  const normalized = text.toLocaleLowerCase();
+ const text = cleanTechnicalSpecificationLine(value);
+ const normalized = text.toLocaleLowerCase();
 
-  if (!normalized) {
-    return true;
+ if (!normalized) {
+ return true;
   }
 
-  if (/^(?:https?:\/\/|www\.)/i.test(text) || /^[€$£¥]\s*\d/.test(text)) {
-    return true;
+ if (/^(?:https?:\/\/|www\.)/i.test(text) || /^[€$£¥]\s*\d/.test(text)) {
+ return true;
   }
 
-  return /^(?:buy now|add to cart|add to basket|shop now|where to buy|compare|share|save|wishlist|sign in|log in|register|learn more|read more|see more|show more|show less|customer reviews?|ratings?|reviews?|frequently bought|sponsored|advertisement|related products?|similar products?|recommended products?|shipping|delivery|returns?|availability|in stock|out of stock|product description|overview|highlights?|key features?|specifications?|technical specifications?|specification details)$/i.test(
-    normalized,
+ return /^(?:buy now|add to cart|add to basket|shop now|where to buy|compare|share|save|wishlist|sign in|log in|register|learn more|read more|see more|show more|show less|customer reviews?|ratings?|reviews?|frequently bought|sponsored|advertisement|related products?|similar products?|recommended products?|shipping|delivery|returns?|availability|in stock|out of stock|product description|overview|highlights?|key features?|specifications?|technical specifications?|specification details)$/i.test(
+ normalized,
   );
 }
 
 function splitExplicitSpecificationPair(
-  value: string,
+ value: string,
 ): { label: string; value: string } | null {
-  const line = cleanTechnicalSpecificationLine(value);
+ const line = cleanTechnicalSpecificationLine(value);
 
-  if (!line) {
-    return null;
+ if (!line) {
+ return null;
   }
 
   /*
    * Strong table/clipboard separators.
    */
-  const tabParts = line
+ const tabParts = line
     .split(/\t+/)
     .map(cleanTechnicalSpecificationLine)
     .filter(Boolean);
 
-  if (
-    tabParts.length >= 2 &&
-    looksLikeTechnicalSpecificationLabel(tabParts[0])
+ if (
+ tabParts.length >= 2 &&
+ looksLikeTechnicalSpecificationLabel(tabParts[0])
   ) {
-    return {
-      label: tabParts[0],
-      value: tabParts.slice(1).join(" "),
+ return {
+ label: tabParts[0],
+ value: tabParts.slice(1).join(" "),
     };
   }
 
@@ -1751,20 +1978,20 @@ function splitExplicitSpecificationPair(
    *
    * Resolution | 2560 × 1600
    */
-  const pipeIndex = line.indexOf("|");
+ const pipeIndex = line.indexOf("|");
 
-  if (pipeIndex > 0) {
-    const label = cleanTechnicalSpecificationLine(line.slice(0, pipeIndex));
-    const pairValue = cleanTechnicalSpecificationLine(
-      line.slice(pipeIndex + 1),
+ if (pipeIndex > 0) {
+ const label = cleanTechnicalSpecificationLine(line.slice(0, pipeIndex));
+ const pairValue = cleanTechnicalSpecificationLine(
+ line.slice(pipeIndex + 1),
     );
 
-    if (
-      looksLikeTechnicalSpecificationLabel(label) &&
-      pairValue &&
+ if (
+ looksLikeTechnicalSpecificationLabel(label) &&
+ pairValue &&
       !isLikelySpecificationPageJunk(label)
     ) {
-      return { label, value: pairValue };
+ return { label, value: pairValue };
     }
   }
 
@@ -1772,46 +1999,46 @@ function splitExplicitSpecificationPair(
    * Standard Label: Value.
    * Only the first colon is structural. Any later colons remain inside value.
    */
-  const colonIndex = line.indexOf(":");
+ const colonIndex = line.indexOf(":");
 
-  if (colonIndex > 0) {
-    const label = cleanTechnicalSpecificationLine(line.slice(0, colonIndex));
-    const pairValue = cleanTechnicalSpecificationLine(
-      line.slice(colonIndex + 1),
+ if (colonIndex > 0) {
+ const label = cleanTechnicalSpecificationLine(line.slice(0, colonIndex));
+ const pairValue = cleanTechnicalSpecificationLine(
+ line.slice(colonIndex + 1),
     );
 
-    const labelContainsValueMaterial =
+ const labelContainsValueMaterial =
       /\d/.test(label) ||
       /[•●▪◦]/.test(label) ||
       /\b(?:gb|tb|mb|mah|wh|w|kw|hz|khz|mhz|ghz|mp|mm|cm|fps|ppi|nit|nits)\b/i.test(
-        label,
+ label,
       );
 
-    if (
+ if (
       !labelContainsValueMaterial &&
-      looksLikeTechnicalSpecificationLabel(label) &&
-      pairValue &&
+ looksLikeTechnicalSpecificationLabel(label) &&
+ pairValue &&
       !isLikelySpecificationPageJunk(label)
     ) {
-      return { label, value: pairValue };
+ return { label, value: pairValue };
     }
   }
 
   /*
    * Label = Value
    */
-  const equalsMatch = line.match(/^(.{1,80}?)\s*=\s*(.+)$/);
+ const equalsMatch = line.match(/^(.{1,80}?)\s*=\s*(.+)$/);
 
-  if (equalsMatch) {
-    const label = cleanTechnicalSpecificationLine(equalsMatch[1]);
-    const pairValue = cleanTechnicalSpecificationLine(equalsMatch[2]);
+ if (equalsMatch) {
+ const label = cleanTechnicalSpecificationLine(equalsMatch[1]);
+ const pairValue = cleanTechnicalSpecificationLine(equalsMatch[2]);
 
-    if (
-      looksLikeTechnicalSpecificationLabel(label) &&
-      pairValue &&
+ if (
+ looksLikeTechnicalSpecificationLabel(label) &&
+ pairValue &&
       !isLikelySpecificationPageJunk(label)
     ) {
-      return { label, value: pairValue };
+ return { label, value: pairValue };
     }
   }
 
@@ -1821,66 +2048,66 @@ function splitExplicitSpecificationPair(
    * Require whitespace around the dash so names such as Wi-Fi, USB-C and
    * model codes are never broken.
    */
-  const dashMatch = line.match(/^(.{1,80}?)\s+[–—-]\s+(.+)$/);
+ const dashMatch = line.match(/^(.{1,80}?)\s+[–—-]\s+(.+)$/);
 
-  if (dashMatch) {
-    const label = cleanTechnicalSpecificationLine(dashMatch[1]);
-    const pairValue = cleanTechnicalSpecificationLine(dashMatch[2]);
+ if (dashMatch) {
+ const label = cleanTechnicalSpecificationLine(dashMatch[1]);
+ const pairValue = cleanTechnicalSpecificationLine(dashMatch[2]);
 
-    if (
-      looksLikeTechnicalSpecificationLabel(label) &&
-      pairValue &&
+ if (
+ looksLikeTechnicalSpecificationLabel(label) &&
+ pairValue &&
       !isLikelySpecificationPageJunk(label)
     ) {
-      return { label, value: pairValue };
+ return { label, value: pairValue };
     }
   }
 
-  return null;
+ return null;
 }
 
 function exactKnownSpecificationLabel(value: string) {
-  const identity = specificationLabelIdentity(value);
+ const identity = specificationLabelIdentity(value);
 
-  if (!identity) {
-    return null;
+ if (!identity) {
+ return null;
   }
 
-  return (
-    bulkTechnicalSpecificationSectionLabels.find(
+ return (
+ bulkTechnicalSpecificationSectionLabels.find(
       (label) => specificationLabelIdentity(label) === identity,
     ) ?? null
   );
 }
 
 function looksLikeStandaloneSpecificationValue(value: string) {
-  const line = cleanTechnicalSpecificationLine(value);
+ const line = cleanTechnicalSpecificationLine(value);
 
-  if (!line || isLikelySpecificationPageJunk(line)) {
-    return false;
+ if (!line || isLikelySpecificationPageJunk(line)) {
+ return false;
   }
 
   /*
    * Numeric/unit values are the strongest signal.
    */
-  if (
+ if (
     /\d/.test(line) ||
     /\b(?:gb|tb|mb|kb|mah|wh|w|kw|v|a|hz|khz|mhz|ghz|mp|mm|cm|inch|inches|fps|ppi|dpi|nit|nits|rpm|mbps|gbps)\b/i.test(
-      line,
+ line,
     )
   ) {
-    return true;
+ return true;
   }
 
   /*
    * Common non-numeric technical values.
    */
-  if (
+ if (
     /\b(?:oled|amoled|lcd|ips|tn|va|mini-led|micro-led|windows|android|ios|macos|linux|stereo|mono|wireless|wired|bluetooth|wifi|wi-fi|ethernet|aluminum|aluminium|plastic|glass|metal|yes|no|supported|not supported|integrated|dedicated|backlit)\b/i.test(
-      line,
+ line,
     )
   ) {
-    return true;
+ return true;
   }
 
   /*
@@ -1890,15 +2117,15 @@ function looksLikeStandaloneSpecificationValue(value: string) {
    * NVIDIA GeForce RTX 5070
    * Bluetooth 5.4
    */
-  return (
-    line.length <= 120 &&
+ return (
+ line.length <= 120 &&
     !/[.!?]$/.test(line) &&
     !isLikelySpecificationPageJunk(line)
   );
 }
 
 function insertCollapsedSpecificationBoundaries(value: string) {
-  let result = String(value ?? "");
+ let result = String(value ?? "");
 
   /*
    * GOOGLE / SEARCH CLIPBOARD RECOVERY
@@ -1906,23 +2133,23 @@ function insertCollapsedSpecificationBoundaries(value: string) {
    * Modern result pages often visually show separate table rows while the
    * clipboard removes the DOM boundary:
    *
-   *   12 GBStorage128 GB
-   *   slot)Rear CameraTriple Camera Setup
-   *   cameras)Battery & Charging5,000 mAh
-   *   supported)SecurityUnder-display fingerprint reader
+   * 12 GBStorage128 GB
+   * slot)Rear CameraTriple Camera Setup
+   * cameras)Battery & Charging5,000 mAh
+   * supported)SecurityUnder-display fingerprint reader
    *
    * Restore boundaries before known TOP-LEVEL specification labels.
    *
    * We require the heading to be immediately attached to preceding content,
    * so normal prose such as "includes security features" is not split.
    */
-  const knownHeadingPattern = bulkTechnicalSpecificationSectionLabels
+ const knownHeadingPattern = bulkTechnicalSpecificationSectionLabels
     .map(escapeSpecificationRegExp)
     .join("|");
 
-  if (knownHeadingPattern) {
-    result = result.replace(
-      new RegExp(
+ if (knownHeadingPattern) {
+ result = result.replace(
+ new RegExp(
         `([^\\s])(${knownHeadingPattern})(?=\\d|[A-Z]|[a-z]|[:\\-–—])`,
         "g",
       ),
@@ -1934,10 +2161,10 @@ function insertCollapsedSpecificationBoundaries(value: string) {
    * Acronym rows are especially common in copied specification tables.
    *
    * Examples:
-   *   GHz)RAM8 GB
-   *   valueSSD512 GB
+   * GHz)RAM8 GB
+   * valueSSD512 GB
    */
-  result = result.replace(
+ result = result.replace(
     /([A-Za-z0-9)%\]])(RAM|ROM|CPU|GPU|NPU|SSD|HDD|USB|HDMI|NFC|GPS|LAN|WAN|WLAN)(?=\d|\s|[A-Z])/g,
     "$1\n$2",
   );
@@ -1947,9 +2174,9 @@ function insertCollapsedSpecificationBoundaries(value: string) {
    * multi-word title is immediately followed by a numerical value.
    *
    * Example:
-   *   someValueMaximumPower120 W
+   * someValueMaximumPower120 W
    */
-  result = result.replace(
+ result = result.replace(
     /([a-z0-9)%\]])([A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+){0,3})(?=\d)/g,
     "$1\n$2",
   );
@@ -1962,69 +2189,69 @@ function insertCollapsedSpecificationBoundaries(value: string) {
    *
    * This happens AFTER top-level row boundaries are recovered.
    */
-  result = result.replace(/([a-z])([A-Z])/g, "$1 $2");
+ result = result.replace(/([a-z])([A-Z])/g, "$1 $2");
 
-  return result;
+ return result;
 }
 
 function specificationEntriesFromStructuredText(source: string) {
-  const normalizedSource = insertCollapsedSpecificationBoundaries(
-    String(source ?? "")
+ const normalizedSource = insertCollapsedSpecificationBoundaries(
+ String(source ?? "")
       .replace(/\u00a0/g, " ")
       .replace(/[\u200B-\u200D\uFEFF]/g, "")
       .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
       .replace(/\r\n?/g, "\n"),
   );
 
-  const rawLines = normalizedSource
+ const rawLines = normalizedSource
     .split("\n")
     .map(cleanTechnicalSpecificationLine)
     .filter(Boolean);
 
-  const entries: Array<{ label: string; value: string }> = [];
+ const entries: Array<{ label: string; value: string }> = [];
 
-  const parserState: {
-    current: { label: string; value: string } | null;
+ const parserState: {
+ current: { label: string; value: string } | null;
   } = {
-    current: null,
+ current: null,
   };
 
-  function commitCurrent() {
-    const current = parserState.current;
+ function commitCurrent() {
+ const current = parserState.current;
 
-    if (!current) {
-      return;
+ if (!current) {
+ return;
     }
 
-    const label = cleanTechnicalSpecificationLine(current.label);
-    const value = cleanTechnicalSpecificationLine(current.value);
+ const label = cleanTechnicalSpecificationLine(current.label);
+ const value = cleanTechnicalSpecificationLine(current.value);
 
-    if (
-      looksLikeTechnicalSpecificationLabel(label) &&
-      value &&
+ if (
+ looksLikeTechnicalSpecificationLabel(label) &&
+ value &&
       !isLikelySpecificationPageJunk(label) &&
       !isLikelySpecificationPageJunk(value)
     ) {
-      entries.push({ label, value });
+ entries.push({ label, value });
     }
 
-    parserState.current = null;
+ parserState.current = null;
   }
 
-  function begin(label: string, value: string) {
-    commitCurrent();
+ function begin(label: string, value: string) {
+ commitCurrent();
 
-    parserState.current = {
-      label: cleanTechnicalSpecificationLine(label),
-      value: cleanTechnicalSpecificationLine(value),
+ parserState.current = {
+ label: cleanTechnicalSpecificationLine(label),
+ value: cleanTechnicalSpecificationLine(value),
     };
   }
 
-  for (let index = 0; index < rawLines.length; index += 1) {
-    const line = cleanTechnicalSpecificationLine(rawLines[index]);
+ for (let index = 0; index < rawLines.length; index += 1) {
+ const line = cleanTechnicalSpecificationLine(rawLines[index]);
 
-    if (!line || isLikelySpecificationPageJunk(line)) {
-      continue;
+ if (!line || isLikelySpecificationPageJunk(line)) {
+ continue;
     }
 
     /*
@@ -2036,11 +2263,11 @@ function specificationEntriesFromStructuredText(source: string) {
      * Label = Value
      * Label - Value
      */
-    const explicitPair = splitExplicitSpecificationPair(line);
+ const explicitPair = splitExplicitSpecificationPair(line);
 
-    if (explicitPair) {
-      begin(explicitPair.label, explicitPair.value);
-      continue;
+ if (explicitPair) {
+ begin(explicitPair.label, explicitPair.value);
+ continue;
     }
 
     /*
@@ -2050,23 +2277,23 @@ function specificationEntriesFromStructuredText(source: string) {
      *
      * Display remains the parent. Resolution stays inside its value.
      */
-    const knownLabel = bulkTechnicalSpecificationSectionLabels.find((label) => {
-      const escaped = escapeSpecificationRegExp(label);
+ const knownLabel = bulkTechnicalSpecificationSectionLabels.find((label) => {
+ const escaped = escapeSpecificationRegExp(label);
 
-      return new RegExp(
+ return new RegExp(
         `^${escaped}(?=\\s|\\d|[A-Z]|[a-z]|[:\\-–—])`,
         "i",
       ).test(line);
     });
 
-    if (knownLabel && line.length > knownLabel.length) {
-      const candidateValue = cleanTechnicalSpecificationLine(
-        line.slice(knownLabel.length).replace(/^[:\-–—\s]+/, ""),
+ if (knownLabel && line.length > knownLabel.length) {
+ const candidateValue = cleanTechnicalSpecificationLine(
+ line.slice(knownLabel.length).replace(/^[:\-–—\s]+/, ""),
       );
 
-      if (candidateValue && !isLikelySpecificationPageJunk(candidateValue)) {
-        begin(knownLabel, candidateValue);
-        continue;
+ if (candidateValue && !isLikelySpecificationPageJunk(candidateValue)) {
+ begin(knownLabel, candidateValue);
+ continue;
       }
     }
 
@@ -2086,20 +2313,20 @@ function specificationEntriesFromStructuredText(source: string) {
      * Exact known labels are high-confidence enough to pair with the next
      * line even when the value itself looks like words rather than numbers.
      */
-    const exactKnownLabel = exactKnownSpecificationLabel(line);
-    const nextLine =
-      index + 1 < rawLines.length
+ const exactKnownLabel = exactKnownSpecificationLabel(line);
+ const nextLine =
+ index + 1 < rawLines.length
         ? cleanTechnicalSpecificationLine(rawLines[index + 1])
         : "";
 
-    if (
-      exactKnownLabel &&
-      nextLine &&
+ if (
+ exactKnownLabel &&
+ nextLine &&
       !isLikelySpecificationPageJunk(nextLine)
     ) {
-      begin(exactKnownLabel, nextLine);
-      index += 1;
-      continue;
+ begin(exactKnownLabel, nextLine);
+ index += 1;
+ continue;
     }
 
     /*
@@ -2108,19 +2335,19 @@ function specificationEntriesFromStructuredText(source: string) {
      * This is deliberately more conservative than the known-label path.
      * It allows previously unseen specifications while avoiding prose.
      */
-    if (
-      nextLine &&
-      looksLikeTechnicalSpecificationLabel(line) &&
+ if (
+ nextLine &&
+ looksLikeTechnicalSpecificationLabel(line) &&
       !isLikelySpecificationPageJunk(line) &&
-      looksLikeStandaloneSpecificationValue(nextLine) &&
+ looksLikeStandaloneSpecificationValue(nextLine) &&
       !splitExplicitSpecificationPair(nextLine)
     ) {
-      const words = line.split(/\s+/).filter(Boolean);
+ const words = line.split(/\s+/).filter(Boolean);
 
-      if (words.length <= 6 && !/\d/.test(line) && !/[.!?]$/.test(line)) {
-        begin(line, nextLine);
-        index += 1;
-        continue;
+ if (words.length <= 6 && !/\d/.test(line) && !/[.!?]$/.test(line)) {
+ begin(line, nextLine);
+ index += 1;
+ continue;
       }
     }
 
@@ -2131,30 +2358,30 @@ function specificationEntriesFromStructuredText(source: string) {
      * Maximum Power120 W
      * Refresh Rate144 Hz
      */
-    const numericBoundary = line.match(
+ const numericBoundary = line.match(
       /^([A-Za-z][A-Za-z/&+().'\- ]{1,49}?)(?=\d)(.+)$/,
     );
 
-    if (numericBoundary) {
-      const candidateLabel = cleanTechnicalSpecificationLine(
-        numericBoundary[1],
+ if (numericBoundary) {
+ const candidateLabel = cleanTechnicalSpecificationLine(
+ numericBoundary[1],
       );
 
-      const candidateValue = cleanTechnicalSpecificationLine(
-        line.slice(numericBoundary[1].length),
+ const candidateValue = cleanTechnicalSpecificationLine(
+ line.slice(numericBoundary[1].length),
       );
 
-      const candidateWords = candidateLabel.split(/\s+/).filter(Boolean);
+ const candidateWords = candidateLabel.split(/\s+/).filter(Boolean);
 
-      if (
-        candidateWords.length <= 6 &&
+ if (
+ candidateWords.length <= 6 &&
         !/[•●▪◦]/.test(candidateLabel) &&
-        looksLikeTechnicalSpecificationLabel(candidateLabel) &&
+ looksLikeTechnicalSpecificationLabel(candidateLabel) &&
         !isLikelySpecificationPageJunk(candidateLabel) &&
-        candidateValue
+ candidateValue
       ) {
-        begin(candidateLabel, candidateValue);
-        continue;
+ begin(candidateLabel, candidateValue);
+ continue;
       }
     }
 
@@ -2169,23 +2396,23 @@ function specificationEntriesFromStructuredText(source: string) {
      * Resolution: 2796 × 1290
      * HDR: Dolby Vision
      */
-    const current = parserState.current;
+ const current = parserState.current;
 
-    if (current) {
-      const normalizedContinuation = cleanTechnicalSpecificationLine(line);
+ if (current) {
+ const normalizedContinuation = cleanTechnicalSpecificationLine(line);
 
-      if (
-        normalizedContinuation &&
+ if (
+ normalizedContinuation &&
         !isLikelySpecificationPageJunk(normalizedContinuation)
       ) {
-        current.value = cleanTechnicalSpecificationLine(
+ current.value = cleanTechnicalSpecificationLine(
           `${current.value} • ${normalizedContinuation}`,
         );
       }
     }
   }
 
-  commitCurrent();
+ commitCurrent();
 
   /*
    * Deduplicate case/spacing variants while preserving first-seen order.
@@ -2193,58 +2420,58 @@ function specificationEntriesFromStructuredText(source: string) {
    * If the same specification appears twice, keep the richer value rather
    * than producing duplicate technical-spec rows.
    */
-  const deduplicated = new Map<string, { label: string; value: string }>();
+ const deduplicated = new Map<string, { label: string; value: string }>();
 
-  for (const entry of entries) {
-    const identity = specificationLabelIdentity(entry.label);
+ for (const entry of entries) {
+ const identity = specificationLabelIdentity(entry.label);
 
-    if (!identity) {
-      continue;
+ if (!identity) {
+ continue;
     }
 
-    const existing = deduplicated.get(identity);
+ const existing = deduplicated.get(identity);
 
-    if (!existing) {
-      deduplicated.set(identity, entry);
-      continue;
+ if (!existing) {
+ deduplicated.set(identity, entry);
+ continue;
     }
 
-    const existingValue = existing.value.toLocaleLowerCase();
-    const incomingValue = entry.value.toLocaleLowerCase();
+ const existingValue = existing.value.toLocaleLowerCase();
+ const incomingValue = entry.value.toLocaleLowerCase();
 
-    if (existingValue.includes(incomingValue)) {
-      continue;
+ if (existingValue.includes(incomingValue)) {
+ continue;
     }
 
-    if (incomingValue.includes(existingValue)) {
-      deduplicated.set(identity, entry);
-      continue;
+ if (incomingValue.includes(existingValue)) {
+ deduplicated.set(identity, entry);
+ continue;
     }
 
-    if (entry.value.length > existing.value.length) {
-      deduplicated.set(identity, entry);
+ if (entry.value.length > existing.value.length) {
+ deduplicated.set(identity, entry);
     }
   }
 
-  return Array.from(deduplicated.values());
+ return Array.from(deduplicated.values());
 }
 
 function splitFlattenedTechnicalSpecificationText(source: string) {
-  const cleanedSource = cleanClipboardSpecificationText(source);
+ const cleanedSource = cleanClipboardSpecificationText(source);
 
-  if (!cleanedSource) {
-    return "";
+ if (!cleanedSource) {
+ return "";
   }
 
   /*
    * First try the generic structural parser. This handles Title:value,
    * numerical boundaries and many collapsed clipboard rows.
    */
-  const structuralEntries =
-    specificationEntriesFromStructuredText(cleanedSource);
+ const structuralEntries =
+ specificationEntriesFromStructuredText(cleanedSource);
 
-  if (structuralEntries.length > 1) {
-    return structuralEntries
+ if (structuralEntries.length > 1) {
+ return structuralEntries
       .map(({ label, value }) => `${label}: ${value}`)
       .join("\n");
   }
@@ -2255,58 +2482,58 @@ function splitFlattenedTechnicalSpecificationText(source: string) {
    * Historical high-level headings remain useful here, but they are no
    * longer the primary parsing mechanism.
    */
-  const labelPattern = bulkTechnicalSpecificationSectionLabels
+ const labelPattern = bulkTechnicalSpecificationSectionLabels
     .map(escapeSpecificationRegExp)
     .join("|");
 
-  const headingRegex = new RegExp(`(${labelPattern})`, "g");
+ const headingRegex = new RegExp(`(${labelPattern})`, "g");
 
-  const matches = Array.from(cleanedSource.matchAll(headingRegex));
+ const matches = Array.from(cleanedSource.matchAll(headingRegex));
 
-  if (matches.length === 0) {
-    return cleanedSource;
+ if (matches.length === 0) {
+ return cleanedSource;
   }
 
-  const sections: string[] = [];
+ const sections: string[] = [];
 
-  for (let index = 0; index < matches.length; index += 1) {
-    const match = matches[index];
+ for (let index = 0; index < matches.length; index += 1) {
+ const match = matches[index];
 
-    if (match.index == null) {
-      continue;
+ if (match.index == null) {
+ continue;
     }
 
-    const label = match[1]?.trim();
+ const label = match[1]?.trim();
 
-    if (!label) {
-      continue;
+ if (!label) {
+ continue;
     }
 
-    const valueStart = match.index + match[0].length;
-    const nextMatch = matches[index + 1];
-    const valueEnd =
-      nextMatch?.index == null ? cleanedSource.length : nextMatch.index;
+ const valueStart = match.index + match[0].length;
+ const nextMatch = matches[index + 1];
+ const valueEnd =
+ nextMatch?.index == null ? cleanedSource.length : nextMatch.index;
 
-    const value = cleanClipboardSpecificationText(
-      cleanedSource.slice(valueStart, valueEnd),
+ const value = cleanClipboardSpecificationText(
+ cleanedSource.slice(valueStart, valueEnd),
     ).replace(/^[:\-–—\s]+/, "");
 
-    if (!value) {
-      continue;
+ if (!value) {
+ continue;
     }
 
-    sections.push(`${label}: ${value}`);
+ sections.push(`${label}: ${value}`);
   }
 
-  return sections.length > 0 ? sections.join("\n") : cleanedSource;
+ return sections.length > 0 ? sections.join("\n") : cleanedSource;
 }
 
 function specificationTextFromClipboardHtml(html: string) {
-  if (!html.trim() || typeof DOMParser === "undefined") {
-    return "";
+ if (!html.trim() || typeof DOMParser === "undefined") {
+ return "";
   }
 
-  const document = new DOMParser().parseFromString(html, "text/html");
+ const document = new DOMParser().parseFromString(html, "text/html");
 
   /*
    * PRIORITY 1 — REAL TABLE ROWS
@@ -2318,66 +2545,66 @@ function specificationTextFromClipboardHtml(html: string) {
    *
    * Every row becomes exactly ONE textarea line.
    */
-  const tableLines: string[] = [];
+ const tableLines: string[] = [];
 
-  for (const row of Array.from(document.body.querySelectorAll("tr"))) {
-    const cells = Array.from(row.querySelectorAll(":scope > th, :scope > td"));
+ for (const row of Array.from(document.body.querySelectorAll("tr"))) {
+ const cells = Array.from(row.querySelectorAll(":scope > th, :scope > td"));
 
-    if (cells.length < 2) {
-      continue;
+ if (cells.length < 2) {
+ continue;
     }
 
-    const label = cleanClipboardSpecificationText(cells[0]?.textContent);
+ const label = cleanClipboardSpecificationText(cells[0]?.textContent);
 
-    const value = cells
+ const value = cells
       .slice(1)
       .map((cell) => {
-        const listItems = Array.from(
-          cell.querySelectorAll("li"),
+ const listItems = Array.from(
+ cell.querySelectorAll("li"),
         )
           .map((item) =>
-            cleanClipboardSpecificationText(item.textContent),
+ cleanClipboardSpecificationText(item.textContent),
           )
           .filter(Boolean);
 
-        if (listItems.length > 1) {
-          return Array.from(new Set(listItems))
+ if (listItems.length > 1) {
+ return Array.from(new Set(listItems))
             .map((item) => `• ${item}`)
             .join(" · ");
         }
 
-        const structuredBlocks = Array.from(
-          cell.querySelectorAll(
+ const structuredBlocks = Array.from(
+ cell.querySelectorAll(
             ":scope > p, :scope > div, :scope > span",
           ),
         )
           .map((element) =>
-            cleanClipboardSpecificationText(element.textContent),
+ cleanClipboardSpecificationText(element.textContent),
           )
           .filter(Boolean);
 
-        const uniqueStructuredBlocks = Array.from(
-          new Set(structuredBlocks),
+ const uniqueStructuredBlocks = Array.from(
+ new Set(structuredBlocks),
         );
 
-        if (uniqueStructuredBlocks.length > 1) {
-          return uniqueStructuredBlocks.join(" · ");
+ if (uniqueStructuredBlocks.length > 1) {
+ return uniqueStructuredBlocks.join(" · ");
         }
 
-        return cleanClipboardSpecificationText(cell.textContent);
+ return cleanClipboardSpecificationText(cell.textContent);
       })
       .filter(Boolean)
       .join(" · ");
 
-    if (!label || !value || label.length > 100) {
-      continue;
+ if (!label || !value || label.length > 100) {
+ continue;
     }
 
-    tableLines.push(`${label}: ${value}`);
+ tableLines.push(`${label}: ${value}`);
   }
 
-  if (tableLines.length > 0) {
-    return Array.from(new Set(tableLines)).join("\n\n").trim();
+ if (tableLines.length > 0) {
+ return Array.from(new Set(tableLines)).join("\n\n").trim();
   }
 
   /*
@@ -2392,110 +2619,110 @@ function specificationTextFromClipboardHtml(html: string) {
    * NEVER merge these together.
    * One <li> = one Quick Paste line.
    */
-  const listLines = Array.from(document.body.querySelectorAll("li"))
+ const listLines = Array.from(document.body.querySelectorAll("li"))
     .map((item) => cleanClipboardSpecificationText(item.textContent))
     .filter(Boolean);
 
-  if (listLines.length > 0) {
-    return Array.from(new Set(listLines)).join("\n\n").trim();
+ if (listLines.length > 0) {
+ return Array.from(new Set(listLines)).join("\n\n").trim();
   }
 
   /*
    * PRIORITY 3 — ARIA TABLE / GRID ROWS
    */
-  const ariaLines: string[] = [];
+ const ariaLines: string[] = [];
 
-  for (const row of Array.from(
-    document.body.querySelectorAll('[role="row"]'),
+ for (const row of Array.from(
+ document.body.querySelectorAll('[role="row"]'),
   )) {
-    const cells = Array.from(
-      row.querySelectorAll(
+ const cells = Array.from(
+ row.querySelectorAll(
         ':scope > [role="cell"], :scope > [role="gridcell"], :scope > [role="rowheader"], :scope > [role="columnheader"]',
       ),
     );
 
-    if (cells.length < 2) {
-      continue;
+ if (cells.length < 2) {
+ continue;
     }
 
-    const label = cleanClipboardSpecificationText(cells[0]?.textContent);
+ const label = cleanClipboardSpecificationText(cells[0]?.textContent);
 
-    const value = cells
+ const value = cells
       .slice(1)
       .map((cell) => {
-        const listItems = Array.from(
-          cell.querySelectorAll("li"),
+ const listItems = Array.from(
+ cell.querySelectorAll("li"),
         )
           .map((item) =>
-            cleanClipboardSpecificationText(item.textContent),
+ cleanClipboardSpecificationText(item.textContent),
           )
           .filter(Boolean);
 
-        if (listItems.length > 1) {
-          return Array.from(new Set(listItems))
+ if (listItems.length > 1) {
+ return Array.from(new Set(listItems))
             .map((item) => `• ${item}`)
             .join(" · ");
         }
 
-        const structuredBlocks = Array.from(
-          cell.querySelectorAll(
+ const structuredBlocks = Array.from(
+ cell.querySelectorAll(
             ":scope > p, :scope > div, :scope > span",
           ),
         )
           .map((element) =>
-            cleanClipboardSpecificationText(element.textContent),
+ cleanClipboardSpecificationText(element.textContent),
           )
           .filter(Boolean);
 
-        const uniqueStructuredBlocks = Array.from(
-          new Set(structuredBlocks),
+ const uniqueStructuredBlocks = Array.from(
+ new Set(structuredBlocks),
         );
 
-        if (uniqueStructuredBlocks.length > 1) {
-          return uniqueStructuredBlocks.join(" · ");
+ if (uniqueStructuredBlocks.length > 1) {
+ return uniqueStructuredBlocks.join(" · ");
         }
 
-        return cleanClipboardSpecificationText(cell.textContent);
+ return cleanClipboardSpecificationText(cell.textContent);
       })
       .filter(Boolean)
       .join(" · ");
 
-    if (!label || !value || label.length > 100) {
-      continue;
+ if (!label || !value || label.length > 100) {
+ continue;
     }
 
-    ariaLines.push(`${label}: ${value}`);
+ ariaLines.push(`${label}: ${value}`);
   }
 
-  if (ariaLines.length > 0) {
-    return Array.from(new Set(ariaLines)).join("\n\n").trim();
+ if (ariaLines.length > 0) {
+ return Array.from(new Set(ariaLines)).join("\n\n").trim();
   }
 
   /*
    * PRIORITY 4 — DEFINITION LISTS
    */
-  const definitionLines: string[] = [];
+ const definitionLines: string[] = [];
 
-  for (const term of Array.from(document.body.querySelectorAll("dt"))) {
-    const description = term.nextElementSibling;
+ for (const term of Array.from(document.body.querySelectorAll("dt"))) {
+ const description = term.nextElementSibling;
 
-    if (!description || description.tagName !== "DD") {
-      continue;
+ if (!description || description.tagName !== "DD") {
+ continue;
     }
 
-    const label = cleanClipboardSpecificationText(term.textContent);
+ const label = cleanClipboardSpecificationText(term.textContent);
 
-    const value = cleanClipboardSpecificationText(description.textContent);
+ const value = cleanClipboardSpecificationText(description.textContent);
 
-    if (!label || !value || label.length > 100) {
-      continue;
+ if (!label || !value || label.length > 100) {
+ continue;
     }
 
-    definitionLines.push(`${label}: ${value}`);
+ definitionLines.push(`${label}: ${value}`);
   }
 
-  if (definitionLines.length > 0) {
-    return Array.from(new Set(definitionLines)).join("\n\n").trim();
+ if (definitionLines.length > 0) {
+ return Array.from(new Set(definitionLines)).join("\n\n").trim();
   }
 
   /*
@@ -2504,20 +2731,20 @@ function specificationTextFromClipboardHtml(html: string) {
    * Preserve block boundaries instead of flattening the entire page
    * into one giant string.
    */
-  const blockLines = Array.from(
-    document.body.querySelectorAll("p, h1, h2, h3, h4, h5, h6"),
+ const blockLines = Array.from(
+ document.body.querySelectorAll("p, h1, h2, h3, h4, h5, h6"),
   )
     .map((element) => cleanClipboardSpecificationText(element.textContent))
     .filter(Boolean);
 
-  const specificationBlockLines = blockLines.filter((line) => {
-    const colonIndex = line.indexOf(":");
+ const specificationBlockLines = blockLines.filter((line) => {
+ const colonIndex = line.indexOf(":");
 
-    return colonIndex > 0 && colonIndex <= 100;
+ return colonIndex > 0 && colonIndex <= 100;
   });
 
-  if (specificationBlockLines.length > 0) {
-    return Array.from(new Set(specificationBlockLines)).join("\n\n").trim();
+ if (specificationBlockLines.length > 0) {
+ return Array.from(new Set(specificationBlockLines)).join("\n\n").trim();
   }
 
   /*
@@ -2530,103 +2757,421 @@ function specificationTextFromClipboardHtml(html: string) {
    * In that case the clipboard may flatten this:
    *
    * Display
-   *   6.7-inch Super AMOLED Plus
+   * 6.7-inch Super AMOLED Plus
    *   • Resolution: ...
    *   • Refresh Rate: ...
    *
    * Processor (CPU/GPU)
-   *   Samsung Exynos ...
+   * Samsung Exynos ...
    *
    * into one long string.
    *
    * Reconstruct ONLY known top-level specification sections here.
    * Internal bullets and nested labels remain part of their parent value.
    */
-  const fallbackText = String(
-    document.body.innerText || document.body.textContent || "",
+ const fallbackText = String(
+ document.body.innerText || document.body.textContent || "",
   )
     .replace(/\u00a0/g, " ")
     .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
     .replace(/\r\n?/g, "\n")
     .trim();
 
-  const reconstructed = splitFlattenedTechnicalSpecificationText(fallbackText);
+ const reconstructed = splitFlattenedTechnicalSpecificationText(fallbackText);
 
-  const reconstructedLines = reconstructed
+ const reconstructedLines = reconstructed
     .split("\n")
     .map((line) => line.replace(/[ \t]+/g, " ").trim())
     .filter(Boolean)
     .filter((line) => {
-      const colonIndex = line.indexOf(":");
+ const colonIndex = line.indexOf(":");
 
-      if (colonIndex <= 0) {
-        return true;
+ if (colonIndex <= 0) {
+ return true;
       }
 
-      const label = line.slice(0, colonIndex).trim().toLocaleLowerCase();
+ const label = line.slice(0, colonIndex).trim().toLocaleLowerCase();
 
-      const value = line
+ const value = line
         .slice(colonIndex + 1)
         .trim()
         .toLocaleLowerCase();
 
-      return !(label === "category" && value === "specification details");
+ return !(label === "category" && value === "specification details");
     });
 
-  if (reconstructedLines.length > 0) {
-    return reconstructedLines.join("\n\n").trim();
+ if (reconstructedLines.length > 0) {
+ return reconstructedLines.join("\n\n").trim();
   }
 
-  return fallbackText;
+ return fallbackText;
 }
 
-export default function ElectronicsVariantEditor({
-  variants,
+
+function AdminDirectorySelect({
+  value,
+  options,
+  placeholder,
+  directoryLabel,
+  ariaLabel,
   onChange,
-}: ElectronicsVariantEditorProps) {
-  const [specificationsPortalTarget, setSpecificationsPortalTarget] =
-    useState<HTMLElement | null>(null);
+  onOpen,
+  searchable = true,
+  stopPropagation = false,
+}: {
+  value: string;
+  options: {
+    value: string;
+    label: string;
+    description?: string;
+  }[];
+  placeholder: string;
+  directoryLabel: string;
+  ariaLabel: string;
+  onChange: (value: string) => void;
+  onOpen?: () => void;
+  searchable?: boolean;
+  stopPropagation?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState({
+    top: 0,
+    left: 0,
+    width: 320,
+  });
+
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const searchRef = useRef<HTMLInputElement | null>(null);
+
+  const selectedOption =
+    options.find((option) => option.value === value) ?? null;
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredOptions =
+    normalizedQuery.length === 0
+      ? options
+      : options.filter((option) =>
+          `${option.label} ${option.description ?? ""}`
+            .toLowerCase()
+            .includes(normalizedQuery),
+        );
+
+  function updatePosition() {
+    const trigger = triggerRef.current;
+
+    if (!trigger) {
+      return;
+    }
+
+    const rect = trigger.getBoundingClientRect();
+
+    const preferredWidth = Math.max(
+      300,
+      Math.min(420, Math.max(rect.width, 320)),
+    );
+
+    const viewportPadding = 16;
+
+    const width = Math.min(
+      preferredWidth,
+      window.innerWidth - viewportPadding * 2,
+    );
+
+    const left = Math.min(
+      Math.max(viewportPadding, rect.left),
+      window.innerWidth - width - viewportPadding,
+    );
+
+    setPosition({
+      top: rect.bottom + 8,
+      left,
+      width,
+    });
+  }
 
   useEffect(() => {
-    setSpecificationsPortalTarget(
-      document.getElementById("st-product-information-specifications"),
+    setMounted(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    updatePosition();
+
+    function handleViewportChange() {
+      updatePosition();
+    }
+
+    window.addEventListener("resize", handleViewportChange);
+    window.addEventListener("scroll", handleViewportChange, true);
+
+    return () => {
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("scroll", handleViewportChange, true);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      searchRef.current?.focus();
+    }, 0);
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as Node;
+
+      if (
+        triggerRef.current?.contains(target) ||
+        dropdownRef.current?.contains(target)
+      ) {
+        return;
+      }
+
+      setOpen(false);
+      setQuery("");
+    }
+
+    function handleEscape(event: globalThis.KeyboardEvent) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      setOpen(false);
+      setQuery("");
+      triggerRef.current?.focus();
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.clearTimeout(timeout);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open]);
+
+  function choose(nextValue: string) {
+    onChange(nextValue);
+    setOpen(false);
+    setQuery("");
+
+    requestAnimationFrame(() => {
+      triggerRef.current?.focus();
+    });
+  }
+
+  const dropdown =
+    mounted && open
+      ? createPortal(
+          <div
+            ref={dropdownRef}
+            className="st-admin-unified-directory-final fixed z-[10000]"
+            style={{
+              top: position.top,
+              left: position.left,
+              width: position.width,
+            }}
+            role="dialog"
+            aria-label={directoryLabel}
+          >
+            {searchable ? (
+              <div className="st-admin-unified-directory-final__search-wrap">
+                <div className="st-admin-unified-directory-final__search">
+                  <Search />
+                  <input
+                    ref={searchRef}
+                    value={query}
+                    onChange={(event) => {
+                      setQuery(event.target.value);
+                    }}
+                    placeholder={`Search ${directoryLabel.toLowerCase()}...`}
+                    autoComplete="off"
+                    aria-label={`Search ${directoryLabel}`}
+                  />
+
+                  {query ? (
+                    <button
+                      type="button"
+                      className="st-admin-unified-directory-final__clear"
+                      aria-label="Clear search"
+                      onClick={() => {
+                        setQuery("");
+                        requestAnimationFrame(() => {
+                          searchRef.current?.focus();
+                        });
+                      }}
+                    >
+                      <X />
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="st-admin-unified-directory-final__heading">
+              <span>{directoryLabel}</span>
+              <small>
+                {filteredOptions.length}{" "}
+                {filteredOptions.length === 1 ? "choice" : "choices"}
+              </small>
+            </div>
+
+            <div
+              className="st-admin-unified-directory-final__list"
+              role="listbox"
+              aria-label={directoryLabel}
+            >
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((option) => {
+                  const selected = option.value === value;
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      className="st-admin-unified-directory-final__option"
+                      onClick={() => {
+                        choose(option.value);
+                      }}
+                    >
+                      <span className="st-admin-unified-directory-final__option-copy">
+                        <strong>{option.label}</strong>
+
+                        {option.description ? (
+                          <small>{option.description}</small>
+                        ) : null}
+                      </span>
+
+                      <span className="st-admin-unified-directory-final__option-action">
+                        {selected ? (
+                          <>
+                            <Check />
+                            <span>Selected</span>
+                          </>
+                        ) : (
+                          <span>Select</span>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="st-admin-unified-directory-final__empty">
+                  No matching options
+                </div>
+              )}
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="st-admin-unified-directory-trigger-final"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={ariaLabel}
+        onClick={(event) => {
+          if (stopPropagation) {
+            event.stopPropagation();
+          }
+
+          if (!open) {
+            onOpen?.();
+            requestAnimationFrame(updatePosition);
+          }
+
+          setOpen((current) => !current);
+        }}
+      >
+        <span
+          className={
+            selectedOption
+              ? "st-admin-unified-directory-trigger-final__value"
+              : "st-admin-unified-directory-trigger-final__placeholder"
+          }
+        >
+          {selectedOption?.label ?? placeholder}
+        </span>
+
+        <ChevronDown
+          className={
+            open
+              ? "st-admin-unified-directory-trigger-final__chevron is-open"
+              : "st-admin-unified-directory-trigger-final__chevron"
+          }
+        />
+      </button>
+
+      {dropdown}
+    </>
+  );
+}
+
+
+export default function ElectronicsVariantEditor({
+ variants,
+ onChange,
+}: ElectronicsVariantEditorProps) {
+ const [specificationsPortalTarget, setSpecificationsPortalTarget] =
+ useState<HTMLElement | null>(null);
+
+ useEffect(() => {
+ setSpecificationsPortalTarget(
+ document.getElementById("st-product-information-specifications"),
     );
   }, []);
 
-  const [levels, setLevels] = useState<OptionLevel[]>(() =>
-    levelsFromVariants(variants),
+ const [levels, setLevels] = useState<OptionLevel[]>(() =>
+ levelsFromVariants(variants),
   );
 
-  const [activeClientId, setActiveClientId] = useState(
-    variants[0]?.clientId ?? "",
+ const [activeClientId, setActiveClientId] = useState(
+ variants[0]?.clientId ?? "",
   );
 
-  const [newLevelName, setNewLevelName] = useState("");
-  const [hierarchyError, setHierarchyError] = useState("");
-  const [customSpecName, setCustomSpecName] = useState("");
-  const [bulkTechnicalSpecs, setBulkTechnicalSpecs] = useState("");
+ const [newLevelName, setNewLevelName] = useState("");
+ const [hierarchyError, setHierarchyError] = useState("");
+ const [customSpecName, setCustomSpecName] = useState("");
+ const [bulkTechnicalSpecs, setBulkTechnicalSpecs] = useState("");
 
-  const [customSpecError, setCustomSpecError] = useState("");
-  const [technicalSpecsMessage, setTechnicalSpecsMessage] = useState("");
-  const [technicalSpecsExpanded, setTechnicalSpecsExpanded] = useState(true);
-  const orderedVariants = useMemo(
+ const [customSpecError, setCustomSpecError] = useState("");
+ const [technicalSpecsMessage, setTechnicalSpecsMessage] = useState("");
+ const [technicalSpecsExpanded, setTechnicalSpecsExpanded] = useState(true);
+ const orderedVariants = useMemo(
     () =>
-      [...variants].sort(
+ [...variants].sort(
         (first, second) =>
-          Number(first.display_position ?? 0) -
-          Number(second.display_position ?? 0),
+ Number(first.display_position ?? 0) -
+ Number(second.display_position ?? 0),
       ),
-    [variants],
+ [variants],
   );
 
-  const activeVariant =
-    orderedVariants.find((variant) => variant.clientId === activeClientId) ??
-    orderedVariants[0] ??
-    null;
+ const activeVariant =
+ orderedVariants.find((variant) => variant.clientId === activeClientId) ??
+ orderedVariants[0] ??
+ null;
 
-  useEffect(() => {
-    if (!activeVariant && orderedVariants[0]) {
-      setActiveClientId(orderedVariants[0].clientId);
+ useEffect(() => {
+ if (!activeVariant && orderedVariants[0]) {
+ setActiveClientId(orderedVariants[0].clientId);
     }
   }, [activeVariant, orderedVariants]);
 
@@ -2634,39 +3179,39 @@ export default function ElectronicsVariantEditor({
    * Keep the existing photograph manager synchronized with
    * configuration edits.
    */
-  useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent("stereophonie:admin-product-configurations", {
-        detail: {
-          configurations: orderedVariants.map((variant, index) => ({
-            id: variant.id ?? variant.clientId,
-            variant_name:
-              clean(variant.variant_name) || `Configuration ${index + 1}`,
-            fallbackLabel:
-              clean(variant.variant_name) || `Configuration ${index + 1}`,
-            persisted: Boolean(variant.id),
+ useEffect(() => {
+ window.dispatchEvent(
+ new CustomEvent("stereophonie:admin-product-configurations", {
+ detail: {
+ configurations: orderedVariants.map((variant, index) => ({
+ id: variant.id ?? variant.clientId,
+ variant_name:
+ clean(variant.variant_name) || `Configuration ${index + 1}`,
+ fallbackLabel:
+ clean(variant.variant_name) || `Configuration ${index + 1}`,
+ persisted: Boolean(variant.id),
           })),
         },
       }),
     );
   }, [orderedVariants]);
 
-  function emit(next: AdminElectronicsVariant[]) {
-    onChange(
-      next.map((variant, index) => ({
+ function emit(next: AdminElectronicsVariant[]) {
+ onChange(
+ next.map((variant, index) => ({
         ...variant,
-        display_position: index,
+ display_position: index,
       })),
     );
   }
 
-  function updateVariant(
-    clientId: string,
-    updates: Partial<AdminElectronicsVariant>,
+ function updateVariant(
+ clientId: string,
+ updates: Partial<AdminElectronicsVariant>,
   ) {
-    emit(
-      orderedVariants.map((variant) =>
-        variant.clientId === clientId
+ emit(
+ orderedVariants.map((variant) =>
+ variant.clientId === clientId
           ? {
               ...variant,
               ...updates,
@@ -2676,32 +3221,32 @@ export default function ElectronicsVariantEditor({
     );
   }
 
-  function updateAttribute(clientId: string, key: string, value: string) {
-    emit(
-      orderedVariants.map((variant) => {
-        if (variant.clientId !== clientId) {
-          return variant;
+ function updateAttribute(clientId: string, key: string, value: string) {
+ emit(
+ orderedVariants.map((variant) => {
+ if (variant.clientId !== clientId) {
+ return variant;
         }
 
-        const attributes = {
+ const attributes = {
           ...(variant.attributes ?? {}),
         };
 
-        if (clean(value)) {
-          attributes[key] = value;
+ if (clean(value)) {
+ attributes[key] = value;
         } else {
-          delete attributes[key];
+ delete attributes[key];
         }
 
-        return {
+ return {
           ...variant,
-          attributes,
+ attributes,
         };
       }),
     );
   }
 
-  function updateHierarchyValue(clientId: string, key: string, value: string) {
+ function updateHierarchyValue(clientId: string, key: string, value: string) {
     /*
      * Attribute + generated configuration name must be updated
      * together.
@@ -2711,27 +3256,27 @@ export default function ElectronicsVariantEditor({
      * and can immediately erase the hierarchy value the user just
      * selected.
      */
-    emit(
-      orderedVariants.map((variant) => {
-        if (variant.clientId !== clientId) {
-          return variant;
+ emit(
+ orderedVariants.map((variant) => {
+ if (variant.clientId !== clientId) {
+ return variant;
         }
 
-        const attributes = {
+ const attributes = {
           ...(variant.attributes ?? {}),
         };
 
-        if (clean(value)) {
-          attributes[key] = value;
+ if (clean(value)) {
+ attributes[key] = value;
         } else {
-          delete attributes[key];
+ delete attributes[key];
         }
 
-        return {
+ return {
           ...variant,
-          attributes,
-          variant_name:
-            generatedName(attributes, levels) || variant.variant_name,
+ attributes,
+ variant_name:
+ generatedName(attributes, levels) || variant.variant_name,
         };
       }),
     );
@@ -2744,193 +3289,193 @@ export default function ElectronicsVariantEditor({
    * Values are deliberately excluded: changing "Black, White" to
    * "Black, White, Orange" does not change the selector order.
    */
-  function variantsWithHierarchy(
-    sourceVariants: AdminElectronicsVariant[],
-    nextLevels: OptionLevel[],
+ function variantsWithHierarchy(
+ sourceVariants: AdminElectronicsVariant[],
+ nextLevels: OptionLevel[],
   ) {
-    const normalizedKeys = nextLevels
+ const normalizedKeys = nextLevels
       .map((level) => normalizeKey(level.label || level.key))
       .filter(
         (key, index, allKeys) =>
-          Boolean(key) &&
+ Boolean(key) &&
           !hiddenSelectorKeys.has(key) &&
-          allKeys.indexOf(key) === index,
+ allKeys.indexOf(key) === index,
       );
 
-    const hierarchyValue = JSON.stringify(normalizedKeys);
+ const hierarchyValue = JSON.stringify(normalizedKeys);
 
-    return sourceVariants.map((variant) => {
-      const attributes = {
+ return sourceVariants.map((variant) => {
+ const attributes = {
         ...(variant.attributes ?? {}),
       };
 
-      if (normalizedKeys.length > 0) {
-        attributes[configurationHierarchyKey] = hierarchyValue;
+ if (normalizedKeys.length > 0) {
+ attributes[configurationHierarchyKey] = hierarchyValue;
       } else {
-        delete attributes[configurationHierarchyKey];
+ delete attributes[configurationHierarchyKey];
       }
 
-      return {
+ return {
         ...variant,
-        attributes,
+ attributes,
       };
     });
   }
 
-  function commitHierarchy(nextLevels: OptionLevel[]) {
-    setLevels(nextLevels);
-    emit(variantsWithHierarchy(orderedVariants, nextLevels));
+ function commitHierarchy(nextLevels: OptionLevel[]) {
+ setLevels(nextLevels);
+ emit(variantsWithHierarchy(orderedVariants, nextLevels));
   }
 
-  function addLevel() {
-    const label = clean(newLevelName);
-    const key = normalizeKey(label);
+ function addLevel() {
+ const label = clean(newLevelName);
+ const key = normalizeKey(label);
 
-    if (!label || !key) {
-      setHierarchyError("Enter a configuration level name.");
-      return;
+ if (!label || !key) {
+ setHierarchyError("Enter a configuration level name.");
+ return;
     }
 
-    if (hiddenSelectorKeys.has(key)) {
-      setHierarchyError(`${label} is reserved for internal product metadata.`);
-      return;
+ if (hiddenSelectorKeys.has(key)) {
+ setHierarchyError(`${label} is reserved for internal product metadata.`);
+ return;
     }
 
-    if (levels.some((level) => level.key === key)) {
-      setHierarchyError(`${label} already exists in the hierarchy.`);
-      return;
+ if (levels.some((level) => level.key === key)) {
+ setHierarchyError(`${label} already exists in the hierarchy.`);
+ return;
     }
 
-    const nextLevels = [
+ const nextLevels = [
       ...levels,
       {
-        id: crypto.randomUUID(),
-        key,
-        label,
-        values: [],
+ id: crypto.randomUUID(),
+ key,
+ label,
+ values: [],
       },
     ];
 
-    commitHierarchy(nextLevels);
+ commitHierarchy(nextLevels);
 
-    setNewLevelName("");
-    setHierarchyError("");
+ setNewLevelName("");
+ setHierarchyError("");
   }
 
-  function renameLevel(levelId: string, label: string) {
-    const currentLevel = levels.find((level) => level.id === levelId);
+ function renameLevel(levelId: string, label: string) {
+ const currentLevel = levels.find((level) => level.id === levelId);
 
-    if (!currentLevel) {
-      return;
+ if (!currentLevel) {
+ return;
     }
 
-    const nextKey = normalizeKey(label);
+ const nextKey = normalizeKey(label);
 
-    const nextLevels = levels.map((level) =>
-      level.id === levelId
+ const nextLevels = levels.map((level) =>
+ level.id === levelId
         ? {
             ...level,
-            label,
+ label,
             ...(nextKey ? { key: nextKey } : {}),
           }
         : level,
     );
 
-    setLevels(nextLevels);
+ setLevels(nextLevels);
 
-    const renamedVariants = orderedVariants.map((variant) => {
-      const attributes = {
+ const renamedVariants = orderedVariants.map((variant) => {
+ const attributes = {
         ...(variant.attributes ?? {}),
       };
 
-      if (
-        nextKey &&
-        nextKey !== currentLevel.key &&
-        Object.prototype.hasOwnProperty.call(attributes, currentLevel.key)
+ if (
+ nextKey &&
+ nextKey !== currentLevel.key &&
+ Object.prototype.hasOwnProperty.call(attributes, currentLevel.key)
       ) {
-        const previousValue = attributes[currentLevel.key];
+ const previousValue = attributes[currentLevel.key];
 
-        delete attributes[currentLevel.key];
-        attributes[nextKey] = previousValue;
+ delete attributes[currentLevel.key];
+ attributes[nextKey] = previousValue;
       }
 
-      return {
+ return {
         ...variant,
-        attributes,
+ attributes,
       };
     });
 
-    emit(variantsWithHierarchy(renamedVariants, nextLevels));
+ emit(variantsWithHierarchy(renamedVariants, nextLevels));
   }
 
-  function updateLevelValues(levelId: string, values: string[]) {
-    const normalizedValues = uniqueValues(values.map(clean).filter(Boolean));
+ function updateLevelValues(levelId: string, values: string[]) {
+ const normalizedValues = uniqueValues(values.map(clean).filter(Boolean));
 
-    setLevels((current) =>
-      current.map((level) =>
-        level.id === levelId
+ setLevels((current) =>
+ current.map((level) =>
+ level.id === levelId
           ? {
               ...level,
-              values: normalizedValues,
+ values: normalizedValues,
             }
           : level,
       ),
     );
   }
 
-  function moveLevel(levelId: string, direction: "up" | "down") {
-    const index = levels.findIndex((level) => level.id === levelId);
+ function moveLevel(levelId: string, direction: "up" | "down") {
+ const index = levels.findIndex((level) => level.id === levelId);
 
-    if (index < 0) {
-      return;
+ if (index < 0) {
+ return;
     }
 
-    const target = direction === "up" ? index - 1 : index + 1;
+ const target = direction === "up" ? index - 1 : index + 1;
 
-    if (target < 0 || target >= levels.length) {
-      return;
+ if (target < 0 || target >= levels.length) {
+ return;
     }
 
-    const nextLevels = [...levels];
+ const nextLevels = [...levels];
 
-    [nextLevels[index], nextLevels[target]] = [
-      nextLevels[target],
-      nextLevels[index],
+ [nextLevels[index], nextLevels[target]] = [
+ nextLevels[target],
+ nextLevels[index],
     ];
 
-    commitHierarchy(nextLevels);
+ commitHierarchy(nextLevels);
   }
 
-  function removeLevel(levelId: string) {
-    const level = levels.find((candidate) => candidate.id === levelId);
+ function removeLevel(levelId: string) {
+ const level = levels.find((candidate) => candidate.id === levelId);
 
-    if (!level) {
-      return;
+ if (!level) {
+ return;
     }
 
-    const nextLevels = levels.filter((candidate) => candidate.id !== levelId);
+ const nextLevels = levels.filter((candidate) => candidate.id !== levelId);
 
-    setLevels(nextLevels);
+ setLevels(nextLevels);
 
-    const variantsWithoutLevel = orderedVariants.map((variant) => {
-      const attributes = {
+ const variantsWithoutLevel = orderedVariants.map((variant) => {
+ const attributes = {
         ...(variant.attributes ?? {}),
       };
 
-      delete attributes[level.key];
+ delete attributes[level.key];
 
-      return {
+ return {
         ...variant,
-        attributes,
+ attributes,
       };
     });
 
-    emit(variantsWithHierarchy(variantsWithoutLevel, nextLevels));
+ emit(variantsWithHierarchy(variantsWithoutLevel, nextLevels));
   }
 
-  function generatedCombinationIdentity(
-    attributes: Record<string, string>,
-    hierarchyLevels: OptionLevel[],
+ function generatedCombinationIdentity(
+ attributes: Record<string, string>,
+ hierarchyLevels: OptionLevel[],
   ) {
     /*
      * Configuration identity MUST use the entire customer-choice path.
@@ -2941,90 +3486,90 @@ export default function ElectronicsVariantEditor({
      * The level key is included as well as its value so this remains
      * correct for arbitrary hierarchy depth.
      */
-    return JSON.stringify(
-      hierarchyLevels.map((level) => [
-        level.key,
-        optionIdentity(clean(attributes[level.key])),
+ return JSON.stringify(
+ hierarchyLevels.map((level) => [
+ level.key,
+ optionIdentity(clean(attributes[level.key])),
       ]),
     );
   }
 
-  function generateCombinations() {
-    const normalizedLevels = levels
+ function generateCombinations() {
+ const normalizedLevels = levels
       .map((level) => ({
         ...level,
-        key: normalizeKey(level.label || level.key),
-        label: clean(level.label) || humanizeKey(level.key),
-        values: uniqueValues(level.values.map(clean).filter(Boolean)),
+ key: normalizeKey(level.label || level.key),
+ label: clean(level.label) || humanizeKey(level.key),
+ values: uniqueValues(level.values.map(clean).filter(Boolean)),
       }))
       .filter((level) => level.key);
 
-    if (normalizedLevels.length === 0) {
-      setHierarchyError(
+ if (normalizedLevels.length === 0) {
+ setHierarchyError(
         "Add at least one configuration level before generating combinations.",
       );
-      return;
+ return;
     }
 
-    const duplicateKeys = normalizedLevels
+ const duplicateKeys = normalizedLevels
       .map((level) => level.key)
       .filter((key, index, allKeys) => allKeys.indexOf(key) !== index);
 
-    if (duplicateKeys.length > 0) {
-      setHierarchyError("Each hierarchy level must have a different name.");
-      return;
+ if (duplicateKeys.length > 0) {
+ setHierarchyError("Each hierarchy level must have a different name.");
+ return;
     }
 
-    const incomplete = normalizedLevels.find(
+ const incomplete = normalizedLevels.find(
       (level) => level.values.length === 0,
     );
 
-    if (incomplete) {
-      setHierarchyError(`Add at least one value for ${incomplete.label}.`);
-      return;
+ if (incomplete) {
+ setHierarchyError(`Add at least one value for ${incomplete.label}.`);
+ return;
     }
 
-    const combinations = cartesianProduct(
-      normalizedLevels,
+ const combinations = cartesianProduct(
+ normalizedLevels,
     ).map((attributes) =>
-      attributesWithColorHex(
-        attributes,
-        normalizedLevels,
+ attributesWithColorHex(
+ attributes,
+ normalizedLevels,
       ),
     );
 
-    if (combinations.length > 250) {
-      setHierarchyError(
+ if (combinations.length > 250) {
+ setHierarchyError(
         `This hierarchy would create ${combinations.length} configurations. Reduce the option values before generating.`,
       );
-      return;
+ return;
     }
 
-    const existingByCombination = new Map(
-      orderedVariants.map((variant) => [
-        generatedCombinationIdentity(
-          variant.attributes ?? {},
-          normalizedLevels,
+ const existingByCombination = new Map(
+ orderedVariants.map((variant) => [
+ generatedCombinationIdentity(
+ variant.attributes ?? {},
+ normalizedLevels,
         ),
-        variant,
+ variant,
       ]),
     );
 
-    const generated = combinations.map((attributes, index) => {
-      const existing = existingByCombination.get(
-        generatedCombinationIdentity(attributes, normalizedLevels),
+ const generated = combinations.map((attributes, index) => {
+ const existing = existingByCombination.get(
+ generatedCombinationIdentity(attributes, normalizedLevels),
       );
 
-      const hierarchyValue = hierarchyMetadata(normalizedLevels);
+ const hierarchyValue = hierarchyMetadata(normalizedLevels);
 
-      if (!existing) {
-        return defaultVariant(
+ if (!existing) {
+ return defaultVariant(
           {
             ...attributes,
-            [configurationHierarchyKey]: hierarchyValue,
+ [configurationHierarchyKey]: hierarchyValue,
           },
-          normalizedLevels,
-          index,
+ normalizedLevels,
+ index,
         );
       }
 
@@ -3036,99 +3581,99 @@ export default function ElectronicsVariantEditor({
        * exact configuration carries the same authoritative
        * customer-facing option order.
        */
-      const preservedAttributes = Object.fromEntries(
-        Object.entries(existing.attributes ?? {}).filter(
+ const preservedAttributes = Object.fromEntries(
+ Object.entries(existing.attributes ?? {}).filter(
           ([key]) =>
-            key !== configurationHierarchyKey &&
+ key !== configurationHierarchyKey &&
             !normalizedLevels.some((level) => level.key === key),
         ),
       );
 
-      return {
+ return {
         ...existing,
-        display_position: index,
-        attributes: {
+ display_position: index,
+ attributes: {
           ...preservedAttributes,
           ...attributes,
-          [configurationHierarchyKey]: hierarchyValue,
+ [configurationHierarchyKey]: hierarchyValue,
         },
-        variant_name: generatedName(attributes, normalizedLevels),
+ variant_name: generatedName(attributes, normalizedLevels),
       };
     });
 
-    setLevels(normalizedLevels);
-    setHierarchyError("");
-    emit(generated);
+ setLevels(normalizedLevels);
+ setHierarchyError("");
+ emit(generated);
 
-    if (generated.length > 0) {
-      setActiveClientId(generated[0].clientId);
+ if (generated.length > 0) {
+ setActiveClientId(generated[0].clientId);
     }
   }
 
-  function addManualConfiguration() {
-    const next = defaultVariant({}, [], orderedVariants.length);
-    emit([...orderedVariants, next]);
-    setActiveClientId(next.clientId);
+ function addManualConfiguration() {
+ const next = defaultVariant({}, [], orderedVariants.length);
+ emit([...orderedVariants, next]);
+ setActiveClientId(next.clientId);
   }
 
-  function duplicateVariant(variant: AdminElectronicsVariant) {
-    const copy: AdminElectronicsVariant = {
+ function duplicateVariant(variant: AdminElectronicsVariant) {
+ const copy: AdminElectronicsVariant = {
       ...variant,
-      clientId: crypto.randomUUID(),
-      id: null,
-      variant_name: `${variant.variant_name} Copy`,
-      sku: "",
-      barcode: "",
-      display_position: orderedVariants.length,
-      attributes: {
+ clientId: crypto.randomUUID(),
+ id: null,
+ variant_name: `${variant.variant_name} Copy`,
+ sku: "",
+ barcode: "",
+ display_position: orderedVariants.length,
+ attributes: {
         ...(variant.attributes ?? {}),
       },
     };
 
-    emit([...orderedVariants, copy]);
-    setActiveClientId(copy.clientId);
+ emit([...orderedVariants, copy]);
+ setActiveClientId(copy.clientId);
   }
 
-  function removeVariant(clientId: string) {
-    if (orderedVariants.length <= 1) {
-      return;
+ function removeVariant(clientId: string) {
+ if (orderedVariants.length <= 1) {
+ return;
     }
 
-    const index = orderedVariants.findIndex(
+ const index = orderedVariants.findIndex(
       (variant) => variant.clientId === clientId,
     );
 
-    const next = orderedVariants.filter(
+ const next = orderedVariants.filter(
       (variant) => variant.clientId !== clientId,
     );
 
-    emit(next);
+ emit(next);
 
-    const fallback = next[Math.min(Math.max(index, 0), next.length - 1)];
+ const fallback = next[Math.min(Math.max(index, 0), next.length - 1)];
 
-    setActiveClientId(fallback?.clientId ?? "");
+ setActiveClientId(fallback?.clientId ?? "");
   }
 
-  function moveVariant(clientId: string, direction: "up" | "down") {
-    const index = orderedVariants.findIndex(
+ function moveVariant(clientId: string, direction: "up" | "down") {
+ const index = orderedVariants.findIndex(
       (variant) => variant.clientId === clientId,
     );
 
-    const target = direction === "up" ? index - 1 : index + 1;
+ const target = direction === "up" ? index - 1 : index + 1;
 
-    if (index < 0 || target < 0 || target >= orderedVariants.length) {
-      return;
+ if (index < 0 || target < 0 || target >= orderedVariants.length) {
+ return;
     }
 
-    const next = [...orderedVariants];
-    [next[index], next[target]] = [next[target], next[index]];
+ const next = [...orderedVariants];
+ [next[index], next[target]] = [next[target], next[index]];
 
-    emit(next);
+ emit(next);
   }
 
-  function applyTechnicalSpecificationsToAll() {
-    if (!activeVariant || orderedVariants.length <= 1) {
-      return;
+ function applyTechnicalSpecificationsToAll() {
+ if (!activeVariant || orderedVariants.length <= 1) {
+ return;
     }
 
     /*
@@ -3138,8 +3683,8 @@ export default function ElectronicsVariantEditor({
      * Everything else in attributes, excluding the reserved
      * hierarchy metadata, is technical metadata.
      */
-    const selectorKeys = new Set(
-      levels.map((level) => normalizeKey(level.key)),
+ const selectorKeys = new Set(
+ levels.map((level) => normalizeKey(level.key)),
     );
 
     /*
@@ -3149,26 +3694,26 @@ export default function ElectronicsVariantEditor({
      * Copying technical specifications from one configuration to another
      * must never remove, replace or duplicate colour metadata.
      */
-    const isTechnicalKey = (key: string) => {
-      const normalizedKey = normalizeKey(key);
+ const isTechnicalKey = (key: string) => {
+ const normalizedKey = normalizeKey(key);
 
-      return (
-        normalizedKey !== configurationHierarchyKey &&
+ return (
+ normalizedKey !== configurationHierarchyKey &&
         !selectorKeys.has(normalizedKey) &&
         !hiddenSelectorKeys.has(normalizedKey)
       );
     };
 
-    const sourceTechnicalEntries = Object.entries(
-      activeVariant.attributes ?? {},
+ const sourceTechnicalEntries = Object.entries(
+ activeVariant.attributes ?? {},
     ).filter(([key]) => isTechnicalKey(key));
 
-    if (sourceTechnicalEntries.length === 0) {
-      setTechnicalSpecsMessage("");
-      setCustomSpecError(
+ if (sourceTechnicalEntries.length === 0) {
+ setTechnicalSpecsMessage("");
+ setCustomSpecError(
         "Add at least one technical specification before applying specs to all configurations.",
       );
-      return;
+ return;
     }
 
     /*
@@ -3179,72 +3724,72 @@ export default function ElectronicsVariantEditor({
      * Configuration hierarchy, selector values, prices, SKU, stock,
      * availability and every other variant field remain untouched.
      */
-    const allTechnicalKeys = new Set(
-      orderedVariants.flatMap((variant) =>
-        Object.keys(variant.attributes ?? {}).filter(isTechnicalKey),
+ const allTechnicalKeys = new Set(
+ orderedVariants.flatMap((variant) =>
+ Object.keys(variant.attributes ?? {}).filter(isTechnicalKey),
       ),
     );
 
-    const sourceTechnicalAttributes = Object.fromEntries(
-      sourceTechnicalEntries,
+ const sourceTechnicalAttributes = Object.fromEntries(
+ sourceTechnicalEntries,
     );
 
-    emit(
-      orderedVariants.map((variant) => {
-        const attributes = {
+ emit(
+ orderedVariants.map((variant) => {
+ const attributes = {
           ...(variant.attributes ?? {}),
         };
 
-        for (const key of allTechnicalKeys) {
-          delete attributes[key];
+ for (const key of allTechnicalKeys) {
+ delete attributes[key];
         }
 
-        Object.assign(attributes, sourceTechnicalAttributes);
+ Object.assign(attributes, sourceTechnicalAttributes);
 
-        return {
+ return {
           ...variant,
-          attributes,
+ attributes,
         };
       }),
     );
 
-    setCustomSpecError("");
-    setTechnicalSpecsMessage(
+ setCustomSpecError("");
+ setTechnicalSpecsMessage(
       `Applied ${sourceTechnicalEntries.length} ${
-        sourceTechnicalEntries.length === 1
+ sourceTechnicalEntries.length === 1
           ? "technical specification"
           : "technical specifications"
       } to all ${orderedVariants.length} configurations.`,
     );
   }
 
-  function parseBulkTechnicalSpecifications() {
-    if (!activeVariant) {
-      return;
+ function parseBulkTechnicalSpecifications() {
+ if (!activeVariant) {
+ return;
     }
 
-    setCustomSpecError("");
-    setTechnicalSpecsMessage("");
+ setCustomSpecError("");
+ setTechnicalSpecsMessage("");
 
-    const source = bulkTechnicalSpecs
+ const source = bulkTechnicalSpecs
       .replace(/\u00a0/g, " ")
       .replace(/[\u200B-\u200D\uFEFF]/g, "")
       .replace(/\[\s*\d+(?:\s*,\s*\d+)*\s*\]/g, "")
       .replace(/\r\n?/g, "\n")
       .trim();
 
-    if (!source) {
-      setCustomSpecError("Paste technical specifications before parsing them.");
-      return;
+ if (!source) {
+ setCustomSpecError("Paste technical specifications before parsing them.");
+ return;
     }
 
-    const protectedKeys = new Set([
+ const protectedKeys = new Set([
       ...levels.map((level) => normalizeKey(level.key)),
-      normalizeKey(configurationHierarchyKey),
+ normalizeKey(configurationHierarchyKey),
     ]);
 
-    const parsedSpecifications = new Map<
-      string,
+ const parsedSpecifications = new Map<
+ string,
       { label: string; value: string }
     >();
 
@@ -3260,145 +3805,145 @@ export default function ElectronicsVariantEditor({
      * This intentionally does NOT require every specification to already
      * exist on its own physical line.
      */
-    let entries = specificationEntriesFromStructuredText(source);
+ let entries = specificationEntriesFromStructuredText(source);
 
     /*
      * If the original clipboard text has been flattened into one continuous
      * string, run the reconstruction layer and parse the reconstructed form.
      */
-    if (entries.length <= 1) {
-      const reconstructed = splitFlattenedTechnicalSpecificationText(source);
+ if (entries.length <= 1) {
+ const reconstructed = splitFlattenedTechnicalSpecificationText(source);
 
-      const reconstructedEntries =
-        specificationEntriesFromStructuredText(reconstructed);
+ const reconstructedEntries =
+ specificationEntriesFromStructuredText(reconstructed);
 
-      if (reconstructedEntries.length > entries.length) {
-        entries = reconstructedEntries;
+ if (reconstructedEntries.length > entries.length) {
+ entries = reconstructedEntries;
       }
     }
 
-    let ignoredLines = 0;
+ let ignoredLines = 0;
 
-    for (const entry of entries) {
-      const label = clean(entry.label);
-      const value = clean(entry.value);
+ for (const entry of entries) {
+ const label = clean(entry.label);
+ const value = clean(entry.value);
 
-      if (!label || !value || label.length > 100) {
-        ignoredLines += 1;
-        continue;
+ if (!label || !value || label.length > 100) {
+ ignoredLines += 1;
+ continue;
       }
 
-      const lowerLabel = label.toLocaleLowerCase();
-      const lowerValue = value.toLocaleLowerCase();
+ const lowerLabel = label.toLocaleLowerCase();
+ const lowerValue = value.toLocaleLowerCase();
 
       /*
        * Google table column headers are metadata, not product specs.
        */
-      if (lowerLabel === "category" && lowerValue === "specification details") {
-        continue;
+ if (lowerLabel === "category" && lowerValue === "specification details") {
+ continue;
       }
 
-      const identity = normalizeKey(label);
+ const identity = normalizeKey(label);
 
-      if (
+ if (
         !identity ||
-        protectedKeys.has(identity) ||
-        hiddenSelectorKeys.has(identity)
+ protectedKeys.has(identity) ||
+ hiddenSelectorKeys.has(identity)
       ) {
-        ignoredLines += 1;
-        continue;
+ ignoredLines += 1;
+ continue;
       }
 
-      parsedSpecifications.set(identity, {
-        label,
-        value,
+ parsedSpecifications.set(identity, {
+ label,
+ value,
       });
     }
 
-    if (parsedSpecifications.size === 0) {
-      setCustomSpecError(
+ if (parsedSpecifications.size === 0) {
+ setCustomSpecError(
         "No specifications detected. Paste a specification table, bullet list, or Title/value text.",
       );
-      return;
+ return;
     }
 
-    const parsedEntries = Array.from(parsedSpecifications.values());
+ const parsedEntries = Array.from(parsedSpecifications.values());
 
-    emit(
-      orderedVariants.map((variant) => {
-        if (variant.clientId !== activeVariant.clientId) {
-          return variant;
+ emit(
+ orderedVariants.map((variant) => {
+ if (variant.clientId !== activeVariant.clientId) {
+ return variant;
         }
 
-        const attributes = {
+ const attributes = {
           ...(variant.attributes ?? {}),
         };
 
-        for (const existingKey of Object.keys(attributes)) {
-          const existingIdentity = normalizeKey(existingKey);
+ for (const existingKey of Object.keys(attributes)) {
+ const existingIdentity = normalizeKey(existingKey);
 
-          if (
-            parsedSpecifications.has(existingIdentity) &&
-            existingKey !== configurationHierarchyKey
+ if (
+ parsedSpecifications.has(existingIdentity) &&
+ existingKey !== configurationHierarchyKey
           ) {
-            delete attributes[existingKey];
+ delete attributes[existingKey];
           }
         }
 
-        for (const specification of parsedEntries) {
-          attributes[specification.label] = specification.value;
+ for (const specification of parsedEntries) {
+ attributes[specification.label] = specification.value;
         }
 
-        return {
+ return {
           ...variant,
-          attributes,
+ attributes,
         };
       }),
     );
 
-    setBulkTechnicalSpecs("");
-    setCustomSpecError("");
+ setBulkTechnicalSpecs("");
+ setCustomSpecError("");
 
-    const ignoredMessage =
-      ignoredLines > 0
+ const ignoredMessage =
+ ignoredLines > 0
         ? ` · ignored ${ignoredLines} ${
-            ignoredLines === 1
+ ignoredLines === 1
               ? "non-specification item"
               : "non-specification items"
           }`
         : "";
 
-    setTechnicalSpecsMessage(
+ setTechnicalSpecsMessage(
       `Parsed ${parsedEntries.length} ${
-        parsedEntries.length === 1
+ parsedEntries.length === 1
           ? "technical specification"
           : "technical specifications"
       }${ignoredMessage}.`,
     );
   }
 
-  function addCustomSpecification() {
-    if (!activeVariant) {
-      return;
+ function addCustomSpecification() {
+ if (!activeVariant) {
+ return;
     }
 
-    setTechnicalSpecsMessage("");
+ setTechnicalSpecsMessage("");
 
-    const label = clean(customSpecName);
-    const key = normalizeKey(label);
+ const label = clean(customSpecName);
+ const key = normalizeKey(label);
 
-    setCustomSpecError("");
+ setCustomSpecError("");
 
-    if (!label || !key) {
-      return;
+ if (!label || !key) {
+ return;
     }
 
-    if (
-      levels.some((level) => level.key === key) ||
-      Object.prototype.hasOwnProperty.call(activeVariant.attributes ?? {}, key)
+ if (
+ levels.some((level) => level.key === key) ||
+ Object.prototype.hasOwnProperty.call(activeVariant.attributes ?? {}, key)
     ) {
-      setCustomSpecError("This technical specification already exists.");
-      return;
+ setCustomSpecError("This technical specification already exists.");
+ return;
     }
 
     /*
@@ -3406,146 +3951,93 @@ export default function ElectronicsVariantEditor({
      * specification through updateAttribute(..., "") immediately
      * deleted it. Create the editable key directly instead.
      */
-    emit(
-      orderedVariants.map((variant) =>
-        variant.clientId === activeVariant.clientId
+ emit(
+ orderedVariants.map((variant) =>
+ variant.clientId === activeVariant.clientId
           ? {
               ...variant,
-              attributes: {
+ attributes: {
                 ...(variant.attributes ?? {}),
-                [key]: "",
+ [key]: "",
               },
             }
           : variant,
       ),
     );
 
-    setCustomSpecName("");
-    setCustomSpecError("");
+ setCustomSpecName("");
+ setCustomSpecError("");
   }
 
-  const selectorKeys = new Set([
+ const selectorKeys = new Set([
     ...levels.map((level) => level.key),
-    configurationHierarchyKey,
+ configurationHierarchyKey,
   ]);
 
-  const technicalAttributes = activeVariant
+ const technicalAttributes = activeVariant
     ? Object.entries(activeVariant.attributes ?? {}).filter(
         ([key]) =>
           !selectorKeys.has(key) && !hiddenSelectorKeys.has(normalizeKey(key)),
       )
     : [];
 
-  const activeIndex = activeVariant
+ const activeIndex = activeVariant
     ? orderedVariants.findIndex(
         (variant) => variant.clientId === activeVariant.clientId,
       )
     : -1;
 
-  function applyNeutralSelectFocus(
-    event: React.FocusEvent<HTMLDivElement>,
+  /*
+   * Spreadsheet-style vertical entry for the compact configuration table.
+   *
+   * Enter moves to the same numeric field in the next configuration.
+   * The final row intentionally stays put and Enter never submits the form.
+   */
+ function moveToNextConfigurationNumericField(
+ event: React.KeyboardEvent<HTMLInputElement>,
+ rowIndex: number,
+ field: "price" | "sale" | "stock" | "low-stock",
   ) {
-    const target = event.target;
-
-    if (!(target instanceof HTMLSelectElement)) {
-      return;
+ if (event.key !== "Enter") {
+ return;
     }
 
-    target.style.setProperty(
-      "border-color",
-      "#202223",
-      "important",
-    );
+ event.preventDefault();
+ event.stopPropagation();
 
-    target.style.setProperty(
-      "box-shadow",
-      "0 0 0 1px #202223",
-      "important",
-    );
+ const nextRowIndex = rowIndex + 1;
 
-    target.style.setProperty(
-      "outline",
-      "none",
-      "important",
-    );
-
-    target.style.setProperty(
-      "--tw-ring-color",
-      "transparent",
-      "important",
-    );
-
-    target.style.setProperty(
-      "--tw-ring-offset-shadow",
-      "0 0 #0000",
-      "important",
-    );
-
-    target.style.setProperty(
-      "--tw-ring-shadow",
-      "0 0 #0000",
-      "important",
-    );
-  }
-
-  function clearNeutralSelectFocus(
-    event: React.FocusEvent<HTMLDivElement>,
-  ) {
-    const target = event.target;
-
-    if (!(target instanceof HTMLSelectElement)) {
-      return;
+ if (nextRowIndex >= orderedVariants.length) {
+ return;
     }
 
-    target.style.setProperty(
-      "border-color",
-      "#d1d1d1",
-      "important",
-    );
+ const selector =
+      `input[data-config-numeric-field="${field}"]` +
+      `[data-config-row-index="${nextRowIndex}"]`;
 
-    target.style.setProperty(
-      "box-shadow",
-      "none",
-      "important",
-    );
+ const nextInput =
+ event.currentTarget
+        .closest(".st-admin-config-table-v2")
+        ?.querySelector<HTMLInputElement>(selector);
 
-    target.style.setProperty(
-      "outline",
-      "none",
-      "important",
-    );
+ if (!nextInput || nextInput.disabled) {
+ return;
+    }
 
-    target.style.setProperty(
-      "--tw-ring-color",
-      "transparent",
-      "important",
-    );
-
-    target.style.setProperty(
-      "--tw-ring-offset-shadow",
-      "0 0 #0000",
-      "important",
-    );
-
-    target.style.setProperty(
-      "--tw-ring-shadow",
-      "0 0 #0000",
-      "important",
-    );
+ nextInput.focus();
+ nextInput.select();
   }
 
-  return (
+ return (
     <div
-      className="st-admin-config-editor-v2"
-      onFocusCapture={applyNeutralSelectFocus}
-      onBlurCapture={clearNeutralSelectFocus}
+ className="st-admin-config-editor-v2"
     >
       <section className="st-admin-config-options-v2">
         <div className="st-admin-config-section-heading-v2">
           <div>
             <h3>Options</h3>
             <p>
-              Define the choices customers select before buying.
+ Define the choices customers select before buying.
             </p>
           </div>
 
@@ -3558,32 +4050,23 @@ export default function ElectronicsVariantEditor({
         {levels.length > 0 ? (
           <div className="st-admin-config-options-list-v2">
             {levels.map((level, index) => {
-              const presetLevel =
-                isPresetHierarchyLabel(level.label);
+ const presetLevel =
+ isPresetHierarchyLabel(level.label);
 
-              const colorLevel =
-                level.key === "color" ||
-                level.key === "colour";
+ const colorLevel =
+ level.key === "color" ||
+ level.key === "colour";
 
-              return (
+ return (
                 <div
-                  key={level.id}
-                  className="st-admin-config-option-row-v2"
+ key={level.id}
+ className="st-admin-config-option-row-v2"
                 >
                   <div className="st-admin-config-option-name-v2">
-                    <select
-                      value={
-                        presetLevel
-                          ? level.label
-                          : "__custom__"
-                      }
-                      onChange={(event) => {
-                        const value =
-                          event.target.value;
-
-                        if (
-                          value === "__custom__"
-                        ) {
+                    <OptionNamePicker
+                      value={level.label}
+                      onChange={(value) => {
+                        if (value === "__custom__") {
                           if (presetLevel) {
                             renameLevel(
                               level.id,
@@ -3594,44 +4077,26 @@ export default function ElectronicsVariantEditor({
                           return;
                         }
 
-                        renameLevel(
-                          level.id,
-                          value,
-                        );
+                        renameLevel(level.id, value);
                       }}
-                    >
-                      {hierarchyPresetLabels.map(
-                        (label) => (
-                          <option
-                            key={label}
-                            value={label}
-                          >
-                            {label}
-                          </option>
-                        ),
-                      )}
-
-                      <option value="__custom__">
-                        Custom option
-                      </option>
-                    </select>
+                    />
 
                     {!presetLevel ? (
                       <input
-                        value={
-                          level.label ===
+ value={
+ level.label ===
                           "Custom Option"
                             ? ""
                             : level.label
                         }
-                        onChange={(event) =>
-                          renameLevel(
-                            level.id,
-                            event.target.value ||
+ onChange={(event) =>
+ renameLevel(
+ level.id,
+ event.target.value ||
                               "Custom Option",
                           )
                         }
-                        placeholder="Option name"
+ placeholder="Option name"
                       />
                     ) : null}
                   </div>
@@ -3640,55 +4105,55 @@ export default function ElectronicsVariantEditor({
                     {colorLevel ? (
                       <>
                         <ConfigurationColorPicker
-                          value={null}
-                          onChange={(color) => {
-                            const canonicalColorName =
-                              canonicalizeProductColorwayName(
-                                color.name,
+ value={null}
+ onChange={(color) => {
+ const canonicalColorName =
+ canonicalizeProductColorwayName(
+ color.name,
                               );
 
-                            setLevels(
+ setLevels(
                               (current) =>
-                                current.map(
+ current.map(
                                   (
-                                    currentLevel,
+ currentLevel,
                                   ) => {
-                                    if (
-                                      currentLevel.id !==
-                                      level.id
+ if (
+ currentLevel.id !==
+ level.id
                                     ) {
-                                      return currentLevel;
+ return currentLevel;
                                     }
 
-                                    const alreadySelected =
-                                      currentLevel.values.some(
+ const alreadySelected =
+ currentLevel.values.some(
                                         (
-                                          value,
+ value,
                                         ) =>
-                                          canonicalizeProductColorwayName(
-                                            value,
+ canonicalizeProductColorwayName(
+ value,
                                           ).toLocaleLowerCase() ===
-                                          canonicalColorName.toLocaleLowerCase(),
+ canonicalColorName.toLocaleLowerCase(),
                                       );
 
-                                    return {
+ return {
                                       ...currentLevel,
 
-                                      values:
-                                        alreadySelected
+ values:
+ alreadySelected
                                           ? currentLevel.values
                                           : [
                                               ...currentLevel.values,
-                                              canonicalColorName,
+ canonicalColorName,
                                             ],
 
-                                      colorHexByValue:
+ colorHexByValue:
                                         {
                                           ...(currentLevel.colorHexByValue ??
                                             {}),
 
-                                          [canonicalColorName]:
-                                            color.hex,
+ [canonicalColorName]:
+ color.hex,
                                         },
                                     };
                                   },
@@ -3698,32 +4163,32 @@ export default function ElectronicsVariantEditor({
                         />
 
 {level.values.length >
-                        0 ? (
+ 0 ? (
                           <div className="st-admin-config-value-pills-v2">
                             {level.values.map(
                               (value) => (
                                 <span key={value}>
                                   {canonicalizeProductColorwayName(
-                                    value,
+ value,
                                   )}
 
                                   <button
-                                    type="button"
-                                    onClick={() =>
-                                      updateLevelValues(
-                                        level.id,
-                                        level.values.filter(
+ type="button"
+ onClick={() =>
+ updateLevelValues(
+ level.id,
+ level.values.filter(
                                           (
-                                            item,
+ item,
                                           ) =>
-                                            item !==
-                                            value,
+ item !==
+ value,
                                         ),
                                       )
                                     }
-                                    className="st-admin-color-chip-remove-v2"
-                                      aria-label={`Remove ${canonicalizeProductColorwayName(
-                                      value,
+ className="st-admin-color-chip-remove-v2"
+ aria-label={`Remove ${canonicalizeProductColorwayName(
+ value,
                                     )}`}
                                   >
                                     <X />
@@ -3736,11 +4201,11 @@ export default function ElectronicsVariantEditor({
                       </>
                     ) : (
                       <SearchableOptionValuePicker
-                        level={level}
-                        onChange={(values) =>
-                          updateLevelValues(
-                            level.id,
-                            values,
+ level={level}
+ onChange={(values) =>
+ updateLevelValues(
+ level.id,
+ values,
                           )
                         }
                       />
@@ -3749,42 +4214,42 @@ export default function ElectronicsVariantEditor({
 
                   <div className="st-admin-config-option-actions-v2">
                     <button
-                      type="button"
-                      disabled={index === 0}
-                      onClick={() =>
-                        moveLevel(
-                          level.id,
+ type="button"
+ disabled={index === 0}
+ onClick={() =>
+ moveLevel(
+ level.id,
                           "up",
                         )
                       }
-                      aria-label={`Move ${level.label} earlier`}
+ aria-label={`Move ${level.label} earlier`}
                     >
                       <ArrowUp />
                     </button>
 
                     <button
-                      type="button"
-                      disabled={
-                        index ===
-                        levels.length - 1
+ type="button"
+ disabled={
+ index ===
+ levels.length - 1
                       }
-                      onClick={() =>
-                        moveLevel(
-                          level.id,
+ onClick={() =>
+ moveLevel(
+ level.id,
                           "down",
                         )
                       }
-                      aria-label={`Move ${level.label} later`}
+ aria-label={`Move ${level.label} later`}
                     >
                       <ArrowDown />
                     </button>
 
                     <button className="st-admin-destructive-control-v2"
-                      type="button"
-                      onClick={() =>
-                        removeLevel(level.id)
+ type="button"
+ onClick={() =>
+ removeLevel(level.id)
                       }
-                      aria-label={`Remove ${level.label}`}
+ aria-label={`Remove ${level.label}`}
                     >
                       <Trash2 />
                     </button>
@@ -3795,79 +4260,50 @@ export default function ElectronicsVariantEditor({
           </div>
         ) : (
           <div className="st-admin-config-empty-options-v2">
-            No customer options yet. Add
-            Storage, Color, Size, RAM or another
-            option only when the product needs it.
+ No customer options yet. Add
+ Storage, Color, Size, RAM or another
+ option only when the product needs it.
           </div>
         )}
 
         <div className="st-admin-config-option-builder-v2">
-          <select
-            value={
-              hierarchyPresetLabels.includes(
-                newLevelName as
-                  (typeof hierarchyPresetLabels)[number],
-              )
-                ? newLevelName
-                : newLevelName
-                  ? "__custom__"
-                  : ""
-            }
-            onChange={(event) => {
-              const value =
-                event.target.value;
-
-              setNewLevelName(
-                value === "__custom__"
-                  ? "Custom Option"
-                  : value,
-              );
-
+          <OptionNamePicker
+            value={newLevelName}
+            placeholder="Add product option..."
+            onChange={(value) => {
               setHierarchyError("");
+
+              if (value === "__custom__") {
+                setNewLevelName("Custom Option");
+                return;
+              }
+
+              setNewLevelName(value);
             }}
-          >
-            <option value="">
-              Add product option...
-            </option>
-
-            {hierarchyPresetLabels.map(
-              (label) => (
-                <option
-                  key={label}
-                  value={label}
-                >
-                  {label}
-                </option>
-              ),
-            )}
-
-            <option value="__custom__">
-              Custom option
-            </option>
-          </select>
+          />
 
           <button
-            type="button"
-            onClick={addLevel}
-            disabled={
+ type="button"
+ onClick={addLevel}
+ disabled={
               !clean(newLevelName)
             }
           >
             <Plus />
-            Add option
+ Add option
           </button>
 
           <button
-            type="button"
-            onClick={
-              generateCombinations
+ type="button"
+ onClick={
+ generateCombinations
             }
-            disabled={
-              levels.length === 0
+ disabled={
+ levels.length === 0
             }
           >
             <RefreshCw />
-            Generate configurations
+ Generate configurations
           </button>
         </div>
 
@@ -3879,12 +4315,12 @@ export default function ElectronicsVariantEditor({
 
         {levels.length > 0 ? (
           <p className="st-admin-config-choice-order-v2">
-            Customer selection order:{" "}
+ Customer selection order:{" "}
             <strong>
               {levels
                 .map(
                   (level) =>
-                    level.label,
+ level.label,
                 )
                 .join(" → ")}
             </strong>
@@ -3897,21 +4333,21 @@ export default function ElectronicsVariantEditor({
           <div>
             <h3>Configurations</h3>
             <p>
-              Edit the important inventory fields
-              directly without opening every
-              configuration.
+ Edit the important inventory fields
+ directly without opening every
+ configuration.
             </p>
           </div>
 
           <button
-            type="button"
-            onClick={
-              addManualConfiguration
+ type="button"
+ onClick={
+ addManualConfiguration
             }
-            className="st-admin-config-add-manual-v2"
+ className="st-admin-config-add-manual-v2"
           >
             <CirclePlus />
-            Add configuration
+ Add configuration
           </button>
         </div>
 
@@ -3928,50 +4364,51 @@ export default function ElectronicsVariantEditor({
 
             {orderedVariants.map(
               (variant, index) => {
-                const active =
-                  activeVariant?.clientId ===
-                  variant.clientId;
+ const active =
+ activeVariant?.clientId ===
+ variant.clientId;
 
-                const unavailable =
-                  variant.availability_status ===
+ const unavailable =
+ variant.availability_status ===
                     "out_of_stock" ||
-                  variant.availability_status ===
+ variant.availability_status ===
                     "coming_soon";
 
-                const label =
-                  clean(
-                    variant.variant_name,
+ const label =
+ clean(
+ variant.variant_name,
                   ) ||
                   `Configuration ${
-                    index + 1
+ index + 1
                   }`;
 
-                return (
+ return (
                   <div
-                    key={
-                      variant.clientId
+ key={
+ variant.clientId
                     }
-                    className={`st-admin-config-table-row-v2 ${
-                      active
+ className={`st-admin-config-table-row-v2 ${
+ active
                         ? "is-active"
                         : ""
                     }`}
-                    onClick={() =>
-                      setActiveClientId(
-                        variant.clientId,
+ aria-selected={active}
+ onClick={() =>
+ setActiveClientId(
+ variant.clientId,
                       )
                     }
                   >
                     <button
-                      type="button"
-                      className="st-admin-config-table-name-v2"
-                      onClick={(
-                        event,
+ type="button"
+ className="st-admin-config-table-name-v2"
+ onClick={(
+ event,
                       ) => {
-                        event.stopPropagation();
+ event.stopPropagation();
 
-                        setActiveClientId(
-                          variant.clientId,
+ setActiveClientId(
+ variant.clientId,
                         );
                       }}
                     >
@@ -3980,44 +4417,53 @@ export default function ElectronicsVariantEditor({
                       </strong>
 
                       <small>
-                        Configuration{" "}
+ Configuration{" "}
                         {index + 1}
                       </small>
                     </button>
 
                     <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        variant.regular_price
+ type="number"
+ min="0"
+ step="0.01"
+ value={
+ variant.regular_price
                       }
-                      aria-label={`Regular price for ${label}`}
-                      onFocus={() =>
-                        setActiveClientId(
-                          variant.clientId,
+ aria-label={`Regular price for ${label}`}
+ data-config-numeric-field="price"
+ data-config-row-index={index}
+ onKeyDown={(event) =>
+ moveToNextConfigurationNumericField(
+ event,
+ index,
+                          "price",
                         )
                       }
-                      onClick={(
-                        event,
-                      ) =>
-                        event.stopPropagation()
+ onFocus={() =>
+ setActiveClientId(
+ variant.clientId,
+                        )
                       }
-                      onChange={(
-                        event,
+ onClick={(
+ event,
                       ) =>
-                        updateVariant(
-                          variant.clientId,
+ event.stopPropagation()
+                      }
+ onChange={(
+ event,
+                      ) =>
+ updateVariant(
+ variant.clientId,
                           {
-                            regular_price:
-                              event.target
+ regular_price:
+ event.target
                                 .value ===
                               ""
                                 ? ""
                                 : Math.max(
-                                    0,
-                                    Number(
-                                      event
+ 0,
+ Number(
+ event
                                         .target
                                         .value,
                                     ),
@@ -4028,39 +4474,48 @@ export default function ElectronicsVariantEditor({
                     />
 
                     <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={
-                        variant.sale_price
+ type="number"
+ min="0"
+ step="0.01"
+ value={
+ variant.sale_price
                       }
-                      placeholder="—"
-                      aria-label={`Sale price for ${label}`}
-                      onFocus={() =>
-                        setActiveClientId(
-                          variant.clientId,
+ placeholder="—"
+ aria-label={`Sale price for ${label}`}
+ data-config-numeric-field="sale"
+ data-config-row-index={index}
+ onKeyDown={(event) =>
+ moveToNextConfigurationNumericField(
+ event,
+ index,
+                          "sale",
                         )
                       }
-                      onClick={(
-                        event,
-                      ) =>
-                        event.stopPropagation()
+ onFocus={() =>
+ setActiveClientId(
+ variant.clientId,
+                        )
                       }
-                      onChange={(
-                        event,
+ onClick={(
+ event,
                       ) =>
-                        updateVariant(
-                          variant.clientId,
+ event.stopPropagation()
+                      }
+ onChange={(
+ event,
+                      ) =>
+ updateVariant(
+ variant.clientId,
                           {
-                            sale_price:
-                              event.target
+ sale_price:
+ event.target
                                 .value ===
                               ""
                                 ? ""
                                 : Math.max(
-                                    0,
-                                    Number(
-                                      event
+ 0,
+ Number(
+ event
                                         .target
                                         .value,
                                     ),
@@ -4071,40 +4526,49 @@ export default function ElectronicsVariantEditor({
                     />
 
                     <input
-                      type="number"
-                      min="0"
-                      disabled={unavailable}
-                      value={
-                        unavailable
+ type="number"
+ min="0"
+ disabled={unavailable}
+ value={
+ unavailable
                           ? 0
                           : variant.stock_quantity
                       }
-                      aria-label={`Stock for ${label}`}
-                      onFocus={() =>
-                        setActiveClientId(
-                          variant.clientId,
+ aria-label={`Stock for ${label}`}
+ data-config-numeric-field="stock"
+ data-config-row-index={index}
+ onKeyDown={(event) =>
+ moveToNextConfigurationNumericField(
+ event,
+ index,
+                          "stock",
                         )
                       }
-                      onClick={(
-                        event,
-                      ) =>
-                        event.stopPropagation()
+ onFocus={() =>
+ setActiveClientId(
+ variant.clientId,
+                        )
                       }
-                      onChange={(
-                        event,
+ onClick={(
+ event,
                       ) =>
-                        updateVariant(
-                          variant.clientId,
+ event.stopPropagation()
+                      }
+ onChange={(
+ event,
+                      ) =>
+ updateVariant(
+ variant.clientId,
                           {
-                            stock_quantity:
-                              Math.max(
-                                0,
-                                Number(
-                                  event
+ stock_quantity:
+ Math.max(
+ 0,
+ Number(
+ event
                                     .target
                                     .value,
                                 ) ||
-                                  0,
+ 0,
                               ),
                           },
                         )
@@ -4112,34 +4576,43 @@ export default function ElectronicsVariantEditor({
                     />
 
                     <input
-                      type="number"
-                      min="0"
-                      value={
-                        variant.low_stock_threshold
+ type="number"
+ min="0"
+ value={
+ variant.low_stock_threshold
                       }
-                      aria-label={`Low-stock threshold for ${label}`}
-                      title="Low-stock threshold"
-                      onFocus={() =>
-                        setActiveClientId(
-                          variant.clientId,
+ aria-label={`Low-stock threshold for ${label}`}
+ title="Low-stock threshold"
+ data-config-numeric-field="low-stock"
+ data-config-row-index={index}
+ onKeyDown={(event) =>
+ moveToNextConfigurationNumericField(
+ event,
+ index,
+                          "low-stock",
                         )
                       }
-                      onClick={(
-                        event,
-                      ) =>
-                        event.stopPropagation()
+ onFocus={() =>
+ setActiveClientId(
+ variant.clientId,
+                        )
                       }
-                      onChange={(
-                        event,
+ onClick={(
+ event,
                       ) =>
-                        updateVariant(
-                          variant.clientId,
+ event.stopPropagation()
+                      }
+ onChange={(
+ event,
+                      ) =>
+ updateVariant(
+ variant.clientId,
                           {
-                            low_stock_threshold:
-                              Math.max(
-                                0,
-                                Number(
-                                  event.target
+ low_stock_threshold:
+ Math.max(
+ 0,
+ Number(
+ event.target
                                     .value,
                                 ) || 0,
                               ),
@@ -4148,30 +4621,25 @@ export default function ElectronicsVariantEditor({
                       }
                     />
 
-                    <select
-                      value={
-                        variant.availability_status
-                      }
-                      aria-label={`Availability for ${label}`}
-                      onFocus={() =>
+                    <AdminDirectorySelect
+                      value={variant.availability_status}
+                      options={availabilityOptions}
+                      placeholder="Select availability"
+                      directoryLabel="Availability"
+                      ariaLabel={`Availability for ${label}`}
+                      searchable={false}
+                      stopPropagation
+                      onOpen={() => {
                         setActiveClientId(
                           variant.clientId,
-                        )
-                      }
-                      onClick={(
-                        event,
-                      ) =>
-                        event.stopPropagation()
-                      }
-                      onChange={(
-                        event,
-                      ) => {
+                        );
+                      }}
+                      onChange={(value) => {
                         /*
                          * The compact table and Configuration Details
                          * represent one exact configuration state.
                          *
-                         * Make the edited row authoritative immediately
-                         * so its detail panel always mirrors this value.
+                         * Keep the edited row authoritative immediately.
                          */
                         setActiveClientId(
                           variant.clientId,
@@ -4181,29 +4649,11 @@ export default function ElectronicsVariantEditor({
                           variant.clientId,
                           {
                             availability_status:
-                              event.target
-                                .value as AvailabilityStatus,
+                              value as AvailabilityStatus,
                           },
                         );
                       }}
-                    >
-                      {availabilityOptions.map(
-                        (option) => (
-                          <option
-                            key={
-                              option.value
-                            }
-                            value={
-                              option.value
-                            }
-                          >
-                            {
-                              option.label
-                            }
-                          </option>
-                        ),
-                      )}
-                    </select>
+                    />
                   </div>
                 );
               },
@@ -4217,11 +4667,11 @@ export default function ElectronicsVariantEditor({
           <div className="st-admin-config-section-heading-v2">
             <div>
               <h3>
-                Configuration details
+ Configuration details
               </h3>
               <p>
-                Advanced controls for the
-                selected configuration.
+ Advanced controls for the
+ selected configuration.
               </p>
             </div>
 
@@ -4233,83 +4683,83 @@ export default function ElectronicsVariantEditor({
 
           <div className="st-admin-config-detail-toolbar-v2">
             <button
-              type="button"
-              disabled={
-                activeIndex <= 0
+ type="button"
+ disabled={
+ activeIndex <= 0
               }
-              onClick={() =>
-                moveVariant(
-                  activeVariant.clientId,
+ onClick={() =>
+ moveVariant(
+ activeVariant.clientId,
                   "up",
                 )
               }
             >
               <ChevronLeft />
-              Earlier
+ Earlier
             </button>
 
             <button
-              type="button"
-              disabled={
-                activeIndex >=
-                orderedVariants.length -
-                  1
+ type="button"
+ disabled={
+ activeIndex >=
+ orderedVariants.length -
+ 1
               }
-              onClick={() =>
-                moveVariant(
-                  activeVariant.clientId,
+ onClick={() =>
+ moveVariant(
+ activeVariant.clientId,
                   "down",
                 )
               }
             >
-              Later
+ Later
               <ChevronRight />
             </button>
 
             <button
-              type="button"
-              onClick={() =>
-                updateVariant(
-                  activeVariant.clientId,
+ type="button"
+ onClick={() =>
+ updateVariant(
+ activeVariant.clientId,
                   {
-                    variant_name:
-                      generatedName(
-                        activeVariant.attributes,
-                        levels,
+ variant_name:
+ generatedName(
+ activeVariant.attributes,
+ levels,
                       ) ||
-                      activeVariant.variant_name,
+ activeVariant.variant_name,
                   },
                 )
               }
             >
               <Check />
-              Generate name
+ Generate name
             </button>
 
             <button
-              type="button"
-              onClick={() =>
-                duplicateVariant(
-                  activeVariant,
+ type="button"
+ onClick={() =>
+ duplicateVariant(
+ activeVariant,
                 )
               }
             >
               <Copy />
-              Duplicate
+ Duplicate
             </button>
 
             {orderedVariants.length >
-            1 ? (
+ 1 ? (
               <button className="st-admin-destructive-control-v2"
-                type="button"
-                onClick={() =>
-                  removeVariant(
-                    activeVariant.clientId,
+ type="button"
+ onClick={() =>
+ removeVariant(
+ activeVariant.clientId,
                   )
                 }
               >
                 <Trash2 />
-                Remove
+ Remove
               </button>
             ) : null}
           </div>
@@ -4322,61 +4772,40 @@ export default function ElectronicsVariantEditor({
                 {levels.map(
                   (level) => (
                     <label
-                      key={
-                        level.id
+ key={
+ level.id
                       }
                     >
                       <span>
                         {
-                          level.label
+ level.label
                         }
                       </span>
 
-                      <select
+                      <AdminDirectorySelect
                         value={
-                          activeVariant
-                            .attributes[
+                          activeVariant.attributes[
                             level.key
                           ] ?? ""
                         }
-                        onChange={(
-                          event,
-                        ) =>
+                        options={level.values.map(
+                          (optionValue) => ({
+                            value: optionValue,
+                            label: optionValue,
+                          }),
+                        )}
+                        placeholder={`Select ${level.label.toLowerCase()}`}
+                        directoryLabel={`${level.label} directory`}
+                        ariaLabel={`Select ${level.label}`}
+                        searchable
+                        onChange={(value) =>
                           updateHierarchyValue(
                             activeVariant.clientId,
                             level.key,
-                            event
-                              .target
-                              .value,
+                            value,
                           )
                         }
-                      >
-                        <option value="">
-                          Select{" "}
-                          {
-                            level.label
-                          }
-                        </option>
-
-                        {level.values.map(
-                          (
-                            value,
-                          ) => (
-                            <option
-                              key={
-                                value
-                              }
-                              value={
-                                value
-                              }
-                            >
-                              {
-                                value
-                              }
-                            </option>
-                          ),
-                        )}
-                      </select>
+                      />
                     </label>
                   ),
                 )}
@@ -4390,21 +4819,21 @@ export default function ElectronicsVariantEditor({
             <div className="st-admin-config-detail-grid-v2">
               <label className="st-admin-config-identity-name-v2">
                 <span>
-                  Configuration name
+ Configuration name
                 </span>
 
                 <input
-                  value={
-                    activeVariant.variant_name
+ value={
+ activeVariant.variant_name
                   }
-                  onChange={(
-                    event,
+ onChange={(
+ event,
                   ) =>
-                    updateVariant(
-                      activeVariant.clientId,
+ updateVariant(
+ activeVariant.clientId,
                       {
-                        variant_name:
-                          event
+ variant_name:
+ event
                             .target
                             .value,
                       },
@@ -4417,19 +4846,19 @@ export default function ElectronicsVariantEditor({
                 <span>SKU</span>
 
                 <input
-                  value={
-                    activeVariant.sku
+ value={
+ activeVariant.sku
                   }
-                  placeholder="Optional internal SKU"
-                  autoComplete="off"
-                  onChange={(
-                    event,
+ placeholder="Optional internal SKU"
+ autoComplete="off"
+ onChange={(
+ event,
                   ) =>
-                    updateVariant(
-                      activeVariant.clientId,
+ updateVariant(
+ activeVariant.clientId,
                       {
-                        sku:
-                          event
+ sku:
+ event
                             .target
                             .value,
                       },
@@ -4440,25 +4869,39 @@ export default function ElectronicsVariantEditor({
 
               <label>
                 <span>
-                  Barcode
+ Barcode
                 </span>
 
                 <input
-                  value={
-                    activeVariant.barcode ??
+ className="st-admin-barcode-scanner-input-v52"
+ value={
+ activeVariant.barcode ??
                     ""
                   }
-                  inputMode="numeric"
-                  autoComplete="off"
-                  placeholder="UPC, EAN, GTIN or custom barcode"
-                  onChange={(
-                    event,
+ inputMode="numeric"
+ autoComplete="off"
+ placeholder="UPC, EAN, GTIN or custom barcode"
+ onKeyDown={(event) => {
+ if (event.key !== "Enter") {
+ return;
+                    }
+
+                    /*
+                     * Barcode scanners commonly terminate a scan with Enter.
+                     * Keep that Enter local to this field so it cannot become
+                     * an implicit Save Draft / Publish form submission.
+                     */
+ event.preventDefault();
+ event.stopPropagation();
+                  }}
+ onChange={(
+ event,
                   ) =>
-                    updateVariant(
-                      activeVariant.clientId,
+ updateVariant(
+ activeVariant.clientId,
                       {
-                        barcode:
-                          event
+ barcode:
+ event
                             .target
                             .value,
                       },
@@ -4482,14 +4925,14 @@ export default function ElectronicsVariantEditor({
                           <div className="flex items-start justify-between gap-4">
                             <div>
                               <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#fdb73e]">
-                                Quick paste specifications
+ Quick paste specifications
                               </p>
 
                               <p className="st-admin-spec-paste-v2__description">
-                                Paste a specification table or feature list from
-                                Google or another source. Top-level sections are
-                                preserved automatically, including nested
-                                specification details.
+ Paste a specification table or feature list from
+ Google or another source. Top-level sections are
+ preserved automatically, including nested
+ specification details.
                               </p>
                             </div>
 
@@ -4499,36 +4942,36 @@ export default function ElectronicsVariantEditor({
 
                         <div className="st-admin-spec-paste-v2__body">
                           <textarea
-                            value={bulkTechnicalSpecs}
-                            onChange={(event) => {
-                              setBulkTechnicalSpecs(event.target.value);
-                              setCustomSpecError("");
-                              setTechnicalSpecsMessage("");
+ value={bulkTechnicalSpecs}
+ onChange={(event) => {
+ setBulkTechnicalSpecs(event.target.value);
+ setCustomSpecError("");
+ setTechnicalSpecsMessage("");
                             }}
-                            onPaste={(event) => {
-                              const html =
-                                event.clipboardData.getData("text/html");
+ onPaste={(event) => {
+ const html =
+ event.clipboardData.getData("text/html");
 
-                              if (!html) {
-                                return;
+ if (!html) {
+ return;
                               }
 
-                              const reconstructed =
-                                specificationTextFromClipboardHtml(html);
+ const reconstructed =
+ specificationTextFromClipboardHtml(html);
 
-                              if (!reconstructed) {
-                                return;
+ if (!reconstructed) {
+ return;
                               }
 
-                              event.preventDefault();
+ event.preventDefault();
 
-                              setBulkTechnicalSpecs(reconstructed);
-                              setCustomSpecError("");
-                              setTechnicalSpecsMessage("");
+ setBulkTechnicalSpecs(reconstructed);
+ setCustomSpecError("");
+ setTechnicalSpecsMessage("");
                             }}
-                            rows={8}
-                            spellCheck={false}
-                            placeholder={`Paste specifications here...
+ rows={8}
+ spellCheck={false}
+ placeholder={`Paste specifications here...
 
 Display and Design
 Screen: 6.3-inch OLED with ProMotion
@@ -4539,27 +4982,27 @@ Performance and Hardware
 Processor: Apple A19 Pro chipset
 RAM: 12 GB RAM
 Storage Options: 256GB, 512GB, and 1TB`}
-                            className="st-admin-spec-paste-v2__textarea st-admin-spec-paste-focus-final st-admin-spec-paste-focus-real"
+ className="st-admin-spec-paste-v2__textarea st-admin-spec-paste-focus-final st-admin-spec-paste-focus-real"
 />
 
                           <div className="st-admin-spec-paste-v2__footer">
                             <p className="st-admin-spec-paste-v2__format">
-                              Format:{" "}
+ Format:{" "}
                               <span>
-                                Google table, bullet list, or Title: value
+ Google table, bullet list, or Title: value
                               </span>{" "}
                               · Nested details stay inside their parent
-                              specification.
+ specification.
                             </p>
 
                             <button
-                              type="button"
-                              onClick={parseBulkTechnicalSpecifications}
-                              disabled={!bulkTechnicalSpecs.trim()}
-                              className="st-admin-spec-paste-v2__parse"
+ type="button"
+ onClick={parseBulkTechnicalSpecifications}
+ disabled={!bulkTechnicalSpecs.trim()}
+ className="st-admin-spec-paste-v2__parse"
                             >
                               <Plus className="h-3.5 w-3.5" />
-                              Parse specifications
+ Parse specifications
                             </button>
                           </div>
                         </div>
@@ -4567,20 +5010,20 @@ Storage Options: 256GB, 512GB, and 1TB`}
 
                       <div className="st-admin-spec-add-row-v26">
                         <input
-                          value={customSpecName}
-                          onChange={(event) => {
-                            setCustomSpecName(event.target.value);
-                            setCustomSpecError("");
+ value={customSpecName}
+ onChange={(event) => {
+ setCustomSpecName(event.target.value);
+ setCustomSpecError("");
                           }}
-                          placeholder="Technical metadata — e.g. Charging standard"
-                          className="st-admin-spec-add-v2__input"
+ placeholder="Technical metadata — e.g. Charging standard"
+ className="st-admin-spec-add-v2__input"
                         />
 
                         <div className="st-admin-spec-add-actions-v26">
                           <button
-                            type="button"
-                            onClick={addCustomSpecification}
-                            className="st-admin-spec-add-v2__button"
+ type="button"
+ onClick={addCustomSpecification}
+ className="st-admin-spec-add-v2__button"
                           >
                             <Plus className="h-4 w-4 shrink-0" />
                             <span>Add technical spec</span>
@@ -4588,13 +5031,13 @@ Storage Options: 256GB, 512GB, and 1TB`}
 
                           {orderedVariants.length > 1 ? (
                             <button
-                              type="button"
-                              onClick={applyTechnicalSpecificationsToAll}
-                              className="st-admin-spec-add-v2__button st-admin-spec-add-v2__button--secondary"
+ type="button"
+ onClick={applyTechnicalSpecificationsToAll}
+ className="st-admin-spec-add-v2__button st-admin-spec-add-v2__button--secondary"
                             >
                               <Copy className="h-3.5 w-3.5 shrink-0" />
                               <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
-                                Apply specs to all
+ Apply specs to all
                               </span>
                             </button>
                           ) : null}
@@ -4609,8 +5052,8 @@ Storage Options: 256GB, 512GB, and 1TB`}
 
                       {technicalSpecsMessage ? (
                         <p
-                          role="status"
-                          className="st-admin-spec-message-v2"
+ role="status"
+ className="st-admin-spec-message-v2"
                         >
                           {technicalSpecsMessage}
                         </p>
@@ -4619,11 +5062,11 @@ Storage Options: 256GB, 512GB, and 1TB`}
                       {technicalAttributes.length > 0 ? (
                         <div className="st-admin-spec-list-v26">
                           <button
-                            type="button"
-                            className="st-admin-spec-disclosure-v26"
-                            aria-expanded={technicalSpecsExpanded}
-                            onClick={() =>
-                              setTechnicalSpecsExpanded((current) => !current)
+ type="button"
+ className="st-admin-spec-disclosure-v26"
+ aria-expanded={technicalSpecsExpanded}
+ onClick={() =>
+ setTechnicalSpecsExpanded((current) => !current)
                             }
                           >
                             <span>
@@ -4633,26 +5076,26 @@ Storage Options: 256GB, 512GB, and 1TB`}
                             </span>
                             <small>{technicalAttributes.length}</small>
                             <span
-                              className={`st-admin-spec-disclosure-v26__chevron ${
-                                technicalSpecsExpanded ? "is-expanded" : ""
+ className={`st-admin-spec-disclosure-v26__chevron ${
+ technicalSpecsExpanded ? "is-expanded" : ""
                               }`}
-                              aria-hidden="true"
+ aria-hidden="true"
                             >
                               ↓
                             </span>
                           </button>
 
                           <div
-                            className={`st-admin-spec-collapse-v26 ${
-                              technicalSpecsExpanded ? "is-expanded" : ""
+ className={`st-admin-spec-collapse-v26 ${
+ technicalSpecsExpanded ? "is-expanded" : ""
                             }`}
                           >
                             <div className="st-admin-spec-collapse-v26__inner">
                               <div className="st-admin-spec-grid-v2">
                                 {technicalAttributes.map(([key, value]) => (
                                   <div
-                                    key={key}
-                                    className="st-admin-spec-item-v2"
+ key={key}
+ className="st-admin-spec-item-v2"
                                   >
                                     <div className="st-admin-spec-item-v2__header">
                                       <span className="st-admin-spec-item-v2__label">
@@ -4662,36 +5105,36 @@ Storage Options: 256GB, 512GB, and 1TB`}
 
                                     <div className="st-admin-spec-item-v29__field">
                                       <input
-                                        value={value}
-                                        onChange={(event) =>
-                                          updateAttribute(
-                                            activeVariant.clientId,
-                                            key,
-                                            event.target.value,
+ value={value}
+ onChange={(event) =>
+ updateAttribute(
+ activeVariant.clientId,
+ key,
+ event.target.value,
                                           )
                                         }
-                                        className="st-admin-spec-item-v2__value st-admin-spec-item-v29__input"
+ className="st-admin-spec-item-v2__value st-admin-spec-item-v29__input"
                                       />
 
                                       <button
-                                        type="button"
-                                        onClick={() => {
-                                          const attributes = {
+ type="button"
+ onClick={() => {
+ const attributes = {
                                             ...activeVariant.attributes,
                                           };
 
-                                          delete attributes[key];
+ delete attributes[key];
 
-                                          updateVariant(
-                                            activeVariant.clientId,
+ updateVariant(
+ activeVariant.clientId,
                                             {
-                                              attributes,
+ attributes,
                                             },
                                           );
                                         }}
-                                        className="st-admin-spec-item-v29__remove"
-                                        aria-label={`Remove ${key} specification`}
-                                        title={`Remove ${key}`}
+ className="st-admin-spec-item-v29__remove"
+ aria-label={`Remove ${key} specification`}
+ title={`Remove ${key}`}
                                       >
                                         <X aria-hidden="true" />
                                       </button>
@@ -4704,7 +5147,7 @@ Storage Options: 256GB, 512GB, and 1TB`}
                         </div>
                       ) : null}
                     </section>,
-                    specificationsPortalTarget,
+ specificationsPortalTarget,
                   )
                 : null}
     </div>

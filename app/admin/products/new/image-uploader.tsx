@@ -62,7 +62,7 @@ type ImageUploaderProps = {
 
 const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
-const maximumImagesPerConfiguration = 10;
+const maximumImagesPerConfiguration = 15;
 const maximumFileSize = 10 * 1024 * 1024;
 
 function clean(value: unknown) {
@@ -168,6 +168,63 @@ export default function ImageUploader({
       setActiveConfigurationId(configurations[0].clientId);
     }
   }, [activeConfigurationId, configurations]);
+
+  /*
+   * Keep image assignments synchronized with the live configuration
+   * directory.
+   *
+   * New-product images refer to configurations by temporary clientId.
+   * If the configuration matrix changes after an image was assigned,
+   * remove only identities that no longer exist before the image payload
+   * reaches the upload/server pipeline.
+   *
+   * Empty configurationIds continues to mean Shared.
+   */
+  useEffect(() => {
+    const validConfigurationIds = new Set(
+      configurations
+        .map((configuration) => clean(configuration.clientId))
+        .filter(Boolean),
+    );
+
+    setImages((current) => {
+      let changed = false;
+
+      const reconciled = current.map((image) => {
+        const nextConfigurationIds = Array.from(
+          new Set(
+            image.configurationIds
+              .map((configurationId) => clean(configurationId))
+              .filter(
+                (configurationId) =>
+                  Boolean(configurationId) &&
+                  validConfigurationIds.has(configurationId),
+              ),
+          ),
+        );
+
+        const unchanged =
+          nextConfigurationIds.length === image.configurationIds.length &&
+          nextConfigurationIds.every(
+            (configurationId, index) =>
+              configurationId === image.configurationIds[index],
+          );
+
+        if (unchanged) {
+          return image;
+        }
+
+        changed = true;
+
+        return {
+          ...image,
+          configurationIds: nextConfigurationIds,
+        };
+      });
+
+      return changed ? reconciled : current;
+    });
+  }, [configurations]);
 
   useEffect(() => {
     imagesRef.current = images;

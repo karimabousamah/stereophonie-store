@@ -70,7 +70,7 @@ type ImageManagerProps = {
   successMessage?: string;
 };
 
-const maximumImagesPerConfiguration = 10;
+const maximumImagesPerConfiguration = 15;
 const maximumFileSize = 10 * 1024 * 1024;
 
 function isAcceptedImageFile(file: File) {
