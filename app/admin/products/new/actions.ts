@@ -4,7 +4,10 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import sharp from "sharp";
 
-import { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-shop-loader";
+import {
+  SHOP_CATALOGUE_CACHE_TAG,
+  STOREFRONT_RECOMMENDATION_CACHE_TAG,
+} from "@/lib/storefront-cache-tags";
 import { createClient } from "@/lib/supabase/server";
 
 type AvailabilityStatus =
@@ -1158,7 +1161,9 @@ async function createProductUnsafe(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/admin/products");
   revalidatePath("/");
+  revalidatePath("/shop");
   revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirect(
     `/admin/products/${product.id}?saved=${
