@@ -9881,3 +9881,60 @@ html
 /* ==========================================================
    END STOREFRONT DYNAMIC ISLAND — HEADER REVEAL AUTHORITY V47
    ========================================================== */
+
+/* ==========================================================
+   STOREFRONT DYNAMIC ISLAND — FINAL VISUAL AUTHORITY V48
+   Visual treatment only.
+   Position and motion remain owned by V47 + Framer Motion.
+   ========================================================== */
+
+.st-storefront-transition-layer
+  .st-storefront-transition-island {
+  overflow: hidden !important;
+
+  border: 1px solid rgba(166, 106, 0, 0.58) !important;
+  background: rgba(255, 255, 255, 0.995) !important;
+
+  box-shadow:
+    0 10px 30px rgba(29, 29, 31, 0.14),
+    0 3px 10px rgba(166, 106, 0, 0.12) !important;
+
+  isolation: isolate;
+}
+
+.st-storefront-transition-island__content {
+  position: relative;
+  z-index: 2;
+}
+
+.st-storefront-transition-island__icon,
+.st-storefront-transition-island__icon--complete,
+.st-storefront-transition-island__spinner {
+  color: #a66a00 !important;
+  opacity: 1 !important;
+}
+
+.st-storefront-transition-island__icon svg,
+.st-storefront-transition-island__spinner svg {
+  opacity: 1 !important;
+  stroke: currentColor;
+}
+
+.st-storefront-transition-island__label {
+  color: #3a3a3c !important;
+  opacity: 1 !important;
+}
+
+.st-storefront-transition-island__label strong {
+  color: #8a5900 !important;
+  opacity: 1 !important;
+}
+
+.st-storefront-transition-island__sheen {
+  z-index: 1;
+  pointer-events: none !important;
+}
+
+/* ==========================================================
+   END STOREFRONT DYNAMIC ISLAND — FINAL VISUAL AUTHORITY V48
+   ========================================================== */

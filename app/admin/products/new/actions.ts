@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import sharp from "sharp";
 
@@ -1162,7 +1162,7 @@ async function createProductUnsafe(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  updateTag(SHOP_CATALOGUE_CACHE_TAG);
   revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirect(

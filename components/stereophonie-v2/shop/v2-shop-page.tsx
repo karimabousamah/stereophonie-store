@@ -75,6 +75,9 @@ export default function V2ShopPage({
   const [loadMoreFailed, setLoadMoreFailed] =
     useState(false);
 
+  const [catalogueOffset, setCatalogueOffset] =
+    useState(SHOP_PRODUCTS_PER_BATCH);
+
   /*
    * Every server-rendered filter state receives a new first
    * batch. Reset the locally appended catalogue accordingly.
@@ -84,6 +87,7 @@ export default function V2ShopPage({
   useEffect(() => {
     requestVersion.current += 1;
     setLoadedProducts(products);
+    setCatalogueOffset(SHOP_PRODUCTS_PER_BATCH);
     setIsLoadingMore(false);
     setLoadMoreFailed(false);
   }, [
@@ -166,7 +170,7 @@ export default function V2ShopPage({
 
       parameters.set(
         "offset",
-        String(loadedProducts.length),
+        String(catalogueOffset),
       );
 
       parameters.set(
@@ -215,6 +219,10 @@ export default function V2ShopPage({
 
         return [...current, ...newProducts];
       });
+
+      setCatalogueOffset(
+        result.offset + result.limit,
+      );
     } catch (error) {
       if (requestVersion.current === currentVersion) {
         console.error(

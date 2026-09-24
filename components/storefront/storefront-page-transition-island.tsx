@@ -17,7 +17,10 @@ function normalizeRouteKey(pathname: string, search: string) {
 }
 
 function normalizeDestinationLabel(label: string) {
-  return label.replace(/^(?:Shop|View)\s+/i, "").trim();
+  return label
+    .replace(/^(?:Shop|View)\s+/i, "")
+    .replace(/[›→>]+\s*$/g, "")
+    .trim();
 }
 
 function getDestinationLabel(anchor: HTMLAnchorElement, url: URL) {

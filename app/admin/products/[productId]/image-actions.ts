@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import sharp from "sharp";
 
@@ -207,7 +207,7 @@ async function refreshProductPages(productId: string) {
   revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${productId}`);
   revalidatePath("/");
-  revalidateTag(SHOP_CATALOGUE_CACHE_TAG, "max");
+  updateTag(SHOP_CATALOGUE_CACHE_TAG);
 }
 
 export async function uploadProductImages(formData: FormData) {
