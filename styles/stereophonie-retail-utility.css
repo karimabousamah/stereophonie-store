@@ -5630,7 +5630,7 @@
     .st-retail-card__name {
     display: -webkit-box !important;
 
-    min-height: 31px !important;
+    min-height: 0 !important;
 
     margin: 0 !important;
 
@@ -6417,7 +6417,7 @@
     .st-retail-card__name {
     display: -webkit-box !important;
 
-    min-height: 31px !important;
+    min-height: 0 !important;
 
     margin: 0 !important;
 
@@ -7060,7 +7060,7 @@
     .st-retail-card__name {
     display: -webkit-box !important;
 
-    min-height: 31px !important;
+    min-height: 0 !important;
 
     overflow: hidden !important;
 

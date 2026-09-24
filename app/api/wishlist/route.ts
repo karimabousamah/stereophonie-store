@@ -249,6 +249,7 @@ export async function GET() {
           display_position,
           variant_name,
           size,
+          attributes,
           is_active,
           regular_price,
           sale_price,

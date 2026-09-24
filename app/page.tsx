@@ -580,6 +580,7 @@ export default async function HomePage() {
                 stock_quantity,
                 size,
                 variant_name,
+                attributes,
                 is_active,
                 availability_status
               )

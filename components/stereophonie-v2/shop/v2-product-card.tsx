@@ -10,6 +10,10 @@ import { createPortal } from "react-dom";
 
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 import { isNewDropActive, newDropRemainingMs } from "@/lib/storefront/new-drop";
+import {
+  canonicalizeProductColorwayName,
+  productColorwayHex,
+} from "@/lib/product-colorways";
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 type Props = {
@@ -258,6 +262,300 @@ function resolveProductCardSticker({
   }
 
   return badge;
+}
+
+const productCardConfigurationHierarchyKey = "__configuration_hierarchy";
+
+const productCardHiddenConfigurationKeys = new Set([
+  productCardConfigurationHierarchyKey,
+  "color_hex",
+  "colour_hex",
+  "color_name",
+  "colour_name",
+  "band_color",
+  "band_colour",
+  "swatch",
+  "swatch_hex",
+  "hex",
+  "image",
+  "image_url",
+]);
+
+const productCardLegacyPurchaseAttributePriority = [
+  "color",
+  "colour",
+  "screen_size",
+  "display_size",
+  "size",
+  "storage",
+  "capacity",
+  "memory",
+  "ram",
+] as const;
+
+function productCardNormalizedAttributeKey(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+}
+
+function productCardOptionIdentity(value: unknown) {
+  return String(value ?? "").trim().toLocaleLowerCase();
+}
+
+function productCardAttributesRecord(
+  variant: StoreProductCardProduct["variants"][number],
+) {
+  if (
+    !variant.attributes ||
+    typeof variant.attributes !== "object" ||
+    Array.isArray(variant.attributes)
+  ) {
+    return {} as Record<string, unknown>;
+  }
+
+  return Object.fromEntries(
+    Object.entries(variant.attributes).map(([key, value]) => [
+      productCardNormalizedAttributeKey(key),
+      value,
+    ]),
+  );
+}
+
+function productCardPersistedConfigurationHierarchy(
+  variants: StoreProductCardProduct["variants"],
+) {
+  for (const variant of variants) {
+    const record = productCardAttributesRecord(variant);
+    const raw = record[productCardConfigurationHierarchyKey];
+
+    if (raw === null || raw === undefined || raw === "") {
+      continue;
+    }
+
+    let parsed: unknown = raw;
+
+    if (typeof raw === "string") {
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        continue;
+      }
+    }
+
+    if (!Array.isArray(parsed)) {
+      continue;
+    }
+
+    const keys = parsed
+      .map((value) =>
+        productCardNormalizedAttributeKey(String(value ?? "")),
+      )
+      .filter(
+        (key, index, allKeys) =>
+          Boolean(key) &&
+          !productCardHiddenConfigurationKeys.has(key) &&
+          allKeys.indexOf(key) === index,
+      );
+
+    if (keys.length > 0) {
+      return keys;
+    }
+  }
+
+  return [];
+}
+
+function productCardConfigurationKeys(
+  variants: StoreProductCardProduct["variants"],
+) {
+  const activeVariants = variants.filter(
+    (variant) => variant.is_active !== false,
+  );
+
+  const persisted =
+    productCardPersistedConfigurationHierarchy(activeVariants);
+
+  if (persisted.length > 0) {
+    return persisted.filter((attributeKey) =>
+      activeVariants.some((variant) =>
+        Boolean(
+          String(
+            productCardAttributesRecord(variant)[attributeKey] ?? "",
+          ).trim(),
+        ),
+      ),
+    );
+  }
+
+  return productCardLegacyPurchaseAttributePriority.filter(
+    (attributeKey) => {
+      const values = new Set(
+        activeVariants
+          .map((variant) =>
+            productCardOptionIdentity(
+              productCardAttributesRecord(variant)[attributeKey],
+            ),
+          )
+          .filter(Boolean),
+      );
+
+      return values.size > 1;
+    },
+  );
+}
+
+function productCardValuesForAttribute(
+  variants: StoreProductCardProduct["variants"],
+  attributeKey: string,
+) {
+  const values = new Map<string, string>();
+
+  for (const variant of variants) {
+    if (variant.is_active === false) {
+      continue;
+    }
+
+    const raw =
+      productCardAttributesRecord(variant)[attributeKey];
+
+    const value =
+      raw === null || raw === undefined ? "" : String(raw).trim();
+
+    if (!value) {
+      continue;
+    }
+
+    const identity = productCardOptionIdentity(value);
+
+    if (!values.has(identity)) {
+      values.set(identity, value);
+    }
+  }
+
+  return Array.from(values.values());
+}
+
+function productCardStoredColourHex(
+  variants: StoreProductCardProduct["variants"],
+  attributeKey: string,
+  attributeValue: string,
+) {
+  const wantedValue = productCardOptionIdentity(attributeValue);
+
+  for (const variant of variants) {
+    if (variant.is_active === false) {
+      continue;
+    }
+
+    const attributes = productCardAttributesRecord(variant);
+
+    if (
+      productCardOptionIdentity(attributes[attributeKey]) !== wantedValue
+    ) {
+      continue;
+    }
+
+    for (const metadataKey of [
+      "color_hex",
+      "colour_hex",
+      "swatch_hex",
+      "hex",
+    ]) {
+      const value = String(attributes[metadataKey] ?? "").trim();
+
+      if (
+        /^#[0-9a-f]{6}$/i.test(value) ||
+        /^#[0-9a-f]{3}$/i.test(value) ||
+        value.toLowerCase() === "transparent"
+      ) {
+        return value;
+      }
+    }
+  }
+
+  return null;
+}
+
+function productCardOptionsSummary(product: StoreProductCardProduct) {
+  const activeVariants = product.variants.filter(
+    (variant) => variant.is_active !== false,
+  );
+
+  const configurationKeys =
+    productCardConfigurationKeys(activeVariants);
+
+  const colourKey =
+    configurationKeys.find(
+      (key) => key === "color" || key === "colour",
+    ) ?? null;
+
+  const colourValues = colourKey
+    ? productCardValuesForAttribute(activeVariants, colourKey)
+    : [];
+
+  const colourCandidates = colourValues.map((value) => ({
+    value,
+    name: canonicalizeProductColorwayName(value),
+    storedHex: productCardStoredColourHex(
+      activeVariants,
+      colourKey ?? "color",
+      value,
+    ),
+    libraryHex: productColorwayHex(value),
+  }));
+
+  /*
+   * Recover safely from legacy/corrupted colour metadata.
+   *
+   * A valid product can intentionally have custom Admin colours, so the
+   * stored per-variant HEX remains authoritative in normal circumstances.
+   *
+   * However, if multiple distinct recognised colour names all carry the
+   * exact same stored HEX while the shared colourway library resolves them
+   * to different HEX values, the stored metadata is internally inconsistent.
+   * In that narrow case use the known colourway-library values for the card.
+   */
+  const storedHexIdentities = new Set(
+    colourCandidates
+      .map((colour) => colour.storedHex?.trim().toLocaleLowerCase() ?? "")
+      .filter(Boolean),
+  );
+
+  const libraryHexIdentities = new Set(
+    colourCandidates
+      .map((colour) => colour.libraryHex?.trim().toLocaleLowerCase() ?? "")
+      .filter(Boolean),
+  );
+
+  const recoverDuplicatedStoredHex =
+    colourCandidates.length >= 2 &&
+    colourCandidates.every(
+      (colour) => Boolean(colour.storedHex) && Boolean(colour.libraryHex),
+    ) &&
+    storedHexIdentities.size === 1 &&
+    libraryHexIdentities.size > 1;
+
+  const colours = colourCandidates.map((colour) => ({
+    name: colour.name,
+    hex:
+      (recoverDuplicatedStoredHex ? colour.libraryHex : colour.storedHex) ??
+      colour.libraryHex ??
+      "#8e8e93",
+  }));
+
+  const hasMultipleNonColourOptions = configurationKeys
+    .filter((key) => key !== "color" && key !== "colour")
+    .some(
+      (key) =>
+        productCardValuesForAttribute(activeVariants, key).length > 1,
+    );
+
+  return {
+    colours: colours.length >= 2 ? colours : [],
+    hasMultipleNonColourOptions,
+  };
 }
 
 function productCardBadgeClass(badge: string | null) {
@@ -667,63 +965,58 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
           </Link>
 
           {(() => {
-            const colours = Array.from(
-              new Map(
-                product.variants.flatMap((variant) => {
-                  const attributes =
-                    variant.attributes && typeof variant.attributes === "object"
-                      ? variant.attributes
-                      : {};
+            const optionSummary = productCardOptionsSummary(product);
 
-                  const name = String(
-                    attributes.color_name ??
-                      attributes.color ??
-                      attributes.colour ??
-                      "",
-                  ).trim();
+            if (
+              optionSummary.colours.length === 0 &&
+              !optionSummary.hasMultipleNonColourOptions
+            ) {
+              return null;
+            }
 
-                  const hex = String(attributes.color_hex ?? "").trim();
+            return (
+              <div className="st-retail-card__options-summary">
+                {optionSummary.colours.length > 0 ? (
+                  <div
+                    className="st-retail-card__colors"
+                    aria-label="Available colours"
+                  >
+                    {optionSummary.colours.slice(0, 6).map((colour) => (
+                      <span
+                        key={`${colour.name}-${colour.hex}`}
+                        className="st-retail-card__color"
+                        title={colour.name}
+                        aria-label={colour.name}
+                        style={
+                          colour.hex.toLowerCase() === "transparent"
+                            ? {
+                                backgroundColor: "#ffffff",
+                                backgroundImage:
+                                  "linear-gradient(45deg, #c7c7cc 25%, transparent 25%), linear-gradient(-45deg, #c7c7cc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #c7c7cc 75%), linear-gradient(-45deg, transparent 75%, #c7c7cc 75%)",
+                                backgroundSize: "6px 6px",
+                                backgroundPosition:
+                                  "0 0, 0 3px, 3px -3px, -3px 0px",
+                              }
+                            : { backgroundColor: colour.hex }
+                        }
+                      />
+                    ))}
 
-                  const validColour =
-                    /^#[0-9a-fA-F]{6}$/.test(hex) ||
-                    hex.toLowerCase() === "transparent";
+                    {optionSummary.colours.length > 6 ? (
+                      <small>
+                        +{optionSummary.colours.length - 6}
+                      </small>
+                    ) : null}
+                  </div>
+                ) : null}
 
-                  return name && validColour
-                    ? [[`${name}-${hex}`, { name, hex }]]
-                    : [];
-                }),
-              ).values(),
-            );
-
-            return colours.length > 0 ? (
-              <div
-                className="st-retail-card__colors"
-                aria-label="Available colours"
-              >
-                {colours.slice(0, 6).map((colour) => (
-                  <span
-                    key={`${colour.name}-${colour.hex}`}
-                    title={colour.name}
-                    style={
-                      colour.hex === "transparent"
-                        ? {
-                            backgroundColor: "#ffffff",
-                            backgroundImage:
-                              "linear-gradient(45deg, #c7c7cc 25%, transparent 25%), linear-gradient(-45deg, #c7c7cc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #c7c7cc 75%), linear-gradient(-45deg, transparent 75%, #c7c7cc 75%)",
-                            backgroundSize: "6px 6px",
-                            backgroundPosition:
-                              "0 0, 0 3px, 3px -3px, -3px 0px",
-                          }
-                        : { backgroundColor: colour.hex }
-                    }
-                  />
-                ))}
-
-                {colours.length > 6 ? (
-                  <small>+{colours.length - 6}</small>
+                {optionSummary.hasMultipleNonColourOptions ? (
+                  <span className="st-retail-card__multiple-options">
+                    Multiple options available
+                  </span>
                 ) : null}
               </div>
-            ) : null;
+            );
           })()}
 
           <div className="st-retail-card__footer">

@@ -21635,3 +21635,536 @@ html
 }
 
 /* === ST ADMIN CATEGORY + BRAND PICKER FINAL END === */
+
+/* ============================================================
+   STOREFRONT PRODUCT CARD — CONFIGURATION SUMMARY FINAL
+
+   Information rhythm:
+   category
+   product title
+   7px
+   colourways
+   5px
+   multiple-options message
+   10px
+   price / stock footer
+
+   Important:
+   - no historical fixed title slot
+   - colourways always precede the options message
+   - neutral colourway rings
+   - same hierarchy across desktop, tablet and mobile
+   ============================================================ */
+
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__name {
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__options-summary {
+  position: static !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-start !important;
+
+  align-self: stretch !important;
+
+  gap: 5px !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin: 7px 0 0 !important;
+  padding: 0 !important;
+
+  flex: 0 0 auto !important;
+}
+
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__colors {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+
+  gap: 6px !important;
+
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  flex: 0 0 auto !important;
+}
+
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__color,
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__colors
+  > span.st-retail-card__color {
+  display: block !important;
+
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+
+  flex: 0 0 14px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 2px solid #c7c7cc !important;
+  border-radius: 50% !important;
+
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+}
+
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__colors
+  small {
+  margin: 0 !important;
+
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+
+  color: rgba(17, 17, 17, 0.58) !important;
+}
+
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__multiple-options {
+  display: block !important;
+
+  width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  flex: 0 0 auto !important;
+
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.01em !important;
+
+  color: rgba(17, 17, 17, 0.58) !important;
+}
+
+/*
+ * Footer spacing is measured from whichever information element
+ * actually precedes it:
+ *
+ * title -> footer
+ * options message -> footer
+ * colourways -> footer
+ */
+html
+  body
+  .st-product-card-canonical
+  .st-retail-card__footer {
+  margin-top: 10px !important;
+}
+
+@media (max-width: 767px) {
+  html
+    body
+    .st-product-card-canonical
+    .st-retail-card__options-summary {
+    gap: 5px !important;
+    margin-top: 7px !important;
+  }
+
+  html
+    body
+    .st-product-card-canonical
+    .st-retail-card__color,
+  html
+    body
+    .st-product-card-canonical
+    .st-retail-card__colors
+    > span.st-retail-card__color {
+    width: 13px !important;
+    height: 13px !important;
+    min-width: 13px !important;
+    min-height: 13px !important;
+
+    flex-basis: 13px !important;
+  }
+
+  html
+    body
+    .st-product-card-canonical
+    .st-retail-card__multiple-options {
+    font-size: 10px !important;
+  }
+}
+
+/* ============================================================
+   END STOREFRONT PRODUCT CARD — CONFIGURATION SUMMARY FINAL
+   ============================================================ */
+
+/* ============================================================
+   ST PRODUCT CARD — RESPONSIVE NATURAL INFORMATION FLOW V1
+   ============================================================
+   Keep the exact professional hierarchy on every device:
+
+   category
+   title
+   7px
+   colourways
+   5px
+   multiple-options message
+   10px
+   price / stock
+
+   Critical:
+   - title height follows its actual number of lines
+   - no mobile/tablet reserved title slot
+   - old /shop mobile min-height rules cannot reopen the gap
+   ============================================================ */
+
+html
+  body
+  main.st3-shop-v4
+  .st3-shop-v4__grid.st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__name,
+html
+  body
+  .st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__name {
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+html
+  body
+  main.st3-shop-v4
+  .st3-shop-v4__grid.st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__options-summary,
+html
+  body
+  .st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__options-summary {
+  margin-top: 7px !important;
+}
+
+html
+  body
+  main.st3-shop-v4
+  .st3-shop-v4__grid.st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__colors,
+html
+  body
+  .st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__colors {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 999px) {
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__name,
+  html
+    body
+    .st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__name {
+    min-height: 0 !important;
+    height: auto !important;
+
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__options-summary,
+  html
+    body
+    .st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__options-summary {
+    gap: 5px !important;
+
+    margin-top: 7px !important;
+    margin-bottom: 0 !important;
+  }
+
+  html
+    body
+    main.st3-shop-v4
+    .st3-shop-v4__grid.st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__colors,
+  html
+    body
+    .st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__colors {
+    margin: 0 !important;
+  }
+}
+
+/* ============================================================
+   END ST PRODUCT CARD — RESPONSIVE NATURAL INFORMATION FLOW V1
+   ============================================================ */
+
+/* ============================================================
+   STOREFRONT PRODUCT CARD — TIGHT MOBILE OPTION RHYTHM
+   ============================================================ */
+
+@media (max-width: 767px) {
+  html
+    body
+    .st-product-card-canonical
+    .st-retail-card__options-summary {
+    gap: 3px !important;
+    margin-top: 1px !important;
+  }
+
+  html
+    body
+    .st-product-card-canonical
+    .st-retail-card__colors {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  html
+    body
+    .st-product-card-canonical
+    .st-retail-card__multiple-options {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* ============================================================
+   END STOREFRONT PRODUCT CARD — TIGHT MOBILE OPTION RHYTHM
+   ============================================================ */
+
+/* === ST PRODUCT DETAIL RECOMMENDED CARD OPTIONS RHYTHM END === */
+
+/* === ST PRODUCT DETAIL RELATED CARD RHYTHM FINAL START === */
+
+/*
+ * Exact product-detail recommendation shelf:
+ *
+ *   .st-product-v5__related
+ *   .st-related-products-grid
+ *
+ * This fixes ONLY "You may also like".
+ *
+ * Rhythm:
+ * category
+ * title
+ * breathing room
+ * colourways
+ * optional multiple-options text
+ * price / stock
+ *
+ * Shop and Homepage cards are intentionally untouched.
+ */
+
+html
+  body
+  .st-product-v5__related
+  .st-product-card-canonical
+  .st-retail-card__name {
+  min-height: 0 !important;
+  height: auto !important;
+
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+html
+  body
+  .st-product-v5__related
+  .st-product-card-canonical
+  .st-retail-card__options-summary {
+  position: static !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-start !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  gap: 4px !important;
+
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
+
+  padding: 0 !important;
+}
+
+html
+  body
+  .st-product-v5__related
+  .st-product-card-canonical
+  .st-retail-card__colors {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+
+  gap: 5px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html
+  body
+  .st-product-v5__related
+  .st-product-card-canonical
+  .st-retail-card__multiple-options {
+  display: block !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  line-height: 1.2 !important;
+}
+
+html
+  body
+  .st-product-v5__related
+  .st-product-card-canonical
+  .st-retail-card__footer {
+  margin-top: 9px !important;
+}
+
+
+/* ---------- TABLET ---------- */
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  html
+    body
+    .st-product-v5__related
+    .st-product-card-canonical
+    .st-retail-card__options-summary {
+    gap: 4px !important;
+
+    margin-top: 7px !important;
+    margin-bottom: 0 !important;
+  }
+
+  html
+    body
+    .st-product-v5__related
+    .st-product-card-canonical
+    .st-retail-card__colors {
+    gap: 4px !important;
+  }
+
+  html
+    body
+    .st-product-v5__related
+    .st-product-card-canonical
+    .st-retail-card__footer {
+    margin-top: 8px !important;
+  }
+}
+
+
+/* ---------- PHONE ---------- */
+
+@media (max-width: 767px) {
+  html
+    body
+    .st-product-v5__related
+    .st-product-card-canonical
+    .st-retail-card__options-summary {
+    gap: 3px !important;
+
+    margin-top: 7px !important;
+    margin-bottom: 0 !important;
+  }
+
+  html
+    body
+    .st-product-v5__related
+    .st-product-card-canonical
+    .st-retail-card__colors {
+    gap: 4px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  html
+    body
+    .st-product-v5__related
+    .st-product-card-canonical
+    .st-retail-card__multiple-options {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-size: 9px !important;
+    line-height: 1.15 !important;
+  }
+
+  html
+    body
+    .st-product-v5__related
+    .st-product-card-canonical
+    .st-retail-card__footer {
+    margin-top: 8px !important;
+  }
+}
+
+/* === ST PRODUCT DETAIL RELATED CARD RHYTHM FINAL END === */
