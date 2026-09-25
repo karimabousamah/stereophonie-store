@@ -317,12 +317,26 @@ function normalizeProduct(
     }
   }
 
-  const orderedImages = storefrontConfigurationImages(
+  /*
+   * Keep two image views for two different responsibilities:
+   *
+   * defaultImages:
+   *   The existing authoritative first-configuration gallery.
+   *   This preserves today's default card photograph and hover image.
+   *
+   * images:
+   *   The complete product image graph, including
+   *   product_image_variants, so a clicked colour can resolve its
+   *   own assigned primary and secondary photographs client-side.
+   */
+  const defaultImages = storefrontConfigurationImages(
     product.product_images,
     product.product_variants,
   );
 
-  const images = orderedImages.map((image) => {
+  const withStorefrontImageUrl = (
+    image: ShopFullImage,
+  ): ShopFullImage => {
     if (!image.image_url) {
       return image;
     }
@@ -345,7 +359,14 @@ function normalizeProduct(
       ...image,
       storefront_image_url: data.publicUrl,
     };
-  });
+  };
+
+  const defaultStorefrontImages =
+    defaultImages.map(withStorefrontImageUrl);
+
+  const images = (product.product_images ?? [])
+    .map(withStorefrontImageUrl);
+
 
   return {
     id: product.id,
@@ -358,6 +379,7 @@ function normalizeProduct(
     is_new_arrival: product.is_new_arrival,
     new_drop_started_at: product.new_drop_started_at,
     images,
+    defaultImages: defaultStorefrontImages,
     variants: product.product_variants ?? [],
   };
 }

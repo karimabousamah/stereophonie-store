@@ -14,6 +14,7 @@ import {
   canonicalizeProductColorwayName,
   productColorwayHex,
 } from "@/lib/product-colorways";
+import { storefrontImagesForVariant } from "@/lib/storefront-product-media";
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
 type Props = {
@@ -537,13 +538,28 @@ function productCardOptionsSummary(product: StoreProductCardProduct) {
     storedHexIdentities.size === 1 &&
     libraryHexIdentities.size > 1;
 
-  const colours = colourCandidates.map((colour) => ({
-    name: colour.name,
-    hex:
-      (recoverDuplicatedStoredHex ? colour.libraryHex : colour.storedHex) ??
-      colour.libraryHex ??
-      "#8e8e93",
-  }));
+  const colours = colourCandidates.map((colour) => {
+    const colourIdentity = productCardOptionIdentity(colour.value);
+
+    const matchingVariant =
+      colourKey
+        ? activeVariants.find(
+            (variant) =>
+              productCardOptionIdentity(
+                productCardAttributesRecord(variant)[colourKey],
+              ) === colourIdentity,
+          ) ?? null
+        : null;
+
+    return {
+      name: colour.name,
+      hex:
+        (recoverDuplicatedStoredHex ? colour.libraryHex : colour.storedHex) ??
+        colour.libraryHex ??
+        "#8e8e93",
+      variantId: matchingVariant?.id ?? null,
+    };
+  });
 
   const hasMultipleNonColourOptions = configurationKeys
     .filter((key) => key !== "color" && key !== "colour")
@@ -578,11 +594,42 @@ function productCardBadgeClass(badge: string | null) {
 
 export default function V2ProductCard({ product, index = 0 }: Props) {
   const router = useRouter();
-  const images = useMemo(() => orderedImages(product), [product]);
+  const defaultImages = useMemo(
+    () =>
+      product.defaultImages?.length
+        ? product.defaultImages
+        : orderedImages(product),
+    [product],
+  );
+
+  const [selectedColourVariantId, setSelectedColourVariantId] =
+    useState<string | null>(null);
+
+  const images = useMemo(() => {
+    if (!selectedColourVariantId) {
+      return defaultImages;
+    }
+
+    const selectedImages = storefrontImagesForVariant(
+      product.images,
+      selectedColourVariantId,
+    );
+
+    return selectedImages.length > 0
+      ? selectedImages
+      : defaultImages;
+  }, [
+    defaultImages,
+    product.images,
+    selectedColourVariantId,
+  ]);
 
   const primaryImage = images[0] ?? null;
   const secondaryImage = images[1] ?? null;
-  const hasSecondaryImage = Boolean(secondaryImage?.image_url);
+  const hasSecondaryImage = Boolean(
+    secondaryImage?.storefront_image_url ??
+      secondaryImage?.image_url,
+  );
 
   /*
    * Shop photography intentionally uses direct Supabase URLs.
@@ -613,6 +660,23 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
     secondaryStorefrontImageFailed,
     setSecondaryStorefrontImageFailed,
   ] = useState(false);
+
+  useEffect(() => {
+    setSelectedColourVariantId(null);
+  }, [product.id]);
+
+  useEffect(() => {
+    setPrimaryImageFailed(false);
+    setPrimaryStorefrontImageFailed(false);
+    setSecondaryImageRequested(false);
+    setSecondaryImageFailed(false);
+    setSecondaryStorefrontImageFailed(false);
+  }, [
+    primaryImage?.storefront_image_url,
+    primaryImage?.image_url,
+    secondaryImage?.storefront_image_url,
+    secondaryImage?.image_url,
+  ]);
 
   const primaryImageUrl =
     !primaryStorefrontImageFailed &&
@@ -981,26 +1045,49 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                     className="st-retail-card__colors"
                     aria-label="Available colours"
                   >
-                    {optionSummary.colours.slice(0, 6).map((colour) => (
-                      <span
-                        key={`${colour.name}-${colour.hex}`}
-                        className="st-retail-card__color"
-                        title={colour.name}
-                        aria-label={colour.name}
-                        style={
-                          colour.hex.toLowerCase() === "transparent"
-                            ? {
-                                backgroundColor: "#ffffff",
-                                backgroundImage:
-                                  "linear-gradient(45deg, #c7c7cc 25%, transparent 25%), linear-gradient(-45deg, #c7c7cc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #c7c7cc 75%), linear-gradient(-45deg, transparent 75%, #c7c7cc 75%)",
-                                backgroundSize: "6px 6px",
-                                backgroundPosition:
-                                  "0 0, 0 3px, 3px -3px, -3px 0px",
-                              }
-                            : { backgroundColor: colour.hex }
-                        }
-                      />
-                    ))}
+                    {optionSummary.colours.slice(0, 6).map((colour) => {
+                      const selected =
+                        Boolean(colour.variantId) &&
+                        selectedColourVariantId === colour.variantId;
+
+                      return (
+                        <button
+                          key={`${colour.name}-${colour.hex}`}
+                          type="button"
+                          className={`st-retail-card__color ${
+                            selected ? "is-selected" : ""
+                          }`}
+                          title={colour.name}
+                          aria-label={`Show ${colour.name}`}
+                          aria-pressed={selected}
+                          disabled={!colour.variantId}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            if (!colour.variantId) {
+                              return;
+                            }
+
+                            setSelectedColourVariantId(
+                              colour.variantId,
+                            );
+                          }}
+                          style={
+                            colour.hex.toLowerCase() === "transparent"
+                              ? {
+                                  backgroundColor: "#ffffff",
+                                  backgroundImage:
+                                    "linear-gradient(45deg, #c7c7cc 25%, transparent 25%), linear-gradient(-45deg, #c7c7cc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #c7c7cc 75%), linear-gradient(-45deg, transparent 75%, #c7c7cc 75%)",
+                                  backgroundSize: "6px 6px",
+                                  backgroundPosition:
+                                    "0 0, 0 3px, 3px -3px, -3px 0px",
+                                }
+                              : { backgroundColor: colour.hex }
+                          }
+                        />
+                      );
+                    })}
 
                     {optionSummary.colours.length > 6 ? (
                       <small>

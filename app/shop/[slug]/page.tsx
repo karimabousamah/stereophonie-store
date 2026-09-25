@@ -1609,21 +1609,8 @@ export default async function ProductPage({
           <div className="st-product-v5__back-row">
             <ProductBackButton />
           </div>
-
-          <nav className="st-product-v5__breadcrumb">
-            <Link href="/">Home</Link>
-            <span>/</span>
-            <Link href="/shop">Shop</Link>
-            <span>/</span>
-            <strong>{product.name}</strong>
-          </nav>
-
           <header className="st-product-v5__intro">
             <div>
-              <span className="st-product-v5__category">
-                {brandName} · {categoryName}
-              </span>
-
               <h1>{product.name}</h1>
             </div>
 
@@ -1666,15 +1653,6 @@ export default async function ProductPage({
           </section>
 
           <section className="st-product-v5__buy">
-            <header className="st-product-v5__buy-heading">
-              <div>
-                <span>Purchase</span>
-                <h2>Choose your options.</h2>
-              </div>
-
-              <small>Ref. {product.id.slice(0, 8).toUpperCase()}</small>
-            </header>
-
             <ProductPurchaseControls
               product={{
                 id: product.id,

@@ -16389,17 +16389,17 @@ body:has(.st3-header) {
   opacity: 0;
 }
 
-@media (hover: hover) {
-  .st-retail-card:hover .st-retail-card__image--primary {
+@media (hover: hover) and (pointer: fine) {
+  .st-retail-card__image-link:hover .st-retail-card__image--primary {
     transform: scale(1.025);
   }
 
-  .st-retail-card:hover .st-retail-card__image--secondary {
+  .st-retail-card__image-link:hover .st-retail-card__image--secondary {
     opacity: 1;
     transform: scale(1.025);
   }
 
-  .st-retail-card:hover .st-retail-card__image--secondary + * {
+  .st-retail-card__image-link:hover .st-retail-card__image--secondary + * {
     opacity: 1;
   }
 }
@@ -24546,13 +24546,16 @@ button.st3-ai-launcher.st3-ai-launcher--open::before {
 
 /*
  * Crossfade. No hard replacement.
+ * Only the actual photograph surface triggers the secondary image.
  */
-.st-retail-card:hover .st-retail-card__image--primary {
-  opacity: 0;
-}
+@media (hover: hover) and (pointer: fine) {
+  .st-retail-card__image-link:hover .st-retail-card__image--primary {
+    opacity: 0;
+  }
 
-.st-retail-card:hover .st-retail-card__image--secondary {
-  opacity: 1;
+  .st-retail-card__image-link:hover .st-retail-card__image--secondary {
+    opacity: 1;
+  }
 }
 
 /*
@@ -25406,12 +25409,14 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
   opacity: 0;
 }
 
-.st-retail-card:hover .st-retail-card__image--primary {
-  opacity: 0 !important;
-}
+@media (hover: hover) and (pointer: fine) {
+  .st-retail-card__image-link:hover .st-retail-card__image--primary {
+    opacity: 0 !important;
+  }
 
-.st-retail-card:hover .st-retail-card__image--secondary {
-  opacity: 1 !important;
+  .st-retail-card__image-link:hover .st-retail-card__image--secondary {
+    opacity: 1 !important;
+  }
 }
 
 /*
@@ -27776,7 +27781,7 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
 
   gap: 40px !important;
 
-  padding: 24px 0 25px !important;
+  padding: 0 0 25px !important;
 
   margin: 0 !important;
 
@@ -28071,6 +28076,7 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
 @media (max-width: 768px) {
   .st-product-v5__shell {
     width: calc(100% - 28px) !important;
+    padding-top: 18px !important;
   }
 
   .st-product-v5__breadcrumb {
@@ -28084,7 +28090,7 @@ button[data-st-ai-launcher="true"].st3-ai-launcher--open {
 
     gap: 18px !important;
 
-    padding: 18px 0 21px !important;
+    padding: 0 0 21px !important;
   }
 
   .st-product-v5__intro h1 {
@@ -49515,7 +49521,7 @@ html body .st3-header__socials > a:focus-visible {
 
   justify-content: flex-start;
 
-  margin: 0 0 18px;
+  margin: 0 0 4px;
 
   padding: 0;
 }
@@ -67747,18 +67753,14 @@ html
 
 /* === ST SINGLE-IMAGE PRODUCT CARD HOVER GUARD START ===
  *
- * Desktop/laptop catalogue cards normally crossfade from the primary
- * product image to the second product image on hover.
+ * Desktop/laptop catalogue cards crossfade only while the actual
+ * photograph is hovered.
  *
- * When a product only has one valid image there is no secondary layer,
- * so the primary image must remain visible instead of fading to the
- * empty white media surface.
- *
- * Products with 2+ images keep the existing hover/crossfade unchanged.
+ * A configuration with one valid photograph must keep that photograph
+ * visible because there is no secondary layer to reveal.
  */
 @media (hover: hover) and (pointer: fine) {
-  .st-retail-card:hover
-    .st-retail-card__image-link[data-has-secondary-image="false"]
+  .st-retail-card__image-link[data-has-secondary-image="false"]:hover
     .st-retail-card__image--primary {
     opacity: 1 !important;
   }
@@ -82146,7 +82148,7 @@ html body .st3-utility-spin {
 html body .st3-home-live
   .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
   > .st3-products-section.st3-home-shop-products {
-  padding-top: 38px !important;
+  padding-top: 28px !important;
   padding-bottom: 0 !important;
 }
 
@@ -82189,7 +82191,7 @@ html body .st3-home-live
   html body .st3-home-live
     .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
     > .st3-products-section.st3-home-shop-products {
-    padding-top: 32px !important;
+    padding-top: 24px !important;
   }
 
   html body .st3-home-live
@@ -82215,7 +82217,7 @@ html body .st3-home-live
   html body .st3-home-live
     .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
     > .st3-products-section.st3-home-shop-products {
-    padding-top: 28px !important;
+    padding-top: 22px !important;
   }
 
   html body .st3-home-live
@@ -82233,3 +82235,71 @@ html body .st3-home-live
 }
 
 /* === ST HOMEPAGE LOWER PRODUCT SECTION SPACING V4 END === */
+
+/* === ST HOMEPAGE MOVIES TO PRODUCTS + CATEGORY CTA SPACING V1 START === */
+
+/*
+ * HOMEPAGE ONLY.
+ *
+ * 1. Normalize the visual transition from the final category campaign
+ *    (Movies & Series) into the first product shelf.
+ * 2. Give the Shop CTA a little more breathing room below category titles.
+ *
+ * Product cards, category artwork, Movies & Series internals,
+ * card dimensions and commerce behaviour remain untouched.
+ */
+
+html body .st3-home-live
+  .st3-cat-world:has(.st3-reveal--movies-series) {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+html body .st3-home-live
+  .st3-cat-world:has(.st3-reveal--movies-series)
+  + .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+  > .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 28px !important;
+}
+
+html body .st3-home-live
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-actions {
+  margin-top: 18px !important;
+}
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    > .st3-products-section.st3-home-shop-products {
+    padding-top: 24px !important;
+  }
+
+  html body .st3-home-live
+    .st3-cat-grid
+    .st3-cat-tile
+    .st3-cat-actions {
+    margin-top: 17px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-reveal:has(> .st3-products-section.st3-home-shop-products)
+    > .st3-products-section.st3-home-shop-products {
+    padding-top: 22px !important;
+  }
+
+  html body .st3-home-live
+    .st3-cat-grid
+    .st3-cat-tile
+    .st3-cat-actions {
+    margin-top: 16px !important;
+  }
+}
+
+/* === ST HOMEPAGE MOVIES TO PRODUCTS + CATEGORY CTA SPACING V1 END === */

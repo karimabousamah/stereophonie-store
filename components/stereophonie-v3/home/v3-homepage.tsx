@@ -168,17 +168,13 @@ function CategoryActions({
 }
 
 function ProductSection({
-  eyebrow,
   title,
-  description,
   products,
   href,
   linkLabel,
   soft = false,
 }: {
-  eyebrow: string;
   title: string;
-  description: string;
   products: V3Product[];
   href: string;
   linkLabel: string;
@@ -199,11 +195,9 @@ function ProductSection({
       >
         <div className="st3-section-heading">
           <div>
-            <p className="st3-section-eyebrow">{eyebrow}</p>
 
             <h2>{title}</h2>
 
-            <p className="st3-section-description">{description}</p>
           </div>
         </div>
 
@@ -360,15 +354,7 @@ export default function V3Homepage({
 
       {categories.length ? (
         <section className="st3-cat-world">
-          <V3Reveal>
-            <div className="st3-cat-intro st3-home-after-hero">
-              <p>Explore Stereophonie</p>
-
-              <h2>Find what fits your life.</h2>
-            </div>
-          </V3Reveal>
-
-          {/* ==================================================
+{/* ==================================================
               HOMEPAGE CATEGORIES — APPLE-LIKE 2-UP CAMPAIGNS
               ================================================== */}
 
@@ -415,11 +401,7 @@ export default function V3Homepage({
                       />
 
                       <div className="st3-cat-tile__copy">
-                        <p className="st3-cat-kicker">Stereophonie</p>
-
                         <h3>{category.name}</h3>
-
-                        <p>{categoryDescription(category)}</p>
 
                         <div className="st3-cat-actions">
                           <Link
@@ -428,19 +410,6 @@ export default function V3Homepage({
                             aria-label={`Shop ${category.name}`}
                           >
                             Shop
-                          </Link>
-
-                          <Link
-                            href={categoryExploreHref(category)}
-                            className={
-                              dark
-                                ? "st3-cat-text-link st3-cat-text-link--light"
-                                : "st3-cat-text-link"
-                            }
-                            aria-label={`Explore newest ${category.name}`}
-                          >
-                            Explore
-                            <span aria-hidden="true">›</span>
                           </Link>
                         </div>
                       </div>
@@ -464,19 +433,24 @@ export default function V3Homepage({
           ==================================================== */}
 
       <ProductSection
-        eyebrow="Latest"
         title="Just arrived."
-        description="The newest technology at Stereophonie."
         products={latestProducts}
         href="/shop?sort=newest"
         linkLabel="View all"
       />
 
+      {comingSoonProducts.length ? (
+        <ProductSection
+          title="Coming soon."
+          products={comingSoonProducts}
+          href="/shop"
+          linkLabel="Explore store"
+        />
+      ) : null}
+
       {offerProducts.length ? (
         <ProductSection
-          eyebrow="Offers"
           title="More for less."
-          description="Selected technology at special prices."
           products={offerProducts}
           href="/shop?offers=true"
           linkLabel="View offers"
@@ -484,24 +458,11 @@ export default function V3Homepage({
       ) : null}
 
       <ProductSection
-        eyebrow="Selected"
         title="Worth discovering."
-        description="A selection from across the Stereophonie store."
         products={featuredProducts}
         href="/shop"
         linkLabel="Explore store"
       />
-
-      {comingSoonProducts.length ? (
-        <ProductSection
-          eyebrow="Coming soon"
-          title="Coming soon."
-          description="A preview of technology arriving soon at Stereophonie."
-          products={comingSoonProducts}
-          href="/shop"
-          linkLabel="Explore store"
-        />
-      ) : null}
     </main>
   );
 }

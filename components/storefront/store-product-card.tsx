@@ -27,6 +27,21 @@ export type StoreProductImage = {
   variant_id?: string | null;
   variant_position?: number | null;
   is_variant_primary?: boolean | null;
+
+  /*
+   * Complete many-to-many configuration media assignments.
+   *
+   * The default storefront gallery still uses the first configuration,
+   * while interactive colour selection can resolve another
+   * configuration's actual photographs from this graph.
+   */
+  product_image_variants?:
+    | {
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }[]
+    | null;
 };
 
 export type StoreProductVariant = {
@@ -68,6 +83,16 @@ export type StoreProductCardProduct = {
   new_drop_started_at?: string | null;
 
   images: StoreProductImage[];
+
+  /*
+   * Existing first-configuration storefront gallery.
+   *
+   * This remains the default card image order. `images` additionally
+   * retains the complete configuration media graph for interactive
+   * colour selection.
+   */
+  defaultImages?: StoreProductImage[];
+
   variants: StoreProductVariant[];
 };
 
@@ -96,24 +121,32 @@ export default function StoreProductCard({
    * it cannot reinterpret the already-correct gallery and accidentally
    * choose another photograph.
    */
-  const authoritativeImages = product.images.map((image, imageIndex) => ({
-    ...image,
+  const defaultImages =
+    product.defaultImages?.length
+      ? product.defaultImages
+      : product.images;
 
-    position: imageIndex,
-    is_primary: imageIndex === 0,
+  const authoritativeDefaultImages = defaultImages.map(
+    (image, imageIndex) => ({
+      ...image,
 
-    /*
-     * Configuration selection has already happened upstream.
-     * Do not allow the legacy card to perform it a second time.
-     */
-    variant_id: null,
-    variant_position: imageIndex,
-    is_variant_primary: imageIndex === 0,
-  }));
+      position: imageIndex,
+      is_primary: imageIndex === 0,
+
+      /*
+       * Preserve the existing default first-configuration gallery.
+       * The complete product.images graph remains untouched so
+       * clicked colourways can resolve their own media assignments.
+       */
+      variant_id: null,
+      variant_position: imageIndex,
+      is_variant_primary: imageIndex === 0,
+    }),
+  );
 
   const authoritativeProduct: StoreProductCardProduct = {
     ...product,
-    images: authoritativeImages,
+    defaultImages: authoritativeDefaultImages,
   };
 
   return <V2ProductCard product={authoritativeProduct} index={index} />;
