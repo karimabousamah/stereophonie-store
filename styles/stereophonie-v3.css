@@ -82303,3 +82303,498 @@ html body .st3-home-live
 }
 
 /* === ST HOMEPAGE MOVIES TO PRODUCTS + CATEGORY CTA SPACING V1 END === */
+
+/* === ST HOMEPAGE MOBILE CATEGORY COPY POSITION V1 START ===
+ *
+ * Phone only.
+ *
+ * Move the category title + Shop CTA downward together without
+ * changing the category card, product artwork, or desktop/tablet.
+ */
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-cat-grid
+    .st3-cat-tile
+    .st3-cat-tile__copy {
+    transform: translateY(32px) !important;
+  }
+}
+/* === ST HOMEPAGE MOBILE CATEGORY COPY POSITION V1 END === */
+
+
+/* === ST FINAL STOREFRONT PASS V1 START === */
+
+/*
+ * Product-page + storefront-card async indicators.
+ * Lucide does not animate merely because the class is named is-spin.
+ */
+@keyframes st-storefront-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.st-product-v5 .is-spin,
+.st-purchase-v6-modal .is-spin,
+.st-retail-card .is-spin,
+.st-retail-preorder-modal .is-spin {
+  animation: st-storefront-spin 0.8s linear infinite !important;
+  transform-origin: center !important;
+}
+
+/*
+ * Coming Soon card action.
+ */
+.st-retail-card__preorder {
+  min-height: 32px;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(169, 103, 0, 0.12);
+  border-radius: 999px;
+  background: var(--st-mustard);
+  color: #1d1d1f;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(245, 179, 53, 0.18);
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.st-retail-card__preorder svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 1.9;
+}
+
+.st-retail-card__preorder:hover {
+  background: #f5b335;
+  box-shadow: 0 7px 18px rgba(245, 179, 53, 0.24);
+  transform: translateY(-1px);
+}
+
+.st-retail-card__preorder:disabled {
+  opacity: 0.58;
+  cursor: wait;
+  transform: none;
+}
+
+/*
+ * Minimal fixed availability toast.
+ *
+ * Portaled to document.body so it never becomes another item inside
+ * the horizontally scrolling Homepage product shelf.
+ */
+.st-retail-card__preorder-message {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 10020;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 32px));
+  margin: 0;
+  padding: 11px 16px;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #505056;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  box-shadow:
+    0 14px 38px rgba(0, 0, 0, 0.11),
+    0 2px 8px rgba(0, 0, 0, 0.045);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.st-retail-card__preorder-message.is-success {
+  color: #4f3900;
+}
+
+.st-retail-card__preorder-message.is-error {
+  color: #9f241c;
+}
+
+@media (max-width: 600px) {
+  .st-retail-card__preorder-message {
+    bottom: 20px;
+    max-width: calc(100vw - 28px);
+    padding: 10px 14px;
+    font-size: 11.5px;
+  }
+}
+
+/*
+ * Guest email collection reuses the visual language of the existing
+ * product-page stock notification without changing that component.
+ */
+.st-retail-preorder-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+}
+
+.st-retail-preorder-modal__window {
+  width: min(100%, 440px);
+  overflow: hidden;
+  border: 0;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.18);
+}
+
+.st-retail-preorder-modal__window > header {
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.st-retail-preorder-modal__window > header > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.st-retail-preorder-modal__window > header svg {
+  width: 17px;
+  height: 17px;
+}
+
+.st-retail-preorder-modal__window > header button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: #f5f5f7;
+  cursor: pointer;
+}
+
+.st-retail-preorder-modal__body {
+  padding: 24px 20px 22px;
+}
+
+.st-retail-preorder-modal__body > span:first-child {
+  color: #86868b;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.st-retail-preorder-modal__body h2 {
+  margin: 7px 0 0;
+  color: #1d1d1f;
+  font-size: 26px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.st-retail-preorder-modal__body p {
+  margin: 11px 0 18px;
+  color: #6e6e73;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.st-retail-preorder-modal__body input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 15px;
+  border: 1px solid #dcdce1;
+  border-radius: 12px;
+  background: #fff;
+  color: #1d1d1f;
+  font: inherit;
+  outline: none;
+}
+
+.st-retail-preorder-modal__body input:focus {
+  border-color: #a7a7ac;
+}
+
+.st-retail-preorder-modal__error {
+  display: block;
+  margin-top: 8px;
+  color: #b42318;
+  font-size: 11px;
+}
+
+.st-retail-preorder-modal__body > button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #1d1d1f;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.st-retail-preorder-modal__body > button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/*
+ * Homepage lower merchandising shelves only.
+ *
+ * The shelf is a horizontal scrollport. A large external card shadow
+ * gets clipped by that scrollport, creating the hard rectangular edge
+ * seen on hover. Keep the existing shelf geometry and scrolling intact,
+ * but give the desktop shelf vertical breathing room and use a softer
+ * shadow that remains inside that breathing room.
+ */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  html body .st3-home-shop-products .st3-home-product-shelf {
+    padding-top: 18px !important;
+    padding-bottom: 26px !important;
+  }
+
+  .st3-home-live .st3-home-shop-products .st-retail-card:hover,
+  .st3-home-live .st3-home-product-shelf .st-retail-card:hover {
+    box-shadow:
+      0 12px 28px rgba(0, 0, 0, 0.065),
+      0 3px 10px rgba(0, 0, 0, 0.025) !important;
+  }
+}
+
+/* === ST FINAL STOREFRONT PASS V1 END === */
+
+/* === ST PREORDER APPROVED CONFIRMATION + HOMEPAGE EDGE FIX V1 START === */
+
+/*
+ * Pre-order confirmation.
+ *
+ * Match the approved product-page Notify me when available feedback:
+ * check icon, warm success surface, mustard border and the same message
+ * typography. It remains portaled to document.body so it cannot become
+ * another Homepage shelf item.
+ */
+.st-retail-card__preorder-message.st-purchase-v6__message {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 28px !important;
+  z-index: 10020 !important;
+
+  width: max-content !important;
+  max-width: min(760px, calc(100vw - 32px)) !important;
+
+  margin: 0 !important;
+  padding: 16px 20px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 14px !important;
+
+  border: 1px solid rgba(245, 179, 53, 0.52) !important;
+  border-radius: 18px !important;
+
+  background: #fff9ed !important;
+  color: #1d1d1f !important;
+
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  text-align: left !important;
+
+  box-shadow:
+    0 14px 38px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(253, 183, 62, 0.08) !important;
+
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+
+  transform: translateX(-50%) !important;
+  pointer-events: none !important;
+}
+
+.st-retail-card__preorder-message.st-purchase-v6__message svg {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  flex: 0 0 18px !important;
+
+  color: #1d1d1f !important;
+  stroke: currentColor !important;
+}
+
+.st-retail-card__preorder-message.st-purchase-v6__message > span {
+  color: #1d1d1f !important;
+}
+
+.st-retail-card__preorder-message.st-purchase-v6__message.is-error {
+  border-color: rgba(159, 36, 28, 0.24) !important;
+  background: #fff6f5 !important;
+  color: #9f241c !important;
+}
+
+.st-retail-card__preorder-message.st-purchase-v6__message.is-error > span {
+  color: #9f241c !important;
+}
+
+@media (max-width: 600px) {
+  .st-retail-card__preorder-message.st-purchase-v6__message {
+    bottom: 20px !important;
+    width: calc(100vw - 28px) !important;
+    max-width: calc(100vw - 28px) !important;
+    padding: 14px 16px !important;
+    gap: 11px !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+  }
+}
+
+/*
+ * Desktop Homepage shelves.
+ *
+ * overflow-x:auto is necessarily a clipping boundary. Give the scroll
+ * surface its own horizontal shadow gutter so the first and last cards
+ * can lift without their outer shadows being cut off.
+ *
+ * Negative outer margins compensate for that gutter so the normal
+ * four-card visual alignment remains unchanged.
+ */
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+  html body .st3-home-shop-products .st3-home-product-shelf {
+    width: calc(100% + 36px) !important;
+    max-width: calc(100% + 36px) !important;
+
+    margin-left: -18px !important;
+    margin-right: -18px !important;
+
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    padding-bottom: 28px !important;
+
+    scroll-padding-left: 18px !important;
+    scroll-padding-right: 18px !important;
+  }
+
+  html body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    > .st-retail-card:first-child {
+    scroll-margin-left: 18px !important;
+  }
+
+  html body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    > .st-retail-card:last-child {
+    scroll-margin-right: 18px !important;
+  }
+}
+
+/* === ST PREORDER APPROVED CONFIRMATION + HOMEPAGE EDGE FIX V1 END === */
+
+
+/* === ST SUCCESS TOAST 4 SECOND LIFECYCLE V1 START === */
+
+/*
+ * Shared storefront success-message lifecycle.
+ *
+ * React keeps the toast mounted during the exit animation, then removes it.
+ * Visual authority/design remains unchanged.
+ */
+
+[data-st-product-message].is-leaving,
+.st-retail-card__preorder-message.st-purchase-v6__message.is-leaving {
+  animation: stProductToastLeave 340ms cubic-bezier(0.4, 0, 0.2, 1) both !important;
+  pointer-events: none !important;
+}
+
+@keyframes stProductToastLeave {
+  0% {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, 10px, 0);
+  }
+}
+
+/*
+ * The site's global reset disables animations.
+ * These selectors deliberately restore the already-approved toast entrance.
+ */
+[data-st-product-message]:not(.is-leaving),
+.st-retail-card__preorder-message.st-purchase-v6__message:not(.is-leaving) {
+  animation: stProductToastEnter 300ms cubic-bezier(0.22, 0.61, 0.36, 1) both !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-st-product-message],
+  .st-retail-card__preorder-message.st-purchase-v6__message {
+    animation: none !important;
+  }
+}
+
+/* === ST SUCCESS TOAST 4 SECOND LIFECYCLE V1 END === */
+
+/* === ST SOLID MUSTARD SUCCESS TOAST V1 START === */
+
+/*
+ * Success notification visual treatment only.
+ *
+ * Applies consistently to:
+ * - Product-page stock notification
+ * - Homepage Coming Soon / Pre-order notification
+ *
+ * Lifecycle, timing, animation and positioning remain untouched.
+ */
+
+[data-st-product-message="success"].st-purchase-v6__message,
+.st-retail-card__preorder-message.st-purchase-v6__message.is-success {
+  background: #fdb73e !important;
+  border-color: #fdb73e !important;
+  color: #1d1d1f !important;
+}
+
+[data-st-product-message="success"].st-purchase-v6__message > span,
+.st-retail-card__preorder-message.st-purchase-v6__message.is-success > span {
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+  text-transform: capitalize !important;
+}
+
+[data-st-product-message="success"].st-purchase-v6__message svg,
+.st-retail-card__preorder-message.st-purchase-v6__message.is-success svg,
+[data-st-product-message="success"].st-purchase-v6__message svg path,
+[data-st-product-message="success"].st-purchase-v6__message svg circle,
+[data-st-product-message="success"].st-purchase-v6__message svg polyline,
+[data-st-product-message="success"].st-purchase-v6__message svg line {
+  color: #1d1d1f !important;
+  stroke: #1d1d1f !important;
+}
+
+/* === ST SOLID MUSTARD SUCCESS TOAST V1 END === */

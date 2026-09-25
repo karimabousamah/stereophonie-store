@@ -162,6 +162,7 @@ function relationName(relation: NamedRelation, fallback = "") {
 }
 
 type HomepageProduct = V3Product & {
+  defaultImages?: V3ProductImage[];
   availability?: string | null;
   offer_started_at?: string | null;
   discovering_started_at?: string | null;
@@ -172,6 +173,16 @@ function normalizeProduct(
   product: ProductRow,
   supabase: ReturnType<typeof createAdminClient>,
 ): HomepageProduct {
+  const images = homepageImagesWithStorefrontUrls(
+    product.product_images,
+    supabase,
+  );
+
+  const defaultImages = storefrontConfigurationImages(
+    images,
+    product.product_variants,
+  );
+
   return {
     id: product.id,
     name: product.name,
@@ -188,13 +199,8 @@ function normalizeProduct(
     offer_started_at: product.offer_started_at,
     discovering_started_at: product.discovering_started_at,
     coming_soon_started_at: product.coming_soon_started_at,
-    images: storefrontConfigurationImages(
-      homepageImagesWithStorefrontUrls(
-        product.product_images,
-        supabase,
-      ),
-      product.product_variants,
-    ),
+    images,
+    defaultImages,
     variants: product.product_variants ?? [],
   };
 }

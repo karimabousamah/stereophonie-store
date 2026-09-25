@@ -4,7 +4,7 @@ import { calculateProductAvailability } from "@/lib/stereophonie-v2/product-vari
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, Eye, Bookmark, ImageOff, X } from "lucide-react";
+import { Check, CheckCircle2, Eye, Bookmark, ImageOff, LoaderCircle, Mail, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -21,6 +21,20 @@ type Props = {
   product: StoreProductCardProduct;
   index?: number;
 };
+
+type StockAlertResponse = {
+  success?: boolean;
+  requiresEmail?: boolean;
+  message?: string;
+};
+
+function validStockAlertEmail(value: string) {
+  return (
+    value.length >= 5 &&
+    value.length <= 320 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+  );
+}
 
 /*
  * Product-card photography follows the FIRST storefront
@@ -605,6 +619,40 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
   const [selectedColourVariantId, setSelectedColourVariantId] =
     useState<string | null>(null);
 
+  const [preorderLoading, setPreorderLoading] = useState(false);
+  const [preorderEmailOpen, setPreorderEmailOpen] = useState(false);
+  const [preorderEmail, setPreorderEmail] = useState("");
+  const [preorderEmailError, setPreorderEmailError] = useState("");
+  const [preorderMessage, setPreorderMessage] = useState("");
+  const [preorderMessageType, setPreorderMessageType] =
+    useState<"success" | "error" | "">("");
+  const [preorderMessageLeaving, setPreorderMessageLeaving] =
+    useState(false);
+
+  useEffect(() => {
+    if (!preorderMessage) {
+      setPreorderMessageLeaving(false);
+      return;
+    }
+
+    setPreorderMessageLeaving(false);
+
+    const leaveTimer = window.setTimeout(() => {
+      setPreorderMessageLeaving(true);
+    }, 4000);
+
+    const removeTimer = window.setTimeout(() => {
+      setPreorderMessage("");
+      setPreorderMessageType("");
+      setPreorderMessageLeaving(false);
+    }, 4340);
+
+    return () => {
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(removeTimer);
+    };
+  }, [preorderMessage]);
+
   const images = useMemo(() => {
     if (!selectedColourVariantId) {
       return defaultImages;
@@ -789,6 +837,96 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
     }
 
     router.prefetch(href);
+  }
+
+  const preorderVariant = useMemo(
+    () =>
+      product.variants.find(
+        (variant) =>
+          variant.is_active !== false &&
+          variant.availability_status === "coming_soon" &&
+          Boolean(variant.id),
+      ) ?? null,
+    [product.variants],
+  );
+
+  async function requestPreorderNotification(address?: string) {
+    if (!preorderVariant?.id) {
+      setPreorderMessage(
+        "This product is not ready for availability notifications yet.",
+      );
+      setPreorderMessageType("error");
+      return;
+    }
+
+    setPreorderLoading(true);
+    setPreorderEmailError("");
+    setPreorderMessage("");
+
+    try {
+      const response = await fetch("/api/stock-alerts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          variantId: preorderVariant.id,
+          ...(address ? { email: address } : {}),
+        }),
+      });
+
+      const data = (await response.json()) as StockAlertResponse;
+
+      if (data.requiresEmail) {
+        setPreorderEmailOpen(true);
+        return;
+      }
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || "The availability notification could not be created.",
+        );
+      }
+
+      setPreorderEmailOpen(false);
+      setPreorderEmail("");
+      setPreorderMessage(
+        data.message ||
+          "You will be notified when this item becomes available.",
+      );
+      setPreorderMessageType("success");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "The availability notification could not be created.";
+
+      if (address) {
+        setPreorderEmailError(message);
+      } else {
+        setPreorderMessage(message);
+        setPreorderMessageType("error");
+      }
+    } finally {
+      setPreorderLoading(false);
+    }
+  }
+
+  async function submitPreorderEmail(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    const normalized = preorderEmail.trim().toLowerCase();
+
+    if (!validStockAlertEmail(normalized)) {
+      setPreorderEmailError("Enter a valid email address.");
+      return;
+    }
+
+    await requestPreorderNotification(normalized);
   }
 
   const { hydrated, isWishlisted, toggleProduct } = useWishlist();
@@ -1119,28 +1257,135 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
               )}
             </div>
 
-            <span
-              className={
-                productAvailability === "coming_soon"
-                  ? "is-coming-soon"
-                  : lowStock
+            {productAvailability === "coming_soon" ? (
+              <button
+                type="button"
+                className="st-retail-card__preorder"
+                disabled={preorderLoading || !preorderVariant?.id}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  void requestPreorderNotification();
+                }}
+              >
+                {preorderLoading ? (
+                  <LoaderCircle className="is-spin" />
+                ) : (
+                  <Mail />
+                )}
+                <span>Pre-order</span>
+              </button>
+            ) : (
+              <span
+                className={
+                  lowStock
                     ? "is-low-stock"
                     : available
                       ? "is-available"
                       : ""
-              }
-            >
-              {productAvailability === "coming_soon"
-                ? "Available soon"
-                : lowStock
+                }
+              >
+                {lowStock
                   ? "Low Stock"
                   : available
                     ? "In stock"
                     : "Unavailable"}
-            </span>
+              </span>
+            )}
           </div>
         </div>
       </article>
+
+      {preorderMessage && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              data-st-product-message={preorderMessageType || undefined}
+              className={`st-retail-card__preorder-message st-purchase-v6__message ${
+                preorderMessageType === "success" ? "is-success" : "is-error"
+              }${preorderMessageLeaving ? " is-leaving" : ""}`}
+              role="status"
+              aria-live="polite"
+            >
+              {preorderMessageType === "success" ? <CheckCircle2 /> : null}
+              <span>{preorderMessage}</span>
+            </div>,
+            document.body,
+          )
+        : null}
+
+      {preorderEmailOpen && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="st-retail-preorder-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Availability notification"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) {
+                  setPreorderEmailOpen(false);
+                }
+              }}
+            >
+              <form
+                className="st-retail-preorder-modal__window"
+                onSubmit={submitPreorderEmail}
+              >
+                <header>
+                  <div>
+                    <Mail />
+                    <strong>Availability notification</strong>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setPreorderEmailOpen(false)}
+                    aria-label="Close"
+                  >
+                    <X />
+                  </button>
+                </header>
+
+                <div className="st-retail-preorder-modal__body">
+                  <span>Pre-order alert</span>
+                  <h2>Be notified when available.</h2>
+                  <p>
+                    Enter your email and Stereophonie will notify you when this
+                    item becomes available.
+                  </p>
+
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={preorderEmail}
+                    onChange={(event) => {
+                      setPreorderEmail(event.target.value);
+                      setPreorderEmailError("");
+                    }}
+                  />
+
+                  {preorderEmailError ? (
+                    <span className="st-retail-preorder-modal__error">
+                      {preorderEmailError}
+                    </span>
+                  ) : null}
+
+                  <button type="submit" disabled={preorderLoading}>
+                    {preorderLoading ? (
+                      <LoaderCircle className="is-spin" />
+                    ) : (
+                      <Mail />
+                    )}
+                    <span>Notify me</span>
+                  </button>
+                </div>
+              </form>
+            </div>,
+            document.body,
+          )
+        : null}
 
       {quickViewMounted && typeof document !== "undefined"
         ? createPortal(

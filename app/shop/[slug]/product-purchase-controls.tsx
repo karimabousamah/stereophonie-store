@@ -633,17 +633,30 @@ export default function ProductPurchaseControls({
     );
   }, [selected]);
 
+  const [messageLeaving, setMessageLeaving] = useState(false);
+
   useEffect(() => {
     if (!message) {
+      setMessageLeaving(false);
       return;
     }
 
-    const timer = window.setTimeout(() => {
+    setMessageLeaving(false);
+
+    const leaveTimer = window.setTimeout(() => {
+      setMessageLeaving(true);
+    }, 4000);
+
+    const removeTimer = window.setTimeout(() => {
       setMessage("");
       setMessageType("");
-    }, 4500);
+      setMessageLeaving(false);
+    }, 4340);
 
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(removeTimer);
+    };
   }, [message]);
 
   useEffect(() => {
@@ -1128,7 +1141,7 @@ export default function ProductPurchaseControls({
             data-st-product-message={messageType || undefined}
             className={`st-purchase-v6__message ${
               messageType === "success" ? "is-success" : "is-error"
-            }`}
+            }${messageLeaving ? " is-leaving" : ""}`}
             role="status"
           >
             {messageType === "success" ? <CheckCircle2 /> : <Zap />}
