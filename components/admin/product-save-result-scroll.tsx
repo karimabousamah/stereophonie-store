@@ -6,8 +6,49 @@ type ProductSaveResultScrollProps = {
   active: boolean;
 };
 
-const MIN_DURATION_MS = 420;
-const MAX_DURATION_MS = 900;
+const MIN_DURATION_MS = 480;
+const MAX_DURATION_MS = 1050;
+const RESULT_GAP_PX = 22;
+const PRODUCT_SAVE_SCROLL_STORAGE_KEY =
+  "stereophonie-admin-product-save-scroll-y";
+
+export function rememberProductSaveScrollPosition() {
+  try {
+    window.sessionStorage.setItem(
+      PRODUCT_SAVE_SCROLL_STORAGE_KEY,
+      String(Math.max(0, Math.round(window.scrollY))),
+    );
+  } catch {
+    /*
+     * Storage can be unavailable in restrictive browser modes.
+     * Saving the product must never depend on scroll restoration.
+     */
+  }
+}
+
+function consumeProductSaveScrollPosition() {
+  try {
+    const storedValue = window.sessionStorage.getItem(
+      PRODUCT_SAVE_SCROLL_STORAGE_KEY,
+    );
+
+    window.sessionStorage.removeItem(
+      PRODUCT_SAVE_SCROLL_STORAGE_KEY,
+    );
+
+    if (storedValue === null) {
+      return null;
+    }
+
+    const scrollY = Number(storedValue);
+
+    return Number.isFinite(scrollY)
+      ? Math.max(0, scrollY)
+      : null;
+  } catch {
+    return null;
+  }
+}
 
 function easeInOutCubic(progress: number) {
   return progress < 0.5
@@ -15,10 +56,44 @@ function easeInOutCubic(progress: number) {
     : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 }
 
+function getProductResultScrollTarget() {
+  const result =
+    document.querySelector<HTMLElement>(
+      '[data-admin-product-success="true"], [data-admin-product-error="true"]',
+    );
+
+  if (!result) {
+    return 0;
+  }
+
+  const fixedHeader =
+    document.querySelector<HTMLElement>(
+      '[data-admin-product-fixed-header="true"]',
+    );
+
+  const headerHeight =
+    fixedHeader?.getBoundingClientRect().height ?? 0;
+
+  const resultTop =
+    window.scrollY +
+    result.getBoundingClientRect().top;
+
+  return Math.max(
+    0,
+    Math.round(
+      resultTop -
+      headerHeight -
+      RESULT_GAP_PX,
+    ),
+  );
+}
+
 export function smoothScrollProductResultToTop() {
   const startY = window.scrollY;
+  const targetY = getProductResultScrollTarget();
+  const distance = targetY - startY;
 
-  if (startY <= 1) {
+  if (Math.abs(distance) <= 1) {
     return () => {};
   }
 
@@ -27,15 +102,17 @@ export function smoothScrollProductResultToTop() {
   ).matches;
 
   if (reduceMotion) {
-    window.scrollTo(0, 0);
+    window.scrollTo(0, targetY);
     return () => {};
   }
+
+  const travelDistance = Math.abs(distance);
 
   const duration = Math.min(
     MAX_DURATION_MS,
     Math.max(
       MIN_DURATION_MS,
-      360 + startY * 0.12,
+      420 + travelDistance * 0.11,
     ),
   );
 
@@ -49,19 +126,24 @@ export function smoothScrollProductResultToTop() {
     }
 
     const elapsed = now - startedAt;
-    const progress = Math.min(1, elapsed / duration);
+    const progress = Math.min(
+      1,
+      elapsed / duration,
+    );
     const eased = easeInOutCubic(progress);
 
     window.scrollTo(
       0,
-      Math.round(startY * (1 - eased)),
+      Math.round(
+        startY + distance * eased,
+      ),
     );
 
     if (progress < 1) {
       animationFrame =
         window.requestAnimationFrame(animate);
     } else {
-      window.scrollTo(0, 0);
+      window.scrollTo(0, targetY);
     }
   };
 
@@ -72,7 +154,9 @@ export function smoothScrollProductResultToTop() {
     cancelled = true;
 
     if (animationFrame) {
-      window.cancelAnimationFrame(animationFrame);
+      window.cancelAnimationFrame(
+        animationFrame,
+      );
     }
   };
 }

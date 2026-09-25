@@ -35,6 +35,7 @@ import {
 import ProductSaveBar from "@/components/admin/products/v2/product-save-bar";
 
 import { deleteProduct, updateProduct } from "./actions";
+import { rememberProductSaveScrollPosition } from "@/components/admin/product-save-result-scroll";
 
 type AvailabilityStatus =
   "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
@@ -429,6 +430,14 @@ export default function EditProductForm({
 
             authoritativeIntentSubmitter.value = intent;
 
+              if (
+                intent === "draft" ||
+                intent === "publish" ||
+                intent === "setup"
+              ) {
+                rememberProductSaveScrollPosition();
+              }
+
             if (process.env.NODE_ENV === "development") {
               console.log("[EDIT PRODUCT] final client intent", {
                 capturedIntent: intent,
@@ -473,7 +482,7 @@ export default function EditProductForm({
               <div className="p-6">
                 <div className="flex items-start justify-between gap-5">
                   <div className="min-w-0">
-                    <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#c97d00]">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-[#1d1d1f]">
                       Stereophonie Product Manager
                     </p>
 
@@ -498,7 +507,7 @@ export default function EditProductForm({
                 <div className="mt-5 rounded-[15px] border border-black/[0.055] bg-[#f7f7f8] p-4">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#fdb73e]" />
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#1d1d1f]" />
 
                       <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-[#515154]">
                         Processing
@@ -545,12 +554,12 @@ export default function EditProductForm({
                 width: 100%;
                 opacity: 1 !important;
                 visibility: visible !important;
-                background: #fdb73e !important;
+                background: #1d1d1f !important;
                 transform: scaleX(0);
                 transform-origin: left center;
                 box-shadow:
-                  0 0 7px rgba(253, 183, 62, 0.32),
-                  0 0 14px rgba(253, 183, 62, 0.12);
+                  0 0 7px rgba(29, 29, 31, 0.18),
+                  0 0 14px rgba(29, 29, 31, 0.08);
                 animation: stProductSaveFill 7.5s
                   cubic-bezier(0.22, 0.61, 0.36, 1)
                   1 forwards !important;
@@ -657,6 +666,12 @@ export default function EditProductForm({
                 onDelete={permanentlyDeleteProduct}
                 deletePending={deletePending}
                 formId="st-edit-product-form"
+                editMode
+                editIntent={
+                  product.status === "published"
+                    ? "publish"
+                    : "draft"
+                }
               />
             }
             sidebar={
@@ -670,7 +685,7 @@ export default function EditProductForm({
                       <strong>{productEffectiveStatus.label}</strong>
 
                       <small>
-                        Use Save draft or Publish live in the fixed header.
+                        Use Save Changes in the fixed header to keep your edits.
                       </small>
                     </div>
                   </div>

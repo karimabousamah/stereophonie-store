@@ -52,6 +52,115 @@ async function requireAdministrator() {
   return supabase;
 }
 
+export type InlineCategoryRenameResult =
+  | {
+      ok: true;
+      category: {
+        id: string;
+        name: string;
+      };
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
+export async function renameCategoryInline(
+  categoryId: string,
+  rawName: string,
+): Promise<InlineCategoryRenameResult> {
+  const supabase = await requireAdministrator();
+
+  if (!supabase) {
+    return {
+      ok: false,
+      error: "Administrator authentication is required.",
+    };
+  }
+
+  const id = categoryId.trim();
+  const name = rawName.replace(/\s+/g, " ").trim();
+
+  if (!id) {
+    return {
+      ok: false,
+      error: "Category could not be identified.",
+    };
+  }
+
+  if (!name) {
+    return {
+      ok: false,
+      error: "Enter a category name.",
+    };
+  }
+
+  if (name.length > 120) {
+    return {
+      ok: false,
+      error: "Category name is too long.",
+    };
+  }
+
+  const slug = slugify(name);
+
+  if (!slug) {
+    return {
+      ok: false,
+      error: "Enter a valid category name.",
+    };
+  }
+
+  const { data: duplicate, error: duplicateError } = await supabase
+    .from("categories")
+    .select("id")
+    .ilike("name", name)
+    .neq("id", id)
+    .limit(1)
+    .maybeSingle();
+
+  if (duplicateError) {
+    return {
+      ok: false,
+      error: duplicateError.message,
+    };
+  }
+
+  if (duplicate) {
+    return {
+      ok: false,
+      error: "A category with this name already exists.",
+    };
+  }
+
+  const { data: updatedCategory, error } = await supabase
+    .from("categories")
+    .update({
+      name,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select("id, name")
+    .single();
+
+  if (error || !updatedCategory) {
+    return {
+      ok: false,
+      error: error?.message ?? "The category could not be renamed.",
+    };
+  }
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
+  revalidatePath("/");
+
+  return {
+    ok: true,
+    category: updatedCategory,
+  };
+}
+
 export async function createCategoryInline(
   rawName: string,
 ): Promise<InlineCategoryResult> {

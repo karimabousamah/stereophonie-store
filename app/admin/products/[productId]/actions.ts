@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag, updateTag } from "next/cache";
+import { after } from "next/server";
 import { redirect } from "next/navigation";
 
 import { processStockNotificationsForProduct } from "@/lib/email/process-stock-notifications";
@@ -473,26 +474,39 @@ export async function updateProduct(formData: FormData) {
     redirectWithError(productId, variantSaveError);
   }
 
-  try {
-    const notificationResult =
-      await processStockNotificationsForProduct(productId);
+  /*
+   * Product + configuration persistence is complete at this point.
+   *
+   * Stock notification processing can involve additional database reads,
+   * an RPC, recipient preference checks, Resend requests, and follow-up
+   * notification-state writes. None of that needs to block the administrator
+   * from receiving the successful save response.
+   *
+   * Next.js after() keeps this work attached to the request lifecycle while
+   * allowing the save redirect to complete first.
+   */
+  after(async () => {
+    try {
+      const notificationResult =
+        await processStockNotificationsForProduct(productId);
 
-    if (!notificationResult.success) {
+      if (!notificationResult.success) {
+        console.error(
+          `Some stock notifications failed for product ${productId}:`,
+          notificationResult.errors,
+        );
+      }
+    } catch (error) {
+      /*
+       * A notification failure must never undo
+       * a valid product or inventory update.
+       */
       console.error(
-        `Some stock notifications failed for product ${productId}:`,
-        notificationResult.errors,
+        `Stock notifications could not be processed for product ${productId}:`,
+        error,
       );
     }
-  } catch (error) {
-    /*
-     * A notification failure must never undo
-     * a valid product or inventory update.
-     */
-    console.error(
-      `Stock notifications could not be processed for product ${productId}:`,
-      error,
-    );
-  }
+  });
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");

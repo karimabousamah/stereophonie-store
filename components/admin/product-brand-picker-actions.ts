@@ -53,6 +53,114 @@ async function requireAdministrator() {
   return supabase;
 }
 
+export type InlineBrandRenameResult =
+  | {
+      ok: true;
+      brand: {
+        id: string;
+        name: string;
+      };
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
+export async function renameBrandInline(
+  brandId: string,
+  rawName: string,
+): Promise<InlineBrandRenameResult> {
+  const supabase = await requireAdministrator();
+
+  if (!supabase) {
+    return {
+      ok: false,
+      error: "Administrator authentication is required.",
+    };
+  }
+
+  const id = brandId.trim();
+  const name = rawName.replace(/\s+/g, " ").trim();
+
+  if (!id) {
+    return {
+      ok: false,
+      error: "Brand could not be identified.",
+    };
+  }
+
+  if (!name) {
+    return {
+      ok: false,
+      error: "Enter a brand name.",
+    };
+  }
+
+  if (name.length > 120) {
+    return {
+      ok: false,
+      error: "Brand name is too long.",
+    };
+  }
+
+  const slug = slugify(name);
+
+  if (!slug) {
+    return {
+      ok: false,
+      error: "Enter a valid brand name.",
+    };
+  }
+
+  const { data: duplicate, error: duplicateError } = await supabase
+    .from("brands")
+    .select("id")
+    .ilike("name", name)
+    .neq("id", id)
+    .limit(1)
+    .maybeSingle();
+
+  if (duplicateError) {
+    return {
+      ok: false,
+      error: duplicateError.message,
+    };
+  }
+
+  if (duplicate) {
+    return {
+      ok: false,
+      error: "A brand with this name already exists.",
+    };
+  }
+
+  const { data: updatedBrand, error } = await supabase
+    .from("brands")
+    .update({
+      name,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select("id, name")
+    .single();
+
+  if (error || !updatedBrand) {
+    return {
+      ok: false,
+      error: error?.message ?? "The brand could not be renamed.",
+    };
+  }
+
+  revalidatePath("/admin/brands");
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
+
+  return {
+    ok: true,
+    brand: updatedBrand,
+  };
+}
+
 export async function createBrandInline(
   rawName: string,
 ): Promise<InlineBrandResult> {

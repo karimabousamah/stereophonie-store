@@ -36630,8 +36630,8 @@ html body
 
   margin: 0 !important;
 
-  border: 1px solid #d8dadd !important;
-  border-radius: 7px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
 
   outline: 0 !important;
 
@@ -36647,7 +36647,8 @@ html body
   .st3-admin
   .st-admin-product-editor-form
   textarea.st-admin-spec-paste-v2__textarea:hover {
-  border-color: #bfc3c7 !important;
+  border: 0 !important;
+  outline: 0 !important;
   box-shadow: none !important;
 }
 
@@ -36659,9 +36660,9 @@ html body
   .st3-admin
   .st-admin-product-editor-form
   textarea.st-admin-spec-paste-v2__textarea:focus-visible {
-  border-color: #202223 !important;
+  border: 0 !important;
   outline: 0 !important;
-  box-shadow: 0 0 0 1px #202223 !important;
+  box-shadow: none !important;
 
   --tw-ring-color: transparent !important;
   --tw-ring-offset-color: transparent !important;
@@ -42179,8 +42180,8 @@ html body
 
   outline: 0 !important;
 
-  box-shadow: 0 0 0 1px #202223 !important;
-  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
 
   filter: none !important;
 }
@@ -42555,50 +42556,38 @@ html body
 .st-admin-product-editor-form
 .st-admin-specifications-portal-v27
 > .st-admin-spec-paste-v2:focus-within {
+  border: 1px solid #202223 !important;
+
   outline: none !important;
 
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
 
   filter: none !important;
 }
 
 
 /* ------------------------------------------------------------
-   QUICK PASTE — TEXTAREA OWNS ITS PERIMETER
+   QUICK PASTE — TEXTAREA IS CONTENT ONLY
+
+   The outer Quick Paste card owns the active perimeter.
    ------------------------------------------------------------ */
 
 html body
 .st3-admin
 .st-admin-product-editor-form
 .st-admin-spec-paste-v2
-textarea.st-admin-spec-paste-v2__textarea {
-  box-sizing: border-box !important;
-
-  border: 1px solid #d8dadd !important;
-  border-radius: 7px !important;
-
-  outline: none !important;
-
-  background: #ffffff !important;
-
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-
-  filter: none !important;
-}
-
+textarea.st-admin-spec-paste-v2__textarea,
 html body
 .st3-admin
 .st-admin-product-editor-form
 .st-admin-spec-paste-v2
-textarea.st-admin-spec-paste-v2__textarea:hover:not(:focus):not(:focus-visible) {
-  border: 1px solid #bfc3c7 !important;
-
-  box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-}
-
+textarea.st-admin-spec-paste-v2__textarea:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:active,
 html body
 .st3-admin
 .st-admin-product-editor-form
@@ -42609,14 +42598,20 @@ html body
 .st-admin-product-editor-form
 .st-admin-spec-paste-v2
 textarea.st-admin-spec-paste-v2__textarea:focus-visible {
-  border: 1px solid #202223 !important;
+  box-sizing: border-box !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
 
   outline: none !important;
   outline-width: 0 !important;
   outline-offset: 0 !important;
 
-  box-shadow: 0 0 0 1px #202223 !important;
-  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
 
   --tw-ring-color: transparent !important;
   --tw-ring-offset-color: transparent !important;
@@ -43131,3 +43126,1855 @@ svg {
 /* ============================================================
    END ADMIN V2 — UNIFIED PROFESSIONAL DIRECTORY SELECTORS V82
    ============================================================ */
+
+/* === ADMIN V2 CONFIG MICRO-CONTROL AUTHORITY V83 START === */
+
+/*
+ * Narrow final authority for Product Editor micro-controls only.
+ *
+ * - Configuration-option reorder/delete controls never move.
+ * - Their SVG icons never inherit global hover translation.
+ * - Hover/focus cannot create an extra edge or shadow.
+ * - Delete changes to red on hover without moving.
+ * - Technical-spec value editing has no rectangular focus perimeter.
+ *
+ * No selector, configuration-row, save-bar or form behavior is changed.
+ */
+
+/* Configuration option action buttons */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:active {
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+}
+
+/* Prevent the global SVG hover translation. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:hover
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:focus
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:focus-visible
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:active
+> svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/*
+ * Keep the existing segmented-control separators.
+ * The button itself must not paint a new hover/focus edge.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button {
+  border-top-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-color: transparent !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:first-child {
+  border-left-color: transparent !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button
++ button {
+  border-left-color: rgba(29, 29, 31, 0.12) !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Delete: position stays fixed; only foreground becomes red. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button.st-admin-destructive-control-v2:hover {
+  color: #dc2626 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button.st-admin-destructive-control-v2:hover
+> svg {
+  color: #dc2626 !important;
+  stroke: #dc2626 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/*
+ * Technical specification value field.
+ *
+ * V79 intentionally gave the outer field an active perimeter.
+ * For this compact specification editor that perimeter is unwanted:
+ * typing should not create another rectangular box.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+.st-admin-spec-item-v29__field:focus-within {
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+.st-admin-spec-item-v29__field
+> input:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+.st-admin-spec-item-v29__field
+> input:focus-visible {
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* === ADMIN V2 CONFIG MICRO-CONTROL AUTHORITY V83 END === */
+
+/* ============================================================
+   ADMIN V2 — FINAL PRODUCT EDITOR POLISH V84
+
+   Exact scope:
+   1. Configuration-name hover paints absolutely nothing.
+   2. Selected configuration perimeter remains fully visible.
+   3. Quick Paste outer card owns focus; textarea owns none.
+
+   Approved selectors, save controls, option controls and
+   technical-specification focus behavior are untouched.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. CONFIGURATION NAME — TRUE ZERO-HOVER SURFACE
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2:active {
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+
+  text-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2
+> strong,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2
+> strong:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2
+> small,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2
+> button.st-admin-config-table-name-v2
+> small:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+  transform: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   2. SELECTED CONFIGURATION — COMPLETE VISIBLE PERIMETER
+
+   Keep the approved 1px dark physical border + 1px dark ring.
+   Give the ring room to render inside the configuration table
+   rather than allowing the table edge to clip its left/right side.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2 {
+  box-sizing: border-box !important;
+
+  padding-left: 1px !important;
+  padding-right: 1px !important;
+
+  overflow-x: visible !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2 {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2.is-active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2[aria-selected="true"] {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  border: 1px solid #202223 !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2.is-active::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2.is-active::after,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2[aria-selected="true"]::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-v2
+.st-admin-config-table-row-v2[aria-selected="true"]::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   3. QUICK PASTE — OUTER CARD IS THE ONLY FOCUS SURFACE
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2:focus-within {
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-spec-paste-v2
+textarea:active {
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — FINAL PRODUCT EDITOR POLISH V84
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — QUICK PASTE INNER SURFACE FINAL
+
+   Outer Quick Paste perimeter is intentionally untouched.
+   The textarea itself must never paint a second rectangle.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-spec-paste-v2
+textarea.st-admin-spec-paste-v2__textarea:focus-visible {
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — QUICK PASTE INNER SURFACE FINAL
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — TECHNICAL SPECIFICATIONS EDITOR V5
+
+   Purpose:
+   - one calm professional editing surface
+   - compact identity/header
+   - no nested input/card appearance
+   - integrated editor + utility bar
+   - outer component owns the only focus perimeter
+   - neutral Admin V2 palette only
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-tech-spec-editor-v3 {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  margin: 0 !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid #d8dadd !important;
+  border-radius: 10px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-specifications-portal-v27
+> .st-admin-tech-spec-editor-v3:focus-within {
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+}
+
+
+/* HEADER */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__top {
+  box-sizing: border-box !important;
+
+  margin: 0 !important;
+  padding: 12px 14px 8px !important;
+
+  border: 0 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__heading {
+  display: flex !important;
+
+  align-items: center !important;
+
+  gap: 9px !important;
+
+  margin: 0 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__icon-shell {
+  display: inline-flex !important;
+
+  width: 24px !important;
+  height: 24px !important;
+
+  flex: 0 0 24px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+
+  border: 1px solid #e2e4e6 !important;
+  border-radius: 7px !important;
+
+  background: #f7f8f8 !important;
+
+  color: #555a5f !important;
+
+  box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__icon {
+  width: 12px !important;
+  height: 12px !important;
+
+  stroke-width: 1.7 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__title {
+  margin: 0 !important;
+
+  color: #202223 !important;
+
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  line-height: 1.25 !important;
+
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__description {
+  max-width: none !important;
+
+  margin: 2px 0 0 !important;
+
+  color: #969a9e !important;
+
+  font-size: 7.5px !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+}
+
+
+/* EDITING CANVAS */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__editor,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__editor:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__editor:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__editor:focus-within {
+  box-sizing: border-box !important;
+
+  margin: 0 !important;
+  padding: 0 14px !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3
+textarea.st-admin-tech-spec-editor-v3__textarea,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3
+textarea.st-admin-tech-spec-editor-v3__textarea:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3
+textarea.st-admin-tech-spec-editor-v3__textarea:active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3
+textarea.st-admin-tech-spec-editor-v3__textarea:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3
+textarea.st-admin-tech-spec-editor-v3__textarea:focus-visible {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  display: block !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+
+  height: 92px !important;
+  min-height: 92px !important;
+  max-height: 220px !important;
+
+  margin: 0 !important;
+  padding: 11px 0 !important;
+
+  resize: vertical !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #303235 !important;
+
+  font-family: inherit !important;
+  font-size: 9px !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+
+  --tw-ring-inset: initial !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+textarea.st-admin-tech-spec-editor-v3__textarea::placeholder {
+  color: #a4a8ac !important;
+  opacity: 1 !important;
+}
+
+
+/* INTEGRATED UTILITY BAR */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__bottom {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+
+  min-height: 40px !important;
+
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  gap: 12px !important;
+
+  margin: 0 14px !important;
+  padding: 7px 0 9px !important;
+
+  border: 0 !important;
+  border-top: 1px solid #eceeef !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__hint {
+  margin: 0 !important;
+
+  color: #a0a4a8 !important;
+
+  font-size: 7px !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__hint span {
+  color: #6f7478 !important;
+  font-weight: 500 !important;
+}
+
+
+/* PARSE ACTION */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__parse {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  display: inline-flex !important;
+
+  min-height: 27px !important;
+
+  flex: none !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 5px !important;
+
+  margin: 0 !important;
+  padding: 5px 9px !important;
+
+  border: 1px solid #d6d8da !important;
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  color: #42464a !important;
+
+  font-size: 7.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__parse:not(:disabled):hover {
+  border-color: #8c9196 !important;
+
+  background: #f6f7f7 !important;
+
+  color: #202223 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__parse:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__parse:focus-visible {
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-tech-spec-editor-v3__parse:disabled {
+  cursor: not-allowed !important;
+
+  opacity: 0.38 !important;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 720px) {
+  html body
+  .st3-admin
+  .st-admin-product-editor-form
+  .st-admin-tech-spec-editor-v3__top {
+    padding: 11px 12px 7px !important;
+  }
+
+  html body
+  .st3-admin
+  .st-admin-product-editor-form
+  .st-admin-tech-spec-editor-v3__editor {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  html body
+  .st3-admin
+  .st-admin-product-editor-form
+  .st-admin-tech-spec-editor-v3__bottom {
+    align-items: stretch !important;
+
+    flex-direction: column !important;
+
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+  }
+
+  html body
+  .st3-admin
+  .st-admin-product-editor-form
+  .st-admin-tech-spec-editor-v3__parse {
+    width: 100% !important;
+  }
+}
+
+/* ============================================================
+   END ADMIN V2 — TECHNICAL SPECIFICATIONS EDITOR V5
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — SELECTOR ORDER + CONFIG ARROW HOVER V85
+   Selected directory entries are promoted by the shared popup
+   component. This CSS only owns configuration reorder hover.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):focus-visible {
+  position: relative !important;
+  z-index: 2 !important;
+
+  border: 1px solid #202223 !important;
+  border-radius: 4px !important;
+
+  background: #202223 !important;
+  color: #ffffff !important;
+
+  outline: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):hover
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):focus-visible
+> svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/*
+ * A hovered arrow owns its complete perimeter. Adjacent segmented
+ * separators therefore cannot paint the old one-sided dark edge.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):hover
++ button,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):focus-visible
++ button {
+  border-left-color: transparent !important;
+}
+
+/* Delete behavior stays exactly foreground-red and stationary. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button.st-admin-destructive-control-v2:hover {
+  background: #ffffff !important;
+  color: #dc2626 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — SELECTOR ORDER + CONFIG ARROW HOVER V85
+   ============================================================ */
+
+
+/* ============================================================
+   ADMIN V2 — CONFIG ARROW FINAL AUTHORITY V86
+
+   Arrow hover:
+   - keeps the existing light surface
+   - arrow stays black
+   - no right-side hover bar
+   - no movement
+   - delete behavior untouched
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):focus-visible {
+  background: #f6f6f7 !important;
+  color: #202223 !important;
+
+  border: 0 !important;
+  border-right: 0 !important;
+  border-left: 0 !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):hover
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):focus-visible
+> svg {
+  color: #202223 !important;
+  stroke: #202223 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/*
+ * Remove the separator immediately to the right of the
+ * hovered/focused reorder arrow.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):hover
++ button,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):focus-visible
++ button {
+  border-left: 0 !important;
+  border-left-color: transparent !important;
+}
+
+/* The hovered arrow itself must never paint a right separator. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-actions-v2
+> button:not(.st-admin-destructive-control-v2):not(:disabled):hover {
+  border-right: 0 !important;
+  border-right-color: transparent !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — CONFIG ARROW FINAL AUTHORITY V86
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — MEDIA CARD CONTROLS FINAL AUTHORITY V87
+
+   Scope:
+   - Active product Media gallery only.
+   - Reorder arrows remain physically stationary.
+   - Delete control remains physically stationary.
+   - Child SVG icons remain physically stationary.
+   - Clear all uses the same control geometry as Save usage
+     while preserving destructive red semantics.
+
+   Configuration controls / V86 are intentionally untouched.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:hover,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:focus,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:focus-visible,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  outline-offset: 0 !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button
+> svg,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:hover
+> svg,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:focus
+> svg,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:focus-visible
+> svg,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-media-item__actions
+button:active
+> svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/*
+ * Clear all:
+ * inherit the same rectangular control language as Save usage.
+ * Only the destructive red treatment remains different.
+ */
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger {
+  box-sizing: border-box !important;
+
+  min-height: 36px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 13px !important;
+
+  border: 1px solid #e4b7b3 !important;
+  border-radius: 7px !important;
+
+  background: #ffffff !important;
+  color: #b42318 !important;
+
+  font: inherit !important;
+  font-weight: 600 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:hover,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:focus,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:focus-visible,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:active {
+  border-color: #d92d20 !important;
+
+  background: #fff3f2 !important;
+  color: #b42318 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — MEDIA CARD CONTROLS FINAL AUTHORITY V87
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — CLEAR ALL FINAL AUTHORITY V88
+
+   Default:
+   visually matches Save usage.
+
+   Hover:
+   reveals destructive red treatment.
+
+   No movement.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger {
+  box-sizing: border-box !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 13px !important;
+
+  border: 1px solid #c9cccf !important;
+  border-radius: 7px !important;
+
+  background: #ffffff !important;
+  color: #202223 !important;
+
+  font-size: inherit !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    color 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:hover {
+  border-color: #d92d20 !important;
+
+  background: #fff3f2 !important;
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:focus,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:focus-visible,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — CLEAR ALL FINAL AUTHORITY V88
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — CLEAR ALL EXACT SAVE-USAGE MATCH V89
+
+   Clear all uses the same physical control dimensions and
+   typography as Save usage.
+
+   The only intentional distinction is destructive color:
+   - normal state: simple red text
+   - hover: light-red destructive treatment
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger {
+  box-sizing: border-box !important;
+
+  height: auto !important;
+  min-height: 32px !important;
+  max-height: none !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 10px !important;
+
+  border: 1px solid #c9cccf !important;
+  border-radius: 7px !important;
+
+  background: #ffffff !important;
+
+  color: #d92d20 !important;
+
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    color 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:hover {
+  border-color: #d92d20 !important;
+
+  background: #fff3f2 !important;
+
+  color: #d92d20 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:focus,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:focus-visible,
+html body
+.st3-admin
+.st-admin-existing-media-v2
+.st-admin-existing-media-v2__toolbar-actions
+button.st-admin-existing-media-v2__danger:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — CLEAR ALL EXACT SAVE-USAGE MATCH V89
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — BRAND / CATEGORY INLINE RENAME V90
+   Additive only. Universal popup dimensions remain authoritative.
+   ============================================================ */
+
+.st-admin-directory-popup__option-actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+}
+
+.st-admin-directory-popup__edit-trigger {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+  background: transparent !important;
+  color: #6d7175 !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.st-admin-directory-popup__edit-trigger:hover,
+.st-admin-directory-popup__edit-trigger:focus,
+.st-admin-directory-popup__edit-trigger:focus-visible {
+  background: #e7e7e7 !important;
+  color: #202223 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.st-admin-directory-popup__edit-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 8px !important;
+  background: #f7f7f7 !important;
+  color: #202223 !important;
+}
+
+.st-admin-directory-popup__edit-input {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  height: 26px !important;
+  padding: 0 7px !important;
+  border: 1px solid #b5b5b5 !important;
+  border-radius: 5px !important;
+  background: #ffffff !important;
+  color: #202223 !important;
+  font: inherit !important;
+  font-size: 9px !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.st-admin-directory-popup__edit-input:focus {
+  border-color: #202223 !important;
+  box-shadow: 0 0 0 1px #202223 !important;
+}
+
+.st-admin-directory-popup__edit-actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+}
+
+.st-admin-directory-popup__edit-cancel,
+.st-admin-directory-popup__edit-save {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 26px !important;
+  padding: 0 7px !important;
+  border: 1px solid #c9cccf !important;
+  border-radius: 5px !important;
+  background: #ffffff !important;
+  color: #303030 !important;
+  font: inherit !important;
+  font-size: 8px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.st-admin-directory-popup__edit-save {
+  border-color: #202223 !important;
+  background: #202223 !important;
+  color: #ffffff !important;
+}
+
+.st-admin-directory-popup__edit-cancel:hover {
+  background: #ededed !important;
+}
+
+.st-admin-directory-popup__edit-save:hover {
+  background: #303236 !important;
+}
+
+.st-admin-directory-popup__edit-cancel:disabled,
+.st-admin-directory-popup__edit-save:disabled,
+.st-admin-directory-popup__edit-input:disabled {
+  cursor: default !important;
+  opacity: 0.55 !important;
+}
+
+/* ============================================================
+   ADMIN V2 — BRAND / CATEGORY INLINE PENCIL ROW ALIGNMENT V91
+   ============================================================ */
+
+.st3-admin
+  .st-admin-category-picker__option
+  > strong {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.st3-admin
+  .st-admin-directory-popup__option-actions {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex: 0 0 auto !important;
+  gap: 7px !important;
+  margin-left: 10px !important;
+}
+
+.st3-admin
+  .st-admin-directory-popup__edit-trigger {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 5px !important;
+
+  background: transparent !important;
+  color: #6d7175 !important;
+
+  box-shadow: none !important;
+  outline: none !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+.st3-admin
+  .st-admin-directory-popup__edit-trigger:hover {
+  background: #ececec !important;
+  color: #202223 !important;
+
+  border: 0 !important;
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+.st3-admin
+  .st-admin-directory-popup__edit-trigger:focus,
+.st3-admin
+  .st-admin-directory-popup__edit-trigger:focus-visible {
+  background: #ececec !important;
+  color: #202223 !important;
+
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+.st3-admin
+  .st-admin-directory-popup__edit-trigger
+  > svg {
+  display: block !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+.st3-admin
+  .st-admin-directory-popup__option-actions
+  > small {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+.st3-admin
+  .st-admin-directory-popup__option-actions
+  .st-admin-category-picker__check {
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+/* ==========================================================
+   ADMIN V2 — TRANSITION ISLAND TRUE HEADER REVEAL V92
+
+   Motion remains authoritative:
+   - starts upward behind the workspace header
+   - slides downward from behind the header
+   - rests visibly below the header
+   - exits upward behind the header
+
+   The measured header bottom remains the island's y=0 origin.
+   The header owns the higher stacking layer.
+   ========================================================== */
+
+.st3-admin .st-admin-transition-island-layer {
+  top: var(--st-admin-island-header-edge, 0px) !important;
+  bottom: auto !important;
+
+  left: 0 !important;
+  right: 0 !important;
+
+  width: 100% !important;
+  height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  overflow: visible !important;
+  pointer-events: none !important;
+
+  /*
+   * Motion owns transform / translateY.
+   * Do not override transform here.
+   */
+  transition: none !important;
+
+  /*
+   * Must remain below the canonical workspace header (z-index 30)
+   * so negative Motion y values genuinely travel behind it.
+   */
+  z-index: 29 !important;
+}
+
+.st3-admin
+  .st-admin-transition-island-layer
+  .st-admin-transition-island {
+  margin-top: 8px !important;
+}
+
+/*
+ * The canonical workspace header is the reveal mask.
+ * Its existing surface and geometry remain untouched.
+ */
+.st3-admin .st-admin-v2-page-header {
+  z-index: 30 !important;
+}
+
+@media (max-width: 760px) {
+  .st3-admin .st-admin-transition-island-layer {
+    top: var(--st-admin-island-header-edge, 0px) !important;
+  }
+
+  .st3-admin
+    .st-admin-transition-island-layer
+    .st-admin-transition-island {
+    margin-top: 6px !important;
+  }
+}
+
+/* ==========================================================
+   END ADMIN V2 — TRANSITION ISLAND TRUE HEADER REVEAL V92
+   ========================================================== */

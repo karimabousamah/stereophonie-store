@@ -194,6 +194,33 @@ function getAdminDestination(
   };
 }
 
+function syncAdminIslandToHeaderEdge() {
+  const header =
+    document.querySelector<HTMLElement>(
+      ".st-admin-v2-page-header",
+    );
+
+  if (!header) {
+    document.documentElement.style.removeProperty(
+      "--st-admin-island-header-edge",
+    );
+    return;
+  }
+
+  const headerRect =
+    header.getBoundingClientRect();
+
+  const headerEdge = Math.max(
+    0,
+    Math.round(headerRect.bottom),
+  );
+
+  document.documentElement.style.setProperty(
+    "--st-admin-island-header-edge",
+    `${headerEdge}px`,
+  );
+}
+
 export default function AdminPageTransitionIsland() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -237,6 +264,29 @@ export default function AdminPageTransitionIsland() {
     useRef<ReturnType<typeof setTimeout> | null>(
       null,
     );
+
+  useEffect(() => {
+    syncAdminIslandToHeaderEdge();
+
+    const frame =
+      window.requestAnimationFrame(() => {
+        syncAdminIslandToHeaderEdge();
+      });
+
+    window.addEventListener(
+      "resize",
+      syncAdminIslandToHeaderEdge,
+    );
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+
+      window.removeEventListener(
+        "resize",
+        syncAdminIslandToHeaderEdge,
+      );
+    };
+  }, []);
 
   const updatePhase = useCallback(
     (nextPhase: IslandPhase) => {

@@ -17,8 +17,12 @@ import {
  type KeyboardEvent,
 } from "react";
 import { createPortal } from "react-dom";
+import ProductDirectoryPopup from "@/components/admin/product-directory-popup";
 
-import { createCategoryInline } from "@/components/admin/product-category-picker-actions";
+import {
+  createCategoryInline,
+  renameCategoryInline,
+} from "@/components/admin/product-category-picker-actions";
 
 export type ProductCategoryOption = {
  id: string;
@@ -55,11 +59,15 @@ export default function ProductCategoryPicker({
  const [creating, setCreating] = useState(false);
  const [error, setError] = useState("");
  const [creationMessage, setCreationMessage] = useState("");
+ const [editingCategoryId, setEditingCategoryId] =
+   useState<string | null>(null);
+ const [editValue, setEditValue] = useState("");
+ const [editBusy, setEditBusy] = useState(false);
 
  const [position, setPosition] = useState({
  top: 0,
  left: 0,
- width: 390,
+ width: 320,
   });
 
  useEffect(() => {
@@ -105,7 +113,7 @@ export default function ProductCategoryPicker({
  const rect = button.getBoundingClientRect();
  const padding = 16;
 
- let width = Math.max(rect.width, 390);
+ let width = Math.min(Math.max(rect.width, 300), 320);
 
  width = Math.min(width, window.innerWidth - padding * 2);
 
@@ -247,6 +255,64 @@ export default function ProductCategoryPicker({
  setCreating(false);
     }
   }
+ async function saveCategoryRename(categoryId: string) {
+   const currentCategory = options.find(
+     (category) => category.id === categoryId,
+   );
+   const requestedName = editValue.replace(/\s+/g, " ").trim();
+
+   if (!currentCategory || !requestedName || editBusy) {
+     return;
+   }
+
+   if (requestedName === currentCategory.name) {
+     setEditingCategoryId(null);
+     setEditValue("");
+     return;
+   }
+
+   setEditBusy(true);
+   setError("");
+   setCreationMessage("");
+
+   try {
+     const result = await renameCategoryInline(categoryId, requestedName);
+
+     if (!result.ok) {
+       setError(result.error);
+       return;
+     }
+
+     const updatedCategory: ProductCategoryOption = result.category;
+
+     setOptions((current) =>
+       current
+         .map((category) =>
+           category.id === updatedCategory.id
+             ? updatedCategory
+             : category,
+         )
+         .sort((a, b) => a.name.localeCompare(b.name)),
+     );
+
+     setEditingCategoryId(null);
+     setEditValue("");
+     setQuery("");
+     setActiveIndex(-1);
+     setCreationMessage(
+       `${updatedCategory.name} was renamed successfully.`,
+     );
+
+     if (updatedCategory.id === selectedId) {
+       onCategoryChange?.(updatedCategory);
+     }
+   } catch {
+     setError("The category could not be renamed. Please try again.");
+   } finally {
+     setEditBusy(false);
+   }
+ }
+
 
  function keyDown(event: KeyboardEvent<HTMLInputElement>) {
  if (event.key === "ArrowDown") {
@@ -283,158 +349,101 @@ export default function ProductCategoryPicker({
   }
 
  const dropdown =
- mounted && open
+    mounted && open
       ? createPortal(
-          <div
-            ref={dropdownRef}
-            className="st-admin-category-picker__dropdown fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
-            style={{
-              top: position.top,
-              left: position.left,
-              width: position.width,
+          <ProductDirectoryPopup
+            dropdownRef={dropdownRef}
+            searchRef={searchRef}
+            position={position}
+            ariaLabel="Choose product category"
+            directoryLabel="Category directory"
+            countLabelSingular="category"
+            countLabelPlural="categories"
+            options={filtered.map((category) => ({
+              key: category.id,
+              label: category.name,
+              selected: category.id === selectedId,
+            }))}
+            activeIndex={activeIndex}
+            onActiveIndexChange={setActiveIndex}
+            onChoose={(option) => {
+              const category = filtered.find(
+                (candidate) => candidate.id === option.key,
+              );
+
+              if (category) {
+                choose(category);
+              }
             }}
-            role="dialog"
-            aria-label="Choose product category"
-          >
-            <div className="border-b border-black/[0.07] p-3">
-              <div className="st-admin-picker-search-final st-admin-option-directory-search-v2 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
-                <Search className="h-[17px] w-[17px] shrink-0 text-black/42" />
+            onEdit={(option) => {
+              const category = filtered.find(
+                (candidate) => candidate.id === option.key,
+              );
 
-                <input
-                  ref={searchRef}
-                  value={query}
-                  onChange={(event) => {
-                    setQuery(event.target.value);
-                    setError("");
-                    setCreationMessage("");
-                  }}
-                  onKeyDown={keyDown}
-                  placeholder="Search categories..."
-                  autoComplete="off"
-                  className="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-[14px] font-medium text-[#1d1d1f] outline-none ring-0 shadow-none placeholder:text-black/35 focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none st-admin-category-picker__search-input st-admin-picker-search-input-final"
-                  aria-label="Search categories"
-                  role="combobox"
-                  aria-expanded="true"
-                  aria-autocomplete="list"
-                />
+              if (!category) {
+                return;
+              }
 
-                {query ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setQuery("");
-                      setError("");
-                      setCreationMessage("");
-                      requestAnimationFrame(() => {
-                        searchRef.current?.focus();
-                      });
-                    }}
-                    className="st-admin-picker-search-clear-final"
-                    aria-label="Clear category search"
-                  >
-                    <X
-                      className="h-3.5 w-3.5"
-                      strokeWidth={1.8}
-                      aria-hidden="true"
-                    />
-                  </button>
+              setEditingCategoryId(category.id);
+              setEditValue(category.name);
+              setError("");
+              setCreationMessage("");
+            }}
+            editingKey={editingCategoryId}
+            editValue={editValue}
+            editBusy={editBusy}
+            onEditValueChange={setEditValue}
+            onEditSave={(option) => {
+              void saveCategoryRename(option.key);
+            }}
+            onEditCancel={() => {
+              setEditingCategoryId(null);
+              setEditValue("");
+              setError("");
+            }}
+            query={query}
+            onQueryChange={(value) => {
+              setQuery(value);
+              setError("");
+              setCreationMessage("");
+              setActiveIndex(-1);
+            }}
+            onSearchKeyDown={keyDown}
+            searchPlaceholder="Search categories..."
+            searchAriaLabel="Search categories"
+            emptyTitle="No matching category"
+            emptyDescription="You can create this category without leaving the product."
+            statusContent={
+              <>
+                {error ? (
+                  <div className="border-t border-black/[0.07] px-4 py-3 text-[12px] font-medium text-red-600">
+                    {error}
+                  </div>
                 ) : null}
-              </div>
 
-              <div className="mt-2.5 flex items-center justify-between gap-4 px-1">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/35">
-                  Category directory
-                </span>
-
-                <span className="text-[11px] font-medium text-black/38">
-                  {filtered.length}{" "}
-                  {filtered.length === 1 ? "category" : "categories"}
-                </span>
-              </div>
-            </div>
-
-            <div className="max-h-[330px] overflow-y-auto overscroll-contain p-2">
-              {filtered.length ? (
-                <div role="listbox" aria-label="Available categories">
-                  {filtered.map((category, index) => {
-                    const selected = category.id === selectedId;
-                    const active = index === activeIndex;
-
-                    return (
-                      <button
-                        key={category.id}
-                        type="button"
-                        role="option"
-                        aria-selected={selected}
-                        onMouseEnter={() => setActiveIndex(index)}
-                        onClick={() => choose(category)}
-                        className={`mb-1 flex min-h-[46px] w-full items-center justify-between gap-4 rounded-[12px] px-3.5 text-left transition ${
-                          selected
-                            ? "bg-[#fff6df] text-[#7b5000]"
-                            : active
-                              ? "bg-black/[0.045] text-black"
-                              : "text-black/72 hover:bg-black/[0.035] hover:text-black"
-                        }`}
-                      >
-                        <span className="min-w-0 truncate text-[13px] font-semibold">
-                          {category.name}
-                        </span>
-
-                        {selected ? (
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#fdb73e] text-black shadow-[0_4px_12px_rgba(253,183,62,0.25)]">
-                            <Check
-                              className="h-3.5 w-3.5"
-                              strokeWidth={2.5}
-                            />
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-black/22">
-                            Select
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="px-4 py-7 text-center">
-                  <Search className="mx-auto h-5 w-5 text-black/20" />
-
-                  <p className="mt-3 text-[13px] font-semibold text-black/65">
-                    No matching category
-                  </p>
-
-                  <p className="mt-1 text-[12px] leading-5 text-black/40">
-                    You can create this category without leaving the product.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {error ? (
-              <div className="border-t border-red-500/10 bg-red-50 px-4 py-3 text-[12px] font-medium text-red-700">
-                {error}
-              </div>
-            ) : null}
-
-            {creationMessage ? (
-              <div className="border-t border-emerald-500/10 bg-emerald-50 px-4 py-3 text-[12px] font-medium text-emerald-700">
-                {creationMessage}
-              </div>
-            ) : null}
-
-            {canCreate ? (
+                {creationMessage ? (
+                  <div className="border-t border-black/[0.07] px-4 py-3 text-[12px] font-medium text-black/55">
+                    {creationMessage}
+                  </div>
+                ) : null}
+              </>
+            }
+            footerContent={
+              canCreate ? (
                 <div className="st-admin-picker-create-footer-v40">
                   <button
- type="button"
- onClick={() => void createRequestedCategory()}
- disabled={creating}
- className="st-admin-picker-create-action-v40"
+                    type="button"
+                    onClick={createRequestedCategory}
+                    disabled={creating}
+                    className="st-admin-picker-create-action-v40"
                   >
                     <span className="st-admin-picker-create-content-v40">
                       <span className="st-admin-picker-create-icon-v40">
                         {creating ? (
-                          <LoaderCircle className="st-admin-picker-create-spinner-v40" />
+                          <LoaderCircle
+                            className="h-4 w-4 animate-spin"
+                            strokeWidth={2.2}
+                          />
                         ) : (
                           <Plus className="h-4 w-4" strokeWidth={2.2} />
                         )}
@@ -443,17 +452,18 @@ export default function ProductCategoryPicker({
                       <span className="st-admin-picker-create-copy-v40">
                         <strong>
                           {creating
-                            ? "Creating category..."
-                            : `Add “${query.replace(/\s+/g, " ").trim()}”`}
+                            ? "Creating..."
+                            : `Add “${cleanQuery}”`}
                         </strong>
                         <small>Create and select automatically</small>
                       </span>
                     </span>
                   </button>
                 </div>
-              ) : null}
-          </div>,
- document.body,
+              ) : null
+            }
+          />,
+          document.body,
         )
       : null;
 

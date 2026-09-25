@@ -15,6 +15,8 @@ type ProductSaveBarProps = {
   onDelete?: () => void;
   deletePending?: boolean;
   formId?: string;
+  editMode?: boolean;
+  editIntent?: "draft" | "publish";
 };
 
 export default function ProductSaveBar({
@@ -27,6 +29,8 @@ export default function ProductSaveBar({
   onDelete,
   deletePending = false,
   formId = "st-admin-new-product-form",
+  editMode = false,
+  editIntent = "draft",
 }: ProductSaveBarProps) {
   const [mounted, setMounted] = useState(false);
   const [deleteConfirmationOpen,
@@ -212,32 +216,63 @@ export default function ProductSaveBar({
               </div>
             ) : null}
 
-          <button
-            type="submit"
-            name="intent"
-            value="draft"
-            formNoValidate
-            disabled={isSubmitting}
-            onClick={onDraft}
-            className="st-admin-product-fixed-header__draft"
+          {editMode ? (
+            <>
+              <button
+                type="submit"
+                name="intent"
+                value="draft"
+                formNoValidate
+                disabled={isSubmitting}
+                onClick={onDraft}
+                className="st-admin-product-fixed-header__draft"
+                form={formId}
+              >
+                Save draft
+              </button>
 
-            form={formId}
-          >
-            Save draft
-          </button>
+              <button
+                type="submit"
+                name="intent"
+                value={editIntent === "publish" ? "publish" : "publish"}
+                disabled={isSubmitting}
+                onClick={onPublish}
+                className="st-admin-product-fixed-header__publish"
+                form={formId}
+              >
+                {editIntent === "publish"
+                  ? "Save Changes"
+                  : "Publish live"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="submit"
+                name="intent"
+                value="draft"
+                formNoValidate
+                disabled={isSubmitting}
+                onClick={onDraft}
+                className="st-admin-product-fixed-header__draft"
+                form={formId}
+              >
+                Save draft
+              </button>
 
-          <button
-            type="submit"
-            name="intent"
-            value="publish"
-            disabled={isSubmitting}
-            onClick={onPublish}
-            className="st-admin-product-fixed-header__publish"
-
-            form={formId}
-          >
-            Publish live
-          </button>
+              <button
+                type="submit"
+                name="intent"
+                value="publish"
+                disabled={isSubmitting}
+                onClick={onPublish}
+                className="st-admin-product-fixed-header__publish"
+                form={formId}
+              >
+                Publish live
+              </button>
+            </>
+          )}
         </div>
       </div>
 

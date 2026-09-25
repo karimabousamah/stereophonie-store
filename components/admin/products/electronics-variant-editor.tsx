@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
+import ProductDirectoryPopup from "@/components/admin/product-directory-popup";
 
 import ConfigurationColorPicker from "@/components/admin/products/configuration-color-picker";
 import { canonicalizeProductColorwayName } from "@/lib/product-colorways";
@@ -579,7 +580,7 @@ function SearchableOptionValuePicker({
  const [position, setPosition] = useState({
  top: 0,
  left: 0,
- width: 390,
+ width: 320,
   });
 
  const selected = uniqueValues(level.values.map(clean).filter(Boolean));
@@ -631,7 +632,7 @@ function SearchableOptionValuePicker({
  const rect = trigger.getBoundingClientRect();
 
  const viewportPadding = 16;
- const desiredWidth = Math.max(rect.width, 390);
+ const desiredWidth = Math.min(Math.max(rect.width, 300), 320);
  const maximumWidth = Math.min(desiredWidth, window.innerWidth - 32);
 
  let left = rect.left;
@@ -817,158 +818,40 @@ function SearchableOptionValuePicker({
   }
 
  const dropdown =
- mounted && open
+    mounted && open
       ? createPortal(
-          <div
- ref={dropdownRef}
- className="st-admin-option-directory-v2 fixed z-[10000] overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.08)]"
- style={{
- top: position.top,
- left: position.left,
- width: position.width,
+          <ProductDirectoryPopup
+            dropdownRef={dropdownRef}
+            searchRef={searchRef}
+            position={position}
+            ariaLabel={`Choose ${level.label}`}
+            directoryLabel={`${level.label} directory`}
+            countLabelSingular="choice"
+            countLabelPlural="choices"
+            options={filteredValues.map((value) => ({
+              key: value,
+              label: value,
+              selected: selected.includes(value),
+            }))}
+            activeIndex={activeIndex}
+            onActiveIndexChange={setActiveIndex}
+            onChoose={(option) => toggleValue(option.label)}
+            query={query}
+            onQueryChange={(value) => {
+              setQuery(value);
+              setActiveIndex(-1);
             }}
- role="dialog"
- aria-label={`Choose ${level.label}`}
-          >
-            <div className="border-b border-black/[0.07] p-3">
-              <div className="st-admin-option-directory-search-v2 st-admin-search-shell-v44-4 st-admin-option-search-shell-v54 flex min-h-[48px] items-center gap-3 rounded-[13px] border border-black/10 bg-[#f7f7f8] px-3.5 transition focus-within:border-[#d59a2e]/65 focus-within:bg-white focus-within:shadow-[0_0_0_4px_rgba(253,183,62,0.10)]">
-                <Search className="h-[17px] w-[17px] shrink-0 text-black/42" />
-
-                <input
- ref={searchRef}
- value={query}
- onChange={(event) => {
- setQuery(event.target.value);
-                  }}
- onKeyDown={handleSearchKeyDown}
- placeholder={`Search ${level.label.toLowerCase()}...`}
- autoComplete="off"
- className="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-[14px] font-medium text-[#1d1d1f] outline-none ring-0 shadow-none placeholder:text-black/35 focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none st-admin-product-brand-picker__search-input"
- aria-label={`Search ${level.label}`}
- role="combobox"
- aria-expanded="true"
- aria-autocomplete="list"
-                />
-                {query ? (
-                  <button
- type="button"
- onClick={() => {
- setQuery("");
- setActiveIndex(-1);
-
- requestAnimationFrame(() => {
- searchRef.current?.focus();
-                      });
-                    }}
- className="st-admin-search-clear-v47"
- aria-label={`Clear ${level.label} search`}
-                  >
-                    <X
- className="h-3.5 w-3.5"
- strokeWidth={1.8}
- aria-hidden="true"
-                    />
-                  </button>
-                ) : null}
-              </div>
-
-              <div className="mt-2.5 flex items-center justify-between gap-4 px-1">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.17em] text-black/35">
-                  {level.label} directory
-                </span>
-
-                <span className="text-[11px] font-medium text-black/38">
-                  {filteredValues.length}{" "}
-                  {filteredValues.length === 1 ? "choice" : "choices"}
-                </span>
-              </div>
-            </div>
-
-            <div className="max-h-[330px] overflow-y-auto overscroll-contain p-2">
-              {filteredValues.length > 0 ? (
-                <div
- role="listbox"
- aria-label={`Available ${level.label}`}
- aria-multiselectable="true"
-                >
-                  {filteredValues.map((value, index) => {
- const selectedValue = isSelected(value);
- const active = index === activeIndex;
-
- return (
-                      <button
- key={value}
- type="button"
- role="option"
- aria-selected={selectedValue}
- onMouseEnter={() => setActiveIndex(index)}
- onClick={() => toggleValue(value)}
- className={`mb-1 flex min-h-[46px] w-full items-center justify-between gap-4 rounded-[12px] px-3.5 text-left transition ${
- selectedValue
-                            ? "st-admin-option-directory-selected-v2"
-                            : active
-                              ? "bg-black/[0.045] text-black"
-                              : "text-black/72 hover:bg-black/[0.035] hover:text-black"
-                        }`}
-                      >
-                        <span className="min-w-0 truncate text-[13px] font-semibold">
-                          {value}
-                        </span>
-
-                        {selectedValue ? (
-                          <span className="st-admin-option-directory-check-v2">
-                            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-black/22">
- Select
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="px-4 py-7 text-center">
-                  <Search className="mx-auto h-5 w-5 text-black/20" />
-
-                  <p className="mt-3 text-[13px] font-semibold text-black/65">
- No matching {level.label.toLowerCase()}
-                  </p>
-
-                  <p className="mt-1 text-[12px] leading-5 text-black/40">
- You can add this choice without leaving the product.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {canCreate ? (
-              <div className="st-admin-picker-create-footer-v40">
-                <button
- type="button"
- onClick={createRequestedValue}
- className="st-admin-picker-create-action-v40"
-                >
-                  <span className="st-admin-picker-create-content-v40">
-                    <span className="st-admin-picker-create-icon-v40">
-                      <Plus className="h-4 w-4" strokeWidth={2.2} />
-                    </span>
-
-                    <span className="st-admin-picker-create-copy-v40">
-                      <strong>Add “{cleanQuery}”</strong>
-                      <small>Create and select automatically</small>
-                    </span>
-                  </span>
-                </button>
-              </div>
-            ) : null}
-          </div>,
- document.body,
+            onSearchKeyDown={handleSearchKeyDown}
+            searchPlaceholder={`Search ${level.label.toLowerCase()}...`}
+            searchAriaLabel={`Search ${level.label}`}
+            emptyTitle={`No matching ${level.label.toLowerCase()}`}
+            multiselect
+          />,
+          document.body,
         )
       : null;
 
- return (
+  return (
     <div className="st-admin-option-value-picker-v2 relative w-full">
       <button
  ref={triggerRef}
@@ -988,7 +871,7 @@ function SearchableOptionValuePicker({
           <span
  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition ${
  open
-                ? "bg-[#fdb73e] text-black"
+                ? "bg-[#1d1d1f] text-white"
                 : "bg-white/[0.07] text-white/55 group-hover:bg-white/[0.10] group-hover:text-white/75"
             }`}
           >
@@ -1025,7 +908,7 @@ function SearchableOptionValuePicker({
         <ChevronDown
  className={`h-4 w-4 shrink-0 transition duration-200 ${
  open
-              ? "rotate-180 text-[#9a6500]"
+              ? "rotate-180 text-white/70"
               : "text-white/38 group-hover:text-white/65"
           }`}
         />
@@ -1071,23 +954,39 @@ function OptionNamePicker({
   placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [position, setPosition] = useState({
     top: 0,
     left: 0,
-    width: 220,
+    width: 320,
   });
 
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const searchRef = useRef<HTMLInputElement | null>(null);
 
   const preset =
     hierarchyPresetLabels.find(
       (label) => optionIdentity(label) === optionIdentity(value),
     ) ?? "";
 
-  const customSelected =
-    Boolean(clean(value)) && !preset;
+  const customSelected = Boolean(clean(value)) && !preset;
+
+  const directoryOptions = [
+    ...hierarchyPresetLabels,
+    "Custom option",
+  ];
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredOptions =
+    normalizedQuery.length === 0
+      ? directoryOptions
+      : directoryOptions.filter((label) =>
+          label.toLowerCase().includes(normalizedQuery),
+        );
 
   function updatePosition() {
     const trigger = triggerRef.current;
@@ -1097,25 +996,34 @@ function OptionNamePicker({
     }
 
     const rect = trigger.getBoundingClientRect();
-    const viewportPadding = 12;
-    const preferredWidth = Math.max(rect.width, 220);
-    const width = Math.min(
-      preferredWidth,
-      window.innerWidth - viewportPadding * 2,
+
+    const viewportPadding = 16;
+    const desiredWidth = Math.min(Math.max(rect.width, 300), 320);
+    const maximumWidth = Math.min(
+      desiredWidth,
+      window.innerWidth - 32,
     );
 
-    const left = Math.min(
-      Math.max(viewportPadding, rect.left),
-      Math.max(
-        viewportPadding,
-        window.innerWidth - width - viewportPadding,
-      ),
-    );
+    let left = rect.left;
+
+    if (
+      left + maximumWidth >
+      window.innerWidth - viewportPadding
+    ) {
+      left =
+        window.innerWidth -
+        maximumWidth -
+        viewportPadding;
+    }
+
+    if (left < viewportPadding) {
+      left = viewportPadding;
+    }
 
     setPosition({
-      top: rect.bottom + 6,
+      top: rect.bottom + 8,
       left,
-      width,
+      width: maximumWidth,
     });
   }
 
@@ -1123,7 +1031,7 @@ function OptionNamePicker({
     setMounted(true);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) {
       return;
     }
@@ -1133,6 +1041,40 @@ function OptionNamePicker({
     function handleViewportChange() {
       updatePosition();
     }
+
+    window.addEventListener(
+      "resize",
+      handleViewportChange,
+    );
+
+    window.addEventListener(
+      "scroll",
+      handleViewportChange,
+      true,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        handleViewportChange,
+      );
+
+      window.removeEventListener(
+        "scroll",
+        handleViewportChange,
+        true,
+      );
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      searchRef.current?.focus();
+    }, 30);
 
     function handlePointerDown(event: MouseEvent) {
       const target = event.target as Node;
@@ -1145,37 +1087,107 @@ function OptionNamePicker({
       }
 
       setOpen(false);
+      setQuery("");
+      setActiveIndex(-1);
     }
 
-    function handleEscape(event: globalThis.KeyboardEvent) {
+    function handleEscape(
+      event: globalThis.KeyboardEvent,
+    ) {
       if (event.key !== "Escape") {
         return;
       }
 
       setOpen(false);
+      setQuery("");
+      setActiveIndex(-1);
       triggerRef.current?.focus();
     }
 
-    window.addEventListener("resize", handleViewportChange);
-    window.addEventListener("scroll", handleViewportChange, true);
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener(
+      "mousedown",
+      handlePointerDown,
+    );
+
+    document.addEventListener(
+      "keydown",
+      handleEscape,
+    );
 
     return () => {
-      window.removeEventListener("resize", handleViewportChange);
-      window.removeEventListener("scroll", handleViewportChange, true);
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleEscape);
+      window.clearTimeout(timeout);
+
+      document.removeEventListener(
+        "mousedown",
+        handlePointerDown,
+      );
+
+      document.removeEventListener(
+        "keydown",
+        handleEscape,
+      );
     };
   }, [open]);
 
-  function choose(nextValue: string) {
-    onChange(nextValue);
+  function choose(label: string) {
+    onChange(
+      label === "Custom option"
+        ? "__custom__"
+        : label,
+    );
+
     setOpen(false);
+    setQuery("");
+    setActiveIndex(-1);
 
     requestAnimationFrame(() => {
       triggerRef.current?.focus();
     });
+  }
+
+  function handleSearchKeyDown(
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+
+      if (!filteredOptions.length) {
+        return;
+      }
+
+      setActiveIndex((current) =>
+        current < filteredOptions.length - 1
+          ? current + 1
+          : 0,
+      );
+
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+
+      if (!filteredOptions.length) {
+        return;
+      }
+
+      setActiveIndex((current) =>
+        current > 0
+          ? current - 1
+          : filteredOptions.length - 1,
+      );
+
+      return;
+    }
+
+    if (
+      event.key === "Enter" &&
+      activeIndex >= 0 &&
+      filteredOptions[activeIndex]
+    ) {
+      event.preventDefault();
+      choose(filteredOptions[activeIndex]);
+    }
   }
 
   const displayValue =
@@ -1186,63 +1198,35 @@ function OptionNamePicker({
   const dropdown =
     mounted && open
       ? createPortal(
-          <div
-            ref={dropdownRef}
-            className="st-admin-option-name-directory-final"
-            style={{
-              top: position.top,
-              left: position.left,
-              width: position.width,
+          <ProductDirectoryPopup
+            dropdownRef={dropdownRef}
+            searchRef={searchRef}
+            position={position}
+            ariaLabel="Choose product option"
+            directoryLabel="Product option directory"
+            countLabelSingular="option"
+            countLabelPlural="options"
+            options={filteredOptions.map((label) => ({
+              key: label,
+              label,
+              selected:
+                label === "Custom option"
+                  ? customSelected
+                  : optionIdentity(label) === optionIdentity(preset),
+            }))}
+            activeIndex={activeIndex}
+            onActiveIndexChange={setActiveIndex}
+            onChoose={(option) => choose(option.label)}
+            query={query}
+            onQueryChange={(value) => {
+              setQuery(value);
+              setActiveIndex(-1);
             }}
-            role="listbox"
-            aria-label="Choose product option"
-          >
-            <div className="st-admin-option-name-directory-final__list">
-              {hierarchyPresetLabels.map((label) => {
-                const selected =
-                  optionIdentity(label) === optionIdentity(preset);
-
-                return (
-                  <button
-                    key={label}
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    className="st-admin-option-name-directory-final__option"
-                    onClick={() => choose(label)}
-                  >
-                    <span>{label}</span>
-
-                    {selected ? (
-                      <Check
-                        className="h-3.5 w-3.5"
-                        strokeWidth={2.5}
-                      />
-                    ) : null}
-                  </button>
-                );
-              })}
-
-              <div className="st-admin-option-name-directory-final__separator" />
-
-              <button
-                type="button"
-                role="option"
-                aria-selected={customSelected}
-                className="st-admin-option-name-directory-final__option"
-                onClick={() => choose("__custom__")}
-              >
-                <span>Custom option</span>
-
-                {customSelected ? (
-                  <Check
-                    className="h-3.5 w-3.5"
-                    strokeWidth={2.5}
-                  />
-                ) : null}
-              </button>
-            </div>
-          </div>,
+            onSearchKeyDown={handleSearchKeyDown}
+            searchPlaceholder="Search product options..."
+            searchAriaLabel="Search product options"
+            emptyTitle="No matching product option"
+          />,
           document.body,
         )
       : null;
@@ -1256,11 +1240,11 @@ function OptionNamePicker({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => {
-          setOpen((current) => !current);
-
           if (!open) {
             requestAnimationFrame(updatePosition);
           }
+
+          setOpen((current) => !current);
         }}
       >
         <span
@@ -2836,20 +2820,30 @@ function AdminDirectorySelect({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+
   const [position, setPosition] = useState({
     top: 0,
     left: 0,
     width: 320,
   });
 
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const searchRef = useRef<HTMLInputElement | null>(null);
+  const triggerRef =
+    useRef<HTMLButtonElement | null>(null);
+
+  const dropdownRef =
+    useRef<HTMLDivElement | null>(null);
+
+  const searchRef =
+    useRef<HTMLInputElement | null>(null);
 
   const selectedOption =
-    options.find((option) => option.value === value) ?? null;
+    options.find(
+      (option) => option.value === value,
+    ) ?? null;
 
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery =
+    query.trim().toLowerCase();
 
   const filteredOptions =
     normalizedQuery.length === 0
@@ -2867,29 +2861,40 @@ function AdminDirectorySelect({
       return;
     }
 
-    const rect = trigger.getBoundingClientRect();
-
-    const preferredWidth = Math.max(
-      300,
-      Math.min(420, Math.max(rect.width, 320)),
-    );
+    const rect =
+      trigger.getBoundingClientRect();
 
     const viewportPadding = 16;
 
-    const width = Math.min(
-      preferredWidth,
-      window.innerWidth - viewportPadding * 2,
-    );
+    const desiredWidth =
+      Math.min(Math.max(rect.width, 300), 320);
 
-    const left = Math.min(
-      Math.max(viewportPadding, rect.left),
-      window.innerWidth - width - viewportPadding,
-    );
+    const maximumWidth =
+      Math.min(
+        desiredWidth,
+        window.innerWidth - 32,
+      );
+
+    let left = rect.left;
+
+    if (
+      left + maximumWidth >
+      window.innerWidth - viewportPadding
+    ) {
+      left =
+        window.innerWidth -
+        maximumWidth -
+        viewportPadding;
+    }
+
+    if (left < viewportPadding) {
+      left = viewportPadding;
+    }
 
     setPosition({
       top: rect.bottom + 8,
       left,
-      width,
+      width: maximumWidth,
     });
   }
 
@@ -2908,12 +2913,28 @@ function AdminDirectorySelect({
       updatePosition();
     }
 
-    window.addEventListener("resize", handleViewportChange);
-    window.addEventListener("scroll", handleViewportChange, true);
+    window.addEventListener(
+      "resize",
+      handleViewportChange,
+    );
+
+    window.addEventListener(
+      "scroll",
+      handleViewportChange,
+      true,
+    );
 
     return () => {
-      window.removeEventListener("resize", handleViewportChange);
-      window.removeEventListener("scroll", handleViewportChange, true);
+      window.removeEventListener(
+        "resize",
+        handleViewportChange,
+      );
+
+      window.removeEventListener(
+        "scroll",
+        handleViewportChange,
+        true,
+      );
     };
   }, [open]);
 
@@ -2922,11 +2943,16 @@ function AdminDirectorySelect({
       return;
     }
 
-    const timeout = window.setTimeout(() => {
-      searchRef.current?.focus();
-    }, 0);
+    const timeout =
+      window.setTimeout(() => {
+        if (searchable) {
+          searchRef.current?.focus();
+        }
+      }, 30);
 
-    function handlePointerDown(event: MouseEvent) {
+    function handlePointerDown(
+      event: MouseEvent,
+    ) {
       const target = event.target as Node;
 
       if (
@@ -2938,142 +2964,136 @@ function AdminDirectorySelect({
 
       setOpen(false);
       setQuery("");
+      setActiveIndex(-1);
     }
 
-    function handleEscape(event: globalThis.KeyboardEvent) {
+    function handleEscape(
+      event: globalThis.KeyboardEvent,
+    ) {
       if (event.key !== "Escape") {
         return;
       }
 
       setOpen(false);
       setQuery("");
+      setActiveIndex(-1);
       triggerRef.current?.focus();
     }
 
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener(
+      "mousedown",
+      handlePointerDown,
+    );
+
+    document.addEventListener(
+      "keydown",
+      handleEscape,
+    );
 
     return () => {
       window.clearTimeout(timeout);
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleEscape);
+
+      document.removeEventListener(
+        "mousedown",
+        handlePointerDown,
+      );
+
+      document.removeEventListener(
+        "keydown",
+        handleEscape,
+      );
     };
-  }, [open]);
+  }, [open, searchable]);
 
   function choose(nextValue: string) {
     onChange(nextValue);
     setOpen(false);
     setQuery("");
+    setActiveIndex(-1);
 
     requestAnimationFrame(() => {
       triggerRef.current?.focus();
     });
   }
 
+  function handleSearchKeyDown(
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+
+      if (!filteredOptions.length) {
+        return;
+      }
+
+      setActiveIndex((current) =>
+        current < filteredOptions.length - 1
+          ? current + 1
+          : 0,
+      );
+
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+
+      if (!filteredOptions.length) {
+        return;
+      }
+
+      setActiveIndex((current) =>
+        current > 0
+          ? current - 1
+          : filteredOptions.length - 1,
+      );
+
+      return;
+    }
+
+    if (
+      event.key === "Enter" &&
+      activeIndex >= 0 &&
+      filteredOptions[activeIndex]
+    ) {
+      event.preventDefault();
+
+      choose(
+        filteredOptions[activeIndex].value,
+      );
+    }
+  }
+
   const dropdown =
     mounted && open
       ? createPortal(
-          <div
-            ref={dropdownRef}
-            className="st-admin-unified-directory-final fixed z-[10000]"
-            style={{
-              top: position.top,
-              left: position.left,
-              width: position.width,
+          <ProductDirectoryPopup
+            dropdownRef={dropdownRef}
+            searchRef={searchRef}
+            position={position}
+            ariaLabel={ariaLabel}
+            directoryLabel={directoryLabel}
+            countLabelSingular="choice"
+            countLabelPlural="choices"
+            options={filteredOptions.map((option) => ({
+              key: option.value,
+              label: option.label,
+              selected: option.value === value,
+            }))}
+            activeIndex={activeIndex}
+            onActiveIndexChange={setActiveIndex}
+            onChoose={(option) => choose(option.key)}
+            searchable={searchable}
+            query={query}
+            onQueryChange={(value) => {
+              setQuery(value);
+              setActiveIndex(-1);
             }}
-            role="dialog"
-            aria-label={directoryLabel}
-          >
-            {searchable ? (
-              <div className="st-admin-unified-directory-final__search-wrap">
-                <div className="st-admin-unified-directory-final__search">
-                  <Search />
-                  <input
-                    ref={searchRef}
-                    value={query}
-                    onChange={(event) => {
-                      setQuery(event.target.value);
-                    }}
-                    placeholder={`Search ${directoryLabel.toLowerCase()}...`}
-                    autoComplete="off"
-                    aria-label={`Search ${directoryLabel}`}
-                  />
-
-                  {query ? (
-                    <button
-                      type="button"
-                      className="st-admin-unified-directory-final__clear"
-                      aria-label="Clear search"
-                      onClick={() => {
-                        setQuery("");
-                        requestAnimationFrame(() => {
-                          searchRef.current?.focus();
-                        });
-                      }}
-                    >
-                      <X />
-                    </button>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
-
-            <div className="st-admin-unified-directory-final__heading">
-              <span>{directoryLabel}</span>
-              <small>
-                {filteredOptions.length}{" "}
-                {filteredOptions.length === 1 ? "choice" : "choices"}
-              </small>
-            </div>
-
-            <div
-              className="st-admin-unified-directory-final__list"
-              role="listbox"
-              aria-label={directoryLabel}
-            >
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((option) => {
-                  const selected = option.value === value;
-
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      role="option"
-                      aria-selected={selected}
-                      className="st-admin-unified-directory-final__option"
-                      onClick={() => {
-                        choose(option.value);
-                      }}
-                    >
-                      <span className="st-admin-unified-directory-final__option-copy">
-                        <strong>{option.label}</strong>
-
-                        {option.description ? (
-                          <small>{option.description}</small>
-                        ) : null}
-                      </span>
-
-                      <span className="st-admin-unified-directory-final__option-action">
-                        {selected ? (
-                          <>
-                            <Check />
-                            <span>Selected</span>
-                          </>
-                        ) : (
-                          <span>Select</span>
-                        )}
-                      </span>
-                    </button>
-                  );
-                })
-              ) : (
-                <div className="st-admin-unified-directory-final__empty">
-                  No matching options
-                </div>
-              )}
-            </div>
-          </div>,
+            onSearchKeyDown={handleSearchKeyDown}
+            searchPlaceholder={`Search ${directoryLabel.toLowerCase()}...`}
+            searchAriaLabel={`Search ${directoryLabel}`}
+            emptyTitle="No matching options"
+          />,
           document.body,
         )
       : null;
@@ -3094,7 +3114,10 @@ function AdminDirectorySelect({
 
           if (!open) {
             onOpen?.();
-            requestAnimationFrame(updatePosition);
+
+            requestAnimationFrame(
+              updatePosition,
+            );
           }
 
           setOpen((current) => !current);
@@ -3123,7 +3146,6 @@ function AdminDirectorySelect({
     </>
   );
 }
-
 
 export default function ElectronicsVariantEditor({
  variants,
@@ -4797,7 +4819,7 @@ export default function ElectronicsVariantEditor({
                         placeholder={`Select ${level.label.toLowerCase()}`}
                         directoryLabel={`${level.label} directory`}
                         ariaLabel={`Select ${level.label}`}
-                        searchable
+                        searchable={false}
                         onChange={(value) =>
                           updateHierarchyValue(
                             activeVariant.clientId,
@@ -4920,58 +4942,57 @@ export default function ElectronicsVariantEditor({
               {specificationsPortalTarget
                 ? createPortal(
                     <section className="st-admin-specifications-portal-v27">
-                      <div className="st-admin-spec-paste-v2">
-                        <div className="st-admin-spec-paste-v2__header">
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#fdb73e]">
- Quick paste specifications
-                              </p>
-
-                              <p className="st-admin-spec-paste-v2__description">
- Paste a specification table or feature list from
- Google or another source. Top-level sections are
- preserved automatically, including nested
- specification details.
-                              </p>
+                      <div className="st-admin-tech-spec-editor-v3">
+                        <div className="st-admin-tech-spec-editor-v3__top">
+                          <div className="st-admin-tech-spec-editor-v3__heading">
+                            <div className="st-admin-tech-spec-editor-v3__icon-shell">
+                              <Copy className="st-admin-tech-spec-editor-v3__icon" />
                             </div>
 
-                            <Copy className="st-admin-spec-paste-v2__icon" />
+                            <div>
+                              <p className="st-admin-tech-spec-editor-v3__title">
+                                Technical specifications
+                              </p>
+
+                              <p className="st-admin-tech-spec-editor-v3__description">
+                                Paste product specifications and convert them into structured technical details.
+                              </p>
+                            </div>
                           </div>
                         </div>
 
-                        <div className="st-admin-spec-paste-v2__body">
+                        <div className="st-admin-tech-spec-editor-v3__editor">
                           <textarea
- value={bulkTechnicalSpecs}
- onChange={(event) => {
- setBulkTechnicalSpecs(event.target.value);
- setCustomSpecError("");
- setTechnicalSpecsMessage("");
+                            value={bulkTechnicalSpecs}
+                            onChange={(event) => {
+                              setBulkTechnicalSpecs(event.target.value);
+                              setCustomSpecError("");
+                              setTechnicalSpecsMessage("");
                             }}
- onPaste={(event) => {
- const html =
- event.clipboardData.getData("text/html");
+                            onPaste={(event) => {
+                              const html =
+                                event.clipboardData.getData("text/html");
 
- if (!html) {
- return;
+                              if (!html) {
+                                return;
                               }
 
- const reconstructed =
- specificationTextFromClipboardHtml(html);
+                              const reconstructed =
+                                specificationTextFromClipboardHtml(html);
 
- if (!reconstructed) {
- return;
+                              if (!reconstructed) {
+                                return;
                               }
 
- event.preventDefault();
+                              event.preventDefault();
 
- setBulkTechnicalSpecs(reconstructed);
- setCustomSpecError("");
- setTechnicalSpecsMessage("");
+                              setBulkTechnicalSpecs(reconstructed);
+                              setCustomSpecError("");
+                              setTechnicalSpecsMessage("");
                             }}
- rows={8}
- spellCheck={false}
- placeholder={`Paste specifications here...
+                            rows={8}
+                            spellCheck={false}
+                            placeholder={`Paste technical specifications...
 
 Display and Design
 Screen: 6.3-inch OLED with ProMotion
@@ -4982,29 +5003,24 @@ Performance and Hardware
 Processor: Apple A19 Pro chipset
 RAM: 12 GB RAM
 Storage Options: 256GB, 512GB, and 1TB`}
- className="st-admin-spec-paste-v2__textarea st-admin-spec-paste-focus-final st-admin-spec-paste-focus-real"
-/>
+                            className="st-admin-tech-spec-editor-v3__textarea"
+                          />
+                        </div>
 
-                          <div className="st-admin-spec-paste-v2__footer">
-                            <p className="st-admin-spec-paste-v2__format">
- Format:{" "}
-                              <span>
- Google table, bullet list, or Title: value
-                              </span>{" "}
-                              · Nested details stay inside their parent
- specification.
-                            </p>
+                        <div className="st-admin-tech-spec-editor-v3__bottom">
+                          <p className="st-admin-tech-spec-editor-v3__hint">
+                            Google table, bullet list, or <span>Title: value</span>
+                          </p>
 
-                            <button
- type="button"
- onClick={parseBulkTechnicalSpecifications}
- disabled={!bulkTechnicalSpecs.trim()}
- className="st-admin-spec-paste-v2__parse"
-                            >
-                              <Plus className="h-3.5 w-3.5" />
- Parse specifications
-                            </button>
-                          </div>
+                          <button
+                            type="button"
+                            onClick={parseBulkTechnicalSpecifications}
+                            disabled={!bulkTechnicalSpecs.trim()}
+                            className="st-admin-tech-spec-editor-v3__parse"
+                          >
+                            <Plus className="h-3.5 w-3.5" />
+                            <span>Parse specifications</span>
+                          </button>
                         </div>
                       </div>
 

@@ -21227,18 +21227,18 @@ button[data-st-welcome-close="true"]:hover {
 }
 
 .st-admin-category-picker__trigger:hover {
-  border-color: rgba(190, 132, 29, 0.3) !important;
+  border-color: rgba(29, 29, 31, 0.24) !important;
 
-  background: #fffefa !important;
+  background: #ffffff !important;
 }
 
 .st-admin-category-picker__trigger.is-open {
-  border-color: rgba(213, 154, 46, 0.72) !important;
+  border-color: rgba(29, 29, 31, 0.72) !important;
 
   background: #ffffff !important;
 
   box-shadow:
-    0 0 0 4px rgba(253, 183, 62, 0.09),
+    0 0 0 3px rgba(29, 29, 31, 0.055),
     0 7px 22px rgba(29, 29, 31, 0.045) !important;
 }
 
@@ -21263,7 +21263,7 @@ button[data-st-welcome-close="true"]:hover {
 
 .st-admin-category-picker__trigger.is-open
   .st-admin-category-picker__trigger-icon {
-  background: #fdb73e !important;
+  background: #f2f2f3 !important;
 
   color: #111111 !important;
 }
@@ -21314,7 +21314,7 @@ button[data-st-welcome-close="true"]:hover {
 .st-admin-category-picker__trigger.is-open .st-admin-category-picker__chevron {
   transform: rotate(180deg) !important;
 
-  color: #9a6500 !important;
+  color: #1d1d1f !important;
 }
 
 /* =========================================================
@@ -21364,11 +21364,11 @@ button[data-st-welcome-close="true"]:hover {
 }
 
 .st-admin-category-picker__search-shell:focus-within {
-  border-color: rgba(213, 154, 46, 0.72) !important;
+  border-color: rgba(29, 29, 31, 0.72) !important;
 
   background: #ffffff !important;
 
-  box-shadow: 0 0 0 4px rgba(253, 183, 62, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(29, 29, 31, 0.055) !important;
 }
 
 /*
@@ -21442,13 +21442,43 @@ html body .st-admin-category-picker__search-input:active {
 
   background: transparent !important;
 
-  color: rgba(29, 29, 31, 0.4) !important;
+  color: #1d1d1f !important;
+
+  transform: none !important;
+  translate: none !important;
 }
 
 .st-admin-category-picker__clear:hover {
-  background: rgba(29, 29, 31, 0.055) !important;
+  background: transparent !important;
 
-  color: rgba(29, 29, 31, 0.75) !important;
+  color: #dc2626 !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+.st-admin-category-picker__clear:active,
+.st-admin-category-picker__clear:focus,
+.st-admin-category-picker__clear:focus-visible {
+  transform: none !important;
+  translate: none !important;
+}
+
+.st-admin-category-picker__clear svg {
+  color: #1d1d1f !important;
+  stroke: #1d1d1f !important;
+  transform: none !important;
+  translate: none !important;
+  transition:
+    color 140ms ease,
+    stroke 140ms ease !important;
+}
+
+.st-admin-category-picker__clear:hover svg {
+  color: #dc2626 !important;
+  stroke: #dc2626 !important;
+  transform: none !important;
+  translate: none !important;
 }
 
 .st-admin-category-picker__directory-heading {
@@ -21519,9 +21549,9 @@ html body .st-admin-category-picker__search-input:active {
 }
 
 .st-admin-category-picker__option.is-selected {
-  background: #fff6df !important;
+  background: rgba(29, 29, 31, 0.055) !important;
 
-  color: #7b5000 !important;
+  color: #1d1d1f !important;
 }
 
 .st-admin-category-picker__option strong {
@@ -21546,13 +21576,15 @@ html body .st-admin-category-picker__search-input:active {
   align-items: center !important;
   justify-content: center !important;
 
+  border: 1.5px solid #1d1d1f !important;
+
   border-radius: 999px !important;
 
-  background: #fdb73e !important;
+  background: #ffffff !important;
 
   color: #111111 !important;
 
-  box-shadow: 0 4px 12px rgba(253, 183, 62, 0.28) !important;
+  box-shadow: none !important;
 }
 
 .st-admin-category-picker__empty {
@@ -22168,3 +22200,741 @@ html
 }
 
 /* === ST PRODUCT DETAIL RELATED CARD RHYTHM FINAL END === */
+
+/* === ADMIN V2 PRODUCT SELECTOR FAMILY START === */
+
+/*
+ * Canonical Admin V2 product-selector language.
+ *
+ * Brand is the visual reference for:
+ * - Brand
+ * - Category
+ * - Add product option
+ * - Product option values
+ * - Availability
+ * - Configuration Details
+ *
+ * Admin selectors are deliberately monochrome.
+ * Product/storefront colour choices are not affected.
+ */
+
+:root {
+  --st-admin-picker-ink: #1d1d1f;
+  --st-admin-picker-muted: rgba(29, 29, 31, 0.42);
+  --st-admin-picker-border: rgba(29, 29, 31, 0.72);
+  --st-admin-picker-surface: rgba(29, 29, 31, 0.055);
+  --st-admin-picker-hover: rgba(29, 29, 31, 0.045);
+  --st-admin-picker-halo: rgba(29, 29, 31, 0.055);
+  --st-admin-picker-shadow: rgba(29, 29, 31, 0.07);
+}
+
+/* Brand + Category search focus: monochrome, never mustard. */
+
+html body .st-admin-picker-search-final:focus-within,
+html body .st-admin-category-picker__search-shell:focus-within {
+  border-color: rgba(29, 29, 31, 0.72) !important;
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.055) !important;
+}
+
+/* Category closed trigger follows the same neutral interaction system. */
+
+html body .st-admin-category-picker__trigger:hover {
+  border-color: rgba(29, 29, 31, 0.24) !important;
+  background: #ffffff !important;
+}
+
+html body .st-admin-category-picker__trigger.is-open {
+  border-color: rgba(29, 29, 31, 0.72) !important;
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.055) !important;
+}
+
+html
+  body
+  .st-admin-category-picker__trigger.is-open
+  .st-admin-category-picker__trigger-icon {
+  background: #f2f2f3 !important;
+  color: var(--st-admin-picker-ink) !important;
+}
+
+html
+  body
+  .st-admin-category-picker__trigger.is-open
+  .st-admin-category-picker__chevron {
+  color: var(--st-admin-picker-ink) !important;
+}
+
+/*
+ * Canonical selected row.
+ * This is intentionally close to the Brand screenshot:
+ * soft gray fill + fine dark perimeter + restrained halo.
+ */
+
+html body [class*="st-admin"] .st-admin-picker-selected-final,
+html body .st-admin-option-name-directory-final
+  .st-admin-option-name-directory-final__option[aria-selected="true"],
+html body .st-admin-unified-directory-final
+  .st-admin-unified-directory-final__option[aria-selected="true"],
+html body .st-admin-option-directory-selected-v2,
+html body .st-admin-category-picker__option.is-selected {
+  background: var(--st-admin-picker-surface) !important;
+  color: var(--st-admin-picker-ink) !important;
+
+  border: 1px solid var(--st-admin-picker-border) !important;
+
+  box-shadow:
+    0 0 0 2px var(--st-admin-picker-halo),
+    0 5px 16px var(--st-admin-picker-shadow) !important;
+
+  transform: none !important;
+}
+
+/* Keep all text inside selected rows monochrome. */
+
+html body .st-admin-option-name-directory-final
+  .st-admin-option-name-directory-final__option[aria-selected="true"] *,
+html body .st-admin-unified-directory-final
+  .st-admin-unified-directory-final__option[aria-selected="true"] *,
+html body .st-admin-category-picker__option.is-selected * {
+  color: var(--st-admin-picker-ink) !important;
+}
+
+/* Canonical check treatment. */
+
+html body .st-admin-picker-check-final,
+html body .st-admin-option-directory-check-v2,
+html body .st-admin-category-picker__check {
+  background: #ffffff !important;
+  color: var(--st-admin-picker-ink) !important;
+
+  border: 1.5px solid var(--st-admin-picker-ink) !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Unified directory search focus.
+ * Availability and Configuration Details may deliberately disable
+ * search, but searchable directories use this same monochrome system.
+ */
+
+html body .st-admin-unified-directory-final__search:focus-within,
+html body .st-admin-option-directory-search-v2:focus-within {
+  border-color: rgba(29, 29, 31, 0.72) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.055) !important;
+}
+
+/*
+ * Prevent the historical global mustard selected shadow from leaking
+ * back into this product-selector family.
+ */
+
+html body .st-admin-option-name-directory-final [aria-selected="true"],
+html body .st-admin-unified-directory-final [aria-selected="true"],
+html body .st-admin-category-picker__dropdown [aria-selected="true"] {
+  --st-selected-shadow:
+    0 0 0 2px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.07);
+
+  transform: none !important;
+}
+
+/* === ADMIN V2 PRODUCT SELECTOR FAMILY END === */
+
+/* === ADMIN V2 PRODUCT DIRECTORY CHECKMARK SAFETY START === */
+
+html body .st-admin-picker-check-final {
+  display: inline-flex !important;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  flex: 0 0 24px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 9999px !important;
+  border: 1.5px solid #1d1d1f !important;
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+  opacity: 1 !important;
+}
+
+html body .st-admin-picker-check-final svg {
+  display: block !important;
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  stroke: currentColor !important;
+  stroke-width: 2.5 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+html body .st-admin-picker-select-label-final {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  color: rgba(29, 29, 31, 0.24) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+}
+
+/* === ADMIN V2 PRODUCT DIRECTORY CHECKMARK SAFETY END === */
+
+/* === ADMIN V2 BRAND DIRECTORY DIMENSION SYNC START === */
+
+/*
+ * Brand is the dimensional reference.
+ * Product-option and unified-directory rows inherit the same
+ * 46px / 12px / 14px rhythm used by Brand and Category.
+ */
+
+html body .st-admin-option-name-directory-final {
+  overflow: hidden !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+html body .st-admin-option-name-directory-final__list {
+  max-height: 330px !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  padding: 8px !important;
+}
+
+html body .st-admin-option-name-directory-final__option,
+html body .st-admin-unified-directory-final__option {
+  box-sizing: border-box !important;
+  min-height: 46px !important;
+  width: 100% !important;
+  margin-bottom: 4px !important;
+  padding: 0 14px !important;
+  border-radius: 12px !important;
+}
+
+html body .st-admin-option-name-directory-final__option {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  text-align: left !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+html body .st-admin-unified-directory-final {
+  overflow: hidden !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 20px !important;
+  background: #ffffff !important;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+html body .st-admin-unified-directory-final__list {
+  max-height: 330px !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  padding: 8px !important;
+}
+
+html body .st-admin-unified-directory-final__option-action > span:not(.st-admin-picker-check-final) {
+  color: rgba(29, 29, 31, 0.22) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+}
+
+/* === ADMIN V2 BRAND DIRECTORY DIMENSION SYNC END === */
+
+/* === ADMIN V2 PRODUCT EDITOR MONOCHROME SAFETY START === */
+
+/*
+ * Product editor selectors are intentionally monochrome.
+ * Do not introduce mustard/amber/yellow interaction states here.
+ */
+
+html body .st-admin-product-directory-brand {
+  overflow: hidden !important;
+  max-width: calc(100vw - 32px) !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.10) !important;
+  border-radius: 20px !important;
+
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/*
+ * Search container.
+ * One clean neutral perimeter only.
+ */
+
+html body .st-admin-product-directory-brand
+  .st-admin-picker-search-final,
+html body .st-admin-product-directory-brand
+  .st-admin-option-directory-search-v2 {
+  min-height: 48px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.10) !important;
+  border-radius: 13px !important;
+
+  background: #f7f7f8 !important;
+
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/*
+ * Neutral focus.
+ * Explicitly kills inherited mustard focus/ring styles.
+ */
+
+html body .st-admin-product-directory-brand
+  .st-admin-picker-search-final:focus-within,
+html body .st-admin-product-directory-brand
+  .st-admin-option-directory-search-v2:focus-within {
+  border-color: rgba(29, 29, 31, 0.72) !important;
+
+  background: #ffffff !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.055) !important;
+}
+
+/*
+ * The actual input must remain visually transparent.
+ * This specifically prevents the inner rectangle visible in the
+ * Product Option screenshot.
+ */
+
+html body .st-admin-product-directory-brand
+  input[type="text"],
+html body .st-admin-product-directory-brand
+  input[type="search"],
+html body .st-admin-product-directory-brand
+  input[role="combobox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Same guarantee while focused.
+ */
+
+html body .st-admin-product-directory-brand
+  input[type="text"]:focus,
+html body .st-admin-product-directory-brand
+  input[type="search"]:focus,
+html body .st-admin-product-directory-brand
+  input[role="combobox"]:focus,
+html body .st-admin-product-directory-brand
+  input[type="text"]:focus-visible,
+html body .st-admin-product-directory-brand
+  input[type="search"]:focus-visible,
+html body .st-admin-product-directory-brand
+  input[role="combobox"]:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Brand-like row rhythm.
+ */
+
+html body .st-admin-product-directory-brand
+  .st-admin-brand-directory-row {
+  box-sizing: border-box !important;
+
+  min-height: 46px !important;
+
+  margin-bottom: 4px !important;
+  padding: 0 14px !important;
+
+  border-radius: 12px !important;
+}
+
+/*
+ * Selected state: monochrome only.
+ */
+
+html body .st-admin-product-directory-brand
+  .st-admin-picker-selected-final {
+  border: 1px solid rgba(29, 29, 31, 0.72) !important;
+
+  background: rgba(29, 29, 31, 0.055) !important;
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 2px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.07) !important;
+}
+
+/*
+ * Selected check.
+ */
+
+html body .st-admin-product-directory-brand
+  .st-admin-picker-check-final {
+  display: inline-flex !important;
+
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+
+  flex: 0 0 24px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1.5px solid #1d1d1f !important;
+  border-radius: 9999px !important;
+
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+/*
+ * Category search gets the exact same monochrome focus treatment.
+ */
+
+html body .st-admin-category-picker__search-shell,
+html body .st-admin-category-picker__search-shell:focus-within {
+  border-color: rgba(29, 29, 31, 0.10) !important;
+
+  outline: none !important;
+
+  box-shadow: none !important;
+}
+
+html body .st-admin-category-picker__search-shell:focus-within {
+  border-color: rgba(29, 29, 31, 0.72) !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.055) !important;
+}
+
+html body .st-admin-category-picker__search-input,
+html body .st-admin-category-picker__search-input:focus,
+html body .st-admin-category-picker__search-input:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* === ADMIN V2 PRODUCT EDITOR MONOCHROME SAFETY END === */
+
+/* === ADMIN V2 PRODUCT BRAND FINAL SYNC START === */
+
+/*
+ * Product Brand now uses the exact same dimensional language as the
+ * other Product Editor directories.
+ *
+ * This block is intentionally Brand-specific so Category / Option /
+ * Availability / Configuration Details remain untouched.
+ */
+
+html body .st-admin-brand-picker__dropdown.st-admin-product-directory-brand {
+  max-width: calc(100vw - 32px) !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.10) !important;
+  border-radius: 20px !important;
+
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-picker-search-final {
+  min-height: 48px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.10) !important;
+  border-radius: 13px !important;
+
+  background: #f7f7f8 !important;
+
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-picker-search-final:focus-within {
+  border-color: rgba(29, 29, 31, 0.72) !important;
+
+  background: #ffffff !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 3px rgba(29, 29, 31, 0.055),
+    0 5px 16px rgba(29, 29, 31, 0.055) !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  input.st-admin-product-brand-picker__search-input,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  input.st-admin-product-brand-picker__search-input:hover,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  input.st-admin-product-brand-picker__search-input:focus,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  input.st-admin-product-brand-picker__search-input:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * ProductBrandPicker reuses Category row classes.
+ * Normalize them here so old mustard Category rules cannot leak into Brand.
+ */
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__directory-heading {
+  padding: 11px 15px 9px !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__directory-heading span {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.17em !important;
+
+  color: rgba(29, 29, 31, 0.38) !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__directory-heading small {
+  font-size: 11px !important;
+
+  color: rgba(29, 29, 31, 0.38) !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__list {
+  max-height: 330px !important;
+
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+
+  padding: 8px !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-height: 46px !important;
+
+  margin: 0 0 4px !important;
+  padding: 0 14px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+
+  border: 0 !important;
+  border-radius: 12px !important;
+
+  background: transparent !important;
+
+  color: rgba(29, 29, 31, 0.72) !important;
+
+  text-align: left !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option:hover,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option.is-active {
+  background: rgba(29, 29, 31, 0.045) !important;
+  color: #1d1d1f !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option strong {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+
+  color: #1d1d1f !important;
+}
+
+/*
+ * Exact monochrome selected state.
+ * This explicitly overrides the historical #fff6df / mustard Brand state.
+ */
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option.is-selected,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option[aria-selected="true"] {
+  border: 1px solid rgba(29, 29, 31, 0.72) !important;
+
+  background: rgba(29, 29, 31, 0.055) !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+  outline: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  transform: none !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option.is-selected *,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__option[aria-selected="true"] * {
+  color: #1d1d1f !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__check,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-picker-check-final {
+  display: inline-flex !important;
+
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+
+  flex: 0 0 24px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1.5px solid #1d1d1f !important;
+  border-radius: 9999px !important;
+
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-category-picker__check svg,
+html body
+  .st-admin-brand-picker__dropdown.st-admin-product-directory-brand
+  .st-admin-picker-check-final svg {
+  display: block !important;
+
+  width: 14px !important;
+  height: 14px !important;
+
+  stroke: currentColor !important;
+  stroke-width: 2.5 !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* === ADMIN V2 PRODUCT BRAND FINAL SYNC END === */
