@@ -266,27 +266,47 @@ export default function AdminPageTransitionIsland() {
     );
 
   useEffect(() => {
-    syncAdminIslandToHeaderEdge();
+    const syncHeaderEdge = () => {
+      syncAdminIslandToHeaderEdge();
+    };
+
+    syncHeaderEdge();
 
     const frame =
-      window.requestAnimationFrame(() => {
-        syncAdminIslandToHeaderEdge();
-      });
+      window.requestAnimationFrame(
+        syncHeaderEdge,
+      );
+
+    const header =
+      document.querySelector<HTMLElement>(
+        ".st-admin-v2-page-header",
+      );
+
+    const resizeObserver =
+      header &&
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(syncHeaderEdge)
+        : null;
+
+    if (header && resizeObserver) {
+      resizeObserver.observe(header);
+    }
 
     window.addEventListener(
       "resize",
-      syncAdminIslandToHeaderEdge,
+      syncHeaderEdge,
     );
 
     return () => {
       window.cancelAnimationFrame(frame);
+      resizeObserver?.disconnect();
 
       window.removeEventListener(
         "resize",
-        syncAdminIslandToHeaderEdge,
+        syncHeaderEdge,
       );
     };
-  }, []);
+  }, [routeKey]);
 
   const updatePhase = useCallback(
     (nextPhase: IslandPhase) => {

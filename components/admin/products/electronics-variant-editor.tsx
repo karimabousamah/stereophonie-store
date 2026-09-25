@@ -845,6 +845,29 @@ function SearchableOptionValuePicker({
             searchPlaceholder={`Search ${level.label.toLowerCase()}...`}
             searchAriaLabel={`Search ${level.label}`}
             emptyTitle={`No matching ${level.label.toLowerCase()}`}
+            emptyDescription={`You can add this ${level.label.toLowerCase()} without leaving the product.`}
+            footerContent={
+              canCreate ? (
+                <div className="st-admin-picker-create-footer-v40">
+                  <button
+                    type="button"
+                    onClick={createRequestedValue}
+                    className="st-admin-picker-create-action-v40"
+                  >
+                    <span className="st-admin-picker-create-content-v40">
+                      <span className="st-admin-picker-create-icon-v40">
+                        <Plus className="h-4 w-4" strokeWidth={2.2} />
+                      </span>
+
+                      <span className="st-admin-picker-create-copy-v40">
+                        <strong>{`Add “${cleanQuery}”`}</strong>
+                        <small>Create and select automatically</small>
+                      </span>
+                    </span>
+                  </button>
+                </div>
+              ) : null
+            }
             multiselect
           />,
           document.body,
