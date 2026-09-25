@@ -432,6 +432,93 @@ function clampPriceRange({
   };
 }
 
+async function loadFreshShopProductCardsByIds(
+  productIds: string[],
+): Promise<StoreProductCardProduct[]> {
+  const uniqueProductIds = Array.from(
+    new Set(
+      productIds
+        .map((productId) => String(productId ?? "").trim())
+        .filter(Boolean),
+    ),
+  );
+
+  if (uniqueProductIds.length === 0) {
+    return [];
+  }
+
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `
+        id,
+        name,
+        slug,
+        description,
+        is_featured,
+        is_trending,
+        is_new_arrival,
+        new_drop_started_at,
+        created_at,
+
+        categories (
+          name
+        ),
+
+        brands (
+          name
+        ),
+
+        product_images (
+          id,
+          image_url,
+          storage_path,
+          alt_text,
+          position,
+          is_primary,
+          variant_id,
+          variant_position,
+          is_variant_primary,
+          product_image_variants (
+            variant_id,
+            position,
+            is_primary
+          )
+        ),
+
+        product_variants (
+          id,
+          display_position,
+          regular_price,
+          sale_price,
+          stock_quantity,
+          size,
+          variant_name,
+          attributes,
+          is_active,
+          availability_status
+        )
+      `,
+    )
+    .eq("status", "published")
+    .in("id", uniqueProductIds);
+
+  if (error) {
+    console.error(
+      "Stereophonie fresh shop product-card fallback could not load:",
+      error,
+    );
+
+    return [];
+  }
+
+  return ((data ?? []) as ShopFullRow[]).map((product) =>
+    normalizeProduct(product, supabase),
+  );
+}
+
 export async function loadShopProductBatch({
   filters,
   offset = 0,
@@ -600,6 +687,26 @@ export async function loadShopProductBatch({
   const cardProductById = new Map(
     cardProducts.map((product) => [product.id, product]),
   );
+
+  /*
+   * The lightweight catalogue index can know about a newly
+   * published product before the shared full-card cache does.
+   *
+   * Never silently omit that product from Shop or Category pages.
+   * Only IDs missing from the cached graph are fetched fresh.
+   */
+  const missingBatchIds = batchIds.filter(
+    (id) => !cardProductById.has(id),
+  );
+
+  if (missingBatchIds.length > 0) {
+    const freshMissingProducts =
+      await loadFreshShopProductCardsByIds(missingBatchIds);
+
+    for (const product of freshMissingProducts) {
+      cardProductById.set(product.id, product);
+    }
+  }
 
   const batchProducts = batchIds
     .map((id) => cardProductById.get(id))
