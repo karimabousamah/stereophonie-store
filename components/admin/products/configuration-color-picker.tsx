@@ -40,6 +40,7 @@ export type ConfigurationColorValue = {
 
 type Props = {
  value?: ConfigurationColorValue | null;
+ values?: ConfigurationColorValue[];
  onChange: (value: ConfigurationColorValue) => void;
 };
 
@@ -309,12 +310,23 @@ const rawPresetColors: ConfigurationColorValue[] = [
   { name: "Frost White", hex: "#E8E9E8" },
 ];
 
+function colorwayIdentity(name: unknown, hex: unknown) {
+ return `${String(name ?? "")
+   .trim()
+   .toLocaleLowerCase()}::${String(hex ?? "")
+   .trim()
+   .toLocaleLowerCase()}`;
+}
+
 const presetColors = Array.from(
  new Map(
  [...rawPresetColors, ...productColorways].map((colorway) => {
  const normalized = normalizeProductColorway(colorway);
 
- return [normalized.name.toLocaleLowerCase(), normalized] as const;
+ return [
+ colorwayIdentity(normalized.name, normalized.hex),
+ normalized,
+ ] as const;
     }),
   ).values(),
 );
@@ -336,7 +348,11 @@ function swatchStyle(hex: string) {
   };
 }
 
-export default function ConfigurationColorPicker({ value, onChange }: Props) {
+export default function ConfigurationColorPicker({
+ value,
+ values = [],
+ onChange,
+}: Props) {
  const pickerRef = useRef<HTMLDivElement>(null);
  const triggerRef = useRef<HTMLButtonElement>(null);
  const popupRef = useRef<HTMLDivElement>(null);
@@ -450,7 +466,7 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
  const allColors = Array.from(
  new Map(
  [...customColors, ...presetColors].map((color) => [
- color.name.toLocaleLowerCase(),
+ colorwayIdentity(color.name, color.hex),
           {
  name: color.name,
  hex: color.hex,
@@ -478,21 +494,26 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
  function chooseColor(color: ConfigurationColorValue) {
  const customColor = customColors.find(
       (item) =>
- item.name.toLocaleLowerCase() === color.name.toLocaleLowerCase(),
+ colorwayIdentity(item.name, item.hex) ===
+ colorwayIdentity(color.name, color.hex),
     );
 
- const name = customColor
-      ? customColor.name
-      : canonicalizeProductColorwayName(color.name);
+ if (customColor) {
+ onChange({
+ name: customColor.name,
+ hex: customColor.hex,
+      });
+
+ return;
+    }
+
+ const name = canonicalizeProductColorwayName(color.name);
 
  onChange({
  name,
- hex: customColor
-        ? customColor.hex
-        : (productColorwayHex(name) ?? color.hex),
+ hex: productColorwayHex(name) ?? color.hex,
     });
 
- closePicker();
   }
 
  function openCreator() {
@@ -519,8 +540,8 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
  const remaining = current.filter(
           (color) =>
  color.id !== result.colorway.id &&
- color.name.toLocaleLowerCase() !==
- result.colorway.name.toLocaleLowerCase(),
+ colorwayIdentity(color.name, color.hex) !==
+ colorwayIdentity(result.colorway.name, result.colorway.hex),
         );
 
  return [result.colorway, ...remaining];
@@ -781,8 +802,17 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
               <div className="grid grid-cols-1 gap-2">
                 {filteredColors.map((color) => {
  const selected =
- value?.name === color.name &&
-                    value?.hex.toLowerCase() === color.hex.toLowerCase();
+ values.some(
+   (selectedColor) =>
+     colorwayIdentity(
+       selectedColor.name,
+       selectedColor.hex,
+     ) === colorwayIdentity(color.name, color.hex),
+ ) ||
+ (value
+   ? colorwayIdentity(value.name, value.hex) ===
+     colorwayIdentity(color.name, color.hex)
+   : false);
 
  const customColorway = customColors.find(
                     (item) =>
@@ -821,10 +851,15 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                           </span>
 
                           {selected ? (
-                            <Check
- className="h-3.5 w-3.5 shrink-0 text-[#202223]"
- aria-hidden="true"
-                            />
+                            <span
+                              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#202223] text-[#202223]"
+                              aria-hidden="true"
+                            >
+                              <Check
+                                className="h-3 w-3"
+                                strokeWidth={2}
+                              />
+                            </span>
                           ) : null}
                         </button>
 
@@ -870,10 +905,15 @@ export default function ConfigurationColorPicker({ value, onChange }: Props) {
                       </span>
 
                       {selected ? (
-                        <Check
- className="h-3.5 w-3.5 shrink-0 text-[#202223]"
- aria-hidden="true"
-                        />
+                        <span
+                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#202223] text-[#202223]"
+                          aria-hidden="true"
+                        >
+                          <Check
+                            className="h-3 w-3"
+                            strokeWidth={2}
+                          />
+                        </span>
                       ) : null}
                     </button>
                   );

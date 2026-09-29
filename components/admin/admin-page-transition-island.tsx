@@ -195,10 +195,18 @@ function getAdminDestination(
 }
 
 function syncAdminIslandToHeaderEdge() {
-  const header =
+  const productHeader =
+    document.querySelector<HTMLElement>(
+      '[data-admin-product-fixed-header="true"]',
+    );
+
+  const workspaceHeader =
     document.querySelector<HTMLElement>(
       ".st-admin-v2-page-header",
     );
+
+  const header =
+    productHeader ?? workspaceHeader;
 
   if (!header) {
     document.documentElement.style.removeProperty(
@@ -277,33 +285,68 @@ export default function AdminPageTransitionIsland() {
         syncHeaderEdge,
       );
 
-    const header =
-      document.querySelector<HTMLElement>(
-        ".st-admin-v2-page-header",
-      );
+    const observedHeaders = new Set<HTMLElement>();
 
     const resizeObserver =
-      header &&
       typeof ResizeObserver !== "undefined"
         ? new ResizeObserver(syncHeaderEdge)
         : null;
 
-    if (header && resizeObserver) {
-      resizeObserver.observe(header);
-    }
+    const observeCurrentHeaders = () => {
+      const headers = [
+        document.querySelector<HTMLElement>(
+          '[data-admin-product-fixed-header="true"]',
+        ),
+        document.querySelector<HTMLElement>(
+          ".st-admin-v2-page-header",
+        ),
+      ].filter(
+        (header): header is HTMLElement =>
+          header instanceof HTMLElement,
+      );
+
+      for (const header of headers) {
+        if (observedHeaders.has(header)) {
+          continue;
+        }
+
+        observedHeaders.add(header);
+        resizeObserver?.observe(header);
+      }
+
+      syncHeaderEdge();
+    };
+
+    observeCurrentHeaders();
+
+    const mutationObserver =
+      typeof MutationObserver !== "undefined"
+        ? new MutationObserver(
+            observeCurrentHeaders,
+          )
+        : null;
+
+    mutationObserver?.observe(
+      document.body,
+      {
+        childList: true,
+        subtree: true,
+      },
+    );
 
     window.addEventListener(
       "resize",
-      syncHeaderEdge,
+      observeCurrentHeaders,
     );
 
     return () => {
       window.cancelAnimationFrame(frame);
+      mutationObserver?.disconnect();
       resizeObserver?.disconnect();
 
       window.removeEventListener(
         "resize",
-        syncHeaderEdge,
+        observeCurrentHeaders,
       );
     };
   }, [routeKey]);

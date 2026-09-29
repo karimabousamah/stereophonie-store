@@ -83,6 +83,29 @@ function calculateProductAvailability(
   return "out_of_stock";
 }
 
+function variantHasConfigurationOptions(
+  variant: { attributes?: Record<string, string> | null },
+) {
+  const rawHierarchy = variant.attributes?.["__configuration_hierarchy"];
+
+  if (!rawHierarchy) {
+    return false;
+  }
+
+  try {
+    const hierarchy = JSON.parse(rawHierarchy);
+
+    return (
+      Array.isArray(hierarchy) &&
+      hierarchy.some(
+        (key) => typeof key === "string" && key.trim().length > 0,
+      )
+    );
+  } catch {
+    return false;
+  }
+}
+
 function validateVariants(
   productId: string,
   variants: VariantInput[],
@@ -97,23 +120,28 @@ function validateVariants(
   for (const variant of variants) {
     const configurationName = String(variant.variant_name ?? "").trim();
 
-    if (!configurationName) {
+    const hasConfigurationOptions =
+      variantHasConfigurationOptions(variant);
+
+    if (!configurationName && hasConfigurationOptions) {
       redirectWithError(
         productId,
-        "Every product configuration must have a name.",
+        "Every product configuration with options must have a name.",
       );
     }
 
-    const normalizedName = configurationName.toLowerCase();
+    if (configurationName) {
+      const normalizedName = configurationName.toLowerCase();
 
-    if (usedConfigurationNames.has(normalizedName)) {
-      redirectWithError(
-        productId,
-        `Configuration ${configurationName} was added more than once.`,
-      );
+      if (usedConfigurationNames.has(normalizedName)) {
+        redirectWithError(
+          productId,
+          `Configuration ${configurationName} was added more than once.`,
+        );
+      }
+
+      usedConfigurationNames.add(normalizedName);
     }
-
-    usedConfigurationNames.add(normalizedName);
 
     if (
       typeof variant.attributes !== "object" ||
@@ -435,7 +463,11 @@ export async function updateProduct(formData: FormData) {
         variant.availability_status === "out_of_stock" ||
         variant.availability_status === "coming_soon";
 
-      const configurationName = variant.variant_name.trim();
+      const configurationName =
+        variant.variant_name.trim() ||
+        (!variantHasConfigurationOptions(variant)
+          ? "Configuration 1"
+          : "");
 
       const configurationRegularPrice = Number(variant.regular_price);
 

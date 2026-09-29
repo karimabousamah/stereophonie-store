@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -17,6 +17,7 @@ type ProductSaveBarProps = {
   formId?: string;
   editMode?: boolean;
   editIntent?: "draft" | "publish";
+  storefrontHref?: string;
 };
 
 export default function ProductSaveBar({
@@ -31,6 +32,7 @@ export default function ProductSaveBar({
   formId = "st-admin-new-product-form",
   editMode = false,
   editIntent = "draft",
+  storefrontHref,
 }: ProductSaveBarProps) {
   const [mounted, setMounted] = useState(false);
   const [deleteConfirmationOpen,
@@ -162,8 +164,8 @@ export default function ProductSaveBar({
                   aria-hidden={deleteConfirmationOpen}
                   tabIndex={deleteConfirmationOpen ? -1 : 0}
                 >
-                  <Trash2 aria-hidden="true" />
                   <span>Delete product</span>
+                  <Trash2 aria-hidden="true" />
                 </button>
 
                 <div
@@ -215,6 +217,21 @@ export default function ProductSaveBar({
                 </div>
               </div>
             ) : null}
+          {storefrontHref ? (
+            <Link
+              href={storefrontHref}
+              target="_blank"
+              rel="noreferrer"
+              className="st-admin-product-fixed-header__view"
+              aria-label={`View ${productName || "product"} on storefront`}
+              title="View storefront"
+            >
+              <span>View item</span>
+              <ArrowUpRight aria-hidden="true" />
+            </Link>
+          ) : null}
+
+
 
           {editMode ? (
             <>

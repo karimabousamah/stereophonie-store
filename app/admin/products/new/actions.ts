@@ -366,19 +366,24 @@ async function createProductUnsafe(formData: FormData) {
   for (const variant of variants) {
     const configurationName = String(variant.variant_name ?? "").trim();
 
-    if (!configurationName) {
-      redirectWithError("Every product configuration must have a name.");
+    const hasConfigurationOptions =
+      variantHasConfigurationOptions(variant);
+
+    if (!configurationName && hasConfigurationOptions) {
+      redirectWithError("Every product configuration with options must have a name.");
     }
 
-    const normalizedConfigurationName = configurationName.toLowerCase();
+    if (configurationName) {
+      const normalizedConfigurationName = configurationName.toLowerCase();
 
-    if (usedConfigurationNames.has(normalizedConfigurationName)) {
-      redirectWithError(
-        `Configuration ${configurationName} was added more than once.`,
-      );
+      if (usedConfigurationNames.has(normalizedConfigurationName)) {
+        redirectWithError(
+          `Configuration ${configurationName} was added more than once.`,
+        );
+      }
+
+      usedConfigurationNames.add(normalizedConfigurationName);
     }
-
-    usedConfigurationNames.add(normalizedConfigurationName);
 
     if (!validStatuses.includes(variant.availability_status)) {
       redirectWithError(
@@ -772,7 +777,11 @@ async function createProductUnsafe(formData: FormData) {
       variant.availability_status === "out_of_stock" ||
       variant.availability_status === "coming_soon";
 
-    const configurationName = variant.variant_name.trim();
+    const configurationName =
+      variant.variant_name.trim() ||
+      (!variantHasConfigurationOptions(variant)
+        ? "Configuration 1"
+        : "");
 
     return {
       product_id: product.id,
@@ -1181,6 +1190,29 @@ export type CreateProductResult =
       ok: false;
       error: string;
     };
+
+function variantHasConfigurationOptions(
+  variant: { attributes?: Record<string, string> | null },
+) {
+  const rawHierarchy = variant.attributes?.["__configuration_hierarchy"];
+
+  if (!rawHierarchy) {
+    return false;
+  }
+
+  try {
+    const hierarchy = JSON.parse(rawHierarchy);
+
+    return (
+      Array.isArray(hierarchy) &&
+      hierarchy.some(
+        (key) => typeof key === "string" && key.trim().length > 0,
+      )
+    );
+  } catch {
+    return false;
+  }
+}
 
 export async function createProduct(
   formData: FormData,

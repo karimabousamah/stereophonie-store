@@ -147,50 +147,36 @@ export async function createCustomColorway(
     };
   }
 
-  const { data: existingByName, error: existingNameError } =
+  const { data: existingMatches, error: existingMatchError } =
     await administrator.supabase
       .from("admin_custom_colors")
       .select("id, name, hex_value")
-      .ilike("name", name)
-      .maybeSingle();
+      .eq("hex_value", hex);
 
-  if (existingNameError) {
+  if (existingMatchError) {
     return {
       ok: false,
-      error: existingNameError.message,
+      error: existingMatchError.message,
     };
   }
 
-  if (existingByName) {
+  const existingExactPair = (existingMatches ?? []).find(
+    (colorway) =>
+      colorway.name.trim().toLocaleLowerCase() ===
+        name.trim().toLocaleLowerCase() &&
+      colorway.hex_value.trim().toLocaleLowerCase() ===
+        hex.trim().toLocaleLowerCase(),
+  );
+
+  if (existingExactPair) {
     return {
       ok: true,
       created: false,
       colorway: {
-        id: existingByName.id,
-        name: existingByName.name,
-        hex: existingByName.hex_value.toUpperCase(),
+        id: existingExactPair.id,
+        name: existingExactPair.name,
+        hex: existingExactPair.hex_value.toUpperCase(),
       },
-    };
-  }
-
-  const { data: existingByHex, error: existingHexError } =
-    await administrator.supabase
-      .from("admin_custom_colors")
-      .select("id, name, hex_value")
-      .ilike("hex_value", hex)
-      .maybeSingle();
-
-  if (existingHexError) {
-    return {
-      ok: false,
-      error: existingHexError.message,
-    };
-  }
-
-  if (existingByHex) {
-    return {
-      ok: false,
-      error: `That exact color is already saved as "${existingByHex.name}".`,
     };
   }
 
@@ -203,6 +189,41 @@ export async function createCustomColorway(
     })
     .select("id, name, hex_value")
     .single();
+
+  if (error?.code === "23505") {
+    const { data: concurrentMatches, error: concurrentMatchError } =
+      await administrator.supabase
+        .from("admin_custom_colors")
+        .select("id, name, hex_value")
+        .eq("hex_value", hex);
+
+    if (concurrentMatchError) {
+      return {
+        ok: false,
+        error: concurrentMatchError.message,
+      };
+    }
+
+    const concurrentExactPair = (concurrentMatches ?? []).find(
+      (colorway) =>
+        colorway.name.trim().toLocaleLowerCase() ===
+          name.trim().toLocaleLowerCase() &&
+        colorway.hex_value.trim().toLocaleLowerCase() ===
+          hex.trim().toLocaleLowerCase(),
+    );
+
+    if (concurrentExactPair) {
+      return {
+        ok: true,
+        created: false,
+        colorway: {
+          id: concurrentExactPair.id,
+          name: concurrentExactPair.name,
+          hex: concurrentExactPair.hex_value.toUpperCase(),
+        },
+      };
+    }
+  }
 
   if (error || !data) {
     return {

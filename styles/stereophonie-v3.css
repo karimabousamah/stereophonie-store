@@ -16749,9 +16749,11 @@ body:has(.st3-header) {
 .st-retail-qv__info h2 {
   margin: 13px 0 20px;
   color: #1d1d1f;
+  font-family: inherit;
   font-size: clamp(34px, 3vw, 48px);
+  font-weight: 650;
   line-height: 1;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.045em;
 }
 
 .st-retail-qv__price {
@@ -84482,3 +84484,31 @@ html body .st-pg-immersive {
 }
 
 /* === ST PRODUCT GALLERY IMMERSIVE TOP LAYER V1 END === */
+
+/* === ST MOBILE SHOP PREORDER BOTTOM POSITION V1 START === */
+
+/*
+ * Mobile Shop / Category only.
+ *
+ * Homepage Coming Soon cards already have the approved Pre-order
+ * vertical position and must remain untouched.
+ *
+ * The shared mobile V6 authority raises every Pre-order button by
+ * 12px. That lift is correct for the homepage shelf geometry but
+ * places the button too high inside the Shop / Category grid card.
+ *
+ * Keep the approved absolute horizontal centering and remove only
+ * that vertical lift outside the homepage merchandising shelves.
+ */
+@media (max-width: 767px) {
+  html
+    body
+    .st-product-grid-canonical:not(.st3-home-shop-products .st-product-grid-canonical)
+    .st-product-card-canonical
+    .st-retail-card__footer
+    > .st-retail-card__preorder {
+    transform: translate(-50%, 0) !important;
+  }
+}
+
+/* === ST MOBILE SHOP PREORDER BOTTOM POSITION V1 END === */

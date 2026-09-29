@@ -20,6 +20,11 @@ import { createPortal } from "react-dom";
 import ProductDirectoryPopup from "@/components/admin/product-directory-popup";
 
 import ConfigurationColorPicker from "@/components/admin/products/configuration-color-picker";
+import {
+  createProductOptionValue,
+  listProductOptionValues,
+  type AdminProductOptionValue,
+} from "@/components/admin/products/configuration-option-value-actions";
 import { canonicalizeProductColorwayName } from "@/lib/product-colorways";
 
 type AvailabilityStatus =
@@ -562,6 +567,47 @@ function presetsForLevel(level: OptionLevel) {
  return optionValuePresets[key] ?? [];
 }
 
+const productOptionValuesCache = new Map<
+  string,
+  AdminProductOptionValue[]
+>();
+
+const productOptionValuesRequests = new Map<
+  string,
+  Promise<Awaited<ReturnType<typeof listProductOptionValues>>>
+>();
+
+function loadProductOptionValues(optionKey: string) {
+  const cached = productOptionValuesCache.get(optionKey);
+
+  if (cached) {
+    return Promise.resolve({
+      ok: true as const,
+      values: cached,
+    });
+  }
+
+  const existingRequest = productOptionValuesRequests.get(optionKey);
+
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = listProductOptionValues(optionKey).then((result) => {
+    if (result.ok) {
+      productOptionValuesCache.set(optionKey, result.values);
+    }
+
+    productOptionValuesRequests.delete(optionKey);
+
+    return result;
+  });
+
+  productOptionValuesRequests.set(optionKey, request);
+
+  return request;
+}
+
 function SearchableOptionValuePicker({
  level,
  onChange,
@@ -582,7 +628,10 @@ function SearchableOptionValuePicker({
  left: 0,
  width: 320,
   });
+ const [savedValues, setSavedValues] = useState<AdminProductOptionValue[]>([]);
+ const [savingValue, setSavingValue] = useState(false);
 
+ const optionKey = normalizeKey(level.label || level.key);
  const selected = uniqueValues(level.values.map(clean).filter(Boolean));
  const presets = presetsForLevel(level);
 
@@ -590,8 +639,13 @@ function SearchableOptionValuePicker({
  const normalizedQuery = optionIdentity(cleanQuery);
 
  const allValues = useMemo(
-    () => uniqueValues([...selected, ...presets]),
- [selected, presets],
+    () =>
+      uniqueValues([
+        ...selected,
+        ...savedValues.map((item) => item.value),
+        ...presets,
+      ]),
+    [selected, savedValues, presets],
   );
 
  const filteredValues = useMemo(() => {
@@ -614,6 +668,36 @@ function SearchableOptionValuePicker({
  useEffect(() => {
  setMounted(true);
   }, []);
+
+ useEffect(() => {
+   let active = true;
+
+   if (!optionKey) {
+     setSavedValues([]);
+
+     return () => {
+       active = false;
+     };
+   }
+
+   const cached = productOptionValuesCache.get(optionKey);
+
+   if (cached) {
+     setSavedValues(cached);
+   }
+
+   void loadProductOptionValues(optionKey).then((result) => {
+     if (!active || !result.ok) {
+       return;
+     }
+
+     setSavedValues(result.values);
+   });
+
+   return () => {
+     active = false;
+   };
+ }, [optionKey]);
 
  function isSelected(value: string) {
  return selected.some(
@@ -744,7 +828,7 @@ function SearchableOptionValuePicker({
  function createRequestedValue() {
  const requestedValue = cleanQuery;
 
- if (!requestedValue) {
+ if (!requestedValue || !optionKey || savingValue) {
  return;
     }
 
@@ -757,16 +841,52 @@ function SearchableOptionValuePicker({
  if (!isSelected(existing)) {
  onChange(uniqueValues([...selected, existing]));
       }
-    } else {
- onChange(uniqueValues([...selected, requestedValue]));
-    }
 
  setQuery("");
  setActiveIndex(-1);
 
  requestAnimationFrame(() => {
  searchRef.current?.focus();
-    });
+      });
+
+ return;
+    }
+
+ setSavingValue(true);
+
+ void createProductOptionValue(optionKey, requestedValue)
+      .then((result) => {
+ if (!result.ok) {
+ window.alert(result.error);
+ return;
+        }
+
+ const savedValue = result.value.value;
+
+ setSavedValues((current) => {
+ const remaining = current.filter(
+            (item) =>
+ item.id !== result.value.id &&
+ optionIdentity(item.value) !== optionIdentity(savedValue),
+          );
+
+ return [result.value, ...remaining];
+        });
+
+ if (!isSelected(savedValue)) {
+ onChange(uniqueValues([...selected, savedValue]));
+        }
+
+ setQuery("");
+ setActiveIndex(-1);
+
+ requestAnimationFrame(() => {
+ searchRef.current?.focus();
+        });
+      })
+      .finally(() => {
+ setSavingValue(false);
+      });
   }
 
  function handleSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -852,6 +972,7 @@ function SearchableOptionValuePicker({
                   <button
                     type="button"
                     onClick={createRequestedValue}
+                    disabled={savingValue}
                     className="st-admin-picker-create-action-v40"
                   >
                     <span className="st-admin-picker-create-content-v40">
@@ -860,8 +981,16 @@ function SearchableOptionValuePicker({
                       </span>
 
                       <span className="st-admin-picker-create-copy-v40">
-                        <strong>{`Add “${cleanQuery}”`}</strong>
-                        <small>Create and select automatically</small>
+                        <strong>
+                          {savingValue
+                            ? `Saving “${cleanQuery}”...`
+                            : `Add “${cleanQuery}”`}
+                        </strong>
+                        <small>
+                          {savingValue
+                            ? "Saving to reusable option library"
+                            : "Create and select automatically"}
+                        </small>
                       </span>
                     </span>
                   </button>
@@ -4149,63 +4278,73 @@ export default function ElectronicsVariantEditor({
                   <div className="st-admin-config-option-values-v2">
                     {colorLevel ? (
                       <>
-                        <ConfigurationColorPicker
- value={null}
- onChange={(color) => {
- const canonicalColorName =
- canonicalizeProductColorwayName(
- color.name,
-                              );
+                          <ConfigurationColorPicker
+                            values={level.values.flatMap((colorName) => {
+                              const colorHex =
+                                level.colorHexByValue?.[colorName];
 
- setLevels(
-                              (current) =>
- current.map(
-                                  (
- currentLevel,
-                                  ) => {
- if (
- currentLevel.id !==
- level.id
-                                    ) {
- return currentLevel;
-                                    }
+                              return colorHex
+                                ? [
+                                    {
+                                      name: colorName,
+                                      hex: colorHex,
+                                    },
+                                  ]
+                                : [];
+                            })}
+                            onChange={(color) => {
+                              const canonicalColorName =
+                                canonicalizeProductColorwayName(
+                                  color.name,
+                                );
 
- const alreadySelected =
- currentLevel.values.some(
-                                        (
- value,
-                                        ) =>
- canonicalizeProductColorwayName(
- value,
-                                          ).toLocaleLowerCase() ===
- canonicalColorName.toLocaleLowerCase(),
-                                      );
+                              setLevels((current) =>
+                                current.map((currentLevel) => {
+                                  if (currentLevel.id !== level.id) {
+                                    return currentLevel;
+                                  }
 
- return {
-                                      ...currentLevel,
+                                  const selectedValue =
+                                    currentLevel.values.find(
+                                      (currentValue) =>
+                                        canonicalizeProductColorwayName(
+                                          currentValue,
+                                        ).toLocaleLowerCase() ===
+                                        canonicalColorName.toLocaleLowerCase(),
+                                    );
 
- values:
- alreadySelected
-                                          ? currentLevel.values
-                                          : [
-                                              ...currentLevel.values,
- canonicalColorName,
-                                            ],
-
- colorHexByValue:
-                                        {
-                                          ...(currentLevel.colorHexByValue ??
-                                            {}),
-
- [canonicalColorName]:
- color.hex,
-                                        },
+                                  if (selectedValue) {
+                                    const nextColorHexByValue = {
+                                      ...(currentLevel.colorHexByValue ?? {}),
                                     };
-                                  },
-                                ),
-                            );
-                          }}
-                        />
+
+                                    delete nextColorHexByValue[selectedValue];
+
+                                    return {
+                                      ...currentLevel,
+                                      values: currentLevel.values.filter(
+                                        (currentValue) =>
+                                          currentValue !== selectedValue,
+                                      ),
+                                      colorHexByValue: nextColorHexByValue,
+                                    };
+                                  }
+
+                                  return {
+                                    ...currentLevel,
+                                    values: [
+                                      ...currentLevel.values,
+                                      canonicalColorName,
+                                    ],
+                                    colorHexByValue: {
+                                      ...(currentLevel.colorHexByValue ?? {}),
+                                      [canonicalColorName]: color.hex,
+                                    },
+                                  };
+                                }),
+                              );
+                            }}
+                          />
 
 {level.values.length >
  0 ? (
@@ -4864,7 +5003,7 @@ export default function ElectronicsVariantEditor({
             <div className="st-admin-config-detail-grid-v2">
               <label className="st-admin-config-identity-name-v2">
                 <span>
- Configuration name
+ Configuration name{levels.length === 0 ? " (optional)" : ""}
                 </span>
 
                 <input

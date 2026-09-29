@@ -97,13 +97,18 @@ export default function ProductBrandPicker({
  const normalizedQuery = normalize(cleanQuery);
 
  const filteredBrands = useMemo(() => {
- if (!normalizedQuery) {
- return options;
-    }
+ const matchingBrands = normalizedQuery
+   ? options.filter((brand) =>
+       normalize(brand.name).includes(normalizedQuery),
+     )
+   : options;
 
- return options.filter((brand) =>
- normalize(brand.name).includes(normalizedQuery),
-    );
+ return [...matchingBrands].sort((a, b) =>
+   a.name.localeCompare(b.name, undefined, {
+     sensitivity: "base",
+     numeric: true,
+   }),
+ );
   }, [options, normalizedQuery]);
 
  const exactMatch = useMemo(() => {
@@ -404,6 +409,7 @@ export default function ProductBrandPicker({
               label: brand.name,
               selected: brand.id === selectedId,
             }))}
+            preserveOptionOrder
             activeIndex={activeIndex}
             onActiveIndexChange={setActiveIndex}
             onChoose={(option) => {

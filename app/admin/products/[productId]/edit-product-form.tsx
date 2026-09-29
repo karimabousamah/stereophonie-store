@@ -107,6 +107,7 @@ type EditProductFormProps = {
   product: {
     id: string;
     name: string;
+    slug: string;
     description: string;
     categoryId: string;
     subcategoryId: string;
@@ -671,6 +672,11 @@ export default function EditProductForm({
                   product.status === "published"
                     ? "publish"
                     : "draft"
+                }
+                storefrontHref={
+                  product.status === "published" && product.slug
+                    ? `/shop/${product.slug}`
+                    : undefined
                 }
               />
             }

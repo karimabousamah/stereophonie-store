@@ -47,6 +47,7 @@ type ProductDirectoryPopupProps = {
   multiselect?: boolean;
   statusContent?: ReactNode;
   footerContent?: ReactNode;
+  preserveOptionOrder?: boolean;
 };
 
 export default function ProductDirectoryPopup({
