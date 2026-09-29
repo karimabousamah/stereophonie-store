@@ -33542,7 +33542,6 @@ html
   .st-account-retail__module-content
   :is(
     .st-account-address-add,
-    .st-account-address-action,
     .st-account-address-badge,
     .st-account-address-form button,
     .st-account-address-edit-form button,
@@ -82349,6 +82348,10 @@ html body .st3-home-live
   min-height: 32px;
   padding: 0 13px;
   display: inline-flex;
+  width: max-content;
+  max-width: none;
+  flex-wrap: nowrap;
+  white-space: nowrap;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -82798,3 +82801,1684 @@ html body .st3-home-live
 }
 
 /* === ST SOLID MUSTARD SUCCESS TOAST V1 END === */
+
+/* === ST CANONICAL STOREFRONT PRODUCT CARD HEIGHT V2 START ===
+ *
+ * One predictable product-card geometry across:
+ * - Shop
+ * - Category pages
+ * - Homepage merchandising shelves
+ *
+ * The media stage is intentionally untouched.
+ *
+ * The content region has one canonical height. Product titles receive
+ * exactly two lines and truncate with an ellipsis when necessary.
+ * A dedicated options slot remains available for colour swatches and
+ * the Multiple options available label, while the footer stays aligned
+ * to the bottom of every card.
+ */
+
+html body .st-retail-card.st-product-card-canonical {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+html body
+  .st-retail-card.st-product-card-canonical
+  > .st-retail-card__visual {
+  flex: 0 0 auto !important;
+}
+
+html body
+  .st-retail-card.st-product-card-canonical
+  > .st-retail-card__content {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  flex: 0 0 190px !important;
+  height: 190px !important;
+  min-height: 190px !important;
+  max-height: 190px !important;
+
+  overflow: hidden !important;
+}
+
+html body
+  .st-retail-card.st-product-card-canonical
+  .st-retail-card__name {
+  display: -webkit-box !important;
+
+  min-height: calc(2em * 1.13) !important;
+  max-height: calc(2em * 1.13) !important;
+
+  overflow: hidden !important;
+
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+
+  text-overflow: ellipsis !important;
+}
+
+html body
+  .st-retail-card.st-product-card-canonical
+  .st-retail-card__options-summary {
+  flex: 0 0 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  overflow: hidden !important;
+}
+
+html body
+  .st-retail-card.st-product-card-canonical
+  .st-retail-card__footer {
+  margin-top: auto !important;
+  padding-top: 0 !important;
+
+  flex: 0 0 auto !important;
+}
+
+/*
+ * Homepage shelves have older mobile rules that explicitly use
+ * height:auto/min-height:0 and align-self:flex-start. Override only
+ * those geometry declarations so Homepage follows the same canonical
+ * card system as Shop and Category pages.
+ */
+html body
+  .st3-home-shop-products
+  .st3-home-product-shelf
+  > .st-retail-card.st-product-card-canonical {
+  align-self: stretch !important;
+}
+
+html body
+  .st3-home-shop-products
+  .st3-home-product-shelf
+  > .st-retail-card.st-product-card-canonical
+  > .st-retail-card__content {
+  height: 190px !important;
+  min-height: 190px !important;
+  max-height: 190px !important;
+}
+
+/*
+ * Mobile keeps the existing compact card/media design, but every card
+ * receives the same compact content height.
+ */
+@media (max-width: 768px) {
+  html body
+    .st-retail-card.st-product-card-canonical
+    > .st-retail-card__content {
+    flex-basis: 166px !important;
+
+    height: 166px !important;
+    min-height: 166px !important;
+    max-height: 166px !important;
+  }
+
+  html body
+    .st3-home-shop-products
+    .st3-home-product-shelf
+    > .st-retail-card.st-product-card-canonical
+    > .st-retail-card__content {
+    height: 166px !important;
+    min-height: 166px !important;
+    max-height: 166px !important;
+  }
+
+  html body
+    .st-retail-card.st-product-card-canonical
+    .st-retail-card__options-summary {
+    flex-basis: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+  }
+}
+
+/* === ST CANONICAL STOREFRONT PRODUCT CARD HEIGHT V2 END === */
+
+/* === ST PRODUCT PRICE CHANGE MUSTARD GLOW V1 START ===
+ *
+ * Visual confirmation for a genuine configuration price change.
+ * The existing configuration logic decides whether the visible price
+ * changed; this layer is presentation only.
+ */
+
+@keyframes stProductPriceMustardGlow {
+  0% {
+    background-color: rgba(253, 183, 62, 0);
+    box-shadow: 0 0 0 0 rgba(253, 183, 62, 0);
+  }
+
+  18% {
+    background-color: rgba(253, 183, 62, 0.34);
+    box-shadow:
+      0 0 0 8px rgba(253, 183, 62, 0.18),
+      0 0 28px 10px rgba(253, 183, 62, 0.28);
+  }
+
+  48% {
+    background-color: rgba(253, 183, 62, 0.24);
+    box-shadow:
+      0 0 0 6px rgba(253, 183, 62, 0.12),
+      0 0 22px 8px rgba(253, 183, 62, 0.20);
+  }
+
+  100% {
+    background-color: rgba(253, 183, 62, 0);
+    box-shadow: 0 0 0 0 rgba(253, 183, 62, 0);
+  }
+}
+
+html body
+  .st-product-v5
+  .st-product-v5__price.is-price-changing {
+  position: relative !important;
+  z-index: 1 !important;
+
+  border-radius: 10px !important;
+
+  animation:
+    stProductPriceMustardGlow
+    1500ms
+    cubic-bezier(0.22, 0.61, 0.36, 1)
+    both !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+    .st-product-v5
+    .st-product-v5__price.is-price-changing {
+    animation-duration: 1ms !important;
+  }
+}
+
+/* === ST PRODUCT PRICE CHANGE MUSTARD GLOW V1 END === */
+
+/* === ST HOMEPAGE COMING SOON TOP SPACING V1 START ===
+ *
+ * Homepage only.
+ *
+ * Just Arrived now lives above the category campaigns, so Coming Soon
+ * is the first product shelf after Movies & Series.
+ *
+ * Give the complete Coming Soon section the same breathing room used
+ * between the lower Homepage product shelves. Internal title-to-product
+ * spacing and product-card geometry remain untouched.
+ */
+
+html body .st3-home-live
+  .st3-cat-world:has(.st3-reveal--movies-series)
+  + .st3-home-coming-soon-section
+  .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 48px !important;
+}
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-coming-soon-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 38px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-coming-soon-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 32px !important;
+  }
+}
+
+/* === ST HOMEPAGE COMING SOON TOP SPACING V1 END === */
+
+/* === ST HOMEPAGE JUST ARRIVED BALANCED SPACING V1 START === */
+
+/*
+ * Homepage top merchandising rhythm only.
+ *
+ * Premium Technology -> Just Arrived title
+ * Just Arrived title -> product shelf
+ *
+ * Both visual gaps use the same compact spacing.
+ * Other Homepage product sections remain untouched.
+ */
+
+html body .st3-home-live
+  .st3-premium-hero--cinematic
+  + .st3-home-just-arrived-section
+  .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 24px !important;
+}
+
+html body .st3-home-live
+  .st3-home-just-arrived-section
+  .st3-section-heading {
+  margin-bottom: 6px !important;
+}
+
+html body .st3-home-live
+  .st3-home-just-arrived-section
+  .st3-home-product-shelf {
+  padding-top: 30px !important;
+}
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    .st3-premium-hero--cinematic
+    + .st3-home-just-arrived-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 20px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-section-heading {
+    margin-bottom: 4px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-home-product-shelf {
+    padding-top: 18px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-premium-hero--cinematic
+    + .st3-home-just-arrived-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 18px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-section-heading {
+    margin-bottom: 4px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-home-product-shelf {
+    padding-top: 22px !important;
+  }
+}
+
+/* === ST HOMEPAGE JUST ARRIVED BALANCED SPACING V1 END === */
+
+/* === ST JUST ARRIVED EQUAL VISUAL GAP V1 START === */
+
+/*
+ * Homepage Just Arrived only.
+ *
+ * Match the visual white space above the Just Arrived title
+ * to the approved compact space below the title.
+ *
+ * Product cards and internal shelf spacing remain untouched.
+ */
+
+html body .st3-home-live
+  .st3-premium-hero--cinematic
+  + .st3-home-just-arrived-section
+  .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 18px !important;
+}
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    .st3-premium-hero--cinematic
+    + .st3-home-just-arrived-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 16px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-premium-hero--cinematic
+    + .st3-home-just-arrived-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 14px !important;
+  }
+}
+
+/* === ST JUST ARRIVED EQUAL VISUAL GAP V1 END === */
+
+
+
+
+
+/* === ST JUST ARRIVED FINAL VISUAL GAP V1 START === */
+
+/*
+ * Homepage Just Arrived only.
+ *
+ * Pull the complete section upward until the visible hero-to-title
+ * whitespace matches the approved title-to-product whitespace.
+ *
+ * Internal Just Arrived spacing and product-card geometry stay untouched.
+ */
+
+html body .st3-home-live
+  > .st3-home-just-arrived-section {
+  margin-top: -32px !important;
+}
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    > .st3-home-just-arrived-section {
+    margin-top: -26px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    > .st3-home-just-arrived-section {
+    margin-top: -20px !important;
+  }
+}
+
+/* === ST JUST ARRIVED FINAL VISUAL GAP V1 END === */
+
+/* === ST HOMEPAGE CANONICAL LOWER MERCHANDISING SPACING V1 START === */
+
+/*
+ * Homepage lower merchandising rhythm.
+ *
+ * Just Arrived's approved internal/top spacing is not modified here.
+ * Only:
+ *   1. Just Arrived -> category-world transition
+ *   2. Movies & Series -> Coming Soon
+ *   3. Lower title -> product-shelf spacing
+ *   4. CTA -> following merchandising title
+ *
+ * No transforms.
+ * No product-card geometry changes.
+ * No heading typography changes.
+ * No CTA geometry changes.
+ */
+
+/* Keep the already-approved tightened transition after Just Arrived. */
+html body .st3-home-live
+  > .st3-home-just-arrived-section
+  + .st3-cat-world {
+  margin-top: -36px !important;
+}
+
+/*
+ * Compact ONLY the white space after the lower section CTA.
+ *
+ * Measured before:
+ * Explore Store -> More for less title = 48px
+ * View offers -> Worth discovering title = 48px
+ *
+ * Pull each following wrapper upward by 22px so those visible
+ * transitions become 26px while preserving all internal section spacing.
+ */
+html body .st3-home-live
+  > .st3-home-more-for-less-section,
+html body .st3-home-live
+  > .st3-home-worth-discovering-section {
+  margin-top: -58px !important;
+}
+
+/*
+ * Movies & Series -> Coming Soon title.
+ *
+ * The previous measured 18px was too tight.
+ * Use the same 36px visual target currently established around
+ * the approved Just Arrived merchandising rhythm.
+ */
+html body .st3-home-live
+  .st3-cat-world:has(.st3-reveal--movies-series)
+  + .st3-home-coming-soon-section
+  .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 36px !important;
+}
+
+/*
+ * Lower section headings do not add their own bottom margin.
+ * The shelf padding below is the sole title -> products authority.
+ */
+html body .st3-home-live
+  > .st3-home-coming-soon-section
+  .st3-section-heading,
+html body .st3-home-live
+  > .st3-home-more-for-less-section
+  .st3-section-heading,
+html body .st3-home-live
+  > .st3-home-worth-discovering-section
+  .st3-section-heading {
+  margin-bottom: 0 !important;
+}
+
+/* Match lower title -> product rhythm. */
+html body .st3-home-live
+  > .st3-home-coming-soon-section
+  .st3-home-product-shelf,
+html body .st3-home-live
+  > .st3-home-more-for-less-section
+  .st3-home-product-shelf,
+html body .st3-home-live
+  > .st3-home-worth-discovering-section
+  .st3-home-product-shelf {
+  padding-top: 36px !important;
+}
+
+/*
+ * CTA -> next title.
+ *
+ * These sections previously rendered about 46px.
+ * Use 18px section top padding to produce a visibly tighter transition
+ * without translating the section out of normal document flow.
+ */
+html body .st3-home-live
+  > .st3-home-more-for-less-section
+  .st3-products-section.st3-home-shop-products,
+html body .st3-home-live
+  > .st3-home-worth-discovering-section
+  .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 18px !important;
+  transform: none !important;
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    > .st3-home-just-arrived-section
+    + .st3-cat-world {
+    margin-top: -26px !important;
+  }
+
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-coming-soon-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 26px !important;
+  }
+
+  html body .st3-home-live
+    > .st3-home-coming-soon-section
+    .st3-home-product-shelf,
+  html body .st3-home-live
+    > .st3-home-more-for-less-section
+    .st3-home-product-shelf,
+  html body .st3-home-live
+    > .st3-home-worth-discovering-section
+    .st3-home-product-shelf {
+    padding-top: 26px !important;
+  }
+
+  html body .st3-home-live
+    > .st3-home-more-for-less-section
+    .st3-products-section.st3-home-shop-products,
+  html body .st3-home-live
+    > .st3-home-worth-discovering-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 14px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    > .st3-home-just-arrived-section
+    + .st3-cat-world {
+    margin-top: -22px !important;
+  }
+
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-coming-soon-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 22px !important;
+  }
+
+  html body .st3-home-live
+    > .st3-home-coming-soon-section
+    .st3-home-product-shelf,
+  html body .st3-home-live
+    > .st3-home-more-for-less-section
+    .st3-home-product-shelf,
+  html body .st3-home-live
+    > .st3-home-worth-discovering-section
+    .st3-home-product-shelf {
+    padding-top: 22px !important;
+  }
+
+  html body .st3-home-live
+    > .st3-home-more-for-less-section
+    .st3-products-section.st3-home-shop-products,
+  html body .st3-home-live
+    > .st3-home-worth-discovering-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 12px !important;
+  }
+}
+
+/* === ST HOMEPAGE CANONICAL LOWER MERCHANDISING SPACING V1 END === */
+
+/* === ST HOMEPAGE SHARED JUST + COMING SPACING V3 START === */
+
+/*
+ * Just Arrived is the canonical Homepage merchandising reference.
+ *
+ * Coming Soon uses the same heading-to-products spacing at every
+ * responsive breakpoint, while its section-entry spacing is calibrated
+ * to produce the same visible previous-section-to-title gap.
+ *
+ * Existing Just Arrived geometry is preserved.
+ * CTA spacing and product-card geometry remain untouched.
+ */
+
+/* Desktop / laptop */
+
+html body .st3-home-live
+  .st3-cat-world:has(.st3-reveal--movies-series)
+  + .st3-home-coming-soon-section
+  .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 24px !important;
+}
+
+html body .st3-home-live
+  .st3-home-just-arrived-section
+  .st3-section-heading,
+html body .st3-home-live
+  > .st3-home-coming-soon-section
+  .st3-section-heading {
+  margin-bottom: 6px !important;
+}
+
+html body .st3-home-live
+  .st3-home-just-arrived-section
+  .st3-home-product-shelf,
+html body .st3-home-live
+  > .st3-home-coming-soon-section
+  .st3-home-product-shelf {
+  padding-top: 30px !important;
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-coming-soon-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 20px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-section-heading,
+  html body .st3-home-live
+    > .st3-home-coming-soon-section
+    .st3-section-heading {
+    margin-bottom: 4px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-home-product-shelf,
+  html body .st3-home-live
+    > .st3-home-coming-soon-section
+    .st3-home-product-shelf {
+    padding-top: 18px !important;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-coming-soon-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 18px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-section-heading,
+  html body .st3-home-live
+    > .st3-home-coming-soon-section
+    .st3-section-heading {
+    margin-bottom: 4px !important;
+  }
+
+  html body .st3-home-live
+    .st3-home-just-arrived-section
+    .st3-home-product-shelf,
+  html body .st3-home-live
+    > .st3-home-coming-soon-section
+    .st3-home-product-shelf {
+    padding-top: 22px !important;
+  }
+}
+
+/* === ST HOMEPAGE SHARED JUST + COMING SPACING V3 END === */
+
+/* === ST HOMEPAGE MOBILE CTA TO NEXT TITLE GAP V1 START === */
+
+/*
+ * Mobile only.
+ *
+ * Give the transitions below comfortable positive whitespace:
+ *
+ * Coming Soon / Explore Store -> More for less
+ * More for less / View offers -> Worth discovering
+ *
+ * Desktop and tablet remain unchanged.
+ */
+
+@media (max-width: 600px) {
+  html body .st3-home-live
+    > .st3-home-more-for-less-section,
+  html body .st3-home-live
+    > .st3-home-worth-discovering-section {
+    margin-top: -24px !important;
+  }
+}
+
+/* === ST HOMEPAGE MOBILE CTA TO NEXT TITLE GAP V1 END === */
+
+/* === ST STOCK MODAL CENTERED CLOSE V3 START === */
+
+/*
+ * Shared by Coming Soon Pre-order and Product Page stock notification.
+ *
+ * Keep the close control on the same vertical centerline as the
+ * Stock notification header content.
+ */
+html body
+.st-purchase-v6-modal__window
+> header {
+  position: relative !important;
+}
+
+html body
+.st-purchase-v6-modal__window
+> header
+> .st-stock-notification-modal__close {
+  position: absolute !important;
+
+  top: 50% !important;
+  right: 20px !important;
+
+  width: 36px !important;
+  height: 36px !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  padding: 0 !important;
+
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 10px !important;
+
+  background: #ffffff !important;
+  color: #737373 !important;
+
+  font-size: 18px !important;
+  line-height: 1 !important;
+
+  box-shadow: none !important;
+
+  transform: translateY(-50%) !important;
+
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease !important;
+}
+
+html body
+.st-purchase-v6-modal__window
+> header
+> .st-stock-notification-modal__close
+> span {
+  display: block !important;
+  line-height: 1 !important;
+  transform: translateY(-1px) !important;
+}
+
+html body
+.st-purchase-v6-modal__window
+> header
+> .st-stock-notification-modal__close:hover {
+  border-color: #d9a43d !important;
+  background: #fffaf0 !important;
+  color: #9a680b !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.12),
+    0 0 18px rgba(245, 179, 53, 0.18) !important;
+
+  transform: translateY(-50%) !important;
+}
+
+html body
+.st-purchase-v6-modal__window
+> header
+> .st-stock-notification-modal__close:focus-visible {
+  border-color: #d9a43d !important;
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.16) !important;
+
+  transform: translateY(-50%) !important;
+}
+
+/* === ST STOCK MODAL CENTERED CLOSE V3 END === */
+
+/* ==========================================================================
+   ST PRODUCT GALLERY — IMMERSIVE FULL SCREEN VIEWER V1
+   ========================================================================== */
+
+.st-pg-modern__viewport {
+  position: relative;
+}
+
+.st-pg-modern__expand {
+  position: absolute;
+  z-index: 8;
+  top: 20px;
+  right: 20px;
+
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.92);
+  color: #1d1d1f;
+
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 6px 18px rgba(0, 0, 0, 0.06);
+
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.st-pg-modern__expand svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (hover: hover) {
+  .st-pg-modern__expand:hover {
+    background: #fffaf0;
+    border-color: #d9a43d;
+    color: #9a680b;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.12),
+      0 0 18px rgba(245, 179, 53, 0.18),
+      0 6px 18px rgba(0, 0, 0, 0.06);
+
+    transform: none !important;
+  }
+}
+
+.st-pg-modern__expand:focus-visible,
+.st-pg-immersive button:focus-visible {
+  outline: 2px solid #f5b335;
+  outline-offset: 3px;
+}
+
+.st-pg-immersive {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+
+  width: 100vw;
+  height: 100dvh;
+
+  background: rgba(250, 250, 252, 0.985);
+  color: #1d1d1f;
+
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+
+  overscroll-behavior: contain;
+
+  animation: st-pg-immersive-enter 260ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+
+.st-pg-immersive__topbar {
+  position: relative;
+  z-index: 3;
+
+  min-height: 82px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(22px, env(safe-area-inset-right))
+    12px
+    max(22px, env(safe-area-inset-left));
+}
+
+.st-pg-immersive__identity {
+  min-width: 0;
+
+  display: flex;
+  align-items: baseline;
+
+  gap: 12px;
+}
+
+.st-pg-immersive__identity strong {
+  overflow: hidden;
+
+  color: #1d1d1f;
+
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-pg-immersive__identity span {
+  flex: none;
+
+  color: #86868b;
+
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.st-pg-immersive__close {
+  flex: none;
+
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 50%;
+
+  background: rgba(232, 232, 237, 0.86);
+  color: #1d1d1f;
+
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.st-pg-immersive__close span {
+  display: block;
+
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 300;
+
+  transform: translateY(-2px);
+}
+
+@media (hover: hover) {
+  .st-pg-immersive__close:hover {
+    border-color: #d9a43d;
+    background: #fffaf0;
+    color: #9a680b;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.12),
+      0 0 18px rgba(245, 179, 53, 0.18);
+
+    transform: none !important;
+  }
+}
+
+.st-pg-immersive__canvas {
+  position: relative;
+
+  min-width: 0;
+  min-height: 0;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  padding: 12px clamp(78px, 9vw, 150px) 20px;
+
+  touch-action: pan-y;
+}
+
+.st-pg-immersive__image {
+  width: 100%;
+  height: 100%;
+
+  max-width: min(1280px, 82vw);
+  max-height: calc(100dvh - 180px);
+
+  object-fit: contain;
+
+  user-select: none;
+  -webkit-user-drag: none;
+
+  animation: st-pg-immersive-image-enter 280ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+
+/* === ST PRODUCT GALLERY IMMERSIVE INTERACTION POLISH V2 START === */
+
+.st-pg-immersive__stage {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+}
+
+.st-pg-immersive__stage .st-pg-immersive__image {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  margin: auto;
+
+  animation: none !important;
+
+  will-change: opacity, transform;
+}
+
+.st-pg-immersive__image--incoming {
+  z-index: 2;
+
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.st-pg-immersive__image--incoming.is-transitioning.is-next {
+  animation:
+    st-pg-immersive-in-next
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+.st-pg-immersive__image--incoming.is-transitioning.is-previous {
+  animation:
+    st-pg-immersive-in-previous
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+.st-pg-immersive__image--outgoing {
+  z-index: 1;
+}
+
+.st-pg-immersive__image--outgoing.is-next {
+  animation:
+    st-pg-immersive-out-next
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+.st-pg-immersive__image--outgoing.is-previous {
+  animation:
+    st-pg-immersive-out-previous
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+@keyframes st-pg-immersive-in-next {
+  from {
+    opacity: 0;
+    transform: translate3d(34px, 0, 0) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-out-next {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0) scale(0.992);
+  }
+}
+
+@keyframes st-pg-immersive-in-previous {
+  from {
+    opacity: 0;
+    transform: translate3d(-34px, 0, 0) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-out-previous {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0) scale(0.992);
+  }
+}
+
+@media (max-width: 700px) {
+  .st-pg-immersive__image--incoming.is-transitioning.is-next {
+    animation-name: st-pg-immersive-mobile-in-next !important;
+  }
+
+  .st-pg-immersive__image--incoming.is-transitioning.is-previous {
+    animation-name: st-pg-immersive-mobile-in-previous !important;
+  }
+
+  .st-pg-immersive__image--outgoing.is-next {
+    animation-name: st-pg-immersive-mobile-out-next !important;
+  }
+
+  .st-pg-immersive__image--outgoing.is-previous {
+    animation-name: st-pg-immersive-mobile-out-previous !important;
+  }
+}
+
+@keyframes st-pg-immersive-mobile-in-next {
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0) scale(0.994);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-mobile-out-next {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(-18px, 0, 0) scale(0.994);
+  }
+}
+
+@keyframes st-pg-immersive-mobile-in-previous {
+  from {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0) scale(0.994);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-mobile-out-previous {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(18px, 0, 0) scale(0.994);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-pg-immersive__image--incoming,
+  .st-pg-immersive__image--outgoing {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .st-pg-immersive__image--outgoing {
+    display: none;
+  }
+}
+
+/* === ST PRODUCT GALLERY IMMERSIVE INTERACTION POLISH V2 END === */
+
+.st-pg-immersive__arrow {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+
+  width: 50px;
+  height: 50px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(29, 29, 31, 0.07);
+  border-radius: 50%;
+
+  background: rgba(232, 232, 237, 0.9);
+  color: #1d1d1f;
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+
+  cursor: pointer;
+
+  transform: translateY(-50%);
+
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.st-pg-immersive__arrow--previous {
+  left: max(22px, env(safe-area-inset-left));
+}
+
+.st-pg-immersive__arrow--next {
+  right: max(22px, env(safe-area-inset-right));
+}
+
+.st-pg-immersive__arrow svg {
+  width: 22px;
+  height: 22px;
+}
+
+@media (hover: hover) {
+  .st-pg-immersive__arrow:hover {
+    border-color: #d9a43d;
+    background: #fffaf0;
+    color: #9a680b;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.12),
+      0 0 18px rgba(245, 179, 53, 0.18);
+
+    transform: translateY(-50%) !important;
+  }
+}
+
+.st-pg-immersive__pagination {
+  min-height: 66px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding:
+    8px
+    max(20px, env(safe-area-inset-right))
+    max(18px, env(safe-area-inset-bottom))
+    max(20px, env(safe-area-inset-left));
+}
+
+.st-pg-immersive__pagination button {
+  width: 22px;
+  height: 22px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.st-pg-immersive__pagination button span {
+  width: 6px;
+  height: 6px;
+
+  display: block;
+
+  border-radius: 50%;
+
+  background: #b8b8bd;
+
+  transition:
+    width 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease !important;
+}
+
+.st-pg-immersive__pagination button.is-active span {
+  width: 18px;
+
+  border-radius: 999px;
+
+  background: #1d1d1f;
+}
+
+@keyframes st-pg-immersive-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes st-pg-immersive-image-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 700px) {
+  .st-pg-modern__expand {
+    top: 14px;
+    right: 14px;
+
+    width: 42px;
+    height: 42px;
+  }
+
+  .st-pg-immersive__topbar {
+    min-height: 70px;
+
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(16px, env(safe-area-inset-right))
+      8px
+      max(16px, env(safe-area-inset-left));
+  }
+
+  .st-pg-immersive__identity {
+    gap: 8px;
+  }
+
+  .st-pg-immersive__identity strong {
+    max-width: min(62vw, 360px);
+
+    font-size: 13px;
+  }
+
+  .st-pg-immersive__close {
+    width: 42px;
+    height: 42px;
+  }
+
+  .st-pg-immersive__canvas {
+    padding: 8px 16px 14px;
+
+    touch-action: pan-y;
+  }
+
+  .st-pg-immersive__image {
+    max-width: 94vw;
+    max-height: calc(100dvh - 150px);
+  }
+
+  .st-pg-immersive__arrow {
+    display: none;
+  }
+
+  .st-pg-immersive__pagination {
+    min-height: 58px;
+
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-pg-immersive,
+  .st-pg-immersive__image {
+    animation: none !important;
+  }
+
+  .st-pg-modern__expand,
+  .st-pg-immersive button,
+  .st-pg-immersive__pagination button span {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   ST PRODUCT GALLERY — IMMERSIVE FULL SCREEN VIEWER V1 END
+   ========================================================================== */
+
+
+/* === ST PRODUCT GALLERY IMMERSIVE VISIBLE POLISH V3 START === */
+
+/*
+ * Final fullscreen interaction authority.
+ *
+ * Keep controls physically stationary.
+ * Hover changes presentation only.
+ */
+
+html body .st-pg-modern__expand,
+html body .st-pg-modern__expand:hover,
+html body .st-pg-modern__expand:active {
+  transform: none !important;
+}
+
+html body .st-pg-modern__expand svg,
+html body .st-pg-modern__expand:hover svg,
+html body .st-pg-modern__expand:active svg {
+  display: block !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+}
+
+/*
+ * The arrow button requires translateY(-50%) for its permanent
+ * vertical positioning. Preserve that exact transform in every state.
+ */
+
+html body .st-pg-immersive__arrow,
+html body .st-pg-immersive__arrow:hover,
+html body .st-pg-immersive__arrow:active,
+html body .st-pg-immersive__arrow:focus-visible {
+  display: grid;
+  place-items: center;
+
+  transform: translateY(-50%) !important;
+}
+
+html body .st-pg-immersive__arrow svg,
+html body .st-pg-immersive__arrow:hover svg,
+html body .st-pg-immersive__arrow:active svg,
+html body .st-pg-immersive__arrow:focus-visible svg {
+  display: block !important;
+
+  width: 22px !important;
+  height: 22px !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+}
+
+/*
+ * Fullscreen pagination.
+ * Inactive = neutral gray.
+ * Active = Stereophonie mustard.
+ */
+
+html body .st-pg-immersive__pagination button span {
+  background: #b8b8bd !important;
+  transform: none !important;
+}
+
+html body .st-pg-immersive__pagination button.is-active span {
+  width: 18px;
+
+  border-radius: 999px;
+
+  background: #f5b335 !important;
+
+  transform: none !important;
+}
+
+/*
+ * Fullscreen image transition.
+ *
+ * Runtime inspection confirmed the transition state is firing correctly.
+ * The previous 24px movement was too subtle at fullscreen scale.
+ *
+ * This keeps the same 520ms transition architecture but makes the
+ * movement visually clear while retaining restrained premium motion.
+ */
+
+html body
+.st-pg-immersive__image--incoming.is-transitioning.is-next {
+  animation:
+    st-pg-immersive-visible-in-next
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+html body
+.st-pg-immersive__image--outgoing.is-next {
+  animation:
+    st-pg-immersive-visible-out-next
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+html body
+.st-pg-immersive__image--incoming.is-transitioning.is-previous {
+  animation:
+    st-pg-immersive-visible-in-previous
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+html body
+.st-pg-immersive__image--outgoing.is-previous {
+  animation:
+    st-pg-immersive-visible-out-previous
+    520ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both !important;
+}
+
+@keyframes st-pg-immersive-visible-in-next {
+  from {
+    opacity: 0;
+    transform: translate3d(92px, 0, 0) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-visible-out-next {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(-62px, 0, 0) scale(0.985);
+  }
+}
+
+@keyframes st-pg-immersive-visible-in-previous {
+  from {
+    opacity: 0;
+    transform: translate3d(-92px, 0, 0) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-visible-out-previous {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(62px, 0, 0) scale(0.985);
+  }
+}
+
+@media (max-width: 700px) {
+  html body
+  .st-pg-immersive__image--incoming.is-transitioning.is-next {
+    animation-name: st-pg-immersive-visible-mobile-in-next !important;
+  }
+
+  html body
+  .st-pg-immersive__image--outgoing.is-next {
+    animation-name: st-pg-immersive-visible-mobile-out-next !important;
+  }
+
+  html body
+  .st-pg-immersive__image--incoming.is-transitioning.is-previous {
+    animation-name: st-pg-immersive-visible-mobile-in-previous !important;
+  }
+
+  html body
+  .st-pg-immersive__image--outgoing.is-previous {
+    animation-name: st-pg-immersive-visible-mobile-out-previous !important;
+  }
+}
+
+@keyframes st-pg-immersive-visible-mobile-in-next {
+  from {
+    opacity: 0;
+    transform: translate3d(52px, 0, 0) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-visible-mobile-out-next {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(-36px, 0, 0) scale(0.99);
+  }
+}
+
+@keyframes st-pg-immersive-visible-mobile-in-previous {
+  from {
+    opacity: 0;
+    transform: translate3d(-52px, 0, 0) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes st-pg-immersive-visible-mobile-out-previous {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(36px, 0, 0) scale(0.99);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .st-pg-immersive__image--incoming,
+  html body .st-pg-immersive__image--outgoing {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  html body .st-pg-immersive__image--outgoing {
+    display: none;
+  }
+}
+
+/* === ST PRODUCT GALLERY IMMERSIVE VISIBLE POLISH V3 END === */
+
+/* === ST PRODUCT GALLERY IMMERSIVE TOP LAYER V1 START === */
+
+/*
+ * The immersive product-photo viewer must cover the complete storefront,
+ * including the fixed V3 header on mobile and compact viewports.
+ *
+ * Geometry is intentionally unchanged.
+ */
+
+html body .st-pg-immersive {
+  z-index: 2147483646 !important;
+}
+
+/* === ST PRODUCT GALLERY IMMERSIVE TOP LAYER V1 END === */

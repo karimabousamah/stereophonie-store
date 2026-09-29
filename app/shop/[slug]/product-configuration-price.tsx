@@ -94,6 +94,13 @@ export default function ProductConfigurationPrice({ variants }: Props) {
   );
 
   /*
+   * A real customer-visible price change briefly highlights the
+   * price after the existing smooth return to the top.
+   */
+  const [priceChanging, setPriceChanging] = useState(false);
+  const priceGlowTimerRef = useRef<number | null>(null);
+
+  /*
    * Product pages must always begin at the top instead of
    * inheriting/restoring the previous page's scroll position.
    */
@@ -159,11 +166,30 @@ export default function ProductConfigurationPrice({ variants }: Props) {
         return;
       }
 
+      /*
+       * Restart the mustard price-change cue on every genuine
+       * visible price change, including rapid configuration changes.
+       */
+      if (priceGlowTimerRef.current !== null) {
+        window.clearTimeout(priceGlowTimerRef.current);
+      }
+
+      setPriceChanging(false);
+
       window.requestAnimationFrame(() => {
         window.scrollTo({
           top: 0,
           left: 0,
           behavior: "smooth",
+        });
+
+        window.requestAnimationFrame(() => {
+          setPriceChanging(true);
+
+          priceGlowTimerRef.current = window.setTimeout(() => {
+            setPriceChanging(false);
+            priceGlowTimerRef.current = null;
+          }, 1500);
         });
       });
     }
@@ -178,6 +204,11 @@ export default function ProductConfigurationPrice({ variants }: Props) {
         "stereophonie:product-configuration",
         handleConfigurationChange,
       );
+
+      if (priceGlowTimerRef.current !== null) {
+        window.clearTimeout(priceGlowTimerRef.current);
+        priceGlowTimerRef.current = null;
+      }
     };
   }, [ordered]);
 
@@ -193,7 +224,9 @@ export default function ProductConfigurationPrice({ variants }: Props) {
 
   return (
     <div
-      className="st-product-v5__price"
+      className={`st-product-v5__price${
+        priceChanging ? " is-price-changing" : ""
+      }`}
       data-product-configuration-price="true"
       data-selected-variant-id={selected?.id ?? ""}
     >

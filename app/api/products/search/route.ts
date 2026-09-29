@@ -3,6 +3,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import {
   storefrontConfigurationImages,
 } from "@/lib/storefront-product-media";
+import {
+  normalizeStorefrontSearchText,
+  storefrontSearchValueScore,
+} from "@/lib/storefront-search";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -219,33 +223,64 @@ function searchableValues(product: ProductRow) {
   ];
 }
 
+function productSearchScore(product: ProductRow, query: string) {
+  const weightedValues = [
+    {
+      value: product.name,
+      weight: 0,
+    },
+    {
+      value: relationName(product.brands),
+      weight: 20,
+    },
+    {
+      value: relationName(product.categories),
+      weight: 30,
+    },
+
+    ...(product.product_variants ?? []).flatMap((variant) => [
+      {
+        value: variant.variant_name ?? "",
+        weight: 40,
+      },
+      {
+        value: variant.size ?? "",
+        weight: 45,
+      },
+    ]),
+
+    {
+      value: product.description ?? "",
+      weight: 60,
+    },
+  ];
+
+  let bestScore: number | null = null;
+
+  for (const item of weightedValues) {
+    const matchScore = storefrontSearchValueScore(item.value, query);
+
+    if (matchScore === null) {
+      continue;
+    }
+
+    const score = item.weight + matchScore;
+
+    if (bestScore === null || score < bestScore) {
+      bestScore = score;
+    }
+  }
+
+  return bestScore;
+}
+
 function matchesProduct(product: ProductRow, query: string) {
-  return searchableValues(product).some((value) =>
-    value.toLowerCase().includes(query),
-  );
+  return productSearchScore(product, query) !== null;
 }
 
 function ranking(product: ProductRow, query: string) {
-  const name = product.name.toLowerCase();
-  const brand = relationName(product.brands).toLowerCase();
-  const category = relationName(product.categories).toLowerCase();
-
-  if (name === query) return 0;
-  if (name.startsWith(query)) return 1;
-
-  if (brand === query) return 2;
-  if (brand.startsWith(query)) return 3;
-
-  if (category === query) return 4;
-  if (category.startsWith(query)) return 5;
-
-  if (name.includes(query)) return 6;
-  if (brand.includes(query)) return 7;
-  if (category.includes(query)) return 8;
-
-  return 9;
+  return productSearchScore(product, query) ?? Number.MAX_SAFE_INTEGER;
 }
-
 export async function GET(request: NextRequest) {
   const searchQuery =
     request.nextUrl.searchParams.get("q")?.trim().slice(0, 80) ?? "";
@@ -258,7 +293,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const normalizedQuery = searchQuery.toLowerCase();
+  const normalizedQuery = normalizeStorefrontSearchText(searchQuery);
 
   const supabase = await createClient();
 
@@ -389,7 +424,9 @@ export async function GET(request: NextRequest) {
       matchingProducts
         .map((product) => relationName(product.brands))
         .filter(Boolean)
-        .filter((brand) => brand.toLowerCase().includes(normalizedQuery)),
+        .filter(
+          (brand) => storefrontSearchValueScore(brand, normalizedQuery) !== null,
+        ),
     ),
   ).slice(0, 5);
 
@@ -398,7 +435,10 @@ export async function GET(request: NextRequest) {
       matchingProducts
         .map((product) => relationName(product.categories))
         .filter(Boolean)
-        .filter((category) => category.toLowerCase().includes(normalizedQuery)),
+        .filter(
+          (category) =>
+            storefrontSearchValueScore(category, normalizedQuery) !== null,
+        ),
     ),
   ).slice(0, 5);
 

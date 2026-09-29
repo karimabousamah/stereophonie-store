@@ -5690,7 +5690,7 @@
 
     min-width: 0 !important;
 
-    margin-top: 10px !important;
+    margin-top: auto !important;
 
     padding: 0 !important;
   }
@@ -7043,11 +7043,13 @@
     .st3-shop-v4__grid.st-product-grid-canonical
     .st-product-card-canonical
     .st-retail-card__category {
-    margin: 0 0 6px !important;
+    margin: 0 !important;
 
-    font-size: 8px !important;
+    font-size: 12px !important;
 
-    line-height: 1.1 !important;
+    line-height: 18px !important;
+
+    font-weight: 500 !important;
 
     color: #86868b !important;
   }
@@ -7060,17 +7062,18 @@
     .st-retail-card__name {
     display: -webkit-box !important;
 
-    min-height: 0 !important;
+    min-height: calc(2em * 1.13) !important;
+    max-height: calc(2em * 1.13) !important;
 
     overflow: hidden !important;
 
-    font-size: 13px !important;
+    font-size: 19px !important;
 
-    font-weight: 600 !important;
+    font-weight: 650 !important;
 
-    line-height: 1.17 !important;
+    line-height: 1.13 !important;
 
-    letter-spacing: -0.025em !important;
+    letter-spacing: -0.035em !important;
 
     -webkit-box-orient: vertical;
 
@@ -7085,13 +7088,15 @@
     .st-retail-card__footer {
     display: flex !important;
 
-    align-items: flex-end !important;
+    align-items: center !important;
 
     justify-content: space-between !important;
 
-    gap: 5px !important;
+    gap: 6px !important;
 
-    margin-top: 10px !important;
+    min-height: 24px !important;
+
+    margin-top: auto !important;
   }
 
   html
@@ -7101,11 +7106,11 @@
     .st-product-card-canonical
     .st-retail-card__price
     strong {
-    font-size: 14px !important;
+    font-size: 16px !important;
 
     font-weight: 600 !important;
 
-    line-height: 1 !important;
+    line-height: 24px !important;
   }
 
   html
@@ -9938,3 +9943,85 @@ html
 /* ==========================================================
    END STOREFRONT DYNAMIC ISLAND — FINAL VISUAL AUTHORITY V48
    ========================================================== */
+
+/* === ST PREORDER REAL HORIZONTAL CENTER V4 START === */
+
+/*
+ * FINAL utility authority.
+ *
+ * The generic footer :last-child rule above intentionally normalizes
+ * stock labels, but the Coming Soon Pre-order button is also the last
+ * child and must not inherit that static positioning.
+ *
+ * Horizontal axis only:
+ * - preserve the existing footer row and vertical position
+ * - do not set top/bottom
+ * - center against the full footer width
+ */
+html
+  body
+  .st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__footer:has(> .st-retail-card__preorder) {
+  position: relative !important;
+}
+
+html
+  body
+  .st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__footer
+  > .st-retail-card__preorder {
+  position: absolute !important;
+
+  left: 50% !important;
+  right: auto !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  transform: translateX(-50%) !important;
+}
+
+/* === ST PREORDER REAL HORIZONTAL CENTER V4 END === */
+
+/* === ST MOBILE PREORDER ONE-LINE AUTHORITY V6 START === */
+
+/*
+ * Mobile only:
+ * keep the approved V4 horizontal centering architecture intact.
+ * This authority changes wrapping only.
+ */
+@media (max-width: 767px) {
+  html
+    body
+    .st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__footer
+    > .st-retail-card__preorder {
+    width: max-content !important;
+    min-width: max-content !important;
+    max-width: none !important;
+
+    flex-wrap: nowrap !important;
+
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+
+    transform: translate(-50%, -12px) !important;
+  }
+
+  html
+    body
+    .st-product-grid-canonical
+    .st-product-card-canonical
+    .st-retail-card__footer
+    > .st-retail-card__preorder
+    > span {
+    display: inline-block !important;
+    width: auto !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* === ST MOBILE PREORDER ONE-LINE AUTHORITY V6 END === */

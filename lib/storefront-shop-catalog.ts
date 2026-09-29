@@ -1,4 +1,7 @@
 import type { StoreProductVariant } from "@/components/storefront/store-product-card";
+import {
+  storefrontSearchDirectProductMatch,
+} from "@/lib/storefront-search";
 
 export type ShopNamedRelation =
   | {
@@ -14,6 +17,8 @@ export type ShopCatalogueProduct = {
   name: string;
   slug: string | null;
   description: string | null;
+  is_new_arrival: boolean | null;
+  new_drop_started_at: string | null;
   created_at: string | null;
   categories: ShopNamedRelation;
   brands: ShopNamedRelation;
@@ -185,37 +190,46 @@ export function shopMatchesSearch(
   product: ShopCatalogueProduct,
   search: string,
 ) {
-  const query = search.trim().toLowerCase();
-
-  if (!query) {
+  if (!search.trim()) {
     return true;
   }
 
-  const searchableValues = [
-    product.name,
-    product.description ?? "",
-    shopCategoryName(product),
-    shopBrandName(product),
-
-    ...(product.product_variants ?? []).flatMap((variant) => [
-      String(variant.size ?? ""),
-      String(variant.variant_name ?? ""),
-    ]),
-  ];
-
-  return searchableValues.some((value) =>
-    value.toLowerCase().includes(query),
-  );
+  return storefrontSearchDirectProductMatch({
+    name: product.name,
+    brand: shopBrandName(product),
+    query: search,
+  });
 }
 
 export function shopNewestTimestamp(product: ShopCatalogueProduct) {
-  if (!product.created_at) {
-    return 0;
+  const createdTimestamp = product.created_at
+    ? new Date(product.created_at).getTime()
+    : 0;
+
+  const validCreatedTimestamp = Number.isFinite(createdTimestamp)
+    ? createdTimestamp
+    : 0;
+
+  if (!product.is_new_arrival || !product.new_drop_started_at) {
+    return validCreatedTimestamp;
   }
 
-  const timestamp = new Date(product.created_at).getTime();
+  const newDropTimestamp = new Date(
+    product.new_drop_started_at,
+  ).getTime();
 
-  return Number.isFinite(timestamp) ? timestamp : 0;
+  if (!Number.isFinite(newDropTimestamp)) {
+    return validCreatedTimestamp;
+  }
+
+  const sevenDays = 7 * 24 * 60 * 60 * 1000;
+  const newDropAge = Date.now() - newDropTimestamp;
+
+  if (newDropAge >= 0 && newDropAge < sevenDays) {
+    return newDropTimestamp;
+  }
+
+  return validCreatedTimestamp;
 }
 
 export function shopSortCatalog<T extends ShopCatalogueProduct>(

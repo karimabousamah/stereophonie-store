@@ -8,6 +8,7 @@ import { Check, CheckCircle2, Eye, Bookmark, ImageOff, LoaderCircle, Mail, X } f
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import StorefrontStockNotificationModal from "@/components/storefront/storefront-stock-notification-modal";
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 import { isNewDropActive, newDropRemainingMs } from "@/lib/storefront/new-drop";
 import {
@@ -1313,79 +1314,19 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
           )
         : null}
 
-      {preorderEmailOpen && typeof document !== "undefined"
-        ? createPortal(
-            <div
-              className="st-retail-preorder-modal"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Availability notification"
-              onMouseDown={(event) => {
-                if (event.target === event.currentTarget) {
-                  setPreorderEmailOpen(false);
-                }
-              }}
-            >
-              <form
-                className="st-retail-preorder-modal__window"
-                onSubmit={submitPreorderEmail}
-              >
-                <header>
-                  <div>
-                    <Mail />
-                    <strong>Availability notification</strong>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setPreorderEmailOpen(false)}
-                    aria-label="Close"
-                  >
-                    <X />
-                  </button>
-                </header>
-
-                <div className="st-retail-preorder-modal__body">
-                  <span>Pre-order alert</span>
-                  <h2>Be notified when available.</h2>
-                  <p>
-                    Enter your email and Stereophonie will notify you when this
-                    item becomes available.
-                  </p>
-
-                  <input
-                    type="email"
-                    required
-                    autoFocus
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    value={preorderEmail}
-                    onChange={(event) => {
-                      setPreorderEmail(event.target.value);
-                      setPreorderEmailError("");
-                    }}
-                  />
-
-                  {preorderEmailError ? (
-                    <span className="st-retail-preorder-modal__error">
-                      {preorderEmailError}
-                    </span>
-                  ) : null}
-
-                  <button type="submit" disabled={preorderLoading}>
-                    {preorderLoading ? (
-                      <LoaderCircle className="is-spin" />
-                    ) : (
-                      <Mail />
-                    )}
-                    <span>Notify me</span>
-                  </button>
-                </div>
-              </form>
-            </div>,
-            document.body,
-          )
-        : null}
+      <StorefrontStockNotificationModal
+        open={preorderEmailOpen}
+        email={preorderEmail}
+        error={preorderEmailError}
+        loading={preorderLoading}
+        description="Enter your email and Stereophonie will notify you when this item becomes available."
+        onClose={() => setPreorderEmailOpen(false)}
+        onEmailChange={(value) => {
+          setPreorderEmail(value);
+          setPreorderEmailError("");
+        }}
+        onSubmit={submitPreorderEmail}
+      />
 
       {quickViewMounted && typeof document !== "undefined"
         ? createPortal(

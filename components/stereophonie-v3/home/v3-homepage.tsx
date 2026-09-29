@@ -349,6 +349,19 @@ export default function V3Homepage({
       </section>
 
       {/* ====================================================
+          JUST ARRIVED
+          ==================================================== */}
+
+      <div className="st3-home-just-arrived-section">
+        <ProductSection
+          title="Just arrived."
+          products={latestProducts}
+          href="/shop?sort=newest"
+          linkLabel="View all"
+        />
+      </div>
+
+      {/* ====================================================
           CATEGORY INTRO
           ==================================================== */}
 
@@ -432,37 +445,36 @@ export default function V3Homepage({
           PRODUCTS
           ==================================================== */}
 
-      <ProductSection
-        title="Just arrived."
-        products={latestProducts}
-        href="/shop?sort=newest"
-        linkLabel="View all"
-      />
-
       {comingSoonProducts.length ? (
-        <ProductSection
-          title="Coming soon."
-          products={comingSoonProducts}
-          href="/shop"
-          linkLabel="Explore store"
-        />
+        <div className="st3-home-coming-soon-section">
+          <ProductSection
+            title="Coming soon."
+            products={comingSoonProducts}
+            href="/shop"
+            linkLabel="Explore store"
+          />
+        </div>
       ) : null}
 
       {offerProducts.length ? (
-        <ProductSection
-          title="More for less."
-          products={offerProducts}
-          href="/shop?offers=true"
-          linkLabel="View offers"
-        />
+        <div className="st3-home-more-for-less-section">
+          <ProductSection
+            title="More for less."
+            products={offerProducts}
+            href="/shop?offers=true"
+            linkLabel="View offers"
+          />
+        </div>
       ) : null}
 
-      <ProductSection
-        title="Worth discovering."
-        products={featuredProducts}
-        href="/shop"
-        linkLabel="Explore store"
-      />
+      <div className="st3-home-worth-discovering-section">
+        <ProductSection
+          title="Worth discovering."
+          products={featuredProducts}
+          href="/shop"
+          linkLabel="Explore store"
+        />
+      </div>
     </main>
   );
 }

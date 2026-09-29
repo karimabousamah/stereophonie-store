@@ -21,6 +21,7 @@ import {
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 
+import StorefrontStockNotificationModal from "@/components/storefront/storefront-stock-notification-modal";
 import { useCart } from "@/components/cart/cart-provider";
 import {
   storefrontImageDisplayUrl,
@@ -1238,73 +1239,19 @@ export default function ProductPurchaseControls({
         </button>
       </section>
 
-      {emailOpen ? (
-        <div
-          className="st-purchase-v6-modal"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setEmailOpen(false);
-            }
-          }}
-        >
-          <form className="st-purchase-v6-modal__window" onSubmit={submitEmail}>
-            <header>
-              <div>
-                <Mail />
-                <strong>Stock notification</strong>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setEmailOpen(false)}
-                aria-label="Close"
-              >
-                <X />
-              </button>
-            </header>
-
-            <div className="st-purchase-v6-modal__body">
-              <span>Restock alert</span>
-
-              <h2>Notify me when available.</h2>
-
-              <p>
-                Enter your email and Stereophonie will notify you when this
-                configuration returns.
-              </p>
-
-              <input
-                type="email"
-                required
-                autoFocus
-                autoComplete="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                  setEmailError("");
-                }}
-              />
-
-              {emailError ? (
-                <span className="st-purchase-v6-modal__error">
-                  {emailError}
-                </span>
-              ) : null}
-
-              <button type="submit" disabled={notificationLoading}>
-                {notificationLoading ? (
-                  <LoaderCircle className="is-spin" />
-                ) : (
-                  <Mail />
-                )}
-
-                <span>Notify me</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : null}
+      <StorefrontStockNotificationModal
+        open={emailOpen}
+        email={email}
+        error={emailError}
+        loading={notificationLoading}
+        description="Enter your email and Stereophonie will notify you when this configuration returns."
+        onClose={() => setEmailOpen(false)}
+        onEmailChange={(value) => {
+          setEmail(value);
+          setEmailError("");
+        }}
+        onSubmit={submitEmail}
+      />
     </>
   );
 }

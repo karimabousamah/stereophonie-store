@@ -263,7 +263,7 @@ export async function updateProduct(formData: FormData) {
 
   const { data: currentProduct, error: currentProductError } = await supabase
     .from("products")
-    .select("status")
+    .select("status, availability")
     .eq("id", productId)
     .single();
 
@@ -276,6 +276,10 @@ export async function updateProduct(formData: FormData) {
   }
 
   const currentProductStatus = String(currentProduct.status || "draft");
+
+  const currentProductAvailability = String(
+    currentProduct.availability ?? "",
+  );
 
   const validationIntent =
     publishingIntent === "archive"
@@ -320,22 +324,48 @@ export async function updateProduct(formData: FormData) {
     isNewArrival = false;
   }
 
+  /*
+   * A published Coming Soon product becomes a genuine new arrival
+   * when it first becomes purchasable.
+   *
+   * Start the seven-day NEW DROP window from this availability
+   * transition rather than from the earlier Coming Soon publication.
+   *
+   * Ordinary edits and later in-stock updates do not restart it.
+   */
+  const becameAvailableFromComingSoon =
+    currentProductStatus === "published" &&
+    productStatus === "published" &&
+    currentProductAvailability === "coming_soon" &&
+    productAvailability === "in_stock";
+
+  if (becameAvailableFromComingSoon) {
+    isNewArrival = true;
+  }
+
+  const productUpdateValues = {
+    name,
+    description: description || null,
+    category_id: categoryId,
+    subcategory_id: subcategoryId || null,
+    collection_id: collectionId || null,
+    brand_id: brandId || null,
+    status: productStatus,
+    availability: productAvailability,
+    is_featured: isFeatured,
+    is_trending: isTrending,
+    is_new_arrival: isNewArrival,
+    updated_at: new Date().toISOString(),
+    ...(becameAvailableFromComingSoon
+      ? {
+          new_drop_started_at: new Date().toISOString(),
+        }
+      : {}),
+  };
+
   const { error: productUpdateError } = await supabase
     .from("products")
-    .update({
-      name,
-      description: description || null,
-      category_id: categoryId,
-      subcategory_id: subcategoryId || null,
-      collection_id: collectionId || null,
-      brand_id: brandId || null,
-      status: productStatus,
-      availability: productAvailability,
-      is_featured: isFeatured,
-      is_trending: isTrending,
-      is_new_arrival: isNewArrival,
-      updated_at: new Date().toISOString(),
-    })
+    .update(productUpdateValues)
     .eq("id", productId);
 
   if (productUpdateError) {

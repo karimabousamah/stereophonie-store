@@ -240,8 +240,6 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                     placeholder="Enter your password"
                     required
                   />
-
-                  <LockKeyhole />
                 </span>
               </label>
 
@@ -362,8 +360,6 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                       minLength={8}
                       required
                     />
-
-                    <LockKeyhole />
                   </span>
                 </label>
 
@@ -392,8 +388,6 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                       minLength={8}
                       required
                     />
-
-                    <LockKeyhole />
                   </span>
                 </label>
               </div>

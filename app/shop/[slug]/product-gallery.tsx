@@ -454,6 +454,7 @@ export default function ProductGallery(props: ProductGalleryProps) {
   }, [allImages, selectedConfiguration, selectedVariantId]);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [fullscreenOpen, setFullscreenOpen] = useState(false);
 
   const [autoplayResetKey, setAutoplayResetKey] = useState(0);
 
@@ -625,6 +626,41 @@ export default function ProductGallery(props: ProductGalleryProps) {
     }
   }
 
+  useEffect(() => {
+    if (!fullscreenOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+
+    document.body.style.overflow = "hidden";
+
+    function handleFullscreenKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        setFullscreenOpen(false);
+        return;
+      }
+
+      if (event.key === "ArrowRight" && total > 1) {
+        event.preventDefault();
+        next();
+        return;
+      }
+
+      if (event.key === "ArrowLeft" && total > 1) {
+        event.preventDefault();
+        previous();
+      }
+    }
+
+    window.addEventListener("keydown", handleFullscreenKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleFullscreenKeyDown);
+    };
+  }, [fullscreenOpen, total, next, previous]);
+
   if (!activeImage) {
     return (
       <section
@@ -647,6 +683,28 @@ export default function ProductGallery(props: ProductGalleryProps) {
       onTouchEnd={handleTouchEnd}
     >
       <div className="st-pg-modern__viewport">
+        <button
+          type="button"
+          className="st-pg-modern__expand"
+          aria-label="View product images full screen"
+          onClick={() => setFullscreenOpen(true)}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M8 3H3v5" />
+            <path d="M16 3h5v5" />
+            <path d="M8 21H3v-5" />
+            <path d="M16 21h5v-5" />
+          </svg>
+        </button>
+
         <div
           className={`st-pg-modern__stage ${
             direction === "next" ? "is-next" : "is-previous"
@@ -728,6 +786,154 @@ export default function ProductGallery(props: ProductGalleryProps) {
           </nav>
         ) : null}
       </div>
+
+      {fullscreenOpen ? (
+        <div
+          className="st-pg-immersive"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${productName} full screen image viewer`}
+        >
+          <div className="st-pg-immersive__topbar">
+            <div className="st-pg-immersive__identity">
+              <strong>{productName}</strong>
+
+              {total > 1 ? (
+                <span>
+                  {safeIndex + 1} / {total}
+                </span>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              className="st-pg-immersive__close"
+              aria-label="Close full screen image viewer"
+              onClick={() => setFullscreenOpen(false)}
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+
+          <div
+            className="st-pg-immersive__canvas"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {total > 1 ? (
+              <button
+                type="button"
+                className="st-pg-immersive__arrow st-pg-immersive__arrow--previous"
+                aria-label="Previous image"
+                onClick={previous}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+              </button>
+            ) : null}
+
+            <div
+              className={`st-pg-immersive__stage ${
+                direction === "next" ? "is-next" : "is-previous"
+              }`}
+            >
+              {outgoingImage ? (
+                <img
+                  className={`st-pg-immersive__image st-pg-immersive__image--outgoing ${
+                    direction === "next" ? "is-next" : "is-previous"
+                  }`}
+                  src={outgoingImage.src}
+                  alt=""
+                  aria-hidden="true"
+                  decoding="async"
+                  onError={(event) => {
+                    if (
+                      outgoingImage.fallbackSrc &&
+                      event.currentTarget.src !== outgoingImage.fallbackSrc
+                    ) {
+                      event.currentTarget.src = outgoingImage.fallbackSrc;
+                    }
+                  }}
+                  draggable={false}
+                />
+              ) : null}
+
+              <img
+                key={`fullscreen-${activeImage.src}-${safeIndex}-${selectedConfiguration}`}
+                className={`st-pg-immersive__image st-pg-immersive__image--incoming ${
+                  transitioning ? "is-transitioning" : ""
+                } ${direction === "next" ? "is-next" : "is-previous"}`}
+                src={activeImage.src}
+                alt={activeImage.alt}
+                decoding="async"
+                onError={(event) => {
+                  if (
+                    activeImage.fallbackSrc &&
+                    event.currentTarget.src !== activeImage.fallbackSrc
+                  ) {
+                    event.currentTarget.src = activeImage.fallbackSrc;
+                  }
+                }}
+                draggable={false}
+              />
+            </div>
+
+            {total > 1 ? (
+              <button
+                type="button"
+                className="st-pg-immersive__arrow st-pg-immersive__arrow--next"
+                aria-label="Next image"
+                onClick={next}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            ) : null}
+          </div>
+
+          {total > 1 ? (
+            <nav
+              className="st-pg-immersive__pagination"
+              aria-label="Full screen product images"
+            >
+              {galleryImages.map((image, index) => {
+                const selected = index === safeIndex;
+
+                return (
+                  <button
+                    key={`fullscreen-dot-${image.src}-${index}`}
+                    type="button"
+                    className={selected ? "is-active" : ""}
+                    aria-label={`View image ${index + 1} of ${total}`}
+                    aria-current={selected ? "true" : undefined}
+                    onClick={() => select(index)}
+                  >
+                    <span />
+                  </button>
+                );
+              })}
+            </nav>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }

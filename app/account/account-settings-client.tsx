@@ -8,6 +8,7 @@ import {
   useOptimistic,
   useState,
 } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { createPortal, useFormStatus } from "react-dom";
 
 import {
@@ -138,6 +139,7 @@ function StableModal({
   icon,
   children,
   onClose,
+  modalClassName = "",
 }: {
   open: boolean;
   title: string;
@@ -145,6 +147,7 @@ function StableModal({
   icon?: string;
   children: ReactNode;
   onClose: () => void;
+  modalClassName?: string;
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -202,16 +205,21 @@ function StableModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-[500px] overflow-y-auto border border-neutral-200 bg-white p-7 shadow-[0_35px_120px_rgba(0,0,0,0.42)] sm:p-9"
+        className={`relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-[500px] overflow-y-auto border border-neutral-200 bg-white p-7 shadow-[0_35px_120px_rgba(0,0,0,0.42)] sm:p-9 ${modalClassName}`}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close confirmation"
-          className="absolute right-5 top-5 grid h-9 w-9 place-items-center border border-neutral-200 bg-white text-lg text-neutral-500 transition hover:border-black hover:bg-black hover:text-white"
+          className="absolute right-5 top-5 grid h-9 w-9 place-items-center border border-neutral-200 bg-white text-lg text-neutral-500 transition-[border-color,background-color,color,box-shadow] duration-200 hover:border-[#d9a43d] hover:bg-[#fffaf0] hover:text-[#9a680b] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.12),0_0_18px_rgba(245,179,53,0.18)] focus-visible:border-[#d9a43d] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_rgba(245,179,53,0.16)] active:transform-none"
         >
-          ×
+          <span
+            aria-hidden="true"
+            className="pointer-events-none inline-block leading-none [transform:translateY(-1px)]"
+          >
+            ×
+          </span>
         </button>
 
         {icon ? (
@@ -254,35 +262,34 @@ function PasswordInput({
   const [visible, setVisible] = useState(false);
 
   return (
-    <div>
-      <div className="flex items-center justify-between gap-4">
-        <label
-          htmlFor={id}
-          className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500"
-        >
-          {label}
-        </label>
+    <label className="st-account-password-field">
+      <span className="st-account-password-label-row">
+        <span>{label}</span>
 
         <button
           type="button"
           onClick={() => setVisible((current) => !current)}
-          className="bg-transparent text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400 shadow-none transition hover:text-black"
+          aria-label={visible ? `Hide ${label}` : `Show ${label}`}
+          aria-pressed={visible}
         >
-          {visible ? "Hide password" : "Show password"}
-        </button>
-      </div>
+          {visible ? <EyeOff /> : <Eye />}
 
-      <input
-        id={id}
-        name={name}
-        type={visible ? "text" : "password"}
-        autoComplete={autoComplete}
-        minLength={8}
-        required
-        placeholder={placeholder}
-        className="mt-2 w-full border border-neutral-300 bg-white px-4 py-4 text-sm outline-none transition focus:border-black"
-      />
-    </div>
+          <span>{visible ? "Hide" : "Show"}</span>
+        </button>
+      </span>
+
+      <span className="st-account-password-control">
+        <input
+          id={id}
+          name={name}
+          type={visible ? "text" : "password"}
+          autoComplete={autoComplete}
+          minLength={8}
+          required
+          placeholder={placeholder}
+        />
+      </span>
+    </label>
   );
 }
 
@@ -325,7 +332,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           defaultValue={address?.label ?? "Home"}
           required
           placeholder="Home, Work, Parents..."
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -337,7 +344,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           name="country"
           defaultValue="Lebanon"
           required
-          className="mt-2 w-full border border-neutral-300 bg-white px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 bg-white px-4 py-4 text-sm outline-none transition"
         >
           {countryOptions.map((country) => (
             <option
@@ -364,7 +371,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           defaultValue={address?.city ?? ""}
           required
           placeholder="Beirut"
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -376,7 +383,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           name="area"
           defaultValue={address?.area ?? ""}
           placeholder="Antelias"
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -391,7 +398,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           defaultValue={address?.address_line ?? ""}
           required
           placeholder="Street, road, and neighborhood"
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -403,7 +410,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           name="building"
           defaultValue={address?.building ?? ""}
           placeholder="Building name or number"
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -415,7 +422,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           name="floor"
           defaultValue={address?.floor ?? ""}
           placeholder="3"
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -427,7 +434,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           name="apartment"
           defaultValue={address?.apartment ?? ""}
           placeholder="Apartment or door number"
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -442,7 +449,7 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           name="landmark"
           defaultValue={address?.landmark ?? ""}
           placeholder="Near a known location"
-          className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
@@ -458,18 +465,11 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
           defaultValue={address?.delivery_instructions ?? ""}
           rows={4}
           placeholder="Entrance details or courier instructions"
-          className="mt-2 w-full resize-none border border-neutral-300 px-4 py-4 text-sm leading-6 outline-none transition focus:border-black"
+          className="st-account-focus-control mt-2 w-full resize-none border border-neutral-300 px-4 py-4 text-sm leading-6 outline-none transition"
         />
       </div>
 
-      <label className="flex cursor-pointer items-center gap-3 border border-neutral-200 bg-neutral-50 px-4 py-4 sm:col-span-2">
-        <input
-          name="isDefault"
-          type="checkbox"
-          defaultChecked={address?.is_default ?? false}
-          className="h-4 w-4 accent-black"
-        />
-
+      <label className="st-account-default-toggle-row sm:col-span-2">
         <span>
           <span className="block text-xs font-semibold uppercase tracking-[0.12em]">
             Use as default address
@@ -477,6 +477,21 @@ function AddressFields({ address }: { address?: CustomerAddress }) {
 
           <span className="mt-1 block text-xs leading-5 text-neutral-500">
             This address will be selected automatically during checkout.
+          </span>
+        </span>
+
+        <span className="st-account-default-switch-wrap">
+          <input
+            name="isDefault"
+            type="checkbox"
+            defaultChecked={address?.is_default ?? false}
+            className="st-account-default-switch-input"
+          />
+          <span
+            aria-hidden="true"
+            className="st-account-default-switch"
+          >
+            <span className="st-account-default-switch__thumb" />
           </span>
         </span>
       </label>
@@ -505,7 +520,7 @@ function DeleteAccountSubmitButton({ enabled }: { enabled: boolean }) {
     <button
       type="submit"
       disabled={!enabled || pending}
-      className="w-full border border-red-700 bg-red-700 px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-red-700 disabled:cursor-not-allowed disabled:border-neutral-200 disabled:bg-neutral-100 disabled:text-neutral-400"
+      className="st-account-delete-submit w-full border border-red-700 bg-red-700 px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition disabled:cursor-not-allowed"
     >
       {pending ? "Deleting account..." : "Permanently delete account"}
     </button>
@@ -539,8 +554,8 @@ function DeleteAccountVerificationForm({
   const isReady = confirmationText === "DELETE" && acceptedPermanentDeletion;
 
   return (
-    <form action={formAction} className="mt-7">
-      <div className="border border-neutral-200 bg-neutral-50 px-4 py-4">
+    <form action={formAction} className="st-account-delete-verification mt-7">
+      <div className="st-account-delete-identity border border-neutral-200 bg-neutral-50 px-4 py-4">
         <p className="text-[9px] font-semibold uppercase tracking-[0.17em] text-neutral-400">
           Account being deleted
         </p>
@@ -553,7 +568,7 @@ function DeleteAccountVerificationForm({
       {state.status === "error" ? (
         <div
           role="alert"
-          className="mt-5 flex gap-3 border border-red-200 bg-red-50 px-4 py-4"
+          className="st-account-delete-error mt-5 flex gap-3 border border-red-200 bg-red-50 px-4 py-4"
         >
           <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-red-300 text-[10px] font-semibold text-red-700">
             !
@@ -563,8 +578,8 @@ function DeleteAccountVerificationForm({
         </div>
       ) : null}
 
-      <div className="mt-6">
-        <div className="flex items-center justify-between gap-4">
+      <div className="st-account-delete-field mt-6">
+        <div className="st-account-delete-label-row flex items-center justify-between gap-4">
           <label
             htmlFor="accountPassword"
             className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500"
@@ -575,9 +590,16 @@ function DeleteAccountVerificationForm({
           <button
             type="button"
             onClick={() => setPasswordVisible((current) => !current)}
-            className="bg-transparent text-[9px] font-semibold uppercase tracking-[0.14em] text-neutral-400 shadow-none transition hover:text-black"
+            aria-label={
+              passwordVisible
+                ? "Hide current account password"
+                : "Show current account password"
+            }
+            aria-pressed={passwordVisible}
+            className="st-account-delete-show bg-transparent text-[9px] font-semibold uppercase tracking-[0.14em] shadow-none transition"
           >
-            {passwordVisible ? "Hide" : "Show"}
+            {passwordVisible ? <EyeOff /> : <Eye />}
+            <span>{passwordVisible ? "Hide" : "Show"}</span>
           </button>
         </div>
 
@@ -588,11 +610,11 @@ function DeleteAccountVerificationForm({
           autoComplete="current-password"
           required
           placeholder="Enter your password"
-          className="mt-2 w-full border border-neutral-300 bg-white px-4 py-4 text-sm outline-none transition focus:border-black"
+          className="st-account-delete-input st-account-focus-control mt-2 w-full border border-neutral-300 bg-white px-4 py-4 text-sm outline-none transition"
         />
       </div>
 
-      <div className="mt-5">
+      <div className="st-account-delete-field mt-5">
         <label
           htmlFor="confirmationText"
           className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500"
@@ -611,7 +633,7 @@ function DeleteAccountVerificationForm({
           spellCheck={false}
           required
           placeholder="DELETE"
-          className={`mt-2 w-full border bg-white px-4 py-4 text-sm font-semibold uppercase tracking-[0.12em] outline-none transition ${
+          className={`st-account-delete-input st-account-delete-confirm mt-2 w-full border bg-white px-4 py-4 text-sm font-semibold uppercase tracking-[0.12em] outline-none transition ${
             confirmationText === "DELETE"
               ? "border-red-700"
               : "border-neutral-300 focus:border-black"
@@ -619,7 +641,7 @@ function DeleteAccountVerificationForm({
         />
       </div>
 
-      <label className="mt-5 flex cursor-pointer items-start gap-3 border border-red-200 bg-red-50 px-4 py-4">
+      <label className="st-account-delete-consent mt-5 flex cursor-pointer items-center gap-3 border border-red-200 bg-red-50 px-4 py-4">
         <input
           name="acceptPermanentDeletion"
           type="checkbox"
@@ -627,7 +649,7 @@ function DeleteAccountVerificationForm({
           onChange={(event) =>
             setAcceptedPermanentDeletion(event.target.checked)
           }
-          className="mt-1 h-4 w-4 shrink-0 accent-red-700"
+          className="st-account-delete-consent-checkbox h-4 w-4 shrink-0 accent-red-700"
         />
 
         <span className="text-xs leading-6 text-red-800">
@@ -636,11 +658,11 @@ function DeleteAccountVerificationForm({
         </span>
       </label>
 
-      <div className="mt-7 grid gap-3 sm:grid-cols-2">
+      <div className="st-account-delete-actions mt-7 grid gap-3 sm:grid-cols-2">
         <button
           type="button"
           onClick={onBack}
-          className="border border-neutral-300 bg-white px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-600 transition hover:border-black hover:text-black"
+          className="st-account-delete-back border border-neutral-300 bg-white px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-600 transition"
         >
           Go back
         </button>
@@ -656,8 +678,16 @@ export default function AccountSettingsClient({
   addresses,
   stockNotificationsEnabled,
 }: AccountSettingsClientProps) {
-  const [activeSection, setActiveSection] =
-    useState<SettingsSection>("profile");
+  const [activeSection, setActiveSection] = useState<SettingsSection>(() => {
+    if (
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("section") === "addresses"
+    ) {
+      return "addresses";
+    }
+
+    return "profile";
+  });
 
   const [
     optimisticStockNotificationsEnabled,
@@ -769,7 +799,7 @@ export default function AccountSettingsClient({
                         name="firstName"
                         defaultValue={profile.firstName}
                         required
-                        className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none focus:border-black"
+                        className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none"
                       />
                     </div>
 
@@ -781,7 +811,7 @@ export default function AccountSettingsClient({
                         name="lastName"
                         defaultValue={profile.lastName}
                         required
-                        className="mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none focus:border-black"
+                        className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none"
                       />
                     </div>
 
@@ -809,7 +839,7 @@ export default function AccountSettingsClient({
                         Telephone number
                       </FieldLabel>
 
-                      <div className="st-account-field-shell st-account-field-shell--phone mt-2 grid grid-cols-[160px_minmax(0,1fr)] border border-neutral-300 focus-within:border-black">
+                      <div className="st-account-field-shell st-account-field-shell--phone mt-2 grid grid-cols-[160px_minmax(0,1fr)] border border-neutral-300">
                         <select
                           name="phoneCountryCode"
                           defaultValue={profile.phoneCountryCode}
@@ -1092,7 +1122,7 @@ export default function AccountSettingsClient({
                               </h4>
 
                               {address.is_default ? (
-                                <span className="st-account-address-badge bg-black px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] text-white">
+                                <span className="st-account-address-badge">
                                   Default
                                 </span>
                               ) : null}
@@ -1112,7 +1142,13 @@ export default function AccountSettingsClient({
                                   value={address.id}
                                 />
 
-                                <button className="st-account-address-action border border-neutral-300 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em]">
+                                <input
+                                  type="hidden"
+                                  name="returnSection"
+                                  value="addresses"
+                                />
+
+                                <button className="st-account-address-action st-account-address-action--default">
                                   Make default
                                 </button>
                               </form>
@@ -1127,7 +1163,7 @@ export default function AccountSettingsClient({
                                     : address.id,
                                 )
                               }
-                              className="st-account-address-action border border-neutral-300 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em]"
+                              className="st-account-address-action st-account-address-action--edit"
                             >
                               Edit
                             </button>
@@ -1135,34 +1171,44 @@ export default function AccountSettingsClient({
                             <button
                               type="button"
                               onClick={() => setAddressToDelete(address)}
-                              className="st-account-address-action border border-red-200 px-4 py-3 text-[9px] font-semibold uppercase tracking-[0.13em] text-red-700"
+                              className="st-account-address-action st-account-address-action--delete"
                             >
                               Delete
                             </button>
                           </div>
                         </div>
 
-                        {editingAddressId === address.id ? (
-                          <form
-                            action={updateCustomerAddress}
-                            className="st-account-address-edit-form mt-7 border-t border-neutral-200 pt-7"
-                          >
-                            <input
-                              type="hidden"
-                              name="addressId"
-                              value={address.id}
-                            />
-
-                            <AddressFields address={address} />
-
-                            <button
-                              type="submit"
-                              className="mt-6 border border-black bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white"
+                        <div
+                          className="st-account-address-edit-reveal"
+                          data-open={
+                            editingAddressId === address.id ? "true" : "false"
+                          }
+                          aria-hidden={
+                            editingAddressId === address.id ? undefined : true
+                          }
+                        >
+                          <div className="st-account-address-edit-reveal__inner">
+                            <form
+                              action={updateCustomerAddress}
+                              className="st-account-address-edit-form mt-7 border-t border-neutral-200 pt-7"
                             >
-                              Save changes
-                            </button>
-                          </form>
-                        ) : null}
+                              <input
+                                type="hidden"
+                                name="addressId"
+                                value={address.id}
+                              />
+
+                              <AddressFields address={address} />
+
+                              <button
+                                type="submit"
+                                className="st-account-address-save mt-6 border border-black bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white"
+                              >
+                                Save changes
+                              </button>
+                            </form>
+                          </div>
+                        </div>
                       </article>
                     ))
                   ) : (
@@ -1191,14 +1237,9 @@ export default function AccountSettingsClient({
         open={showLogoutConfirmation}
         eyebrow="Account security"
         title="Sign out?"
-        icon="↗"
         onClose={() => setShowLogoutConfirmation(false)}
       >
         <div className="st-retail-signout">
-          <div className="st-retail-signout__icon">
-            <span>↗</span>
-          </div>
-
           <p>
             You are about to leave your Stereophonie account. Your saved
             information, addresses and order history will remain safely stored.
@@ -1231,57 +1272,59 @@ export default function AccountSettingsClient({
         open={deleteAccountStep === "warning"}
         eyebrow="Permanent account deletion"
         title="Delete your Stereophonie account?"
-        icon="!"
+        modalClassName="st-account-delete-modal"
         onClose={closeAccountDeletion}
       >
-        <p className="mt-5 text-sm leading-7 text-neutral-600">
-          This is different from signing out. Your customer account will be
-          removed permanently and cannot be restored.
-        </p>
+        <div className="st-retail-signout st-account-delete-signout">
+          <p>
+            This is different from signing out. Your customer account will be
+            removed permanently and cannot be restored.
+          </p>
 
-        <div className="mt-6 border-y border-neutral-200">
-          {[
-            "Your customer login will be deleted.",
-            "Your personal profile will be removed.",
-            "Your saved delivery addresses will be removed.",
-            "You will lose access to your account and order history.",
-          ].map((item, index) => (
-            <div
-              key={item}
-              className="flex gap-4 border-b border-neutral-200 py-4 last:border-b-0"
-            >
-              <span className="text-[10px] font-semibold text-red-700">
-                0{index + 1}
-              </span>
+          <div className="st-account-delete-signout__note">
+            {[
+              "Your customer login will be deleted.",
+              "Your personal profile will be removed.",
+              "Your saved delivery addresses will be removed.",
+              "You will lose access to your account and order history.",
+            ].map((item, index) => (
+              <div
+                key={item}
+                className="st-account-delete-signout__row"
+              >
+                <span className="st-account-delete-signout__number">
+                  0{index + 1}
+                </span>
 
-              <p className="text-sm leading-6 text-neutral-600">{item}</p>
-            </div>
-          ))}
-        </div>
+                <span className="st-account-delete-signout__text">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
 
-        <div className="mt-5 border border-amber-200 bg-amber-50 px-4 py-4">
-          <p className="text-xs leading-6 text-amber-900">
+          <div className="st-retail-signout__note st-account-delete-signout__legal">
             Store transaction records may remain available to Stereophonie for
             order, payment, delivery, accounting, and support purposes.
-          </p>
-        </div>
+          </div>
 
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={closeAccountDeletion}
-            className="border border-neutral-300 bg-white px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-600 transition hover:border-black hover:text-black"
-          >
-            Keep my account
-          </button>
+          <div className="st-retail-signout__actions">
+            <button
+              type="button"
+              onClick={closeAccountDeletion}
+              className="st-retail-signout__cancel"
+            >
+              Keep my account
+            </button>
 
-          <button
-            type="button"
-            onClick={() => setDeleteAccountStep("verification")}
-            className="border border-red-700 bg-red-700 px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white hover:text-red-700"
-          >
-            Continue
-          </button>
+            <button
+              type="button"
+              onClick={() => setDeleteAccountStep("verification")}
+              className="st-account-delete-signout__continue"
+            >
+              Continue
+            </button>
+          </div>
         </div>
       </StableModal>
 
@@ -1289,10 +1332,11 @@ export default function AccountSettingsClient({
         open={deleteAccountStep === "verification"}
         eyebrow="Final identity verification"
         title="Confirm permanent deletion"
-        icon="×"
+        modalClassName="st-account-delete-modal"
         onClose={closeAccountDeletion}
       >
-        <p className="mt-5 text-sm leading-7 text-neutral-600">
+        <div className="st-account-delete-final">
+          <p className="mt-5 text-sm leading-7 text-neutral-600">
           For your security, verify your current password and complete the final
           confirmation below.
         </p>
@@ -1303,6 +1347,7 @@ export default function AccountSettingsClient({
             onBack={() => setDeleteAccountStep("warning")}
           />
         ) : null}
+        </div>
       </StableModal>
 
       <StableModal

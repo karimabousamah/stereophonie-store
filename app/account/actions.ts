@@ -652,6 +652,16 @@ export async function setDefaultCustomerAddress(formData: FormData) {
   revalidatePath("/account");
   revalidatePath("/checkout");
 
+  const returnSection = readText(formData, "returnSection");
+
+  if (returnSection === "addresses") {
+    redirect(
+      `/account?message=${encodeURIComponent(
+        "Your default delivery address was updated.",
+      )}&section=addresses`,
+    );
+  }
+
   redirectToAccount("Your default delivery address was updated.");
 }
 

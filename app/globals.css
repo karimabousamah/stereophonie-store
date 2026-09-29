@@ -22938,3 +22938,2244 @@ html body
 }
 
 /* === ADMIN V2 PRODUCT BRAND FINAL SYNC END === */
+
+/* === ST AUTH FIELD UI POLISH V4 START ===
+ *
+ * Canonical clean-auth geometry and interaction state.
+ *
+ * - Every label/control pair uses the same exact 8px gap.
+ * - Show/Hide text AND eye icon remain completely stationary.
+ * - Safari/WebKit native focus decoration is suppressed.
+ * - Focus is represented by one minimal mustard border only.
+ */
+
+html body .st-auth-clean-form .st-auth-clean-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > span:first-child,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > .st-auth-clean-label-row {
+  margin: 0 !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > .st-auth-clean-password,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > .st-auth-clean-phone {
+  margin: 0 !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row {
+  width: 100% !important;
+  min-height: 13px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:hover,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:focus-visible,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:active {
+  position: static !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  min-width: 55px !important;
+  min-height: 13px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 5px !important;
+
+  border: 0 !important;
+  background: transparent !important;
+
+  transform: none !important;
+  translate: none !important;
+
+  box-shadow: none !important;
+  outline: 0 !important;
+
+  line-height: 1 !important;
+}
+
+/*
+ * Beat the global:
+ * button:not(:disabled):hover > svg:last-child
+ * rule. The eye icon must remain stationary together with its text.
+ */
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button
+  > svg,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:hover
+  > svg,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:focus
+  > svg,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:focus-visible
+  > svg,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  button:active
+  > svg {
+  display: block !important;
+
+  width: 13px !important;
+  height: 13px !important;
+  min-width: 13px !important;
+  min-height: 13px !important;
+  flex: 0 0 13px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  position: static !important;
+  inset: auto !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition: none !important;
+  animation: none !important;
+
+  transform-origin: center !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  input {
+  padding-right: 16px !important;
+}
+
+/*
+ * Remove native/WebKit focus painting from the actual controls.
+ * The visible focus state is applied only by the mustard border below.
+ */
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  input,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  input,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  select {
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -webkit-appearance: none;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input:focus-visible {
+  border-color: #c99029 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password:focus-within,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone:focus-within {
+  border-color: #c99029 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  input:focus-visible,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  input:focus-visible,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  select:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  select:focus-visible {
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+/* === ST AUTH FIELD UI POLISH V4 END === */
+
+/* === ST ACCOUNT SIGNOUT + AUTH FOCUS SYNC V2 START ===
+ *
+ * Account sign-out interaction stays stationary.
+ *
+ * Clean authentication controls use one minimal mustard border as
+ * their only visible focus indicator. No outer halo, no browser
+ * outline and no nested input ring.
+ */
+
+/* Keep account sign-out actions stationary on interaction. */
+html body .st-retail-signout button,
+html body .st-retail-signout button:hover,
+html body .st-retail-signout button:focus,
+html body .st-retail-signout button:focus-visible,
+html body .st-retail-signout button:active,
+html body button[class*="signout"],
+html body button[class*="signout"]:hover,
+html body button[class*="signout"]:focus,
+html body button[class*="signout"]:focus-visible,
+html body button[class*="signout"]:active {
+  transform: none !important;
+  translate: none !important;
+}
+
+/*
+ * Standard fields:
+ * one mustard border and absolutely no secondary focus decoration.
+ */
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input:focus-visible {
+  border-color: #c99029 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Composite controls:
+ * password and telephone shells own the same single mustard border.
+ */
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password:focus-within,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone:focus-within {
+  border-color: #c99029 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Inner password/telephone controls must remain completely transparent
+ * while the outer shell represents focus.
+ */
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  input:focus-visible,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  input:focus-visible,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  select:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone
+  select:focus-visible {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* === ST ACCOUNT SIGNOUT + AUTH FOCUS SYNC V2 END === */
+
+/* === ST ACCOUNT PAGE STATIONARY + FIELD FOCUS SYNC V1 START ===
+ *
+ * Account settings navigation/actions must remain physically stationary.
+ * Editable Profile + Delivery fields reuse the exact clean-auth mustard
+ * focus language: one #c99029 border, no halo, no shadow, no browser ring.
+ */
+
+/* Profile / Delivery navigation and account text actions must never jump. */
+@media (hover: hover) and (pointer: fine) {
+  html body .st-account-settings-nav button:not(:disabled),
+  html body .st-account-settings-nav button:not(:disabled):hover,
+  html body .st-account-settings-nav button:not(:disabled):focus,
+  html body .st-account-settings-nav button:not(:disabled):focus-visible,
+  html body .st-account-settings-nav button:not(:disabled):active,
+  html body .st-account-settings-signout button:not(:disabled),
+  html body .st-account-settings-signout button:not(:disabled):hover,
+  html body .st-account-settings-signout button:not(:disabled):focus,
+  html body .st-account-settings-signout button:not(:disabled):focus-visible,
+  html body .st-account-settings-signout button:not(:disabled):active {
+    transform: none !important;
+    translate: none !important;
+  }
+}
+
+/*
+ * Editable account inputs, selects and textareas:
+ * same approved single mustard focus border as Sign In / Create Account.
+ *
+ * Disabled controls are intentionally excluded, so the verified-email
+ * locked field keeps its existing neutral appearance.
+ */
+html body
+  .st-account-settings-retail-v2
+  ~ input:not(:disabled):focus,
+html body
+  .st-account-settings-retail-v2
+  ~ input:not(:disabled):focus-visible,
+html body
+  .st-account-settings-retail-v2
+  ~ select:not(:disabled):focus,
+html body
+  .st-account-settings-retail-v2
+  ~ select:not(:disabled):focus-visible,
+html body
+  .st-account-settings-retail-v2
+  ~ textarea:not(:disabled):focus,
+html body
+  .st-account-settings-retail-v2
+  ~ textarea:not(:disabled):focus-visible {
+  border-color: #c99029 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Telephone is a composite control, exactly like the auth telephone field:
+ * the surrounding shell owns focus, not its inner select/input.
+ */
+html body
+  .st-account-field-shell--phone:focus-within {
+  border-color: #c99029 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+  .st-account-field-shell--phone
+  :is(input, select):focus,
+html body
+  .st-account-field-shell--phone
+  :is(input, select):focus-visible {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Delivery/address forms are rendered by AddressFields and do not wrap
+ * FieldLabel directly around their controls, so scope their editable
+ * controls through the account address containers.
+ */
+html body
+  :is(.st-account-address-form, .st-account-address-edit-form)
+  :is(input:not([type="hidden"]):not([type="checkbox"]), select, textarea):focus,
+html body
+  :is(.st-account-address-form, .st-account-address-edit-form)
+  :is(input:not([type="hidden"]):not([type="checkbox"]), select, textarea):focus-visible {
+  border-color: #c99029 !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* === ST ACCOUNT PAGE STATIONARY + FIELD FOCUS SYNC V1 END === */
+
+/* === ST ACCOUNT FINAL POLISH V3 START ===
+ *
+ * Canonical account controls.
+ * Focus language mirrors Sign In / Create Account:
+ * mustard border only, no focus halo or browser ring.
+ */
+
+/* =========================================================
+   EDITABLE ACCOUNT FOCUS
+   ========================================================= */
+
+html body
+  .st-account-retail
+  .st-account-focus-control {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-focus-control:focus,
+html body
+  .st-account-retail
+  .st-account-focus-control:focus-visible {
+  border-color: #c99029 !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* Telephone remains one composite control. */
+html body
+  .st-account-retail
+  .st-account-field-shell--phone:focus-within {
+  border-color: #c99029 !important;
+  background: #fff !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* All address controls use the same exact focus language. */
+html body
+  .st-account-retail
+  :is(.st-account-address-form, .st-account-address-edit-form)
+  :is(
+    input:not([type="hidden"]):not([type="checkbox"]),
+    select,
+    textarea
+  ):focus,
+html body
+  .st-account-retail
+  :is(.st-account-address-form, .st-account-address-edit-form)
+  :is(
+    input:not([type="hidden"]):not([type="checkbox"]),
+    select,
+    textarea
+  ):focus-visible {
+  border-color: #c99029 !important;
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* =========================================================
+   SECURITY PASSWORDS — SAME SHOW/HIDE LANGUAGE AS AUTH
+   ========================================================= */
+
+html body
+  .st-account-retail
+  .st-account-password-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-label-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  color: #737373 !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.16em !important;
+  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:hover,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:focus,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:focus-visible,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:active {
+  position: static !important;
+  min-width: 55px !important;
+  min-height: 13px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 5px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #a3a3a3 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  transform: none !important;
+  translate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-account-retail
+    .st-account-password-label-row
+    > button:hover {
+    color: #171717 !important;
+    transform: none !important;
+    translate: none !important;
+  }
+}
+
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button
+  > svg,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:hover
+  > svg,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:focus
+  > svg,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:focus-visible
+  > svg,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:active
+  > svg {
+  width: 13px !important;
+  min-width: 13px !important;
+  height: 13px !important;
+  min-height: 13px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 13px !important;
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-control {
+  min-width: 0 !important;
+  min-height: 56px !important;
+  display: flex !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 16px !important;
+  background: #f7f7f8 !important;
+  box-shadow: none !important;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-control:focus-within {
+  border-color: #c99029 !important;
+  background: #fff !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-control
+  > input {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 54px !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-control
+  > input:focus,
+html body
+  .st-account-retail
+  .st-account-password-control
+  > input:focus-visible {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+/* =========================================================
+   DEFAULT ADDRESS BADGE
+   ========================================================= */
+
+html body
+  .st-account-retail
+  .st-account-address-badge {
+  border: 1px solid rgba(168, 108, 0, 0.12) !important;
+  background: #f5b335 !important;
+  color: #171717 !important;
+  box-shadow: 0 3px 10px rgba(245, 179, 53, 0.16) !important;
+}
+
+/* =========================================================
+   ADDRESS ACTIONS
+   Same geometry for Make default / Edit / Delete.
+   ========================================================= */
+
+html body
+  .st-account-retail
+  button.st-account-address-action {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  box-sizing: border-box !important;
+  width: auto !important;
+  min-width: 104px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 7px !important;
+  font-size: 9px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.11em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  transform: none !important;
+  translate: none !important;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html body
+  .st-account-retail
+  button.st-account-address-action--default,
+html body
+  .st-account-retail
+  button.st-account-address-action--edit {
+  border: 1px solid rgba(201, 144, 41, 0.46) !important;
+  background: rgba(245, 179, 53, 0.08) !important;
+  color: #7f5508 !important;
+  box-shadow: 0 3px 10px rgba(201, 144, 41, 0.06) !important;
+}
+
+html body
+  .st-account-retail
+  button.st-account-address-action--delete {
+  border: 1px solid rgba(220, 38, 38, 0.38) !important;
+  background: #fff !important;
+  color: #b91c1c !important;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.045) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-account-retail
+    button.st-account-address-action--default:hover,
+  html body
+    .st-account-retail
+    button.st-account-address-action--edit:hover {
+    border-color: rgba(201, 144, 41, 0.76) !important;
+    background: rgba(245, 179, 53, 0.14) !important;
+    color: #6f4905 !important;
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.11),
+      0 7px 18px rgba(201, 144, 41, 0.11) !important;
+    transform: none !important;
+    translate: none !important;
+  }
+
+  html body
+    .st-account-retail
+    button.st-account-address-action--delete:hover {
+    border-color: rgba(220, 38, 38, 0.66) !important;
+    background: #fff7f7 !important;
+    color: #991b1b !important;
+    box-shadow:
+      0 0 0 3px rgba(220, 38, 38, 0.075),
+      0 7px 18px rgba(220, 38, 38, 0.09) !important;
+    transform: none !important;
+    translate: none !important;
+  }
+}
+
+html body
+  .st-account-retail
+  button.st-account-address-action:focus,
+html body
+  .st-account-retail
+  button.st-account-address-action:focus-visible,
+html body
+  .st-account-retail
+  button.st-account-address-action:active {
+  transform: none !important;
+  translate: none !important;
+}
+
+/* =========================================================
+   EDIT ADDRESS WORKSPACE
+   ========================================================= */
+
+html body
+  .st-account-retail
+  .st-account-address-edit-reveal {
+  display: grid !important;
+  grid-template-rows: 0fr !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition:
+    grid-template-rows 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 260ms ease,
+    visibility 0s linear 420ms !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-address-edit-reveal[data-open="true"] {
+  grid-template-rows: 1fr !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition:
+    grid-template-rows 420ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 300ms ease,
+    visibility 0s linear 0s !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-address-edit-reveal__inner {
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-address-edit-form {
+  margin-top: 26px !important;
+  padding: 28px !important;
+  border: 1px solid rgba(0, 0, 0, 0.09) !important;
+  border-radius: 18px !important;
+  background: #fafafa !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(-10px) !important;
+  opacity: 0 !important;
+  transition:
+    transform 400ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 260ms ease !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-address-edit-reveal[data-open="true"]
+  .st-account-address-edit-form {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+/* =========================================================
+   DEFAULT ADDRESS SWITCH
+   ========================================================= */
+
+html body
+  .st-account-retail
+  .st-account-default-toggle-row {
+  min-height: 78px !important;
+  padding: 16px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  cursor: pointer !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-default-switch-wrap {
+  position: relative !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  height: 32px !important;
+  flex: 0 0 52px !important;
+}
+
+html body
+  .st-account-retail
+  input.st-account-default-switch-input {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 52px !important;
+  height: 32px !important;
+  margin: 0 !important;
+  opacity: 0 !important;
+  z-index: 2 !important;
+  cursor: pointer !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-default-switch {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 52px !important;
+  height: 32px !important;
+  display: block !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  border-radius: 999px !important;
+  background: #d2d2d7 !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.055) !important;
+  transition:
+    background-color 230ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 230ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-default-switch__thumb {
+  position: absolute !important;
+  top: 3px !important;
+  left: 3px !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.2),
+    0 0 1px rgba(0, 0, 0, 0.12) !important;
+  transform: translateX(0) !important;
+  transition:
+    transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+
+html body
+  .st-account-retail
+  input.st-account-default-switch-input:checked
+  + .st-account-default-switch {
+  background: #f5b335 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(168, 108, 0, 0.08),
+    0 3px 10px rgba(245, 179, 53, 0.18) !important;
+}
+
+html body
+  .st-account-retail
+  input.st-account-default-switch-input:checked
+  + .st-account-default-switch
+  > .st-account-default-switch__thumb {
+  transform: translateX(20px) !important;
+}
+
+html body
+  .st-account-retail
+  input.st-account-default-switch-input:focus-visible
+  + .st-account-default-switch {
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.2),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.055) !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-address-save,
+html body
+  .st-account-retail
+  .st-account-address-save:hover,
+html body
+  .st-account-retail
+  .st-account-address-save:active {
+  transform: none !important;
+  translate: none !important;
+}
+
+@media (max-width: 640px) {
+  html body
+    .st-account-retail
+    .st-account-address-edit-form {
+    padding: 20px !important;
+  }
+
+  html body
+    .st-account-retail
+    .st-account-default-toggle-row {
+    gap: 16px !important;
+  }
+
+  html body
+    .st-account-retail
+    button.st-account-address-action {
+    min-width: 96px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    padding-inline: 13px !important;
+    border-radius: 7px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+    .st-account-retail
+    .st-account-address-edit-reveal,
+  html body
+    .st-account-retail
+    .st-account-address-edit-form,
+  html body
+    .st-account-retail
+    .st-account-default-switch,
+  html body
+    .st-account-retail
+    .st-account-default-switch__thumb {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* === ST ACCOUNT FINAL POLISH V3 END === */
+
+
+/* === ST ACCOUNT + AUTH CANONICAL TELEPHONE FOCUS V1 START ===
+ *
+ * The Account Personal Details telephone shell is the visual authority.
+ * Every editable Account/Auth control below uses that exact focus recipe:
+ *
+ * border: rgba(168, 108, 0, 0.42)
+ * background: #fff
+ * halo: 0 0 0 4px rgba(245, 179, 53, 0.11)
+ *
+ * No data, form actions or account behavior is changed here.
+ */
+
+/* =========================================================
+   ACCOUNT — ORDINARY EDITABLE CONTROLS
+   ========================================================= */
+
+html body
+  .st-account-retail__module-content
+  input.st-account-focus-control:not(:disabled):focus,
+html body
+  .st-account-retail__module-content
+  input.st-account-focus-control:not(:disabled):focus-visible,
+html body
+  .st-account-retail__module-content
+  select.st-account-focus-control:not(:disabled):focus,
+html body
+  .st-account-retail__module-content
+  select.st-account-focus-control:not(:disabled):focus-visible,
+html body
+  .st-account-retail__module-content
+  textarea.st-account-focus-control:not(:disabled):focus,
+html body
+  .st-account-retail__module-content
+  textarea.st-account-focus-control:not(:disabled):focus-visible {
+  border-color: rgba(168, 108, 0, 0.42) !important;
+  background: #fff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+  -webkit-box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* =========================================================
+   ACCOUNT — TELEPHONE
+   Keep the existing reference itself on the exact recipe.
+   ========================================================= */
+
+html body
+  .st-account-retail__module-content
+  .st-account-field-shell--phone:focus-within {
+  border-color: rgba(168, 108, 0, 0.42) !important;
+  background: #fff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+  -webkit-box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* =========================================================
+   ACCOUNT — SECURITY PASSWORDS
+   Composite shell owns the exact telephone focus treatment.
+   ========================================================= */
+
+html body
+  .st-account-retail
+  .st-account-password-control {
+  display: block !important;
+  overflow: hidden !important;
+
+  border: 1px solid rgba(0, 0, 0, 0.10) !important;
+  border-radius: 16px !important;
+  background: #f7f7f8 !important;
+
+  box-shadow: none !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-control:focus-within {
+  border-color: rgba(168, 108, 0, 0.42) !important;
+  background: #fff !important;
+
+  outline: none !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+  -webkit-box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-control
+  > input {
+  width: 100% !important;
+  min-height: 54px !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+  .st-account-retail
+  .st-account-password-control
+  > input:focus,
+html body
+  .st-account-retail
+  .st-account-password-control
+  > input:focus-visible {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* =========================================================
+   ACCOUNT — ADDRESS FORM
+   Every address text/select/textarea control gets the exact
+   same telephone active surroundings.
+   ========================================================= */
+
+html body
+  .st-account-retail
+  :is(.st-account-address-form, .st-account-address-edit-form)
+  :is(
+    input:not([type="hidden"]):not([type="checkbox"]),
+    select,
+    textarea
+  ):focus,
+html body
+  .st-account-retail
+  :is(.st-account-address-form, .st-account-address-edit-form)
+  :is(
+    input:not([type="hidden"]):not([type="checkbox"]),
+    select,
+    textarea
+  ):focus-visible {
+  border-color: rgba(168, 108, 0, 0.42) !important;
+  background: #fff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+  -webkit-box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* =========================================================
+   SIGN IN / CREATE ACCOUNT
+   All regular auth fields use the Account telephone recipe.
+   ========================================================= */
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-field
+  > input:focus-visible {
+  border-color: rgba(168, 108, 0, 0.42) !important;
+  background: #fff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+  -webkit-box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* Auth password is composite: shell owns focus. */
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password:focus-within {
+  border-color: rgba(168, 108, 0, 0.42) !important;
+  background: #fff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+  -webkit-box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  > input:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-password
+  > input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* Auth telephone is also forced onto the exact same recipe. */
+html body
+  .st-auth-clean-form
+  .st-auth-clean-phone:focus-within {
+  border-color: rgba(168, 108, 0, 0.42) !important;
+  background: #fff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+  -webkit-box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* =========================================================
+   ADDRESS ACTIONS
+   Geometry intentionally follows + Add address.
+   ========================================================= */
+
+html body
+  .st-account-retail
+  button.st-account-address-action {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  box-sizing: border-box !important;
+
+  width: auto !important;
+  min-width: 104px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+
+  margin: 0 !important;
+  padding: 0 18px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 999px !important;
+
+  font-size: 9px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.11em !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+/* Make default + Edit: mustard family. */
+html body
+  .st-account-retail
+  button.st-account-address-action--default,
+html body
+  .st-account-retail
+  button.st-account-address-action--edit {
+  border: 1px solid rgba(201, 144, 41, 0.46) !important;
+  background: rgba(245, 179, 53, 0.08) !important;
+  color: #7f5508 !important;
+
+  box-shadow: 0 3px 10px rgba(201, 144, 41, 0.06) !important;
+}
+
+/* Delete keeps destructive semantics but exact same architecture. */
+html body
+  .st-account-retail
+  button.st-account-address-action--delete {
+  border: 1px solid rgba(220, 38, 38, 0.38) !important;
+  background: #fff !important;
+  color: #b91c1c !important;
+
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.045) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-account-retail
+    button.st-account-address-action--default:hover,
+  html body
+    .st-account-retail
+    button.st-account-address-action--edit:hover {
+    border-color: rgba(201, 144, 41, 0.76) !important;
+    background: rgba(245, 179, 53, 0.14) !important;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.11),
+      0 7px 18px rgba(201, 144, 41, 0.11) !important;
+
+    transform: none !important;
+    translate: none !important;
+  }
+
+  html body
+    .st-account-retail
+    button.st-account-address-action--delete:hover {
+    border-color: rgba(220, 38, 38, 0.66) !important;
+    background: #fff7f7 !important;
+
+    box-shadow:
+      0 0 0 3px rgba(220, 38, 38, 0.075),
+      0 7px 18px rgba(220, 38, 38, 0.09) !important;
+
+    transform: none !important;
+    translate: none !important;
+  }
+}
+
+/* =========================================================
+   DEFAULT ADDRESS BADGE
+   Compact professional status capsule.
+   ========================================================= */
+
+html body
+  .st-account-retail
+  .st-account-address-badge {
+  box-sizing: border-box !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 26px !important;
+
+  margin: 0 !important;
+  padding: 0 10px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+
+  border: 1px solid rgba(201, 144, 41, 0.32) !important;
+  border-radius: 999px !important;
+
+  background: rgba(245, 179, 53, 0.12) !important;
+  color: #80570b !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 2px 7px rgba(201, 144, 41, 0.06) !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+}
+
+@media (max-width: 640px) {
+  html body
+    .st-account-retail
+    button.st-account-address-action {
+    min-width: 96px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    padding-inline: 15px !important;
+    border-radius: 999px !important;
+  }
+}
+
+/* === ST ACCOUNT + AUTH CANONICAL TELEPHONE FOCUS V1 END === */
+
+/* === ST SHOW HIDE PERMANENT BLACK V1 START === */
+
+/*
+ * Sign In / Create Account and Account > Security.
+ * Eye + Show/Hide text stay black in every interaction state.
+ * Existing geometry and stationary behavior remain authoritative.
+ */
+
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  > button,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  > button:hover,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  > button:focus,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  > button:focus-visible,
+html body
+  .st-auth-clean-form
+  .st-auth-clean-label-row
+  > button:active,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:hover,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:focus,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:focus-visible,
+html body
+  .st-account-retail
+  .st-account-password-label-row
+  > button:active {
+  color: #171717 !important;
+}
+
+/* === ST SHOW HIDE PERMANENT BLACK V1 END === */
+
+/* === ST DELETE ACCOUNT CANONICAL SIGNOUT V1 START === */
+
+/*
+ * Delete Account warning intentionally inherits the canonical Sign Out
+ * architecture. Only destructive semantics and consequence presentation differ.
+ */
+
+html body .st-account-delete-modal {
+  border-radius: 24px !important;
+}
+
+/*
+ * The warning screen inherits:
+ * - Sign Out paragraph typography
+ * - Sign Out spacing rhythm
+ * - Sign Out action grid
+ * - Sign Out neutral cancel button
+ */
+
+html body .st-account-delete-signout {
+  margin-top: 20px;
+}
+
+html body .st-account-delete-signout__note {
+  margin-top: 17px;
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, 0.07);
+  border-radius: 13px;
+  background: #f7f7f8;
+}
+
+html body .st-account-delete-signout__row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 11px 15px;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.07);
+}
+
+html body .st-account-delete-signout__row:last-child {
+  border-bottom: 0;
+}
+
+html body .st-account-delete-signout__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 28px;
+  margin: 0;
+  color: #b4232f;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+html body .st-account-delete-signout__text {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  margin: 0;
+  color: #6e6e73;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+html body .st-account-delete-signout__legal {
+  color: #86868b;
+}
+
+/*
+ * Match Sign Out's button dimensions exactly.
+ * Continue keeps the destructive identity without making the whole modal red.
+ */
+
+html body .st-account-delete-signout__continue {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 18px;
+  border: 1px solid rgba(180, 35, 47, 0.42);
+  border-radius: 13px;
+  background: rgba(180, 35, 47, 0.035);
+  color: #b4232f;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+html body .st-account-delete-signout__continue:hover,
+html body .st-account-delete-signout__continue:focus-visible {
+  border-color: #b4232f;
+  background: #b4232f;
+  color: #fff;
+  outline: none;
+}
+
+html body .st-account-delete-signout button,
+html body .st-account-delete-signout button:hover,
+html body .st-account-delete-signout button:focus,
+html body .st-account-delete-signout button:focus-visible,
+html body .st-account-delete-signout button:active {
+  transform: none !important;
+  translate: none !important;
+}
+
+/*
+ * Preserve the already-built verification UI. These are the scoped controls
+ * used by DeleteAccountVerificationForm and do not affect Sign Out.
+ */
+
+html body .st-account-delete-final {
+  margin-top: 0;
+}
+
+html body .st-account-delete-final > p {
+  margin-top: 18px;
+  color: #6e6e73;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+html body .st-account-delete-verification {
+  margin-top: 20px;
+}
+
+html body .st-account-delete-identity {
+  border: 1px solid rgba(29, 29, 31, 0.07);
+  border-radius: 13px;
+  background: #f7f7f8;
+}
+
+html body .st-account-delete-error {
+  border-radius: 13px;
+}
+
+html body .st-account-delete-verification .st-account-delete-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+html body .st-account-delete-verification .st-account-delete-show,
+html body .st-account-delete-verification .st-account-delete-show:hover,
+html body .st-account-delete-verification .st-account-delete-show:focus,
+html body .st-account-delete-verification .st-account-delete-show:focus-visible,
+html body .st-account-delete-verification .st-account-delete-show:active {
+  color: #171717 !important;
+  transform: none !important;
+  translate: none !important;
+}
+
+html body .st-account-delete-verification .st-account-delete-input {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid rgba(29, 29, 31, 0.14);
+  border-radius: 13px;
+  background: #fff;
+  padding: 14px 15px;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+html body .st-account-delete-verification .st-account-delete-input:focus,
+html body .st-account-delete-verification .st-account-delete-input:focus-visible {
+  border-color: rgba(168, 108, 0, 0.42);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.11);
+}
+
+html body
+  .st-account-delete-verification
+  .st-account-delete-confirm.border-red-700 {
+  border-color: #b4232f;
+}
+
+html body .st-account-delete-consent {
+  border: 1px solid rgba(180, 35, 47, 0.16);
+  border-radius: 13px;
+  background: rgba(180, 35, 47, 0.035);
+}
+
+html body .st-account-delete-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+html body .st-account-delete-actions button {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 18px;
+  border-radius: 13px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: none !important;
+  translate: none !important;
+}
+
+html body .st-account-delete-back {
+  border: 1px solid rgba(29, 29, 31, 0.12);
+  background: #fff;
+  color: #1d1d1f;
+}
+
+html body .st-account-delete-back:hover {
+  background: #f5f5f7;
+}
+
+html body .st-account-delete-submit:not(:disabled) {
+  border: 1px solid #b4232f;
+  background: #b4232f;
+  color: #fff;
+}
+
+html body .st-account-delete-submit:not(:disabled):hover {
+  border-color: #961d27;
+  background: #961d27;
+  color: #fff;
+}
+
+html body .st-account-delete-submit:disabled {
+  border: 1px solid rgba(29, 29, 31, 0.07);
+  background: #f5f5f7;
+  color: #a1a1a6;
+}
+
+@media (max-width: 600px) {
+  html body .st-account-delete-modal {
+    border-radius: 22px !important;
+  }
+
+  html body .st-account-delete-signout__row {
+    grid-template-columns: 26px minmax(0, 1fr);
+    padding: 10px 13px;
+  }
+
+  html body .st-account-delete-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === ST DELETE ACCOUNT CANONICAL SIGNOUT V1 END === */
+
+/* === ST DELETE ACCOUNT CONSEQUENCE POLISH V1 START === */
+
+/*
+ * Final warning-step polish only.
+ * No modal architecture or account-deletion logic is changed.
+ */
+
+/* Restore the four consequences as one clean grouped surface. */
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__note {
+  display: block !important;
+  margin-top: 17px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(29, 29, 31, 0.08) !important;
+  border-radius: 13px !important;
+  background: #f7f7f8 !important;
+}
+
+/* Each consequence gets a stable number column + text column. */
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__row {
+  display: grid !important;
+  grid-template-columns: 30px minmax(0, 1fr) !important;
+  align-items: center !important;
+  column-gap: 12px !important;
+  min-height: 50px !important;
+  margin: 0 !important;
+  padding: 11px 15px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.07) !important;
+  background: transparent !important;
+}
+
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__row:last-child {
+  border-bottom: 0 !important;
+}
+
+/* 01 / 02 / 03 / 04 — unmistakably destructive red. */
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__number {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: stretch !important;
+  width: 30px !important;
+  min-width: 30px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #b4232f !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Clean consequence copy with proper separation from the number. */
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__text {
+  display: block !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #5f5f63 !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+}
+
+/*
+ * Legal note remains its own quiet Sign-Out-style note.
+ * It must not inherit the consequence-row presentation.
+ */
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__legal {
+  display: block !important;
+  margin-top: 17px !important;
+  padding: 14px 15px !important;
+  overflow: visible !important;
+  border: 1px solid rgba(29, 29, 31, 0.07) !important;
+  border-radius: 13px !important;
+  background: #f7f7f8 !important;
+  color: #86868b !important;
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+}
+
+/*
+ * Continue mirrors the canonical Sign Out / Keep My Account button geometry.
+ * Red communicates that continuing begins a destructive flow.
+ */
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__continue {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  min-height: 50px !important;
+  padding: 0 18px !important;
+
+  border: 1px solid rgba(180, 35, 47, 0.46) !important;
+  border-radius: 13px !important;
+
+  background: rgba(180, 35, 47, 0.035) !important;
+  color: #b4232f !important;
+
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.12em !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+
+  box-shadow: none !important;
+  transform: none !important;
+  translate: none !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__continue:hover,
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__continue:focus-visible {
+  border-color: #b4232f !important;
+  background: rgba(180, 35, 47, 0.07) !important;
+  color: #9f1f2a !important;
+  box-shadow: 0 8px 22px rgba(180, 35, 47, 0.08) !important;
+  outline: none !important;
+  transform: none !important;
+  translate: none !important;
+}
+
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__continue:active {
+  border-color: #b4232f !important;
+  background: rgba(180, 35, 47, 0.1) !important;
+  color: #9f1f2a !important;
+  transform: none !important;
+  translate: none !important;
+}
+
+@media (max-width: 600px) {
+  html body
+    .st-account-delete-signout
+    .st-account-delete-signout__row {
+    grid-template-columns: 27px minmax(0, 1fr) !important;
+    column-gap: 10px !important;
+    min-height: 48px !important;
+    padding: 10px 13px !important;
+  }
+
+  html body
+    .st-account-delete-signout
+    .st-account-delete-signout__number {
+    width: 27px !important;
+    min-width: 27px !important;
+  }
+
+  html body
+    .st-account-delete-signout
+    .st-account-delete-signout__text {
+    font-size: 11px !important;
+  }
+}
+
+/* === ST DELETE ACCOUNT CONSEQUENCE POLISH V1 END === */
+
+/* === ST DELETE ACCOUNT FINAL ALIGNMENT V1 START === */
+
+/*
+ * Delete Account only.
+ * Final alignment pass:
+ * - consequence number and sentence share one vertical centerline
+ * - password visibility control mirrors approved Account/Auth Eye + text UX
+ * - destructive confirmation checkbox is red and vertically centered
+ */
+
+/* Exact vertical centering for 01 / 02 / 03 / 04 and their copy. */
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__row {
+  display: grid !important;
+  grid-template-columns: 30px minmax(0, 1fr) !important;
+  align-items: center !important;
+}
+
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__number {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+
+  width: 30px !important;
+  min-width: 30px !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #b4232f !important;
+  line-height: 1 !important;
+}
+
+html body
+  .st-account-delete-signout
+  .st-account-delete-signout__text {
+  display: flex !important;
+  align-items: center !important;
+  align-self: center !important;
+
+  min-height: 28px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  line-height: 1.5 !important;
+}
+
+/* Same Eye / EyeOff + Show / Hide language as approved password controls. */
+html body
+  .st-account-delete-verification
+  .st-account-delete-show,
+html body
+  .st-account-delete-verification
+  .st-account-delete-show:hover,
+html body
+  .st-account-delete-verification
+  .st-account-delete-show:focus,
+html body
+  .st-account-delete-verification
+  .st-account-delete-show:focus-visible,
+html body
+  .st-account-delete-verification
+  .st-account-delete-show:active {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  color: #171717 !important;
+
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+
+  outline: none !important;
+  transform: none !important;
+  translate: none !important;
+}
+
+html body
+  .st-account-delete-verification
+  .st-account-delete-show svg {
+  width: 15px !important;
+  height: 15px !important;
+  flex: 0 0 15px !important;
+  stroke-width: 1.8 !important;
+  color: #171717 !important;
+}
+
+/* Keep the password label and visibility control on the same centerline. */
+html body
+  .st-account-delete-verification
+  .st-account-delete-label-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+/* Vertically center the destructive acknowledgement control. */
+html body
+  .st-account-delete-verification
+  .st-account-delete-consent {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+html body
+  .st-account-delete-verification
+  .st-account-delete-consent
+  .st-account-delete-consent-checkbox {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  position: relative !important;
+  align-self: center !important;
+  flex: 0 0 18px !important;
+
+  width: 18px !important;
+  height: 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1.5px solid #b4232f !important;
+  border-radius: 5px !important;
+
+  background: #fff !important;
+
+  cursor: pointer !important;
+  box-shadow: none !important;
+  outline: none !important;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+html body
+  .st-account-delete-verification
+  .st-account-delete-consent
+  .st-account-delete-consent-checkbox:checked {
+  border-color: #b4232f !important;
+  background: #b4232f !important;
+}
+
+html body
+  .st-account-delete-verification
+  .st-account-delete-consent
+  .st-account-delete-consent-checkbox:checked::after {
+  content: "" !important;
+
+  position: absolute !important;
+  left: 5px !important;
+  top: 2px !important;
+
+  width: 5px !important;
+  height: 9px !important;
+
+  border: solid #fff !important;
+  border-width: 0 2px 2px 0 !important;
+
+  transform: rotate(45deg) !important;
+}
+
+html body
+  .st-account-delete-verification
+  .st-account-delete-consent
+  .st-account-delete-consent-checkbox:focus-visible {
+  border-color: #b4232f !important;
+  box-shadow: 0 0 0 4px rgba(180, 35, 47, 0.1) !important;
+}
+
+html body
+  .st-account-delete-verification
+  .st-account-delete-consent
+  > span {
+  margin: 0 !important;
+  align-self: center !important;
+}
+
+/* Preserve the tighter mobile consequence geometry. */
+@media (max-width: 600px) {
+  html body
+    .st-account-delete-signout
+    .st-account-delete-signout__row {
+    grid-template-columns: 27px minmax(0, 1fr) !important;
+  }
+
+  html body
+    .st-account-delete-signout
+    .st-account-delete-signout__number {
+    width: 27px !important;
+    min-width: 27px !important;
+  }
+}
+
+/* === ST DELETE ACCOUNT FINAL ALIGNMENT V1 END === */
