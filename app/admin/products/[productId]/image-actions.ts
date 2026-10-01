@@ -2175,6 +2175,303 @@ export async function moveProductImage(formData: FormData) {
   );
 }
 
+export async function reorderProductImages(formData: FormData) {
+  const supabase = await requireAdministrator();
+
+  const productId = String(formData.get("product_id") ?? "").trim();
+  const variantId = String(formData.get("variant_id") ?? "").trim();
+  const rawOrderedImageIds = String(
+    formData.get("ordered_image_ids") ?? "",
+  ).trim();
+
+  if (!productId || !rawOrderedImageIds) {
+    imageOperationError(
+      formData,
+      productId,
+      "The image reorder request is incomplete.",
+    );
+  }
+
+  let orderedImageIds: string[];
+
+  try {
+    const parsed = JSON.parse(rawOrderedImageIds);
+
+    if (
+      !Array.isArray(parsed) ||
+      parsed.some(
+        (imageId) =>
+          typeof imageId !== "string" || imageId.trim().length === 0,
+      )
+    ) {
+      throw new Error("Invalid image order.");
+    }
+
+    orderedImageIds = parsed.map((imageId) => imageId.trim());
+  } catch {
+    imageOperationError(
+      formData,
+      productId,
+      "The requested image order is invalid.",
+    );
+  }
+
+  if (
+    orderedImageIds.length === 0 ||
+    new Set(orderedImageIds).size !== orderedImageIds.length
+  ) {
+    imageOperationError(
+      formData,
+      productId,
+      "The requested image order is invalid.",
+    );
+  }
+
+  /*
+   * ========================================================
+   * EXACT CONFIGURATION DIRECT REORDER
+   * ========================================================
+   *
+   * The browser submits the complete ordered set for one exact
+   * configuration. Validate that set against the database before
+   * changing any positions.
+   */
+  if (variantId) {
+    const { data: variant, error: variantError } = await supabase
+      .from("product_variants")
+      .select("id")
+      .eq("id", variantId)
+      .eq("product_id", productId)
+      .maybeSingle();
+
+    if (variantError || !variant) {
+      imageOperationError(
+        formData,
+        productId,
+        variantError?.message ??
+          "The selected configuration could not be verified.",
+      );
+    }
+
+    const { data: assignments, error: assignmentsError } = await supabase
+      .from("product_image_variants")
+      .select("image_id, position, is_primary")
+      .eq("variant_id", variantId)
+      .order("position", { ascending: true })
+      .order("image_id", { ascending: true });
+
+    if (assignmentsError || !assignments) {
+      imageOperationError(
+        formData,
+        productId,
+        assignmentsError?.message ??
+          "Configuration images could not be loaded.",
+      );
+    }
+
+    const authoritativeIds = assignments.map(
+      (assignment) => assignment.image_id,
+    );
+
+    const authoritativeSet = new Set(authoritativeIds);
+    const requestedSet = new Set(orderedImageIds);
+
+    const exactSetMatch =
+      authoritativeIds.length === orderedImageIds.length &&
+      authoritativeIds.every((imageId) => requestedSet.has(imageId)) &&
+      orderedImageIds.every((imageId) => authoritativeSet.has(imageId));
+
+    if (!exactSetMatch) {
+      imageOperationError(
+        formData,
+        productId,
+        "The configuration image set changed. Refresh and try again.",
+      );
+    }
+
+    for (let index = 0; index < orderedImageIds.length; index += 1) {
+      const imageId = orderedImageIds[index];
+
+      const { error: temporaryUpdateError } = await supabase
+        .from("product_image_variants")
+        .update({
+          position: 100000 + index,
+        })
+        .eq("variant_id", variantId)
+        .eq("image_id", imageId);
+
+      if (temporaryUpdateError) {
+        imageOperationError(
+          formData,
+          productId,
+          temporaryUpdateError.message,
+        );
+      }
+    }
+
+    for (let index = 0; index < orderedImageIds.length; index += 1) {
+      const imageId = orderedImageIds[index];
+
+      const { error: updateError } = await supabase
+        .from("product_image_variants")
+        .update({
+          position: index,
+          is_primary: index === 0,
+        })
+        .eq("variant_id", variantId)
+        .eq("image_id", imageId);
+
+      if (updateError) {
+        imageOperationError(formData, productId, updateError.message);
+      }
+    }
+
+    if (!isClientImageOperation(formData)) {
+      await refreshProductPages(productId);
+    }
+
+    return finishImageOperation(
+      formData,
+      supabase,
+      productId,
+      "Configuration image order updated.",
+    );
+  }
+
+  /*
+   * ========================================================
+   * SHARED PHOTO DIRECT REORDER
+   * ========================================================
+   *
+   * Shared images are product_images with zero configuration
+   * junction rows. Configuration-specific images do not
+   * participate in this ordering.
+   */
+  const { data: productImages, error: productImagesError } = await supabase
+    .from("product_images")
+    .select(
+      `
+        id,
+        position,
+        product_image_variants (
+          variant_id
+        )
+      `,
+    )
+    .eq("product_id", productId)
+    .order("position", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (productImagesError || !productImages) {
+    imageOperationError(
+      formData,
+      productId,
+      productImagesError?.message ?? "Product images could not be loaded.",
+    );
+  }
+
+  const sharedImages = productImages.filter(
+    (image) =>
+      !Array.isArray(image.product_image_variants) ||
+      image.product_image_variants.length === 0,
+  );
+
+  const authoritativeIds = sharedImages.map((image) => image.id);
+  const authoritativeSet = new Set(authoritativeIds);
+  const requestedSet = new Set(orderedImageIds);
+
+  const exactSetMatch =
+    authoritativeIds.length === orderedImageIds.length &&
+    authoritativeIds.every((imageId) => requestedSet.has(imageId)) &&
+    orderedImageIds.every((imageId) => authoritativeSet.has(imageId));
+
+  if (!exactSetMatch) {
+    imageOperationError(
+      formData,
+      productId,
+      "The shared image set changed. Refresh and try again.",
+    );
+  }
+
+  const { error: clearSharedPrimaryError } = await supabase
+    .from("product_images")
+    .update({
+      is_primary: false,
+    })
+    .eq("product_id", productId);
+
+  if (clearSharedPrimaryError) {
+    imageOperationError(
+      formData,
+      productId,
+      clearSharedPrimaryError.message,
+    );
+  }
+
+  for (let index = 0; index < orderedImageIds.length; index += 1) {
+    const imageId = orderedImageIds[index];
+
+    const { error: temporaryPositionError } = await supabase
+      .from("product_images")
+      .update({
+        position: 100000 + index,
+      })
+      .eq("product_id", productId)
+      .eq("id", imageId);
+
+    if (temporaryPositionError) {
+      imageOperationError(
+        formData,
+        productId,
+        temporaryPositionError.message,
+      );
+    }
+  }
+
+  for (let index = 0; index < orderedImageIds.length; index += 1) {
+    const imageId = orderedImageIds[index];
+
+    const { error: positionError } = await supabase
+      .from("product_images")
+      .update({
+        position: index,
+      })
+      .eq("product_id", productId)
+      .eq("id", imageId);
+
+    if (positionError) {
+      imageOperationError(formData, productId, positionError.message);
+    }
+  }
+
+  const nextPrimaryImageId = orderedImageIds[0];
+
+  if (nextPrimaryImageId) {
+    const { error: primaryError } = await supabase
+      .from("product_images")
+      .update({
+        is_primary: true,
+      })
+      .eq("product_id", productId)
+      .eq("id", nextPrimaryImageId);
+
+    if (primaryError) {
+      imageOperationError(formData, productId, primaryError.message);
+    }
+  }
+
+  if (!isClientImageOperation(formData)) {
+    await refreshProductPages(productId);
+  }
+
+  return finishImageOperation(
+    formData,
+    supabase,
+    productId,
+    "Shared image order updated.",
+  );
+}
+
 export async function deleteProductImage(formData: FormData) {
   const supabase = await requireAdministrator();
 

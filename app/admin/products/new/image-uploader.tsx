@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft,
-  ArrowRight,
   ImagePlus,
   Star,
   Trash2,
@@ -125,6 +123,20 @@ export default function ImageUploader({
   const imagesRef = useRef<SelectedImage[]>([]);
 
   const [images, setImages] = useState<SelectedImage[]>([]);
+
+  const dragHoldTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const dragPointerRef = useRef<{
+    pointerId: number;
+    sourceId: string;
+    startX: number;
+    startY: number;
+    active: boolean;
+    card: HTMLElement;
+  } | null>(null);
+
+  const [draggingImageId, setDraggingImageId] = useState("");
+  const [dragTargetImageId, setDragTargetImageId] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -528,65 +540,290 @@ export default function ImageUploader({
     );
   }
 
-  function moveImage(imageId: string, direction: "left" | "right") {
+  function reorderVisibleImages(
+    sourceId: string,
+    targetId: string,
+  ) {
+    if (
+      !sourceId ||
+      !targetId ||
+      sourceId === targetId
+    ) {
+      return;
+    }
+
     setImages((current) => {
-      /*
-       * Configuration-first ordering:
-       *
-       * Moving Midnight image 2 only changes Midnight's relative order.
-       * Starlight/Blue/etc. keep their own relative sequence.
-       */
-      const visibleImages = activeConfigurationId
+      const visible = activeConfigurationId
         ? current.filter(
             (image) =>
               image.configurationIds.length === 0 ||
-              image.configurationIds.includes(activeConfigurationId),
+              image.configurationIds.includes(
+                activeConfigurationId,
+              ),
           )
         : current;
 
-      const currentVisibleIndex = visibleImages.findIndex(
-        (image) => image.id === imageId,
+      const sourceIndex = visible.findIndex(
+        (image) => image.id === sourceId,
       );
 
-      if (currentVisibleIndex < 0) {
-        return current;
-      }
-
-      const destinationVisibleIndex =
-        direction === "left"
-          ? currentVisibleIndex - 1
-          : currentVisibleIndex + 1;
+      const targetIndex = visible.findIndex(
+        (image) => image.id === targetId,
+      );
 
       if (
-        destinationVisibleIndex < 0 ||
-        destinationVisibleIndex >= visibleImages.length
+        sourceIndex < 0 ||
+        targetIndex < 0 ||
+        sourceIndex === targetIndex
       ) {
         return current;
       }
 
-      const targetImage = visibleImages[destinationVisibleIndex];
+      const reorderedVisible = [...visible];
 
-      const sourceAbsoluteIndex = current.findIndex(
-        (image) => image.id === imageId,
+      const [moving] = reorderedVisible.splice(
+        sourceIndex,
+        1,
       );
 
-      const targetAbsoluteIndex = current.findIndex(
-        (image) => image.id === targetImage.id,
+      reorderedVisible.splice(
+        targetIndex,
+        0,
+        moving,
       );
 
-      if (sourceAbsoluteIndex < 0 || targetAbsoluteIndex < 0) {
-        return current;
+      /*
+       * Only replace positions occupied by images visible
+       * in this exact configuration gallery.
+       *
+       * Hidden configuration-specific images keep their
+       * existing physical slots.
+       */
+      const visibleIds = new Set(
+        visible.map((image) => image.id),
+      );
+
+      let reorderedIndex = 0;
+
+      return current.map((image) => {
+        if (!visibleIds.has(image.id)) {
+          return image;
+        }
+
+        const replacementImage =
+          reorderedVisible[reorderedIndex];
+
+        reorderedIndex += 1;
+
+        return replacementImage;
+      });
+    });
+  }
+
+  function clearImageDragTimer() {
+    if (dragHoldTimerRef.current !== null) {
+      clearTimeout(dragHoldTimerRef.current);
+      dragHoldTimerRef.current = null;
+    }
+  }
+
+  function resetImageDrag() {
+    clearImageDragTimer();
+
+    const pointer = dragPointerRef.current;
+
+    if (
+      pointer &&
+      pointer.card.hasPointerCapture?.(
+        pointer.pointerId,
+      )
+    ) {
+      pointer.card.releasePointerCapture(
+        pointer.pointerId,
+      );
+    }
+
+    dragPointerRef.current = null;
+
+    setDraggingImageId("");
+    setDragTargetImageId("");
+  }
+
+  function handleImageDragPointerDown(
+    event: React.PointerEvent<HTMLElement>,
+    imageId: string,
+  ) {
+    if (
+      disabled ||
+      event.button !== 0 ||
+      !event.isPrimary
+    ) {
+      return;
+    }
+
+    const target = event.target;
+
+    /*
+     * Usage controls and delete remain normal controls.
+     * Holding one of them must never start image movement.
+     */
+    if (
+      target instanceof Element &&
+      target.closest(
+        "button, input, select, textarea, a, summary, details, label, form",
+      )
+    ) {
+      return;
+    }
+
+    clearImageDragTimer();
+
+    const card = event.currentTarget;
+
+    dragPointerRef.current = {
+      pointerId: event.pointerId,
+      sourceId: imageId,
+      startX: event.clientX,
+      startY: event.clientY,
+      active: false,
+      card,
+    };
+
+    dragHoldTimerRef.current = setTimeout(() => {
+      const pointer = dragPointerRef.current;
+
+      if (
+        !pointer ||
+        pointer.pointerId !== event.pointerId ||
+        pointer.sourceId !== imageId
+      ) {
+        return;
       }
 
-      const next = [...current];
+      pointer.active = true;
+      dragHoldTimerRef.current = null;
 
-      [next[sourceAbsoluteIndex], next[targetAbsoluteIndex]] = [
-        next[targetAbsoluteIndex],
-        next[sourceAbsoluteIndex],
-      ];
+      card.setPointerCapture?.(
+        event.pointerId,
+      );
 
-      return next;
-    });
+      setDraggingImageId(imageId);
+      setDragTargetImageId(imageId);
+    }, 1500);
+  }
+
+  function handleImageDragPointerMove(
+    event: React.PointerEvent<HTMLElement>,
+  ) {
+    const pointer = dragPointerRef.current;
+
+    if (
+      !pointer ||
+      pointer.pointerId !== event.pointerId
+    ) {
+      return;
+    }
+
+    /*
+     * Before the 1.5 second hold completes, normal movement
+     * cancels the gesture instead of hijacking scrolling.
+     */
+    if (!pointer.active) {
+      const distanceX = Math.abs(
+        event.clientX - pointer.startX,
+      );
+
+      const distanceY = Math.abs(
+        event.clientY - pointer.startY,
+      );
+
+      if (
+        distanceX > 8 ||
+        distanceY > 8
+      ) {
+        clearImageDragTimer();
+        dragPointerRef.current = null;
+      }
+
+      return;
+    }
+
+    event.preventDefault();
+
+    const element = document.elementFromPoint(
+      event.clientX,
+      event.clientY,
+    );
+
+    const card = element?.closest<HTMLElement>(
+      '[data-admin-add-product-reorder-image="true"]',
+    );
+
+    const targetId =
+      card?.dataset.adminImageId ?? "";
+
+    if (targetId) {
+      setDragTargetImageId(targetId);
+    }
+  }
+
+  function handleImageDragPointerUp(
+    event: React.PointerEvent<HTMLElement>,
+  ) {
+    const pointer = dragPointerRef.current;
+
+    if (
+      !pointer ||
+      pointer.pointerId !== event.pointerId
+    ) {
+      return;
+    }
+
+    clearImageDragTimer();
+
+    if (pointer.active) {
+      event.preventDefault();
+
+      const element = document.elementFromPoint(
+        event.clientX,
+        event.clientY,
+      );
+
+      const card = element?.closest<HTMLElement>(
+        '[data-admin-add-product-reorder-image="true"]',
+      );
+
+      const targetId =
+        card?.dataset.adminImageId ??
+        dragTargetImageId;
+
+      if (
+        targetId &&
+        targetId !== pointer.sourceId
+      ) {
+        reorderVisibleImages(
+          pointer.sourceId,
+          targetId,
+        );
+      }
+    }
+
+    resetImageDrag();
+  }
+
+  function handleImageDragPointerCancel(
+    event: React.PointerEvent<HTMLElement>,
+  ) {
+    const pointer = dragPointerRef.current;
+
+    if (
+      !pointer ||
+      pointer.pointerId !== event.pointerId
+    ) {
+      return;
+    }
+
+    resetImageDrag();
   }
 
   const activeConfiguration = configurations.find(
@@ -790,7 +1027,7 @@ export default function ImageUploader({
                     clearAllImages();
                   }
                 }}
-                className="st-admin-media-manager__clear"
+                className="st-admin-media-manager__clear st-admin-image-destructive-v32"
               >
                 <Trash2 />
                 Clear
@@ -806,7 +1043,14 @@ export default function ImageUploader({
             </div>
           </div>
 
-          <div className="st-admin-media-manager__grid">
+          <div
+            className={[
+              "st-admin-media-manager__grid",
+              draggingImageId ? "is-drag-focus" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
             {visibleImages.map(
               (image, visibleIndex) => {
                 const absoluteIndex =
@@ -846,12 +1090,38 @@ export default function ImageUploader({
                 return (
                   <article
                     key={image.id}
-                    className={
+                    className={[
                       visibleIndex === 0
                         ? "st-admin-media-item is-main"
-                        : "st-admin-media-item"
-                    }
+                        : "st-admin-media-item",
+                      draggingImageId === image.id
+                        ? "is-dragging"
+                        : "",
+                      dragTargetImageId === image.id &&
+                      draggingImageId !== image.id
+                        ? "is-drag-target"
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
                     data-admin-product-image-card="true"
+                    data-admin-add-product-reorder-image="true"
+                    data-admin-image-id={image.id}
+                    onPointerDown={(event) =>
+                      handleImageDragPointerDown(
+                        event,
+                        image.id,
+                      )
+                    }
+                    onPointerMove={
+                      handleImageDragPointerMove
+                    }
+                    onPointerUp={
+                      handleImageDragPointerUp
+                    }
+                    onPointerCancel={
+                      handleImageDragPointerCancel
+                    }
                   >
                     <div className="st-admin-media-item__preview">
                       <img
@@ -982,53 +1252,21 @@ export default function ImageUploader({
                         </div>
                       </details>
 
-                      <div className="st-admin-media-item__actions">
-                        <button
-                          type="button"
-                          disabled={
-                            disabled ||
-                            visibleIndex === 0
-                          }
-                          onClick={() =>
-                            moveImage(
-                              image.id,
-                              "left",
-                            )
-                          }
-                          title="Move image earlier"
-                        >
-                          <ArrowLeft />
-                        </button>
-
-                        <button
-                          type="button"
-                          disabled={
-                            disabled ||
-                            visibleIndex ===
-                              visibleImages.length -
-                                1
-                          }
-                          onClick={() =>
-                            moveImage(
-                              image.id,
-                              "right",
-                            )
-                          }
-                          title="Move image later"
-                        >
-                          <ArrowRight />
-                        </button>
-
+                      <div className="st-admin-media-item__actions st-admin-media-item__actions--delete-only">
                         <button
                           type="button"
                           disabled={disabled}
                           onClick={() =>
                             removeImage(image.id)
                           }
-                          title="Remove image"
-                          className="is-danger"
+                          title="Delete photo"
+                          aria-label="Delete photo"
+                          className="is-danger st-admin-image-destructive-v32"
                         >
                           <Trash2 />
+                          <span>
+                            Delete photo
+                          </span>
                         </button>
                       </div>
                     </div>

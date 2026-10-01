@@ -522,37 +522,6 @@ function productCardOptionsSummary(product: StoreProductCardProduct) {
     libraryHex: productColorwayHex(value),
   }));
 
-  /*
-   * Recover safely from legacy/corrupted colour metadata.
-   *
-   * A valid product can intentionally have custom Admin colours, so the
-   * stored per-variant HEX remains authoritative in normal circumstances.
-   *
-   * However, if multiple distinct recognised colour names all carry the
-   * exact same stored HEX while the shared colourway library resolves them
-   * to different HEX values, the stored metadata is internally inconsistent.
-   * In that narrow case use the known colourway-library values for the card.
-   */
-  const storedHexIdentities = new Set(
-    colourCandidates
-      .map((colour) => colour.storedHex?.trim().toLocaleLowerCase() ?? "")
-      .filter(Boolean),
-  );
-
-  const libraryHexIdentities = new Set(
-    colourCandidates
-      .map((colour) => colour.libraryHex?.trim().toLocaleLowerCase() ?? "")
-      .filter(Boolean),
-  );
-
-  const recoverDuplicatedStoredHex =
-    colourCandidates.length >= 2 &&
-    colourCandidates.every(
-      (colour) => Boolean(colour.storedHex) && Boolean(colour.libraryHex),
-    ) &&
-    storedHexIdentities.size === 1 &&
-    libraryHexIdentities.size > 1;
-
   const colours = colourCandidates.map((colour) => {
     const colourIdentity = productCardOptionIdentity(colour.value);
 
@@ -568,8 +537,13 @@ function productCardOptionsSummary(product: StoreProductCardProduct) {
 
     return {
       name: colour.name,
+      /*
+       * The exact HEX persisted by the Admin for this product configuration
+       * is authoritative. The shared colourway library is fallback-only for
+       * legacy products that do not have stored per-variant colour metadata.
+       */
       hex:
-        (recoverDuplicatedStoredHex ? colour.libraryHex : colour.storedHex) ??
+        colour.storedHex ??
         colour.libraryHex ??
         "#8e8e93",
       variantId: matchingVariant?.id ?? null,

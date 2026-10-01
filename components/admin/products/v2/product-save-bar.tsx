@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  Trash2,
+  Plus,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -16,6 +21,7 @@ type ProductSaveBarProps = {
   deletePending?: boolean;
   formId?: string;
   editMode?: boolean;
+  hasUnsavedChanges?: boolean;
   editIntent?: "draft" | "publish";
   storefrontHref?: string;
 };
@@ -31,6 +37,7 @@ export default function ProductSaveBar({
   deletePending = false,
   formId = "st-admin-new-product-form",
   editMode = false,
+  hasUnsavedChanges = true,
   editIntent = "draft",
   storefrontHref,
 }: ProductSaveBarProps) {
@@ -129,7 +136,9 @@ export default function ProductSaveBar({
               {isSubmitting
                 ? statusText
                 : hasProductName
-                  ? "Unsaved changes"
+                  ? editMode && !hasUnsavedChanges
+                    ? statusText
+                    : "Unsaved changes"
                   : "Unsaved product"}
             </small>
           </div>
@@ -217,7 +226,20 @@ export default function ProductSaveBar({
                 </div>
               </div>
             ) : null}
-          {storefrontHref ? (
+          {/* ADMIN EXISTING PRODUCT ADD ACTION V21.1 */}
+            {editMode ? (
+              <Link
+                href="/admin/products/new"
+                className="st-admin-product-fixed-header__add-product"
+                aria-label="Add a new product"
+                title="Add product"
+              >
+                <Plus aria-hidden="true" />
+                <span>Add product</span>
+              </Link>
+            ) : null}
+
+            {storefrontHref ? (
             <Link
               href={storefrontHref}
               target="_blank"
@@ -252,7 +274,7 @@ export default function ProductSaveBar({
                 type="submit"
                 name="intent"
                 value={editIntent === "publish" ? "publish" : "publish"}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !hasUnsavedChanges}
                 onClick={onPublish}
                 className="st-admin-product-fixed-header__publish"
                 form={formId}

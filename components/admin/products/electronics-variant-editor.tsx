@@ -621,7 +621,7 @@ function SearchableOptionValuePicker({
 
  const [query, setQuery] = useState("");
  const [open, setOpen] = useState(false);
- const [mounted, setMounted] = useState(false);
+ const [popupPresent, setPopupPresent] = useState(false);
  const [activeIndex, setActiveIndex] = useState(-1);
  const [position, setPosition] = useState({
  top: 0,
@@ -666,8 +666,23 @@ function SearchableOptionValuePicker({
  const canCreate = Boolean(cleanQuery && !exactMatch);
 
  useEffect(() => {
- setMounted(true);
-  }, []);
+    if (open) {
+      setPopupPresent(true);
+      return;
+    }
+
+    if (!popupPresent) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setPopupPresent(false);
+    }, 360);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [open, popupPresent]);
 
  useEffect(() => {
    let active = true;
@@ -938,9 +953,10 @@ function SearchableOptionValuePicker({
   }
 
  const dropdown =
-    mounted && open
+    popupPresent
       ? createPortal(
           <ProductDirectoryPopup
+            open={open}
             dropdownRef={dropdownRef}
             searchRef={searchRef}
             position={position}
@@ -1107,7 +1123,7 @@ function OptionNamePicker({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const [popupPresent, setPopupPresent] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [position, setPosition] = useState({
     top: 0,
@@ -1180,8 +1196,23 @@ function OptionNamePicker({
   }
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (open) {
+      setPopupPresent(true);
+      return;
+    }
+
+    if (!popupPresent) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setPopupPresent(false);
+    }, 360);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [open, popupPresent]);
 
   useLayoutEffect(() => {
     if (!open) {
@@ -1348,9 +1379,10 @@ function OptionNamePicker({
     placeholder;
 
   const dropdown =
-    mounted && open
+    popupPresent
       ? createPortal(
           <ProductDirectoryPopup
+            open={open}
             dropdownRef={dropdownRef}
             searchRef={searchRef}
             position={position}
@@ -2065,6 +2097,12 @@ function cleanTechnicalSpecificationLine(value: string) {
   );
 }
 
+function cleanTechnicalSpecificationValue(value: string) {
+ return cleanTechnicalSpecificationLine(value)
+    .replace(/\.$/, "")
+    .trim();
+}
+
 function isLikelySpecificationPageJunk(value: string) {
  const text = cleanTechnicalSpecificationLine(value);
  const normalized = text.toLocaleLowerCase();
@@ -2360,7 +2398,7 @@ function specificationEntriesFromStructuredText(source: string) {
     }
 
  const label = cleanTechnicalSpecificationLine(current.label);
- const value = cleanTechnicalSpecificationLine(current.value);
+ const value = cleanTechnicalSpecificationValue(current.value);
 
  if (
  looksLikeTechnicalSpecificationLabel(label) &&
@@ -2971,7 +3009,7 @@ function AdminDirectorySelect({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const [popupPresent, setPopupPresent] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const [position, setPosition] = useState({
@@ -3051,8 +3089,23 @@ function AdminDirectorySelect({
   }
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (open) {
+      setPopupPresent(true);
+      return;
+    }
+
+    if (!popupPresent) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setPopupPresent(false);
+    }, 360);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [open, popupPresent]);
 
   useLayoutEffect(() => {
     if (!open) {
@@ -3217,9 +3270,10 @@ function AdminDirectorySelect({
   }
 
   const dropdown =
-    mounted && open
+    popupPresent
       ? createPortal(
           <ProductDirectoryPopup
+            open={open}
             dropdownRef={dropdownRef}
             searchRef={searchRef}
             position={position}
@@ -3396,9 +3450,29 @@ export default function ElectronicsVariantEditor({
   }
 
  function updateAttribute(clientId: string, key: string, value: string) {
+ const normalizedKey = normalizeKey(key);
+ const selectorKeys = new Set(
+ levels.map((level) => normalizeKey(level.key)),
+    );
+
+ const isTechnicalSpecification =
+ normalizedKey !== normalizeKey(configurationHierarchyKey) &&
+      !selectorKeys.has(normalizedKey) &&
+      !hiddenSelectorKeys.has(normalizedKey);
+
+ /*
+  * Technical specifications are product-wide metadata.
+  *
+  * Every configuration carries the same technical specification set so
+  * existing persistence/storefront code remains compatible, but editing
+  * one specification updates every configuration automatically.
+  *
+  * Selector attributes such as Colorway, RAM, Storage and other exact
+  * configuration metadata continue to update only their own variant.
+  */
  emit(
  orderedVariants.map((variant) => {
- if (variant.clientId !== clientId) {
+ if (!isTechnicalSpecification && variant.clientId !== clientId) {
  return variant;
         }
 
@@ -3729,6 +3803,29 @@ export default function ElectronicsVariantEditor({
       ]),
     );
 
+ /*
+  * Technical specifications are common product metadata.
+  *
+  * Capture them before rebuilding the configuration matrix so specs added
+  * before Colorway / RAM / Storage / other options exist survive generation
+  * and are inherited automatically by every newly created configuration.
+  */
+ const normalizedSelectorKeys = new Set(
+ normalizedLevels.map((level) => normalizeKey(level.key)),
+    );
+
+ const commonTechnicalAttributes = Object.fromEntries(
+ Object.entries(activeVariant?.attributes ?? {}).filter(([key]) => {
+ const normalizedKey = normalizeKey(key);
+
+ return (
+ normalizedKey !== normalizeKey(configurationHierarchyKey) &&
+        !normalizedSelectorKeys.has(normalizedKey) &&
+        !hiddenSelectorKeys.has(normalizedKey)
+      );
+    }),
+  );
+
  const generated = combinations.map((attributes, index) => {
  const existing = existingByCombination.get(
  generatedCombinationIdentity(attributes, normalizedLevels),
@@ -3739,6 +3836,7 @@ export default function ElectronicsVariantEditor({
  if (!existing) {
  return defaultVariant(
           {
+            ...commonTechnicalAttributes,
             ...attributes,
  [configurationHierarchyKey]: hierarchyValue,
           },
@@ -3768,6 +3866,7 @@ export default function ElectronicsVariantEditor({
  display_position: index,
  attributes: {
           ...preservedAttributes,
+          ...commonTechnicalAttributes,
           ...attributes,
  [configurationHierarchyKey]: hierarchyValue,
         },
@@ -3843,98 +3942,6 @@ export default function ElectronicsVariantEditor({
  [next[index], next[target]] = [next[target], next[index]];
 
  emit(next);
-  }
-
- function applyTechnicalSpecificationsToAll() {
- if (!activeVariant || orderedVariants.length <= 1) {
- return;
-    }
-
-    /*
-     * Selector values such as Color, Size, Storage and RAM belong
-     * to the exact configuration and must NEVER be copied.
-     *
-     * Everything else in attributes, excluding the reserved
-     * hierarchy metadata, is technical metadata.
-     */
- const selectorKeys = new Set(
- levels.map((level) => normalizeKey(level.key)),
-    );
-
-    /*
-     * Internal configuration metadata is NOT a technical specification.
-     *
-     * In particular, color_hex belongs to the exact selected colourway.
-     * Copying technical specifications from one configuration to another
-     * must never remove, replace or duplicate colour metadata.
-     */
- const isTechnicalKey = (key: string) => {
- const normalizedKey = normalizeKey(key);
-
- return (
- normalizedKey !== configurationHierarchyKey &&
-        !selectorKeys.has(normalizedKey) &&
-        !hiddenSelectorKeys.has(normalizedKey)
-      );
-    };
-
- const sourceTechnicalEntries = Object.entries(
- activeVariant.attributes ?? {},
-    ).filter(([key]) => isTechnicalKey(key));
-
- if (sourceTechnicalEntries.length === 0) {
- setTechnicalSpecsMessage("");
- setCustomSpecError(
-        "Add at least one technical specification before applying specs to all configurations.",
-      );
- return;
-    }
-
-    /*
-     * Remove existing technical metadata from every configuration
-     * first, then copy the active configuration's complete technical
-     * specification set.
-     *
-     * Configuration hierarchy, selector values, prices, SKU, stock,
-     * availability and every other variant field remain untouched.
-     */
- const allTechnicalKeys = new Set(
- orderedVariants.flatMap((variant) =>
- Object.keys(variant.attributes ?? {}).filter(isTechnicalKey),
-      ),
-    );
-
- const sourceTechnicalAttributes = Object.fromEntries(
- sourceTechnicalEntries,
-    );
-
- emit(
- orderedVariants.map((variant) => {
- const attributes = {
-          ...(variant.attributes ?? {}),
-        };
-
- for (const key of allTechnicalKeys) {
- delete attributes[key];
-        }
-
- Object.assign(attributes, sourceTechnicalAttributes);
-
- return {
-          ...variant,
- attributes,
-        };
-      }),
-    );
-
- setCustomSpecError("");
- setTechnicalSpecsMessage(
-      `Applied ${sourceTechnicalEntries.length} ${
- sourceTechnicalEntries.length === 1
-          ? "technical specification"
-          : "technical specifications"
-      } to all ${orderedVariants.length} configurations.`,
-    );
   }
 
  function parseBulkTechnicalSpecifications() {
@@ -4043,12 +4050,14 @@ export default function ElectronicsVariantEditor({
 
  const parsedEntries = Array.from(parsedSpecifications.values());
 
+ /*
+  * Parsed technical specifications are product-wide.
+  *
+  * Apply the parsed set to every current configuration immediately.
+  * Configuration selectors and internal metadata are left untouched.
+  */
  emit(
  orderedVariants.map((variant) => {
- if (variant.clientId !== activeVariant.clientId) {
- return variant;
-        }
-
  const attributes = {
           ...(variant.attributes ?? {}),
         };
@@ -4125,18 +4134,18 @@ export default function ElectronicsVariantEditor({
      * specification through updateAttribute(..., "") immediately
      * deleted it. Create the editable key directly instead.
      */
+ /*
+  * A newly created technical specification belongs to the product rather
+  * than one exact configuration, so create the editable key everywhere.
+  */
  emit(
- orderedVariants.map((variant) =>
- variant.clientId === activeVariant.clientId
-          ? {
-              ...variant,
+ orderedVariants.map((variant) => ({
+        ...variant,
  attributes: {
-                ...(variant.attributes ?? {}),
+          ...(variant.attributes ?? {}),
  [key]: "",
-              },
-            }
-          : variant,
-      ),
+        },
+      })),
     );
 
  setCustomSpecName("");
@@ -5207,18 +5216,6 @@ Storage Options: 256GB, 512GB, and 1TB`}
                             <span>Add technical spec</span>
                           </button>
 
-                          {orderedVariants.length > 1 ? (
-                            <button
- type="button"
- onClick={applyTechnicalSpecificationsToAll}
- className="st-admin-spec-add-v2__button st-admin-spec-add-v2__button--secondary"
-                            >
-                              <Copy className="h-3.5 w-3.5 shrink-0" />
-                              <span className="shrink-0 whitespace-nowrap !text-[9px] !tracking-[0.035em] leading-none">
- Apply specs to all
-                              </span>
-                            </button>
-                          ) : null}
                         </div>
                       </div>
 
@@ -5297,17 +5294,19 @@ Storage Options: 256GB, 512GB, and 1TB`}
                                       <button
  type="button"
  onClick={() => {
+ emit(
+ orderedVariants.map((variant) => {
  const attributes = {
-                                            ...activeVariant.attributes,
-                                          };
+                                                ...(variant.attributes ?? {}),
+                                              };
 
  delete attributes[key];
 
- updateVariant(
- activeVariant.clientId,
-                                            {
+ return {
+                                                ...variant,
  attributes,
-                                            },
+                                              };
+                                            }),
                                           );
                                         }}
  className="st-admin-spec-item-v29__remove"

@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  Grip,
   ImageOff,
   ImagePlus,
   Save,
@@ -17,6 +18,7 @@ import {
   deleteAllProductImages,
   deleteProductImage,
   moveProductImage,
+  reorderProductImages,
   setPrimaryProductImage,
   updateProductImageVariantName,
   updateProductImageVariantUsageBulk,
@@ -91,6 +93,17 @@ export default function ImageManager({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   /*
+   * Lock one pending upload batch to the configuration gallery from
+   * which Add images was started.
+   *
+   * This prevents an administrator from selecting files for one
+   * configuration and accidentally assigning them elsewhere before
+   * the upload finishes.
+   */
+  const [pendingUploadConfigurationId, setPendingUploadConfigurationId] =
+    useState("");
+
+  /*
    * Image operations have their own authoritative state.
    *
    * This keeps the surrounding product editor mounted so unsaved technical
@@ -121,6 +134,47 @@ export default function ImageManager({
    * to 2 of 6 but the physical card stayed in its global product position.
    */
   const [visualConfigurationId, setVisualConfigurationId] = useState("");
+
+  const imageDragHoldTimerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
+  const imageDragSourceIdRef = useRef("");
+  const imageDragActivatedRef = useRef(false);
+  const imageDragStartPointRef = useRef({ x: 0, y: 0 });
+  const imageDragPointerIdRef = useRef<number | null>(null);
+  const imageDragTargetIdRef = useRef("");
+  const imageDragDropModeRef =
+    useRef<"swap" | "insert-before" | "insert-after" | "">("");
+  const imageDragPreviewRef = useRef<HTMLDivElement | null>(null);
+  const imageDragSourceCardRef = useRef<HTMLElement | null>(null);
+  const imageDragPreviewOffsetRef = useRef({ x: 0, y: 0 });
+  const imageDragPreviewSizeRef = useRef({ width: 0, height: 0 });
+
+  /*
+   * V8 stable insertion geometry.
+   *
+   * Slot rectangles are captured once when dragging activates.
+   * Pointer movement never measures already-transformed cards.
+   */
+  const imageDragStableSlotRectsRef =
+    useRef<Map<string, DOMRect>>(new Map());
+
+  const imageDragStableOrderRef =
+    useRef<string[]>([]);
+
+  const imageDragVisualOrderKeyRef =
+    useRef("");
+  const imageDragPointerPositionRef = useRef({ x: 0, y: 0 });
+  const imageDragAnimationFrameRef = useRef<number | null>(null);
+
+  const [draggingImageId, setDraggingImageId] = useState("");
+  const [dragTargetImageId, setDragTargetImageId] = useState("");
+  const [imageDragDropMode, setImageDragDropMode] =
+    useState<"swap" | "insert-before" | "insert-after" | "">("");
+  const [imageDragPreview, setImageDragPreview] = useState<{
+    imageUrl: string;
+    width: number;
+    height: number;
+  } | null>(null);
 
   useEffect(() => {
     setManagedImages(images);
@@ -236,6 +290,70 @@ export default function ImageManager({
     isFinalizing?: boolean;
   } | null>(null);
 
+  const [inlineUploadCards, setInlineUploadCards] = useState<
+    {
+      id: string;
+      previewUrl: string;
+      fileName: string;
+      percentage: number;
+      targetPercentage: number;
+      status: "waiting" | "uploading" | "finalizing";
+      realStatus: "waiting" | "uploading" | "finalizing";
+    }[]
+  >([]);
+
+  /*
+   * Keep the percentage shown inside an inline upload card visually alive
+   * without allowing it to run ahead of real upload progress.
+   *
+   * Network progress remains authoritative in targetPercentage.
+   * The visible percentage catches up one point at a time.
+   */
+  useEffect(() => {
+    if (inlineUploadCards.length === 0) {
+      return;
+    }
+
+    const hasPendingVisualProgress = inlineUploadCards.some(
+      (card) => card.percentage < card.targetPercentage,
+    );
+
+    if (!hasPendingVisualProgress) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setInlineUploadCards((current) =>
+        current.map((card) => {
+          if (card.percentage >= card.targetPercentage) {
+            return card;
+          }
+
+          const nextPercentage = Math.min(
+            card.percentage + 1,
+            card.targetPercentage,
+          );
+
+          return {
+            ...card,
+            percentage: nextPercentage,
+            status:
+              nextPercentage >= 100 &&
+              card.realStatus === "finalizing"
+                ? "finalizing"
+                : card.realStatus === "waiting"
+                  ? "waiting"
+                  : "uploading",
+          };
+        }),
+      );
+    }, 22);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [inlineUploadCards]);
+
   /*
    * Product media is grouped and ordered by configuration.
    *
@@ -262,6 +380,1440 @@ export default function ImageManager({
    * from product_image_variants rather than pretending that the
    * product_images row itself belongs to one configuration.
    */
+  function clearImageDragHoldTimer() {
+    if (imageDragHoldTimerRef.current) {
+      clearTimeout(imageDragHoldTimerRef.current);
+      imageDragHoldTimerRef.current = null;
+    }
+  }
+
+  function resetImageDrag() {
+    clearImageDragHoldTimer();
+
+    if (imageDragAnimationFrameRef.current !== null) {
+      cancelAnimationFrame(imageDragAnimationFrameRef.current);
+      imageDragAnimationFrameRef.current = null;
+    }
+    imageDragSourceIdRef.current = "";
+    imageDragSourceCardRef.current = null;
+
+    document
+      .querySelectorAll<HTMLElement>(
+        "[data-admin-edit-product-reorder-image]",
+      )
+      .forEach((card) => {
+        card.style.removeProperty("--st-admin-drag-reflow-x");
+        card.style.removeProperty("--st-admin-drag-reflow-y");
+        card.classList.remove("is-drag-reflowing");
+      });
+
+    imageDragStableSlotRectsRef.current.clear();
+    imageDragStableOrderRef.current = [];
+    imageDragVisualOrderKeyRef.current = "";
+    imageDragActivatedRef.current = false;
+    imageDragPointerIdRef.current = null;
+    imageDragTargetIdRef.current = "";
+    imageDragDropModeRef.current = "";
+    setDraggingImageId("");
+    setDragTargetImageId("");
+    setImageDragDropMode("");
+    setImageDragPreview(null);
+  }
+
+  function imageReorderDomain(
+    currentImages: ProductImage[],
+    imageId: string,
+  ) {
+    const sourceImage = currentImages.find(
+      (candidate) => candidate.id === imageId,
+    );
+
+    if (!sourceImage) {
+      return null;
+    }
+
+    const selectedAssignment = selectedGalleryConfigurationId
+      ? sourceImage.product_image_variants?.find(
+          (assignment) =>
+            assignment.variant_id === selectedGalleryConfigurationId,
+        )
+      : undefined;
+
+    if (selectedAssignment && selectedGalleryConfigurationId) {
+      const configurationImages = currentImages
+        .map((image) => ({
+          image,
+          assignment: image.product_image_variants?.find(
+            (assignment) =>
+              assignment.variant_id === selectedGalleryConfigurationId,
+          ),
+        }))
+        .filter(
+          (
+            item,
+          ): item is {
+            image: ProductImage;
+            assignment: {
+              variant_id: string;
+              position: number;
+              is_primary: boolean;
+            };
+          } => Boolean(item.assignment),
+        )
+        .sort((first, second) => {
+          const difference =
+            Number(first.assignment.position ?? 0) -
+            Number(second.assignment.position ?? 0);
+
+          if (difference !== 0) {
+            return difference;
+          }
+
+          return first.image.id.localeCompare(second.image.id);
+        })
+        .map((item) => item.image);
+
+      return {
+        variantId: selectedGalleryConfigurationId,
+        images: configurationImages,
+      };
+    }
+
+    if ((sourceImage.product_image_variants ?? []).length !== 0) {
+      return null;
+    }
+
+    const sharedImages = currentImages
+      .filter(
+        (image) =>
+          (image.product_image_variants ?? []).length === 0,
+      )
+      .sort((first, second) => {
+        const difference =
+          Number(first.position ?? 0) -
+          Number(second.position ?? 0);
+
+        if (difference !== 0) {
+          return difference;
+        }
+
+        return first.id.localeCompare(second.id);
+      });
+
+    return {
+      variantId: "",
+      images: sharedImages,
+    };
+  }
+
+  async function commitSavedImageExactOrder(
+    sourceImageId: string,
+    nextOrderedImageIds: string[],
+  ) {
+    if (
+      !sourceImageId ||
+      nextOrderedImageIds.length === 0 ||
+      pendingImageOperation
+    ) {
+      return;
+    }
+
+    const sourceDomain = imageReorderDomain(
+      managedImages,
+      sourceImageId,
+    );
+
+    if (!sourceDomain) {
+      return;
+    }
+
+    const authoritativeImageIds =
+      sourceDomain.images.map((image) => image.id);
+
+    if (
+      authoritativeImageIds.length !== nextOrderedImageIds.length ||
+      authoritativeImageIds.some(
+        (imageId) => !nextOrderedImageIds.includes(imageId),
+      ) ||
+      new Set(nextOrderedImageIds).size !== nextOrderedImageIds.length
+    ) {
+      return;
+    }
+
+    if (
+      authoritativeImageIds.every(
+        (imageId, index) =>
+          imageId === nextOrderedImageIds[index],
+      )
+    ) {
+      return;
+    }
+
+    const previousImages = managedImages;
+
+    const nextPositionByImageId = new Map(
+      nextOrderedImageIds.map(
+        (imageId, index) => [imageId, index],
+      ),
+    );
+
+    if (sourceDomain.variantId) {
+      setVisualConfigurationId(sourceDomain.variantId);
+
+      setManagedImages((currentImages) =>
+        currentImages.map((image) => ({
+          ...image,
+          product_image_variants:
+            image.product_image_variants?.map(
+              (assignment) =>
+                assignment.variant_id ===
+                  sourceDomain.variantId &&
+                nextPositionByImageId.has(image.id)
+                  ? {
+                      ...assignment,
+                      position:
+                        nextPositionByImageId.get(image.id) ??
+                        assignment.position,
+                      is_primary:
+                        nextPositionByImageId.get(image.id) === 0,
+                    }
+                  : assignment,
+            ),
+        })),
+      );
+    } else {
+      setManagedImages((currentImages) =>
+        currentImages.map((image) =>
+          nextPositionByImageId.has(image.id)
+            ? {
+                ...image,
+                position:
+                  nextPositionByImageId.get(image.id) ?? 0,
+                is_primary:
+                  nextPositionByImageId.get(image.id) === 0,
+              }
+            : image,
+        ),
+      );
+    }
+
+    setPendingImageOperation("reorder");
+    setImageOperationErrorMessage("");
+
+    const formData = new FormData();
+
+    formData.set("product_id", productId);
+    formData.set(
+      "ordered_image_ids",
+      JSON.stringify(nextOrderedImageIds),
+    );
+    formData.set("_client_image_operation", "1");
+
+    if (sourceDomain.variantId) {
+      formData.set(
+        "variant_id",
+        sourceDomain.variantId,
+      );
+    }
+
+    try {
+      const result = await reorderProductImages(formData);
+
+      if (result?.images) {
+        setManagedImages(result.images);
+      }
+    } catch (error) {
+      setManagedImages(previousImages);
+
+      setImageOperationErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "The image order could not be updated.",
+      );
+    } finally {
+      setPendingImageOperation("");
+    }
+  }
+
+  function buildSavedImageDropOrder(
+    sourceImageId: string,
+    targetImageId: string,
+    mode: "swap" | "insert-before" | "insert-after",
+  ) {
+    const sourceDomain = imageReorderDomain(
+      managedImages,
+      sourceImageId,
+    );
+
+    const targetDomain = imageReorderDomain(
+      managedImages,
+      targetImageId,
+    );
+
+    if (
+      !sourceDomain ||
+      !targetDomain ||
+      sourceDomain.variantId !== targetDomain.variantId
+    ) {
+      return null;
+    }
+
+    const orderedImageIds =
+      sourceDomain.images.map((image) => image.id);
+
+    const sourceIndex = orderedImageIds.indexOf(sourceImageId);
+    const targetIndex = orderedImageIds.indexOf(targetImageId);
+
+    if (
+      sourceIndex < 0 ||
+      targetIndex < 0 ||
+      sourceIndex === targetIndex
+    ) {
+      return null;
+    }
+
+    if (mode === "swap") {
+      const nextOrderedImageIds = [...orderedImageIds];
+
+      nextOrderedImageIds[sourceIndex] = targetImageId;
+      nextOrderedImageIds[targetIndex] = sourceImageId;
+
+      return nextOrderedImageIds;
+    }
+
+    const nextOrderedImageIds = [...orderedImageIds];
+
+    nextOrderedImageIds.splice(sourceIndex, 1);
+
+    const remainingTargetIndex =
+      nextOrderedImageIds.indexOf(targetImageId);
+
+    if (remainingTargetIndex < 0) {
+      return null;
+    }
+
+    const insertionIndex =
+      mode === "insert-after"
+        ? remainingTargetIndex + 1
+        : remainingTargetIndex;
+
+    nextOrderedImageIds.splice(
+      insertionIndex,
+      0,
+      sourceImageId,
+    );
+
+    return nextOrderedImageIds;
+  }
+
+  function setSavedImageDragPreviewNode(
+    node: HTMLDivElement | null,
+  ) {
+    imageDragPreviewRef.current = node;
+
+    if (!node) {
+      return;
+    }
+
+    node.replaceChildren();
+
+    const sourceCard = imageDragSourceCardRef.current;
+
+    if (sourceCard) {
+      const clone = sourceCard.cloneNode(true) as HTMLElement;
+
+      clone.classList.remove(
+        "is-dragging",
+        "is-drag-target",
+        "is-drag-swap",
+        "is-drag-insert-before",
+        "is-drag-insert-after",
+      );
+
+      clone.classList.add("st-admin-image-drag-preview__card");
+
+      clone.removeAttribute(
+        "data-admin-edit-product-reorder-image",
+      );
+
+      clone
+        .querySelectorAll<HTMLElement>(
+          "button, input, select, textarea, summary, a, label, form",
+        )
+        .forEach((element) => {
+          element.style.pointerEvents = "none";
+        });
+
+      clone
+        .querySelectorAll<HTMLDetailsElement>("details")
+        .forEach((details) => {
+          details.open = false;
+        });
+
+      node.appendChild(clone);
+    }
+
+    const pointer = imageDragPointerPositionRef.current;
+    const offset = imageDragPreviewOffsetRef.current;
+
+    const left = pointer.x - offset.x;
+    const top = pointer.y - offset.y;
+
+    node.style.transform =
+      `translate3d(${left}px, ${top}px, 0) rotate(-0.18deg) scale(1.012)`;
+  }
+
+  function handleSavedImagePointerDown(
+    event: React.PointerEvent<HTMLElement>,
+    imageId: string,
+  ) {
+    const target = event.target;
+
+    if (
+      event.button !== 0 ||
+      pendingImageOperation ||
+      (target instanceof Element &&
+        Boolean(
+          target.closest(
+            "button, a, input, select, textarea, summary, form, label",
+          ),
+        ))
+    ) {
+      return;
+    }
+
+    resetImageDrag();
+
+    const card = event.currentTarget;
+    const rect = card.getBoundingClientRect();
+    imageDragSourceIdRef.current = imageId;
+    imageDragSourceCardRef.current = card;
+    imageDragPointerIdRef.current = event.pointerId;
+
+    imageDragStartPointRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
+    imageDragPointerPositionRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
+    imageDragPreviewOffsetRef.current = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+    };
+
+    imageDragPreviewSizeRef.current = {
+      width: rect.width,
+      height: rect.height,
+    };
+
+    imageDragHoldTimerRef.current = setTimeout(() => {
+      imageDragActivatedRef.current = true;
+      imageDragTargetIdRef.current = imageId;
+
+      setDraggingImageId(imageId);
+      setDragTargetImageId(imageId);
+
+      /*
+       * Capture the untouched physical grid exactly once.
+       *
+       * These rectangles remain authoritative for the entire drag.
+       * This prevents animated transforms from feeding back into
+       * pointer hit testing and eliminates V7 layout jitter.
+       */
+      const sourceDomain = imageReorderDomain(
+        managedImages,
+        imageId,
+      );
+
+      const stableRects = new Map<string, DOMRect>();
+      const stableOrder: string[] = [];
+
+      if (sourceDomain) {
+        for (const domainImage of sourceDomain.images) {
+          const domainCard =
+            document.querySelector<HTMLElement>(
+              `[data-admin-edit-product-reorder-image="${domainImage.id}"]`,
+            );
+
+          if (!domainCard) {
+            continue;
+          }
+
+          stableRects.set(
+            domainImage.id,
+            domainCard.getBoundingClientRect(),
+          );
+
+          stableOrder.push(domainImage.id);
+        }
+      }
+
+      imageDragStableSlotRectsRef.current = stableRects;
+      imageDragStableOrderRef.current = stableOrder;
+      imageDragVisualOrderKeyRef.current = "";
+
+      imageDragPointerPositionRef.current = {
+        x: imageDragStartPointRef.current.x,
+        y: imageDragStartPointRef.current.y,
+      };
+
+      setImageDragPreview({
+        imageUrl: "",
+        width: rect.width,
+        height: rect.height,
+      });
+
+      try {
+        card.setPointerCapture(event.pointerId);
+      } catch {
+        return;
+      }
+    }, 300);
+  }
+
+  function handleSavedImagePointerMove(
+    event: React.PointerEvent<HTMLElement>,
+  ) {
+    const sourceImageId =
+      imageDragSourceIdRef.current;
+
+    if (!sourceImageId) {
+      return;
+    }
+
+    if (!imageDragActivatedRef.current) {
+      const horizontalDistance = Math.abs(
+        event.clientX -
+          imageDragStartPointRef.current.x,
+      );
+
+      const verticalDistance = Math.abs(
+        event.clientY -
+          imageDragStartPointRef.current.y,
+      );
+
+      if (
+        horizontalDistance > 8 ||
+        verticalDistance > 8
+      ) {
+        resetImageDrag();
+      }
+
+      return;
+    }
+
+    event.preventDefault();
+
+    /*
+     * V10 FRAME-SYNCHRONIZED SORTABLE ENGINE
+     * ----------------------------------------------------------
+     * Pointer events never manipulate gallery cards directly.
+     *
+     * They only publish the newest pointer coordinates.
+     * One requestAnimationFrame then:
+     *
+     * 1. moves the floating full-card preview,
+     * 2. resolves the logical Swap / insertion destination,
+     * 3. changes the gallery only when that destination changed.
+     *
+     * This guarantees at most one visual drag calculation per
+     * rendered browser frame.
+     */
+    imageDragPointerPositionRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
+    if (imageDragAnimationFrameRef.current !== null) {
+      return;
+    }
+
+    imageDragAnimationFrameRef.current =
+      requestAnimationFrame(() => {
+        imageDragAnimationFrameRef.current = null;
+
+        if (!imageDragActivatedRef.current) {
+          return;
+        }
+
+        const activeSourceImageId =
+          imageDragSourceIdRef.current;
+
+        if (!activeSourceImageId) {
+          return;
+        }
+
+        const pointer =
+          imageDragPointerPositionRef.current;
+
+        /*
+         * Floating card movement.
+         *
+         * This remains completely independent from React and
+         * from gallery-card movement.
+         */
+        const preview =
+          imageDragPreviewRef.current;
+
+        if (preview) {
+          const offset =
+            imageDragPreviewOffsetRef.current;
+
+          const left =
+            pointer.x - offset.x;
+
+          const top =
+            pointer.y - offset.y;
+
+          preview.style.transform =
+            `translate3d(${left}px, ${top}px, 0) rotate(-0.18deg) scale(1.012)`;
+        }
+
+        const sourceDomain = imageReorderDomain(
+          managedImages,
+          activeSourceImageId,
+        );
+
+        const stableRects =
+          imageDragStableSlotRectsRef.current;
+
+        const stableOrder =
+          imageDragStableOrderRef.current;
+
+        const cards = Array.from(
+          document.querySelectorAll<HTMLElement>(
+            "[data-admin-edit-product-reorder-image]",
+          ),
+        );
+
+        function clearVisualReflow() {
+          for (const card of cards) {
+            card.style.removeProperty(
+              "--st-admin-drag-reflow-x",
+            );
+
+            card.style.removeProperty(
+              "--st-admin-drag-reflow-y",
+            );
+
+            card.classList.remove(
+              "is-drag-reflowing",
+            );
+          }
+        }
+
+        function clearLogicalTarget() {
+          if (
+            !imageDragTargetIdRef.current &&
+            !imageDragDropModeRef.current &&
+            !imageDragVisualOrderKeyRef.current
+          ) {
+            return;
+          }
+
+          imageDragTargetIdRef.current = "";
+          imageDragDropModeRef.current = "";
+          imageDragVisualOrderKeyRef.current = "";
+
+          clearVisualReflow();
+
+          setDragTargetImageId("");
+          setImageDragDropMode("");
+        }
+
+        if (
+          !sourceDomain ||
+          stableOrder.length < 2 ||
+          stableRects.size < 2
+        ) {
+          clearLogicalTarget();
+          return;
+        }
+
+        /*
+         * V11 EXACT DROP INTENT
+         * ----------------------------------------------------------
+         * Swap and insertion are now two different physical targets.
+         *
+         * SWAP:
+         * The pointer must deliberately occupy the inner body of a
+         * real photo card.
+         *
+         * INSERT:
+         * Every boundary between ordered slots is its own destination.
+         * The pointer therefore selects a gap directly instead of first
+         * selecting a card and then guessing which side was intended.
+         *
+         * All geometry remains frozen from pickup, so animated cards
+         * can never move the targets underneath the pointer.
+         */
+
+        type ExactDropDestination = {
+          targetImageId: string;
+          mode:
+            | "swap"
+            | "insert-before"
+            | "insert-after";
+          distance: number;
+          priority: number;
+        };
+
+        const destinations: ExactDropDestination[] = [];
+
+        const sourceIndex =
+          stableOrder.indexOf(activeSourceImageId);
+
+        const sourceRect =
+          stableRects.get(activeSourceImageId);
+
+        /*
+         * SWAP DESTINATIONS
+         * ----------------------------------------------------------
+         * A generous but inset rectangle in the middle of every other
+         * card is an explicit Swap destination.
+         *
+         * The inset leaves the physical edges available to the gap
+         * engine, so Swap and Insert no longer fight over the same
+         * pointer position.
+         */
+        for (const imageId of stableOrder) {
+          if (imageId === activeSourceImageId) {
+            continue;
+          }
+
+          const rect = stableRects.get(imageId);
+
+          if (!rect) {
+            continue;
+          }
+
+          const horizontalInset =
+            Math.min(
+              Math.max(rect.width * 0.18, 22),
+              rect.width * 0.28,
+            );
+
+          const verticalInset =
+            Math.min(
+              Math.max(rect.height * 0.08, 12),
+              rect.height * 0.16,
+            );
+
+          const swapLeft =
+            rect.left + horizontalInset;
+
+          const swapRight =
+            rect.right - horizontalInset;
+
+          const swapTop =
+            rect.top + verticalInset;
+
+          const swapBottom =
+            rect.bottom - verticalInset;
+
+          const insideSwap =
+            pointer.x >= swapLeft &&
+            pointer.x <= swapRight &&
+            pointer.y >= swapTop &&
+            pointer.y <= swapBottom;
+
+          if (!insideSwap) {
+            continue;
+          }
+
+          const centerX =
+            rect.left + rect.width / 2;
+
+          const centerY =
+            rect.top + rect.height / 2;
+
+          const normalizedX =
+            Math.abs(pointer.x - centerX) /
+            Math.max(rect.width / 2, 1);
+
+          const normalizedY =
+            Math.abs(pointer.y - centerY) /
+            Math.max(rect.height / 2, 1);
+
+          destinations.push({
+            targetImageId: imageId,
+            mode: "swap",
+            distance:
+              Math.hypot(normalizedX, normalizedY),
+            priority: 0,
+          });
+        }
+
+        /*
+         * INSERT DESTINATIONS
+         * ----------------------------------------------------------
+         * Build a target for each exact boundary in the stable order.
+         *
+         * A boundary is represented by:
+         * - after the card on its left, or
+         * - before the card on its right.
+         *
+         * We choose the representation that remains valid after the
+         * dragged source is removed from the order.
+         */
+        type GapDestination = {
+          targetImageId: string;
+          mode: "insert-before" | "insert-after";
+          x: number;
+          y: number;
+          width: number;
+          height: number;
+        };
+
+        const gaps: GapDestination[] = [];
+
+        for (
+          let boundaryIndex = 1;
+          boundaryIndex < stableOrder.length;
+          boundaryIndex += 1
+        ) {
+          const leftImageId =
+            stableOrder[boundaryIndex - 1];
+
+          const rightImageId =
+            stableOrder[boundaryIndex];
+
+          const leftRect =
+            stableRects.get(leftImageId);
+
+          const rightRect =
+            stableRects.get(rightImageId);
+
+          if (!leftRect || !rightRect) {
+            continue;
+          }
+
+          const sameRow =
+            Math.abs(
+              (leftRect.top + leftRect.height / 2) -
+              (rightRect.top + rightRect.height / 2),
+            ) <
+            Math.max(
+              20,
+              Math.min(
+                leftRect.height,
+                rightRect.height,
+              ) * 0.45,
+            );
+
+          let gapX: number;
+          let gapY: number;
+          let gapWidth: number;
+          let gapHeight: number;
+
+          if (sameRow) {
+            gapX =
+              (leftRect.right + rightRect.left) / 2;
+
+            gapY =
+              (
+                Math.max(leftRect.top, rightRect.top) +
+                Math.min(leftRect.bottom, rightRect.bottom)
+              ) / 2;
+
+            gapWidth =
+              Math.max(
+                34,
+                Math.min(
+                  76,
+                  Math.abs(
+                    rightRect.left - leftRect.right,
+                  ) + 42,
+                ),
+              );
+
+            gapHeight =
+              Math.max(
+                70,
+                Math.min(
+                  leftRect.height,
+                  rightRect.height,
+                ) * 0.82,
+              );
+          } else {
+            /*
+             * Row wrap boundary.
+             *
+             * Treat the end of the previous row and beginning of the
+             * next row as one logical insertion destination centered
+             * between those two stable slots.
+             */
+            gapX =
+              (leftRect.right + rightRect.left) / 2;
+
+            gapY =
+              (leftRect.bottom + rightRect.top) / 2;
+
+            gapWidth =
+              Math.max(
+                80,
+                Math.min(
+                  leftRect.width,
+                  rightRect.width,
+                ) * 0.72,
+              );
+
+            gapHeight =
+              Math.max(
+                36,
+                Math.abs(
+                  rightRect.top - leftRect.bottom,
+                ) + 30,
+              );
+          }
+
+          /*
+           * If the source itself borders this gap, target the card on
+           * the opposite side. This keeps buildSavedImageDropOrder
+           * semantically correct after the source is removed.
+           */
+          let targetImageId: string;
+          let mode:
+            | "insert-before"
+            | "insert-after";
+
+          if (
+            leftImageId === activeSourceImageId &&
+            rightImageId !== activeSourceImageId
+          ) {
+            targetImageId = rightImageId;
+            mode = "insert-before";
+          } else if (
+            rightImageId === activeSourceImageId &&
+            leftImageId !== activeSourceImageId
+          ) {
+            targetImageId = leftImageId;
+            mode = "insert-after";
+          } else {
+            targetImageId = rightImageId;
+            mode = "insert-before";
+          }
+
+          /*
+           * Ignore the source's original boundary when dropping there
+           * would produce no actual order change.
+           */
+          const previewOrder =
+            buildSavedImageDropOrder(
+              activeSourceImageId,
+              targetImageId,
+              mode,
+            );
+
+          if (
+            !previewOrder ||
+            previewOrder.every(
+              (imageId, index) =>
+                imageId === stableOrder[index],
+            )
+          ) {
+            continue;
+          }
+
+          gaps.push({
+            targetImageId,
+            mode,
+            x: gapX,
+            y: gapY,
+            width: gapWidth,
+            height: gapHeight,
+          });
+        }
+
+        /*
+         * Also expose the outer beginning/end of the gallery as exact
+         * insertion destinations.
+         */
+        const firstNonSourceImageId =
+          stableOrder.find(
+            (imageId) =>
+              imageId !== activeSourceImageId,
+          );
+
+        const lastNonSourceImageId =
+          [...stableOrder]
+            .reverse()
+            .find(
+              (imageId) =>
+                imageId !== activeSourceImageId,
+            );
+
+        if (firstNonSourceImageId) {
+          const rect =
+            stableRects.get(firstNonSourceImageId);
+
+          if (rect) {
+            const previewOrder =
+              buildSavedImageDropOrder(
+                activeSourceImageId,
+                firstNonSourceImageId,
+                "insert-before",
+              );
+
+            if (
+              previewOrder &&
+              !previewOrder.every(
+                (imageId, index) =>
+                  imageId === stableOrder[index],
+              )
+            ) {
+              gaps.push({
+                targetImageId:
+                  firstNonSourceImageId,
+                mode: "insert-before",
+                x: rect.left - 18,
+                y: rect.top + rect.height / 2,
+                width: 52,
+                height: rect.height * 0.78,
+              });
+            }
+          }
+        }
+
+        if (lastNonSourceImageId) {
+          const rect =
+            stableRects.get(lastNonSourceImageId);
+
+          if (rect) {
+            const previewOrder =
+              buildSavedImageDropOrder(
+                activeSourceImageId,
+                lastNonSourceImageId,
+                "insert-after",
+              );
+
+            if (
+              previewOrder &&
+              !previewOrder.every(
+                (imageId, index) =>
+                  imageId === stableOrder[index],
+              )
+            ) {
+              gaps.push({
+                targetImageId:
+                  lastNonSourceImageId,
+                mode: "insert-after",
+                x: rect.right + 18,
+                y: rect.top + rect.height / 2,
+                width: 52,
+                height: rect.height * 0.78,
+              });
+            }
+          }
+        }
+
+        /*
+         * Gap hit testing uses normalized distance.
+         *
+         * A pointer inside an insertion corridor is an explicit insert
+         * request. It does not need to pass through a card-edge mode.
+         */
+        for (const gap of gaps) {
+          const normalizedX =
+            Math.abs(pointer.x - gap.x) /
+            Math.max(gap.width / 2, 1);
+
+          const normalizedY =
+            Math.abs(pointer.y - gap.y) /
+            Math.max(gap.height / 2, 1);
+
+          const insideGap =
+            normalizedX <= 1 &&
+            normalizedY <= 1;
+
+          if (!insideGap) {
+            continue;
+          }
+
+          destinations.push({
+            targetImageId:
+              gap.targetImageId,
+            mode: gap.mode,
+            distance:
+              Math.hypot(
+                normalizedX,
+                normalizedY,
+              ),
+            priority: 1,
+          });
+        }
+
+        /*
+         * Explicit intent wins.
+         *
+         * - Deep inside a card: Swap.
+         * - Inside a physical gap corridor: Insert.
+         *
+         * The two regions intentionally overlap as little as possible.
+         * If they do overlap at a corner, the destination whose center
+         * is closer in normalized space wins.
+         */
+        let destination:
+          | ExactDropDestination
+          | null = null;
+
+        for (const candidate of destinations) {
+          if (
+            !destination ||
+            candidate.distance <
+              destination.distance - 0.04 ||
+            (
+              Math.abs(
+                candidate.distance -
+                destination.distance,
+              ) <= 0.04 &&
+              candidate.priority <
+                destination.priority
+            )
+          ) {
+            destination = candidate;
+          }
+        }
+
+        /*
+         * When the pointer is between all explicit targets, preserve
+         * the current destination instead of guessing a new one.
+         *
+         * This is critical: tiny movements through neutral pixels do
+         * not cause the system to flicker between Swap and Insert.
+         */
+        if (!destination) {
+          return;
+        }
+
+        const targetImageId =
+          destination.targetImageId;
+
+        const mode =
+          destination.mode;
+
+        /*
+         * A small destination lock removes last-pixel ambiguity.
+         *
+         * If the pointer is still inside the currently selected exact
+         * destination, keep it. A different destination must become a
+         * genuinely better geometric match before ownership changes.
+         */
+        const previousTarget =
+          imageDragTargetIdRef.current;
+
+        const previousMode =
+          imageDragDropModeRef.current;
+
+        if (
+          previousTarget &&
+          previousMode &&
+          (
+            previousTarget !== targetImageId ||
+            previousMode !== mode
+          )
+        ) {
+          let previousDistance =
+            Number.POSITIVE_INFINITY;
+
+          const previousDestination =
+            destinations.find(
+              (candidate) =>
+                candidate.targetImageId ===
+                  previousTarget &&
+                candidate.mode === previousMode,
+            );
+
+          if (previousDestination) {
+            previousDistance =
+              previousDestination.distance;
+          }
+
+          if (
+            Number.isFinite(previousDistance) &&
+            destination.distance >
+              previousDistance - 0.12
+          ) {
+            return;
+          }
+        }
+
+        /*
+         * Source index is intentionally read above while geometry is
+         * immutable. Keep the variable live for debugging and future
+         * row-boundary refinement without affecting runtime behavior.
+         */
+        void sourceIndex;
+        void sourceRect;
+
+        const visualOrderKey =
+          `${targetImageId}:${mode}`;
+
+        /*
+         * This is the main V10 performance boundary.
+         *
+         * If the logical destination did not change, React and
+         * every gallery card are left completely untouched.
+         */
+        if (
+          imageDragVisualOrderKeyRef.current ===
+          visualOrderKey
+        ) {
+          return;
+        }
+
+        imageDragTargetIdRef.current =
+          targetImageId;
+
+        imageDragDropModeRef.current =
+          mode;
+
+        imageDragVisualOrderKeyRef.current =
+          visualOrderKey;
+
+        /*
+         * SWAP
+         * ------------------------------------------------------
+         * The physical grid stays absolutely stationary.
+         */
+        if (mode === "swap") {
+          clearVisualReflow();
+
+          setDragTargetImageId(targetImageId);
+          setImageDragDropMode("swap");
+          return;
+        }
+
+        /*
+         * INSERT
+         * ------------------------------------------------------
+         * Calculate exactly where every non-source card would be
+         * after drop.
+         *
+         * Only cards whose physical slot changes receive a GPU
+         * transform. The dragged source remains represented by
+         * the floating V6 card and its original placeholder.
+         */
+        const nextVisualOrder =
+          buildSavedImageDropOrder(
+            activeSourceImageId,
+            targetImageId,
+            mode,
+          );
+
+        if (
+          !nextVisualOrder ||
+          nextVisualOrder.length !==
+            stableOrder.length
+        ) {
+          clearVisualReflow();
+
+          setDragTargetImageId(targetImageId);
+          setImageDragDropMode(mode);
+          return;
+        }
+
+        const nextTransformByImageId =
+          new Map<
+            string,
+            { x: number; y: number }
+          >();
+
+        for (
+          let futureIndex = 0;
+          futureIndex < nextVisualOrder.length;
+          futureIndex += 1
+        ) {
+          const imageId =
+            nextVisualOrder[futureIndex];
+
+          if (
+            imageId === activeSourceImageId
+          ) {
+            continue;
+          }
+
+          const currentRect =
+            stableRects.get(imageId);
+
+          const futureSlotImageId =
+            stableOrder[futureIndex];
+
+          const futureRect =
+            stableRects.get(
+              futureSlotImageId,
+            );
+
+          if (
+            !currentRect ||
+            !futureRect
+          ) {
+            continue;
+          }
+
+          const deltaX =
+            futureRect.left -
+            currentRect.left;
+
+          const deltaY =
+            futureRect.top -
+            currentRect.top;
+
+          if (
+            Math.abs(deltaX) < 0.5 &&
+            Math.abs(deltaY) < 0.5
+          ) {
+            continue;
+          }
+
+          nextTransformByImageId.set(
+            imageId,
+            {
+              x: deltaX,
+              y: deltaY,
+            },
+          );
+        }
+
+        /*
+         * Apply the complete destination in one DOM write phase.
+         *
+         * Cards that are no longer displaced return smoothly to
+         * their untouched slot. Cards entering the insertion flow
+         * glide to the new slot.
+         */
+        for (const card of cards) {
+          const imageId =
+            card.dataset
+              .adminEditProductReorderImage ?? "";
+
+          const transform =
+            nextTransformByImageId.get(imageId);
+
+          if (!transform) {
+            if (
+              card.classList.contains(
+                "is-drag-reflowing",
+              )
+            ) {
+              card.style.setProperty(
+                "--st-admin-drag-reflow-x",
+                "0px",
+              );
+
+              card.style.setProperty(
+                "--st-admin-drag-reflow-y",
+                "0px",
+              );
+
+              card.classList.remove(
+                "is-drag-reflowing",
+              );
+            }
+
+            continue;
+          }
+
+          card.style.setProperty(
+            "--st-admin-drag-reflow-x",
+            `${transform.x}px`,
+          );
+
+          card.style.setProperty(
+            "--st-admin-drag-reflow-y",
+            `${transform.y}px`,
+          );
+
+          card.classList.add(
+            "is-drag-reflowing",
+          );
+        }
+
+        setDragTargetImageId(targetImageId);
+        setImageDragDropMode(mode);
+      });
+  }
+
+  function handleSavedImagePointerUp(
+    event: React.PointerEvent<HTMLElement>,
+  ) {
+    const sourceImageId =
+      imageDragSourceIdRef.current;
+
+    const targetImageId =
+      imageDragTargetIdRef.current;
+
+    const dropMode =
+      imageDragDropModeRef.current;
+
+    const wasActivated =
+      imageDragActivatedRef.current;
+
+    try {
+      if (
+        event.currentTarget.hasPointerCapture(
+          event.pointerId,
+        )
+      ) {
+        event.currentTarget.releasePointerCapture(
+          event.pointerId,
+        );
+      }
+    } catch {
+      // Pointer capture is optional.
+    }
+
+    let nextOrderedImageIds: string[] | null = null;
+
+    if (
+      wasActivated &&
+      sourceImageId &&
+      targetImageId &&
+      sourceImageId !== targetImageId &&
+      dropMode
+    ) {
+      nextOrderedImageIds =
+        buildSavedImageDropOrder(
+          sourceImageId,
+          targetImageId,
+          dropMode,
+        );
+    }
+
+    resetImageDrag();
+
+    if (nextOrderedImageIds) {
+      void commitSavedImageExactOrder(
+        sourceImageId,
+        nextOrderedImageIds,
+      );
+    }
+  }
+
+  function handleSavedImagePointerCancel(
+    event: React.PointerEvent<HTMLElement>,
+  ) {
+    try {
+      if (
+        event.currentTarget.hasPointerCapture(
+          event.pointerId,
+        )
+      ) {
+        event.currentTarget.releasePointerCapture(
+          event.pointerId,
+        );
+      }
+    } catch {
+      // Pointer capture is optional.
+    }
+
+    resetImageDrag();
+  }
+
   const orderedImages = [...managedImages].sort((first, second) => {
     /*
      * If the administrator just interacted with one exact configuration,
@@ -867,6 +2419,7 @@ const difference =
 
     setSelectedFiles([]);
     setSelectedVariantIds([]);
+    setPendingUploadConfigurationId("");
     setPreviewUrls([]);
     setUploadError("");
 
@@ -903,22 +2456,23 @@ const difference =
     }
   }
 
-  async function handleDirectUploadSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function uploadPreparedImages(
+    files: File[],
+    variantIdsByFile: string[][],
+    inlineBatch?: {
+      ids: string[];
+      previewUrls: string[];
+    },
+  ) {
     setUploadError("");
 
-    if (selectedFiles.length === 0) {
+    if (files.length === 0) {
       setUploadError("Select at least one image.");
       return;
     }
 
-    if (isPreparingSelectedImages) {
-      setUploadError("Please wait while the selected images are prepared.");
-      return;
-    }
-
     try {
-      validateProductImageFiles(selectedFiles, orderedImages.length);
+      validateProductImageFiles(files, orderedImages.length);
     } catch (error) {
       setUploadError(
         error instanceof Error
@@ -930,14 +2484,14 @@ const difference =
 
     setIsUploading(true);
     setUploadProgress({
-      currentFileName: selectedFiles[0]?.name ?? "",
+      currentFileName: files[0]?.name ?? "",
       percentage: 0,
       currentIndex: 1,
-      totalFiles: selectedFiles.length,
+      totalFiles: files.length,
       isFinalizing: false,
     });
 
-    const totalBytes = selectedFiles.reduce(
+    const totalBytes = files.reduce(
       (total, file) => total + file.size,
       0,
     );
@@ -955,26 +2509,74 @@ const difference =
     }[] = [];
 
     try {
-      for (let index = 0; index < selectedFiles.length; index += 1) {
-        const file = selectedFiles[index];
+      for (let index = 0; index < files.length; index += 1) {
+        const file = files[index];
         const storagePath = createTemporaryProductImagePath(file);
+        const inlineCardId = inlineBatch?.ids[index];
+
+        if (inlineCardId) {
+          setInlineUploadCards((current) =>
+            current.map((card) =>
+              card.id === inlineCardId
+                ? {
+                    ...card,
+                    status: "uploading",
+                    realStatus: "uploading",
+                    percentage: 0,
+                    targetPercentage: 0,
+                  }
+                : card,
+            ),
+          );
+        }
 
         await uploadProductImageDirectly({
           file,
           storagePath,
           onProgress(progress) {
-            const uploadedBytes = completedBytes + progress.bytesUploaded;
+            const uploadedBytes =
+              completedBytes + progress.bytesUploaded;
 
             const percentage =
               totalBytes > 0
-                ? Math.round((uploadedBytes / totalBytes) * 100)
+                ? Math.round(
+                    (uploadedBytes / totalBytes) * 100,
+                  )
                 : 0;
+
+            const filePercentage =
+              file.size > 0
+                ? Math.round(
+                    (progress.bytesUploaded / file.size) * 100,
+                  )
+                : 0;
+
+            if (inlineCardId) {
+              setInlineUploadCards((current) =>
+                current.map((card) =>
+                  card.id === inlineCardId
+                    ? {
+                        ...card,
+                        status:
+                          card.percentage >= 100
+                            ? "finalizing"
+                            : "uploading",
+                        realStatus: "uploading",
+                        targetPercentage: Math.min(
+                          filePercentage,
+                          100,
+                        ),
+                      }
+                    : card,
+                ),
+              );
+            }
 
             setUploadProgress({
               currentFileName: file.name,
               percentage: Math.min(percentage, 100),
               currentIndex: index + 1,
-              totalFiles: selectedFiles.length,
+              totalFiles: files.length,
               isFinalizing: false,
             });
           },
@@ -982,6 +2584,24 @@ const difference =
 
         uploadedPaths.push(storagePath);
         completedBytes += file.size;
+
+        if (inlineCardId) {
+          setInlineUploadCards((current) =>
+            current.map((card) =>
+              card.id === inlineCardId
+                ? {
+                    ...card,
+                    targetPercentage: 100,
+                    realStatus: "finalizing",
+                    status:
+                      card.percentage >= 100
+                        ? "finalizing"
+                        : "uploading",
+                  }
+                : card,
+            ),
+          );
+        }
 
         payload.push({
           storage_path: storagePath,
@@ -992,8 +2612,10 @@ const difference =
           alt_text: "",
           variant_ids: Array.from(
             new Set(
-              (selectedVariantIds[index] ?? [])
-                .map((variantId) => String(variantId ?? "").trim())
+              (variantIdsByFile[index] ?? [])
+                .map((variantId) =>
+                  String(variantId ?? "").trim(),
+                )
                 .filter(Boolean),
             ),
           ),
@@ -1003,23 +2625,50 @@ const difference =
       setUploadProgress({
         currentFileName: "",
         percentage: 100,
-        currentIndex: selectedFiles.length,
-        totalFiles: selectedFiles.length,
+        currentIndex: files.length,
+        totalFiles: files.length,
         isFinalizing: true,
       });
 
-      if (!directUploadedImagesInputRef.current) {
-        throw new Error("The image upload form could not be prepared.");
+      if (inlineBatch) {
+        setInlineUploadCards((current) =>
+          current.map((card) =>
+            inlineBatch.ids.includes(card.id)
+              ? {
+                  ...card,
+                  targetPercentage: 100,
+                  realStatus: "finalizing",
+                  status:
+                    card.percentage >= 100
+                      ? "finalizing"
+                      : "uploading",
+                }
+              : card,
+          ),
+        );
       }
 
-      directUploadedImagesInputRef.current.value = JSON.stringify(payload);
+      if (!directUploadedImagesInputRef.current) {
+        throw new Error(
+          "The image upload form could not be prepared.",
+        );
+      }
+
+      directUploadedImagesInputRef.current.value =
+        JSON.stringify(payload);
 
       const finalizationData = new FormData();
       finalizationData.set("product_id", productId);
-      finalizationData.set("direct_uploaded_images", JSON.stringify(payload));
+      finalizationData.set(
+        "direct_uploaded_images",
+        JSON.stringify(payload),
+      );
       finalizationData.set("_client_image_operation", "1");
 
-      const result = await finalizeDirectProductImageUploads(finalizationData);
+      const result =
+        await finalizeDirectProductImageUploads(
+          finalizationData,
+        );
 
       if (
         !result ||
@@ -1034,10 +2683,25 @@ const difference =
 
       setManagedImages(result.images as ProductImage[]);
 
-      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      if (inlineBatch) {
+        setInlineUploadCards((current) =>
+          current.filter(
+            (card) => !inlineBatch.ids.includes(card.id),
+          ),
+        );
+
+        inlineBatch.previewUrls.forEach((url) => {
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      previewUrls.forEach((url) =>
+        URL.revokeObjectURL(url),
+      );
 
       setSelectedFiles([]);
       setSelectedVariantIds([]);
+      setPendingUploadConfigurationId("");
       setPreviewUrls([]);
 
       if (fileInputRef.current) {
@@ -1050,6 +2714,18 @@ const difference =
       setUploadError("");
       setIsUploading(false);
     } catch (error) {
+      if (inlineBatch) {
+        setInlineUploadCards((current) =>
+          current.filter(
+            (card) => !inlineBatch.ids.includes(card.id),
+          ),
+        );
+
+        inlineBatch.previewUrls.forEach((url) => {
+          URL.revokeObjectURL(url);
+        });
+      }
+
       await removeDirectlyUploadedImages(uploadedPaths);
 
       if (directUploadedImagesInputRef.current) {
@@ -1065,6 +2741,24 @@ const difference =
       setUploadProgress(null);
       setIsUploading(false);
     }
+  }
+
+  async function handleDirectUploadSubmit(
+    event: FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    if (isPreparingSelectedImages) {
+      setUploadError(
+        "Please wait while the selected images are prepared.",
+      );
+      return;
+    }
+
+    await uploadPreparedImages(
+      selectedFiles,
+      selectedVariantIds,
+    );
   }
 
   async function selectFiles(files: FileList | null) {
@@ -1121,15 +2815,77 @@ const difference =
 
     setUploadError("");
 
-    setSelectedFiles(processedFiles);
+    /*
+     * Capture the active configuration before any upload begins.
+     * A later gallery-tab change cannot redirect this batch.
+     */
+    const uploadConfigurationId =
+      selectedGalleryConfigurationId;
+
+    const preparedVariantIds = processedFiles.map(() =>
+      uploadConfigurationId ? [uploadConfigurationId] : [],
+    );
 
     /*
-     * New images default to Shared with all configurations.
-     * The admin can change each image independently before upload.
+     * Configuration gallery:
+     * the native file picker is the final confirmation.
+     * Upload immediately after preparation with local authoritative
+     * file/configuration values, avoiding stale React state.
      */
-    setSelectedVariantIds(processedFiles.map(() => []));
+    if (uploadConfigurationId) {
+      setPendingUploadConfigurationId(
+        uploadConfigurationId,
+      );
 
-    setPreviewUrls(processedFiles.map((file) => URL.createObjectURL(file)));
+      const inlinePreviewUrls = processedFiles.map(
+        (file) => URL.createObjectURL(file),
+      );
+
+      const inlineIds = processedFiles.map(
+        (_, index) =>
+          `inline-upload-${Date.now()}-${index}`,
+      );
+
+      setInlineUploadCards(
+        processedFiles.map((file, index) => ({
+          id: inlineIds[index],
+          previewUrl: inlinePreviewUrls[index],
+          fileName: file.name,
+          percentage: 0,
+          targetPercentage: 0,
+          status: "waiting" as const,
+          realStatus: "waiting" as const,
+        })),
+      );
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      await uploadPreparedImages(
+        processedFiles,
+        preparedVariantIds,
+        {
+          ids: inlineIds,
+          previewUrls: inlinePreviewUrls,
+        },
+      );
+
+      return;
+    }
+
+    /*
+     * Shared-image uploads preserve the existing staging workflow
+     * so administrators can review and assign usage before upload.
+     */
+    setSelectedFiles(processedFiles);
+    setPendingUploadConfigurationId("");
+    setSelectedVariantIds(preparedVariantIds);
+    setPreviewUrls(
+      processedFiles.map((file) =>
+        URL.createObjectURL(file),
+      ),
+    );
   }
 
 
@@ -1265,8 +3021,21 @@ const difference =
                     {selectedFiles.length === 1 ? "image" : "images"} ready
                   </strong>
                   <span>
-                    Choose usage, then upload. New images are added to the end
-                    of the saved gallery.
+                    {pendingUploadConfigurationId
+                      ? `Ready for ${
+                          liveConfigurations.find(
+                            (configuration) =>
+                              configuration.id ===
+                              pendingUploadConfigurationId,
+                          )?.variant_name ||
+                          liveConfigurations.find(
+                            (configuration) =>
+                              configuration.id ===
+                              pendingUploadConfigurationId,
+                          )?.fallbackLabel ||
+                          "the selected configuration"
+                        }. Upload to add them directly to this gallery.`
+                      : "Ready to upload as shared product images."}
                   </span>
                 </div>
 
@@ -1287,6 +3056,15 @@ const difference =
                 {selectedFiles.map((file, index) => {
                   const assignedVariantIds =
                     selectedVariantIds[index] ?? [];
+
+                  const uploadConfiguration =
+                    pendingUploadConfigurationId
+                      ? liveConfigurations.find(
+                          (configuration) =>
+                            configuration.id ===
+                            pendingUploadConfigurationId,
+                        )
+                      : null;
 
                   const currentUsageLabel =
                     assignedVariantIds.length === 0
@@ -1332,101 +3110,16 @@ const difference =
                           </span>
                         </div>
 
-                        <details className="st-admin-media-item__usage">
-                          <summary>
+                        <div className="st-admin-media-item__usage">
+                          <div className="st-admin-media-item__usage-direct">
                             <span>{currentUsageLabel}</span>
-                            <small>Edit usage</small>
-                          </summary>
-
-                          <div className="st-admin-media-item__usage-panel">
-                            <button
-                              type="button"
-                              disabled={
-                                isUploading ||
-                                isPreparingSelectedImages
-                              }
-                              onClick={() => {
-                                setSelectedVariantIds((current) =>
-                                  current.map(
-                                    (value, candidateIndex) =>
-                                      candidateIndex === index
-                                        ? []
-                                        : value,
-                                  ),
-                                );
-                              }}
-                              className={
-                                assignedVariantIds.length === 0
-                                  ? "st-admin-existing-media-v2__shared is-active"
-                                  : "st-admin-existing-media-v2__shared"
-                              }
-                            >
-                              Shared with all configurations
-                            </button>
-
-                            {liveConfigurations.length > 0 ? (
-                              <div className="st-admin-media-item__configuration-list">
-                                {liveConfigurations.map(
-                                  (configuration) => {
-                                    const selected =
-                                      assignedVariantIds.includes(
-                                        configuration.id,
-                                      );
-
-                                    return (
-                                      <label key={configuration.id}>
-                                        <input
-                                          type="checkbox"
-                                          disabled={
-                                            isUploading ||
-                                            isPreparingSelectedImages
-                                          }
-                                          checked={selected}
-                                          onChange={() => {
-                                            setSelectedVariantIds(
-                                              (current) =>
-                                                current.map(
-                                                  (
-                                                    value,
-                                                    candidateIndex,
-                                                  ) => {
-                                                    if (
-                                                      candidateIndex !==
-                                                      index
-                                                    ) {
-                                                      return value;
-                                                    }
-
-                                                    return selected
-                                                      ? value.filter(
-                                                          (
-                                                            variantId,
-                                                          ) =>
-                                                            variantId !==
-                                                            configuration.id,
-                                                        )
-                                                      : [
-                                                          ...value,
-                                                          configuration.id,
-                                                        ];
-                                                  },
-                                                ),
-                                            );
-                                          }}
-                                        />
-
-                                        <span>
-                                          {configuration.variant_name ||
-                                            configuration.fallbackLabel}
-                                        </span>
-                                      </label>
-                                    );
-                                  },
-                                )}
-                              </div>
-                            ) : null}
+                            <small>
+                              {uploadConfiguration
+                                ? "Uploads directly to this configuration"
+                                : "Shared product image"}
+                            </small>
                           </div>
-                        </details>
+                        </div>
 
                         <div className="st-admin-media-item__actions">
                           <button
@@ -1521,22 +3214,6 @@ const difference =
           </div>
 
           <div className="st-admin-existing-media-v2__toolbar-actions">
-            {selectedGalleryConfigurationId &&
-            managedImages.length > 0 ? (
-              <button
-                type="button"
-                disabled={Boolean(pendingImageOperation)}
-                onClick={() => {
-                  void handleSaveConfigurationPhotoUsage();
-                }}
-                className="st-admin-existing-media-v2__secondary"
-              >
-                {pendingImageOperation === "Saving photo usage…"
-                  ? "Saving..."
-                  : "Save usage"}
-              </button>
-            ) : null}
-
             {managedImages.length > 0 ? (
               <button
                 type="button"
@@ -1544,13 +3221,34 @@ const difference =
                 onClick={() => {
                   void handleClearAllPhotographs();
                 }}
-                className="st-admin-existing-media-v2__danger"
+                className="st-admin-existing-media-v2__danger st-admin-image-destructive-v32"
               >
                 Clear all
               </button>
             ) : null}
           </div>
         </div>
+
+        {orderedImages.length > 1 ? (
+          <div
+            className="st-admin-existing-media-v2__reorder-note"
+            role="note"
+          >
+            <span
+              className="st-admin-existing-media-v2__reorder-note-icon"
+              aria-hidden="true"
+            >
+              <Grip />
+            </span>
+
+            <span className="st-admin-existing-media-v2__reorder-note-copy">
+              <strong>Reorder photos</strong>
+              <span>
+                Hold and drag any photo to reposition it in the gallery.
+              </span>
+            </span>
+          </div>
+        ) : null}
 
         {photoUsageSavedMessage ? (
           <div className="st-admin-existing-media-v2__success">
@@ -1599,7 +3297,14 @@ const difference =
             </span>
           </div>
         ) : (
-          <div className="st-admin-media-manager__grid st-admin-existing-media-v2__grid">
+          <div
+            className={[
+              "st-admin-media-manager__grid st-admin-existing-media-v2__grid",
+              draggingImageId ? "is-drag-focus" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
             {selectedConfigurationImages.map((image, index) => {
               const assignments = (image.product_image_variants ?? []).sort(
                 (first, second) =>
@@ -1648,15 +3353,42 @@ const difference =
 
               return (
                 <article
-                  key={image.id}
-                  className={
-                    isActiveMain
-                      ? "st-admin-media-item is-main"
-                      : "st-admin-media-item"
-                  }
-                  data-admin-product-image-card="true"
-                >
-                  <div className="st-admin-media-item__preview">
+                    key={image.id}
+                    className={[
+                      isActiveMain
+                        ? "st-admin-media-item is-main"
+                        : "st-admin-media-item",
+                      draggingImageId === image.id
+                        ? "is-dragging"
+                        : "",
+                      dragTargetImageId === image.id &&
+                      draggingImageId !== image.id &&
+                      imageDragDropMode === "swap"
+                        ? "is-drag-target is-drag-swap"
+                        : "",
+                      dragTargetImageId === image.id &&
+                      draggingImageId !== image.id &&
+                      imageDragDropMode === "insert-before"
+                        ? "is-drag-target is-drag-insert-before"
+                        : "",
+                      dragTargetImageId === image.id &&
+                      draggingImageId !== image.id &&
+                      imageDragDropMode === "insert-after"
+                        ? "is-drag-target is-drag-insert-after"
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    data-admin-product-image-card="true"
+                    data-admin-edit-product-reorder-image={image.id}
+                    onPointerDown={(event) =>
+                      handleSavedImagePointerDown(event, image.id)
+                    }
+                    onPointerMove={handleSavedImagePointerMove}
+                    onPointerUp={handleSavedImagePointerUp}
+                    onPointerCancel={handleSavedImagePointerCancel}
+                  >
+                    <div className="st-admin-media-item__preview">
                     {image.image_url ? (
                       <img
                         src={image.image_url}
@@ -1664,7 +3396,8 @@ const difference =
                           image.alt_text ||
                           `${productName} image ${index + 1}`
                         }
-                      />
+                      draggable={false}
+                        />
                     ) : (
                       <div className="st-admin-existing-media-v2__missing">
                         <ImageOff />
@@ -1698,6 +3431,18 @@ const difference =
                         onSubmit={(event) =>
                           void handleImageOperation(event, "usage")
                         }
+                        onChange={(event) => {
+                          if (
+                            !(event.target instanceof HTMLInputElement) ||
+                            event.target.name !== "variant_ids"
+                          ) {
+                            return;
+                          }
+
+                          window.requestAnimationFrame(() => {
+                            event.currentTarget.requestSubmit();
+                          });
+                        }}
                         className="st-admin-media-item__usage-panel"
                       >
                         <input
@@ -1758,129 +3503,43 @@ const difference =
                     </details>
 
 
-                    <div className="st-admin-media-item__actions">
-                      <form
-                        onSubmit={(event) =>
-                          void handleImageOperation(event, "move")
-                        }
-                      >
-                        <input type="hidden" name="product_id" value={productId} />
-                        <input type="hidden" name="image_id" value={image.id} />
-                        {!isShared && activeAssignment ? (
+                    <div className="st-admin-media-item__actions st-admin-media-item__actions--delete-only">
+                        <form
+                          onSubmit={(event) => {
+                            const confirmed = window.confirm(
+                              "Delete this image permanently?",
+                            );
+
+                            if (!confirmed) {
+                              event.preventDefault();
+                              return;
+                            }
+
+                            void handleImageOperation(event, "delete");
+                          }}
+                        >
                           <input
                             type="hidden"
-                            name="variant_id"
-                            value={activeAssignment.variant_id}
+                            name="product_id"
+                            value={productId}
                           />
-                        ) : null}
-                        <input type="hidden" name="direction" value="left" />
-                        <button
-                          type="submit"
-                          data-secondary-action="true"
-                          data-movement-pending={
-                            pendingMovementImageId === image.id &&
-                            pendingMovementDirection === "left"
-                              ? "true"
-                              : undefined
-                          }
-                          disabled={
-                            (pendingMovementImageId === image.id &&
-                              pendingMovementDirection === "left") ||
-                            (isShared
-                              ? sharedIndex <= 0
-                              : !activeAssignment ||
-                                activeConfigurationIndex <= 0)
-                          }
-                          title="Move image earlier"
-                          aria-label="Move image earlier"
-                        >
-                          {pendingMovementImageId === image.id &&
-                          pendingMovementDirection === "left" ? (
-                            <span
-                              className="st-admin-existing-media-v2__arrow-spinner"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <ArrowLeft />
-                          )}
-                        </button>
-                      </form>
-
-                      <form
-                        onSubmit={(event) =>
-                          void handleImageOperation(event, "move")
-                        }
-                      >
-                        <input type="hidden" name="product_id" value={productId} />
-                        <input type="hidden" name="image_id" value={image.id} />
-                        {!isShared && activeAssignment ? (
                           <input
                             type="hidden"
-                            name="variant_id"
-                            value={activeAssignment.variant_id}
+                            name="image_id"
+                            value={image.id}
                           />
-                        ) : null}
-                        <input type="hidden" name="direction" value="right" />
-                        <button
-                          type="submit"
-                          data-secondary-action="true"
-                          data-movement-pending={
-                            pendingMovementImageId === image.id &&
-                            pendingMovementDirection === "right"
-                              ? "true"
-                              : undefined
-                          }
-                          disabled={
-                            (pendingMovementImageId === image.id &&
-                              pendingMovementDirection === "right") ||
-                            (isShared
-                              ? sharedIndex >= sharedImages.length - 1
-                              : !activeAssignment ||
-                                activeConfigurationIndex >=
-                                  activeConfigurationImages.length - 1)
-                          }
-                          title="Move image later"
-                          aria-label="Move image later"
-                        >
-                          {pendingMovementImageId === image.id &&
-                          pendingMovementDirection === "right" ? (
-                            <span
-                              className="st-admin-existing-media-v2__arrow-spinner"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <ArrowRight />
-                          )}
-                        </button>
-                      </form>
-
-                      <form
-                        onSubmit={(event) => {
-                          const confirmed = window.confirm(
-                            "Delete this image permanently?",
-                          );
-
-                          if (!confirmed) {
-                            event.preventDefault();
-                            return;
-                          }
-
-                          void handleImageOperation(event, "delete");
-                        }}
-                      >
-                        <input type="hidden" name="product_id" value={productId} />
-                        <input type="hidden" name="image_id" value={image.id} />
-                        <button
-                          type="submit"
-                          data-secondary-action="true"
-                          className="is-danger"
-                          title="Delete image"
-                          aria-label="Delete image"
-                        >
-                          <Trash2 />
-                        </button>
-                      </form>
-                    </div>
+                          <button
+                            type="submit"
+                            data-secondary-action="true"
+                            className="is-danger st-admin-image-destructive-v32"
+                            title="Delete photo"
+                            aria-label="Delete photo"
+                          >
+                              <span>Delete photo</span>
+                              <Trash2 />
+                            </button>
+                        </form>
+                      </div>
 
                     {isShared ? (
                       <div className="st-admin-existing-media-v2__controls">
@@ -2196,9 +3855,75 @@ const difference =
                 </article>
               );
             })}
+
+            {inlineUploadCards.map((card, inlineIndex) => (
+              <article
+                key={card.id}
+                className="st-admin-media-item st-admin-inline-upload-v33"
+                aria-label={`${card.fileName} uploading`}
+              >
+                <div className="st-admin-media-item__preview">
+                  <img
+                    src={card.previewUrl}
+                    alt=""
+                    draggable={false}
+                  />
+
+                  <span className="st-admin-media-item__position">
+                    {selectedConfigurationImages.length +
+                      inlineIndex +
+                      1}
+                  </span>
+
+                  <div
+                    className="st-admin-inline-upload-v33__veil"
+                    aria-hidden="true"
+                  />
+
+                  <div
+                    className="st-admin-inline-upload-v33__progress"
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={card.percentage}
+                    aria-label={`Uploading ${card.fileName}`}
+                    style={{
+                      "--st-admin-inline-upload-progress": `${card.percentage * 3.6}deg`,
+                    } as React.CSSProperties}
+                  >
+                    <div className="st-admin-inline-upload-v33__ring">
+                      <div className="st-admin-inline-upload-v33__ring-core">
+                        <strong>{card.percentage}%</strong>
+                        <span>
+                          {card.status === "waiting"
+                            ? "Waiting"
+                            : card.status === "finalizing"
+                              ? "Saving"
+                              : "Uploading"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+              </article>
+            ))}
           </div>
         )}
       </div>
+
+      {imageDragPreview ? (
+        <div
+          ref={setSavedImageDragPreviewNode}
+          className="st-admin-image-drag-preview"
+          style={{
+            width: imageDragPreview.width,
+            height: imageDragPreview.height,
+          }}
+          aria-hidden="true"
+        />
+      ) : null}
     </div>
   );
 

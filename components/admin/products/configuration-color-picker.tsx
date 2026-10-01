@@ -358,6 +358,7 @@ export default function ConfigurationColorPicker({
  const popupRef = useRef<HTMLDivElement>(null);
  const [popupPosition, setPopupPosition] = useState({ left: 0, top: 0 });
  const [open, setOpen] = useState(false);
+ const [popupPresent, setPopupPresent] = useState(false);
  const [query, setQuery] = useState("");
  const [customColors, setCustomColors] = useState<AdminCustomColorway[]>([]);
  const [creatorOpen, setCreatorOpen] = useState(false);
@@ -460,29 +461,114 @@ export default function ConfigurationColorPicker({
     };
   }, [open]);
 
+ const selectedColorIdentities = useMemo(
+   () =>
+     new Set(
+       values.map((selectedColor) =>
+         colorwayIdentity(
+           selectedColor.name,
+           selectedColor.hex,
+         ),
+       ),
+     ),
+   [values],
+ );
+
+ const customColorwayByIdentity = useMemo(
+   () =>
+     new Map(
+       customColors.map((colorway) => [
+         colorwayIdentity(
+           colorway.name,
+           colorway.hex,
+         ),
+         colorway,
+       ]),
+     ),
+   [customColors],
+ );
+
+ const allColors = useMemo(
+   () =>
+     Array.from(
+       new Map(
+         [...customColors, ...presetColors].map(
+           (color) => [
+             colorwayIdentity(
+               color.name,
+               color.hex,
+             ),
+             {
+               name: color.name,
+               hex: color.hex,
+             },
+           ],
+         ),
+       ).values(),
+     ),
+   [customColors],
+ );
+
  const filteredColors = useMemo(() => {
- const normalized = query.trim().toLowerCase();
+   const normalized = query.trim().toLowerCase();
 
- const allColors = Array.from(
- new Map(
- [...customColors, ...presetColors].map((color) => [
- colorwayIdentity(color.name, color.hex),
-          {
- name: color.name,
- hex: color.hex,
-          },
-        ]),
-      ).values(),
-    );
+   const matchingColors = normalized
+     ? allColors.filter((color) =>
+         color.name
+           .toLowerCase()
+           .includes(normalized),
+       )
+     : allColors;
 
- if (!normalized) {
- return allColors;
+   return [...matchingColors].sort(
+     (first, second) => {
+       const firstSelected =
+         selectedColorIdentities.has(
+           colorwayIdentity(
+             first.name,
+             first.hex,
+           ),
+         );
+
+       const secondSelected =
+         selectedColorIdentities.has(
+           colorwayIdentity(
+             second.name,
+             second.hex,
+           ),
+         );
+
+       if (firstSelected === secondSelected) {
+         return 0;
+       }
+
+       return firstSelected ? -1 : 1;
+     },
+   );
+ }, [
+   allColors,
+   query,
+   selectedColorIdentities,
+ ]);
+
+ useEffect(() => {
+ if (open) {
+ setPopupPresent(true);
+ return;
     }
 
- return allColors.filter((color) =>
- color.name.toLowerCase().includes(normalized),
-    );
-  }, [customColors, query]);
+ if (!popupPresent) {
+ return;
+    }
+
+ const timeout = window.setTimeout(() => {
+ setPopupPresent(false);
+    }, 360);
+
+ return () => {
+ window.clearTimeout(timeout);
+    };
+  }, [open, popupPresent]);
 
  function closePicker() {
  setOpen(false);
@@ -492,11 +578,13 @@ export default function ConfigurationColorPicker({
   }
 
  function chooseColor(color: ConfigurationColorValue) {
- const customColor = customColors.find(
-      (item) =>
- colorwayIdentity(item.name, item.hex) ===
- colorwayIdentity(color.name, color.hex),
-    );
+ const customColor =
+   customColorwayByIdentity.get(
+     colorwayIdentity(
+       color.name,
+       color.hex,
+     ),
+   );
 
  if (customColor) {
  onChange({
@@ -585,10 +673,12 @@ export default function ConfigurationColorPicker({
 
  const validHex = /^#[0-9A-Fa-f]{6}$/.test(newColorHex);
 
- const colorPopup = open ? (
+ const colorPopup = popupPresent ? (
     <div
  ref={popupRef}
- className={`st-admin-colorway-portal-v60 ${
+ className={`st-admin-colorway-portal-v60 st-admin-directory-popup-motion-v29 ${
+ open ? "is-open" : "is-closing"
+      } ${
  creatorOpen ? "st-admin-color-popup-final" : ""
       }`}
  style={{
@@ -797,30 +887,26 @@ export default function ConfigurationColorPicker({
             </div>
           </div>
 
-          <div className="max-h-[300px] overflow-y-auto p-3">
+          <div className="st-admin-colorway-scroll-v20 max-h-[300px] overflow-y-auto p-3">
             {filteredColors.length > 0 ? (
               <div className="grid grid-cols-1 gap-2">
                 {filteredColors.map((color) => {
- const selected =
- values.some(
-   (selectedColor) =>
-     colorwayIdentity(
-       selectedColor.name,
-       selectedColor.hex,
-     ) === colorwayIdentity(color.name, color.hex),
- ) ||
- (value
-   ? colorwayIdentity(value.name, value.hex) ===
-     colorwayIdentity(color.name, color.hex)
-   : false);
+ const identity = colorwayIdentity(
+   color.name,
+   color.hex,
+ );
 
- const customColorway = customColors.find(
-                    (item) =>
- item.name.toLocaleLowerCase() ===
-                        color.name.toLocaleLowerCase() &&
-                      item.hex.toLocaleLowerCase() ===
-                        color.hex.toLocaleLowerCase(),
-                  );
+ const selected =
+   selectedColorIdentities.has(identity) ||
+   (value
+     ? colorwayIdentity(
+         value.name,
+         value.hex,
+       ) === identity
+     : false);
+
+ const customColorway =
+   customColorwayByIdentity.get(identity);
 
  if (customColorway) {
  const deleting =

@@ -55,7 +55,7 @@ export default function ProductCategoryPicker({
  const [query, setQuery] = useState("");
  const [open, setOpen] = useState(false);
  const [activeIndex, setActiveIndex] = useState(-1);
- const [mounted, setMounted] = useState(false);
+ const [popupPresent, setPopupPresent] = useState(false);
  const [creating, setCreating] = useState(false);
  const [error, setError] = useState("");
  const [creationMessage, setCreationMessage] = useState("");
@@ -71,8 +71,23 @@ export default function ProductCategoryPicker({
   });
 
  useEffect(() => {
- setMounted(true);
-  }, []);
+ if (open) {
+ setPopupPresent(true);
+ return;
+    }
+
+ if (!popupPresent) {
+ return;
+    }
+
+ const timeout = window.setTimeout(() => {
+ setPopupPresent(false);
+    }, 360);
+
+ return () => {
+ window.clearTimeout(timeout);
+    };
+  }, [open, popupPresent]);
 
  useEffect(() => {
  setOptions(categories);
@@ -349,9 +364,10 @@ export default function ProductCategoryPicker({
   }
 
  const dropdown =
-    mounted && open
+    popupPresent
       ? createPortal(
           <ProductDirectoryPopup
+            open={open}
             dropdownRef={dropdownRef}
             searchRef={searchRef}
             position={position}

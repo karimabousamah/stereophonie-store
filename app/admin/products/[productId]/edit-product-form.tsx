@@ -194,11 +194,54 @@ export default function EditProductForm({
     product.subcategoryId,
   );
 
+  const [selectedBrandId, setSelectedBrandId] = useState(
+    product.brandId,
+  );
+
   const [selectedBrandName, setSelectedBrandName] = useState(initialBrandName);
 
-  const [variants, setVariants] = useState<AdminElectronicsVariant[]>(() =>
-    createInitialVariants(product.variants),
+  const [productDescription, setProductDescription] = useState(
+    product.description,
   );
+
+  const initialVariantsRef = useRef<AdminElectronicsVariant[] | null>(null);
+
+  const [variants, setVariants] = useState<AdminElectronicsVariant[]>(() => {
+    const initialVariants = createInitialVariants(product.variants);
+
+    initialVariantsRef.current = initialVariants;
+
+    return initialVariants;
+  });
+
+  const hasUnsavedChanges = useMemo(() => {
+    const initialVariants = initialVariantsRef.current ?? [];
+
+    return (
+      productName !== product.name ||
+      productDescription !== product.description ||
+      selectedBrandId !== product.brandId ||
+      selectedCategoryId !== product.categoryId ||
+      placementSelection.featured !== product.isFeatured ||
+      placementSelection.trending !== product.isTrending ||
+      placementSelection.newArrival !== product.isNewArrival ||
+      JSON.stringify(variants) !== JSON.stringify(initialVariants)
+    );
+  }, [
+    productName,
+    productDescription,
+    selectedBrandId,
+    selectedCategoryId,
+    placementSelection,
+    variants,
+    product.name,
+    product.description,
+    product.brandId,
+    product.categoryId,
+    product.isFeatured,
+    product.isTrending,
+    product.isNewArrival,
+  ]);
 
   /*
    * Keep the image manager synchronized with the configuration
@@ -668,6 +711,7 @@ export default function EditProductForm({
                 deletePending={deletePending}
                 formId="st-edit-product-form"
                 editMode
+                hasUnsavedChanges={hasUnsavedChanges}
                 editIntent={
                   product.status === "published"
                     ? "publish"
@@ -708,6 +752,10 @@ export default function EditProductForm({
                         brands={brands}
                         defaultValue={product.brandId}
                         onBrandChange={(brand) => {
+                          setSelectedBrandId(
+                            brand?.id ?? "",
+                          );
+
                           setSelectedBrandName(
                             brand?.name ?? "",
                           );
@@ -886,7 +934,10 @@ export default function EditProductForm({
                     id="description"
                     name="description"
                     rows={6}
-                    defaultValue={product.description}
+                    value={productDescription}
+                    onChange={(event) =>
+                      setProductDescription(event.target.value)
+                    }
                     placeholder="Describe the product."
                   className="st-admin-product-description-focus-real"
                   onFocus={(event) => {

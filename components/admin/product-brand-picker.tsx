@@ -70,7 +70,7 @@ export default function ProductBrandPicker({
    useState<string | null>(null);
  const [editValue, setEditValue] = useState("");
  const [editBusy, setEditBusy] = useState(false);
- const [mounted, setMounted] = useState(false);
+ const [popupPresent, setPopupPresent] = useState(false);
 
  const [position, setPosition] = useState<FloatingPosition>({
  top: 0,
@@ -79,8 +79,23 @@ export default function ProductBrandPicker({
   });
 
  useEffect(() => {
- setMounted(true);
-  }, []);
+ if (open) {
+ setPopupPresent(true);
+ return;
+    }
+
+ if (!popupPresent) {
+ return;
+    }
+
+ const timeout = window.setTimeout(() => {
+ setPopupPresent(false);
+    }, 360);
+
+ return () => {
+ window.clearTimeout(timeout);
+    };
+  }, [open, popupPresent]);
 
  useEffect(() => {
  setOptions(brands);
@@ -394,9 +409,10 @@ export default function ProductBrandPicker({
   }
 
  const dropdown =
-    mounted && open
+    popupPresent
       ? createPortal(
           <ProductDirectoryPopup
+            open={open}
             dropdownRef={dropdownRef}
             searchRef={searchRef}
             position={position}

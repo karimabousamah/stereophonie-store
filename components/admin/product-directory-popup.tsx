@@ -48,6 +48,7 @@ type ProductDirectoryPopupProps = {
   statusContent?: ReactNode;
   footerContent?: ReactNode;
   preserveOptionOrder?: boolean;
+  open: boolean;
 };
 
 export default function ProductDirectoryPopup({
@@ -80,6 +81,7 @@ export default function ProductDirectoryPopup({
   multiselect = false,
   statusContent,
   footerContent,
+  open,
 }: ProductDirectoryPopupProps) {
   const orderedOptions = [
     ...options.filter((option) => option.selected),
@@ -89,7 +91,10 @@ export default function ProductDirectoryPopup({
   return (
     <div
       ref={dropdownRef}
-      className="st-admin-category-picker__dropdown"
+      className={`st-admin-category-picker__dropdown st-admin-directory-popup-motion-v29 ${
+        open ? "is-open" : "is-closing"
+      }`}
+      aria-hidden={!open}
       style={{
         top: position.top,
         left: position.left,
