@@ -495,9 +495,35 @@ function productCardStoredColourHex(
 }
 
 function productCardOptionsSummary(product: StoreProductCardProduct) {
-  const activeVariants = product.variants.filter(
-    (variant) => variant.is_active !== false,
-  );
+  /*
+   * Product-card option order follows the administrator-defined
+   * configuration order exactly.
+   *
+   * display_position is persisted by Add/Edit Product and is therefore
+   * the authoritative storefront order. Array order is retained only as
+   * a stable fallback when two legacy configurations share a position.
+   */
+  const activeVariants = product.variants
+    .map((variant, sourceIndex) => ({
+      variant,
+      sourceIndex,
+    }))
+    .filter(({ variant }) => variant.is_active !== false)
+    .sort((first, second) => {
+      const firstPosition = Number(
+        first.variant.display_position ?? 0,
+      );
+      const secondPosition = Number(
+        second.variant.display_position ?? 0,
+      );
+
+      if (firstPosition !== secondPosition) {
+        return firstPosition - secondPosition;
+      }
+
+      return first.sourceIndex - second.sourceIndex;
+    })
+    .map(({ variant }) => variant);
 
   const configurationKeys =
     productCardConfigurationKeys(activeVariants);
@@ -1174,6 +1200,15 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                           aria-label={`Show ${colour.name}`}
                           aria-pressed={selected}
                           disabled={!colour.variantId}
+                          onMouseEnter={() => {
+                            if (!colour.variantId) {
+                              return;
+                            }
+
+                            setSelectedColourVariantId(
+                              colour.variantId,
+                            );
+                          }}
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
@@ -1182,6 +1217,11 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                               return;
                             }
 
+                            /*
+                             * Keep tap/click support for touch devices and
+                             * keyboard users. Desktop customers do not need
+                             * to click because mouse hover selects the colour.
+                             */
                             setSelectedColourVariantId(
                               colour.variantId,
                             );

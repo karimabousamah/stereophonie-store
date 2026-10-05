@@ -50998,3 +50998,25 @@ img {
 /* ============================================================
    END ADMIN V2 — ADD PRODUCT EDIT USAGE DISCLOSURE
    ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — ADD PRODUCT CONFIGURATION TABLE ALIGNMENT V85
+   ============================================================ */
+
+/*
+ * The configuration header and rows already share one grid.
+ * Numeric inputs/selects use 6px inline padding, so align the
+ * corresponding headings to the controls' visible content edge.
+ * Configuration remains aligned to its existing name column.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-table-header-v2
+> span:nth-child(n + 2) {
+  padding-inline: 0 !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — ADD PRODUCT CONFIGURATION TABLE ALIGNMENT V85
+   ============================================================ */

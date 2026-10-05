@@ -143,112 +143,6 @@ type ShopFullRow = {
   product_variants: StoreProductVariant[] | null;
 };
 
-/*
- * STEREOPHONIE_SHOP_CARD_CACHE
- *
- * The product-card graph is substantially more expensive than the
- * lightweight filtering index because it contains the complete
- * storefront image/configuration relationships required by:
- *
- * - primary and secondary card photographs
- * - quick view
- * - configuration colours
- * - pricing
- * - availability
- * - stock badges
- *
- * Build this graph once and share it between shop/category requests.
- * Product and image mutations invalidate SHOP_CATALOGUE_CACHE_TAG,
- * so normal storefront navigation does not need to repeat this
- * relational Supabase query.
- */
-const loadShopProductCards = unstable_cache(
-  async (): Promise<StoreProductCardProduct[]> => {
-    const supabase = createAdminClient();
-
-    const { data, error } = await supabase
-      .from("products")
-      .select(
-        `
-          id,
-          name,
-          slug,
-          description,
-          is_featured,
-          is_trending,
-          is_new_arrival,
-          new_drop_started_at,
-          created_at,
-
-          categories (
-            name
-          ),
-
-          brands (
-            name
-          ),
-
-          product_images (
-            id,
-            image_url,
-            storage_path,
-            alt_text,
-            position,
-            is_primary,
-            variant_id,
-            variant_position,
-            is_variant_primary,
-            product_image_variants (
-              variant_id,
-              position,
-              is_primary
-            )
-          ),
-
-          product_variants (
-            id,
-            display_position,
-            regular_price,
-            sale_price,
-            stock_quantity,
-            size,
-            variant_name,
-            attributes,
-            is_active,
-            availability_status
-          )
-        `,
-      )
-      .eq("status", "published")
-      .order("created_at", {
-        ascending: false,
-      });
-
-    if (error) {
-      console.error(
-        "Stereophonie shop product-card cache could not load:",
-        error,
-      );
-
-      throw new Error(
-        "Stereophonie storefront catalogue is temporarily unavailable.",
-        {
-          cause: error,
-        },
-      );
-    }
-
-    return ((data ?? []) as ShopFullRow[]).map((product) =>
-      normalizeProduct(product, supabase),
-    );
-  },
-  ["stereophonie-shop-product-cards-v1"],
-  {
-    revalidate: 3600,
-    tags: [SHOP_CATALOGUE_CACHE_TAG],
-  },
-);
-
 export type ShopBatchFilters = {
   search: string;
   category: string;
@@ -698,37 +592,25 @@ export async function loadShopProductBatch({
   /*
    * Stage 2
    * -------
-   * The expensive storefront card graph is shared between requests.
+   * Fetch the expensive storefront card graph only for the IDs in
+   * this requested batch.
    *
-   * Filtering and sorting still come from the lightweight catalogue
-   * index above. We only select the IDs belonging to this requested
-   * page from the cached card graph, preserving the exact caller order.
+   * Do not cache the complete full-card catalogue as one Next.js
+   * Data Cache item. As the catalogue grows, the complete image and
+   * configuration graph can exceed the per-item cache-size limit.
+   *
+   * Filtering, price bounds and sorting remain authoritative in the
+   * lightweight cached catalogue index above.
    */
-  const cardProducts = await loadShopProductCards();
+  const freshBatchProducts =
+    await loadFreshShopProductCardsByIds(batchIds);
 
   const cardProductById = new Map(
-    cardProducts.map((product) => [product.id, product]),
+    freshBatchProducts.map((product) => [
+      product.id,
+      product,
+    ]),
   );
-
-  /*
-   * The lightweight catalogue index can know about a newly
-   * published product before the shared full-card cache does.
-   *
-   * Never silently omit that product from Shop or Category pages.
-   * Only IDs missing from the cached graph are fetched fresh.
-   */
-  const missingBatchIds = batchIds.filter(
-    (id) => !cardProductById.has(id),
-  );
-
-  if (missingBatchIds.length > 0) {
-    const freshMissingProducts =
-      await loadFreshShopProductCardsByIds(missingBatchIds);
-
-    for (const product of freshMissingProducts) {
-      cardProductById.set(product.id, product);
-    }
-  }
 
   const batchProducts = batchIds
     .map((id) => cardProductById.get(id))

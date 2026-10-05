@@ -1791,6 +1791,7 @@ function defaultVariant(
  attributes: Record<string, string>,
  levels: OptionLevel[],
  position: number,
+ lowStockThreshold = 5,
 ): AdminElectronicsVariant {
  return {
  clientId: crypto.randomUUID(),
@@ -1803,7 +1804,7 @@ function defaultVariant(
  regular_price: "",
  sale_price: "",
  stock_quantity: 0,
- low_stock_threshold: 5,
+ low_stock_threshold: lowStockThreshold,
  availability_status: "in_stock",
   };
 }
@@ -3364,6 +3365,7 @@ function AdminDirectorySelect({
 export default function ElectronicsVariantEditor({
  variants,
  onChange,
+ saveExistingConfigurationIntent,
 }: ElectronicsVariantEditorProps) {
  const [specificationsPortalTarget, setSpecificationsPortalTarget] =
  useState<HTMLElement | null>(null);
@@ -3850,6 +3852,7 @@ export default function ElectronicsVariantEditor({
           },
  normalizedLevels,
  index,
+ saveExistingConfigurationIntent ? 5 : 0,
         );
       }
 
@@ -3892,7 +3895,12 @@ export default function ElectronicsVariantEditor({
   }
 
  function addManualConfiguration() {
- const next = defaultVariant({}, [], orderedVariants.length);
+ const next = defaultVariant(
+ {},
+ [],
+ orderedVariants.length,
+ saveExistingConfigurationIntent ? 5 : 0,
+    );
  emit([...orderedVariants, next]);
  setActiveClientId(next.clientId);
   }
@@ -4179,10 +4187,11 @@ export default function ElectronicsVariantEditor({
     : -1;
 
   /*
-   * Spreadsheet-style vertical entry for the compact configuration table.
+   * Spreadsheet-style row entry for the compact configuration table.
    *
-   * Enter moves to the same numeric field in the next configuration.
-   * The final row intentionally stays put and Enter never submits the form.
+   * Enter advances Price -> Sale -> Stock -> Low stock, then continues
+   * at Price in the next configuration. The final Low stock stays put,
+   * and Enter never submits the form.
    */
  function moveToNextConfigurationNumericField(
  event: React.KeyboardEvent<HTMLInputElement>,
@@ -4196,14 +4205,23 @@ export default function ElectronicsVariantEditor({
  event.preventDefault();
  event.stopPropagation();
 
- const nextRowIndex = rowIndex + 1;
+ const fieldOrder = ["price", "sale", "stock", "low-stock"] as const;
+ const fieldIndex = fieldOrder.indexOf(field);
+
+ if (fieldIndex < 0) {
+ return;
+    }
+
+ const isLastField = fieldIndex === fieldOrder.length - 1;
+ const nextRowIndex = isLastField ? rowIndex + 1 : rowIndex;
+ const nextField = isLastField ? "price" : fieldOrder[fieldIndex + 1];
 
  if (nextRowIndex >= orderedVariants.length) {
  return;
     }
 
  const selector =
-      `input[data-config-numeric-field="${field}"]` +
+      `input[data-config-numeric-field="${nextField}"]` +
       `[data-config-row-index="${nextRowIndex}"]`;
 
  const nextInput =

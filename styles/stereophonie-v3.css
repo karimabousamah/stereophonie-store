@@ -82844,7 +82844,12 @@ html body
   min-height: 190px !important;
   max-height: 190px !important;
 
-  overflow: hidden !important;
+  /*
+   * The title owns its own two-line clipping below.
+   * Keep the fixed canonical content geometry, but do not clip the
+   * colourway control when its hover treatment lifts above its row.
+   */
+  overflow: visible !important;
 }
 
 html body
@@ -82871,7 +82876,11 @@ html body
   min-height: 42px !important;
   max-height: 42px !important;
 
-  overflow: hidden !important;
+  /*
+   * Keep the canonical reserved row height unchanged while allowing
+   * colorway hover/focus decoration to render outside its own bounds.
+   */
+  overflow: visible !important;
 }
 
 html body

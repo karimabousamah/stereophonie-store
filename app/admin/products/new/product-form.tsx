@@ -64,7 +64,7 @@ function createInitialVariants(): AdminElectronicsVariant[] {
       regular_price: "",
       sale_price: "",
       stock_quantity: 0,
-      low_stock_threshold: 5,
+      low_stock_threshold: 0,
       availability_status: "in_stock",
     },
   ];

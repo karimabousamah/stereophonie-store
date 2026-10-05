@@ -11,6 +11,7 @@ import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 import { STOREFRONT_RECOMMENDATION_CACHE_TAG } from "@/lib/storefront-cache-tags";
 
 import ProductConfigurationPrice from "./product-configuration-price";
+import ProductConfigurationAvailability from "./product-configuration-availability";
 import ProductGallery from "./product-gallery";
 import ProductPurchaseControls from "./product-purchase-controls";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
@@ -1277,51 +1278,66 @@ async function RelatedProductsSection({
     )
     .filter(Boolean) as any[];
 
-  const relatedProducts = orderedRelatedDisplayData.map((item) => ({
-    id: item.id,
-    name: item.name,
-    slug: item.slug,
+  const relatedProducts = orderedRelatedDisplayData.map((item) => {
+    /*
+     * Keep the complete configuration-media graph on `images`.
+     *
+     * V2ProductCard uses that complete graph when a customer hovers or
+     * selects a colourway. The first administrator-defined configuration
+     * remains the initial card photography through `defaultImages`.
+     */
+    const images = (item.product_images ?? []).map((image: any) => {
+      const storagePath =
+        typeof image.storage_path === "string"
+          ? image.storage_path.trim()
+          : "";
 
-    description: item.description ?? null,
+      if (!storagePath) {
+        return image;
+      }
 
-    categoryName: relationName(
-      item.categories as Relation,
-      "Technology",
-    ),
+      const { data } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(
+          storefrontThumbnailPath(storagePath),
+        );
 
-    is_featured: item.is_featured,
+      return {
+        ...image,
+        storefront_image_url: data.publicUrl,
+      };
+    });
 
-    is_trending: item.is_trending,
+    const variants = item.product_variants ?? [];
 
-    is_new_arrival: item.is_new_arrival,
+    return {
+      id: item.id,
+      name: item.name,
+      slug: item.slug,
 
-    images: storefrontConfigurationImages(
-      (item.product_images ?? []).map((image: any) => {
-        const storagePath =
-          typeof image.storage_path === "string"
-            ? image.storage_path.trim()
-            : "";
+      description: item.description ?? null,
 
-        if (!storagePath) {
-          return image;
-        }
+      categoryName: relationName(
+        item.categories as Relation,
+        "Technology",
+      ),
 
-        const { data } = supabase.storage
-          .from("product-images")
-          .getPublicUrl(
-            storefrontThumbnailPath(storagePath),
-          );
+      is_featured: item.is_featured,
 
-        return {
-          ...image,
-          storefront_image_url: data.publicUrl,
-        };
-      }),
-      item.product_variants ?? [],
-    ),
+      is_trending: item.is_trending,
 
-    variants: item.product_variants ?? [],
-  }));
+      is_new_arrival: item.is_new_arrival,
+
+      images,
+
+      defaultImages: storefrontConfigurationImages(
+        images,
+        variants,
+      ),
+
+      variants,
+    };
+  });
 
 
   return (
@@ -1627,24 +1643,15 @@ export default async function ProductPage({
                 }))}
               />
 
-              <span
-                className={`st-product-v5__availability ${
-                  productHasLowStock(variants)
-                    ? "is-low-stock"
-                    : available
-                      ? "is-available"
-                      : ""
-                }`}
-              >
-                <i />
-                {productAvailabilityStatus === "coming_soon"
-                  ? "Coming soon"
-                  : productHasLowStock(variants)
-                    ? "Low Stock"
-                    : available
-                      ? "In stock"
-                      : "Out of stock"}
-              </span>
+              <ProductConfigurationAvailability
+                variants={variants.map((variant) => ({
+                  id: variant.id,
+                  variant_name: variant.variant_name,
+                  display_position: variant.display_position,
+                  stock_quantity: variant.stock_quantity,
+                  availability_status: variant.availability_status,
+                }))}
+              />
             </div>
           </header>
 
@@ -1732,9 +1739,31 @@ export default async function ProductPage({
                     )
                   : [];
 
+                /*
+                 * Customer-facing specifications should contain actual
+                 * product/configuration information, not internal colour
+                 * rendering metadata.
+                 *
+                 * Keep these attributes in the variant data because the
+                 * storefront colourway controls use them for their exact
+                 * swatch colours; hide them only from this specification list.
+                 */
+                const hiddenStorefrontSpecificationKeys = new Set([
+                  "color_hex",
+                  "colour_hex",
+                  "swatch_hex",
+                  "hex",
+                ]);
+
                 const configurationSpecs = Object.entries(
                   firstAttributes,
-                ).filter(([key]) => !key.startsWith("__"));
+                ).filter(
+                  ([key]) =>
+                    !key.startsWith("__") &&
+                    !hiddenStorefrontSpecificationKeys.has(
+                      key.trim().toLowerCase(),
+                    ),
+                );
 
                 return (
                   <dl>
