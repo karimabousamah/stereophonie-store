@@ -20355,8 +20355,21 @@ button:not(:disabled):hover {
 .st3-admin
 .st-admin-product-editor-form
 .st-admin-color-chip-remove-v2:hover {
-  background:#e9eaeb !important;
-  color:#303030 !important;
+  background:transparent !important;
+  color:#b42318 !important;
+  transform:none !important;
+  translate:none !important;
+  box-shadow:none !important;
+}
+
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-option-selected-chip-v2__remove:hover svg,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-color-chip-remove-v2:hover svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
 }
 
 .st3-admin
@@ -20370,6 +20383,232 @@ button:not(:disabled):hover {
 
   margin:0 !important;
 }
+
+
+
+/* ============================================================
+   ADMIN V2 — SELECTED CHIP X POSITION LOCK
+   ============================================================ */
+
+/*
+ * Selected Product Option / Colorway remove controls are
+ * dimensionally identical in every interaction state.
+ * Hover changes ONLY the X color to red.
+ */
+
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+),
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):hover,
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):focus,
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):focus-visible,
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):active {
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  min-height:18px !important;
+
+  margin:0 5px 0 3px !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-radius:4px !important;
+
+  background:transparent !important;
+
+  box-shadow:none !important;
+  filter:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  transition:color 120ms ease !important;
+}
+
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+) svg,
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):hover svg,
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):focus svg,
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):focus-visible svg,
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):active svg {
+  display:block !important;
+
+  width:9px !important;
+  height:9px !important;
+  min-width:9px !important;
+  min-height:9px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  filter:none !important;
+  transition:color 120ms ease, stroke 120ms ease !important;
+}
+
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):hover {
+  color:#b42318 !important;
+}
+
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):hover svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
+}
+
+
+/*
+ * Clear Brand / Clear Category:
+ * lock the entire chip and its real React X in place.
+ */
+
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:hover,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:focus,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:focus-visible,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:active {
+  height:27px !important;
+  min-height:27px !important;
+  max-height:27px !important;
+
+  margin:5px 0 0 0 !important;
+  padding:0 6px 0 8px !important;
+
+  gap:4px !important;
+
+  border:1px solid #d9dbdd !important;
+  border-radius:6px !important;
+
+  background:#f7f7f8 !important;
+  color:#303030 !important;
+
+  box-shadow:none !important;
+  filter:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  transition:none !important;
+}
+
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2 > svg,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:hover > svg,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:focus > svg,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:focus-visible > svg,
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:active > svg {
+  display:block !important;
+
+  width:9px !important;
+  height:9px !important;
+  min-width:9px !important;
+  min-height:9px !important;
+
+  margin:0 1px 0 3px !important;
+  padding:0 !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  filter:none !important;
+  transition:color 120ms ease, stroke 120ms ease !important;
+}
+
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-organization-clear-chip-v2:hover > svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — SELECTED CHIP X POSITION LOCK
+   ============================================================ */
 
 
 /* ============================================================
@@ -21077,20 +21316,21 @@ button.st-admin-media-item__main[type="submit"] {
 .st3-admin
 .st-admin-product-editor-form
 .st-admin-organization-clear-chip-v2:hover {
-  border-color:#c9cbcd !important;
+  border-color:#d9dbdd !important;
 
-  background:#eceeef !important;
+  background:#f7f7f8 !important;
   color:#303030 !important;
 
   box-shadow:none !important;
   transform:none !important;
+  translate:none !important;
 }
 
 .st3-admin
 .st-admin-product-editor-form
 .st-admin-organization-clear-chip-v2:hover > svg {
-  color:#202223 !important;
-  stroke:#202223 !important;
+  color:#b42318 !important;
+  stroke:#b42318 !important;
 }
 
 /* ============================================================
@@ -48860,10 +49100,21 @@ html body
 }
 
 .st3-admin .st-admin-quick-price__spinner {
-  animation: st-admin-quick-price-spin 700ms linear infinite;
+  transform-origin: 50% 50% !important;
+  animation:
+    st-admin-quick-price-spin
+    700ms
+    linear
+    infinite !important;
+  animation-play-state: running !important;
+  will-change: transform;
 }
 
 @keyframes st-admin-quick-price-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
   to {
     transform: rotate(360deg);
   }
@@ -51020,3 +51271,788 @@ html body
 /* ============================================================
    END ADMIN V2 — ADD PRODUCT CONFIGURATION TABLE ALIGNMENT V85
    ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — SELECTED OPTION X ABSOLUTE MOTION LOCK
+   Colorway + reusable option selected-value remove controls only.
+   Geometry never changes. Hover changes only the X color.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:active {
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  min-height:18px !important;
+
+  margin:0 5px 0 3px !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-radius:4px !important;
+
+  background:transparent !important;
+  background-color:transparent !important;
+  background-image:none !important;
+
+  box-shadow:none !important;
+  -webkit-box-shadow:none !important;
+
+  outline:0 !important;
+  outline-offset:0 !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  filter:none !important;
+
+  transition:color 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:hover > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:focus > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:focus-visible > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:active > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2 > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:hover > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:focus > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:focus-visible > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:active > svg {
+  display:block !important;
+
+  width:9px !important;
+  height:9px !important;
+  min-width:9px !important;
+  min-height:9px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  animation:none !important;
+  filter:none !important;
+
+  transition:color 120ms ease, stroke 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2 {
+  color:#777c80 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2 > svg {
+  color:currentColor !important;
+  stroke:currentColor !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:hover {
+  color:#b42318 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:hover > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:hover > svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — SELECTED OPTION X ABSOLUTE MOTION LOCK
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — SELECTED OPTION X ZERO-CHROME SAFARI LOCK
+   Selected Colorway + reusable option remove X only.
+   No hover surface, shadow, ring or native button chrome.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:active {
+  -webkit-appearance:none !important;
+  appearance:none !important;
+
+  background:transparent !important;
+  background-color:transparent !important;
+  background-image:none !important;
+
+  border:0 !important;
+  outline:0 !important;
+  outline-offset:0 !important;
+
+  box-shadow:none !important;
+  -webkit-box-shadow:none !important;
+  text-shadow:none !important;
+
+  filter:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+
+  -webkit-tap-highlight-color:transparent !important;
+
+  --tw-shadow:0 0 #0000 !important;
+  --tw-shadow-colored:0 0 #0000 !important;
+  --tw-ring-color:transparent !important;
+  --tw-ring-offset-color:transparent !important;
+  --tw-ring-offset-width:0px !important;
+  --tw-ring-offset-shadow:0 0 #0000 !important;
+  --tw-ring-shadow:0 0 #0000 !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove::after,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2::after {
+  content:none !important;
+  display:none !important;
+
+  background:none !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+/* Hover changes ONLY the X color. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:hover {
+  color:#b42318 !important;
+
+  background:transparent !important;
+  background-color:transparent !important;
+  background-image:none !important;
+
+  box-shadow:none !important;
+  -webkit-box-shadow:none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-option-selected-chip-v2__remove:hover > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-color-chip-remove-v2:hover > svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
+
+  background:transparent !important;
+  box-shadow:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — SELECTED OPTION X ZERO-CHROME SAFARI LOCK
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — SELECTED OPTION X FINAL PAINTLESS CONTROL
+   The button keeps its hit area but paints absolutely nothing.
+   Only the SVG changes color.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+),
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):active {
+  -webkit-appearance:none !important;
+  appearance:none !important;
+
+  border:0 !important;
+  border-width:0 !important;
+  border-style:none !important;
+  border-color:transparent !important;
+  border-radius:0 !important;
+
+  outline:0 !important;
+  outline-width:0 !important;
+  outline-style:none !important;
+  outline-color:transparent !important;
+  outline-offset:0 !important;
+
+  background:none !important;
+  background-color:transparent !important;
+  background-image:none !important;
+
+  box-shadow:none !important;
+  -webkit-box-shadow:none !important;
+  text-shadow:none !important;
+
+  filter:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  -webkit-tap-highlight-color:transparent !important;
+
+  --tw-shadow:0 0 #0000 !important;
+  --tw-shadow-colored:0 0 #0000 !important;
+  --tw-ring-color:transparent !important;
+  --tw-ring-offset-color:transparent !important;
+  --tw-ring-offset-width:0px !important;
+  --tw-ring-offset-shadow:0 0 #0000 !important;
+  --tw-ring-shadow:0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+)::before,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+)::after {
+  content:none !important;
+  display:none !important;
+}
+
+/* The SVG is the ONLY element allowed to react visually. */
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+) > svg {
+  color:#777c80 !important;
+  stroke:#777c80 !important;
+
+  background:none !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):hover > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):focus > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):focus-visible > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  button.st-admin-option-selected-chip-v2__remove,
+  button.st-admin-color-chip-remove-v2
+):active > svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
+
+  background:none !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — SELECTED OPTION X FINAL PAINTLESS CONTROL
+   ============================================================ */
+
+
+/* ============================================================
+   ADMIN V2 — SELECTED OPTION X TRUE CHROMELESS CONTROL
+   These remove controls intentionally use neutral interactive
+   spans so Safari cannot paint native pressed-button chrome.
+   Geometry stays fixed. Only the X color changes on hover.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+) {
+  -webkit-appearance:none !important;
+  appearance:none !important;
+
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  width:18px !important;
+  height:18px !important;
+  min-width:18px !important;
+  min-height:18px !important;
+
+  margin:0 5px 0 3px !important;
+  padding:0 !important;
+
+  border:0 !important;
+  border-width:0 !important;
+  border-style:none !important;
+  border-color:transparent !important;
+  border-radius:0 !important;
+
+  outline:0 !important;
+  outline-offset:0 !important;
+
+  background:none !important;
+  background-color:transparent !important;
+  background-image:none !important;
+
+  box-shadow:none !important;
+  -webkit-box-shadow:none !important;
+  text-shadow:none !important;
+
+  color:#777c80 !important;
+
+  cursor:pointer !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  filter:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+
+  -webkit-tap-highlight-color:transparent !important;
+
+  transition:color 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):is(:hover, :focus, :focus-visible, :active) {
+  border:0 !important;
+  outline:0 !important;
+
+  background:none !important;
+  background-color:transparent !important;
+  background-image:none !important;
+
+  box-shadow:none !important;
+  -webkit-box-shadow:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):hover {
+  color:#b42318 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+) > svg {
+  display:block !important;
+
+  width:9px !important;
+  height:9px !important;
+  min-width:9px !important;
+  min-height:9px !important;
+
+  margin:0 !important;
+  padding:0 !important;
+
+  color:currentColor !important;
+  stroke:currentColor !important;
+
+  border:0 !important;
+  outline:0 !important;
+  background:none !important;
+  box-shadow:none !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  transition:color 120ms ease, stroke 120ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):hover > svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — SELECTED OPTION X TRUE CHROMELESS CONTROL
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — REMOVE X OPTICAL VERTICAL ALIGNMENT
+   Final optical alignment for:
+   - selected Colorway values
+   - selected reusable option values
+   - Clear brand
+   - Clear category
+
+   Only the X glyph is lowered by 1px.
+   Parent geometry / hit area remains completely unchanged.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   SELECTED PRODUCT OPTION / COLORWAY X
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+) > svg {
+  position:relative !important;
+  top:1px !important;
+
+  margin:0 !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+}
+
+
+/* Keep the exact same position in every interaction state. */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+:is(
+  .st-admin-option-selected-chip-v2__remove,
+  .st-admin-color-chip-remove-v2
+):is(:hover, :focus, :focus-visible, :active) > svg {
+  position:relative !important;
+  top:1px !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+}
+
+/* ============================================================
+   ADMIN V2 — BRAND/CATEGORY REAL X FINAL POSITION LOCK
+
+   Preserve the existing Clear brand / Clear category button
+   exactly as designed.
+
+   The real React X keeps identical geometry in every state.
+   Hover changes ONLY its color from gray to red.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-organization-clear-chip-v2 > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-organization-clear-chip-v2:hover > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-organization-clear-chip-v2:focus > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-organization-clear-chip-v2:focus-visible > svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-organization-clear-chip-v2:active > svg {
+  display:block !important;
+
+  width:9px !important;
+  height:9px !important;
+  min-width:9px !important;
+  min-height:9px !important;
+  max-width:9px !important;
+  max-height:9px !important;
+
+  flex:0 0 9px !important;
+
+  position:relative !important;
+  top:1px !important;
+  right:auto !important;
+  bottom:auto !important;
+  left:auto !important;
+
+  margin:0 1px 0 3px !important;
+  padding:0 !important;
+
+  color:#777c80 !important;
+  stroke:#777c80 !important;
+
+  transform:none !important;
+  translate:none !important;
+  scale:none !important;
+  rotate:none !important;
+
+  animation:none !important;
+  filter:none !important;
+
+  transition:none !important;
+
+  pointer-events:none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-organization-clear-chip-v2:hover > svg {
+  color:#b42318 !important;
+  stroke:#b42318 !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — BRAND/CATEGORY REAL X FINAL POSITION LOCK
+   ============================================================ */
+

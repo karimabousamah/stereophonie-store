@@ -8,6 +8,7 @@ import {
  ChevronRight,
  CirclePlus,
  Copy,
+ LoaderCircle,
  Plus,
  RefreshCw,
  Trash2,
@@ -23,6 +24,7 @@ import ConfigurationColorPicker from "@/components/admin/products/configuration-
 import {
   createProductOptionValue,
   listProductOptionValues,
+  renameProductOptionValue,
   type AdminProductOptionValue,
 } from "@/components/admin/products/configuration-option-value-actions";
 import { canonicalizeProductColorwayName } from "@/lib/product-colorways";
@@ -630,6 +632,9 @@ function SearchableOptionValuePicker({
   });
  const [savedValues, setSavedValues] = useState<AdminProductOptionValue[]>([]);
  const [savingValue, setSavingValue] = useState(false);
+ const [editingValueId, setEditingValueId] = useState<string | null>(null);
+ const [editValue, setEditValue] = useState("");
+ const [editBusy, setEditBusy] = useState(false);
 
  const optionKey = normalizeKey(level.label || level.key);
  const selected = uniqueValues(level.values.map(clean).filter(Boolean));
@@ -840,6 +845,99 @@ function SearchableOptionValuePicker({
     });
   }
 
+ function beginValueRename(value: string) {
+ const savedValue =
+ savedValues.find(
+        (item) =>
+ optionIdentity(item.value) === optionIdentity(value),
+      ) ?? null;
+
+ if (!savedValue) {
+ return;
+    }
+
+ setEditingValueId(savedValue.id);
+ setEditValue(savedValue.value);
+  }
+
+ function cancelValueRename() {
+ if (editBusy) {
+ return;
+    }
+
+ setEditingValueId(null);
+ setEditValue("");
+  }
+
+ function saveValueRename(valueId: string) {
+ const currentValue =
+ savedValues.find((item) => item.id === valueId) ?? null;
+ const requestedValue = clean(editValue);
+
+ if (!currentValue || !requestedValue || editBusy) {
+ return;
+    }
+
+ if (
+ optionIdentity(requestedValue) === optionIdentity(currentValue.value)
+    ) {
+ setEditingValueId(null);
+ setEditValue("");
+ return;
+    }
+
+ setEditBusy(true);
+
+ void renameProductOptionValue(
+ optionKey,
+ valueId,
+ requestedValue,
+    )
+      .then((result) => {
+ if (!result.ok) {
+ window.alert(result.error);
+ return;
+        }
+
+ const previousValue = currentValue.value;
+ const renamedValue = result.value.value;
+
+ setSavedValues((current) => {
+ const next = current.map((item) =>
+ item.id === result.value.id ? result.value : item,
+          );
+
+ productOptionValuesCache.set(optionKey, next);
+
+ return next;
+        });
+
+ if (isSelected(previousValue)) {
+ onChange(
+ uniqueValues(
+ selected.map((value) =>
+ optionIdentity(value) === optionIdentity(previousValue)
+                ? renamedValue
+                : value,
+            ),
+          ),
+        );
+        }
+
+ setEditingValueId(null);
+ setEditValue("");
+ setQuery("");
+ setActiveIndex(-1);
+
+ requestAnimationFrame(() => {
+ searchRef.current?.focus();
+        });
+      })
+      .finally(() => {
+ setEditBusy(false);
+      });
+  }
+
  function createRequestedValue() {
  const requestedValue = cleanQuery;
 
@@ -964,14 +1062,39 @@ function SearchableOptionValuePicker({
             directoryLabel={`${level.label} directory`}
             countLabelSingular="choice"
             countLabelPlural="choices"
-            options={filteredValues.map((value) => ({
-              key: value,
-              label: value,
-              selected: selected.includes(value),
-            }))}
+            options={filteredValues.map((value) => {
+              const savedValue =
+                savedValues.find(
+                  (item) =>
+                    optionIdentity(item.value) === optionIdentity(value),
+                ) ?? null;
+
+              return {
+                key: savedValue?.id ?? `preset:${value}`,
+                label: value,
+                selected: isSelected(value),
+              };
+            })}
             activeIndex={activeIndex}
             onActiveIndexChange={setActiveIndex}
             onChoose={(option) => toggleValue(option.label)}
+            onEdit={(option) => {
+              if (option.key.startsWith("preset:")) {
+                return;
+              }
+
+              beginValueRename(option.label);
+            }}
+            editingKey={editingValueId}
+            editValue={editValue}
+            editBusy={editBusy}
+            onEditValueChange={setEditValue}
+            onEditSave={(option) => {
+              if (!option.key.startsWith("preset:")) {
+                saveValueRename(option.key);
+              }
+            }}
+            onEditCancel={cancelValueRename}
             query={query}
             onQueryChange={(value) => {
               setQuery(value);
@@ -993,18 +1116,48 @@ function SearchableOptionValuePicker({
                   >
                     <span className="st-admin-picker-create-content-v40">
                       <span className="st-admin-picker-create-icon-v40">
-                        <Plus className="h-4 w-4" strokeWidth={2.2} />
+                        {savingValue ? (
+                          <LoaderCircle
+                            className="st-admin-picker-create-spinner-v40 h-4 w-4"
+                            strokeWidth={2.2}
+                            ref={(node) => {
+                              if (!node) {
+                                return;
+                              }
+
+                              if (node.dataset.spinnerActive === "true") {
+                                return;
+                              }
+
+                              node.dataset.spinnerActive = "true";
+
+                              node.animate(
+                                [
+                                  { rotate: "0deg" },
+                                  { rotate: "360deg" },
+                                ],
+                                {
+                                  duration: 700,
+                                  iterations: Infinity,
+                                  easing: "linear",
+                                },
+                              );
+                            }}
+                          />
+                        ) : (
+                          <Plus className="h-4 w-4" strokeWidth={2.2} />
+                        )}
                       </span>
 
                       <span className="st-admin-picker-create-copy-v40">
                         <strong>
                           {savingValue
-                            ? `Saving “${cleanQuery}”...`
+                            ? "Creating..."
                             : `Add “${cleanQuery}”`}
                         </strong>
                         <small>
                           {savingValue
-                            ? "Saving to reusable option library"
+                            ? "Creating and selecting automatically"
                             : "Create and select automatically"}
                         </small>
                       </span>
@@ -1093,14 +1246,21 @@ function SearchableOptionValuePicker({
                 {value}
               </span>
 
-              <button
- type="button"
+              <span
+ role="button"
+ tabIndex={0}
  onClick={() => toggleValue(value)}
+ onKeyDown={(event) => {
+   if (event.key === "Enter" || event.key === " ") {
+     event.preventDefault();
+     toggleValue(value);
+   }
+ }}
  className="st-admin-option-selected-chip-v2__remove"
  aria-label={`Remove ${value}`}
               >
                 <X />
-              </button>
+              </span>
             </span>
           ))}
         </div>
@@ -4391,8 +4551,9 @@ export default function ElectronicsVariantEditor({
  value,
                                   )}
 
-                                  <button
- type="button"
+                                  <span
+ role="button"
+ tabIndex={0}
  onClick={() =>
  updateLevelValues(
  level.id,
@@ -4405,13 +4566,24 @@ export default function ElectronicsVariantEditor({
                                         ),
                                       )
                                     }
+ onKeyDown={(event) => {
+   if (event.key === "Enter" || event.key === " ") {
+     event.preventDefault();
+     updateLevelValues(
+       level.id,
+       level.values.filter(
+         (item) => item !== value,
+       ),
+     );
+   }
+ }}
  className="st-admin-color-chip-remove-v2"
  aria-label={`Remove ${canonicalizeProductColorwayName(
  value,
                                     )}`}
                                   >
                                     <X />
-                                  </button>
+                                  </span>
                                 </span>
                               ),
                             )}

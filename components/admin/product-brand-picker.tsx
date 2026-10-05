@@ -503,7 +503,7 @@ export default function ProductBrandPicker({
                       <span className="st-admin-picker-create-icon-v40">
                         {creating ? (
                           <LoaderCircle
-                            className="h-4 w-4 animate-spin"
+                            className="st-admin-picker-create-spinner-v40 h-4 w-4 animate-spin"
                             strokeWidth={2.2}
                           />
                         ) : (

@@ -29,6 +29,16 @@ type CreateProductOptionValueResult =
       error: string;
     };
 
+type RenameProductOptionValueResult =
+  | {
+      ok: true;
+      value: AdminProductOptionValue;
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
 function normalizeOptionKey(value: unknown) {
   return String(value ?? "")
     .trim()
@@ -111,6 +121,121 @@ export async function listProductOptionValues(
       optionKey: item.option_key,
       value: item.value,
     })),
+  };
+}
+
+export async function renameProductOptionValue(
+  rawOptionKey: string,
+  valueId: string,
+  rawValue: string,
+): Promise<RenameProductOptionValueResult> {
+  const administrator = await requireAdministrator();
+
+  if (!administrator) {
+    return {
+      ok: false,
+      error: "Administrator authentication is required.",
+    };
+  }
+
+  const optionKey = normalizeOptionKey(rawOptionKey);
+  const normalizedId = String(valueId ?? "").trim();
+  const value = normalizeValue(rawValue);
+
+  if (!optionKey || !normalizedId) {
+    return {
+      ok: false,
+      error: "Invalid product option.",
+    };
+  }
+
+  if (!value) {
+    return {
+      ok: false,
+      error: "Enter an option value.",
+    };
+  }
+
+  if (value.length > 160) {
+    return {
+      ok: false,
+      error: "Product option value must be 160 characters or fewer.",
+    };
+  }
+
+  const { data: currentValue, error: currentError } =
+    await administrator.supabase
+      .from("admin_product_option_values")
+      .select("id, option_key, value")
+      .eq("id", normalizedId)
+      .eq("option_key", optionKey)
+      .maybeSingle();
+
+  if (currentError) {
+    return {
+      ok: false,
+      error: currentError.message,
+    };
+  }
+
+  if (!currentValue) {
+    return {
+      ok: false,
+      error: "This reusable option value no longer exists.",
+    };
+  }
+
+  const { data: existingValues, error: existingError } =
+    await administrator.supabase
+      .from("admin_product_option_values")
+      .select("id, option_key, value")
+      .eq("option_key", optionKey);
+
+  if (existingError) {
+    return {
+      ok: false,
+      error: existingError.message,
+    };
+  }
+
+  const duplicate = (existingValues ?? []).find(
+    (item) =>
+      item.id !== normalizedId &&
+      normalizeValue(item.value).toLocaleLowerCase() ===
+        value.toLocaleLowerCase(),
+  );
+
+  if (duplicate) {
+    return {
+      ok: false,
+      error: `“${value}” already exists for this product option.`,
+    };
+  }
+
+  const { data, error } = await administrator.supabase
+    .from("admin_product_option_values")
+    .update({ value })
+    .eq("id", normalizedId)
+    .eq("option_key", optionKey)
+    .select("id, option_key, value")
+    .single();
+
+  if (error || !data) {
+    return {
+      ok: false,
+      error:
+        error?.message ??
+        "The reusable product option value could not be renamed.",
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      id: data.id,
+      optionKey: data.option_key,
+      value: data.value,
+    },
   };
 }
 
