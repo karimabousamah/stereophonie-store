@@ -2492,7 +2492,7 @@ export async function deleteProductImage(formData: FormData) {
     .select("id, storage_path, is_primary, position")
     .eq("id", imageId)
     .eq("product_id", productId)
-    .single();
+    .maybeSingle();
 
   if (imageError || !image) {
     imageOperationError(

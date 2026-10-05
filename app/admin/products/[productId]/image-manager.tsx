@@ -810,69 +810,67 @@ export default function ImageManager({
       height: rect.height,
     };
 
-    imageDragHoldTimerRef.current = setTimeout(() => {
-      imageDragActivatedRef.current = true;
-      imageDragTargetIdRef.current = imageId;
+    imageDragActivatedRef.current = true;
+    imageDragTargetIdRef.current = imageId;
 
-      setDraggingImageId(imageId);
-      setDragTargetImageId(imageId);
+    setDraggingImageId(imageId);
+    setDragTargetImageId(imageId);
 
-      /*
-       * Capture the untouched physical grid exactly once.
-       *
-       * These rectangles remain authoritative for the entire drag.
-       * This prevents animated transforms from feeding back into
-       * pointer hit testing and eliminates V7 layout jitter.
-       */
-      const sourceDomain = imageReorderDomain(
-        managedImages,
-        imageId,
-      );
+    /*
+     * Capture the untouched physical grid exactly once.
+     *
+     * These rectangles remain authoritative for the entire drag.
+     * This prevents animated transforms from feeding back into
+     * pointer hit testing and eliminates V7 layout jitter.
+     */
+    const sourceDomain = imageReorderDomain(
+      managedImages,
+      imageId,
+    );
 
-      const stableRects = new Map<string, DOMRect>();
-      const stableOrder: string[] = [];
+    const stableRects = new Map<string, DOMRect>();
+    const stableOrder: string[] = [];
 
-      if (sourceDomain) {
-        for (const domainImage of sourceDomain.images) {
-          const domainCard =
-            document.querySelector<HTMLElement>(
-              `[data-admin-edit-product-reorder-image="${domainImage.id}"]`,
-            );
-
-          if (!domainCard) {
-            continue;
-          }
-
-          stableRects.set(
-            domainImage.id,
-            domainCard.getBoundingClientRect(),
+    if (sourceDomain) {
+      for (const domainImage of sourceDomain.images) {
+        const domainCard =
+          document.querySelector<HTMLElement>(
+            `[data-admin-edit-product-reorder-image="${domainImage.id}"]`,
           );
 
-          stableOrder.push(domainImage.id);
+        if (!domainCard) {
+          continue;
         }
+
+        stableRects.set(
+          domainImage.id,
+          domainCard.getBoundingClientRect(),
+        );
+
+        stableOrder.push(domainImage.id);
       }
+    }
 
-      imageDragStableSlotRectsRef.current = stableRects;
-      imageDragStableOrderRef.current = stableOrder;
-      imageDragVisualOrderKeyRef.current = "";
+    imageDragStableSlotRectsRef.current = stableRects;
+    imageDragStableOrderRef.current = stableOrder;
+    imageDragVisualOrderKeyRef.current = "";
 
-      imageDragPointerPositionRef.current = {
-        x: imageDragStartPointRef.current.x,
-        y: imageDragStartPointRef.current.y,
-      };
+    imageDragPointerPositionRef.current = {
+      x: imageDragStartPointRef.current.x,
+      y: imageDragStartPointRef.current.y,
+    };
 
-      setImageDragPreview({
-        imageUrl: "",
-        width: rect.width,
-        height: rect.height,
-      });
+    setImageDragPreview({
+      imageUrl: "",
+      width: rect.width,
+      height: rect.height,
+    });
 
-      try {
-        card.setPointerCapture(event.pointerId);
-      } catch {
-        return;
-      }
-    }, 300);
+    try {
+      card.setPointerCapture(event.pointerId);
+    } catch {
+      return;
+    }
   }
 
   function handleSavedImagePointerMove(
@@ -2889,6 +2887,41 @@ const difference =
   }
 
 
+  useEffect(() => {
+    const selector =
+      '[data-admin-edit-product-usage-details="true"]';
+
+    function handleEditUsageOutsidePointer(event: PointerEvent) {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      document
+        .querySelectorAll<HTMLDetailsElement>(`${selector}[open]`)
+        .forEach((details) => {
+          if (!details.contains(target)) {
+            details.open = false;
+          }
+        });
+    }
+
+    document.addEventListener(
+      "pointerdown",
+      handleEditUsageOutsidePointer,
+      true,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "pointerdown",
+        handleEditUsageOutsidePointer,
+        true,
+      );
+    };
+  }, []);
+
   return (
     <div className="st-admin-existing-media-v2">
       <div className="st-admin-media-manager">
@@ -3262,27 +3295,29 @@ const difference =
           </div>
         ) : null}
 
-        <div
-          className="st-admin-existing-media-v2__activity-slot"
-          aria-live="polite"
-          aria-atomic="true"
-        >
+        {pendingImageOperation !== "Deleting image…" ? (
           <div
-            className={`st-admin-existing-media-v2__activity${
-              pendingImageOperation ? " is-visible" : ""
-            }`}
+            className="st-admin-existing-media-v2__activity-slot"
+            aria-live="polite"
+            aria-atomic="true"
           >
-            {pendingImageOperation ? (
-              <>
-                <span
-                  className="st-admin-existing-media-v2__activity-spinner"
-                  aria-hidden="true"
-                />
-                <span>{pendingImageOperation}</span>
-              </>
-            ) : null}
+            <div
+              className={`st-admin-existing-media-v2__activity${
+                pendingImageOperation ? " is-visible" : ""
+              }`}
+            >
+              {pendingImageOperation ? (
+                <>
+                  <span
+                    className="st-admin-existing-media-v2__activity-spinner"
+                    aria-hidden="true"
+                  />
+                  <span>{pendingImageOperation}</span>
+                </>
+              ) : null}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         {orderedImages.length === 0 ? (
           <div className="st-admin-media-manager__empty">
@@ -3416,7 +3451,10 @@ const difference =
                   </div>
 
                   <div className="st-admin-media-item__body">
-                    <details className="st-admin-media-item__usage">
+                    <details
+                      className="st-admin-media-item__usage"
+                      data-admin-edit-product-usage-details="true"
+                    >
                       <summary>
                         <span>Edit usage</span>
                         <small>

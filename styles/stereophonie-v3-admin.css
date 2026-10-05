@@ -45279,7 +45279,11 @@ span {
 .st3-admin
   .st-admin-existing-media-v2
   .st-admin-media-item__actions--delete-only
-  button[type="submit"] {
+  button[type="submit"],
+.st3-admin
+  .st-admin-existing-media-v2
+  .st-admin-media-item__actions--delete-only
+  button[type="button"] {
   display: flex !important;
   width: 100% !important;
   align-items: center !important;
@@ -45294,6 +45298,11 @@ span {
   .st-admin-existing-media-v2
   .st-admin-media-item__actions--delete-only
   button[type="submit"]
+  svg,
+.st3-admin
+  .st-admin-existing-media-v2
+  .st-admin-media-item__actions--delete-only
+  button[type="button"]
   svg {
   width: 13px !important;
   height: 13px !important;
@@ -48432,3 +48441,2560 @@ svg {
 }
 
 /* ADMIN RELEASE POPUP CONTROLS V41 END */
+
+/* ============================================================
+   ADMIN V2 — PRODUCTS DIRECTORY COLUMN CENTERING
+   Preserve the canonical eight-column grid exactly.
+   Product remains left aligned.
+   Columns 2 through 8 center within their existing grid tracks.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__head
+> span:nth-child(n+2) {
+  text-align: center !important;
+  justify-self: stretch !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(n+2) {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  justify-self: stretch !important;
+  text-align: center !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(2),
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(3),
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(4),
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(5),
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(6),
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(7),
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(8) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row
+> :nth-child(2)
+> .st-admin-product-status-badge {
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__inventory {
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__inventory
+> * {
+  text-align: center !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__preview {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* === ADMIN V2 — PRODUCTS DIRECTORY COLUMN CENTERING END === */
+
+/* === ADMIN V2 — PRODUCTS GEOMETRY + STICKY HEADER START === */
+
+/*
+ * Keep document scrolling as the vertical scroll authority.
+ * This allows the existing admin top header sticky positioning
+ * to remain attached to the viewport instead of scrolling away.
+ */
+html body:has(.st3-admin) {
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+}
+
+/*
+ * Products workspace geometry.
+ *
+ * Keep the existing width and internal table architecture.
+ * Remove competing outer max-width behavior and give the Products
+ * workspace one authoritative centered desktop geometry.
+ */
+html body
+.st3-admin
+.st3-admin-main
+> .st-admin-products-v2 {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 1540px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+html body
+.st3-admin
+.st3-admin-main
+> .st-admin-products-v2
+> .st-admin-products-v2__inner {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/*
+ * Desktop optical correction for the admin content canvas.
+ * This moves the complete Products workspace as one unit:
+ * Add product, directory panel, search, filters and table.
+ */
+@media (min-width: 901px) {
+  html body
+  .st3-admin
+  .st3-admin-main
+  > .st-admin-products-v2 {
+    position: relative !important;
+    left: -13.5px !important;
+  }
+}
+
+/* === ADMIN V2 — PRODUCTS GEOMETRY + STICKY HEADER END === */
+
+/* ============================================================
+   ADMIN V2 — PRODUCTS DIRECTORY QUICK PRICE EDIT
+   ============================================================ */
+
+.st3-admin .st-admin-quick-price {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.st3-admin .st-admin-quick-price__display {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.st3-admin .st-admin-quick-price__display > strong {
+  color: #303030 !important;
+  font-size: 11px !important;
+  font-weight: 550 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.st3-admin .st-admin-quick-price__trigger,
+.st3-admin .st-admin-quick-price__close {
+  border: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #86868b;
+  cursor: pointer;
+}
+
+.st3-admin .st-admin-quick-price__trigger {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.st3-admin .st-admin-quick-price__trigger:hover {
+  background: #f0f0f2;
+  color: #1d1d1f;
+}
+
+.st3-admin .st-admin-quick-price__trigger svg {
+  width: 10px;
+  height: 10px;
+  stroke-width: 1.8;
+}
+
+.st3-admin .st-admin-quick-price__popover {
+  position: absolute;
+  z-index: 80;
+  top: calc(100% + 8px);
+  left: 50%;
+  width: 310px;
+  max-height: min(440px, calc(100vh - 160px));
+  padding: 13px;
+  overflow-y: auto;
+  transform: translateX(-50%);
+  border: 1px solid #dedee2;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.12),
+    0 3px 10px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.st3-admin .st-admin-quick-price__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #eeeeef;
+}
+
+.st3-admin .st-admin-quick-price__header > div {
+  min-width: 0;
+}
+
+.st3-admin .st-admin-quick-price__header strong {
+  display: block;
+  color: #1d1d1f !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  line-height: 1.25 !important;
+}
+
+.st3-admin .st-admin-quick-price__header span {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: #86868b !important;
+  font-size: 9.5px !important;
+  font-weight: 450 !important;
+  line-height: 1.3 !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st3-admin .st-admin-quick-price__close {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  border-radius: 7px;
+}
+
+.st3-admin .st-admin-quick-price__close:hover {
+  background: #f2f2f4;
+  color: #1d1d1f;
+}
+
+.st3-admin .st-admin-quick-price__close svg {
+  width: 13px;
+  height: 13px;
+}
+
+.st3-admin .st-admin-quick-price__variants {
+  display: grid;
+}
+
+.st3-admin .st-admin-quick-price__variant {
+  padding: 12px 0;
+  border-bottom: 1px solid #eeeeef;
+}
+
+.st3-admin .st-admin-quick-price__variant:last-child {
+  border-bottom: 0;
+  padding-bottom: 2px;
+}
+
+.st3-admin .st-admin-quick-price__variant-name {
+  margin-bottom: 8px;
+  overflow: hidden;
+  color: #3a3a3c;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st3-admin .st-admin-quick-price__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.st3-admin .st-admin-quick-price__fields label {
+  display: block;
+  min-width: 0;
+}
+
+.st3-admin .st-admin-quick-price__fields label > span {
+  display: block;
+  margin-bottom: 5px;
+  color: #86868b !important;
+  font-size: 8.5px !important;
+  font-weight: 550 !important;
+  line-height: 1.2 !important;
+}
+
+.st3-admin .st-admin-quick-price__input-wrap {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #d8d8dc;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.st3-admin .st-admin-quick-price__input-wrap:focus-within {
+  border-color: #8e8e93;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.04);
+}
+
+.st3-admin .st-admin-quick-price__input-wrap > span {
+  padding-left: 9px;
+  color: #86868b !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+}
+
+.st3-admin .st-admin-quick-price__input-wrap input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0 8px 0 3px;
+  background: transparent;
+  color: #1d1d1f;
+  font-size: 10.5px;
+  font-weight: 550;
+}
+
+.st3-admin .st-admin-quick-price__save {
+  min-height: 30px;
+  margin-top: 8px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #303033;
+  font-size: 9.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.st3-admin .st-admin-quick-price__save:hover:not(:disabled) {
+  background: #f5f5f7;
+}
+
+.st3-admin .st-admin-quick-price__save:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.st3-admin .st-admin-quick-price__save svg {
+  width: 11px;
+  height: 11px;
+}
+
+.st3-admin .st-admin-quick-price__spinner {
+  animation: st-admin-quick-price-spin 700ms linear infinite;
+}
+
+@keyframes st-admin-quick-price-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.st3-admin .st-admin-quick-price__error {
+  margin-top: 10px;
+  padding: 8px 9px;
+  border: 1px solid #f1c5c2;
+  border-radius: 8px;
+  background: #fff5f4;
+  color: #b42318;
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.st3-admin .st-admin-quick-price__hint {
+  padding-top: 10px;
+  color: #86868b;
+  font-size: 8.5px;
+  font-weight: 450;
+  line-height: 1.4;
+}
+
+/* === ADMIN V2 — PRODUCTS DIRECTORY QUICK PRICE EDIT END === */
+
+/* ============================================================
+   ADMIN V2 — QUICK PRICE FINAL NEUTRAL AUTHORITY
+   Gray / white / black only.
+   Smooth Product Editor-style open and close lifecycle.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-quick-price__trigger,
+html body
+.st3-admin
+.st-admin-quick-price__close {
+  outline: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__trigger:hover,
+html body
+.st3-admin
+.st-admin-quick-price__trigger:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price__close:hover,
+html body
+.st3-admin
+.st-admin-quick-price__close:focus-visible {
+  border-color: transparent !important;
+  background: #f0f0f2 !important;
+  color: #1d1d1f !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__popover {
+  border: 1px solid #dedee2 !important;
+  background: #ffffff !important;
+  color: #1d1d1f !important;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform:
+    translateX(-50%)
+    translate3d(0, -7px, 0)
+    scale(0.985) !important;
+
+  transform-origin: 50% 0;
+
+  filter: blur(1px);
+
+  pointer-events: none;
+
+  transition:
+    opacity 190ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 190ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 190ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0ms linear 190ms !important;
+
+  will-change: opacity, transform, filter;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__popover.is-open {
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translateX(-50%)
+    translate3d(0, 0, 0)
+    scale(1) !important;
+
+  filter: blur(0);
+
+  pointer-events: auto;
+
+  transition:
+    opacity 210ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 210ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 210ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0ms linear 0ms !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__popover.is-closing {
+  opacity: 0;
+  visibility: visible;
+
+  transform:
+    translateX(-50%)
+    translate3d(0, -6px, 0)
+    scale(0.988) !important;
+
+  filter: blur(0.8px);
+
+  pointer-events: none;
+}
+
+@starting-style {
+  html body
+  .st3-admin
+  .st-admin-quick-price__popover.is-open {
+    opacity: 0;
+
+    transform:
+      translateX(-50%)
+      translate3d(0, -7px, 0)
+      scale(0.985) !important;
+
+    filter: blur(1px);
+  }
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__input-wrap {
+  border: 1px solid #d8d8dc !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__input-wrap:focus-within {
+  border-color: #202223 !important;
+  background: #ffffff !important;
+
+  box-shadow:
+    0 0 0 1px #202223 !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__input-wrap input,
+html body
+.st3-admin
+.st-admin-quick-price__input-wrap input:focus,
+html body
+.st3-admin
+.st-admin-quick-price__input-wrap input:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  color: #1d1d1f !important;
+  box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__input-wrap input::selection {
+  background: #d5d5d7 !important;
+  color: #1d1d1f !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__save {
+  min-height: 31px !important;
+
+  border: 1px solid #202223 !important;
+  border-radius: 8px !important;
+
+  background: #202223 !important;
+  color: #ffffff !important;
+
+  box-shadow: none !important;
+
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    opacity 140ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__save:hover:not(:disabled),
+html body
+.st3-admin
+.st-admin-quick-price__save:focus-visible:not(:disabled) {
+  border-color: #111214 !important;
+  background: #111214 !important;
+  color: #ffffff !important;
+
+  outline: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__save:active:not(:disabled) {
+  border-color: #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__save:disabled {
+  border-color: #c9c9cc !important;
+  background: #c9c9cc !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price__error {
+  border-color: #e5b9b6 !important;
+  background: #fff5f4 !important;
+  color: #b42318 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  .st3-admin
+  .st-admin-quick-price__popover {
+    transition: none !important;
+    filter: none !important;
+  }
+}
+
+/* === ADMIN V2 — QUICK PRICE FINAL NEUTRAL AUTHORITY END === */
+
+/* ============================================================
+   ADMIN V2 — QUICK PRICE NEUTRAL CONTROLS FINAL AUTHORITY
+   Scoped only to Products directory quick-price editor.
+
+   - no mustard / gold accent
+   - one outer field focus perimeter
+   - dark rectangular Save action
+   - stationary pencil
+   - stationary X with red hover
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   PRICE FIELD
+
+   The wrapper owns the complete focus state.
+   The native input must never paint an inner perimeter.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap {
+  border: 1px solid #d8d8dc !important;
+  background: #ffffff !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap:focus-within {
+  border-color: #202223 !important;
+  background: #ffffff !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input:focus,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input:active {
+  border: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  background: transparent !important;
+
+  filter: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/* ------------------------------------------------------------
+   SAVE
+
+   Canonical Admin V2 dark rectangular action.
+   Never pill-shaped and never mustard.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"] {
+  box-sizing: border-box !important;
+
+  width: auto !important;
+  min-width: 78px !important;
+  min-height: 32px !important;
+  height: 32px !important;
+
+  margin-top: 10px !important;
+  padding: 0 13px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+
+  border: 1px solid #202223 !important;
+  border-radius: 8px !important;
+
+  background: #202223 !important;
+  background-color: #202223 !important;
+
+  color: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    opacity 140ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:hover:not(:disabled),
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:focus-visible:not(:disabled) {
+  border-color: #111214 !important;
+
+  background: #111214 !important;
+  background-color: #111214 !important;
+
+  color: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:active:not(:disabled) {
+  border-color: #000000 !important;
+
+  background: #000000 !important;
+  background-color: #000000 !important;
+
+  color: #ffffff !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:disabled {
+  border-color: #c9c9cc !important;
+
+  background: #c9c9cc !important;
+  background-color: #c9c9cc !important;
+
+  color: #ffffff !important;
+
+  opacity: 1 !important;
+}
+
+
+/* Save icon never inherits global button/icon movement. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__save
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__save:hover
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__save:focus
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__save:focus-visible
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__save:active
+svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   PRICE PENCIL
+
+   Completely stationary.
+   Neutral gray at rest, dark on hover.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:focus,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger {
+  border: 0 !important;
+  background: transparent !important;
+  color: #86868b !important;
+
+  outline: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:focus-visible {
+  border: 0 !important;
+
+  background: #f0f0f2 !important;
+  background-color: #f0f0f2 !important;
+
+  color: #1d1d1f !important;
+
+  outline: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:hover
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:focus
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:focus-visible
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__trigger:active
+svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   CLOSE X
+
+   Completely stationary.
+   Gray normally, red on hover/focus.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:focus,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close {
+  border: 0 !important;
+  background: transparent !important;
+  color: #86868b !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:focus-visible {
+  border: 0 !important;
+  background: transparent !important;
+
+  color: #b42318 !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:hover
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:focus
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:focus-visible
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__close:active
+svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition: none !important;
+}
+
+
+/* Neutral text selection inside price fields. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+input::selection {
+  background: #d5d5d7 !important;
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+input::-moz-selection {
+  background: #d5d5d7 !important;
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+/* === ADMIN V2 — QUICK PRICE NEUTRAL CONTROLS FINAL AUTHORITY END === */
+
+/* ============================================================
+   ADMIN V2 — QUICK PRICE FOCUS + WHITE SAVE FINAL AUTHORITY
+
+   Quick-price editor only:
+   - remove native mustard inner input focus
+   - preserve one outer charcoal focus perimeter
+   - white rectangular Save control
+   - black Save text + icon
+   - neutral gray hover
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   NUMBER INPUT
+
+   The surrounding input-wrap is the ONLY focus perimeter.
+   Suppress native Safari/WebKit inner focus treatment.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"],
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:focus,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:active {
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  filter: none !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/*
+ * Safari can expose native focus painting through the inner
+ * text-field decoration of number controls. Keep it transparent.
+ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]::-webkit-textfield-decoration-container {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+
+/*
+ * Preserve the approved single OUTER perimeter.
+ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap:focus-within {
+  border: 1px solid #202223 !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+}
+
+
+/* ------------------------------------------------------------
+   SAVE BUTTON
+
+   Canonical neutral Admin V2 secondary-action treatment.
+   White / black at rest, subtle gray hover.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"] {
+  box-sizing: border-box !important;
+
+  width: auto !important;
+  min-width: 78px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+
+  margin-top: 10px !important;
+  padding: 0 13px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+
+  border: 1px solid #d4d4d8 !important;
+  border-radius: 8px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  color: #202223 !important;
+
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  font-family: inherit !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease !important;
+}
+
+
+/* Neutral gray hover — no movement and no mustard. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:hover:not(:disabled) {
+  border-color: #c9c9cd !important;
+
+  background: #f3f3f5 !important;
+  background-color: #f3f3f5 !important;
+
+  color: #1d1d1f !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+}
+
+
+/* Keyboard focus remains neutral and external. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:focus-visible {
+  border-color: #202223 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  color: #202223 !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+
+/* Slight neutral pressed feedback without dimensional movement. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:active:not(:disabled) {
+  border-color: #bfc0c4 !important;
+
+  background: #ebebed !important;
+  background-color: #ebebed !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+
+/* Saving / disabled remains neutral rather than mustard. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:disabled {
+  border-color: #dedee1 !important;
+
+  background: #f5f5f6 !important;
+  background-color: #f5f5f6 !important;
+
+  color: #8e8e93 !important;
+
+  cursor: default !important;
+  opacity: 1 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/* Check / spinner inherits the same neutral foreground. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:hover
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:focus
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:focus-visible
+svg,
+html body
+.st3-admin
+.st-admin-quick-price
+button.st-admin-quick-price__save[type="submit"]:active
+svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  filter: none !important;
+}
+
+
+/* Neutral selection inside both price inputs. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]::selection {
+  background: #d5d5d7 !important;
+  background-color: #d5d5d7 !important;
+
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]::-moz-selection {
+  background: #d5d5d7 !important;
+  background-color: #d5d5d7 !important;
+
+  color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+/* === ADMIN V2 — QUICK PRICE FOCUS + WHITE SAVE FINAL AUTHORITY END === */
+
+/* ============================================================
+   ADMIN V2 — QUICK PRICE SAFARI INNER CONTROL REMOVAL
+
+   Quick-price fields only.
+   The outer input-wrap remains the sole focus perimeter.
+   Suppress Safari's native number-field chrome so no inner
+   accent/bracket is painted beside the currency prefix.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:focus,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]:active {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  filter: none !important;
+}
+
+/*
+ * Safari / Chromium number-stepper controls are explicitly
+ * neutralized for this compact editor. Price entry remains a
+ * numeric HTML input and keeps the existing validation logic.
+ */
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]::-webkit-inner-spin-button,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  background: transparent !important;
+
+  opacity: 0 !important;
+}
+
+/*
+ * Keep the approved neutral outer focus perimeter authoritative.
+ */
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap:focus-within {
+  border: 1px solid #202223 !important;
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+}
+
+/* === ADMIN V2 — QUICK PRICE SAFARI INNER CONTROL REMOVAL END === */
+
+/* ============================================================
+   ADMIN V2 — QUICK PRICE TRUE SINGLE-SURFACE FIELDS
+
+   The wrapper owns all visible field chrome.
+   Currency and editable value live on one uninterrupted surface.
+   No internal divider, accent edge, input ring or mustard state.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single {
+  box-sizing: border-box !important;
+
+  height: 32px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  padding: 0 9px !important;
+  gap: 5px !important;
+
+  border: 1px solid #d8d8dc !important;
+  border-radius: 8px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  overflow: hidden !important;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> .st-admin-quick-price__currency {
+  position: static !important;
+
+  display: block !important;
+  flex: 0 0 auto !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  color: #86868b !important;
+
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  pointer-events: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> .st-admin-quick-price__currency::before,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> .st-admin-quick-price__currency::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:focus,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:active {
+  position: static !important;
+
+  display: block !important;
+  flex: 1 1 auto !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  color: #1d1d1f !important;
+  caret-color: #1d1d1f !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input::before,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single:focus-within {
+  border: 1px solid #202223 !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+}
+
+/* === ADMIN V2 — QUICK PRICE TRUE SINGLE-SURFACE FIELDS END === */
+
+/* ============================================================
+   ADMIN V2 — QUICK PRICE FLAT FIELD REDESIGN
+
+   Final architecture:
+   - exactly one visible field surface
+   - wrapper owns all border / radius / focus chrome
+   - currency is an absolute visual prefix
+   - input occupies the complete field surface
+   - no internal compartments
+   - no internal vertical borders
+   - no mustard focus treatment
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single {
+  position: relative !important;
+
+  box-sizing: border-box !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: 32px !important;
+  min-height: 32px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid #d8d8dc !important;
+  border-radius: 8px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  overflow: hidden !important;
+
+  isolation: isolate !important;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+
+/* Currency is only text floating inside the one field surface. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> span.st-admin-quick-price__currency {
+  position: absolute !important;
+
+  z-index: 2 !important;
+
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 9px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  color: #86868b !important;
+
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  pointer-events: none !important;
+
+  transform: none !important;
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> span.st-admin-quick-price__currency::before,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> span.st-admin-quick-price__currency::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* The editable value is visually naked.
+   It fills the complete field and simply leaves room for $. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:hover,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:focus,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:focus-visible,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:active {
+  position: absolute !important;
+
+  z-index: 1 !important;
+
+  inset: 0 !important;
+
+  box-sizing: border-box !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+
+  height: 100% !important;
+  min-height: 0 !important;
+
+  margin: 0 !important;
+
+  padding:
+    0
+    8px
+    0
+    25px !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  color: #1d1d1f !important;
+  caret-color: #1d1d1f !important;
+
+  font-family: inherit !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  filter: none !important;
+  transform: none !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/* Remove any pseudo-element chrome inherited from admin fields. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input::before,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* Placeholder stays neutral. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input::placeholder {
+  color: #86868b !important;
+  opacity: 1 !important;
+}
+
+
+/* ONE AND ONLY ONE focus perimeter. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single:focus-within {
+  border: 1px solid #202223 !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+}
+
+
+/* Explicitly prevent children from drawing vertical separators. */
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> * {
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> *::before,
+html body
+.st3-admin
+.st-admin-quick-price
+.st-admin-quick-price__input-wrap--single
+> *::after {
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+/* === ADMIN V2 — QUICK PRICE FLAT FIELD REDESIGN END === */
+
+/* ============================================================
+   ADMIN V2 — QUICK PRICE INNER OVAL REMOVAL
+
+   Runtime inspection confirmed the value input itself was
+   receiving:
+     border: 1px solid rgba(29,29,31,.086)
+     border-radius: 12px
+
+   The outer wrapper is the sole visible field perimeter.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-quick-price
+div.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input {
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-quick-price
+div.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:hover,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-quick-price
+div.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:focus,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-quick-price
+div.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:focus-visible,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-quick-price
+div.st-admin-quick-price__input-wrap--single
+> input.st-admin-quick-price__value-input:active {
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  filter: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* The wrapper remains the one and only active perimeter. */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-quick-price
+div.st-admin-quick-price__input-wrap--single:focus-within {
+  border: 1px solid #202223 !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 1px #202223 !important;
+  -webkit-box-shadow: 0 0 0 1px #202223 !important;
+}
+
+/* === ADMIN V2 — QUICK PRICE INNER OVAL REMOVAL END === */
+
+/* ============================================================
+   ADMIN V2 — ADD PRODUCT MEDIA PARITY
+   Match the established Edit Product gallery presentation while
+   preserving Add Product local-file and configuration behavior.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-media-manager
+[data-admin-add-product-reorder-image="true"] {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+html body
+.st3-admin
+.st-admin-media-manager
+[data-admin-add-product-reorder-image="true"].is-dragging {
+  cursor: grabbing;
+}
+
+html body
+.st3-admin
+.st-admin-media-manager
+[data-admin-add-product-reorder-image="true"]
+.st-admin-media-item__preview
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/*
+ * Edit Product presents usage as the action name first and the
+ * current assignment as the secondary value. Give Add Product
+ * that same visual reading order without changing its data.
+ */
+html body
+.st3-admin
+.st-admin-media-manager
+[data-admin-add-product-reorder-image="true"]
+.st-admin-media-item__usage
+> summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* === ADMIN V2 — ADD PRODUCT MEDIA PARITY END === */
+
+/* ============================================================
+   ADMIN V2 — ADD PRODUCT MEDIA PARITY
+   ------------------------------------------------------------
+   Add Product deliberately reuses the approved Edit Product
+   photo-card visual language without changing Edit Product.
+   ============================================================ */
+
+.st3-admin
+.st-admin-add-product-media-v2
+.st-admin-media-manager__grid.st-admin-existing-media-v2__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image] {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  background: #fff;
+  touch-action: none;
+  user-select: none;
+  backface-visibility: hidden;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-dragging {
+  opacity: 0.42;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-dragging::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1.5px dashed rgba(102, 112, 133, 0.38);
+  border-radius: 8px;
+  background: rgba(248, 249, 250, 0.24);
+  pointer-events: none;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-drag-target {
+  z-index: 4;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-drag-target.is-drag-swap {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  border-color: #737b87;
+  box-shadow:
+    0 0 0 3px rgba(102, 112, 133, 0.09),
+    0 11px 25px rgba(16, 24, 40, 0.11);
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-drag-target.is-drag-swap::after {
+  content: "Swap";
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  z-index: 8;
+  transform: translateX(-50%);
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(97, 106, 117, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.97);
+  padding: 0 9px;
+  color: #4b5563;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  box-shadow: 0 3px 10px rgba(16, 24, 40, 0.07);
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-drag-reflowing {
+  transform:
+    translate3d(
+      var(--st-admin-drag-reflow-x, 0px),
+      var(--st-admin-drag-reflow-y, 0px),
+      0
+    ) !important;
+  transition:
+    transform 180ms cubic-bezier(0.22, 0.8, 0.24, 1),
+    opacity 110ms ease,
+    border-color 130ms ease,
+    box-shadow 130ms ease !important;
+  will-change: transform;
+  backface-visibility: hidden;
+  z-index: 2;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-drag-target.is-drag-insert-before,
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image].is-drag-target.is-drag-insert-after {
+  transform:
+    translate3d(
+      var(--st-admin-drag-reflow-x, 0px),
+      var(--st-admin-drag-reflow-y, 0px),
+      0
+    ) !important;
+  z-index: 4;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+[data-admin-add-product-reorder-image]
+.st-admin-media-item__preview
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (max-width: 1200px) {
+  .st3-admin
+  .st-admin-add-product-media-v2
+  .st-admin-media-manager__grid.st-admin-existing-media-v2__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .st3-admin
+  .st-admin-add-product-media-v2
+  .st-admin-media-manager__grid.st-admin-existing-media-v2__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-admin
+  .st-admin-add-product-media-v2
+  [data-admin-add-product-reorder-image].is-drag-reflowing {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === ADMIN V2 — ADD PRODUCT MEDIA PARITY END === */
+
+/* ============================================================
+   ADMIN V2 — ADD PRODUCT EDIT USAGE DISCLOSURE
+   ------------------------------------------------------------
+   Add Product only.
+   Smooth open, re-click close and outside-click close.
+   ============================================================ */
+
+.st3-admin
+.st-admin-add-product-media-v2
+.st-admin-add-product-usage-disclosure {
+  overflow: hidden;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+.st-admin-add-product-usage-disclosure
+> .st-admin-media-item__usage-panel {
+  display: block;
+  box-sizing: border-box;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  visibility: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top-width: 0;
+  transform: translateY(-6px);
+  transform-origin: top center;
+  pointer-events: none;
+  transition:
+    max-height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding-top 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding-bottom 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-top-width 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 240ms;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+.st-admin-add-product-usage-disclosure.is-usage-opening
+> .st-admin-media-item__usage-panel,
+.st3-admin
+.st-admin-add-product-media-v2
+.st-admin-add-product-usage-disclosure.is-usage-open
+> .st-admin-media-item__usage-panel {
+  max-height: 240px;
+  opacity: 1;
+  overflow: hidden auto;
+  visibility: visible;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-top-width: 1px;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition:
+    max-height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding-top 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding-bottom 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-top-width 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0s;
+}
+
+.st3-admin
+.st-admin-add-product-media-v2
+.st-admin-add-product-usage-disclosure.is-usage-closing
+> .st-admin-media-item__usage-panel {
+  display: block;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  visibility: visible;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-top-width: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-admin
+  .st-admin-add-product-media-v2
+  .st-admin-add-product-usage-disclosure
+  > .st-admin-media-item__usage-panel {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   END ADMIN V2 — ADD PRODUCT EDIT USAGE DISCLOSURE
+   ============================================================ */

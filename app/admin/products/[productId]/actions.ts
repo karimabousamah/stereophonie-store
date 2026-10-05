@@ -340,19 +340,7 @@ export async function updateProduct(formData: FormData) {
     });
   }
 
-  /*
-   * Out of Stock is exclusive.
-   *
-   * Never preserve or accept merchandising flags when the
-   * aggregate product availability is Out of Stock.
-   */
-  if (productAvailability === "out_of_stock") {
-    isFeatured = false;
-    isTrending = false;
-    isNewArrival = false;
-  }
-
-  /*
+/*
    * A published Coming Soon product becomes a genuine new arrival
    * when it first becomes purchasable.
    *

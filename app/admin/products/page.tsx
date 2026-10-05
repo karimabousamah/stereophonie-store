@@ -15,6 +15,8 @@ import {
 
 import ProductSearch from "@/components/admin/product-search";
 import ProductDirectoryThumbnail from "@/components/admin/products/product-directory-thumbnail";
+import QuickPriceEditor from "./quick-price-editor";
+
 export default async function AdminProductsPage({
   searchParams,
 }: {
@@ -603,11 +605,25 @@ export default async function AdminProductsPage({
                           </div>
 
                           <div className="st-admin-products-directory__cell st-admin-products-directory__price">
-                            <strong>
-                              {lowestPrice === null
-                                ? "—"
-                                : `$${lowestPrice.toFixed(2)}`}
-                            </strong>
+                            <QuickPriceEditor
+                              productId={String(product.id)}
+                              productName={product.name}
+                              variants={variants.map((variant, index) => ({
+                                id: String(variant.id),
+                                name:
+                                  String(variant.variant_name ?? "").trim() ||
+                                  String(variant.size ?? "").trim() ||
+                                  `Configuration ${index + 1}`,
+                                regularPrice:
+                                  typeof variant.regular_price === "number"
+                                    ? variant.regular_price
+                                    : null,
+                                salePrice:
+                                  typeof variant.sale_price === "number"
+                                    ? variant.sale_price
+                                    : null,
+                              }))}
+                            />
                           </div>
 
                           <div className="st-admin-products-directory__cell st-admin-products-directory__configurations">

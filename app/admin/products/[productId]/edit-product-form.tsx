@@ -808,12 +808,7 @@ export default function EditProductForm({
                       <input
                         type="checkbox"
                         name="is_featured"
-                        disabled={productOutOfStock}
-                        checked={
-                          productOutOfStock
-                            ? false
-                            : placementSelection.featured
-                        }
+                        checked={placementSelection.featured}
                         onChange={(event) =>
                           setPlacementSelection((current) => ({
                             ...current,
@@ -834,12 +829,7 @@ export default function EditProductForm({
                       <input
                         type="checkbox"
                         name="is_trending"
-                        disabled={productOutOfStock}
-                        checked={
-                          productOutOfStock
-                            ? false
-                            : placementSelection.trending
-                        }
+                        checked={placementSelection.trending}
                         onChange={(event) =>
                           setPlacementSelection((current) => ({
                             ...current,
@@ -860,12 +850,7 @@ export default function EditProductForm({
                       <input
                         type="checkbox"
                         name="is_new_arrival"
-                        disabled={productOutOfStock}
-                        checked={
-                          productOutOfStock
-                            ? false
-                            : placementSelection.newArrival
-                        }
+                        checked={placementSelection.newArrival}
                         onChange={(event) =>
                           setPlacementSelection((current) => ({
                             ...current,
@@ -874,13 +859,6 @@ export default function EditProductForm({
                         }
                       />
                     </label>
-
-                    {productOutOfStock ? (
-                      <p className="st-admin-placement-compact-v2__note">
-                        Store placement is disabled while every sellable
-                        configuration is unavailable.
-                      </p>
-                    ) : null}
                   </div>
                 </ProductSidebarCard>
 

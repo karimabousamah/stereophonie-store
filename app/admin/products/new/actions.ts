@@ -715,20 +715,7 @@ async function createProductUnsafe(formData: FormData) {
     availability = "out_of_stock";
   }
 
-  /*
-   * Out of Stock is an exclusive storefront state.
-   *
-   * Even if a stale browser form submits merchandising flags,
-   * never persist Featured / Trending / New arrival on an
-   * aggregate Out-of-Stock product.
-   */
-  if (availability === "out_of_stock") {
-    isFeatured = false;
-    isTrending = false;
-    isNewArrival = false;
-  }
-
-  /*
+/*
    * Available live products still require at least one normal
    * store-placement choice.
    *
@@ -737,7 +724,6 @@ async function createProductUnsafe(formData: FormData) {
    */
   if (
     publishingIntent === "publish" &&
-    availability !== "out_of_stock" &&
     !isFeatured &&
     !isTrending &&
     !isNewArrival

@@ -1606,11 +1606,19 @@ function hierarchyMetadata(levels: OptionLevel[]) {
 function levelsFromVariants(
  variants: AdminElectronicsVariant[],
 ): OptionLevel[] {
- const persisted = persistedHierarchyKeys(variants);
+ const keys = persistedHierarchyKeys(variants);
 
- const keys =
- persisted.length > 0 ? persisted : selectorKeysFromVariants(variants);
-
+ /*
+  * Customer-facing Options must come only from the hierarchy that was
+  * explicitly persisted for the product.
+  *
+  * Technical specifications also live inside variant.attributes, so
+  * inferring option levels from arbitrary attribute keys causes products
+  * with specifications but no real options to display those specifications
+  * incorrectly as customer-selectable Options.
+  *
+  * No persisted hierarchy therefore means no Options.
+  */
  return keys.map((key) => {
  const normalizedKey = normalizeKey(key);
 

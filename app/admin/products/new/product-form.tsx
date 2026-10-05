@@ -866,7 +866,8 @@ export default function ProductForm({
   })();
 
   return (
-    <form
+    <div className="st-admin-edit-composition-v2">
+      <form
       id="st-admin-new-product-form"
       className="st-admin-product-editor-form"
       ref={formRef}
@@ -1170,12 +1171,7 @@ export default function ProductForm({
                   <input
                     type="checkbox"
                     name="is_featured"
-                    disabled={productOutOfStock}
-                    checked={
-                      productOutOfStock
-                        ? false
-                        : placementSelection.featured
-                    }
+                    checked={placementSelection.featured}
                     onChange={(event) =>
                       setPlacementSelection((current) => ({
                         ...current,
@@ -1196,12 +1192,7 @@ export default function ProductForm({
                   <input
                     type="checkbox"
                     name="is_trending"
-                    disabled={productOutOfStock}
-                    checked={
-                      productOutOfStock
-                        ? false
-                        : placementSelection.trending
-                    }
+                    checked={placementSelection.trending}
                     onChange={(event) =>
                       setPlacementSelection((current) => ({
                         ...current,
@@ -1222,12 +1213,7 @@ export default function ProductForm({
                   <input
                     type="checkbox"
                     name="is_new_arrival"
-                    disabled={productOutOfStock}
-                    checked={
-                      productOutOfStock
-                        ? false
-                        : placementSelection.newArrival
-                    }
+                    checked={placementSelection.newArrival}
                     onChange={(event) =>
                       setPlacementSelection((current) => ({
                         ...current,
@@ -1326,22 +1312,6 @@ export default function ProductForm({
         </ProductCard>
 
         <ProductCard
-          title="Media"
-          description="Upload product images and connect them to the correct configurations."
-        >
-          <ImageUploader
-            disabled={isSubmitting}
-            configurations={variants.map((variant, index) => ({
-              clientId: variant.clientId,
-              variant_name: variant.variant_name,
-              attributes: variant.attributes,
-              fallbackLabel: `Configuration ${index + 1}`,
-            }))}
-            onImagesChange={handleImagesChange}
-          />
-        </ProductCard>
-
-        <ProductCard
           title="Configurations"
           description="Manage options, pricing, inventory, SKU, availability and technical specifications."
         >
@@ -1354,5 +1324,32 @@ export default function ProductForm({
         </ProductCard>
       </ProductWorkspace>
     </form>
+
+    <div
+      className="st-admin-edit-product-media-v2"
+      data-admin-edit-product-media="true"
+    >
+      <ProductCard
+        title="Media"
+        description="Manage product images, order and configuration assignment."
+      >
+        <div
+          id="product-images"
+          data-admin-product-media-section="v2"
+        >
+          <ImageUploader
+            disabled={isSubmitting}
+            configurations={variants.map((variant, index) => ({
+              clientId: variant.clientId,
+              variant_name: variant.variant_name,
+              attributes: variant.attributes,
+              fallbackLabel: `Configuration ${index + 1}`,
+            }))}
+            onImagesChange={handleImagesChange}
+          />
+        </div>
+      </ProductCard>
+    </div>
+    </div>
   );
 }
