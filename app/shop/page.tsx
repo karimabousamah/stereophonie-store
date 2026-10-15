@@ -17,6 +17,9 @@ import {
   getShopBrandFilterOptionsForCategory,
   getShopCategoryFilterOptions,
 } from "@/lib/storefront-shop-filter-options";
+import type {
+  StorefrontSubcategoryNavigation,
+} from "@/components/stereophonie-v3/shop/category-subcategory-navigation";
 
 /*
  * Smaller first render for faster /shop navigation.
@@ -35,6 +38,7 @@ type ShopPageProps = {
     search?: string | string[];
     q?: string | string[];
     category?: string | string[];
+    subcategory?: string | string[];
     offers?: string | string[];
     brand?: string | string[];
     availability?: string | string[];
@@ -42,6 +46,9 @@ type ShopPageProps = {
     maxPrice?: string | string[];
     sort?: string | string[];
   }>;
+  subcategoryNavigation?:
+    StorefrontSubcategoryNavigation | null;
+  categoryContext?: boolean;
 };
 
 export default async function ShopPage(props: ShopPageProps) {
@@ -51,6 +58,8 @@ export default async function ShopPage(props: ShopPageProps) {
 
 export async function StereophonieShopPage({
   searchParams,
+  subcategoryNavigation = null,
+  categoryContext = false,
 }: ShopPageProps) {
   const parameters = await searchParams;
 
@@ -60,6 +69,10 @@ export async function StereophonieShopPage({
 
   const category = shopSingleParameter(
     parameters.category,
+  ).trim();
+
+  const subcategoryId = shopSingleParameter(
+    parameters.subcategory,
   ).trim();
 
   /*
@@ -136,6 +149,7 @@ export async function StereophonieShopPage({
         filters: {
         search,
         category,
+        subcategoryId,
         offers,
         brand,
         availability,
@@ -172,6 +186,9 @@ export async function StereophonieShopPage({
       categories={categories}
       brands={brands}
       selectedCategory={category}
+      selectedSubcategoryId={subcategoryId}
+      subcategoryNavigation={subcategoryNavigation}
+      categoryContext={categoryContext}
       selectedBrand={brand}
       selectedOffers={offers}
       selectedAvailability={availability}

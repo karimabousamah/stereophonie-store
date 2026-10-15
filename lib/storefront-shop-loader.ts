@@ -9,7 +9,7 @@ import {
   shopBrandName,
   shopCategoryName,
   shopMatchesPriceRange,
-  shopMatchesSearch,
+  shopRelevantSearchProducts,
   shopProductInStock,
   shopProductOnOffer,
   shopProductPrices,
@@ -65,6 +65,7 @@ const loadShopCatalogueIndex = unstable_cache(
           name,
           slug,
           description,
+          subcategory_id,
           is_featured,
           is_trending,
           is_new_arrival,
@@ -108,7 +109,7 @@ const loadShopCatalogueIndex = unstable_cache(
 
     return (data ?? []) as ShopIndexRow[];
   },
-  ["stereophonie-shop-catalogue-index-v1"],
+  ["stereophonie-shop-catalogue-index-v2"],
   {
     revalidate: 3600,
     tags: [SHOP_CATALOGUE_CACHE_TAG],
@@ -146,6 +147,7 @@ type ShopFullRow = {
 export type ShopBatchFilters = {
   search: string;
   category: string;
+  subcategoryId: string;
   offers: boolean;
   brand: string;
   availability: ShopAvailabilityFilter;
@@ -468,7 +470,7 @@ export async function loadShopProductBatch({
    */
   const products = await loadShopCatalogueIndex();
 
-  const priceWindowProducts = products.filter((product) => {
+  const priceWindowCandidates = products.filter((product) => {
     if (filters.offers && !shopProductOnOffer(product)) {
       return false;
     }
@@ -477,6 +479,14 @@ export async function loadShopProductBatch({
       filters.category &&
       shopCategoryName(product).toLowerCase() !==
         filters.category.toLowerCase()
+    ) {
+      return false;
+    }
+
+    if (
+      filters.subcategoryId &&
+      product.subcategory_id !==
+        filters.subcategoryId
     ) {
       return false;
     }
@@ -496,12 +506,14 @@ export async function loadShopProductBatch({
       return false;
     }
 
-    if (!shopMatchesSearch(product, filters.search)) {
-      return false;
-    }
-
     return true;
   });
+
+  const priceWindowProducts =
+    shopRelevantSearchProducts(
+      priceWindowCandidates,
+      filters.search,
+    );
 
   const {
     minimumPrice,
@@ -514,7 +526,7 @@ export async function loadShopProductBatch({
     requestedMaximumPrice: filters.requestedMaximumPrice,
   });
 
-  const filteredProducts = products.filter((product) => {
+  const filteredCandidates = products.filter((product) => {
     if (filters.offers && !shopProductOnOffer(product)) {
       return false;
     }
@@ -523,6 +535,14 @@ export async function loadShopProductBatch({
       filters.category &&
       shopCategoryName(product).toLowerCase() !==
         filters.category.toLowerCase()
+    ) {
+      return false;
+    }
+
+    if (
+      filters.subcategoryId &&
+      product.subcategory_id !==
+        filters.subcategoryId
     ) {
       return false;
     }
@@ -552,17 +572,23 @@ export async function loadShopProductBatch({
       return false;
     }
 
-    if (!shopMatchesSearch(product, filters.search)) {
-      return false;
-    }
-
     return true;
   });
 
-  const sortedProducts = shopSortCatalog(
-    filteredProducts,
-    filters.sort,
-  );
+  const filteredProducts =
+    shopRelevantSearchProducts(
+      filteredCandidates,
+      filters.search,
+    );
+
+  const sortedProducts =
+    filters.search.trim() &&
+    filters.sort === "newest"
+      ? filteredProducts
+      : shopSortCatalog(
+          filteredProducts,
+          filters.sort,
+        );
 
   const totalProducts = sortedProducts.length;
 

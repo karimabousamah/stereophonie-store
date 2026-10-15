@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import V3Reveal from "@/components/stereophonie-v3/shared/v3-reveal";
 import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
+import HomeProductShelfScrollHint from "@/components/stereophonie-v3/home/home-product-shelf-scroll-hint";
 import V3EntertainmentCategory from "@/components/stereophonie-v3/home/v3-entertainment-category";
 import ShopRoutePrefetch from "@/components/storefront/shop-route-prefetch";
 import {
@@ -209,15 +210,7 @@ function ProductSection({
           </div>
         </div>
 
-        <div className="st3-home-product-shelf__scroll-hint" aria-hidden="true">
-          <span className="st3-home-product-shelf__scroll-hint-mobile">
-            Swipe to explore
-          </span>
-          <span className="st3-home-product-shelf__scroll-hint-desktop">
-            Scroll to explore
-          </span>
-          <span className="st3-home-product-shelf__scroll-hint-arrow">→</span>
-        </div>
+        <HomeProductShelfScrollHint />
 
         <Link href={href} className="st3-home-product-shelf__see-all">
           <span>{linkLabel}</span>

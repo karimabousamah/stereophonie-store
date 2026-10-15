@@ -84521,3 +84521,1276 @@ html body .st-pg-immersive {
 }
 
 /* === ST MOBILE SHOP PREORDER BOTTOM POSITION V1 END === */
+
+/* ==========================================================================
+   STOREFRONT SUBCATEGORY NAVIGATION V2
+   Medium selection cards before a leaf; compact sibling switcher on a leaf.
+   ========================================================================== */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories {
+  width: 100%;
+  margin: 0;
+  background: #fff;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__inner {
+  width: min(calc(100% - 48px), 1220px);
+  margin: 0 auto;
+}
+
+
+/* ==========================================================
+   SHARED CONTEXT
+   ========================================================== */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__copy {
+  min-width: 0;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__copy > span {
+  color: #86868b;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__back {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(29, 29, 31, 0.08);
+  border-radius: 999px;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+@media (hover: hover) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__back:hover {
+    border-color: rgba(225, 157, 25, 0.66);
+    background: #fffaf1;
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 7px 21px rgba(197, 131, 8, 0.11);
+  }
+}
+
+
+/* ==========================================================
+   CATEGORY / PARENT PAGE
+   Medium cards — catalogue is intentionally hidden.
+   ========================================================== */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories.is-card-mode {
+  box-sizing: border-box;
+  min-height: calc(
+    100svh - var(--st3-header-height)
+  );
+  padding:
+    clamp(30px, 5svh, 58px)
+    0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories.is-card-mode
+.st3-shop-subcategories__context {
+  margin-bottom:
+    clamp(16px, 2.4svh, 26px);
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories.is-card-mode
+.st3-shop-subcategories__copy > span {
+  font-size: 13px;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: clamp(14px, 1.5vw, 20px);
+}
+
+/*
+ * One or two choices should not look like an
+ * unfinished 3-column row.
+ */
+.st3-shop-subcategories__grid[data-count="1"] {
+  max-width: 430px;
+  margin-inline: auto;
+  grid-template-columns:
+    minmax(0, 1fr);
+}
+
+.st3-shop-subcategories__grid[data-count="2"] {
+  max-width: 880px;
+  margin-inline: auto;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__card {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(29, 29, 31, 0.085);
+  border-radius: 20px;
+  background: #fff;
+  color: #1d1d1f;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.025);
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__card-media {
+  height: clamp(
+    160px,
+    21svh,
+    220px
+  );
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  margin: 8px 8px 0;
+  border-radius: 15px;
+  background: #f5f5f7;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__card-media.is-dark {
+  background: #111113;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__card-media img {
+  width: 100%;
+  height: 100%;
+  padding: 13px;
+  display: block;
+  object-fit: contain;
+  transition:
+    transform 260ms
+    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__card-footer {
+  min-height: clamp(
+    58px,
+    7svh,
+    68px
+  );
+  padding: 14px 16px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__card-footer
+> strong {
+  min-width: 0;
+  color: #1d1d1f;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__card-arrow {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f5f5f7;
+  color: #6e6e73;
+  font-size: 20px;
+  line-height: 1;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+@media (hover: hover) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card:hover {
+    border-color: rgba(225, 157, 25, 0.66);
+    background: #fffaf1;
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 10px 28px rgba(197, 131, 8, 0.11);
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card:hover
+  .st3-shop-subcategories__card-media img {
+    transform: scale(1.025);
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card:hover
+  .st3-shop-subcategories__card-arrow {
+    background: #fdb73e;
+    color: #111;
+    transform: translateX(2px);
+  }
+}
+
+
+/* ==========================================================
+   LEAF PAGE
+   Compact sibling switcher above normal catalogue.
+   ========================================================== */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories.is-compact-mode {
+  padding: 18px 0 0;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories.is-compact-mode
+.st3-shop-subcategories__context {
+  margin-bottom: 10px;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__list {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  gap: 10px;
+
+  width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding: 4px;
+  margin: -4px;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  overscroll-behavior-inline: contain;
+  scroll-behavior: smooth;
+}
+
+.st3-shop-subcategories__list::-webkit-scrollbar {
+  display: none;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__item {
+  flex: 0 0 auto;
+  min-width: 158px;
+  height: 58px;
+  padding: 6px 11px 6px 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(29, 29, 31, 0.085);
+  border-radius: 16px;
+  background: #fff;
+  color: #1d1d1f;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.025);
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+@media (hover: hover) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__item:hover {
+    border-color: rgba(225, 157, 25, 0.66);
+    background: #fffaf1;
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 7px 21px rgba(197, 131, 8, 0.11);
+  }
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__thumb {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #f5f5f7;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__thumb.is-dark {
+  background: #111113;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__thumb img {
+  width: 100%;
+  height: 100%;
+  padding: 3px;
+  display: block;
+  object-fit: contain;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__placeholder {
+  width: 14px;
+  height: 14px;
+  display: block;
+  border-radius: 50%;
+  background: #d2d2d7;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.is-dark
+.st3-shop-subcategories__placeholder {
+  background: #6e6e73;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__name {
+  max-width: 180px;
+  overflow: hidden;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__arrow {
+  margin-left: auto;
+  color: #86868b;
+  font-size: 19px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+
+/* Smaller vertical gap between compact switcher and search. */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories.is-compact-mode
++ section.st3-shop-v4__catalog
+> .st3-shop-v4__catalog-inner {
+  padding-top: 16px !important;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 900px) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-card-mode {
+    min-height: auto;
+    padding: 34px 0 50px;
+    justify-content: flex-start;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid[data-count="1"] {
+    max-width: 430px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid[data-count="2"] {
+    max-width: none;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-media {
+    height: clamp(
+      145px,
+      22vw,
+      190px
+    );
+  }
+}
+
+@media (max-width: 720px) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__inner {
+    width: calc(100% - 32px);
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-card-mode {
+    min-height: auto;
+    padding: 24px 0 40px;
+    justify-content: flex-start;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-card-mode
+  .st3-shop-subcategories__context {
+    margin-bottom: 14px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid {
+    gap: 12px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid[data-count="1"],
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid[data-count="2"] {
+    max-width: none;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-media {
+    height: clamp(
+      120px,
+      23vw,
+      150px
+    );
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-footer {
+    min-height: 54px;
+    padding: 12px 13px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-footer
+  > strong {
+    font-size: 14px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-compact-mode {
+    padding-top: 14px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px;
+    margin: -4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__item {
+    min-width: 148px;
+    height: 54px;
+    border-radius: 15px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__thumb {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 10px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__name {
+    max-width: 150px;
+    font-size: 13px;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-compact-mode
+  + section.st3-shop-v4__catalog
+  > .st3-shop-v4__catalog-inner {
+    padding-top: 12px !important;
+  }
+}
+
+@media (max-width: 540px) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid[data-count="1"],
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__grid[data-count="2"] {
+    width: 100%;
+    max-width: 460px;
+    margin-inline: auto;
+    grid-template-columns: 1fr;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-media {
+    height: clamp(
+      145px,
+      40vw,
+      185px
+    );
+  }
+}
+
+/*
+ * Keep the selector stage comfortable on short laptop
+ * windows without forcing cards below the fold.
+ */
+@media (min-width: 901px) and (max-height: 720px) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-card-mode {
+    min-height: calc(
+      100svh - var(--st3-header-height)
+    );
+    padding: 24px 0;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-media {
+    height: clamp(
+      135px,
+      19svh,
+      165px
+    );
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-footer {
+    min-height: 54px;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__item,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-media img,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__card-arrow,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__back {
+    transition: none;
+  }
+}
+
+/* === ST STOREFRONT NATURAL FILTER CONTEXT V1 === */
+
+/*
+ * Price behaves like the other premium Storefront controls:
+ * white interior, mustard perimeter and soft mustard glow.
+ * The whole control is active — not an inner rectangular patch.
+ */
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger.is-active,
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger[aria-expanded="true"],
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger[data-filter-active="true"] {
+  border-color: rgba(225, 157, 25, 0.78) !important;
+  background: #fff !important;
+  background-color: #fff !important;
+  background-image: none !important;
+  color: #1d1d1f !important;
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.075),
+    0 7px 21px rgba(197, 131, 8, 0.105) !important;
+}
+
+/*
+ * Keep focus treatment on the complete Minimum / Maximum field.
+ * Do not draw another mustard rectangle directly behind the number.
+ */
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-fields
+  label
+  > div {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-fields
+  label
+  > div:focus-within {
+  border-color: rgba(225, 157, 25, 0.7) !important;
+  background: #fff !important;
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.065) !important;
+}
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__price-fields
+  input:focus {
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* === ST STOREFRONT NATURAL FILTER CONTEXT V1 END === */
+
+/* === ST STOREFRONT FILTER INTERACTION FINAL V3 === */
+
+/*
+ * PRICE + IN STOCK
+ *
+ * Category and Brand are the canonical interaction reference.
+ *
+ * Hover:
+ *   rgba(225, 157, 25, 0.66)
+ *   #fffaf1
+ *   same mustard halo
+ *
+ * Active:
+ *   slightly stronger selected mustard state
+ */
+
+
+/* ==========================================================
+   PRICE — NORMAL
+   ========================================================== */
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger[data-filter-active="false"] {
+  border-color: rgba(29, 29, 31, 0.11) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+
+/* ==========================================================
+   PRICE + IN STOCK — HOVER
+   EXACTLY MATCH CATEGORY / BRAND
+   ========================================================== */
+
+@media (hover: hover) {
+  html
+    body
+    .st-retail-shop
+    .st-filter-v4__bar
+    .st-filter-v4__filters
+    .st-filter-v4__price-wrap
+    > button.st-filter-v4__pill.st-filter-v4__price-trigger[data-filter-active="false"]:hover,
+  html
+    body
+    .st-retail-shop
+    .st-filter-v4__bar
+    .st-filter-v4__filters
+    > button.st-filter-v4__pill.st-filter-v4__stock-filter:not(.is-active):hover {
+    border-color: rgba(225, 157, 25, 0.66) !important;
+
+    background: #fffaf1 !important;
+    background-color: #fffaf1 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 7px 21px rgba(197, 131, 8, 0.11) !important;
+  }
+}
+
+
+/* ==========================================================
+   PRICE — ACTIVE
+   OPEN POPUP OR APPLIED PRICE RANGE
+   ========================================================== */
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger[data-filter-active="true"],
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger.is-active,
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  .st-filter-v4__price-wrap
+  > button.st-filter-v4__pill.st-filter-v4__price-trigger[aria-expanded="true"] {
+  border-color: rgba(225, 157, 25, 0.67) !important;
+
+  background: #fff9ee !important;
+  background-color: #fff9ee !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.065),
+    0 7px 20px rgba(197, 131, 8, 0.09) !important;
+}
+
+
+/* ==========================================================
+   IN STOCK — ACTIVE
+   ========================================================== */
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__bar
+  .st-filter-v4__filters
+  > button.st-filter-v4__pill.st-filter-v4__stock-filter.is-active {
+  border-color: rgba(225, 157, 25, 0.67) !important;
+
+  background: #fff9ee !important;
+  background-color: #fff9ee !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.065),
+    0 7px 20px rgba(197, 131, 8, 0.09) !important;
+}
+
+
+html
+  body
+  .st-retail-shop
+  .st-filter-v4__stock-filter.is-active
+  .st-filter-v4__stock-dot {
+  border-color: #dfa026 !important;
+
+  background: #dfa026 !important;
+
+  box-shadow:
+    0 0 0 5px rgba(245, 179, 53, 0.11) !important;
+}
+
+/* === ST STOREFRONT FILTER INTERACTION FINAL V3 END === */
+
+/* === ST SHOP FILTER META + ACTIVE SUBCATEGORY V1 === */
+
+/*
+ * FILTERED RESULTS ROW
+ *
+ * The old geometry reserved:
+ *   min-height: 44px
+ *   margin-bottom: 24px
+ *
+ * Keep the information visible, but stop it from creating
+ * a large white band between Filters and Products.
+ */
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__controls.has-active-state {
+  margin-bottom: 6px !important;
+  padding-bottom: 0 !important;
+}
+
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__active-state {
+  min-height: 28px !important;
+  margin: 0 0 10px !important;
+  padding: 0 4px !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+
+/*
+ * CURRENT SUBCATEGORY
+ *
+ * The selected Subcategory uses EXACTLY the same visual
+ * treatment already approved for Subcategory hover.
+ */
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__item.is-active {
+  border-color: rgba(225, 157, 25, 0.66);
+
+  background: #fffaf1;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.07),
+    0 7px 21px rgba(197, 131, 8, 0.11);
+}
+
+
+/*
+ * Keep active state stable while hovering it.
+ */
+@media (hover: hover) {
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-subcategories__item.is-active:hover {
+    border-color: rgba(225, 157, 25, 0.66);
+
+    background: #fffaf1;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 7px 21px rgba(197, 131, 8, 0.11);
+  }
+}
+
+
+/*
+ * Mobile keeps the same information, just slightly tighter.
+ */
+@media (max-width: 720px) {
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-v4__controls.has-active-state {
+    margin-bottom: 4px !important;
+  }
+
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-v4__active-state {
+    min-height: 26px !important;
+    margin-bottom: 8px !important;
+    gap: 14px;
+  }
+}
+
+/* === ST SHOP FILTER META + ACTIVE SUBCATEGORY V1 END === */
+
+/* === ST FILTER META VERTICAL BALANCE V1 === */
+
+/*
+ * Visually lift only:
+ *   - "Showing filtered results"
+ *   - "Clear all"
+ *
+ * IMPORTANT:
+ * transform does NOT affect layout flow.
+ *
+ * Therefore the product grid remains at exactly the same
+ * vertical position as before.
+ */
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__active-state {
+  transform: translateY(-16px);
+}
+
+
+/*
+ * Slightly less movement on smaller screens.
+ */
+@media (max-width: 720px) {
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-v4__active-state {
+    transform: translateY(-10px);
+  }
+}
+
+/* === ST FILTER META VERTICAL BALANCE V1 END === */
+
+/* === ST SUBCATEGORY SINGLE ROW + SCROLL HINT V1 === */
+
+/*
+ * Compact category navigation never creates a second row.
+ *
+ * Extra Subcategories continue horizontally instead.
+ */
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-compact-mode
+  .st3-shop-subcategories__list {
+  flex-wrap: nowrap !important;
+
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+
+  scrollbar-width: none !important;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories.is-compact-mode
+  .st3-shop-subcategories__list::-webkit-scrollbar {
+  display: none !important;
+
+  width: 0 !important;
+  height: 0 !important;
+}
+
+
+/*
+ * Same continuation cue used by the approved Homepage
+ * product shelves.
+ */
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-hint {
+  display: flex;
+
+  width: fit-content;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin: 12px auto 0;
+  padding: 0;
+
+  color: rgba(29, 29, 31, 0.5);
+
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+
+  white-space: nowrap;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-hint-mobile {
+  display: none;
+}
+
+
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-hint-desktop {
+  display: inline;
+}
+
+
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-hint-arrow {
+  display: inline-block;
+
+  color: #b77900;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+
+  transform: translate3d(0, 0, 0);
+  transform-origin: center center;
+
+  will-change: transform, opacity;
+
+  /*
+   * Exact approved Homepage premium directional motion.
+   */
+  animation:
+    stHomeShelfPremiumArrow
+    2.35s
+    cubic-bezier(0.22, 0.61, 0.36, 1)
+    infinite;
+}
+
+
+@media (max-width: 768px) {
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-subcategories__scroll-hint {
+    margin-top: 10px;
+
+    font-size: 11.5px;
+  }
+
+
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-subcategories__scroll-hint-mobile {
+    display: inline;
+  }
+
+
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-subcategories__scroll-hint-desktop {
+    display: none;
+  }
+
+
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-subcategories__scroll-hint-arrow {
+    font-size: 13px;
+
+    animation-duration: 2.15s;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-subcategories__scroll-hint-arrow {
+    animation: none !important;
+
+    transform: none !important;
+  }
+}
+
+/* === ST SUBCATEGORY SINGLE ROW + SCROLL HINT V1 END === */
+
+/* === ST SUBCATEGORY EXPLORE ARROW MOTION FINAL V1 === */
+
+/*
+ * Exact premium continuation-arrow behavior used by the
+ * Homepage product shelves:
+ *
+ * rest → glide right → hold → return → rest
+ *
+ * Final authority is intentional so generic Storefront
+ * animation/transform rules cannot leave this arrow static.
+ */
+html
+  body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-hint-arrow {
+  display: inline-block !important;
+
+  transform: translate3d(0, 0, 0);
+  transform-origin: center center !important;
+
+  will-change: transform, opacity !important;
+
+  animation:
+    stSubcategoryExploreArrowPremium
+    2.35s
+    cubic-bezier(0.22, 0.61, 0.36, 1)
+    infinite !important;
+}
+
+
+@keyframes stSubcategoryExploreArrowPremium {
+  0%,
+  18% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.72;
+  }
+
+  42% {
+    transform: translate3d(5px, 0, 0);
+    opacity: 1;
+  }
+
+  55% {
+    transform: translate3d(5px, 0, 0);
+    opacity: 0.9;
+  }
+
+  72% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.72;
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.72;
+  }
+}
+
+
+@media (max-width: 768px) {
+  html
+    body
+    main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+    .st3-shop-subcategories__scroll-hint-arrow {
+    animation-duration: 2.15s !important;
+  }
+}
+
+/* === ST SUBCATEGORY EXPLORE ARROW MOTION FINAL V1 END === */

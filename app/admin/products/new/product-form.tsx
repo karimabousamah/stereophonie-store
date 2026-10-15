@@ -34,10 +34,14 @@ import {
   ProductWorkspace,
 } from "@/components/admin/products/v2/product-workspace";
 import { smoothScrollProductResultToTop } from "@/components/admin/product-save-result-scroll";
+import ProductActionNotice from "@/components/admin/products/product-action-notice";
 
 type Category = {
   id: string;
   name: string;
+  rootCategoryId?: string;
+  subcategoryId?: string | null;
+  editable?: boolean;
 };
 
 type Brand = {
@@ -64,7 +68,7 @@ function createInitialVariants(): AdminElectronicsVariant[] {
       regular_price: "",
       sale_price: "",
       stock_quantity: 0,
-      low_stock_threshold: 0,
+      low_stock_threshold: 1,
       availability_status: "in_stock",
     },
   ];
@@ -1068,27 +1072,31 @@ export default function ProductForm({
       />
 
       {(errorMessage || submissionError) && (
-        <div
-          className="st-admin-product-error-v2"
-          role="alert"
-        >
-          <AlertCircle
-            aria-hidden="true"
-          />
-
-          <div>
-            <strong>
-              Product not saved
-            </strong>
-
-            <p>
-              {submissionError ||
-                errorMessage}
-            </p>
-          </div>
-        </div>
+        <ProductActionNotice
+          key={`new-product-error-${submissionError || errorMessage}`}
+          variant="error"
+          title="Product not saved"
+          message={
+            submissionError ||
+            errorMessage ||
+            "The product could not be saved."
+          }
+          clearQueryParams={
+            errorMessage
+              ? ["error"]
+              : []
+          }
+          onDismiss={() => {
+            setSubmissionError("");
+          }}
+        />
       )}
 
+      <input
+        type="hidden"
+        name="subcategory_id"
+        value={selectedSubcategoryId}
+      />
       <ProductWorkspace
         actionBar={
           <ProductSaveBar
@@ -1156,9 +1164,19 @@ export default function ProductForm({
                   <ProductCategoryPicker
                     categories={categories}
                     onCategoryChange={(category) => {
-                      setSelectedCategoryId(category?.id ?? "");
-                      setSelectedCategoryName(category?.name ?? "");
-                      setSelectedSubcategoryId("");
+                      setSelectedCategoryId(
+                        category?.rootCategoryId ??
+                          category?.id ??
+                          "",
+                      );
+
+                      setSelectedCategoryName(
+                        category?.name ?? "",
+                      );
+
+                      setSelectedSubcategoryId(
+                        category?.subcategoryId ?? "",
+                      );
                     }}
                   />
                 </div>

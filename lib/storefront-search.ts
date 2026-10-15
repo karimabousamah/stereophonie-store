@@ -258,6 +258,138 @@ export function storefrontSearchValueScore(value: string, query: string) {
   return null;
 }
 
+export type StorefrontSearchProductRelevance = {
+  tier: number;
+  score: number;
+};
+
+export function storefrontSearchProductRelevance({
+  name,
+  brand = "",
+  query,
+}: {
+  name: string;
+  brand?: string;
+  query: string;
+}): StorefrontSearchProductRelevance | null {
+  const normalizedQuery =
+    normalizeStorefrontSearchText(query);
+
+  if (!normalizedQuery) {
+    return {
+      tier: 0,
+      score: 0,
+    };
+  }
+
+  const normalizedName =
+    normalizeStorefrontSearchText(name);
+
+  const normalizedBrand =
+    normalizeStorefrontSearchText(brand);
+
+  if (!normalizedName) {
+    return null;
+  }
+
+  const brandScore =
+    normalizedBrand
+      ? storefrontSearchValueScore(
+          normalizedBrand,
+          normalizedQuery,
+        )
+      : null;
+
+  /*
+   * An exact Brand search is authoritative.
+   *
+   * Example:
+   *   "Promate"
+   *
+   * If Promate products exist, they form the best tier and
+   * fuzzy product-name coincidences from other brands are not
+   * allowed to mix into those results.
+   */
+  if (
+    brandScore !== null &&
+    brandScore <= 1
+  ) {
+    return {
+      tier: 0,
+      score: brandScore,
+    };
+  }
+
+  let productIntent =
+    normalizedQuery;
+
+  const explicitBrandPrefix =
+    Boolean(
+      normalizedBrand &&
+      normalizedQuery.startsWith(
+        `${normalizedBrand} `,
+      ),
+    );
+
+  if (explicitBrandPrefix) {
+    productIntent =
+      normalizedQuery
+        .slice(
+          normalizedBrand.length,
+        )
+        .trim();
+  }
+
+  if (productIntent) {
+    const nameScore =
+      storefrontSearchValueScore(
+        normalizedName,
+        productIntent,
+      );
+
+    if (nameScore !== null) {
+      return {
+        tier:
+          nameScore <= 5
+            ? 1
+            : nameScore === 6
+              ? 2
+              : 3,
+        score: nameScore,
+      };
+    }
+  }
+
+  /*
+   * If the customer explicitly typed
+   * "Brand + product intent", Brand alone is not enough.
+   *
+   * Example:
+   *   "Apple AirPods"
+   *
+   * An iPad must not appear merely because it is Apple.
+   */
+  if (explicitBrandPrefix) {
+    return null;
+  }
+
+  /*
+   * Partial Brand searches are useful after stronger product
+   * matches have been ruled out.
+   */
+  if (brandScore !== null) {
+    return {
+      tier:
+        brandScore <= 5
+          ? 2
+          : 4,
+      score: brandScore,
+    };
+  }
+
+  return null;
+}
+
 export function storefrontSearchDirectProductMatch({
   name,
   brand = "",
@@ -267,51 +399,11 @@ export function storefrontSearchDirectProductMatch({
   brand?: string;
   query: string;
 }) {
-  const normalizedQuery = normalizeStorefrontSearchText(query);
-
-  if (!normalizedQuery) {
-    return true;
-  }
-
-  const normalizedName = normalizeStorefrontSearchText(name);
-  const normalizedBrand = normalizeStorefrontSearchText(brand);
-
-  if (!normalizedName) {
-    return false;
-  }
-
-  /*
-   * Direct storefront results are intentionally product-name led.
-   *
-   * Brand/category/description must never independently admit an
-   * unrelated product. For example, "Apple AirPods" must not return
-   * an iPad merely because both products have the Apple brand.
-   *
-   * When the query begins with the product brand, remove that brand
-   * from the query and require the remaining product intent to match
-   * the actual product name.
-   */
-  let productIntent = normalizedQuery;
-
-  if (
-    normalizedBrand &&
-    normalizedQuery !== normalizedBrand &&
-    normalizedQuery.startsWith(`${normalizedBrand} `)
-  ) {
-    productIntent = normalizedQuery
-      .slice(normalizedBrand.length)
-      .trim();
-  }
-
-  if (!productIntent) {
-    return storefrontSearchValueScore(
-      normalizedBrand,
-      normalizedQuery,
-    ) !== null;
-  }
-
-  return storefrontSearchValueScore(
-    normalizedName,
-    productIntent,
-  ) !== null;
+  return (
+    storefrontSearchProductRelevance({
+      name,
+      brand,
+      query,
+    }) !== null
+  );
 }

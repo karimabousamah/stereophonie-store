@@ -1,14 +1,13 @@
 import { notFound, redirect } from "next/navigation";
-import {
-  CheckCircle2,
-  AlertCircle,
-} from "lucide-react";
 
 import AdminShell from "@/components/admin/admin-shell";
 import ProductSaveResultScroll from "@/components/admin/product-save-result-scroll";
+import ProductActionNotice from "@/components/admin/products/product-action-notice";
+import ProductPageBehavior from "@/components/admin/products/product-page-behavior";
 import { createClient } from "@/lib/supabase/server";
 
 import EditProductForm from "./edit-product-form";
+import { buildProductCategoryLeafOptions } from "@/components/admin/product-category-leaf-options";
 import ImageManager from "./image-manager";
 
 type EditProductPageProps = {
@@ -52,6 +51,50 @@ type ProductImage = {
   variant_position: number;
   is_variant_primary: boolean;
 };
+
+
+/* ADMIN V2 EFFECTIVE NEW ARRIVAL — 7 DAY WINDOW */
+
+const ADMIN_NEW_ARRIVAL_WINDOW_MS =
+  7 * 24 * 60 * 60 * 1000;
+
+function adminNewArrivalIsActive(product: {
+  status: string;
+  is_new_arrival: boolean | null;
+  new_drop_started_at: string | null;
+}) {
+  if (!product.is_new_arrival) {
+    return false;
+  }
+
+  /*
+   * A draft may be marked New before it is published.
+   * Its seven-day timer starts only once publication activates
+   * the existing database trigger.
+   */
+  if (product.status !== "published") {
+    return true;
+  }
+
+  if (!product.new_drop_started_at) {
+    return false;
+  }
+
+  const startedAt =
+    Date.parse(product.new_drop_started_at);
+
+  if (!Number.isFinite(startedAt)) {
+    return false;
+  }
+
+  const age =
+    Date.now() - startedAt;
+
+  return (
+    age >= 0 &&
+    age < ADMIN_NEW_ARRIVAL_WINDOW_MS
+  );
+}
 
 export default async function EditProductPage({
   params,
@@ -98,6 +141,7 @@ export default async function EditProductPage({
         is_featured,
         is_trending,
         is_new_arrival,
+        new_drop_started_at,
         created_at,
         updated_at,
         product_variants (
@@ -142,7 +186,7 @@ export default async function EditProductPage({
 
       supabase
         .from("subcategories")
-        .select("id, category_id, name")
+        .select("id, category_id, parent_subcategory_id, name")
         .eq("is_active", true)
         .order("sort_order", { ascending: true })
         .order("name", { ascending: true }),
@@ -200,6 +244,12 @@ export default async function EditProductPage({
 
   const salePrice = firstVariant?.sale_price ?? null;
 
+  const productCategoryOptions =
+    buildProductCategoryLeafOptions(
+      categoriesResult.data ?? [],
+      subcategoriesResult.data ?? [],
+    );
+
   const loadingError =
     categoriesResult.error || subcategoriesResult.error || brandsResult.error;
 
@@ -231,62 +281,37 @@ export default async function EditProductPage({
 
 
           {savedStatus && (
-            <div
-              data-admin-product-success="true"
-              className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[18px] border border-emerald-400/25 bg-emerald-400/[0.07] p-5"
-            >
-              <CheckCircle2 className="h-5 w-5 shrink-0 self-center text-emerald-300" />
-
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                  Product saved
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-white/65">
-                  The product was successfully saved as{" "}
-                  <strong className="text-white">
-                    {savedStatus === "published" ? "Live" : "Draft"}
-                  </strong>
-                  .
-                </p>
-              </div>
-            </div>
+            <ProductActionNotice
+              key={`product-saved-${savedStatus}`}
+              variant="success"
+              title="Product saved"
+              message={
+                savedStatus === "published"
+                  ? "The product was successfully saved as Live."
+                  : "The product was successfully saved as Draft."
+              }
+              clearQueryParams={["saved"]}
+            />
           )}
 
           {setupSaved && (
-            <div className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[18px] border border-[#fdb73e]/30 bg-[#fdb73e]/[0.07] p-5">
-              <CheckCircle2 className="h-5 w-5 shrink-0 self-center text-[#fdb73e]" />
-
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#fdb73e]">
-                  Product setup saved
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-white/65">
-                  Product information, configurations and store placement were
-                  saved. The current publication status was preserved.
-                </p>
-              </div>
-            </div>
+            <ProductActionNotice
+              key="product-setup-saved"
+              variant="success"
+              title="Product setup saved"
+              message="Product information, configurations and store placement were saved. The current publication status was preserved."
+              clearQueryParams={["setup_saved"]}
+            />
           )}
 
           {errorMessage && (
-            <div
-              data-admin-product-error="true"
-              className="st-admin-product-alert-v5 mb-7 flex items-start gap-4 rounded-[20px] border border-red-400/30 bg-red-400/[0.07] p-5"
-            >
-              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-red-300" />
-
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-red-300">
-                  Product not saved
-                </p>
-
-                <p className="mt-2 text-sm leading-6 text-white/65">
-                  {errorMessage}
-                </p>
-              </div>
-            </div>
+            <ProductActionNotice
+              key={`product-error-${errorMessage}`}
+              variant="error"
+              title="Product not saved"
+              message={errorMessage}
+              clearQueryParams={["error"]}
+            />
           )}
 
           <EditProductForm
@@ -302,12 +327,12 @@ export default async function EditProductPage({
               availability: product.availability,
               isFeatured: product.is_featured ?? false,
               isTrending: product.is_trending ?? false,
-              isNewArrival: product.is_new_arrival ?? false,
+              isNewArrival: adminNewArrivalIsActive(product),
               regularPrice,
               salePrice,
               variants,
             }}
-            categories={categoriesResult.data ?? []}
+            categories={productCategoryOptions}
             brands={brandsResult.data ?? []}
             errorMessage={errorMessage}
             mediaManager={

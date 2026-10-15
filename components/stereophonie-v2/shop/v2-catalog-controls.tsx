@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import type { ShopCategoryFilterOption } from "@/lib/storefront-shop-filter-options";
 import {
   type FormEvent,
   useEffect,
@@ -38,9 +39,11 @@ type SearchResponse = {
 };
 
 type Props = {
-  categories: string[];
+  categories: ShopCategoryFilterOption[];
   brands: string[];
   selectedCategory: string;
+  selectedSubcategoryId: string;
+  categoryContext?: boolean;
   selectedBrand: string;
   selectedAvailability: string;
   selectedSort: SortOption;
@@ -63,6 +66,8 @@ export default function V2CatalogControls({
   categories,
   brands,
   selectedCategory,
+  selectedSubcategoryId,
+  categoryContext = false,
   selectedBrand,
   selectedAvailability,
   selectedSort,
@@ -501,6 +506,80 @@ export default function V2CatalogControls({
     });
   }
 
+  function navigateCategory(
+    option: ShopCategoryFilterOption | null,
+  ) {
+    const params =
+      new URLSearchParams(
+        window.location.search,
+      );
+
+    /*
+     * Category identity belongs to the route.
+     * Remove stale Category/Subcategory query state before
+     * switching to the new customer-facing category route.
+     */
+    params.delete("category");
+    params.delete("subcategory");
+
+    if (option?.subcategoryId) {
+      params.set(
+        "subcategory",
+        option.subcategoryId,
+      );
+    }
+
+    const queryString =
+      params.toString();
+
+    const destination =
+      option
+        ? `/shop/category/${encodeURIComponent(
+            option.rootCategorySlug,
+          )}`
+        : "/shop";
+
+    startTransition(() => {
+      router.push(
+        queryString
+          ? `${destination}?${queryString}`
+          : destination,
+        {
+          scroll: false,
+        },
+      );
+    });
+  }
+
+  function categoryOptionIsCurrent(
+    option: ShopCategoryFilterOption,
+  ) {
+    /*
+     * A normal Category route is navigation context.
+     * It should not visually look like an applied filter.
+     */
+    if (categoryContext) {
+      return false;
+    }
+
+    if (selectedSubcategoryId) {
+      return (
+        option.subcategoryId ===
+        selectedSubcategoryId
+      );
+    }
+
+    return (
+      option.subcategoryId === null &&
+      option.rootCategoryName
+        .trim()
+        .toLowerCase() ===
+        selectedCategory
+          .trim()
+          .toLowerCase()
+    );
+  }
+
   function submitSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -599,9 +678,21 @@ export default function V2CatalogControls({
 
   const normalizedBrandQuery = brandQuery.trim().toLowerCase();
 
-  const filteredCategories = categories.filter((category) =>
-    category.toLowerCase().includes(normalizedCategoryQuery),
-  );
+  const filteredCategories =
+    categories.filter((category) => {
+      if (!normalizedCategoryQuery) {
+        return true;
+      }
+
+      return (
+        category.label
+          .toLowerCase()
+          .includes(normalizedCategoryQuery) ||
+        category.rootCategoryName
+          .toLowerCase()
+          .includes(normalizedCategoryQuery)
+      );
+    });
 
   const filteredBrands = brands.filter((brand) =>
     brand.toLowerCase().includes(normalizedBrandQuery),
@@ -867,7 +958,7 @@ export default function V2CatalogControls({
           <div
             ref={categoryPickerRef}
             className={`st-filter-v4__picker ${
-              selectedCategory ? "is-active" : ""
+              selectedCategory && !categoryContext ? "is-active" : ""
             }`}
           >
             <button
@@ -882,7 +973,7 @@ export default function V2CatalogControls({
                 setPriceOpen(false);
               }}
             >
-              <span>{selectedCategory || "Category"}</span>
+              <span>{categoryContext ? "Category" : selectedCategory || "Category"}</span>
 
               <ChevronDown className={categoryOpen ? "is-open" : ""} />
             </button>
@@ -947,45 +1038,64 @@ export default function V2CatalogControls({
                   <button
                     type="button"
                     className={`st-filter-v4__picker-option ${
-                      !selectedCategory ? "is-selected" : ""
+                      !categoryContext &&
+                      !selectedCategory &&
+                      !selectedSubcategoryId
+                        ? "is-selected"
+                        : ""
                     }`}
                     onClick={() => {
                       setCategoryOpen(false);
                       setCategoryQuery("");
 
-                      navigate({
-                        category: null,
-                      });
+                      navigateCategory(null);
                     }}
                   >
                     <span>All categories</span>
 
-                    {!selectedCategory ? <strong>Selected</strong> : null}
+                    {!categoryContext &&
+                    !selectedCategory &&
+                    !selectedSubcategoryId ? (
+                      <strong>Selected</strong>
+                    ) : null}
                   </button>
 
-                  {filteredCategories.map((category) => (
-                    <button
-                      type="button"
-                      key={category}
-                      className={`st-filter-v4__picker-option ${
-                        selectedCategory === category ? "is-selected" : ""
-                      }`}
-                      onClick={() => {
-                        setCategoryOpen(false);
-                        setCategoryQuery("");
+                  {filteredCategories.map((category) => {
+                    const selected =
+                      categoryOptionIsCurrent(
+                        category,
+                      );
 
-                        navigate({
-                          category,
-                        });
-                      }}
-                    >
-                      <span>{category}</span>
+                    return (
+                      <button
+                        type="button"
+                        key={category.id}
+                        className={`st-filter-v4__picker-option ${
+                          selected
+                            ? "is-selected"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setCategoryOpen(false);
+                          setCategoryQuery("");
 
-                      {selectedCategory === category ? (
-                        <strong>Selected</strong>
-                      ) : null}
-                    </button>
-                  ))}
+                          navigateCategory(
+                            category,
+                          );
+                        }}
+                      >
+                        <span>
+                          {category.label}
+                        </span>
+
+                        {selected ? (
+                          <strong>
+                            Selected
+                          </strong>
+                        ) : null}
+                      </button>
+                    );
+                  })}
 
                   {filteredCategories.length === 0 ? (
                     <div className="st-filter-v4__picker-empty">
@@ -1133,9 +1243,10 @@ export default function V2CatalogControls({
           <div className="st-filter-v4__price-wrap">
             <button
               type="button"
-              className={`st-filter-v4__pill ${
-                hasPriceFilter ? "is-active" : ""
+              className={`st-filter-v4__pill st-filter-v4__price-trigger ${
+                (hasPriceFilter || priceOpen) ? "is-active" : ""
               }`}
+              data-filter-active={hasPriceFilter || priceOpen ? "true" : "false"}
               onClick={() => setPriceOpen((value) => !value)}
               aria-expanded={priceOpen}
             >
@@ -1149,7 +1260,7 @@ export default function V2CatalogControls({
                   : "Price"}
               </span>
 
-              <ChevronDown />
+              <ChevronDown className={priceOpen ? "is-open" : ""} />
             </button>
 
             {priceMounted ? (
@@ -1253,7 +1364,7 @@ export default function V2CatalogControls({
 
           <button
             type="button"
-            className={`st-filter-v4__pill ${
+            className={`st-filter-v4__pill st-filter-v4__stock-filter ${
               selectedAvailability === "in-stock" ? "is-active" : ""
             }`}
             onClick={() =>

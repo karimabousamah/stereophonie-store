@@ -18,12 +18,19 @@ function normalizeRouteKey(pathname: string, search: string) {
 
 function normalizeDestinationLabel(label: string) {
   return label
-    .replace(/^(?:Shop|View)\s+/i, "")
+    .replace(/^(?:Shop|View|Open|Explore)\s+/i, "")
     .replace(/[›→>]+\s*$/g, "")
     .trim();
 }
 
 function getDestinationLabel(anchor: HTMLAnchorElement, url: URL) {
+  const transitionLabel =
+    anchor.getAttribute("data-transition-label")?.trim();
+
+  if (transitionLabel) {
+    return transitionLabel.slice(0, 34);
+  }
+
   const explicit =
     anchor.getAttribute("aria-label")?.trim() ||
     anchor.getAttribute("title")?.trim();

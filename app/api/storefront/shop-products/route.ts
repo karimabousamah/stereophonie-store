@@ -35,6 +35,9 @@ export async function GET(request: NextRequest) {
 
   const category = parameters.get("category")?.trim() ?? "";
 
+  const subcategoryId =
+    parameters.get("subcategory")?.trim() ?? "";
+
   const offers =
     parameters.get("offers")?.trim().toLowerCase() === "true";
 
@@ -74,6 +77,7 @@ export async function GET(request: NextRequest) {
       filters: {
         search,
         category,
+        subcategoryId,
         offers,
         brand,
         availability,

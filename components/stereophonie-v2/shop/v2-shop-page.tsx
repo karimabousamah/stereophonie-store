@@ -2,12 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight, ChevronRight, PackageSearch } from "lucide-react";
 
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 
 import V2CatalogControls from "@/components/stereophonie-v2/shop/v2-catalog-controls";
 import V2ProductGrid from "@/components/stereophonie-v2/shop/v2-product-grid";
+import type { ShopCategoryFilterOption } from "@/lib/storefront-shop-filter-options";
+import CategorySubcategoryNavigation, {
+  type StorefrontSubcategoryNavigation,
+} from "@/components/stereophonie-v3/shop/category-subcategory-navigation";
 
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
@@ -16,9 +21,13 @@ type SortOption = "newest" | "price-asc" | "price-desc";
 type Props = {
   products: StoreProductCardProduct[];
   totalProducts: number;
-  categories: string[];
+  categories: ShopCategoryFilterOption[];
   brands: string[];
   selectedCategory: string;
+  selectedSubcategoryId: string;
+  subcategoryNavigation?:
+    StorefrontSubcategoryNavigation | null;
+  categoryContext?: boolean;
   selectedBrand: string;
   selectedOffers: boolean;
   selectedAvailability: string;
@@ -56,6 +65,9 @@ export default function V2ShopPage({
   categories,
   brands,
   selectedCategory,
+  selectedSubcategoryId,
+  subcategoryNavigation = null,
+  categoryContext = false,
   selectedBrand,
   selectedOffers,
   selectedAvailability,
@@ -66,6 +78,7 @@ export default function V2ShopPage({
   maximumAvailablePrice,
   selectedSearch = "",
 }: Props) {
+  const pathname = usePathname();
   const [loadedProducts, setLoadedProducts] =
     useState<StoreProductCardProduct[]>(products);
 
@@ -94,6 +107,7 @@ export default function V2ShopPage({
     products,
     totalProducts,
     selectedCategory,
+    selectedSubcategoryId,
     selectedBrand,
     selectedOffers,
     selectedAvailability,
@@ -132,6 +146,13 @@ export default function V2ShopPage({
         parameters.set(
           "category",
           selectedCategory,
+        );
+      }
+
+      if (selectedSubcategoryId) {
+        parameters.set(
+          "subcategory",
+          selectedSubcategoryId,
         );
       }
 
@@ -240,12 +261,41 @@ export default function V2ShopPage({
   }
 
   const hasFilters =
-    Boolean(selectedCategory) ||
+    (!categoryContext && Boolean(selectedCategory)) ||
+    (!categoryContext && Boolean(selectedSubcategoryId)) ||
     Boolean(selectedBrand) ||
+    selectedOffers ||
     selectedAvailability === "in-stock" ||
+    selectedSort !== "newest" ||
     selectedMinPrice !== null ||
     selectedMaxPrice !== null ||
     Boolean(selectedSearch.trim());
+
+  /*
+   * Clear customer-applied filters WITHOUT destroying
+   * the Category / Subcategory page the customer is visiting.
+   *
+   * Examples:
+   *
+   * /shop/category/monitors
+   *   -> stays /shop/category/monitors
+   *
+   * /shop/category/monitors?subcategory=abc&brand=Asus
+   *   -> /shop/category/monitors?subcategory=abc
+   *
+   * /shop?...filters
+   *   -> /shop
+   */
+  const clearFiltersHref =
+    categoryContext
+      ? `${pathname}${
+          selectedSubcategoryId
+            ? `?subcategory=${encodeURIComponent(
+                selectedSubcategoryId,
+              )}`
+            : ""
+        }`
+      : "/shop";
 
 
     return (
@@ -253,20 +303,29 @@ export default function V2ShopPage({
       <V3Header />
 
       <main className="st3-shop-v4 st-retail-shop st-retail-shop-v4">
+        {subcategoryNavigation ? (
+          <CategorySubcategoryNavigation
+            navigation={subcategoryNavigation}
+            selectedSubcategoryId={selectedSubcategoryId}
+            variant="compact"
+          />
+        ) : null}
+
         <section className="st3-shop-v4__catalog">
           <div className="st3-shop-v4__catalog-inner">
-            <div className="st3-shop-v4__catalog-heading">
-              <div>
-                <h2>Shop all products</h2>
-              </div>
-
-            </div>
-
-            <div className="st3-shop-v4__controls">
+            <div
+              className={`st3-shop-v4__controls ${
+                hasFilters
+                  ? "has-active-state"
+                  : ""
+              }`}
+            >
               <V2CatalogControls
                 categories={categories}
                 brands={brands}
                 selectedCategory={selectedCategory}
+                selectedSubcategoryId={selectedSubcategoryId}
+                categoryContext={categoryContext}
                 selectedBrand={selectedBrand}
                 selectedAvailability={selectedAvailability}
                 selectedSort={selectedSort}
@@ -282,7 +341,7 @@ export default function V2ShopPage({
               <div className="st3-shop-v4__active-state">
                 <span>Showing filtered results</span>
 
-                <Link href="/shop">Clear all</Link>
+                <Link href={clearFiltersHref}>Clear all</Link>
               </div>
             ) : null}
 

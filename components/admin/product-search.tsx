@@ -120,8 +120,8 @@ export default function ProductSearch({
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search products, SKU, category or brand"
-            aria-label="Search products"
+            placeholder="Search products, barcode, SKU, category or brand"
+            aria-label="Search products by name, barcode, SKU, category or brand"
             autoComplete="off"
             spellCheck={false}
           />

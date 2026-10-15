@@ -30528,6 +30528,10 @@ html body .st3-admin
 
   width: 26px !important;
   height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  max-width: 26px !important;
+  max-height: 26px !important;
 
   margin: 0 0 0 7px !important;
   padding: 0 !important;
@@ -30538,16 +30542,38 @@ html body .st3-admin
   outline: 0 !important;
 
   background: transparent !important;
+  background-color: transparent !important;
+
   color: #6d7175 !important;
 
   box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+
+  transition:
+    color 120ms ease !important;
 }
 
 html body .st3-admin
 .st-admin-products-v2
 .st-admin-directory-search__field > button:hover {
-  background: #f1f2f2 !important;
-  color: #202223 !important;
+  border: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  color: #d92d20 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
 }
 
 html body .st3-admin
@@ -30559,10 +30585,82 @@ html body .st3-admin
 
 html body .st3-admin
 .st-admin-products-v2
-.st-admin-directory-search__field > button svg {
+.st-admin-directory-search__field > button svg,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:hover svg,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:focus svg,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:focus-visible svg,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:active svg {
+  display: block !important;
+
   width: 13px !important;
   height: 13px !important;
+  min-width: 13px !important;
+  min-height: 13px !important;
+  max-width: 13px !important;
+  max-height: 13px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+
+  transition:
+    color 120ms ease,
+    stroke 120ms ease !important;
+
+  pointer-events: none !important;
 }
+/*
+ * Products directory search clear:
+ * absolute motion lock for every interaction state.
+ * Hover may change color only.
+ */
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:hover,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:focus,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:focus-visible,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:active {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  margin: 0 0 0 7px !important;
+  padding: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-directory-search__field > button:hover {
+  color: #d92d20 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 
 /* ============================================================
    FILTER SELECTOR — SAME HEIGHT AS SEARCH
@@ -43116,6 +43214,7 @@ html body
 }
 
 
+
 /* ------------------------------------------------------------
    SEARCH
    ------------------------------------------------------------ */
@@ -52056,3 +52155,8532 @@ button.st-admin-organization-clear-chip-v2:hover > svg {
    END ADMIN V2 — BRAND/CATEGORY REAL X FINAL POSITION LOCK
    ============================================================ */
 
+/* ============================================================
+   ADMIN V2 — CATEGORY TAXONOMY WORKSPACE
+   Categories only.
+   Formal neutral taxonomy administration.
+   ============================================================ */
+
+.st3-admin .st-category-admin {
+  box-sizing:border-box;
+  width:100%;
+  max-width:1580px;
+  margin:0 auto;
+  padding:18px 28px 36px;
+  color:#202223;
+}
+
+/*
+ * Desktop optical correction for the Categories canvas.
+ *
+ * The AdminShell content area has the same visual offset already
+ * corrected on the finished Products workspace.
+ *
+ * Move the complete Categories workspace as one unit so the
+ * visible left and right gaps are optically equal.
+ */
+@media (min-width:901px) {
+  html body
+  .st3-admin
+  .st3-admin-main
+  > .st-category-admin {
+    position:relative !important;
+    left:-20px !important;
+  }
+}
+
+
+@media (max-width:639px) {
+  .st3-admin .st-category-admin {
+    padding-right:20px;
+    padding-left:20px;
+  }
+}
+
+/* ------------------------------------------------------------
+   TOP UTILITY ROW
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-admin__top {
+  min-height:42px;
+  margin:0 0 12px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+.st3-admin .st-category-admin__intro {
+  display:none;
+}
+
+.st3-admin .st-category-admin__create-root {
+  position:relative;
+  margin-left:auto;
+}
+
+.st3-admin .st-category-admin__create-root > summary {
+  min-height:36px;
+  padding:0 12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border:1px solid #c9c9c9;
+  border-radius:7px;
+  background:#fff;
+  color:#3f3f3f;
+  box-shadow:0 1px 2px rgba(0,0,0,.025);
+  font-size:10px;
+  font-weight:620;
+  list-style:none;
+  cursor:pointer;
+  transition:
+    border-color .16s ease,
+    background .16s ease,
+    color .16s ease,
+    box-shadow .16s ease;
+}
+
+.st3-admin .st-category-admin__create-root > summary::-webkit-details-marker {
+  display:none;
+}
+
+.st3-admin .st-category-admin__create-root > summary:hover {
+  border-color:#8f8f8f;
+  background:#f7f7f7;
+  color:#202223;
+  box-shadow:0 2px 5px rgba(0,0,0,.04);
+}
+
+.st3-admin .st-category-admin__create-root > summary svg {
+  width:13px;
+  height:13px;
+}
+
+.st3-admin .st-category-admin__create-root-panel {
+  position:absolute;
+  z-index:50;
+  top:calc(100% + 8px);
+  right:0;
+  width:390px;
+  padding:16px;
+  border:1px solid #d8d8d8;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 18px 50px rgba(0,0,0,.12);
+}
+
+.st3-admin .st-category-admin__create-root-panel > div > span,
+.st3-admin .st-category-modal__head span,
+.st3-admin .st-category-wallpaper__content > div:first-child > span {
+  display:block;
+  color:#999;
+  font-size:8px;
+  font-weight:650;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+
+.st3-admin .st-category-admin__create-root-panel > div > strong {
+  display:block;
+  margin-top:3px;
+  color:#303030;
+  font-size:13px;
+  font-weight:650;
+}
+
+.st3-admin .st-category-admin__create-root-panel form {
+  margin-top:14px;
+  display:grid;
+  gap:10px;
+}
+
+/* ------------------------------------------------------------
+   FIELDS
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-admin__create-root-panel label > span,
+.st3-admin .st-category-modal__panel label > span,
+.st3-admin .st-category-workspace__form label > span {
+  display:block;
+  margin-bottom:5px;
+  color:#6f6f6f;
+  font-size:9px;
+  font-weight:620;
+}
+
+.st3-admin .st-category-admin__create-root-panel input,
+.st3-admin .st-category-admin__create-root-panel textarea,
+.st3-admin .st-category-modal__panel input,
+.st3-admin .st-category-modal__panel textarea,
+.st3-admin .st-category-workspace__form input,
+.st3-admin .st-category-workspace__form textarea,
+.st3-admin .st-category-cinema input {
+  width:100%;
+  border:1px solid #d0d0d0 !important;
+  border-radius:6px !important;
+  outline:none !important;
+  background:#fff !important;
+  color:#292929 !important;
+  box-shadow:none !important;
+  font:inherit;
+  font-size:10.5px;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+
+.st3-admin .st-category-admin__create-root-panel input,
+.st3-admin .st-category-modal__panel input,
+.st3-admin .st-category-workspace__form input,
+.st3-admin .st-category-cinema input {
+  height:36px;
+  padding:0 10px;
+}
+
+.st3-admin .st-category-admin__create-root-panel textarea,
+.st3-admin .st-category-modal__panel textarea,
+.st3-admin .st-category-workspace__form textarea {
+  padding:9px 10px;
+  resize:vertical;
+}
+
+.st3-admin .st-category-admin__create-root-panel input:focus,
+.st3-admin .st-category-admin__create-root-panel textarea:focus,
+.st3-admin .st-category-modal__panel input:focus,
+.st3-admin .st-category-modal__panel textarea:focus,
+.st3-admin .st-category-workspace__form input:focus,
+.st3-admin .st-category-workspace__form textarea:focus,
+.st3-admin .st-category-cinema input:focus {
+  border-color:#777 !important;
+  outline:none !important;
+  box-shadow:0 0 0 2px rgba(0,0,0,.045) !important;
+}
+
+.st3-admin .st-category-admin__checkbox,
+.st3-admin .st-category-modal__checkbox,
+.st3-admin .st-category-workspace__checkbox {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#606060;
+  font-size:9.5px;
+}
+
+.st3-admin .st-category-admin__checkbox input,
+.st3-admin .st-category-modal__checkbox input,
+.st3-admin .st-category-workspace__checkbox input {
+  width:13px !important;
+  height:13px !important;
+  min-height:0 !important;
+  margin:0;
+  padding:0;
+  accent-color:#555 !important;
+}
+
+/* ------------------------------------------------------------
+   CATEGORY-SCOPED SUBMIT AUTHORITY
+   Defeats the old global mustard admin submit rule.
+   ------------------------------------------------------------ */
+
+.st3-admin main .st-category-admin button[type="submit"],
+.st3-admin main .st-category-admin button[type="submit"]:not([data-destructive]):not([data-secondary-action]) {
+  border:1px solid #c9c9c9 !important;
+  border-radius:6px !important;
+  background:#fff !important;
+  color:#3f3f3f !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+@media (hover:hover) {
+  .st3-admin main .st-category-admin button[type="submit"]:hover,
+  .st3-admin main .st-category-admin button[type="submit"]:not([data-destructive]):not([data-secondary-action]):hover {
+    border-color:#8d8d8d !important;
+    background:#f6f6f6 !important;
+    color:#202223 !important;
+    box-shadow:0 2px 5px rgba(0,0,0,.04) !important;
+    transform:none !important;
+  }
+}
+
+.st3-admin main .st-category-admin .is-danger,
+.st3-admin main .st-category-admin button[type="submit"].is-danger {
+  border-color:#dfcaca !important;
+  background:#fff !important;
+  color:#913f3f !important;
+}
+
+@media (hover:hover) {
+  .st3-admin main .st-category-admin .is-danger:hover,
+  .st3-admin main .st-category-admin button[type="submit"].is-danger:hover {
+    border-color:#c99d9d !important;
+    background:#fff7f7 !important;
+    color:#792e2e !important;
+  }
+}
+
+.st3-admin .st-category-admin__create-root-panel form > button,
+.st3-admin .st-category-modal__footer button:last-child,
+.st3-admin .st-category-workspace__save-row button,
+.st3-admin .st-category-wallpaper__content form > button[type="submit"],
+.st3-admin .st-category-cinema form > button,
+.st3-admin .st-category-homepage__save {
+  min-height:34px;
+  padding:0 10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:9px;
+  font-weight:620;
+  cursor:pointer;
+}
+
+/* ------------------------------------------------------------
+   SUMMARY
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-admin__metrics {
+  min-height:46px;
+  margin:0 0 10px;
+  padding:5px 7px;
+  display:flex;
+  align-items:center;
+  gap:0;
+  border:1px solid #dfdfdf;
+  border-radius:9px;
+  background:#fff;
+}
+
+.st3-admin .st-category-admin__metrics > div {
+  min-width:150px;
+  min-height:34px;
+  padding:0 14px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:7px;
+  border-right:1px solid #e8e8e8;
+}
+
+.st3-admin .st-category-admin__metrics > div:last-child {
+  border-right:0;
+}
+
+.st3-admin .st-category-admin__metrics svg {
+  width:13px;
+  height:13px;
+  color:#8a8a8a;
+}
+
+.st3-admin .st-category-admin__metrics span {
+  color:#747474;
+  font-size:9px;
+}
+
+.st3-admin .st-category-admin__metrics strong {
+  color:#292929;
+  font-size:13px;
+  font-weight:650;
+}
+
+/* Hide any old third/fourth metrics if stale JSX is still present.
+   The Categories workspace only needs Category + Subcategory totals. */
+.st3-admin .st-category-admin__metrics > div:nth-child(n+3) {
+  display:none;
+}
+
+.st3-admin .st-category-admin__notice {
+  min-height:38px;
+  margin-bottom:9px;
+  padding:0 11px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid #d9d9d9;
+  border-radius:7px;
+  background:#fff;
+  color:#555;
+  font-size:9.5px;
+}
+
+.st3-admin .st-category-admin__notice svg {
+  width:12px;
+  height:12px;
+}
+
+.st3-admin .st-category-admin__notice.is-success {
+  border-color:#b8d9c2;
+  background:#eef8f1;
+  color:#356746;
+}
+
+.st3-admin .st-category-admin__notice.is-success svg {
+  color:#4a805b;
+}
+
+.st3-admin .st-category-admin__notice.is-error {
+  border-color:#e3b0ab;
+  background:#fff1f0;
+  color:#a3261d;
+}
+
+/* ------------------------------------------------------------
+   SEARCH
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-admin__search {
+  margin-bottom:10px;
+}
+
+.st3-admin .st-category-admin__search .st-admin-directory-search {
+  border:1px solid #dedede;
+  border-radius:9px;
+  background:#fff;
+  box-shadow:none;
+}
+
+/* ------------------------------------------------------------
+   MAIN TAXONOMY WORKSPACE
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-manager {
+  height:min(700px,calc(100vh - 250px));
+  min-height:560px;
+  display:grid;
+  grid-template-columns:minmax(300px,35%) minmax(0,65%);
+  overflow:hidden;
+  border:1px solid #dcdcdc;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.025);
+}
+
+.st3-admin .st-category-manager__tree {
+  min-width:0;
+  min-height:0;
+  overflow:auto;
+  border-right:1px solid #e1e1e1;
+  background:#fafafa;
+}
+
+.st3-admin .st-category-manager__tree-head {
+  position:sticky;
+  z-index:3;
+  top:0;
+  min-height:54px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid #e3e3e3;
+  background:rgba(250,250,250,.96);
+  backdrop-filter:blur(8px);
+}
+
+.st3-admin .st-category-manager__tree-head > div span {
+  display:block;
+  color:#8f8f8f;
+  font-size:7.5px;
+  font-weight:650;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.st3-admin .st-category-manager__tree-head strong {
+  display:block;
+  margin-top:2px;
+  color:#3b3b3b;
+  font-size:11px;
+  font-weight:650;
+}
+
+.st3-admin .st-category-manager__tree-head small {
+  max-width:145px;
+  color:#999;
+  font-size:8px;
+  line-height:1.35;
+  text-align:right;
+}
+
+.st3-admin .st-category-tree {
+  padding:7px;
+}
+
+.st3-admin .st-category-tree__root-group + .st-category-tree__root-group {
+  margin-top:3px;
+}
+
+.st3-admin .st-category-tree__root,
+.st3-admin .st-category-tree__node {
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  padding-left:calc(var(--tree-depth,0) * 16px);
+  border:1px solid transparent;
+  border-radius:6px;
+  transition:
+    background .14s ease,
+    border-color .14s ease;
+}
+
+.st3-admin .st-category-tree__root {
+  min-height:45px;
+  border-color:#e1e1e1;
+  background:#fff;
+}
+
+.st3-admin .st-category-tree__root:hover,
+.st3-admin .st-category-tree__node:hover {
+  background:#f3f3f3;
+}
+
+.st3-admin .st-category-tree__root.is-selected,
+.st3-admin .st-category-tree__node.is-selected {
+  border-color:#b8b8b8;
+  background:#ededed;
+}
+
+.st3-admin .st-category-tree__expand,
+.st3-admin .st-category-tree__add-child {
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:5px;
+  background:transparent;
+  color:#8b8b8b;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-tree__expand:hover,
+.st3-admin .st-category-tree__add-child:hover {
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  color: #343834 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+
+.st3-admin .st-category-tree__expand svg,
+.st3-admin .st-category-tree__add-child svg {
+  width:12px;
+  height:12px;
+}
+
+.st3-admin .st-category-tree__select {
+  min-width:0;
+  flex:1;
+  min-height:38px;
+  padding:3px 4px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  border:0;
+  background:transparent;
+  text-align:left;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-tree__folder {
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+  display:grid;
+  place-items:center;
+  border:1px solid #d8d8d8;
+  border-radius:5px;
+  background:#f6f6f6;
+  color:#6f6f6f;
+}
+
+.st3-admin .st-category-tree__folder.is-root {
+  background:#f0f0f0;
+  color:#424242;
+}
+
+.st3-admin .st-category-tree__folder svg {
+  width:12px;
+  height:12px;
+}
+
+.st3-admin .st-category-tree__label {
+  min-width:0;
+  flex:1;
+}
+
+.st3-admin .st-category-tree__label strong,
+.st3-admin .st-category-tree__label small {
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.st3-admin .st-category-tree__label strong {
+  color:#363636;
+  font-size:10px;
+  font-weight:620;
+}
+
+.st3-admin .st-category-tree__label small {
+  margin-top:1px;
+  color:#999;
+  font-size:7.5px;
+}
+
+.st3-admin .st-category-tree__state {
+  margin-right:3px;
+  color:#a0a0a0;
+  font-size:7px;
+}
+
+.st3-admin .st-category-tree__state.is-active {
+  color:#666;
+}
+
+.st3-admin .st-category-tree__children {
+  position:relative;
+}
+
+.st3-admin .st-category-tree__children::before {
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:4px;
+  left:20px;
+  width:1px;
+  background:#e1e1e1;
+}
+
+.st3-admin .st-category-tree__empty-child {
+  min-height:30px;
+  margin:3px 0 4px 36px;
+  padding:0 8px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  border:1px dashed #d2d2d2;
+  border-radius:5px;
+  background:transparent;
+  color:#8b8b8b;
+  font-size:8px;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-tree__empty-child:hover {
+  border-color:#999;
+  background:#f7f7f7;
+  color:#404040;
+}
+
+/* ------------------------------------------------------------
+   RIGHT INSPECTOR
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-manager__workspace {
+  min-width:0;
+  min-height:0;
+  overflow:auto;
+  background:#fff;
+}
+
+.st3-admin .st-category-workspace__hero {
+  position:sticky;
+  z-index:3;
+  top:0;
+  min-height:72px;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border-bottom:1px solid #e3e3e3;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(8px);
+}
+
+.st3-admin .st-category-workspace__hero > div:first-child > span {
+  color:#929292;
+  font-size:7.5px;
+  font-weight:650;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+
+.st3-admin .st-category-workspace__hero h2 {
+  margin:2px 0 0;
+  color:#252525;
+  font-size:18px;
+  line-height:1.15;
+  font-weight:650;
+  letter-spacing:-.025em;
+}
+
+.st3-admin .st-category-workspace__hero p {
+  margin:2px 0 0;
+  color:#999;
+  font-size:8px;
+}
+
+.st3-admin .st-category-workspace__summary {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.st3-admin .st-category-workspace__product-count {
+  min-height:31px;
+  padding:0 9px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid #dedede;
+  border-radius:6px;
+  background:#fafafa;
+  color:#777;
+}
+
+.st3-admin .st-category-workspace__product-count svg {
+  width:12px;
+  height:12px;
+  color:#7d7d7d;
+}
+
+.st3-admin .st-category-workspace__product-count span {
+  font-size:8.5px;
+  white-space:nowrap;
+}
+
+.st3-admin .st-category-workspace__product-count strong {
+  color:#303030;
+  font-size:10px;
+  font-weight:680;
+}
+
+.st3-admin .st-category-workspace__status {
+  min-height:31px;
+  padding:0 9px;
+  display:inline-flex;
+  align-items:center;
+  border:1px solid #d7d7d7;
+  border-radius:6px;
+  background:#fff;
+  color:#858585;
+  font-size:8px;
+  font-weight:620;
+}
+
+.st3-admin .st-category-workspace__status.is-active {
+  border-color:#c7cfca;
+  background:#f8faf9;
+  color:#4d5a52;
+}
+
+.st3-admin .st-category-workspace__body {
+  padding:12px;
+}
+
+.st3-admin .st-category-workspace__section,
+.st3-admin .st-category-homepage,
+.st3-admin .st-category-wallpaper {
+  overflow:hidden;
+  border:1px solid #e0e0e0;
+  border-radius:8px;
+  background:#fff;
+}
+
+.st3-admin .st-category-workspace__section + *,
+.st3-admin .st-category-workspace__section + .st-category-homepage,
+.st3-admin .st-category-workspace__section + .st-category-wallpaper {
+  margin-top:9px;
+}
+
+.st3-admin .st-category-workspace__section-head {
+  min-height:48px;
+  padding:9px 11px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid #e8e8e8;
+  background:#fafafa;
+}
+
+.st3-admin .st-category-workspace__section-head strong {
+  display:block;
+  color:#393939;
+  font-size:10px;
+  font-weight:650;
+}
+
+.st3-admin .st-category-workspace__section-head span {
+  display:block;
+  margin-top:2px;
+  color:#999;
+  font-size:8px;
+}
+
+.st3-admin .st-category-workspace__section-head > button {
+  min-height:30px;
+  padding:0 9px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  border:1px solid #d0d0d0;
+  border-radius:6px;
+  background:#fff;
+  color:#5e5e5e;
+  font-size:8.5px;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-workspace__section-head > button:hover {
+  border-color:#929292;
+  background:#f6f6f6;
+  color:#303030;
+}
+
+.st3-admin .st-category-workspace__form {
+  padding:11px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 88px;
+  gap:9px;
+}
+
+.st3-admin .st-category-workspace__form .is-wide {
+  grid-column:1/-1;
+}
+
+.st3-admin .st-category-workspace__save-row {
+  display:flex;
+  justify-content:flex-end;
+}
+
+.st3-admin .st-category-workspace__save-row button svg {
+  width:11px;
+  height:11px;
+}
+
+.st3-admin .st-category-workspace__actions {
+  padding:8px 11px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border-top:1px solid #e8e8e8;
+  background:#fafafa;
+}
+
+.st3-admin .st-category-workspace__actions form:last-child {
+  margin-left:auto;
+}
+
+.st3-admin .st-category-workspace__actions button {
+  min-height:30px;
+  padding:0 9px;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  border-radius:6px !important;
+  font-size:8.5px !important;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-workspace__actions button svg {
+  width:11px;
+  height:11px;
+}
+
+/* ------------------------------------------------------------
+   HOMEPAGE / WALLPAPER
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-homepage,
+.st3-admin .st-category-wallpaper {
+  display:grid;
+  grid-template-columns:160px minmax(0,1fr);
+}
+
+.st3-admin .st-category-homepage__preview,
+.st3-admin .st-category-wallpaper__preview {
+  min-height:172px;
+  border-right:1px solid #e6e6e6;
+  background:#f5f5f5;
+}
+
+.st3-admin .st-category-homepage__preview img,
+.st3-admin .st-category-wallpaper__preview img {
+  width:100%;
+  height:100%;
+  min-height:172px;
+  object-fit:cover;
+}
+
+.st3-admin .st-category-homepage__empty,
+.st3-admin .st-category-wallpaper__preview > div {
+  height:100%;
+  min-height:172px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  color:#aaa;
+  font-size:8px;
+}
+
+.st3-admin .st-category-homepage__empty svg,
+.st3-admin .st-category-wallpaper__preview svg {
+  width:17px;
+  height:17px;
+}
+
+.st3-admin .st-category-homepage__content,
+.st3-admin .st-category-wallpaper__content {
+  padding:11px;
+}
+
+.st3-admin .st-category-homepage__heading {
+  display:flex;
+  align-items:flex-start;
+  gap:7px;
+}
+
+.st3-admin .st-category-homepage__heading > svg {
+  width:13px;
+  height:13px;
+  margin-top:1px;
+  color:#808080;
+}
+
+.st3-admin .st-category-homepage__heading strong,
+.st3-admin .st-category-wallpaper__content > div:first-child > strong {
+  display:block;
+  color:#3a3a3a;
+  font-size:10px;
+}
+
+.st3-admin .st-category-homepage__heading span,
+.st3-admin .st-category-wallpaper__content > div:first-child > p {
+  display:block;
+  margin-top:2px;
+  color:#949494;
+  font-size:8px;
+  line-height:1.4;
+}
+
+.st3-admin .st-category-homepage__content > form:first-of-type {
+  margin-top:9px;
+}
+
+.st3-admin .st-category-homepage__toggle {
+  padding:7px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  border:1px solid #e2e2e2;
+  border-radius:6px;
+  background:#fafafa;
+}
+
+.st3-admin .st-category-homepage__toggle strong,
+.st3-admin .st-category-homepage__toggle small {
+  display:block;
+}
+
+.st3-admin .st-category-homepage__toggle strong {
+  color:#494949;
+  font-size:8.5px;
+}
+
+.st3-admin .st-category-homepage__toggle small {
+  margin-top:1px;
+  color:#999;
+  font-size:7px;
+}
+
+.st3-admin .st-category-homepage__toggle input {
+  width:13px;
+  height:13px;
+  accent-color:#555 !important;
+}
+
+.st3-admin .st-category-homepage__themes {
+  margin-top:6px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.st3-admin .st-category-homepage__themes button {
+  min-height:42px;
+  padding:6px 8px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid #dedede;
+  border-radius:6px;
+  background:#fff;
+  color:#777;
+  text-align:left;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-homepage__themes button:hover {
+  border-color:#aaa;
+  background:#f8f8f8;
+  color:#3d3d3d;
+}
+
+.st3-admin .st-category-homepage__themes button.is-selected {
+  border-color:#8c8c8c;
+  background:#f1f1f1;
+  color:#303030;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.02);
+}
+
+.st3-admin .st-category-homepage__themes button svg {
+  width:12px;
+  height:12px;
+}
+
+.st3-admin .st-category-homepage__themes strong,
+.st3-admin .st-category-homepage__themes small {
+  display:block;
+}
+
+.st3-admin .st-category-homepage__themes strong {
+  font-size:8.5px;
+}
+
+.st3-admin .st-category-homepage__themes small {
+  margin-top:1px;
+  color:#999;
+  font-size:7px;
+}
+
+.st3-admin .st-category-homepage__upload,
+.st3-admin .st-category-wallpaper__content form > label {
+  margin-top:6px;
+  padding:7px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:1px dashed #d0d0d0;
+  border-radius:6px;
+  background:#fafafa;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-homepage__upload:hover,
+.st3-admin .st-category-wallpaper__content form > label:hover {
+  border-color:#aaa;
+  background:#f7f7f7;
+}
+
+.st3-admin .st-category-homepage__upload > svg,
+.st3-admin .st-category-wallpaper__content form > label > svg {
+  width:12px;
+  height:12px;
+  color:#808080;
+}
+
+.st3-admin .st-category-homepage__upload > span {
+  min-width:0;
+  flex:1;
+}
+
+.st3-admin .st-category-homepage__upload strong,
+.st3-admin .st-category-homepage__upload small {
+  display:block;
+}
+
+.st3-admin .st-category-homepage__upload strong {
+  color:#5b5b5b;
+  font-size:8px;
+}
+
+.st3-admin .st-category-homepage__upload small {
+  margin-top:1px;
+  color:#999;
+  font-size:6.8px;
+}
+
+.st3-admin .st-category-homepage__upload input,
+.st3-admin .st-category-wallpaper__content form > label input {
+  max-width:170px;
+  color:#777;
+  font-size:7px;
+}
+
+.st3-admin .st-category-homepage__save {
+  margin-top:7px;
+}
+
+.st3-admin .st-category-homepage__save svg {
+  width:10px;
+  height:10px;
+}
+
+.st3-admin .st-category-homepage__remove,
+.st3-admin .st-category-wallpaper__remove {
+  min-height:25px !important;
+  margin-top:3px;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#934646 !important;
+  box-shadow:none !important;
+  font-size:7.5px !important;
+}
+
+.st3-admin .st-category-homepage__remove:hover,
+.st3-admin .st-category-wallpaper__remove:hover {
+  background:transparent !important;
+  color:#752d2d !important;
+}
+
+.st3-admin .st-category-wallpaper__content form {
+  margin-top:8px;
+}
+
+.st3-admin .st-category-wallpaper__content form > label {
+  flex-wrap:wrap;
+}
+
+.st3-admin .st-category-wallpaper__content form > label > span {
+  flex:1;
+  color:#5b5b5b;
+  font-size:8px;
+  font-weight:600;
+}
+
+.st3-admin .st-category-wallpaper__content form > button[type="submit"] {
+  margin-top:6px;
+}
+
+/* ------------------------------------------------------------
+   EMPTY STATE
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-workspace__blank {
+  min-height:420px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:#999;
+  text-align:center;
+}
+
+.st3-admin .st-category-workspace__blank svg {
+  width:24px;
+  height:24px;
+}
+
+.st3-admin .st-category-workspace__blank strong {
+  margin-top:8px;
+  color:#555;
+  font-size:11px;
+}
+
+.st3-admin .st-category-workspace__blank span {
+  margin-top:3px;
+  font-size:8px;
+}
+
+
+
+/* ============================================================
+   ADMIN V2 — ADD SUBCATEGORY + INLINE CREATE WORKSPACE
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   HIERARCHY ADD SUBCATEGORY BUTTON
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__add-slot-v2 {
+  box-sizing:border-box;
+
+  width:100%;
+
+  padding:
+    8px
+    12px
+    8px
+    calc(39px + (var(--tree-depth, 0) * 18px));
+
+  display:flex;
+  align-items:center;
+
+  background:transparent;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__add-slot-v2.is-root {
+  padding-left:39px;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-tree__add-subcategory-v2 {
+  box-sizing: border-box !important;
+
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 180px !important;
+  min-height: 32px !important;
+
+  margin: 0 !important;
+  padding: 0 11px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+
+  gap: 8px !important;
+
+  border: 1px solid #d5d8d5 !important;
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  color: #505450 !important;
+
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.025) !important;
+
+  font-family: inherit !important;
+  font-size: 9px !important;
+  font-weight: 640 !important;
+  line-height: 1 !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-tree__add-subcategory-v2
+svg {
+  width: 13px !important;
+  height: 13px !important;
+
+  flex: 0 0 13px !important;
+
+  color: #666b67 !important;
+
+  stroke-width: 1.8 !important;
+
+  transform: none !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  button.st-category-tree__add-subcategory-v2:hover {
+    border-color: #aeb3af !important;
+
+    background: #f4f5f4 !important;
+
+    color: #202223 !important;
+
+    box-shadow:
+      0 2px 6px rgba(0,0,0,.04) !important;
+
+    transform: none !important;
+  }
+
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  button.st-category-tree__add-subcategory-v2:hover
+  svg {
+    color: #202223 !important;
+
+    transform: none !important;
+  }
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-tree__add-subcategory-v2:focus-visible {
+  outline: 2px solid rgba(32,34,35,.16) !important;
+  outline-offset: 2px !important;
+
+  border-color: #8f9490 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   CREATE SUBCATEGORY — PARENT CONTEXT
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__parent {
+  min-width: 0 !important;
+  min-height: 34px !important;
+
+  padding: 0 10px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+
+  gap: 8px !important;
+
+  border: 1px solid #dadcda !important;
+  border-radius: 7px !important;
+
+  background: #fafafa !important;
+
+  color: #505450 !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__parent
+> svg {
+  width: 14px !important;
+  height: 14px !important;
+
+  flex: 0 0 14px !important;
+
+  color: #676c68 !important;
+
+  stroke-width: 1.8 !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__parent
+> span {
+  min-width: 0 !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__parent
+small,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__parent
+strong {
+  display: block !important;
+
+  overflow: hidden !important;
+
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__parent
+small {
+  color: #989c99 !important;
+
+  font-size: 6.5px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__parent
+strong {
+  margin-top: 2px !important;
+
+  max-width: 190px !important;
+
+  color: #3d413e !important;
+
+  font-size: 8.5px !important;
+  font-weight: 650 !important;
+  line-height: 1.15 !important;
+}
+
+
+/* ------------------------------------------------------------
+   CREATE / CANCEL ACTIONS
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-create-workspace__actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+
+  gap: 7px !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-create-workspace__cancel,
+
+html body
+.st3-admin
+main
+.st-category-admin
+button[type="submit"].st-category-create-workspace__submit {
+  min-height: 34px !important;
+
+  margin: 0 !important;
+  padding: 0 11px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 7px !important;
+
+  border-radius: 6px !important;
+
+  font-family: inherit !important;
+  font-size: 9px !important;
+  font-weight: 630 !important;
+  line-height: 1 !important;
+
+  cursor: pointer !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-create-workspace__cancel {
+  border: 1px solid #d5d8d5 !important;
+
+  background: #ffffff !important;
+
+  color: #6a6e6b !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button[type="submit"].st-category-create-workspace__submit {
+  border: 1px solid #c7cac7 !important;
+
+  background: #ffffff !important;
+
+  color: #343834 !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-create-workspace__submit
+svg {
+  width: 13px !important;
+  height: 13px !important;
+
+  stroke-width: 1.8 !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  button.st-category-create-workspace__cancel:hover {
+    border-color: #b7bbb8 !important;
+
+    background: #f6f7f6 !important;
+
+    color: #303330 !important;
+
+    transform: none !important;
+  }
+
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  button[type="submit"].st-category-create-workspace__submit:hover:not(:disabled) {
+    border-color: #8f9490 !important;
+
+    background: #f3f4f3 !important;
+
+    color: #202223 !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+  }
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-create-workspace__cancel:focus-visible,
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-create-workspace__submit:focus-visible {
+  outline: 2px solid rgba(32,34,35,.16) !important;
+  outline-offset: 2px !important;
+
+  box-shadow: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — ADD SUBCATEGORY + INLINE CREATE WORKSPACE
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   MOVIES & SERIES
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-cinema {
+  margin-top:9px;
+  padding:11px 12px;
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr) 205px;
+  align-items:center;
+  gap:12px;
+  border:1px solid #dfdfdf;
+  border-radius:8px;
+  background:#fff;
+}
+
+.st3-admin .st-category-cinema__identity {
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+}
+
+.st3-admin .st-category-cinema__icon {
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+  display:grid;
+  place-items:center;
+  border:1px solid #d7d7d7;
+  border-radius:6px;
+  background:#f6f6f6;
+  color:#555;
+}
+
+.st3-admin .st-category-cinema__icon svg {
+  width:13px;
+  height:13px;
+}
+
+.st3-admin .st-category-cinema__identity h2 {
+  margin:2px 0 0;
+  color:#303030;
+  font-size:12px;
+}
+
+.st3-admin .st-category-cinema__identity p {
+  max-width:520px;
+  margin:3px 0 0;
+  color:#8d8d8d;
+  font-size:8px;
+  line-height:1.4;
+}
+
+.st3-admin .st-category-cinema__features {
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
+
+.st3-admin .st-category-cinema__features span {
+  min-height:22px;
+  padding:0 6px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  border:1px solid #dedede;
+  border-radius:5px;
+  background:#fafafa;
+  color:#777;
+  font-size:7px;
+}
+
+.st3-admin .st-category-cinema__features span.is-ready {
+  border-color:#c5cdc8;
+  color:#4c5a51;
+}
+
+.st3-admin .st-category-cinema__features svg {
+  width:9px;
+  height:9px;
+}
+
+.st3-admin .st-category-cinema form {
+  display:grid;
+  grid-template-columns:70px 1fr;
+  align-items:end;
+  gap:6px;
+}
+
+.st3-admin .st-category-cinema form label > span {
+  display:block;
+  margin-bottom:4px;
+  color:#888;
+  font-size:7px;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+
+@media (max-width:1100px) {
+  .st3-admin .st-category-manager {
+    grid-template-columns:minmax(280px,38%) minmax(0,62%);
+  }
+
+  .st3-admin .st-category-homepage,
+  .st3-admin .st-category-wallpaper {
+    grid-template-columns:135px minmax(0,1fr);
+  }
+
+  .st3-admin .st-category-cinema {
+    grid-template-columns:1fr 1fr;
+  }
+
+  .st3-admin .st-category-cinema form {
+    grid-column:1/-1;
+  }
+}
+
+@media (max-width:820px) {
+  .st3-admin .st-category-admin {
+    padding:14px 12px 28px;
+  }
+
+  .st3-admin .st-category-admin__metrics {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    padding:5px;
+  }
+
+  .st3-admin .st-category-admin__metrics > div {
+    min-width:0;
+    border-right:0;
+  }
+
+  .st3-admin .st-category-manager {
+    height:auto;
+    min-height:0;
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-manager__tree {
+    max-height:390px;
+    border-right:0;
+    border-bottom:1px solid #e1e1e1;
+  }
+
+  .st3-admin .st-category-manager__workspace {
+    max-height:none;
+  }
+
+  .st3-admin .st-category-workspace__hero {
+    position:static;
+  }
+
+  .st3-admin .st-category-homepage,
+  .st3-admin .st-category-wallpaper {
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-homepage__preview,
+  .st3-admin .st-category-wallpaper__preview {
+    min-height:140px;
+    border-right:0;
+    border-bottom:1px solid #e6e6e6;
+  }
+
+  .st3-admin .st-category-cinema {
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-cinema form {
+    grid-column:auto;
+  }
+}
+
+@media (max-width:560px) {
+  .st3-admin .st-category-admin__metrics {
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-admin__create-root-panel {
+    position:fixed;
+    z-index:90;
+    top:76px;
+    right:12px;
+    left:12px;
+    width:auto;
+    max-height:calc(100vh - 90px);
+    overflow:auto;
+  }
+
+  .st3-admin .st-category-workspace__hero {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .st3-admin .st-category-workspace__summary {
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .st3-admin .st-category-workspace__form {
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-workspace__form .is-wide {
+    grid-column:1;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   DIRECTORY TOOLBAR REFINEMENT
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-admin__toolbar {
+  min-height:38px;
+  margin:0 0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+}
+
+.st3-admin .st-category-admin__toolbar-summary {
+  display:none;
+}
+
+.st3-admin .st-category-admin__create-root {
+  margin-left:auto;
+}
+
+.st3-admin .st-category-admin__create-root > summary {
+  min-height:36px;
+  padding:0 12px;
+  border-radius:7px;
+}
+
+.st3-admin .st-category-admin__search {
+  margin:0 0 10px;
+}
+
+.st3-admin .st-category-directory-search {
+  min-height:64px;
+  padding:8px;
+  display:grid;
+  grid-template-columns:auto minmax(280px,1fr);
+  align-items:stretch;
+  gap:8px;
+  border:1px solid #dedede;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.025);
+}
+
+.st3-admin .st-category-directory-search__stats {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(116px,1fr));
+  overflow:hidden;
+  border:1px solid #e1e1e1;
+  border-radius:7px;
+  background:#fafafa;
+}
+
+.st3-admin .st-category-directory-search__stat {
+  min-width:116px;
+  padding:7px 11px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.st3-admin .st-category-directory-search__stat + .st-category-directory-search__stat {
+  border-left:1px solid #e2e2e2;
+}
+
+.st3-admin .st-category-directory-search__stat span {
+  color:#8a8a8a;
+  font-size:7.5px;
+  font-weight:620;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+}
+
+.st3-admin .st-category-directory-search__stat strong {
+  margin-top:2px;
+  color:#303030;
+  font-size:14px;
+  line-height:1;
+  font-weight:670;
+}
+
+.st3-admin .st-category-directory-search__field {
+  min-width:0;
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 11px;
+  border:1px solid #dedede;
+  border-radius:7px;
+  background:#fafafa;
+  transition:
+    border-color .15s ease,
+    background .15s ease,
+    box-shadow .15s ease;
+}
+
+.st3-admin .st-category-directory-search__field:focus-within {
+  border-color:#a3a3a3;
+  background:#fff;
+  box-shadow:0 0 0 2px rgba(0,0,0,.035);
+}
+
+.st3-admin .st-category-directory-search__icon {
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+  display:grid;
+  place-items:center;
+  border:1px solid #e1e1e1;
+  border-radius:6px;
+  background:#fff;
+  color:#8b8b8b;
+}
+
+.st3-admin .st-category-directory-search__icon svg {
+  width:12px;
+  height:12px;
+}
+
+.st3-admin .st-category-directory-search__field input {
+  min-width:0;
+  width:100%;
+  height:40px;
+  padding:0;
+  border:0 !important;
+  outline:0 !important;
+  background:transparent !important;
+  color:#333 !important;
+  box-shadow:none !important;
+  font-size:10px;
+}
+
+.st3-admin .st-category-directory-search__field input::placeholder {
+  color:#aaa;
+}
+
+.st3-admin .st-category-directory-search__field > button {
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:5px;
+  background:transparent;
+  color:#8a8a8a;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-directory-search__field > button:hover {
+  background:#ececec;
+  color:#333;
+}
+
+.st3-admin .st-category-directory-search__field > button svg {
+  width:12px;
+  height:12px;
+}
+
+/* Remove the old directory-search presentation if any stale wrapper remains. */
+
+.st3-admin .st-category-admin__search .st-admin-directory-search__heading {
+  display:none;
+}
+
+/* ------------------------------------------------------------
+   COMPACT INSPECTOR
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-manager {
+  height:min(690px,calc(100vh - 245px));
+  min-height:550px;
+  grid-template-columns:minmax(310px,36%) minmax(0,64%);
+}
+
+.st3-admin .st-category-workspace__hero {
+  min-height:64px;
+  padding:10px 14px;
+}
+
+.st3-admin .st-category-workspace__hero h2 {
+  font-size:17px;
+}
+
+.st3-admin .st-category-workspace__body {
+  padding:10px;
+}
+
+.st3-admin .st-category-workspace__section + *,
+.st3-admin .st-category-workspace__section + .st-category-homepage,
+.st3-admin .st-category-workspace__section + .st-category-wallpaper {
+  margin-top:8px;
+}
+
+.st3-admin .st-category-workspace__section-head {
+  min-height:43px;
+  padding:8px 10px;
+}
+
+.st3-admin .st-category-workspace__form {
+  padding:10px;
+  grid-template-columns:minmax(0,1fr) 82px;
+  gap:8px;
+}
+
+.st3-admin .st-category-workspace__form input {
+  height:34px;
+}
+
+.st3-admin .st-category-workspace__status-control {
+  min-height:52px;
+  padding:8px 9px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border:1px solid #e2e2e2;
+  border-radius:7px;
+  background:#fafafa;
+  cursor:pointer;
+}
+
+.st3-admin .st-category-workspace__status-copy {
+  min-width:0;
+}
+
+.st3-admin .st-category-workspace__status-copy strong,
+.st3-admin .st-category-workspace__status-copy small {
+  display:block;
+}
+
+.st3-admin .st-category-workspace__status-copy strong {
+  color:#414141;
+  font-size:9px;
+  font-weight:640;
+}
+
+.st3-admin .st-category-workspace__status-copy small {
+  margin-top:2px;
+  color:#969696;
+  font-size:7.5px;
+  line-height:1.35;
+}
+
+.st3-admin .st-category-workspace__switch {
+  position:relative;
+  width:34px;
+  height:20px;
+  flex:0 0 34px;
+}
+
+.st3-admin .st-category-workspace__switch > input {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  margin:-1px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  clip:rect(0 0 0 0) !important;
+  clip-path:inset(50%) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
+
+.st3-admin .st-category-workspace__switch-track {
+  position:absolute;
+  inset:0;
+  display:block;
+  border:1px solid #c8c8c8;
+  border-radius:999px;
+  background:#e7e7e7;
+  transition:
+    border-color .16s ease,
+    background .16s ease;
+}
+
+.st3-admin .st-category-workspace__switch-track > span {
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:14px;
+  height:14px;
+  display:block;
+  border:1px solid #c9c9c9;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.08);
+  transition:transform .16s ease;
+}
+
+.st3-admin .st-category-workspace__switch > input:checked + .st-category-workspace__switch-track {
+  border-color:#606060;
+  background:#606060;
+}
+
+.st3-admin .st-category-workspace__switch > input:checked + .st-category-workspace__switch-track > span {
+  border-color:#fff;
+  transform:translateX(14px);
+}
+
+.st3-admin .st-category-workspace__switch > input:focus-visible + .st-category-workspace__switch-track {
+  box-shadow:0 0 0 3px rgba(0,0,0,.08);
+}
+
+.st3-admin .st-category-workspace__save-row {
+  margin-top:0;
+}
+
+.st3-admin .st-category-workspace__save-row button {
+  min-height:32px !important;
+  padding:0 10px !important;
+}
+
+.st3-admin .st-category-workspace__actions {
+  min-height:43px;
+  padding:7px 10px;
+  justify-content:flex-end;
+}
+
+.st3-admin .st-category-workspace__actions form:last-child {
+  margin-left:auto;
+}
+
+.st3-admin .st-category-workspace__actions .is-danger {
+  min-height:29px !important;
+  padding:0 8px !important;
+  border-color:#dfcaca !important;
+  background:#fff !important;
+  color:#934343 !important;
+}
+
+
+/* ------------------------------------------------------------
+   STOREFRONT PRESENTATION
+   Root category only — subcategories keep their wallpaper module.
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-homepage,
+.st3-admin .st-category-wallpaper {
+  grid-template-columns:135px minmax(0,1fr);
+}
+
+.st3-admin .st-category-homepage__preview,
+.st3-admin .st-category-wallpaper__preview,
+.st3-admin .st-category-homepage__preview img,
+.st3-admin .st-category-wallpaper__preview img,
+.st3-admin .st-category-homepage__empty,
+.st3-admin .st-category-wallpaper__preview > div {
+  min-height:150px;
+}
+
+.st3-admin .st-category-homepage__content,
+.st3-admin .st-category-wallpaper__content {
+  padding:10px;
+}
+
+.st3-admin .st-category-homepage__toggle {
+  min-height:43px;
+  padding:7px 8px;
+}
+
+.st3-admin .st-category-homepage__themes button {
+  min-height:39px;
+}
+
+.st3-admin .st-category-homepage__save {
+  min-height:31px !important;
+}
+
+/* ------------------------------------------------------------
+   SPECIAL STOREFRONT CATEGORY
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-cinema {
+  margin-top:10px;
+  padding:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:stretch;
+  gap:0;
+  overflow:hidden;
+  border:1px solid #dedede;
+  border-radius:9px;
+  background:#fff;
+}
+
+.st3-admin .st-category-cinema__identity {
+  min-width:0;
+  padding:12px;
+  align-items:center;
+}
+
+.st3-admin .st-category-cinema__icon {
+  width:34px;
+  height:34px;
+  flex-basis:34px;
+}
+
+.st3-admin .st-category-cinema__identity > div:last-child > span {
+  display:block;
+  color:#969696;
+  font-size:7px;
+  font-weight:650;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.st3-admin .st-category-cinema__identity h2 {
+  margin-top:2px;
+  font-size:11.5px;
+}
+
+.st3-admin .st-category-cinema__identity p {
+  max-width:580px;
+  margin-top:2px;
+  font-size:7.7px;
+}
+
+.st3-admin .st-category-cinema__features {
+  grid-column:1;
+  padding:0 12px 11px 54px;
+  align-items:center;
+}
+
+.st3-admin .st-category-cinema__features span {
+  min-height:22px;
+  border-radius:5px;
+}
+
+.st3-admin .st-category-cinema form {
+  grid-column:2;
+  grid-row:1 / span 2;
+  min-width:225px;
+  padding:11px;
+  display:grid;
+  grid-template-columns:72px minmax(110px,1fr);
+  align-content:center;
+  align-items:end;
+  gap:7px;
+  border-left:1px solid #e5e5e5;
+  background:#fafafa;
+}
+
+.st3-admin .st-category-cinema form > button {
+  min-height:34px !important;
+  border-radius:6px !important;
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVE REFINEMENT
+   ------------------------------------------------------------ */
+
+@media (max-width:900px) {
+  .st3-admin .st-category-directory-search {
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-directory-search__stats {
+    grid-template-columns:1fr 1fr;
+  }
+
+  .st3-admin .st-category-cinema {
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-cinema form {
+    grid-column:1;
+    grid-row:auto;
+    border-top:1px solid #e5e5e5;
+    border-left:0;
+  }
+}
+
+@media (max-width:560px) {
+  .st3-admin .st-category-directory-search__stats {
+    grid-template-columns:1fr;
+  }
+
+  .st3-admin .st-category-directory-search__stat + .st-category-directory-search__stat {
+    border-top:1px solid #e2e2e2;
+    border-left:0;
+  }
+
+  .st3-admin .st-category-workspace__status-control {
+    align-items:flex-start;
+  }
+}
+
+/* ------------------------------------------------------------
+   END DIRECTORY / INSPECTOR REFINEMENT
+   ------------------------------------------------------------ */
+
+
+/* ------------------------------------------------------------
+   END PRODUCT-DIRECTORY STYLE CATEGORY TOOLBAR
+   ------------------------------------------------------------ */
+
+
+
+
+
+
+/* ------------------------------------------------------------
+   CATEGORY HOMEPAGE FILE CONTROL — AUTHORITATIVE
+   Safari-safe custom upload architecture.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-homepage__upload {
+  position:relative;
+  width:100%;
+  min-width:0;
+  min-height:62px;
+  margin-top:8px;
+  padding:9px 10px !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  grid-template-rows:auto auto;
+  align-items:center;
+  gap:3px 12px !important;
+  box-sizing:border-box;
+  border:1px dashed #cfcfcf !important;
+  border-radius:7px !important;
+  background:#fafafa !important;
+  overflow:hidden;
+  cursor:default !important;
+}
+
+html body
+.st3-admin
+.st-category-homepage__upload:hover {
+  border-color:#aaa !important;
+  background:#f8f8f8 !important;
+}
+
+html body
+.st3-admin
+.st-category-homepage__upload-copy {
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  grid-column:1;
+  grid-row:1;
+}
+
+html body
+.st3-admin
+.st-category-homepage__upload-copy > svg {
+  width:17px;
+  height:17px;
+  flex:0 0 17px;
+  color:#606060;
+  stroke-width:1.8;
+}
+
+html body
+.st3-admin
+.st-category-homepage__upload-copy > span {
+  min-width:0;
+}
+
+html body
+.st3-admin
+.st-category-homepage__upload-copy strong,
+html body
+.st3-admin
+.st-category-homepage__upload-copy small {
+  display:block;
+}
+
+html body
+.st3-admin
+.st-category-homepage__upload-copy strong {
+  color:#3d3d3d;
+  font-size:9px;
+  font-weight:650;
+  line-height:1.2;
+}
+
+html body
+.st3-admin
+.st-category-homepage__upload-copy small {
+  margin-top:2px;
+  color:#969696;
+  font-size:7px;
+  font-weight:450;
+  line-height:1.3;
+}
+
+html body
+.st3-admin
+input.st-category-homepage__file-input,
+html body
+.st3-admin
+.st-category-homepage__upload
+> input.st-category-homepage__file-input,
+html body
+.st3-admin
+.st-category-homepage__file-input[type="file"] {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  min-width:1px !important;
+  min-height:1px !important;
+  max-width:1px !important;
+  max-height:1px !important;
+  margin:-1px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  clip:rect(0 0 0 0) !important;
+  clip-path:inset(50%) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+
+html body
+.st3-admin
+button.st-category-homepage__file-button {
+  grid-column:2;
+  grid-row:1 / span 2;
+  min-width:88px;
+  min-height:32px;
+  margin:0;
+  padding:0 11px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #cfcfcf !important;
+  border-radius:6px !important;
+  background:#fff !important;
+  color:#3d3d3d !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.025) !important;
+  font-family:inherit;
+  font-size:8.5px;
+  font-weight:600;
+  line-height:1;
+  letter-spacing:0;
+  cursor:pointer;
+  transition:
+    border-color 130ms ease,
+    background 130ms ease,
+    color 130ms ease;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  button.st-category-homepage__file-button:hover {
+    border-color:#999 !important;
+    background:#f4f4f4 !important;
+    color:#202020 !important;
+  }
+}
+
+html body
+.st3-admin
+.st-category-homepage__file-name {
+  grid-column:1;
+  grid-row:2;
+  min-width:0;
+  max-width:100%;
+  margin:0;
+  padding-left:25px;
+  overflow:hidden;
+  color:#aaa;
+  font-size:7px;
+  font-weight:450;
+  line-height:1.25;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+html body
+.st3-admin
+.st-category-homepage__file-name.has-file {
+  color:#555;
+  font-weight:500;
+}
+
+/* ------------------------------------------------------------
+   HOMEPAGE VISIBILITY — SWITCH AUTHORITY
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-homepage__toggle {
+  cursor:pointer;
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch {
+  position:relative;
+  width:34px;
+  height:20px;
+  flex:0 0 34px;
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch
+> input[type="checkbox"] {
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  min-width:1px !important;
+  min-height:1px !important;
+  margin:-1px !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  clip:rect(0 0 0 0) !important;
+  clip-path:inset(50%) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+  opacity:0 !important;
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch-track {
+  position:absolute;
+  inset:0;
+  display:block;
+  border:1px solid #c8c8c8;
+  border-radius:999px;
+  background:#e7e7e7;
+  transition:
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .16s ease;
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch-track > span {
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:14px;
+  height:14px;
+  display:block;
+  border:1px solid #c9c9c9;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.08);
+  transition:transform .16s ease;
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch
+> input:checked
++ .st-category-homepage__switch-track {
+  border-color:#606060;
+  background:#606060;
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch
+> input:checked
++ .st-category-homepage__switch-track
+> span {
+  border-color:#fff;
+  transform:translateX(14px);
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch
+> input:focus-visible
++ .st-category-homepage__switch-track {
+  box-shadow:0 0 0 3px rgba(0,0,0,.08);
+}
+
+@media (max-width:560px) {
+  html body
+  .st3-admin
+  .st-category-homepage__upload {
+    grid-template-columns:minmax(0,1fr) auto !important;
+  }
+
+  html body
+  .st3-admin
+  button.st-category-homepage__file-button {
+    min-width:80px;
+  }
+}
+
+
+
+/* ============================================================
+   ADMIN V2 — CATEGORIES COHERENT ARCHITECTURE
+   Categories only.
+
+   One Categories presentation authority:
+   - exact Product-search visual mechanism
+   - recursive professional hierarchy
+   - compact category management workspace
+   - integrated storefront presentation
+   - restrained green active states
+   - no mustard states
+   ============================================================ */
+
+
+/* ============================================================
+   SEARCH + READ-ONLY COUNTERS
+   ============================================================ */
+
+.st3-admin .st-category-directory {
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  box-shadow: 0 1px 2px rgba(0,0,0,.02);
+}
+
+.st3-admin
+.st-category-directory
+.st-admin-directory-search.st-admin-product-directory-v2 {
+  margin: 0;
+
+  padding: 10px;
+
+  border: 0;
+  border-bottom: 1px solid #e2e2e2;
+  border-radius: 0;
+
+  background: #ffffff;
+
+  box-shadow: none;
+}
+
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2__toolbar.st-category-directory-search-row {
+  min-height: 44px;
+
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+
+/*
+ * EXACT PRODUCT SEARCH OUTER SHELL.
+ * This is the only visible search rectangle.
+ */
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field {
+  position: relative !important;
+
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+
+  margin: 0 !important;
+  padding: 0 12px !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid #b8bdc1 !important;
+  border-radius: 8px !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  isolation: isolate;
+
+  transition:
+    border-color 130ms ease,
+    box-shadow 130ms ease !important;
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field:hover {
+  border-color: #8c9196 !important;
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field:focus-within {
+  border-color: #303030 !important;
+
+  outline: none !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    inset 0 0 0 1px #303030 !important;
+
+  -webkit-box-shadow:
+    inset 0 0 0 1px #303030 !important;
+}
+
+
+/*
+ * Kill inherited label pseudo layers.
+ * These were responsible for the remaining second-field appearance.
+ */
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field::before,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+}
+
+
+/*
+ * EXACT PRODUCT SEARCH INPUT MECHANISM.
+ * Absolutely no second rectangle.
+ */
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"],
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input:hover,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input:focus,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input:focus-visible,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input:active,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]:hover,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]:focus,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]:focus-visible,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]:active {
+  position: relative !important;
+  z-index: 1 !important;
+
+  flex: 1 1 auto !important;
+
+  display: block !important;
+
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #202223 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  filter: none !important;
+
+  --tw-ring-inset: initial !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 450 !important;
+  line-height: 42px !important;
+  letter-spacing: 0 !important;
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input::before,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input::placeholder {
+  color: #8c9196 !important;
+  opacity: 1 !important;
+}
+
+
+/* Safari search chrome */
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]::-webkit-search-decoration,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]::-webkit-search-cancel-button,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]::-webkit-search-results-button,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+input[type="search"]::-webkit-search-results-decoration {
+  display: none !important;
+
+  -webkit-appearance: none !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+
+/* Search icon */
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-directory-search__icon {
+  position: relative !important;
+  z-index: 1 !important;
+
+  flex: 0 0 17px !important;
+
+  width: 17px !important;
+  height: 17px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 10px 0 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #6d7175 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  pointer-events: none !important;
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-directory-search__icon::before,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-directory-search__icon::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-directory-search__icon svg {
+  width: 17px !important;
+  height: 17px !important;
+
+  stroke-width: 1.8 !important;
+}
+
+
+/* Clear X */
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field > button {
+  position: relative !important;
+  z-index: 1 !important;
+
+  width: 27px !important;
+  height: 27px !important;
+  min-width: 27px !important;
+  min-height: 27px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  flex: 0 0 27px !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 0 !important;
+  border-radius: 6px !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  color: #737373 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  .st-category-directory
+  .st-admin-product-directory-v2
+  label.st-admin-directory-search__field > button:hover {
+    border: 0 !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    color: #d92d20 !important;
+
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    transform: none !important;
+  }
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field > button:focus-visible {
+  outline: 2px solid rgba(48,48,48,.18) !important;
+  outline-offset: 1px !important;
+}
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field > button svg {
+  width: 13px !important;
+  height: 13px !important;
+}
+
+
+/* No inherited mustard accent */
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field,
+
+html body
+.st3-admin
+.st-category-directory
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field * {
+  accent-color: #303030 !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+
+/* Read-only category totals */
+
+.st3-admin
+.st-category-directory
+.st-category-directory-counters {
+  min-width: 330px;
+
+  height: 44px;
+
+  display: grid;
+  grid-template-columns: repeat(3,minmax(100px,1fr));
+  align-items: stretch;
+
+  overflow: hidden;
+
+  border: 1px solid #dedede;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  box-shadow: none;
+}
+
+.st3-admin
+.st-category-directory
+.st-category-directory-counter,
+.st3-admin
+.st-category-directory
+.st-category-directory-counter.is-total {
+  box-sizing: border-box;
+
+  min-width: 0;
+  height: 42px;
+
+  padding: 0 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  border: 0;
+  border-left: 1px solid #e5e5e5;
+  border-radius: 0;
+
+  background: transparent;
+
+  box-shadow: none;
+
+  cursor: default;
+
+  user-select: none;
+}
+
+.st3-admin
+.st-category-directory
+.st-category-directory-counter:first-child {
+  border-left: 0;
+}
+
+.st3-admin
+.st-category-directory
+.st-category-directory-counter span {
+  margin: 0;
+
+  color: #717171;
+
+  font-size: 9px;
+  font-weight: 550;
+  line-height: 1;
+
+  letter-spacing: .01em;
+
+  white-space: nowrap;
+}
+
+.st3-admin
+.st-category-directory
+.st-category-directory-counter strong {
+  margin: 0;
+
+  color: #242424;
+
+  font-size: 12px;
+  font-weight: 680;
+  line-height: 1;
+}
+
+.st3-admin
+.st-category-directory
+.st-admin-directory-search__status {
+  margin: 6px 1px 0;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #717171;
+
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+
+/* ============================================================
+   CATEGORY MANAGER SHELL
+   ============================================================ */
+
+.st3-admin .st-category-manager {
+  min-width: 0;
+  min-height: 585px;
+
+  display: grid;
+  grid-template-columns: minmax(320px,35%) minmax(0,65%);
+
+  overflow: hidden;
+
+  border: 0;
+  border-radius: 0;
+
+  background: #ffffff;
+
+  box-shadow: none;
+}
+
+
+/* ============================================================
+   LEFT — CATEGORY STRUCTURE
+   ============================================================ */
+
+.st3-admin .st-category-manager__tree {
+  min-width: 0;
+
+  border-right: 1px solid #dedede;
+
+  background: #fafafa;
+}
+
+.st3-admin .st-category-manager__tree-head {
+  box-sizing: border-box;
+
+  min-height: 70px;
+
+  padding: 15px 17px;
+
+  display: flex;
+  align-items: center;
+
+  border-bottom: 1px solid #dfdfdf;
+
+  background: #ffffff;
+}
+
+.st3-admin .st-category-manager__tree-title {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.st3-admin .st-category-manager__tree-title > strong {
+  display: block;
+
+  color: #252525;
+
+  font-size: 13px;
+  font-weight: 680;
+  line-height: 1.2;
+}
+
+.st3-admin .st-category-manager__tree-title > span {
+  display: block;
+
+  color: #858985;
+
+  font-size: 8.5px;
+  font-weight: 450;
+  line-height: 1.35;
+}
+
+.st3-admin .st-category-tree {
+  padding: 6px 0 10px;
+
+  background: #fafafa;
+}
+
+.st3-admin .st-category-tree__root-group {
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+}
+
+.st3-admin
+.st-category-tree__root-group
++ .st-category-tree__root-group {
+  border-top: 1px solid #eceeec;
+}
+
+
+/* Main recursive rows */
+
+.st3-admin .st-category-tree__root,
+.st3-admin .st-category-tree__node {
+  position: relative;
+
+  box-sizing: border-box;
+
+  min-height: 49px;
+
+  margin: 0;
+
+  padding:
+    0 9px
+    0 calc(9px + (var(--tree-depth,0) * 18px));
+
+  display: grid;
+  grid-template-columns: 27px minmax(0,1fr) 29px;
+  align-items: center;
+
+  gap: 3px;
+
+  border: 0;
+  border-radius: 0;
+
+  background: transparent;
+
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.st3-admin .st-category-tree__root {
+  --tree-depth: 0;
+}
+
+@media (hover:hover) {
+  .st3-admin .st-category-tree__root:not(.is-selected):hover,
+  .st3-admin .st-category-tree__node:not(.is-selected):hover {
+    background: #fafafa;
+
+    box-shadow:
+      inset 0 0 0 1px #eceeec;
+  }
+}
+
+
+/* restrained light-green selected state */
+
+.st3-admin .st-category-tree__root.is-selected,
+.st3-admin .st-category-tree__node.is-selected {
+  background: #eeeeee;
+
+  box-shadow:
+    inset 3px 0 0 #444444;
+}
+
+.st3-admin
+.st-category-tree__root.is-selected
+.st-category-tree__folder,
+.st3-admin
+.st-category-tree__node.is-selected
+.st-category-tree__folder {
+  border-color: #cfcfcf;
+
+  background: #ffffff;
+
+  color: #414141;
+}
+
+
+/* Chevron and add-child controls */
+
+.st3-admin .st-category-tree__expand,
+.st3-admin .st-category-tree__add-child {
+  width: 27px;
+  height: 30px;
+  min-width: 27px;
+  min-height: 30px;
+
+  margin: 0;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 6px;
+
+  outline: 0;
+
+  background: transparent;
+
+  color: #8a8e8a;
+
+  box-shadow: none;
+
+  transform: none;
+
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+@media (hover:hover) {
+  .st3-admin .st-category-tree__expand:hover,
+.st3-admin .st-category-tree__add-child:hover {
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  color: #343834 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+}
+
+.st3-admin .st-category-tree__expand:focus-visible,
+.st3-admin .st-category-tree__add-child:focus-visible {
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  color: #343834 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+.st3-admin .st-category-tree__expand svg,
+.st3-admin .st-category-tree__add-child svg {
+  width: 13px;
+  height: 13px;
+
+  stroke-width: 1.8;
+}
+
+
+
+
+.st3-admin .st-category-tree__expand,
+.st3-admin .st-category-tree__expand:hover,
+.st3-admin .st-category-tree__expand:focus,
+.st3-admin .st-category-tree__expand:focus-visible,
+.st3-admin .st-category-tree__expand:active,
+.st3-admin .st-category-tree__add-child,
+.st3-admin .st-category-tree__add-child:hover,
+.st3-admin .st-category-tree__add-child:focus,
+.st3-admin .st-category-tree__add-child:focus-visible,
+.st3-admin .st-category-tree__add-child:active {
+  border: 0 !important;
+
+  outline: 0 !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+
+/* Row body */
+
+.st3-admin .st-category-tree__select {
+  min-width: 0;
+  min-height: 49px;
+
+  margin: 0;
+  padding: 5px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  border: 0;
+  border-radius: 0;
+
+  outline: 0;
+
+  background: transparent;
+
+  color: #303330;
+
+  box-shadow: none;
+
+  text-align: left;
+
+  transform: none;
+}
+
+.st3-admin .st-category-tree__select:focus-visible {
+  outline: 2px solid rgba(48,48,48,.14);
+  outline-offset: -2px;
+}
+
+
+/* Folder marker */
+
+.st3-admin .st-category-tree__folder {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d8dbd8;
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #656965;
+
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.st3-admin .st-category-tree__folder.is-root {
+  background: #f5f6f5;
+
+  color: #444844;
+}
+
+.st3-admin .st-category-tree__folder svg {
+  width: 13px;
+  height: 13px;
+
+  stroke-width: 1.7;
+}
+
+
+/* Tree typography */
+
+.st3-admin .st-category-tree__label {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.st3-admin .st-category-tree__label strong,
+.st3-admin .st-category-tree__label small {
+  display: block;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.st3-admin .st-category-tree__label strong {
+  color: #303330;
+
+  font-size: 10.5px;
+  font-weight: 620;
+  line-height: 1.2;
+}
+
+.st3-admin .st-category-tree__label small {
+  color: #858985;
+
+  font-size: 8px;
+  font-weight: 450;
+  line-height: 1.2;
+}
+
+.st3-admin .st-category-tree__state {
+  margin-left: auto;
+
+  min-height: 20px;
+
+  padding: 0 7px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #dddddd;
+  border-radius: 999px;
+
+  background: #ffffff;
+
+  color: #6f6f6f;
+
+  font-size: 7px;
+  font-weight: 630;
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+.st3-admin .st-category-tree__state.is-active {
+  border-color: #bfd8c6;
+
+  background: #f0f8f2;
+
+  color: #3f6b4b;
+}
+
+.st3-admin .st-category-tree__state.is-inactive {
+  border-color: #e2c0bd;
+
+  background: #fff5f4;
+
+  color: #a24640;
+}
+
+
+/* Semantic category identity without tinting the whole row. */
+
+.st3-admin
+.st-category-tree__root.is-active
+.st-category-tree__folder,
+.st3-admin
+.st-category-tree__node.is-active
+.st-category-tree__folder {
+  border-color: #c6d9cb;
+
+  background: #f6faf7;
+
+  color: #4c7057;
+}
+
+.st3-admin
+.st-category-tree__root.is-inactive
+.st-category-tree__folder,
+.st3-admin
+.st-category-tree__node.is-inactive
+.st-category-tree__folder {
+  border-color: #e1c4c1;
+
+  background: #fff8f7;
+
+  color: #9e4d47;
+}
+
+.st3-admin
+.st-category-tree__root.is-active
+.st-category-tree__label strong,
+.st3-admin
+.st-category-tree__node.is-active
+.st-category-tree__label strong {
+  color: #41684c;
+}
+
+.st3-admin
+.st-category-tree__root.is-inactive
+.st-category-tree__label strong,
+.st3-admin
+.st-category-tree__node.is-inactive
+.st-category-tree__label strong {
+  color: #984943;
+}
+
+
+
+/* Recursive guide */
+
+.st3-admin .st-category-tree__children {
+  position: relative;
+
+  margin: 0;
+  padding: 0;
+
+  display: grid;
+
+  grid-template-rows: 0fr;
+
+  opacity: 0;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  transition:
+    grid-template-rows 260ms cubic-bezier(.2,.8,.2,1),
+    opacity 180ms ease;
+}
+
+.st3-admin
+.st-category-tree__children.is-open {
+  grid-template-rows: 1fr;
+
+  opacity: 1;
+
+  pointer-events: auto;
+}
+
+.st3-admin
+.st-category-tree__children.is-closed {
+  grid-template-rows: 0fr;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.st3-admin
+.st-category-tree__children-inner {
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+
+
+.st3-admin .st-category-tree__children::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+  left: 21px;
+
+  width: 1px;
+
+  background: #dfe3df;
+}
+
+
+/* Empty branch add-subcategory action */
+
+.st3-admin .st-category-tree__empty-child {
+  box-sizing: border-box;
+
+  width: max-content;
+
+  min-height: 32px;
+
+  margin: 7px 12px 7px 39px;
+  padding: 0 10px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+
+  outline: 0;
+
+  background: #ffffff;
+
+  color: #484848;
+
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1;
+
+  opacity: 1;
+
+  box-shadow: none;
+
+  transform: none;
+
+  cursor: pointer;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+@media (hover:hover) {
+  .st3-admin .st-category-tree__empty-child:hover {
+  opacity: 1;
+
+  border-color: #b7b7b7;
+
+  background: #f4f4f4;
+
+  color: #252525;
+
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.035);
+
+  transform: none;
+}
+}
+
+.st3-admin .st-category-tree__empty-child:focus-visible {
+  opacity: 1;
+
+  outline: 2px solid rgba(48,48,48,.16);
+  outline-offset: 2px;
+
+  border-color: #a8a8a8;
+
+  background: #ffffff;
+
+  color: #252525;
+
+  box-shadow: none;
+
+  transform: none;
+}
+
+
+/* ============================================================
+   RIGHT — CATEGORY MANAGEMENT WORKSPACE
+   ============================================================ */
+
+.st3-admin .st-category-manager__workspace {
+  position: relative;
+
+  min-width: 0;
+
+  background: #ffffff;
+}
+
+/* ============================================================
+   CATEGORY WORKSPACE EMPTY STATE — TRUE CENTER
+
+   On desktop the empty-state icon/copy is centered against the
+   complete right management workspace instead of sitting high.
+   ============================================================ */
+
+@media (min-width:821px) {
+  .st3-admin
+  .st-category-manager__workspace
+  > .st-category-workspace__blank {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    width:
+      auto;
+
+    height:
+      auto;
+
+    margin:
+      0;
+
+    display:
+      flex;
+
+    flex-direction:
+      column;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+  }
+}
+
+
+
+
+
+/* Category identity header */
+
+.st3-admin .st-category-workspace__hero {
+  box-sizing: border-box;
+
+  min-height: 84px;
+
+  padding: 15px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  border-bottom: 1px solid #dfdfdf;
+
+  background: #fbfbfb;
+}
+
+.st3-admin
+.st-category-workspace__hero
+> div:first-child
+> span {
+  color: #858985;
+
+  font-size: 8px;
+  font-weight: 650;
+  line-height: 1;
+
+  letter-spacing: .09em;
+
+  text-transform: uppercase;
+}
+
+.st3-admin .st-category-workspace__hero h2 {
+  margin: 4px 0 0;
+
+  color: #202220;
+
+  font-size: clamp(20px,1.6vw,24px);
+  font-weight: 660;
+  line-height: 1.05;
+
+  letter-spacing: -.022em;
+}
+
+.st3-admin .st-category-workspace__hero p {
+  margin: 0;
+
+  color: #858985;
+
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+.st3-admin .st-category-workspace__summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-wrap: wrap;
+
+  gap: 7px;
+}
+
+.st3-admin .st-category-workspace__product-count,
+.st3-admin .st-category-workspace__status {
+  min-height: 30px;
+
+  padding: 0 10px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  border: 1px solid #dcdfdc;
+  border-radius: 7px;
+
+  background: #fafbfa;
+
+  color: #606460;
+
+  font-size: 8.5px;
+  font-weight: 520;
+}
+
+.st3-admin .st-category-workspace__product-count svg {
+  width: 12px;
+  height: 12px;
+}
+
+.st3-admin .st-category-workspace__product-count strong {
+  color: #282b28;
+
+  font-weight: 680;
+}
+
+
+/* Active category badge */
+
+.st3-admin .st-category-workspace__status.is-active {
+  border-color: #bfd8c6;
+
+  background: #f0f8f2;
+
+  color: #3e694a;
+}
+
+.st3-admin .st-category-workspace__status.is-inactive {
+  border-color: #e2c0bd;
+
+  background: #fff5f4;
+
+  color: #a24640;
+}
+
+
+
+/* Workspace content */
+
+.st3-admin .st-category-workspace__body {
+  padding: 16px 18px 18px;
+
+  background: #ffffff;
+}
+
+.st3-admin .st-category-workspace__section {
+  overflow: visible;
+
+  border: 0;
+  border-radius: 0;
+
+  background: #ffffff;
+
+  box-shadow: none;
+}
+
+.st3-admin .st-category-workspace__section-head {
+  min-height: 44px;
+
+  padding: 0 1px 10px;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  border: 0;
+  border-bottom: 1px solid #e2e2e2;
+
+  background: transparent;
+}
+
+.st3-admin .st-category-workspace__section-head strong {
+  display: block;
+
+  color: #292c29;
+
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.st3-admin .st-category-workspace__section-head span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #858985;
+
+  font-size: 8px;
+  font-weight: 450;
+  line-height: 1.3;
+}
+
+
+/* General form */
+
+.st3-admin .st-category-workspace__form {
+  padding: 12px 0 0;
+
+  display: grid;
+
+  grid-template-columns: minmax(0,1fr) 92px;
+
+  column-gap: 10px;
+  row-gap: 0;
+}
+
+.st3-admin .st-category-workspace__form label {
+  min-width: 0;
+}
+
+.st3-admin
+.st-category-workspace__form
+label > span:first-child {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #666a66;
+
+  font-size: 8.5px;
+  font-weight: 560;
+  line-height: 1.2;
+}
+
+
+/*
+ * Neutral editable fields.
+ * Explicitly defeats any old mustard input state.
+ */
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+input:not([type="checkbox"]) {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+
+  min-height: 39px !important;
+  height: 39px !important;
+
+  padding: 0 10px !important;
+
+  border: 1px solid #d8d8d8 !important;
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #303030 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  accent-color: #303030 !important;
+
+  font-family: inherit !important;
+  font-size: 10px !important;
+
+  --tw-ring-inset: initial !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+input:not([type="checkbox"]):hover {
+  border-color: #b7bcb8 !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+input:not([type="checkbox"]):focus,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+input:not([type="checkbox"]):focus-visible {
+  border: 1px solid #303030 !important;
+  border-color: #303030 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow:
+    0 0 0 1px #303030 !important;
+
+  -webkit-box-shadow:
+    0 0 0 1px #303030 !important;
+
+  filter: none !important;
+
+  --tw-ring-inset: initial !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+> label:not(.st-category-workspace__status-control):focus-within,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+> label:not(.st-category-workspace__status-control):has(> input:focus),
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+> label:not(.st-category-workspace__status-control):has(> input:focus-visible) {
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+> label:not(.st-category-workspace__status-control):has(> input:focus)::before,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+> label:not(.st-category-workspace__status-control):has(> input:focus)::after,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+> label:not(.st-category-workspace__status-control):has(> input:focus-visible)::before,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__form
+> label:not(.st-category-workspace__status-control):has(> input:focus-visible)::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+
+/* Active/inactive control */
+
+.st3-admin
+.st-category-workspace__status-control.is-wide {
+  box-sizing: border-box;
+
+  min-height: 49px;
+
+  grid-column: 1 / -1;
+
+  margin-top: 10px;
+
+  padding: 8px 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  border: 1px solid #dfe2df;
+  border-radius: 7px;
+
+  background: #fafafa;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.st3-admin
+.st-category-workspace__status-control.is-wide:has(input:checked) {
+  border-color: #dfe2df;
+
+  background: #fafafa;
+}
+
+.st3-admin .st-category-workspace__status-copy {
+  min-width: 0;
+}
+
+.st3-admin .st-category-workspace__status-copy strong,
+.st3-admin .st-category-workspace__status-copy small {
+  display: block;
+}
+
+.st3-admin .st-category-workspace__status-copy strong {
+  color: #353835;
+
+  font-size: 9px;
+  font-weight: 620;
+  line-height: 1.2;
+}
+
+.st3-admin .st-category-workspace__status-copy small {
+  margin-top: 2px;
+
+  color: #858985;
+
+  font-size: 8px;
+  font-weight: 450;
+  line-height: 1.25;
+}
+
+
+/*
+ * SAVE CHANGES
+ *
+ * The form has a 10px row gap.
+ * Pull this row up exactly 10px so the visible space becomes:
+ *
+ * status -> 12px -> button -> 12px -> next boundary
+ *
+ * instead of counting the grid gap twice above the button.
+ */
+
+.st3-admin .st-category-workspace__save-row.is-wide {
+  box-sizing: border-box;
+
+  grid-column: 1 / -1;
+
+  min-height: 58px;
+
+  margin: 0 !important;
+
+  padding: 12px 0 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.st3-admin
+.st-category-workspace__save-row.is-wide
+> button {
+  margin: 0 !important;
+}
+
+
+/* Delete action */
+
+.st3-admin .st-category-workspace__actions {
+  min-height: 50px;
+
+  margin: 0;
+
+  padding: 9px 0 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  border-top: 1px solid #e5e7e5;
+
+  background: #ffffff;
+}
+
+
+/* ============================================================
+   STOREFRONT PRESENTATION
+   ============================================================ */
+
+.st3-admin .st-category-homepage {
+  margin-top: 14px;
+  padding-top: 14px;
+
+  display: grid;
+  grid-template-columns: 158px minmax(0,1fr);
+
+  gap: 14px;
+
+  overflow: visible;
+
+  border: 0;
+  border-top: 1px solid #e3e5e3;
+  border-radius: 0;
+
+  background: #ffffff;
+
+  box-shadow: none;
+}
+
+
+/* Wallpaper preview */
+
+
+.st3-admin .st-category-homepage__media {
+  min-width: 0;
+
+  height: 218px;
+
+  display: grid;
+  grid-template-rows: minmax(0,1fr) auto;
+
+  align-self: start;
+}
+
+.st3-admin .st-category-homepage__preview {
+  min-height: 0 !important;
+  height: 100%;
+
+  overflow: hidden;
+
+  border: 1px solid #dedede;
+  border-radius: 9px;
+
+  background: #f7f7f7;
+}
+
+.st3-admin .st-category-homepage__content {
+  min-width: 0;
+
+  padding: 0;
+}
+
+
+/* Presentation heading */
+
+.st3-admin .st-category-homepage__heading {
+  min-height: 42px;
+
+  margin: 0 0 9px;
+  padding: 0 1px 9px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  border-bottom: 1px solid #e6e8e6;
+}
+
+.st3-admin .st-category-homepage__heading > svg {
+  box-sizing: border-box;
+
+  width: 28px;
+  height: 28px;
+
+  flex: 0 0 28px;
+
+  padding: 6px;
+
+  border: 1px solid #dddddd;
+  border-radius: 7px;
+
+  background: #f7f7f7;
+
+  color: #666666;
+}
+
+.st3-admin .st-category-homepage__heading strong {
+  display: block;
+
+  color: #292c29;
+
+  font-size: 9.5px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.st3-admin .st-category-homepage__heading span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #858985;
+
+  font-size: 7.5px;
+  font-weight: 450;
+  line-height: 1.25;
+}
+
+
+/* Show on homepage */
+
+.st3-admin .st-category-homepage__toggle {
+  box-sizing: border-box;
+
+  min-height: 48px;
+
+  padding: 8px 9px;
+
+  border: 1px solid #dfe2df;
+  border-radius: 7px;
+
+  background: #fafbfa;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.st3-admin .st-category-homepage__toggle:has(input:checked) {
+  border-color: #dfe2df;
+
+  background: #fafafa;
+}
+
+.st3-admin .st-category-homepage__toggle-copy strong {
+  font-size: 8.5px;
+}
+
+.st3-admin .st-category-homepage__toggle-copy small {
+  margin-top: 2px;
+
+  font-size: 7.5px;
+}
+
+
+/* Theme choice */
+
+.st3-admin .st-category-homepage__themes {
+  margin-top: 8px;
+
+  gap: 7px;
+}
+
+.st3-admin .st-category-homepage__themes > button {
+  min-height: 41px;
+
+  padding: 6px 8px;
+
+  border: 1px solid #d9ddd9 !important;
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  color: #4f534f !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+@media (hover:hover) {
+  .st3-admin
+  .st-category-homepage__themes
+  > button:hover {
+    border-color: #b7beb8 !important;
+
+    background: #f8f9f8 !important;
+
+    transform: none !important;
+  }
+}
+
+.st3-admin
+.st-category-homepage__themes
+> button.is-selected {
+  border-color: #929292 !important;
+
+  background: #f1f1f1 !important;
+
+  color: #242424 !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.05) !important;
+}
+
+.st3-admin
+.st-category-homepage__themes
+> button:focus-visible {
+  outline: 2px solid rgba(48,48,48,.17) !important;
+  outline-offset: 2px !important;
+}
+
+.st3-admin .st-category-homepage__themes strong {
+  font-size: 8.5px;
+}
+
+.st3-admin .st-category-homepage__themes small {
+  font-size: 7px;
+}
+
+
+/* Wallpaper upload */
+
+.st3-admin .st-category-homepage__upload {
+  box-sizing: border-box;
+
+  min-height: 50px;
+
+  margin-top: 8px;
+
+  padding: 7px 9px !important;
+
+  border: 1px dashed #d0d0d0 !important;
+  border-radius: 7px !important;
+
+  background: #fafafa !important;
+
+  box-shadow: none !important;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+@media (hover:hover) {
+  .st3-admin .st-category-homepage__upload:hover {
+    border-color: #ababab !important;
+
+    background: #f6f6f6 !important;
+
+    transform: none !important;
+}
+}
+
+.st3-admin .st-category-homepage__upload-copy strong {
+  font-size: 8.5px;
+}
+
+.st3-admin .st-category-homepage__upload-copy small,
+.st3-admin .st-category-homepage__file-name {
+  font-size: 7px;
+}
+
+.st3-admin button.st-category-homepage__file-button {
+  min-width: 86px;
+  min-height: 30px;
+
+  padding: 0 10px;
+
+  border: 1px solid #cfd3cf !important;
+  border-radius: 6px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  color: #4f534f !important;
+
+  box-shadow: none !important;
+
+  font-size: 8px;
+
+  transform: none !important;
+}
+
+@media (hover:hover) {
+  .st3-admin button.st-category-homepage__file-button:hover {
+    border-color: #9fa6a0 !important;
+
+    background: #f5f6f5 !important;
+
+    color: #292c29 !important;
+
+    transform: none !important;
+  }
+}
+
+.st3-admin button.st-category-homepage__file-button:focus-visible {
+  outline: 2px solid rgba(48,48,48,.17) !important;
+  outline-offset: 2px !important;
+}
+
+
+/*
+ * SAVE PRESENTATION
+ *
+ * No inherited old margin-top.
+ * 12px actual white space above and below the button.
+ */
+
+.st3-admin .st-category-homepage__save-row {
+  box-sizing: border-box;
+
+  min-height: 58px;
+
+  margin: 0 !important;
+
+  padding: 12px 0 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.st3-admin
+.st-category-homepage__save-row
+> button,
+.st3-admin
+.st-category-homepage__save {
+  margin: 0 !important;
+}
+
+
+/* ============================================================
+   CATEGORY SWITCHES — SMOOTH + LIGHT GREEN ACTIVE STATE
+   ============================================================ */
+
+html body
+.st3-admin
+.st-category-workspace__switch-track,
+html body
+.st3-admin
+.st-category-homepage__switch-track {
+  border-color: #c8c8c8 !important;
+
+  background: #e7e7e7 !important;
+
+  transition:
+    border-color 240ms cubic-bezier(.2,.8,.2,1),
+    background 240ms cubic-bezier(.2,.8,.2,1),
+    box-shadow 240ms cubic-bezier(.2,.8,.2,1) !important;
+}
+
+html body
+.st3-admin
+.st-category-workspace__switch-track > span,
+html body
+.st3-admin
+.st-category-homepage__switch-track > span {
+  transition:
+    transform 260ms cubic-bezier(.2,.8,.2,1),
+    border-color 240ms ease,
+    box-shadow 240ms ease !important;
+}
+
+html body
+.st3-admin
+.st-category-workspace__switch
+> input:checked
++ .st-category-workspace__switch-track {
+  border-color: #5f5f5f !important;
+
+  background: #5f5f5f !important;
+}
+
+html body
+.st3-admin
+.st-category-homepage__switch
+> input:checked
++ .st-category-homepage__switch-track {
+  border-color: #5f5f5f !important;
+
+  background: #5f5f5f !important;
+}
+
+html body
+.st3-admin
+.st-category-workspace__switch
+> input:checked
++ .st-category-workspace__switch-track
+> span,
+
+html body
+.st3-admin
+.st-category-homepage__switch
+> input:checked
++ .st-category-homepage__switch-track
+> span {
+  border-color: #ffffff !important;
+}
+
+html body
+.st3-admin
+.st-category-workspace__switch
+> input:focus-visible
++ .st-category-workspace__switch-track,
+
+html body
+.st3-admin
+.st-category-homepage__switch
+> input:focus-visible
++ .st-category-homepage__switch-track {
+  box-shadow:
+    0 0 0 3px rgba(48,48,48,.11) !important;
+}
+
+
+
+/* ============================================================
+   CATEGORY-SCOPED NEUTRAL FOCUS AUTHORITY
+   No mustard focus / hover implementation may leak in.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-category-admin
+input,
+html body
+.st3-admin
+.st-category-admin
+textarea,
+html body
+.st3-admin
+.st-category-admin
+select,
+html body
+.st3-admin
+.st-category-admin
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html body
+.st3-admin
+.st-category-admin
+input:not([type="checkbox"]):focus-visible,
+html body
+.st3-admin
+.st-category-admin
+textarea:focus-visible,
+html body
+.st3-admin
+.st-category-admin
+select:focus-visible {
+  outline: 0 !important;
+
+  border-color: #666a67 !important;
+
+  box-shadow:
+    0 0 0 2px rgba(0,0,0,.065) !important;
+
+  -webkit-box-shadow:
+    0 0 0 2px rgba(0,0,0,.065) !important;
+}
+
+
+
+/* ------------------------------------------------------------
+   CATEGORIES — STATIC INTERACTION GEOMETRY
+
+   Hover/focus may change border/background/color only.
+   Buttons and their icons never translate, scale or shift.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-admin
+button,
+
+html body
+.st3-admin
+.st-category-admin
+button:hover,
+
+html body
+.st3-admin
+.st-category-admin
+button:focus,
+
+html body
+.st3-admin
+.st-category-admin
+button:focus-visible,
+
+html body
+.st3-admin
+.st-category-admin
+button:active {
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+button svg,
+
+html body
+.st3-admin
+.st-category-admin
+button:hover svg,
+
+html body
+.st3-admin
+.st-category-admin
+button:focus svg,
+
+html body
+.st3-admin
+.st-category-admin
+button:focus-visible svg,
+
+html body
+.st3-admin
+.st-category-admin
+button:active svg {
+  transform: none !important;
+}
+
+
+/* Save controls are especially protected from inherited motion. */
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__save-row
+button,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__save-row
+button:hover,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-homepage__save,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-homepage__save:hover {
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__save-row
+button svg,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-workspace__save-row
+button:hover svg,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-homepage__save svg,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-homepage__save:hover svg {
+  transform: none !important;
+}
+
+
+.st3-admin .st-category-tree__empty-child svg {
+  width: 13px;
+  height: 13px;
+
+  flex: 0 0 13px;
+
+  stroke-width: 1.8;
+
+  color: #666666;
+
+  transform: none !important;
+
+  transition:
+    color 150ms ease;
+}
+
+@media (hover:hover) {
+  .st3-admin .st-category-tree__empty-child:hover svg {
+  color: #252525;
+
+  transform: none !important;
+}
+}
+
+
+/* ============================================================
+   STOREFRONT WALLPAPER MEDIA CARD
+   ============================================================ */
+
+.st3-admin .st-category-homepage__preview {
+  position: relative;
+}
+
+.st3-admin .st-category-homepage__preview > img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0 !important;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+  object-position: center;
+
+  background: #f7f7f7;
+}
+
+.st3-admin .st-category-homepage__preview-actions {
+  position: static;
+
+  z-index: auto;
+
+  width: 100%;
+
+  margin: 7px 0 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+}
+
+.st3-admin .st-category-homepage__preview-actions form {
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ------------------------------------------------------------
+   WALLPAPER PREVIEW ACTION WIDTH AUTHORITY
+   Buttons align exactly with preview left/right edges.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-homepage__preview-actions
+> button.st-category-homepage__view,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-homepage__preview-actions
+> form {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-homepage__preview-actions
+> form
+> button.st-category-homepage__remove.st-admin-image-destructive-v32 {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+/* View wallpaper */
+
+html body
+.st3-admin
+.st-category-admin
+button.st-category-homepage__view {
+  box-sizing: border-box !important;
+
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 148px !important;
+
+  min-height: 32px !important;
+  height: 32px !important;
+
+  margin: 0 !important;
+  padding: 0 10px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 7px !important;
+
+  border: 1px solid #d2d2d2 !important;
+  border-radius: 6px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+
+  color: #3d3d3d !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+
+  white-space: nowrap !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  .st-category-admin
+  button.st-category-homepage__view:hover:not(:disabled) {
+  border-color: #aaaaaa !important;
+
+  background: #f5f5f5 !important;
+
+  color: #202020 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+}
+
+html body
+.st3-admin
+.st-category-admin
+button.st-category-homepage__view svg {
+  width: 14px;
+  height: 14px;
+
+  stroke-width: 1.9;
+
+  transform: none !important;
+}
+
+
+/* Remove wallpaper — exact Product/Delete category red language */
+
+html body
+.st3-admin
+.st-category-admin
+button.st-category-homepage__remove.st-admin-image-destructive-v32 {
+  box-sizing: border-box !important;
+
+  width: 148px !important;
+  min-width: 148px !important;
+  max-width: 148px !important;
+
+  height: 32px !important;
+  min-height: 32px !important;
+
+  margin: 0 !important;
+  padding: 0 10px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 7px !important;
+
+  border: 1px solid #d8a5a1 !important;
+  border-radius: 6px !important;
+
+  background: #ffffff !important;
+
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+
+  white-space: nowrap !important;
+
+  transform: none !important;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  .st-category-admin
+  button.st-category-homepage__remove.st-admin-image-destructive-v32:hover:not(:disabled) {
+  border-color: #c96d66 !important;
+
+  background: #fff6f5 !important;
+
+  color: #9f1f16 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+}
+
+html body
+.st3-admin
+.st-category-admin
+button.st-category-homepage__remove.st-admin-image-destructive-v32:focus-visible {
+  outline: 2px solid rgba(180,35,24,.20) !important;
+  outline-offset: 2px !important;
+
+  border-color: #c96d66 !important;
+
+  background: #ffffff !important;
+
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+
+html body
+.st3-admin
+.st-category-admin
+button.st-category-homepage__remove.st-admin-image-destructive-v32 svg {
+  width: 14px !important;
+  height: 14px !important;
+
+  flex: 0 0 14px !important;
+
+  stroke-width: 1.9 !important;
+
+  transform: none !important;
+}
+
+
+/* ============================================================
+   WALLPAPER LIGHTBOX
+   ADMIN V2 — TRUE FULLSCREEN WALLPAPER VIEWER
+
+   Mirrors the storefront product-image fullscreen philosophy:
+   - owns the entire viewport
+   - no modal-card frame
+   - minimal floating interface
+   - wallpaper gets the maximum usable canvas
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   FULL VIEWPORT ROOT
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-homepage__lightbox {
+  position: fixed !important;
+
+  inset: 0 !important;
+
+  z-index: 2147483000 !important;
+
+  box-sizing: border-box !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  overflow: hidden !important;
+
+  background:
+    rgba(250,250,250,.988) !important;
+
+  color:
+    #1d1d1f !important;
+
+  isolation:
+    isolate !important;
+
+  animation:
+    st-category-wallpaper-fullscreen-enter
+    220ms
+    cubic-bezier(.22,.61,.36,1)
+    both !important;
+}
+
+
+/*
+ * There is no longer an "outside" area because the viewer itself
+ * owns the full viewport. Keep the backdrop inert behind it.
+ */
+
+.st3-admin .st-category-homepage__lightbox-backdrop {
+  position: absolute !important;
+
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  backdrop-filter:
+    none !important;
+
+  -webkit-backdrop-filter:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   PANEL BECOMES THE FULL VIEWPORT
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-homepage__lightbox-panel {
+  position: absolute !important;
+
+  inset: 0 !important;
+
+  z-index: 1 !important;
+
+  box-sizing: border-box !important;
+
+  width: 100vw !important;
+  height: 100dvh !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+
+  overflow: hidden !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background:
+    rgba(250,250,250,.988) !important;
+
+  box-shadow:
+    none !important;
+
+  animation:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   MINIMAL FLOATING HEADER
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-homepage__lightbox-head {
+  position: absolute !important;
+
+  top: 24px !important;
+  left: 32px !important;
+  right: 32px !important;
+
+  z-index: 20 !important;
+
+  min-width: 0 !important;
+  min-height: 44px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+
+  gap: 20px !important;
+
+  border: 0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/*
+ * Remove the previous decorative admin icon.
+ * Fullscreen mode should be visually quiet like the storefront
+ * product-image viewer.
+ */
+
+.st3-admin
+.st-category-homepage__lightbox-head
+> div {
+  position: static !important;
+
+  min-width: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: block !important;
+}
+
+.st3-admin
+.st-category-homepage__lightbox-head
+> div::before,
+.st3-admin
+.st-category-homepage__lightbox-head
+> div::after {
+  content: none !important;
+
+  display: none !important;
+}
+
+
+.st3-admin
+.st-category-homepage__lightbox-head
+span,
+.st3-admin
+.st-category-homepage__lightbox-head
+strong {
+  display: block !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden !important;
+
+  text-overflow:
+    ellipsis !important;
+
+  white-space:
+    nowrap !important;
+}
+
+.st3-admin
+.st-category-homepage__lightbox-head
+span {
+  color:
+    rgba(29,29,31,.46) !important;
+
+  font-size:
+    8px !important;
+
+  line-height:
+    1 !important;
+
+  font-weight:
+    650 !important;
+
+  letter-spacing:
+    .12em !important;
+
+  text-transform:
+    uppercase !important;
+}
+
+.st3-admin
+.st-category-homepage__lightbox-head
+strong {
+  margin-top:
+    7px !important;
+
+  color:
+    #1d1d1f !important;
+
+  font-size:
+    14px !important;
+
+  line-height:
+    1.2 !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    -.012em !important;
+}
+
+
+/* ------------------------------------------------------------
+   FLOATING CLOSE BUTTON
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-admin
+button.st-category-homepage__lightbox-close {
+  position: fixed !important;
+
+  top: 20px !important;
+  right: 24px !important;
+
+  z-index: 40 !important;
+
+  box-sizing:
+    border-box !important;
+
+  width:
+    42px !important;
+
+  height:
+    42px !important;
+
+  min-width:
+    42px !important;
+
+  min-height:
+    42px !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  display:
+    inline-flex !important;
+
+  align-items:
+    center !important;
+
+  justify-content:
+    center !important;
+
+  border:
+    1px solid
+    rgba(29,29,31,.10) !important;
+
+  border-radius:
+    12px !important;
+
+  outline:
+    0 !important;
+
+  background:
+    rgba(255,255,255,.92) !important;
+
+  color:
+    #1d1d1f !important;
+
+  box-shadow:
+    0 7px 24px
+    rgba(29,29,31,.07) !important;
+
+  -webkit-box-shadow:
+    0 7px 24px
+    rgba(29,29,31,.07) !important;
+
+  backdrop-filter:
+    blur(18px)
+    saturate(130%) !important;
+
+  -webkit-backdrop-filter:
+    blur(18px)
+    saturate(130%) !important;
+
+  transform:
+    none !important;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  .st-category-admin
+  button.st-category-homepage__lightbox-close:hover {
+    /*
+     * Exact Admin V2 Save Changes hover language.
+     * Shape / size remain unique to the fullscreen close control.
+     */
+    border-color:
+      #8d8d8d !important;
+
+    background:
+      #f6f6f6 !important;
+
+    color:
+      #202223 !important;
+
+    box-shadow:
+      none !important;
+
+    -webkit-box-shadow:
+      none !important;
+
+    transform:
+      none !important;
+  }
+}
+
+html body
+.st3-admin
+.st-category-admin
+button.st-category-homepage__lightbox-close:focus-visible {
+  border-color:
+    #202223 !important;
+
+  outline:
+    2px solid
+    rgba(32,34,35,.16) !important;
+
+  outline-offset:
+    3px !important;
+
+  background:
+    #ffffff !important;
+}
+
+.st3-admin
+.st-category-homepage__lightbox-close
+svg {
+  width:
+    17px !important;
+
+  height:
+    17px !important;
+
+  stroke-width:
+    1.8 !important;
+}
+
+
+/* ------------------------------------------------------------
+   FULLSCREEN WALLPAPER STAGE
+   ------------------------------------------------------------ */
+
+.st3-admin .st-category-homepage__lightbox-stage {
+  position: absolute !important;
+
+  inset:
+    76px
+    32px
+    30px !important;
+
+  z-index:
+    2 !important;
+
+  box-sizing:
+    border-box !important;
+
+  width:
+    auto !important;
+
+  height:
+    auto !important;
+
+  min-width:
+    0 !important;
+
+  min-height:
+    0 !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  display:
+    grid !important;
+
+  place-items:
+    center !important;
+
+  overflow:
+    hidden !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/* Remove the former inner dark-stage decorations. */
+
+.st3-admin
+.st-category-homepage__lightbox-stage::before,
+.st3-admin
+.st-category-homepage__lightbox-stage::after {
+  content:
+    none !important;
+
+  display:
+    none !important;
+}
+
+
+/*
+ * Wallpaper receives virtually the entire available viewer area.
+ * It is never cropped or stretched.
+ */
+
+.st3-admin
+.st-category-homepage__lightbox-stage
+img {
+  position:
+    static !important;
+
+  display:
+    block !important;
+
+  width:
+    auto !important;
+
+  height:
+    auto !important;
+
+  max-width:
+    96vw !important;
+
+  max-height:
+    calc(100dvh - 112px) !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  object-fit:
+    contain !important;
+
+  object-position:
+    center center !important;
+
+  transform:
+    none !important;
+
+  scale:
+    1 !important;
+
+  user-select:
+    none !important;
+
+  -webkit-user-select:
+    none !important;
+
+  filter:
+    drop-shadow(
+      0 24px 46px
+      rgba(29,29,31,.08)
+    ) !important;
+}
+
+
+/* ------------------------------------------------------------
+   OPEN MOTION
+   ------------------------------------------------------------ */
+
+@keyframes st-category-wallpaper-fullscreen-enter {
+  from {
+    opacity:
+      0;
+  }
+
+  to {
+    opacity:
+      1;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+
+@media (max-width:760px) {
+  .st3-admin
+  .st-category-homepage__lightbox-head {
+    top:
+      18px !important;
+
+    left:
+      18px !important;
+
+    right:
+      18px !important;
+  }
+
+  html body
+  .st3-admin
+  .st-category-admin
+  button.st-category-homepage__lightbox-close {
+    top:
+      14px !important;
+
+    right:
+      14px !important;
+
+    width:
+      40px !important;
+
+    height:
+      40px !important;
+
+    min-width:
+      40px !important;
+
+    min-height:
+      40px !important;
+  }
+
+  .st3-admin
+  .st-category-homepage__lightbox-stage {
+    inset:
+      68px
+      14px
+      18px !important;
+  }
+
+  .st3-admin
+  .st-category-homepage__lightbox-stage
+  img {
+    max-width:
+      96vw !important;
+
+    max-height:
+      calc(100dvh - 94px) !important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .st3-admin
+  .st-category-homepage__lightbox {
+    animation:
+      none !important;
+  }
+}
+
+
+@media (max-width:760px) {
+  .st3-admin .st-category-homepage__media {
+    height: auto;
+  }
+
+  .st3-admin .st-category-homepage__preview {
+    height: 180px;
+    min-height: 180px !important;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width:980px) {
+  .st3-admin .st-category-manager {
+    grid-template-columns: 1fr;
+  }
+
+  .st3-admin .st-category-manager__tree {
+    border-right: 0;
+
+    border-bottom: 1px solid #dedede;
+  }
+
+  .st3-admin .st-category-homepage {
+    grid-template-columns: 138px minmax(0,1fr);
+  }
+}
+
+@media (max-width:760px) {
+  .st3-admin
+  .st-category-directory
+  .st-admin-product-directory-v2__toolbar.st-category-directory-search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .st3-admin
+  .st-category-directory
+  .st-category-directory-counters {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .st3-admin .st-category-workspace__hero {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .st3-admin .st-category-workspace__summary {
+    justify-content: flex-start;
+  }
+
+  .st3-admin .st-category-homepage {
+    grid-template-columns: 1fr;
+  }
+
+  .st3-admin .st-category-homepage__preview {
+  position: relative;
+
+  min-height: 0 !important;
+  height: 100%;
+
+  overflow: hidden;
+
+  border: 1px solid #dedede;
+  border-radius: 9px;
+
+  background: #f7f7f7;
+}
+}
+
+@media (max-width:560px) {
+  .st3-admin
+  .st-category-directory
+  .st-category-directory-counters {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+
+  .st3-admin
+  .st-category-directory
+  .st-category-directory-counter,
+  .st3-admin
+  .st-category-directory
+  .st-category-directory-counter.is-total {
+    padding: 0 9px;
+  }
+
+  .st3-admin
+  .st-category-directory
+  .st-category-directory-counter span {
+    font-size: 8px;
+  }
+
+  .st3-admin .st-category-workspace__form {
+    grid-template-columns: minmax(0,1fr) 76px;
+  }
+}
+
+
+/* ============================================================
+   END ADMIN V2 — CATEGORIES COHERENT ARCHITECTURE
+   ============================================================ */
+
+
+
+
+/* ============================================================
+   SUBCATEGORY WALLPAPER DISABLED ACTION PAIR
+   ============================================================ */
+
+.st3-admin .st-category-wallpaper__actions {
+  margin-top: 8px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+.st3-admin .st-category-wallpaper__actions form {
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================================
+   ADMIN V2 — CATEGORY DESTRUCTIVE FINAL AUTHORITY
+   Categories only. Matches Product Photo destructive behavior.
+   ============================================================ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+:is(.st-category-workspace__actions, .st-category-homepage__preview-actions, .st-category-wallpaper__actions)
+button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32 {
+  min-height: 32px !important;
+  padding: 0 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+
+  border: 1px solid #d8a5a1 !important;
+  border-radius: 6px !important;
+
+  background: #ffffff !important;
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  transform: none !important;
+
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+:is(.st-category-workspace__actions, .st-category-homepage__preview-actions, .st-category-wallpaper__actions)
+button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32
+span {
+  color: inherit !important;
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  transform: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+:is(.st-category-workspace__actions, .st-category-homepage__preview-actions, .st-category-wallpaper__actions)
+button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32
+svg {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  flex: 0 0 14px !important;
+
+  color: inherit !important;
+  stroke: currentColor !important;
+  stroke-width: 1.9 !important;
+  transform: none !important;
+}
+
+@media (hover: hover) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  :is(.st-category-workspace__actions, .st-category-homepage__preview-actions, .st-category-wallpaper__actions)
+  button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32:hover:not(:disabled) {
+    border-color: #c96d66 !important;
+    background: #fff6f5 !important;
+    color: #9f1f16 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  :is(.st-category-workspace__actions, .st-category-homepage__preview-actions, .st-category-wallpaper__actions)
+  button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32:hover:not(:disabled)
+  span,
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  :is(.st-category-workspace__actions, .st-category-homepage__preview-actions, .st-category-wallpaper__actions)
+  button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32:hover:not(:disabled)
+  svg {
+    transform: none !important;
+  }
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+:is(.st-category-workspace__actions, .st-category-homepage__preview-actions, .st-category-wallpaper__actions)
+button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32:focus-visible {
+  outline: 2px solid rgba(180, 35, 24, 0.20) !important;
+  outline-offset: 2px !important;
+  border-color: #c96d66 !important;
+  background: #ffffff !important;
+  color: #b42318 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* ============================================================
+   END ADMIN V2 — CATEGORY DESTRUCTIVE FINAL AUTHORITY
+   ============================================================ */
+
+/* ============================================================
+   CATEGORY / SUBCATEGORY WALLPAPER DISABLED ACTIONS
+   ============================================================ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-homepage__view:disabled {
+  border-color: #dedede !important;
+  background: #f5f5f5 !important;
+  color: #aaaaaa !important;
+
+  opacity: 1 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  cursor: not-allowed !important;
+
+  transform: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+:is(
+  .st-category-homepage__preview-actions,
+  .st-category-wallpaper__actions
+)
+button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32:disabled {
+  border-color: #dedede !important;
+  background: #f5f5f5 !important;
+  color: #aaaaaa !important;
+
+  opacity: 1 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  cursor: not-allowed !important;
+
+  transform: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+:is(
+  .st-category-homepage__preview-actions,
+  .st-category-wallpaper__actions
+)
+button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32:disabled
+span,
+
+html body
+.st3-admin
+main
+.st-category-admin
+:is(
+  .st-category-homepage__preview-actions,
+  .st-category-wallpaper__actions
+)
+button[type="submit"].st-category-destructive-action.st-admin-image-destructive-v32:disabled
+svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+}
+
+/* ============================================================
+   END CATEGORY / SUBCATEGORY WALLPAPER DISABLED ACTIONS
+   ============================================================ */
+/* ============================================================
+   ADMIN V2 — CATEGORY NAME CONTROL V2
+
+   Category/Subcategory EDIT fields only.
+
+   The outer control owns all visible geometry and focus.
+   The native input is completely borderless/outline-free.
+
+   This intentionally avoids the historical
+   input[name="name"] focus architecture entirely.
+   ============================================================ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-field-v2 {
+  min-width: 0 !important;
+
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   CONTROL SHELL — DEFAULT
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2 {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  min-height: 39px !important;
+  height: 39px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  overflow: hidden !important;
+
+  border: 1px solid #d8d8d8 !important;
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease !important;
+}
+
+
+/* ------------------------------------------------------------
+   CONTROL SHELL — HOVER
+   ------------------------------------------------------------ */
+
+@media (hover: hover) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  .st-category-workspace__form
+  .st-category-name-control-v2:hover {
+    border-color: #b7bcb8 !important;
+
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    transform: none !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   CONTROL SHELL — ACTIVE / FOCUSED
+
+   This is the one visible focus treatment.
+   Same neutral black Admin V2 language as Products.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2:focus-within {
+  border: 1px solid #202223 !important;
+  border-color: #202223 !important;
+
+  outline: 0 !important;
+  outline-color: transparent !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow:
+    0 0 0 1px #202223 !important;
+
+  -webkit-box-shadow:
+    0 0 0 1px #202223 !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+
+  transform: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   ACTUAL TEXT INPUT
+
+   No visible border, ring, outline or shadow whatsoever.
+   The parent shell owns the interaction state.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="category_name"],
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="subcategory_name"] {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  height: 100% !important;
+  min-height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 10px !important;
+
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #303030 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-inset: initial !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+
+  filter: none !important;
+
+  accent-color: #202223 !important;
+  caret-color: #202223 !important;
+
+  font-family: inherit !important;
+  font-size: 10px !important;
+
+  transform: none !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+
+/* ------------------------------------------------------------
+   INPUT INTERACTION STATES
+
+   Still completely invisible from a chrome perspective.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="category_name"]:hover,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="category_name"]:focus,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="category_name"]:focus-visible,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="category_name"]:active,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="subcategory_name"]:hover,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="subcategory_name"]:focus,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="subcategory_name"]:focus-visible,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-control-v2
+> input[name="subcategory_name"]:active {
+  border: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-inset: initial !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  --tw-shadow: 0 0 #0000 !important;
+  --tw-shadow-colored: 0 0 #0000 !important;
+
+  filter: none !important;
+
+  transform: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   FIELD LABEL MUST NEVER DRAW ITS OWN FOCUS RING
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-field-v2:focus-within {
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-field-v2:focus-within::before,
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-name-field-v2:focus-within::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — CATEGORY NAME CONTROL V2
+   ============================================================ */
+
+
+/* ============================================================
+   ADMIN V2 — CATEGORY FINAL INTERACTION AUTHORITY V3
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   CATEGORY ACTION NOTICE — EXACT PRODUCT PARITY + MOTION
+
+   Visible state is locked to the exact final Product alert
+   geometry. Motion changes only entrance/exit state.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5 {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  max-width:
+    none !important;
+
+  /*
+   * Exact final Product-alert corner geometry.
+   * This overrides any rounded-[18px] / rounded-[20px]
+   * utility carried by the JSX.
+   */
+  border-radius:
+    17px !important;
+
+  cursor:
+    default !important;
+
+  display:
+    flex !important;
+
+  flex-direction:
+    row !important;
+
+  align-items:
+    center !important;
+
+  justify-content:
+    flex-start !important;
+
+  min-height:
+    58px !important;
+
+  margin-top:
+    0 !important;
+
+  margin-right:
+    0 !important;
+
+  margin-bottom:
+    16px !important;
+
+  margin-left:
+    0 !important;
+
+  padding:
+    12px 16px !important;
+gap:
+    11px !important;
+
+  text-align:
+    left !important;
+
+  overflow:
+    hidden !important;
+
+  opacity:
+    1;
+
+  max-height:
+    100px !important;
+
+  transform:
+    translate3d(0,0,0);
+
+  transform-origin:
+    top left;
+
+  will-change:
+    opacity,
+    transform,
+    max-height,
+    min-height,
+    margin-bottom,
+    padding-top,
+    padding-bottom;
+
+  transition:
+    opacity 280ms ease,
+    transform 320ms cubic-bezier(.2,.8,.2,1),
+    max-height 380ms cubic-bezier(.2,.8,.2,1),
+    min-height 380ms cubic-bezier(.2,.8,.2,1),
+    margin-bottom 380ms cubic-bezier(.2,.8,.2,1),
+    padding-top 380ms cubic-bezier(.2,.8,.2,1),
+    padding-bottom 380ms cubic-bezier(.2,.8,.2,1),
+    border-width 220ms ease !important;
+}
+
+
+/* Exact Product icon proportions */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5
+> svg {
+  width:
+    16px !important;
+
+  height:
+    16px !important;
+
+  min-width:
+    16px !important;
+
+  min-height:
+    16px !important;
+
+  margin:
+    0 !important;
+
+  align-self:
+    center !important;
+
+  flex:
+    0 0 16px !important;
+}
+
+
+/* Exact Product message block presentation */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5
+> div {
+  min-width:
+    0 !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  display:
+    flex !important;
+
+  flex-direction:
+    column !important;
+
+  align-items:
+    flex-start !important;
+
+  justify-content:
+    center !important;
+
+  gap:
+    3px !important;
+
+  text-align:
+    left !important;
+}
+
+
+/* Exact Product heading proportions */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5
+p:first-child {
+  margin:
+    0 !important;
+
+  font-size:
+    8.5px !important;
+
+  line-height:
+    1.15 !important;
+
+  letter-spacing:
+    .14em !important;
+
+  text-align:
+    left !important;
+}
+
+
+/* Exact Product main-message proportions */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5
+p + p {
+  margin:
+    0 !important;
+
+  font-size:
+    10px !important;
+
+  line-height:
+    1.35 !important;
+
+  text-align:
+    left !important;
+}
+
+
+/* ------------------------------------------------------------
+   ENTER
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5.is-enter {
+  opacity:
+    0 !important;
+
+  min-height:
+    0 !important;
+
+  max-height:
+    0 !important;
+
+  margin-bottom:
+    0 !important;
+
+  padding-top:
+    0 !important;
+
+  padding-bottom:
+    0 !important;
+
+  border-width:
+    0 !important;
+
+  transform:
+    translate3d(0,-6px,0) !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   SHOWN
+
+   This is the exact Product visible geometry.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5.is-shown {
+  opacity:
+    1 !important;
+
+  min-height:
+    58px !important;
+
+  max-height:
+    100px !important;
+
+  margin-bottom:
+    16px !important;
+
+  padding:
+    12px 16px !important;
+
+  border-width:
+    1px !important;
+transform:
+    translate3d(0,0,0) !important;
+
+  /*
+   * Status notifications are informational only.
+   * They never react to hover/click/pointer state.
+   */
+  pointer-events:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   EXIT
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5.is-exit {
+  opacity:
+    0 !important;
+
+  min-height:
+    0 !important;
+
+  max-height:
+    0 !important;
+
+  margin-bottom:
+    0 !important;
+
+  padding-top:
+    0 !important;
+
+  padding-bottom:
+    0 !important;
+
+  border-width:
+    0 !important;
+
+  transform:
+    translate3d(0,-6px,0) !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   CATEGORY SUCCESS / ERROR — EXACT SHAPE PARITY
+
+   The approved green success notice is canonical.
+   Error is the same component geometry with red semantics only.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5[data-admin-product-success="true"],
+html body
+.st3-admin
+.st-category-action-notice-v4.st-admin-product-alert-v5[data-admin-category-error="true"] {
+  border-radius:
+    17px !important;
+
+  cursor:
+    default !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/* ------------------------------------------------------------
+   PRODUCT-STYLE FAILURE / ERROR
+
+   Same exact Product notification geometry.
+   Semantic color only: red.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+[data-admin-category-error="true"] {
+  border-color:
+    #e3b4af !important;
+
+  background:
+    #fff3f2 !important;
+
+  color:
+    #9f1f16 !important;
+
+  box-shadow:
+    0 1px 2px rgba(29,29,31,.015),
+    0 6px 20px rgba(180,35,24,.04) !important;
+}
+
+html body
+.st3-admin
+[data-admin-category-error="true"]
+> svg {
+  color:
+    #b42318 !important;
+}
+
+html body
+.st3-admin
+[data-admin-category-error="true"]
+p:first-child {
+  color:
+    #9f1f16 !important;
+}
+
+html body
+.st3-admin
+[data-admin-category-error="true"]
+p:last-child {
+  color:
+    #7f443f !important;
+}
+
+
+/* ------------------------------------------------------------
+   HIERARCHY HOVER — PRESERVE TREE GUIDE
+   ------------------------------------------------------------ */
+
+/*
+ * The row itself never receives a hover surface.
+ * That means the vertical hierarchy guide remains completely
+ * visible instead of being painted over by a gray rectangle.
+ */
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  .st-category-admin
+  .st-category-tree__root:not(.is-selected):hover,
+
+  html body
+  .st3-admin
+  .st-category-admin
+  .st-category-tree__node:not(.is-selected):hover {
+    border-color:
+      transparent !important;
+
+    background:
+      transparent !important;
+
+    box-shadow:
+      none !important;
+  }
+
+
+  /*
+   * Professional micro-hover:
+   * no card / rectangle.
+   * Only the folder marker and text sharpen slightly.
+   */
+
+  html body
+  .st3-admin
+  .st-category-admin
+  .st-category-tree__select:hover {
+    background:
+      transparent !important;
+
+    box-shadow:
+      none !important;
+  }
+
+  html body
+  .st3-admin
+  .st-category-admin
+  .st-category-tree__select:hover
+  .st-category-tree__folder {
+    border-color:
+      #bcc7bf !important;
+
+    background:
+      #f8faf8 !important;
+  }
+
+  html body
+  .st3-admin
+  .st-category-admin
+  .st-category-tree__select:hover
+  .st-category-tree__label
+  strong {
+    filter:
+      brightness(.88);
+  }
+}
+
+
+/* Structural line remains above hover surfaces. */
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-tree__children::before {
+  z-index: 2 !important;
+
+  background:
+    #dfe3df !important;
+
+  opacity:
+    1 !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/* Chevron remains completely bare in every interaction state. */
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-tree__expand,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-tree__expand:hover,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-tree__expand:focus,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-tree__expand:focus-visible,
+
+html body
+.st3-admin
+.st-category-admin
+.st-category-tree__expand:active {
+  border:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  .st3-admin
+  .st-category-action-notice-v4 {
+    transition-duration:
+      1ms !important;
+  }
+}
+
+
+/* ============================================================
+   END ADMIN V2 — CATEGORY FINAL INTERACTION AUTHORITY V3
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — CATEGORY UNIFIED EDITOR FINAL V5
+   ============================================================ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-homepage__save-row.st-category-workspace__final-actions {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-height: 58px !important;
+  margin: 0 !important;
+  padding: 12px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__final-actions > form {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-workspace__final-save[type="submit"] {
+  box-sizing: border-box !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  margin: 0 !important;
+  padding: 0 11px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 6px !important;
+  outline: 0 !important;
+  background: #fff !important;
+  color: #3f3f3f !important;
+  box-shadow: none !important;
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  cursor: pointer !important;
+  transform: none !important;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-workspace__final-save[type="submit"] svg {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  stroke-width: 1.9 !important;
+  color: currentColor !important;
+  stroke: currentColor !important;
+  transform: none !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  button.st-category-workspace__final-save[type="submit"]:hover {
+    border-color: #8d8d8d !important;
+    background: #f6f6f6 !important;
+    color: #202223 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-workspace__final-save[type="submit"]:focus-visible {
+  border-color: #202223 !important;
+  outline: 2px solid rgba(32,34,35,.16) !important;
+  outline-offset: 2px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+
+/* ORDER — neutral black focus */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+label.is-order {
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+label.is-order > input[name="sort_order"] {
+  border: 1px solid #d8d8d8 !important;
+  outline: 0 !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  accent-color: #202223 !important;
+  caret-color: #202223 !important;
+  filter: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+label.is-order:focus-within {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+label.is-order > input[name="sort_order"]:focus,
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+label.is-order > input[name="sort_order"]:focus-visible {
+  border: 1px solid #202223 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: 0 0 0 1px #202223 !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+
+/* ADD CATEGORY — neutral black focus */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-admin__create-root-panel
+form label:focus-within {
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-admin__create-root-panel
+form input[name="name"],
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-admin__create-root-panel
+form input[name="sort_order"] {
+  border: 1px solid #d8d8d8 !important;
+  outline: 0 !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  accent-color: #202223 !important;
+  caret-color: #202223 !important;
+  filter: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-admin__create-root-panel
+form input[name="name"]:focus,
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-admin__create-root-panel
+form input[name="name"]:focus-visible,
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-admin__create-root-panel
+form input[name="sort_order"]:focus,
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-admin__create-root-panel
+form input[name="sort_order"]:focus-visible {
+  border: 1px solid #202223 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: 0 0 0 1px #202223 !important;
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  filter: none !important;
+  transform: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — CATEGORY UNIFIED EDITOR FINAL V5
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — ROOT CATEGORY DRAFT + ORDER PARITY V1
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   ADD CATEGORY TOOLBAR BUTTON
+   Replaces the old popup/details trigger.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-admin__add-root-button {
+  box-sizing: border-box !important;
+
+  min-height: 36px !important;
+  height: 36px !important;
+
+  margin: 0 0 0 auto !important;
+  padding: 0 12px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 7px !important;
+
+  border: 1px solid #c9c9c9 !important;
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+
+  background: #ffffff !important;
+  color: #3f3f3f !important;
+
+  box-shadow: none !important;
+
+  font-family: inherit !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-admin__add-root-button
+svg {
+  width: 14px !important;
+  height: 14px !important;
+
+  stroke-width: 1.9 !important;
+}
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  button.st-category-admin__add-root-button:hover {
+    border-color: #8d8d8d !important;
+
+    background: #f6f6f6 !important;
+    color: #202223 !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+  }
+}
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-admin__add-root-button:focus-visible {
+  border-color: #202223 !important;
+
+  outline: 2px solid rgba(32,34,35,.16) !important;
+  outline-offset: 2px !important;
+
+  box-shadow: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   ORDER CONTROL
+
+   Order intentionally has NO independent visual-state authority.
+
+   Its JSX already uses:
+   - st-category-name-field-v2
+   - st-category-name-control-v2
+
+   Therefore normal, hover and focus geometry now come directly
+   from the exact finished Name control. The input remains
+   type="number", so native increment/decrement arrows remain.
+   ------------------------------------------------------------ */
+
+/* Draft page should look exactly like a normal Category editor. */
+
+html body
+.st3-admin
+main
+.st-category-admin
+#st-category-create-editor {
+  margin-bottom: 0 !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — ROOT CATEGORY DRAFT + ORDER PARITY V1
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — ORDER SINGLE VISUAL SHELL FINAL
+
+   The OUTER st-category-name-control-v2 shell is the only
+   visible field geometry.
+
+   The native number input remains functional, including its
+   increment/decrement arrows, but owns no border, radius,
+   background, shadow or focus ring.
+   ============================================================ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-order-control-v2
+> input[type="number"] {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 10px !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+
+  transform: none !important;
+
+  color: #292929 !important;
+  caret-color: #202223 !important;
+
+  font: inherit !important;
+}
+
+
+/* Hover must affect ONLY the outer Name-style shell. */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-order-control-v2
+> input[type="number"]:hover {
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+
+  transform: none !important;
+}
+
+
+/* Focus must also affect ONLY the outer Name-style shell. */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-order-control-v2
+> input[type="number"]:focus,
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-order-control-v2
+> input[type="number"]:focus-visible {
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  outline-offset: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+
+  filter: none !important;
+
+  transform: none !important;
+}
+
+
+/* Prevent generic Categories input rules from recreating
+   an inner rounded field through pseudo-elements. */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-order-control-v2
+> input[type="number"]::before,
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-workspace__form
+.st-category-order-control-v2
+> input[type="number"]::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — ORDER SINGLE VISUAL SHELL FINAL
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — ADD SUBCATEGORY VISIBLE GAP FINAL
+
+   The Add Subcategory slot already owns:
+   8px top + 8px bottom.
+
+   An older root-group sibling rule adds 3px before the NEXT
+   category, making the visible lower whitespace larger.
+
+   Cancel that extra 3px only after a selected root category
+   displaying the Add Subcategory slot.
+   ============================================================ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__root-group:has(
+  > .st-category-tree__add-slot-v2.is-root.is-open
+)
++ .st-category-tree__root-group {
+  margin-top: 0 !important;
+}
+
+
+/* ============================================================
+   END ADMIN V2 — ADD SUBCATEGORY VISIBLE GAP FINAL
+   ============================================================ */
+
+/* ============================================================
+   ADMIN V2 — CATEGORY TREE PREMIUM ACCORDION MOTION
+
+   Category opening:
+   - descendants slide down + fade in
+   - Add Subcategory slides down with the same motion
+
+   Category closing / switching:
+   - descendants slide upward + fade out
+   - Add Subcategory collapses instead of disappearing
+
+   The Category row itself never moves.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   SUBCATEGORY BRANCH REVEAL
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__children {
+  transform:
+    translate3d(0,-6px,0);
+
+  transform-origin:
+    top center;
+
+  will-change:
+    grid-template-rows,
+    opacity,
+    transform;
+
+  transition:
+    grid-template-rows 320ms cubic-bezier(.22,1,.36,1),
+    opacity 190ms ease,
+    transform 280ms cubic-bezier(.22,1,.36,1) !important;
+}
+
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__children.is-open {
+  transform:
+    translate3d(0,0,0);
+
+  opacity:
+    1;
+}
+
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__children.is-closed {
+  transform:
+    translate3d(0,-6px,0);
+
+  opacity:
+    0;
+}
+
+
+/* ------------------------------------------------------------
+   ROOT ADD-SUBCATEGORY REVEAL
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__add-slot-v2.is-root {
+  box-sizing:
+    border-box;
+
+  overflow:
+    hidden;
+
+  max-height:
+    80px;
+
+  opacity:
+    1;
+
+  transform:
+    translate3d(0,0,0);
+
+  transform-origin:
+    top center;
+
+  visibility:
+    visible;
+
+  will-change:
+    max-height,
+    padding-top,
+    padding-bottom,
+    opacity,
+    transform;
+
+  transition:
+    max-height 320ms cubic-bezier(.22,1,.36,1),
+    padding-top 320ms cubic-bezier(.22,1,.36,1),
+    padding-bottom 320ms cubic-bezier(.22,1,.36,1),
+    opacity 180ms ease 55ms,
+    transform 280ms cubic-bezier(.22,1,.36,1),
+    visibility 0s linear 0s !important;
+}
+
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__add-slot-v2.is-root.is-open {
+  max-height:
+    80px !important;
+
+  padding-top:
+    8px !important;
+
+  padding-bottom:
+    8px !important;
+
+  opacity:
+    1 !important;
+
+  transform:
+    translate3d(0,0,0) !important;
+
+  visibility:
+    visible !important;
+
+  pointer-events:
+    auto !important;
+}
+
+
+html body
+.st3-admin
+main
+.st-category-admin
+.st-category-tree__add-slot-v2.is-root.is-closed {
+  max-height:
+    0 !important;
+
+  padding-top:
+    0 !important;
+
+  padding-bottom:
+    0 !important;
+
+  opacity:
+    0 !important;
+
+  transform:
+    translate3d(0,-6px,0) !important;
+
+  visibility:
+    hidden !important;
+
+  pointer-events:
+    none !important;
+
+  transition:
+    max-height 300ms cubic-bezier(.22,1,.36,1),
+    padding-top 300ms cubic-bezier(.22,1,.36,1),
+    padding-bottom 300ms cubic-bezier(.22,1,.36,1),
+    opacity 140ms ease,
+    transform 250ms cubic-bezier(.22,1,.36,1),
+    visibility 0s linear 300ms !important;
+}
+
+
+/* ------------------------------------------------------------
+   REDUCED MOTION
+   ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  .st-category-tree__children,
+
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  .st-category-tree__add-slot-v2.is-root {
+    transition:
+      none !important;
+
+    transform:
+      none !important;
+  }
+}
+
+
+/* ============================================================
+   END ADMIN V2 — CATEGORY TREE PREMIUM ACCORDION MOTION
+   ============================================================ */
+
+
+
+/* === ADMIN CATEGORIES DIRTY SAVE STATE V2 === */
+
+/*
+ * Persisted Category/Subcategory:
+ *
+ * no changes       -> Save disabled
+ * actual change    -> Save enabled
+ * value reverted   -> Save disabled again
+ * successful save  -> Save disabled again
+ */
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-workspace__final-save[type="submit"]:disabled {
+  border-color: #dddddd !important;
+  background: #f4f4f4 !important;
+  color: #a7a7a7 !important;
+
+  opacity: 1 !important;
+
+  cursor: not-allowed !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+html body
+.st3-admin
+main
+.st-category-admin
+button.st-category-workspace__final-save[type="submit"]:disabled
+svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+}
+
+
+@media (hover:hover) {
+  html body
+  .st3-admin
+  main
+  .st-category-admin
+  button.st-category-workspace__final-save[type="submit"]:disabled:hover {
+    border-color: #dddddd !important;
+    background: #f4f4f4 !important;
+    color: #a7a7a7 !important;
+
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    transform: none !important;
+  }
+}
+
+/* === ADMIN CATEGORIES DIRTY SAVE STATE V2 END === */
+
+
+/* === ADMIN V2 PRODUCT DELETE RED PARITY FINAL === */
+
+/*
+ * Exact approved Delete Product destructive family:
+ *
+ * primary red: #b42318
+ * border red:  #d8a5a1
+ *
+ * Preserve the existing 286px Apple-like expansion,
+ * timings and Cancel interaction exactly as they are.
+ */
+html body.st-admin-product-editor-active
+.st-admin-product-fixed-header__delete-shell.is-confirming
+> .st-admin-product-fixed-header__delete-confirm {
+  border-color:
+    #d8a5a1 !important;
+
+  background:
+    #fff6f5 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(180, 35, 24, 0.10),
+    0 8px 24px rgba(180, 35, 24, 0.09) !important;
+}
+
+html body.st-admin-product-editor-active
+.st-admin-product-fixed-header__delete-question {
+  color:
+    #b42318 !important;
+}
+
+html body.st-admin-product-editor-active
+button.st-admin-product-fixed-header__delete-confirm-button,
+html body.st-admin-product-editor-active
+button.st-admin-product-fixed-header__delete-confirm-button[data-destructive="true"] {
+  border-color:
+    #d8a5a1 !important;
+
+  background:
+    #ffffff !important;
+
+  background-image:
+    none !important;
+
+  color:
+    #b42318 !important;
+
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.025) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body.st-admin-product-editor-active
+  button.st-admin-product-fixed-header__delete-confirm-button:hover:not(:disabled),
+  html body.st-admin-product-editor-active
+  button.st-admin-product-fixed-header__delete-confirm-button[data-destructive="true"]:hover:not(:disabled) {
+    border-color:
+      #c96d66 !important;
+
+    background:
+      #fff6f5 !important;
+
+    color:
+      #9f1f16 !important;
+  }
+}
+
+/* === END ADMIN V2 PRODUCT DELETE RED PARITY FINAL === */
+
+
+/* === ADMIN V2 PRODUCTS + NOTIFICATIONS STATIONARY CONTROLS V2 === */
+
+/*
+ * PRODUCTS DIRECTORY — VIEW
+ * Keep paint feedback, remove all physical hover movement.
+ */
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:hover,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:focus,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:focus-visible,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:active {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link > svg,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:hover > svg,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:focus > svg,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:focus-visible > svg,
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory__preview-link:active > svg {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+  animation: none !important;
+}
+
+
+/*
+ * NOTIFICATIONS — REFRESH
+ * Button never moves.
+ */
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"],
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:hover,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:focus,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:focus-visible,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:active {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+/*
+ * Icon is fixed during normal hover/focus.
+ * When loading, disabled=true and its existing spinner remains allowed.
+ */
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:hover:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:focus:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:focus-visible:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:active:not(:disabled) > svg {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+  animation: none !important;
+}
+
+
+/*
+ * NOTIFICATIONS — CLOSE
+ * Neither the button nor the X moves.
+ */
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"],
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:hover,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:focus,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:focus-visible,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:active {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"] > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:hover > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:focus > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:focus-visible > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:active > svg {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+  animation: none !important;
+}
+
+/* === END ADMIN V2 PRODUCTS + NOTIFICATIONS STATIONARY CONTROLS V2 === */
+
+
+/* === ADMIN V2 NOTIFICATION HEADER VIEW-PARITY HOVER V2 === */
+
+/*
+ * REFRESH + CLOSE
+ *
+ * Exact Products-directory View hover language:
+ *
+ * base:
+ *   border     #d8d8d8
+ *   background #ffffff
+ *
+ * hover:
+ *   border     #8a8a8a
+ *   background #f6f6f7
+ *   color      #303030
+ *
+ * timing:
+ *   120ms ease
+ *
+ * No custom glow/shadow.
+ * No translate.
+ * No scale.
+ * No rotation.
+ */
+
+
+/* ------------------------------------------------------------
+   REFRESH — VIEW BUTTON PARITY
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"] {
+  border-color: #d8d8d8 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  color: #515154 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    color 120ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+  .st3-admin
+  .st-admin-v2-notifications-panel
+  button[aria-label="Refresh notifications"]:hover:not(:disabled) {
+    border-color: #8a8a8a !important;
+
+    background: #f6f6f7 !important;
+    background-color: #f6f6f7 !important;
+
+    color: #303030 !important;
+
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    rotate: none !important;
+    scale: 1 !important;
+  }
+}
+
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:focus-visible {
+  outline: 2px solid rgba(48, 48, 48, 0.18) !important;
+  outline-offset: 2px !important;
+
+  border-color: #8a8a8a !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+
+/*
+ * Refresh icon is completely stationary during ordinary interaction.
+ * The disabled/loading state remains excluded so animate-spin still works.
+ */
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:hover:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:focus:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:focus-visible:not(:disabled) > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Refresh notifications"]:active:not(:disabled) > svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   CLOSE / X
+   White button + black X.
+   Same View hover mechanism.
+   ------------------------------------------------------------ */
+
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"] {
+  border-color: #d8d8d8 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    color 120ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+  .st3-admin
+  .st-admin-v2-notifications-panel
+  button[aria-label="Close notifications"]:hover {
+    border-color: #8a8a8a !important;
+
+    background: #f6f6f7 !important;
+    background-color: #f6f6f7 !important;
+
+    color: #303030 !important;
+
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    rotate: none !important;
+    scale: 1 !important;
+  }
+}
+
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:focus-visible {
+  outline: 2px solid rgba(48, 48, 48, 0.18) !important;
+  outline-offset: 2px !important;
+
+  border-color: #8a8a8a !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"] > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:hover > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:focus > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:focus-visible > svg,
+html body
+.st3-admin
+.st-admin-v2-notifications-panel
+button[aria-label="Close notifications"]:active > svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+}
+
+/* === END ADMIN V2 NOTIFICATION HEADER VIEW-PARITY HOVER V2 === */

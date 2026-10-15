@@ -4,6 +4,8 @@ import AdminShell from "@/components/admin/admin-shell";
 import { createClient } from "@/lib/supabase/server";
 
 import ProductForm from "./product-form";
+import ProductPageBehavior from "@/components/admin/products/product-page-behavior";
+import { buildProductCategoryLeafOptions } from "@/components/admin/product-category-leaf-options";
 
 type NewProductPageProps = {
   searchParams: Promise<{
@@ -42,7 +44,7 @@ export default async function NewProductPage({
 
       supabase
         .from("subcategories")
-        .select("id, category_id, name")
+        .select("id, category_id, parent_subcategory_id, name")
         .eq("is_active", true)
         .order("sort_order", { ascending: true })
         .order("name", { ascending: true }),
@@ -54,6 +56,12 @@ export default async function NewProductPage({
         .order("sort_order", { ascending: true })
         .order("name", { ascending: true }),
     ]);
+
+  const productCategoryOptions =
+    buildProductCategoryLeafOptions(
+      categoriesResult.data ?? [],
+      subcategoriesResult.data ?? [],
+    );
 
   const resolvedSearchParams = await searchParams;
 
@@ -73,8 +81,10 @@ export default async function NewProductPage({
       <div className="px-4 py-4 sm:px-6 sm:py-5">
         <div className="mx-auto max-w-[1540px]">
 
+          <ProductPageBehavior />
+
           <ProductForm
-            categories={categoriesResult.data ?? []}
+            categories={productCategoryOptions}
             brands={brandsResult.data ?? []}
             errorMessage={errorMessage}
           />

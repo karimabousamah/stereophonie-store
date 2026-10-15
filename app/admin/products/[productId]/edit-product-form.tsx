@@ -124,6 +124,9 @@ type EditProductFormProps = {
   categories: {
     id: string;
     name: string;
+    rootCategoryId?: string;
+    subcategoryId?: string | null;
+    editable?: boolean;
   }[];
 
   brands: {
@@ -176,22 +179,43 @@ export default function EditProductForm({
 
   const [productName, setProductName] = useState(product.name);
 
+  const initialCategorySelectionId =
+    product.subcategoryId || product.categoryId;
+
+  const initialCategoryOption =
+    categories.find(
+      (category) => category.id === initialCategorySelectionId,
+    ) ?? null;
+
   const initialCategoryName =
-    categories.find((category) => category.id === product.categoryId)?.name ??
+    initialCategoryOption?.name ?? "";
+
+  /*
+   * If a legacy product points only at a parent Category which
+   * now contains children, that parent is no longer a valid
+   * product destination. The administrator must choose a leaf
+   * before the next save.
+   */
+  const initialCategoryRootId =
+    initialCategoryOption?.rootCategoryId ??
+    initialCategoryOption?.id ??
     "";
+
+  const initialCategorySubcategoryId =
+    initialCategoryOption?.subcategoryId ?? "";
 
   const initialBrandName =
     brands.find((brand) => brand.id === product.brandId)?.name ?? "";
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(
-    product.categoryId,
+    initialCategoryRootId,
   );
 
   const [selectedCategoryName, setSelectedCategoryName] =
     useState(initialCategoryName);
 
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(
-    product.subcategoryId,
+    initialCategorySubcategoryId,
   );
 
   const [selectedBrandId, setSelectedBrandId] = useState(
@@ -221,7 +245,8 @@ export default function EditProductForm({
       productName !== product.name ||
       productDescription !== product.description ||
       selectedBrandId !== product.brandId ||
-      selectedCategoryId !== product.categoryId ||
+      selectedCategoryId !== initialCategoryRootId ||
+      selectedSubcategoryId !== initialCategorySubcategoryId ||
       placementSelection.featured !== product.isFeatured ||
       placementSelection.trending !== product.isTrending ||
       placementSelection.newArrival !== product.isNewArrival ||
@@ -232,12 +257,14 @@ export default function EditProductForm({
     productDescription,
     selectedBrandId,
     selectedCategoryId,
+    selectedSubcategoryId,
     placementSelection,
     variants,
     product.name,
     product.description,
     product.brandId,
-    product.categoryId,
+    initialCategoryRootId,
+    initialCategorySubcategoryId,
     product.isFeatured,
     product.isTrending,
     product.isNewArrival,
@@ -682,6 +709,11 @@ export default function EditProductForm({
           )}
         />
 
+        <input
+          type="hidden"
+          name="subcategory_id"
+          value={selectedSubcategoryId}
+        />
         <ProductWorkspace
             actionBar={
               <ProductSaveBar
@@ -770,25 +802,21 @@ export default function EditProductForm({
 
                       <ProductCategoryPicker
                         categories={categories}
-                        defaultValue={product.categoryId}
+                        defaultValue={initialCategorySelectionId}
                         onCategoryChange={(category) => {
-                          const nextCategoryId =
-                            category?.id ?? "";
-
                           setSelectedCategoryId(
-                            nextCategoryId,
+                            category?.rootCategoryId ??
+                              category?.id ??
+                              "",
                           );
 
                           setSelectedCategoryName(
                             category?.name ?? "",
                           );
 
-                          if (
-                            nextCategoryId !==
-                            selectedCategoryId
-                          ) {
-                            setSelectedSubcategoryId("");
-                          }
+                          setSelectedSubcategoryId(
+                            category?.subcategoryId ?? "",
+                          );
                         }}
                       />
                     </div>

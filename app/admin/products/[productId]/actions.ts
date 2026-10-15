@@ -291,7 +291,7 @@ export async function updateProduct(formData: FormData) {
 
   const { data: currentProduct, error: currentProductError } = await supabase
     .from("products")
-    .select("status, availability")
+    .select("status, availability, is_new_arrival, new_drop_started_at")
     .eq("id", productId)
     .single();
 
@@ -308,6 +308,30 @@ export async function updateProduct(formData: FormData) {
   const currentProductAvailability = String(
     currentProduct.availability ?? "",
   );
+
+  /* ADMIN V2 CURRENT NEW ARRIVAL WINDOW STATE */
+
+  const currentNewDropStartedAt =
+    String(
+      currentProduct.new_drop_started_at ?? "",
+    ).trim();
+
+  const currentNewDropTimestamp =
+    currentNewDropStartedAt
+      ? Date.parse(currentNewDropStartedAt)
+      : Number.NaN;
+
+  const currentNewDropAge =
+    Date.now() - currentNewDropTimestamp;
+
+  const currentNewArrivalWindowActive =
+    currentProductStatus === "published" &&
+    Boolean(currentProduct.is_new_arrival) &&
+    Number.isFinite(currentNewDropTimestamp) &&
+    currentNewDropAge >= 0 &&
+    currentNewDropAge <
+      7 * 24 * 60 * 60 * 1000;
+
 
   const validationIntent =
     publishingIntent === "archive"
@@ -359,6 +383,20 @@ export async function updateProduct(formData: FormData) {
     isNewArrival = true;
   }
 
+  /* ADMIN V2 RESTART EXPIRED NEW ARRIVAL WINDOW */
+
+  const restartExpiredNewArrivalWindow =
+    currentProductStatus === "published" &&
+    productStatus === "published" &&
+    isNewArrival &&
+    Boolean(currentProduct.is_new_arrival) &&
+    !currentNewArrivalWindowActive;
+
+  const restartNewArrivalWindow =
+    becameAvailableFromComingSoon ||
+    restartExpiredNewArrivalWindow;
+
+
   const productUpdateValues = {
     name,
     description: description || null,
@@ -372,7 +410,7 @@ export async function updateProduct(formData: FormData) {
     is_trending: isTrending,
     is_new_arrival: isNewArrival,
     updated_at: new Date().toISOString(),
-    ...(becameAvailableFromComingSoon
+    ...(restartNewArrivalWindow
       ? {
           new_drop_started_at: new Date().toISOString(),
         }

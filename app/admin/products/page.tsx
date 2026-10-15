@@ -80,6 +80,7 @@ export default async function AdminProductsPage({
         size,
         display_position,
         sku,
+        barcode,
         regular_price,
         sale_price,
         stock_quantity
@@ -519,6 +520,7 @@ export default async function AdminProductsPage({
                               variant.variant_name ?? "",
                               variant.size ?? "",
                               variant.sku ?? "",
+                              variant.barcode ?? "",
                             ]),
                           ].join(" ")}
                         >

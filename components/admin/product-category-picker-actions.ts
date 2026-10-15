@@ -161,6 +161,209 @@ export async function renameCategoryInline(
   };
 }
 
+export async function renameSubcategoryInline(
+  subcategoryId: string,
+  rawName: string,
+): Promise<InlineCategoryRenameResult> {
+  const supabase =
+    await requireAdministrator();
+
+  if (!supabase) {
+    return {
+      ok: false,
+      error:
+        "Administrator authentication is required.",
+    };
+  }
+
+  const id =
+    subcategoryId.trim();
+
+  const name =
+    rawName
+      .replace(/\s+/g, " ")
+      .trim();
+
+  if (!id) {
+    return {
+      ok: false,
+      error:
+        "Subcategory could not be identified.",
+    };
+  }
+
+  if (!name) {
+    return {
+      ok: false,
+      error:
+        "Enter a subcategory name.",
+    };
+  }
+
+  if (name.length > 120) {
+    return {
+      ok: false,
+      error:
+        "Subcategory name is too long.",
+    };
+  }
+
+  const slug =
+    slugify(name);
+
+  if (!slug) {
+    return {
+      ok: false,
+      error:
+        "Enter a valid subcategory name.",
+    };
+  }
+
+  /*
+   * Load the current hierarchy location so duplicate checking
+   * is limited to this exact sibling directory.
+   *
+   * Example:
+   *
+   * Gaming
+   *   Gaming Headsets
+   *
+   * Audio
+   *   Headsets
+   *
+   * Similar names in unrelated branches are allowed.
+   */
+  const {
+    data: currentSubcategory,
+    error: currentError,
+  } = await supabase
+    .from("subcategories")
+    .select(
+      "id, category_id, parent_subcategory_id",
+    )
+    .eq("id", id)
+    .single();
+
+  if (
+    currentError ||
+    !currentSubcategory
+  ) {
+    return {
+      ok: false,
+      error:
+        currentError?.message ??
+        "The subcategory could not be loaded.",
+    };
+  }
+
+  const duplicateQuery =
+    supabase
+      .from("subcategories")
+      .select("id")
+      .eq(
+        "category_id",
+        currentSubcategory.category_id,
+      )
+      .ilike("name", name)
+      .neq("id", id)
+      .limit(1);
+
+  const {
+    data: duplicate,
+    error: duplicateError,
+  } =
+    currentSubcategory.parent_subcategory_id
+      ? await duplicateQuery
+          .eq(
+            "parent_subcategory_id",
+            currentSubcategory.parent_subcategory_id,
+          )
+          .maybeSingle()
+      : await duplicateQuery
+          .is(
+            "parent_subcategory_id",
+            null,
+          )
+          .maybeSingle();
+
+  if (duplicateError) {
+    return {
+      ok: false,
+      error:
+        duplicateError.message,
+    };
+  }
+
+  if (duplicate) {
+    return {
+      ok: false,
+      error:
+        "A subcategory with this name already exists in this directory.",
+    };
+  }
+
+  /*
+   * Match the existing Category inline-rename behavior:
+   * change the display name while preserving the stored slug.
+   *
+   * This avoids unexpectedly changing Storefront URLs merely
+   * because an administrator corrected a display name.
+   */
+  const {
+    data: updatedSubcategory,
+    error,
+  } = await supabase
+    .from("subcategories")
+    .update({
+      name,
+    })
+    .eq("id", id)
+    .select("id, name")
+    .single();
+
+  if (
+    error ||
+    !updatedSubcategory
+  ) {
+    return {
+      ok: false,
+      error:
+        error?.message ??
+        "The subcategory could not be renamed.",
+    };
+  }
+
+  /*
+   * Refresh every surface that can display Category hierarchy
+   * names without navigating the Product editor away.
+   */
+  revalidatePath(
+    "/admin/categories",
+  );
+
+  revalidatePath(
+    "/admin/products",
+  );
+
+  revalidatePath(
+    "/shop",
+  );
+
+  revalidatePath(
+    "/",
+  );
+
+  revalidatePath(
+    "/api/storefront/header-categories",
+  );
+
+  return {
+    ok: true,
+    category: updatedSubcategory,
+  };
+}
+
+
 export async function createCategoryInline(
   rawName: string,
 ): Promise<InlineCategoryResult> {

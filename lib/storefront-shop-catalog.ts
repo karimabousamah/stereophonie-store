@@ -1,6 +1,6 @@
 import type { StoreProductVariant } from "@/components/storefront/store-product-card";
 import {
-  storefrontSearchDirectProductMatch,
+  storefrontSearchProductRelevance,
 } from "@/lib/storefront-search";
 
 export type ShopNamedRelation =
@@ -17,6 +17,7 @@ export type ShopCatalogueProduct = {
   name: string;
   slug: string | null;
   description: string | null;
+  subcategory_id?: string | null;
   is_new_arrival: boolean | null;
   new_drop_started_at: string | null;
   created_at: string | null;
@@ -194,11 +195,105 @@ export function shopMatchesSearch(
     return true;
   }
 
-  return storefrontSearchDirectProductMatch({
-    name: product.name,
-    brand: shopBrandName(product),
-    query: search,
-  });
+  return (
+    storefrontSearchProductRelevance({
+      name: product.name,
+      brand: shopBrandName(product),
+      query: search,
+    }) !== null
+  );
+}
+
+export function shopRelevantSearchProducts<
+  T extends ShopCatalogueProduct,
+>(
+  products: T[],
+  search: string,
+) {
+  const query =
+    search.trim();
+
+  if (!query) {
+    return [...products];
+  }
+
+  const scored = products
+    .map((product) => {
+      const relevance =
+        storefrontSearchProductRelevance({
+          name: product.name,
+          brand: shopBrandName(product),
+          query,
+        });
+
+      return relevance
+        ? {
+            product,
+            relevance,
+          }
+        : null;
+    })
+    .filter(
+      (
+        entry,
+      ): entry is {
+        product: T;
+        relevance: {
+          tier: number;
+          score: number;
+        };
+      } => Boolean(entry),
+    );
+
+  if (scored.length === 0) {
+    return [];
+  }
+
+  /*
+   * Critical storefront-search rule:
+   *
+   * If an exact/direct tier exists, weaker fuzzy matches are
+   * completely suppressed.
+   *
+   * Only when no stronger tier exists do typo/related matches
+   * become eligible.
+   */
+  const bestTier =
+    Math.min(
+      ...scored.map(
+        (entry) =>
+          entry.relevance.tier,
+      ),
+    );
+
+  return scored
+    .filter(
+      (entry) =>
+        entry.relevance.tier ===
+        bestTier,
+    )
+    .sort((first, second) => {
+      const scoreDifference =
+        first.relevance.score -
+        second.relevance.score;
+
+      if (scoreDifference !== 0) {
+        return scoreDifference;
+      }
+
+      return (
+        shopNewestTimestamp(
+          second.product,
+        ) -
+        shopNewestTimestamp(
+          first.product,
+        )
+      );
+    })
+    .map(
+      (entry) =>
+        entry.product,
+    );
 }
 
 export function shopNewestTimestamp(product: ShopCatalogueProduct) {

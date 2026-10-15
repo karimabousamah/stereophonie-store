@@ -399,6 +399,31 @@ export default async function HomePage() {
     );
   }
 
+  /*
+   * Movies & Series is a dedicated cinematic destination rather than a
+   * normal merchandise department. Keep it as the final homepage category
+   * regardless of category sort_order values created later in Admin.
+   */
+  if (categoriesResult.data?.length) {
+    const moviesSeriesSlugs = new Set([
+      "movies-series",
+      "movies-and-series",
+      "films-series",
+      "films-and-series",
+    ]);
+
+    categoriesResult.data.sort((a, b) => {
+      const aIsMoviesSeries = moviesSeriesSlugs.has(a.slug);
+      const bIsMoviesSeries = moviesSeriesSlugs.has(b.slug);
+
+      if (aIsMoviesSeries === bIsMoviesSeries) {
+        return 0;
+      }
+
+      return aIsMoviesSeries ? 1 : -1;
+    });
+  }
+
   const homepageSettings = normalizeHomepageSettings(
     homepageSettingsResult.data ?? null,
   );

@@ -11,6 +11,7 @@ export type ProductDirectoryPopupOption = {
   key: string;
   label: string;
   selected: boolean;
+  editable?: boolean;
 };
 
 type ProductDirectoryPopupProps = {
@@ -261,7 +262,7 @@ export default function ProductDirectoryPopup({
                     <strong>{option.label}</strong>
 
                     <span className="st-admin-directory-popup__option-actions">
-                      {onEdit ? (
+                      {onEdit && option.editable !== false ? (
                         <span
                           role="button"
                           tabIndex={0}

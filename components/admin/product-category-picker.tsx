@@ -22,11 +22,37 @@ import ProductDirectoryPopup from "@/components/admin/product-directory-popup";
 import {
   createCategoryInline,
   renameCategoryInline,
+  renameSubcategoryInline,
 } from "@/components/admin/product-category-picker-actions";
 
 export type ProductCategoryOption = {
- id: string;
- name: string;
+  id: string;
+  name: string;
+
+  /*
+   * Product destination metadata.
+   *
+   * Root Category without children:
+   *   rootCategoryId = id
+   *   subcategoryId = null
+   *
+   * Leaf Subcategory:
+   *   rootCategoryId = owning root Category
+   *   subcategoryId = leaf id
+   */
+  rootCategoryId?: string;
+  subcategoryId?: string | null;
+
+  /*
+   * Product destinations may be renamed inline:
+   *
+   * - root Category leaf
+   * - deepest Subcategory leaf
+   *
+   * Organizational parent nodes remain absent from this
+   * leaf-only Product selector.
+   */
+  editable?: boolean;
 };
 
 type Props = {
@@ -238,6 +264,24 @@ export default function ProductCategoryPicker({
 
  const nextCategory = result.category;
 
+ /*
+  * The Product picker contains only valid leaf destinations.
+  *
+  * createCategoryInline may return an already-existing root
+  * Category. If it is absent from this picker, that root has
+  * children and must not become selectable.
+  */
+ if (
+   !result.created &&
+   !options.some((category) => category.id === nextCategory.id)
+ ) {
+   setError(
+     "This category contains subcategories. Select one of its available subcategories instead.",
+   );
+   setCreationMessage("");
+   return;
+ }
+
  setOptions((current) => {
  if (current.some((category) => category.id === nextCategory.id)) {
  return current;
@@ -291,14 +335,27 @@ export default function ProductCategoryPicker({
    setCreationMessage("");
 
    try {
-     const result = await renameCategoryInline(categoryId, requestedName);
+     const result =
+       currentCategory.subcategoryId
+         ? await renameSubcategoryInline(
+             currentCategory.subcategoryId,
+             requestedName,
+           )
+         : await renameCategoryInline(
+             currentCategory.rootCategoryId ??
+               currentCategory.id,
+             requestedName,
+           );
 
      if (!result.ok) {
        setError(result.error);
        return;
      }
 
-     const updatedCategory: ProductCategoryOption = result.category;
+     const updatedCategory: ProductCategoryOption = {
+       ...currentCategory,
+       name: result.category.name,
+     };
 
      setOptions((current) =>
        current
@@ -379,6 +436,7 @@ export default function ProductCategoryPicker({
               key: category.id,
               label: category.name,
               selected: category.id === selectedId,
+              editable: category.editable !== false,
             }))}
             activeIndex={activeIndex}
             onActiveIndexChange={setActiveIndex}
@@ -485,7 +543,15 @@ export default function ProductCategoryPicker({
 
  return (
     <div className="st-admin-category-picker">
-      <input type="hidden" name={name} value={selectedId} />
+      <input
+        type="hidden"
+        name={name}
+        value={
+          selectedCategory?.rootCategoryId ??
+          selectedCategory?.id ??
+          ""
+        }
+      />
 
       <button
  ref={triggerRef}
