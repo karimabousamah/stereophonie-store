@@ -129,13 +129,22 @@ export default function ProductCategoryPicker({
  const cleanQuery = normalize(query);
 
  const filtered = useMemo(() => {
- if (!cleanQuery) {
- return options;
-    }
+ const matchingOptions = cleanQuery
+   ? options.filter((category) =>
+       normalize(category.name).includes(cleanQuery),
+     )
+   : options;
 
- return options.filter((category) =>
- normalize(category.name).includes(cleanQuery),
-    );
+ return [...matchingOptions].sort((first, second) =>
+   first.name.localeCompare(
+     second.name,
+     undefined,
+     {
+       sensitivity: "base",
+       numeric: true,
+     },
+   ),
+ );
   }, [options, cleanQuery]);
 
  const exactMatch = options.some(
@@ -432,6 +441,7 @@ export default function ProductCategoryPicker({
             directoryLabel="Category directory"
             countLabelSingular="category"
             countLabelPlural="categories"
+            preserveOptionOrder
             options={filtered.map((category) => ({
               key: category.id,
               label: category.name,

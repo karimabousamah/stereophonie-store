@@ -78,7 +78,7 @@ export default async function NewProductPage({
       pageTitle="Add product"
       pageDescription="Add product information, configurations and store placement, then manage product images."
     >
-      <div className="px-4 py-4 sm:px-6 sm:py-5">
+      <div className="st-admin-product-editor-page-shell py-4 sm:py-5">
         <div className="mx-auto max-w-[1540px]">
 
           <ProductPageBehavior />

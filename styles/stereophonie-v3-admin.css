@@ -60684,3 +60684,3597 @@ button[aria-label="Close notifications"]:active > svg {
 }
 
 /* === END ADMIN V2 NOTIFICATION HEADER VIEW-PARITY HOVER V2 === */
+
+/* === ADMIN V2 PRODUCT EDITOR TOUCH + GEOMETRY V2 === */
+
+/*
+ * Add/Edit Product use the same horizontal breathing room as
+ * the Products directory.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-page-shell {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+@media (max-width: 900px) {
+  html body
+  .st3-admin
+  .st-admin-product-editor-page-shell {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body
+  .st3-admin
+  .st-admin-product-editor-page-shell {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+/*
+ * The photo card owns the gesture while reordering.
+ * iPhone/iPad Safari must not convert that gesture into document
+ * scrolling, text selection or the native long-press callout.
+ */
+html body
+.st3-admin
+.st-admin-existing-media-v2
+[data-admin-edit-product-reorder-image],
+html body
+.st3-admin
+.st-admin-media-manager
+[data-admin-add-product-reorder-image] {
+  touch-action: none !important;
+  -ms-touch-action: none !important;
+  overscroll-behavior: contain !important;
+
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/*
+ * The card, not its photograph, is the sortable pointer target.
+ */
+html body
+.st3-admin
+.st-admin-existing-media-v2
+[data-admin-edit-product-reorder-image]
+.st-admin-media-item__preview
+img,
+html body
+.st3-admin
+.st-admin-media-manager
+[data-admin-add-product-reorder-image]
+.st-admin-media-item__preview
+img {
+  pointer-events: none !important;
+
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+/* === END ADMIN V2 PRODUCT EDITOR TOUCH + GEOMETRY V2 === */
+
+/* === ADMIN V2 PRODUCT EDITOR DESKTOP OPTICAL CENTERING V3 === */
+
+/*
+ * Match the approved Products directory optical alignment.
+ * Move the complete Add/Edit workspace together so the visible
+ * whitespace against the sidebar and right viewport is balanced.
+ */
+@media (min-width: 901px) {
+  html body
+  .st3-admin
+  .st3-admin-main
+  .st-admin-product-editor-page-shell {
+    position: relative !important;
+    left: -13.5px !important;
+  }
+}
+
+/* === END ADMIN V2 PRODUCT EDITOR DESKTOP OPTICAL CENTERING V3 === */
+
+/* === ADMIN V2 SAVED PHOTO USAGE PROGRESS V4 === */
+
+/*
+ * Persisted photo usage mutations reuse the established Edit Product
+ * inline-upload 0→100 visual language.
+ */
+html body
+.st3-admin
+.st-admin-existing-media-v2
+[data-admin-usage-saving="true"]
+.st-admin-media-item__preview {
+  position: relative !important;
+  isolation: isolate !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+[data-admin-usage-saving="true"]
+.st-admin-media-item__preview
+> img {
+  opacity: 0.68 !important;
+  filter: saturate(0.94) !important;
+
+  transition:
+    opacity 160ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-existing-media-v2
+[data-admin-usage-saving="true"] {
+  cursor: default !important;
+}
+
+/* === END ADMIN V2 SAVED PHOTO USAGE PROGRESS V4 === */
+
+/* === ADMIN V2 — PRODUCT BARCODE SCANNER START === */
+
+/*
+ * Search-bar camera action.
+ *
+ * Keep this entirely inside the current white / black / gray
+ * Products V2 search architecture. No mustard accent.
+ */
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions {
+  position: relative !important;
+  z-index: 4 !important;
+
+  flex: 0 0 auto !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+
+  gap: 4px !important;
+
+  margin: 0 0 0 8px !important;
+  padding: 0 !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions
+button {
+  box-sizing: border-box !important;
+
+  width: 31px !important;
+  min-width: 31px !important;
+  max-width: 31px !important;
+
+  height: 31px !important;
+  min-height: 31px !important;
+  max-height: 31px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  color: #5f6368 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    transform 140ms ease !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions
+button.st-admin-product-barcode-trigger {
+  border-color: #e1e3e5 !important;
+  background: #f5f5f6 !important;
+  color: #303235 !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions
+button:hover {
+  border-color: #c9cccf !important;
+  background: #eeeeef !important;
+  color: #111214 !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions
+button:active {
+  transform: scale(0.94) !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions
+button:focus-visible {
+  border-color: #303030 !important;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px rgba(32, 34, 35, 0.32) !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions
+button svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  stroke-width: 1.9 !important;
+}
+
+
+/* ------------------------------------------------------------
+   Scanner portal
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner,
+.st-admin-barcode-scanner * {
+  box-sizing: border-box;
+}
+
+.st-admin-barcode-scanner {
+  position: fixed;
+  z-index: 100000;
+
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    max(18px, env(safe-area-inset-top))
+    max(18px, env(safe-area-inset-right))
+    max(18px, env(safe-area-inset-bottom))
+    max(18px, env(safe-area-inset-left));
+
+  overflow: auto;
+
+  background: rgba(16, 17, 18, 0.62);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  overscroll-behavior: contain;
+}
+
+.st-admin-barcode-scanner__panel {
+  width: min(760px, 100%);
+
+  max-height: calc(100dvh - 36px);
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 26px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 34px 90px rgba(0, 0, 0, 0.28),
+    0 10px 30px rgba(0, 0, 0, 0.14);
+}
+
+.st-admin-barcode-scanner__header {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding: 22px 22px 19px 24px;
+
+  border-bottom: 1px solid #e7e8e9;
+
+  background: #ffffff;
+}
+
+.st-admin-barcode-scanner__header > div {
+  min-width: 0;
+}
+
+.st-admin-barcode-scanner__eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #85888c;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.15em;
+
+  text-transform: uppercase;
+}
+
+.st-admin-barcode-scanner__header h2 {
+  margin: 0;
+
+  color: #1f2022;
+
+  font-size: 21px;
+  font-weight: 680;
+
+  line-height: 1.2;
+
+  letter-spacing: -0.025em;
+}
+
+.st-admin-barcode-scanner__header p {
+  max-width: 510px;
+
+  margin: 7px 0 0;
+
+  color: #71757a;
+
+  font-size: 12px;
+  font-weight: 450;
+
+  line-height: 1.55;
+}
+
+.st-admin-barcode-scanner__close {
+  flex: 0 0 36px;
+
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid #e0e2e4;
+  border-radius: 10px;
+
+  outline: 0;
+
+  background: #f5f5f6;
+
+  color: #4f5357;
+
+  cursor: pointer;
+
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.st-admin-barcode-scanner__close:hover {
+  border-color: #c8cbce;
+
+  background: #ededee;
+
+  color: #171819;
+}
+
+.st-admin-barcode-scanner__close:active {
+  transform: scale(0.95);
+}
+
+.st-admin-barcode-scanner__close:focus-visible {
+  border-color: #303030;
+
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px rgba(32, 34, 35, 0.34);
+}
+
+.st-admin-barcode-scanner__close svg {
+  width: 17px;
+  height: 17px;
+
+  stroke-width: 1.9;
+}
+
+
+/* ------------------------------------------------------------
+   Live camera
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__viewport {
+  position: relative;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+
+  min-height: 390px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      #26292c 0%,
+      #121416 64%,
+      #090a0b 100%
+    );
+}
+
+.st-admin-barcode-scanner__video {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+
+  background: #0b0c0d;
+}
+
+.st-admin-barcode-scanner__camera-status {
+  position: absolute;
+  z-index: 8;
+
+  top: 16px;
+  left: 16px;
+
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 11px;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+
+  background: rgba(18, 19, 20, 0.62);
+
+  color: rgba(255, 255, 255, 0.92);
+
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  font-size: 10px;
+  font-weight: 650;
+
+  letter-spacing: 0.04em;
+}
+
+.st-admin-barcode-scanner__camera-status > span {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 999px;
+
+  background: #b9bdc1;
+
+  box-shadow: 0 0 0 4px rgba(185, 189, 193, 0.13);
+}
+
+.st-admin-barcode-scanner__camera-status.is-scanning > span {
+  background: #58c694;
+
+  box-shadow: 0 0 0 4px rgba(88, 198, 148, 0.17);
+}
+
+.st-admin-barcode-scanner__camera-status.is-success > span {
+  background: #58c694;
+
+  box-shadow: 0 0 0 4px rgba(88, 198, 148, 0.17);
+}
+
+.st-admin-barcode-scanner__camera-status.is-error > span {
+  background: #d9776c;
+
+  box-shadow: 0 0 0 4px rgba(217, 119, 108, 0.16);
+}
+
+
+/* ------------------------------------------------------------
+   Barcode target
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__frame {
+  position: absolute;
+  z-index: 5;
+
+  top: 50%;
+  left: 50%;
+
+  width: min(78%, 550px);
+  height: 34%;
+
+  min-height: 130px;
+  max-height: 190px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  border-radius: 18px;
+
+  transform: translate(-50%, -50%);
+
+  box-shadow:
+    0 0 0 9999px rgba(0, 0, 0, 0.27),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.11);
+}
+
+.st-admin-barcode-scanner__frame::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 12px;
+
+  border:
+    solid rgba(255, 255, 255, 0.96);
+
+  border-width:
+    2px 0 0 2px;
+
+  border-radius: 8px 0 0 0;
+
+  width: 29px;
+  height: 29px;
+
+  filter:
+    drop-shadow(
+      0 1px 4px rgba(0, 0, 0, 0.26)
+    );
+}
+
+.st-admin-barcode-scanner__frame::after {
+  content: "";
+
+  position: absolute;
+
+  top: 18%;
+  left: 8%;
+
+  width: 84%;
+  height: 1px;
+
+  opacity: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.96) 16%,
+      rgba(255, 255, 255, 0.96) 84%,
+      transparent
+    );
+
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.56);
+}
+
+.st-admin-barcode-scanner__frame.is-scanning::after {
+  opacity: 1;
+
+  animation:
+    st-admin-barcode-scanner-sweep
+    1.8s
+    ease-in-out
+    infinite;
+}
+
+@keyframes st-admin-barcode-scanner-sweep {
+  0%,
+  100% {
+    top: 18%;
+    opacity: 0.48;
+  }
+
+  50% {
+    top: 81%;
+    opacity: 1;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   Camera states
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__state,
+.st-admin-barcode-scanner__success,
+.st-admin-barcode-scanner__error {
+  position: absolute;
+  z-index: 10;
+
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+
+  text-align: center;
+}
+
+.st-admin-barcode-scanner__state {
+  background:
+    rgba(11, 12, 13, 0.52);
+
+  color: #ffffff;
+}
+
+.st-admin-barcode-scanner__state strong,
+.st-admin-barcode-scanner__success strong,
+.st-admin-barcode-scanner__error strong {
+  margin-top: 14px;
+
+  font-size: 16px;
+  font-weight: 680;
+
+  letter-spacing: -0.015em;
+}
+
+.st-admin-barcode-scanner__state span {
+  max-width: 340px;
+
+  margin-top: 6px;
+
+  color: rgba(255, 255, 255, 0.63);
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+.st-admin-barcode-scanner__spinner {
+  width: 31px;
+  height: 31px;
+
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  border-top-color: #ffffff;
+  border-radius: 999px;
+
+  animation:
+    st-admin-barcode-scanner-spin
+    0.8s
+    linear
+    infinite;
+}
+
+@keyframes st-admin-barcode-scanner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.st-admin-barcode-scanner__success {
+  background:
+    rgba(12, 18, 15, 0.82);
+
+  color: #ffffff;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.st-admin-barcode-scanner__success > span {
+  width: 48px;
+  height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(126, 218, 173, 0.42);
+  border-radius: 999px;
+
+  background: rgba(73, 184, 130, 0.16);
+
+  color: #8be2b8;
+}
+
+.st-admin-barcode-scanner__success > span svg {
+  width: 23px;
+  height: 23px;
+
+  stroke-width: 2;
+}
+
+.st-admin-barcode-scanner__success code {
+  margin-top: 9px;
+
+  padding: 6px 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 7px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: rgba(255, 255, 255, 0.82);
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size: 11px;
+}
+
+.st-admin-barcode-scanner__error {
+  background:
+    rgba(17, 18, 19, 0.94);
+
+  color: #ffffff;
+}
+
+.st-admin-barcode-scanner__error-icon {
+  width: 48px;
+  height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(225, 124, 111, 0.3);
+  border-radius: 999px;
+
+  background: rgba(188, 70, 55, 0.12);
+
+  color: #e7988e;
+}
+
+.st-admin-barcode-scanner__error-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.st-admin-barcode-scanner__error p {
+  max-width: 430px;
+
+  margin: 7px 0 0;
+
+  color: rgba(255, 255, 255, 0.64);
+
+  font-size: 11px;
+
+  line-height: 1.55;
+}
+
+.st-admin-barcode-scanner__error button {
+  min-height: 37px;
+
+  margin-top: 17px;
+  padding: 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  cursor: pointer;
+}
+
+.st-admin-barcode-scanner__error button:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.st-admin-barcode-scanner__error button svg {
+  width: 14px;
+  height: 14px;
+}
+
+
+/* ------------------------------------------------------------
+   Scanner footer
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__footer {
+  flex: 0 0 auto;
+
+  min-height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 15px 19px 15px 22px;
+
+  border-top: 1px solid #e5e6e8;
+
+  background: #f8f8f9;
+}
+
+.st-admin-barcode-scanner__instruction {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+}
+
+.st-admin-barcode-scanner__instruction > span {
+  flex: 0 0 34px;
+
+  width: 34px;
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #dedfe1;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #4e5256;
+}
+
+.st-admin-barcode-scanner__instruction > span svg {
+  width: 15px;
+  height: 15px;
+
+  stroke-width: 1.8;
+}
+
+.st-admin-barcode-scanner__instruction div {
+  min-width: 0;
+}
+
+.st-admin-barcode-scanner__instruction strong,
+.st-admin-barcode-scanner__instruction small {
+  display: block;
+}
+
+.st-admin-barcode-scanner__instruction strong {
+  color: #2e3032;
+
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.st-admin-barcode-scanner__instruction small {
+  margin-top: 3px;
+
+  color: #85888c;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+.st-admin-barcode-scanner__switch {
+  flex: 0 0 auto;
+
+  min-height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 0 12px;
+
+  border: 1px solid #d9dbdd;
+  border-radius: 9px;
+
+  outline: 0;
+
+  background: #ffffff;
+
+  color: #414448;
+
+  font-size: 10px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.st-admin-barcode-scanner__switch:hover {
+  border-color: #bfc2c5;
+
+  background: #f1f1f2;
+
+  color: #161719;
+}
+
+.st-admin-barcode-scanner__switch:focus-visible {
+  border-color: #303030;
+
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px rgba(32, 34, 35, 0.3);
+}
+
+.st-admin-barcode-scanner__switch svg {
+  width: 13px;
+  height: 13px;
+}
+
+
+/* ------------------------------------------------------------
+   Tablet / phone adaptation
+   ------------------------------------------------------------ */
+
+@media (max-width: 720px) {
+  .st-admin-barcode-scanner {
+    align-items: stretch;
+
+    padding: 0;
+  }
+
+  .st-admin-barcode-scanner__panel {
+    width: 100%;
+    max-height: none;
+    height: 100dvh;
+
+    border: 0;
+    border-radius: 0;
+  }
+
+  .st-admin-barcode-scanner__header {
+    padding:
+      max(17px, env(safe-area-inset-top))
+      max(16px, env(safe-area-inset-right))
+      16px
+      max(18px, env(safe-area-inset-left));
+  }
+
+  .st-admin-barcode-scanner__header h2 {
+    font-size: 19px;
+  }
+
+  .st-admin-barcode-scanner__header p {
+    max-width: 330px;
+  }
+
+  .st-admin-barcode-scanner__viewport {
+    min-height: 0;
+
+    flex: 1 1 auto;
+  }
+
+  .st-admin-barcode-scanner__frame {
+    width: 84%;
+    height: 28%;
+
+    min-height: 120px;
+    max-height: 170px;
+  }
+
+  .st-admin-barcode-scanner__footer {
+    padding:
+      14px
+      max(15px, env(safe-area-inset-right))
+      max(14px, env(safe-area-inset-bottom))
+      max(15px, env(safe-area-inset-left));
+  }
+
+  .st-admin-barcode-scanner__instruction small {
+    max-width: 230px;
+  }
+}
+
+@media (max-width: 500px) {
+  .st-admin-barcode-scanner__header p {
+    display: none;
+  }
+
+  .st-admin-barcode-scanner__footer {
+    align-items: stretch;
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .st-admin-barcode-scanner__switch {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-admin-barcode-scanner__frame.is-scanning::after,
+  .st-admin-barcode-scanner__spinner {
+    animation: none;
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE SCANNER END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE SEARCH CONTROL REPAIR START === */
+
+/*
+ * Restore the original Products-search clear button architecture.
+ *
+ * The X button is once again a direct child of the search label,
+ * so all existing canonical clear-button rules and red hover
+ * behaviour apply exactly as before.
+ *
+ * The camera action is intentionally flat:
+ * no border, no background and no hover/click movement.
+ */
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger {
+  position: relative !important;
+  z-index: 4 !important;
+
+  flex: 0 0 31px !important;
+
+  width: 31px !important;
+  min-width: 31px !important;
+  max-width: 31px !important;
+
+  height: 31px !important;
+  min-height: 31px !important;
+  max-height: 31px !important;
+
+  margin: 0 2px 0 8px !important;
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+
+  border-radius: 7px !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #62666a !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+
+  cursor: pointer !important;
+
+  transition:
+    color 140ms ease !important;
+
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger:hover,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger:focus,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger:active {
+  border: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  color: #202223 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger:focus-visible {
+  border: 0 !important;
+
+  background: transparent !important;
+
+  color: #202223 !important;
+
+  box-shadow:
+    0 0 0 2px rgba(32, 34, 35, 0.22) !important;
+
+  transform: none !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger
+svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  margin: 0 !important;
+
+  stroke-width: 1.9 !important;
+
+  transform: none !important;
+}
+
+/*
+ * Disable the wrapper-era scanner rules.
+ * The wrapper no longer exists, but these guards prevent those rules
+ * from influencing the canonical direct-child X button in the future.
+ */
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+.st-admin-product-search-actions {
+  display: contents !important;
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE SEARCH CONTROL REPAIR END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE REFINEMENT START === */
+
+/*
+ * Tighten the relationship between the camera and clear buttons.
+ * Keep the X exactly in its restored canonical behaviour while
+ * introducing a very thin divider when both controls are present.
+ */
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger {
+  margin-right: 0 !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger + button[aria-label="Clear product search"] {
+  position: relative !important;
+  margin-left: 3px !important;
+  padding-left: 10px !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger + button[aria-label="Clear product search"]::before {
+  content: "" !important;
+
+  position: absolute !important;
+  left: 1px !important;
+  top: 9px !important;
+  bottom: 9px !important;
+
+  width: 1px !important;
+
+  border-radius: 999px !important;
+
+  background: rgba(32, 34, 35, 0.16) !important;
+
+  pointer-events: none !important;
+}
+
+
+/*
+ * Scanner popup refinement:
+ * - remove the badge/sticker look
+ * - make the scan target more barcode-specific
+ * - give the rectangle a clearer animated language
+ * - turn the target green on successful capture
+ */
+
+.st-admin-barcode-scanner__header p {
+  max-width: 540px;
+}
+
+.st-admin-barcode-scanner__viewport {
+  min-height: 420px;
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      #202326 0%,
+      #121416 62%,
+      #090a0b 100%
+    );
+}
+
+.st-admin-barcode-scanner__frame {
+  position: absolute;
+  z-index: 5;
+
+  top: 50%;
+  left: 50%;
+
+  width: min(82%, 600px);
+  height: 24%;
+
+  min-height: 118px;
+  max-height: 158px;
+
+  overflow: visible;
+
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    );
+
+  transform: translate(-50%, -50%);
+
+  box-shadow:
+    0 0 0 9999px rgba(0, 0, 0, 0.31),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 12px 32px rgba(0, 0, 0, 0.18);
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.st-admin-barcode-scanner__frame::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(#ffffff, #ffffff) left 14px top 14px / 26px 2px no-repeat,
+    linear-gradient(#ffffff, #ffffff) left 14px top 14px / 2px 26px no-repeat,
+    linear-gradient(#ffffff, #ffffff) right 14px top 14px / 26px 2px no-repeat,
+    linear-gradient(#ffffff, #ffffff) right 14px top 14px / 2px 26px no-repeat,
+    linear-gradient(#ffffff, #ffffff) left 14px bottom 14px / 26px 2px no-repeat,
+    linear-gradient(#ffffff, #ffffff) left 14px bottom 14px / 2px 26px no-repeat,
+    linear-gradient(#ffffff, #ffffff) right 14px bottom 14px / 26px 2px no-repeat,
+    linear-gradient(#ffffff, #ffffff) right 14px bottom 14px / 2px 26px no-repeat;
+
+  opacity: 0.94;
+
+  pointer-events: none;
+}
+
+.st-admin-barcode-scanner__frame::after {
+  content: "";
+
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 50%;
+
+  height: 2px;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.95) 18%,
+      rgba(255, 255, 255, 0.95) 82%,
+      transparent 100%
+    );
+
+  box-shadow:
+    0 0 14px rgba(255, 255, 255, 0.45);
+
+  opacity: 0;
+
+  transform: translateY(-50%);
+}
+
+.st-admin-barcode-scanner__frame.is-scanning::after {
+  opacity: 1;
+  animation:
+    st-admin-barcode-scanner-sweep-refined
+    1.55s
+    ease-in-out
+    infinite;
+}
+
+.st-admin-barcode-scanner__frame.is-success {
+  border-color: rgba(88, 198, 148, 0.96);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(88, 198, 148, 0.18),
+      rgba(88, 198, 148, 0.08)
+    );
+  box-shadow:
+    0 0 0 9999px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(88, 198, 148, 0.26) inset,
+    0 0 0 4px rgba(88, 198, 148, 0.12),
+    0 14px 34px rgba(0, 0, 0, 0.18);
+}
+
+.st-admin-barcode-scanner__frame.is-success::before {
+  background:
+    linear-gradient(#7ee0b0, #7ee0b0) left 14px top 14px / 26px 2px no-repeat,
+    linear-gradient(#7ee0b0, #7ee0b0) left 14px top 14px / 2px 26px no-repeat,
+    linear-gradient(#7ee0b0, #7ee0b0) right 14px top 14px / 26px 2px no-repeat,
+    linear-gradient(#7ee0b0, #7ee0b0) right 14px top 14px / 2px 26px no-repeat,
+    linear-gradient(#7ee0b0, #7ee0b0) left 14px bottom 14px / 26px 2px no-repeat,
+    linear-gradient(#7ee0b0, #7ee0b0) left 14px bottom 14px / 2px 26px no-repeat,
+    linear-gradient(#7ee0b0, #7ee0b0) right 14px bottom 14px / 26px 2px no-repeat,
+    linear-gradient(#7ee0b0, #7ee0b0) right 14px bottom 14px / 2px 26px no-repeat;
+}
+
+.st-admin-barcode-scanner__frame.is-success::after {
+  opacity: 1;
+  animation: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(126, 224, 176, 0.96) 18%,
+      rgba(126, 224, 176, 0.96) 82%,
+      transparent 100%
+    );
+  box-shadow:
+    0 0 16px rgba(88, 198, 148, 0.42);
+}
+
+.st-admin-barcode-scanner__frame-label {
+  position: absolute;
+  left: 50%;
+  bottom: -32px;
+
+  padding: 0 10px;
+
+  border-radius: 999px;
+
+  background: rgba(0, 0, 0, 0.32);
+
+  color: rgba(255, 255, 255, 0.84);
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.st-admin-barcode-scanner__frame.is-success .st-admin-barcode-scanner__frame-label {
+  color: #9be8c0;
+  background: rgba(20, 56, 39, 0.44);
+}
+
+@keyframes st-admin-barcode-scanner-sweep-refined {
+  0%,
+  100% {
+    top: 24%;
+    opacity: 0.48;
+  }
+
+  50% {
+    top: 76%;
+    opacity: 1;
+  }
+}
+
+.st-admin-barcode-scanner__state {
+  background:
+    rgba(11, 12, 13, 0.56);
+}
+
+.st-admin-barcode-scanner__success-toast {
+  position: absolute;
+  z-index: 12;
+
+  left: 50%;
+  bottom: 26px;
+
+  min-width: 260px;
+  max-width: min(90%, 420px);
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 12px 14px;
+
+  border: 1px solid rgba(116, 216, 166, 0.28);
+  border-radius: 16px;
+
+  background: rgba(14, 28, 20, 0.84);
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.22);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  transform: translateX(-50%);
+}
+
+.st-admin-barcode-scanner__success-icon {
+  flex: 0 0 36px;
+
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(126, 224, 176, 0.34);
+  border-radius: 999px;
+
+  background: rgba(88, 198, 148, 0.15);
+
+  color: #8be2b8;
+}
+
+.st-admin-barcode-scanner__success-icon svg {
+  width: 18px;
+  height: 18px;
+
+  stroke-width: 2.2;
+}
+
+.st-admin-barcode-scanner__success-toast div {
+  min-width: 0;
+}
+
+.st-admin-barcode-scanner__success-toast strong,
+.st-admin-barcode-scanner__success-toast code {
+  display: block;
+}
+
+.st-admin-barcode-scanner__success-toast strong {
+  font-size: 13px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+
+.st-admin-barcode-scanner__success-toast code {
+  margin-top: 4px;
+
+  color: rgba(255, 255, 255, 0.78);
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
+
+  font-size: 11px;
+}
+
+.st-admin-barcode-scanner__footer {
+  min-height: 82px;
+}
+
+.st-admin-barcode-scanner__instruction small {
+  max-width: 320px;
+}
+
+@media (max-width: 720px) {
+  .st-admin-barcode-scanner__frame {
+    width: 86%;
+    height: 21%;
+    min-height: 108px;
+    max-height: 142px;
+  }
+
+  .st-admin-barcode-scanner__frame-label {
+    bottom: -28px;
+  }
+
+  .st-admin-barcode-scanner__success-toast {
+    bottom: 18px;
+    min-width: 0;
+    width: calc(100% - 32px);
+  }
+}
+
+@media (max-width: 500px) {
+  .st-admin-barcode-scanner__frame {
+    width: 88%;
+    height: 20%;
+    min-height: 98px;
+    max-height: 128px;
+  }
+
+  .st-admin-barcode-scanner__frame-label {
+    font-size: 9px;
+  }
+
+  .st-admin-barcode-scanner__success-toast {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 12px;
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE REFINEMENT END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE PROFESSIONAL V3 START === */
+
+/* ------------------------------------------------------------
+   SEARCH ACTION GEOMETRY
+   camera  ↔  divider  ↔  X
+   Exactly equal whitespace on both sides of the divider.
+   ------------------------------------------------------------ */
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> button.st-admin-product-barcode-trigger {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> .st-admin-product-search-separator {
+  flex: 0 0 1px !important;
+
+  width: 1px !important;
+  height: 18px !important;
+
+  margin: 0 8px 0 7px !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 999px !important;
+
+  background: rgba(32, 34, 35, 0.17) !important;
+
+  pointer-events: none !important;
+}
+
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> .st-admin-product-search-separator
++ button[aria-label="Clear product search"],
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> .st-admin-product-search-separator
++ button[aria-label="Clear product search"]:hover,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> .st-admin-product-search-separator
++ button[aria-label="Clear product search"]:focus,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> .st-admin-product-search-separator
++ button[aria-label="Clear product search"]:focus-visible,
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2
+label.st-admin-directory-search__field
+> .st-admin-product-search-separator
++ button[aria-label="Clear product search"]:active {
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+
+/* ------------------------------------------------------------
+   SCANNER PANEL
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__panel {
+  width: min(760px, 100%);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 36px 100px rgba(0, 0, 0, 0.30),
+    0 12px 34px rgba(0, 0, 0, 0.14);
+}
+
+.st-admin-barcode-scanner__header {
+  padding: 22px 22px 20px 24px;
+}
+
+.st-admin-barcode-scanner__eyebrow {
+  margin-bottom: 5px;
+
+  color: #8a8d91;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.17em;
+}
+
+.st-admin-barcode-scanner__header h2 {
+  font-size: 21px;
+  font-weight: 680;
+
+  letter-spacing: -0.025em;
+}
+
+.st-admin-barcode-scanner__header p {
+  max-width: 540px;
+
+  margin-top: 7px;
+
+  color: #777b80;
+
+  font-size: 11px;
+
+  line-height: 1.55;
+}
+
+
+/* ------------------------------------------------------------
+   CLOSE BUTTON — EXACT NOTIFICATION INTERACTION LANGUAGE
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__close {
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+
+  padding: 0 !important;
+
+  border: 1px solid #d8d8d8 !important;
+
+  border-radius: 9px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    color 120ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .st-admin-barcode-scanner__close:hover {
+    border-color: #8a8a8a !important;
+
+    background: #f6f6f7 !important;
+    background-color: #f6f6f7 !important;
+
+    color: #303030 !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    rotate: none !important;
+    scale: 1 !important;
+  }
+}
+
+.st-admin-barcode-scanner__close:focus-visible {
+  outline:
+    2px solid
+    rgba(48, 48, 48, 0.18) !important;
+
+  outline-offset: 2px !important;
+
+  border-color: #8a8a8a !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+.st-admin-barcode-scanner__close > svg,
+.st-admin-barcode-scanner__close:hover > svg,
+.st-admin-barcode-scanner__close:focus > svg,
+.st-admin-barcode-scanner__close:focus-visible > svg,
+.st-admin-barcode-scanner__close:active > svg {
+  color: currentColor !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   LIVE CAMERA VIEWPORT
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__viewport {
+  min-height: 430px;
+
+  background: #090a0b;
+}
+
+
+/* Kill the old pseudo-element scanner drawing completely. */
+
+.st-admin-barcode-scanner__frame::before,
+.st-admin-barcode-scanner__frame::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   PROFESSIONAL BARCODE GUIDE
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__frame {
+  position: absolute;
+  z-index: 5;
+
+  top: 50%;
+  left: 50%;
+
+  width: min(82%, 600px);
+  height: 26%;
+
+  min-height: 118px;
+  max-height: 162px;
+
+  overflow: visible;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.42);
+
+  border-radius: 15px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  transform:
+    translate(-50%, -50%);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(0, 0, 0, 0.30),
+    inset 0 0 0 1px
+      rgba(0, 0, 0, 0.08);
+
+  transition:
+    left 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+
+/* Four independent corners — no pseudo + shape. */
+
+.st-admin-barcode-scanner__corner {
+  position: absolute;
+
+  width: 29px;
+  height: 29px;
+
+  pointer-events: none;
+
+  transition:
+    border-color 180ms ease,
+    width 180ms ease,
+    height 180ms ease;
+}
+
+.st-admin-barcode-scanner__corner.is-top-left {
+  top: -2px;
+  left: -2px;
+
+  border-top: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+
+  border-radius: 13px 0 0 0;
+}
+
+.st-admin-barcode-scanner__corner.is-top-right {
+  top: -2px;
+  right: -2px;
+
+  border-top: 3px solid #ffffff;
+  border-right: 3px solid #ffffff;
+
+  border-radius: 0 13px 0 0;
+}
+
+.st-admin-barcode-scanner__corner.is-bottom-left {
+  bottom: -2px;
+  left: -2px;
+
+  border-bottom: 3px solid #ffffff;
+  border-left: 3px solid #ffffff;
+
+  border-radius: 0 0 0 13px;
+}
+
+.st-admin-barcode-scanner__corner.is-bottom-right {
+  right: -2px;
+  bottom: -2px;
+
+  border-right: 3px solid #ffffff;
+  border-bottom: 3px solid #ffffff;
+
+  border-radius: 0 0 13px 0;
+}
+
+
+/* ------------------------------------------------------------
+   REAL MOVING SCAN BEAM
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__beam {
+  position: absolute;
+  z-index: 2;
+
+  top: 18px;
+  left: 22px;
+  right: 22px;
+
+  height: 2px;
+
+  border-radius: 999px;
+
+  opacity: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.95) 14%,
+      #ffffff 50%,
+      rgba(255, 255, 255, 0.95) 86%,
+      transparent 100%
+    );
+
+  box-shadow:
+    0 0 5px rgba(255, 255, 255, 0.62),
+    0 0 14px rgba(255, 255, 255, 0.28);
+
+  pointer-events: none;
+}
+
+.st-admin-barcode-scanner__frame.is-scanning
+.st-admin-barcode-scanner__beam {
+  opacity: 1;
+
+  animation:
+    st-admin-barcode-professional-beam
+    1.7s
+    cubic-bezier(0.45, 0, 0.55, 1)
+    infinite;
+}
+
+@keyframes st-admin-barcode-professional-beam {
+  0% {
+    top: 18px;
+    opacity: 0.46;
+  }
+
+  45%,
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    top: calc(100% - 20px);
+    opacity: 0.46;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   GUIDE LABEL
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__frame-label {
+  position: absolute;
+
+  left: 50%;
+  bottom: -31px;
+
+  padding: 5px 9px;
+
+  border: 1px solid
+    rgba(255, 255, 255, 0.10);
+
+  border-radius: 7px;
+
+  background:
+    rgba(13, 14, 15, 0.54);
+
+  color:
+    rgba(255, 255, 255, 0.78);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  font-size: 9px;
+  font-weight: 620;
+
+  letter-spacing: 0.015em;
+
+  white-space: nowrap;
+
+  transform:
+    translateX(-50%);
+
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+
+/* ------------------------------------------------------------
+   SUCCESS LOCK-ON
+   Keep camera visible. Only the guide becomes green and locks
+   toward ZXing's result points when available.
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__frame.is-success {
+  border-color:
+    rgba(79, 207, 144, 0.82);
+
+  background:
+    rgba(61, 196, 128, 0.08);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px
+      rgba(88, 220, 157, 0.18),
+    0 0 0 4px
+      rgba(71, 204, 137, 0.10),
+    0 0 30px
+      rgba(71, 204, 137, 0.14);
+}
+
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__corner {
+  border-color:
+    #68dda3 !important;
+}
+
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__beam {
+  top: 50%;
+
+  opacity: 1;
+
+  animation: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(104, 221, 163, 0.82) 14%,
+      #74e3ad 50%,
+      rgba(104, 221, 163, 0.82) 86%,
+      transparent 100%
+    );
+
+  box-shadow:
+    0 0 7px
+      rgba(104, 221, 163, 0.58),
+    0 0 18px
+      rgba(104, 221, 163, 0.30);
+}
+
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__frame-label {
+  border-color:
+    rgba(104, 221, 163, 0.22);
+
+  background:
+    rgba(20, 66, 43, 0.58);
+
+  color: #9be8c0;
+}
+
+
+/* ------------------------------------------------------------
+   SUCCESS CONFIRMATION
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__success-toast {
+  bottom: 24px;
+
+  padding: 10px 13px;
+
+  border-radius: 12px;
+
+  border:
+    1px solid
+    rgba(104, 221, 163, 0.28);
+
+  background:
+    rgba(15, 41, 28, 0.80);
+
+  box-shadow:
+    0 10px 28px
+    rgba(0, 0, 0, 0.22);
+
+  animation:
+    st-admin-barcode-success-in
+    180ms
+    ease-out
+    both;
+}
+
+@keyframes st-admin-barcode-success-in {
+  from {
+    opacity: 0;
+    transform:
+      translate(-50%, 6px);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate(-50%, 0);
+  }
+}
+
+
+/* ------------------------------------------------------------
+   FOOTER CONTROLS
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__footer {
+  min-height: 80px;
+
+  padding:
+    14px 18px 14px 21px;
+}
+
+.st-admin-barcode-scanner__controls {
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.st-admin-barcode-scanner__utility-button {
+  min-height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin: 0;
+  padding: 0 12px;
+
+  border:
+    1px solid #d9dbdd;
+
+  border-radius: 9px;
+
+  outline: 0;
+
+  background: #ffffff;
+
+  color: #414448;
+
+  font-size: 10px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transform: none;
+
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.st-admin-barcode-scanner__utility-button:hover {
+  border-color: #aeb2b5;
+
+  background: #f4f4f5;
+
+  color: #1c1d1f;
+
+  transform: none;
+}
+
+.st-admin-barcode-scanner__utility-button:focus-visible {
+  outline:
+    2px solid
+    rgba(48, 48, 48, 0.18);
+
+  outline-offset: 2px;
+
+  border-color: #8a8a8a;
+}
+
+.st-admin-barcode-scanner__utility-button:disabled {
+  cursor: wait;
+  opacity: 0.52;
+}
+
+.st-admin-barcode-scanner__utility-button.is-active {
+  border-color:
+    rgba(218, 164, 45, 0.42);
+
+  background:
+    rgba(247, 188, 56, 0.10);
+
+  color: #9b6b08;
+}
+
+.st-admin-barcode-scanner__utility-button svg {
+  width: 13px;
+  height: 13px;
+
+  stroke-width: 1.9;
+}
+
+
+/* ------------------------------------------------------------
+   TABLET / PHONE
+   ------------------------------------------------------------ */
+
+@media (max-width: 720px) {
+  .st-admin-barcode-scanner__frame {
+    width: 87%;
+    height: 23%;
+
+    min-height: 106px;
+    max-height: 144px;
+  }
+
+  .st-admin-barcode-scanner__controls {
+    gap: 6px;
+  }
+
+  .st-admin-barcode-scanner__utility-button {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 500px) {
+  .st-admin-barcode-scanner__frame {
+    width: 89%;
+    height: 21%;
+
+    min-height: 96px;
+    max-height: 126px;
+  }
+
+  .st-admin-barcode-scanner__footer {
+    align-items: stretch;
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .st-admin-barcode-scanner__controls {
+    width: 100%;
+  }
+
+  .st-admin-barcode-scanner__utility-button {
+    flex: 1 1 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-admin-barcode-scanner__frame.is-scanning
+  .st-admin-barcode-scanner__beam,
+  .st-admin-barcode-scanner__success-toast {
+    animation: none !important;
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE PROFESSIONAL V3 END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE LIVE TRACKING V4 START === */
+
+/* No default static guide.
+   The barcode frame only appears when a barcode is actually located. */
+
+.st-admin-barcode-scanner__frame {
+  width: 0;
+  height: 0;
+  min-height: 0;
+  max-height: none;
+
+  opacity: 0;
+
+  border-color: transparent;
+  background: transparent;
+
+  box-shadow: none;
+
+  transform: translate(-50%, -50%) scale(0.96);
+
+  transition:
+    left 140ms linear,
+    top 140ms linear,
+    width 140ms linear,
+    height 140ms linear,
+    opacity 140ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 140ms ease;
+}
+
+.st-admin-barcode-scanner__frame.is-visible {
+  opacity: 1;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.46);
+
+  background:
+    rgba(255, 255, 255, 0.024);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(0, 0, 0, 0.24),
+    inset 0 0 0 1px
+      rgba(0, 0, 0, 0.06);
+
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.st-admin-barcode-scanner__frame:not(.is-visible)
+.st-admin-barcode-scanner__corner,
+.st-admin-barcode-scanner__frame:not(.is-visible)
+.st-admin-barcode-scanner__beam,
+.st-admin-barcode-scanner__frame:not(.is-visible)
+.st-admin-barcode-scanner__frame-label {
+  opacity: 0;
+}
+
+.st-admin-barcode-scanner__frame.is-tracking
+.st-admin-barcode-scanner__beam {
+  opacity: 1;
+
+  animation:
+    st-admin-barcode-professional-beam
+    1.35s
+    cubic-bezier(0.45, 0, 0.55, 1)
+    infinite;
+}
+
+.st-admin-barcode-scanner__frame.is-success {
+  border-color:
+    rgba(79, 207, 144, 0.86);
+
+  background:
+    rgba(61, 196, 128, 0.09);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(0, 0, 0, 0.20),
+    inset 0 0 0 1px
+      rgba(88, 220, 157, 0.18),
+    0 0 0 4px
+      rgba(71, 204, 137, 0.10),
+    0 0 30px
+      rgba(71, 204, 137, 0.14);
+}
+
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__corner {
+  border-color:
+    #68dda3 !important;
+}
+
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__beam {
+  top: 50%;
+
+  opacity: 1;
+
+  animation: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(104, 221, 163, 0.82) 14%,
+      #74e3ad 50%,
+      rgba(104, 221, 163, 0.82) 86%,
+      transparent 100%
+    );
+
+  box-shadow:
+    0 0 7px
+      rgba(104, 221, 163, 0.58),
+    0 0 18px
+      rgba(104, 221, 163, 0.30);
+}
+
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__frame-label {
+  border-color:
+    rgba(104, 221, 163, 0.22);
+
+  background:
+    rgba(20, 66, 43, 0.58);
+
+  color: #9be8c0;
+}
+
+.st-admin-barcode-scanner__floating-hint {
+  position: absolute;
+  z-index: 4;
+
+  left: 50%;
+  bottom: 26px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 3px;
+
+  padding: 10px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
+
+  background: rgba(12, 13, 14, 0.52);
+
+  color: rgba(255, 255, 255, 0.94);
+
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+
+  text-align: center;
+
+  transform: translateX(-50%);
+}
+
+.st-admin-barcode-scanner__floating-hint strong {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.st-admin-barcode-scanner__floating-hint span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.st-admin-barcode-scanner__frame-label {
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    opacity 140ms ease;
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE LIVE TRACKING V4 END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE FEEDBACK V5 START === */
+
+/* ------------------------------------------------------------
+   CAMERA STARTUP LOADER
+
+   The original reduced-motion rule disabled this animation
+   completely. A loading indicator must still communicate that
+   the camera is actively opening, so the final scanner authority
+   keeps the compact ring rotating.
+   ------------------------------------------------------------ */
+
+@keyframes st-admin-barcode-scanner-spin-final {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.st-admin-barcode-scanner__spinner {
+  transform-origin: 50% 50% !important;
+
+  will-change: transform;
+
+  animation:
+    st-admin-barcode-scanner-spin-final
+    0.8s
+    linear
+    infinite
+    !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-admin-barcode-scanner__spinner {
+    animation:
+      st-admin-barcode-scanner-spin-final
+      1.15s
+      linear
+      infinite
+      !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   BARCODE SUCCESS NOTICE
+
+   Same approved Admin V2 visual architecture used by
+   ProductActionNotice and CategoryActionNotice:
+   - canonical success border/background
+   - 17px radius
+   - 58px geometry
+   - 16px check icon
+   - compact uppercase heading
+   - compact message copy
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__success-notice {
+  position: absolute;
+  z-index: 14;
+
+  left: 24px;
+  right: 24px;
+  bottom: 18px;
+
+  box-sizing: border-box !important;
+
+  width: auto !important;
+  max-width: none !important;
+
+  min-height: 58px !important;
+  max-height: 100px !important;
+
+  margin: 0 !important;
+
+  padding:
+    12px 16px !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+
+  gap: 11px !important;
+
+  border:
+    1px solid
+    #bddfc9 !important;
+
+  border-radius:
+    17px !important;
+
+  background:
+    #f1f8f4 !important;
+
+  color:
+    #1f6542 !important;
+
+  box-shadow:
+    0 1px 2px
+      rgba(29, 29, 31, 0.015),
+    0 6px 20px
+      rgba(32, 107, 70, 0.035)
+      !important;
+
+  cursor: default !important;
+
+  pointer-events: none !important;
+
+  overflow: hidden !important;
+
+  text-align: left !important;
+
+  opacity: 1 !important;
+
+  transform:
+    translate3d(0, 0, 0)
+    !important;
+
+  animation:
+    st-admin-barcode-success-notice-in
+    220ms
+    cubic-bezier(.2,.8,.2,1)
+    both;
+}
+
+@keyframes st-admin-barcode-success-notice-in {
+  from {
+    opacity: 0;
+    transform:
+      translate3d(0, -6px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate3d(0, 0, 0);
+  }
+}
+
+.st-admin-barcode-scanner__success-notice
+> svg {
+  flex:
+    0 0 16px !important;
+
+  width:
+    16px !important;
+
+  min-width:
+    16px !important;
+
+  height:
+    16px !important;
+
+  min-height:
+    16px !important;
+
+  margin:
+    0 !important;
+
+  align-self:
+    center !important;
+
+  color:
+    #278153 !important;
+
+  stroke:
+    currentColor !important;
+}
+
+.st-admin-barcode-scanner__success-notice
+> div {
+  min-width:
+    0 !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  display:
+    flex !important;
+
+  flex-direction:
+    column !important;
+
+  align-items:
+    flex-start !important;
+
+  justify-content:
+    center !important;
+
+  gap:
+    3px !important;
+
+  text-align:
+    left !important;
+}
+
+.st-admin-barcode-scanner__success-notice
+p:first-child {
+  margin:
+    0 !important;
+
+  color:
+    #246b45 !important;
+
+  font-size:
+    8.5px !important;
+
+  font-weight:
+    700 !important;
+
+  line-height:
+    1.15 !important;
+
+  letter-spacing:
+    0.14em !important;
+
+  text-transform:
+    uppercase;
+}
+
+.st-admin-barcode-scanner__success-notice
+p + p {
+  margin:
+    0 !important;
+
+  color:
+    #48675a !important;
+
+  font-size:
+    10px !important;
+
+  line-height:
+    1.35 !important;
+
+  letter-spacing:
+    normal !important;
+
+  text-transform:
+    none !important;
+}
+
+.st-admin-barcode-scanner__success-notice
+strong {
+  color:
+    #1d5038 !important;
+
+  font-weight:
+    700 !important;
+}
+
+
+/* The old custom floating toast is no longer used. */
+
+.st-admin-barcode-scanner__success-toast {
+  display: none !important;
+}
+
+
+@media (max-width: 720px) {
+  .st-admin-barcode-scanner__success-notice {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
+@media (max-width: 500px) {
+  .st-admin-barcode-scanner__success-notice {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+
+    min-height:
+      56px !important;
+
+    padding:
+      11px 13px !important;
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE FEEDBACK V5 END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE PREMIUM FEEDBACK V6 START === */
+
+/*
+ * Scanner-only success treatment.
+ *
+ * Keep the approved Product / Category notification geometry,
+ * typography and spacing, but adapt the surface for an over-camera
+ * confirmation: translucent emerald instead of the canonical pale card.
+ */
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"] {
+  border:
+    1px solid
+    rgba(112, 231, 171, 0.52)
+    !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(22, 126, 82, 0.88) 0%,
+      rgba(16, 103, 68, 0.82) 100%
+    )
+    !important;
+
+  color:
+    #ecfff5 !important;
+
+  box-shadow:
+    0 0 0 1px
+      rgba(88, 220, 157, 0.07),
+    0 10px 30px
+      rgba(4, 42, 25, 0.20),
+    0 0 28px
+      rgba(73, 211, 143, 0.18)
+    !important;
+
+  backdrop-filter:
+    blur(14px)
+    saturate(1.08)
+    !important;
+
+  -webkit-backdrop-filter:
+    blur(14px)
+    saturate(1.08)
+    !important;
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+> svg {
+  color:
+    #b5f5d2 !important;
+
+  filter:
+    drop-shadow(
+      0 0 5px
+      rgba(143, 239, 190, 0.25)
+    );
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+p:first-child {
+  color:
+    #c8f8df !important;
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+p + p {
+  color:
+    rgba(239, 255, 247, 0.82)
+    !important;
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+strong {
+  color:
+    #ffffff !important;
+
+  text-shadow:
+    0 0 12px
+    rgba(157, 244, 198, 0.12);
+}
+
+/*
+ * Subtle confirmation pulse when capture succeeds.
+ * This affects only the success card's glow, not its geometry.
+ */
+
+.st-admin-barcode-scanner__success-notice {
+  animation:
+    st-admin-barcode-premium-success-in
+    240ms
+    cubic-bezier(.2,.8,.2,1)
+    both !important;
+}
+
+@keyframes st-admin-barcode-premium-success-in {
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 5px, 0)
+      scale(0.985);
+
+    box-shadow:
+      0 0 0 1px
+        rgba(88, 220, 157, 0),
+      0 8px 22px
+        rgba(4, 42, 25, 0.12),
+      0 0 0
+        rgba(73, 211, 143, 0);
+  }
+
+  70% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    box-shadow:
+      0 0 0 1px
+        rgba(88, 220, 157, 0.09),
+      0 10px 30px
+        rgba(4, 42, 25, 0.20),
+      0 0 34px
+        rgba(73, 211, 143, 0.24);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    box-shadow:
+      0 0 0 1px
+        rgba(88, 220, 157, 0.07),
+      0 10px 30px
+        rgba(4, 42, 25, 0.20),
+      0 0 28px
+        rgba(73, 211, 143, 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-admin-barcode-scanner__success-notice {
+    animation:
+      none !important;
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE PREMIUM FEEDBACK V6 END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE GLASS SUCCESS V7 START === */
+
+/*
+ * Scanner success only:
+ * preserve the approved notice geometry, but remove the solid-green slab.
+ * The camera remains visible through a soft emerald glass surface.
+ */
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"] {
+  border:
+    1px solid
+    rgba(126, 229, 177, 0.36)
+    !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(27, 139, 91, 0.38) 0%,
+      rgba(19, 105, 71, 0.30) 100%
+    )
+    !important;
+
+  color:
+    #effff7 !important;
+
+  box-shadow:
+    0 0 0 1px
+      rgba(123, 235, 179, 0.045),
+    0 8px 28px
+      rgba(5, 46, 28, 0.12),
+    0 0 24px
+      rgba(74, 220, 145, 0.12)
+    !important;
+
+  backdrop-filter:
+    blur(18px)
+    saturate(1.16)
+    !important;
+
+  -webkit-backdrop-filter:
+    blur(18px)
+    saturate(1.16)
+    !important;
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+> svg {
+  color:
+    #aff4cf !important;
+
+  filter:
+    drop-shadow(
+      0 0 5px
+      rgba(115, 232, 171, 0.18)
+    );
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+p:first-child {
+  color:
+    #bff7d8 !important;
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+p + p {
+  color:
+    rgba(243, 255, 249, 0.83)
+    !important;
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"]
+strong {
+  color:
+    #ffffff !important;
+}
+
+/* Subtle glow peak without turning the card opaque. */
+
+.st-admin-barcode-scanner__success-notice {
+  animation:
+    st-admin-barcode-glass-success-in
+    240ms
+    cubic-bezier(.2,.8,.2,1)
+    both
+    !important;
+}
+
+@keyframes st-admin-barcode-glass-success-in {
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 5px, 0)
+      scale(0.988);
+
+    filter:
+      brightness(0.96);
+  }
+
+  72% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      brightness(1.06);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-admin-barcode-scanner__success-notice {
+    animation:
+      none !important;
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE GLASS SUCCESS V7 END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE SMOOTH GLASS V8 START === */
+
+/*
+ * Final scanner success motion.
+ *
+ * Do not use the ProductActionNotice forced `is-shown` state here.
+ * The scanner owns a short one-second lifecycle, so this surface can
+ * smoothly materialize over the live camera without changing the
+ * canonical notice geometry.
+ */
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice {
+  opacity: 0;
+
+  transform:
+    translate3d(0, 10px, 0)
+    scale(0.985);
+
+  transform-origin:
+    center bottom;
+
+  filter:
+    blur(3px)
+    brightness(0.98);
+
+  animation:
+    st-admin-barcode-smooth-glass-enter
+    360ms
+    cubic-bezier(.16,1,.3,1)
+    forwards
+    !important;
+}
+
+@keyframes st-admin-barcode-smooth-glass-enter {
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 10px, 0)
+      scale(0.985);
+
+    filter:
+      blur(3px)
+      brightness(0.98);
+  }
+
+  55% {
+    opacity: 0.96;
+
+    transform:
+      translate3d(0, 1px, 0)
+      scale(0.998);
+
+    filter:
+      blur(0.6px)
+      brightness(1.025);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      blur(0)
+      brightness(1);
+  }
+}
+
+
+/*
+ * Softer glass than V7:
+ * more camera image visible through the notice, with a restrained
+ * emerald tint and light halo rather than a solid green slab.
+ */
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__success-notice[data-admin-product-success="true"] {
+  border:
+    1px solid
+    rgba(125, 230, 178, 0.30)
+    !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(25, 132, 86, 0.27) 0%,
+      rgba(16, 91, 61, 0.20) 100%
+    )
+    !important;
+
+  box-shadow:
+    0 1px 0
+      rgba(255, 255, 255, 0.07)
+      inset,
+    0 9px 28px
+      rgba(4, 44, 27, 0.10),
+    0 0 22px
+      rgba(77, 222, 148, 0.09)
+    !important;
+
+  backdrop-filter:
+    blur(20px)
+    saturate(1.12)
+    !important;
+
+  -webkit-backdrop-filter:
+    blur(20px)
+    saturate(1.12)
+    !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  .st-admin-barcode-scanner
+  .st-admin-barcode-scanner__success-notice {
+    animation:
+      st-admin-barcode-smooth-glass-enter
+      220ms
+      ease-out
+      forwards
+      !important;
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE SMOOTH GLASS V8 END === */
+
+/* === ADMIN V2 — PRODUCT BARCODE VISUAL LOCATOR V9 START === */
+
+/*
+ * WHITE = visual locator has found barcode-like bars.
+ * GREEN = ZXing has actually decoded and confirmed the code.
+ */
+
+.st-admin-barcode-scanner__frame.is-visible.is-tracking {
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.72);
+
+  background:
+    rgba(255, 255, 255, 0.012);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(0, 0, 0, 0.075),
+    inset 0 0 0 1px
+      rgba(255, 255, 255, 0.035),
+    0 0 18px
+      rgba(255, 255, 255, 0.055);
+
+  transition:
+    left 105ms linear,
+    top 105ms linear,
+    width 105ms linear,
+    height 105ms linear,
+    opacity 120ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+}
+
+.st-admin-barcode-scanner__frame.is-visible.is-tracking
+.st-admin-barcode-scanner__corner {
+  width: 23px;
+  height: 23px;
+
+  border-color:
+    rgba(255, 255, 255, 0.96);
+}
+
+.st-admin-barcode-scanner__frame.is-visible.is-tracking
+.st-admin-barcode-scanner__beam {
+  left: 11px;
+  right: 11px;
+
+  height: 1px;
+
+  opacity: 0.88;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.86) 16%,
+      #ffffff 50%,
+      rgba(255, 255, 255, 0.86) 84%,
+      transparent 100%
+    );
+
+  box-shadow:
+    0 0 6px
+      rgba(255, 255, 255, 0.34);
+}
+
+
+/* ------------------------------------------------------------
+   LIVE GUIDANCE
+   ------------------------------------------------------------ */
+
+.st-admin-barcode-scanner__floating-hint {
+  z-index: 9;
+
+  min-width: 214px;
+  max-width:
+    min(
+      calc(100% - 40px),
+      410px
+    );
+
+  padding:
+    9px 13px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.13);
+
+  border-radius:
+    11px;
+
+  background:
+    rgba(13, 15, 17, 0.42);
+
+  box-shadow:
+    0 8px 26px
+      rgba(0, 0, 0, 0.13);
+
+  backdrop-filter:
+    blur(14px)
+    saturate(1.08);
+
+  -webkit-backdrop-filter:
+    blur(14px)
+    saturate(1.08);
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    opacity 160ms ease,
+    transform 180ms
+      cubic-bezier(.2,.8,.2,1);
+}
+
+.st-admin-barcode-scanner__floating-hint.is-guiding {
+  border-color:
+    rgba(255, 255, 255, 0.21);
+
+  background:
+    rgba(12, 14, 16, 0.49);
+}
+
+.st-admin-barcode-scanner__floating-hint strong {
+  color:
+    rgba(255, 255, 255, 0.96);
+
+  font-size:
+    10.5px;
+
+  font-weight:
+    680;
+
+  line-height:
+    1.25;
+}
+
+.st-admin-barcode-scanner__floating-hint span {
+  margin-top:
+    1px;
+
+  color:
+    rgba(255, 255, 255, 0.68);
+
+  font-size:
+    9.5px;
+
+  line-height:
+    1.4;
+}
+
+
+/*
+ * The tracking box should describe the object itself.
+ * Do not force a generic minimum barcode-guide geometry.
+ */
+
+.st-admin-barcode-scanner__frame.is-visible {
+  min-width:
+    0;
+
+  min-height:
+    0;
+
+  max-width:
+    none;
+
+  max-height:
+    none;
+}
+
+
+/* Successful decode remains the only green state. */
+
+.st-admin-barcode-scanner__frame.is-success {
+  border-color:
+    rgba(95, 226, 160, 0.92);
+
+  background:
+    rgba(58, 199, 129, 0.055);
+
+  box-shadow:
+    0 0 0 9999px
+      rgba(0, 0, 0, 0.10),
+    inset 0 0 0 1px
+      rgba(110, 236, 174, 0.16),
+    0 0 0 3px
+      rgba(72, 213, 142, 0.08),
+    0 0 22px
+      rgba(72, 213, 142, 0.14);
+}
+
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__corner {
+  border-color:
+    #74e3ad !important;
+}
+
+
+/* Tablet guidance remains readable without covering the barcode. */
+
+@media (max-width: 720px) {
+  .st-admin-barcode-scanner__floating-hint {
+    bottom:
+      18px;
+
+    max-width:
+      calc(100% - 28px);
+  }
+}
+
+@media (max-width: 500px) {
+  .st-admin-barcode-scanner__floating-hint {
+    bottom:
+      14px;
+
+    min-width:
+      0;
+
+    width:
+      calc(100% - 24px);
+  }
+}
+
+/* === ADMIN V2 — PRODUCT BARCODE VISUAL LOCATOR V9 END === */
+
+/* === ADMIN V2 — BARCODE LIVE MOVING BEAM START === */
+
+/*
+ * While the white locator is following a barcode, the scan beam
+ * continuously travels through the detected barcode area.
+ *
+ * The success state remains stationary and green after capture.
+ */
+
+@keyframes st-admin-barcode-live-beam-sweep {
+  0% {
+    top: 14%;
+    opacity: 0.35;
+  }
+
+  12% {
+    opacity: 0.92;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  88% {
+    opacity: 0.92;
+  }
+
+  100% {
+    top: 82%;
+    opacity: 0.35;
+  }
+}
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__frame.is-visible.is-tracking:not(.is-success)
+.st-admin-barcode-scanner__beam {
+  top: 14%;
+  bottom: auto !important;
+
+  opacity: 1 !important;
+
+  will-change:
+    top,
+    opacity;
+
+  animation:
+    st-admin-barcode-live-beam-sweep
+    1.15s
+    cubic-bezier(.45, 0, .55, 1)
+    infinite
+    alternate
+    !important;
+}
+
+/*
+ * Successful capture = green locked state.
+ * Stop the moving beam once the barcode has actually been read.
+ */
+
+html body
+.st-admin-barcode-scanner
+.st-admin-barcode-scanner__frame.is-success
+.st-admin-barcode-scanner__beam {
+  top: 50% !important;
+
+  animation:
+    none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  .st-admin-barcode-scanner
+  .st-admin-barcode-scanner__frame.is-visible.is-tracking:not(.is-success)
+  .st-admin-barcode-scanner__beam {
+    animation:
+      st-admin-barcode-live-beam-sweep
+      1.8s
+      linear
+      infinite
+      alternate
+      !important;
+  }
+}
+
+/* === ADMIN V2 — BARCODE LIVE MOVING BEAM END === */
+
+/* === ADMIN V2 — BARCODE ANGLE AWARE V10 START === */
+
+.st-admin-barcode-scanner__frame {
+  transform-origin:
+    50% 50%;
+
+  will-change:
+    left,
+    top,
+    width,
+    height,
+    transform,
+    opacity;
+}
+
+/*
+ * The beam lives inside the tracking frame, therefore it naturally
+ * rotates with the barcode and continues sweeping across its local
+ * short axis.
+ */
+
+.st-admin-barcode-scanner__frame.is-visible.is-tracking {
+  transition:
+    left 105ms linear,
+    top 105ms linear,
+    width 105ms linear,
+    height 105ms linear,
+    transform 120ms
+      cubic-bezier(.2,.7,.2,1),
+    opacity 120ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+/* === ADMIN V2 — BARCODE ANGLE AWARE V10 END === */

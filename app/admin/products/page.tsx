@@ -17,46 +17,16 @@ import ProductSearch from "@/components/admin/product-search";
 import ProductDirectoryThumbnail from "@/components/admin/products/product-directory-thumbnail";
 import QuickPriceEditor from "./quick-price-editor";
 
-export default async function AdminProductsPage({
-  searchParams,
+
+async function ProductsDirectory({
+  initialProductFilter,
 }: {
-  searchParams?: Promise<{
-    saved?: string;
-    filter?: string;
-  }>;
+  initialProductFilter: "all" | "published" | "draft" | "archived";
 }) {
-  const resolvedSearchParams = (await searchParams) ?? {};
-
-  const savedState = resolvedSearchParams.saved ?? "";
-
-  const initialProductFilter =
-    resolvedSearchParams.filter === "live"
-      ? "published"
-      : resolvedSearchParams.filter === "draft"
-        ? "draft"
-        : resolvedSearchParams.filter === "archived"
-          ? "archived"
-          : "all";
-
+  const productsPerfStartedAt = performance.now();
   const supabase = await createClient();
 
-  const { data: claimsData } = await supabase.auth.getClaims();
-
-  const userId = claimsData?.claims?.sub;
-
-  if (!userId) {
-    redirect("/admin/login");
-  }
-
-  const { data: admin } = await supabase
-    .from("admin_users")
-    .select("role, is_active")
-    .eq("user_id", userId)
-    .single();
-
-  if (!admin?.is_active) {
-    redirect("/admin/login");
-  }
+  const productsQueryStartedAt = performance.now();
 
   const { data: products, error } = await supabase
     .from("products")
@@ -91,11 +61,45 @@ export default async function AdminProductsPage({
       ascending: false,
     });
 
+  console.log(
+    `[PRODUCTS PERF] products query: ${(performance.now() - productsQueryStartedAt).toFixed(1)}ms | products=${products?.length ?? 0}`,
+  );
+
   if (error) {
     console.error("Products query error:", error);
   }
 
   const productIds = (products ?? []).map((product) => product.id);
+
+  const categoryIds = Array.from(
+    new Set(
+      (products ?? [])
+        .map((product) => product.category_id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  );
+
+  const brandIds = Array.from(
+    new Set(
+      (products ?? [])
+        .map((product) => product.brand_id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  );
+
+  /*
+   * Category and brand names depend only on the Products result.
+   * Start these lightweight lookups now so they can run while the
+   * existing complete product-image pagination continues below.
+   */
+  const directoryLookupsPromise = Promise.all([
+    categoryIds.length
+      ? supabase.from("categories").select("id, name").in("id", categoryIds)
+      : Promise.resolve({ data: [], error: null }),
+    brandIds.length
+      ? supabase.from("brands").select("id, name").in("id", brandIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
 
   /*
    * Use the same authoritative configuration-media hierarchy as the
@@ -116,8 +120,16 @@ export default async function AdminProductsPage({
    * first configuration's explicit Main image.
    */
   const directoryImagePageSize = 500;
+  const directoryAssignmentPageSize = 500;
 
-  let directoryImages: Array<{
+  type DirectoryImageAssignment = {
+    image_id: string;
+    variant_id: string;
+    position: number;
+    is_primary: boolean;
+  };
+
+  type DirectoryImage = {
     id: string;
     product_id: string;
     image_url: string | null;
@@ -129,53 +141,310 @@ export default async function AdminProductsPage({
       variant_id: string;
       position: number;
       is_primary: boolean;
-    }> | null;
-  }> = [];
+    }>;
+  };
 
-  let directoryImagesError: { message: string } | null = null;
+  /*
+   * The directory only displays one photograph per product.
+   *
+   * storefrontConfigurationImages() uses assignments belonging to the
+   * administrator's first configuration. Assignments belonging only to
+   * later configurations cannot affect the directory thumbnail.
+   *
+   * Determine those first configuration IDs using the exact same ordering
+   * rules as storefrontConfigurationImages().
+   */
+  const firstConfigurationIds = Array.from(
+    new Set(
+      (products ?? [])
+        .map((product) => {
+          const firstConfiguration = [
+            ...(product.product_variants ?? []),
+          ].sort((first, second) => {
+            const positionDifference =
+              Number(first.display_position ?? 0) -
+              Number(second.display_position ?? 0);
 
-  if (productIds.length > 0) {
-    for (let from = 0; ; from += directoryImagePageSize) {
-      const to = from + directoryImagePageSize - 1;
+            if (positionDifference !== 0) {
+              return positionDifference;
+            }
 
-      const pageResult = await supabase
-        .from("product_images")
-        .select(
-          `
-          id,
-          product_id,
-          image_url,
-          storage_path,
-          alt_text,
-          position,
-          is_primary,
-          variant_id,
-          product_image_variants (
+            return String(
+              first.variant_name ?? first.size ?? "",
+            ).localeCompare(
+              String(
+                second.variant_name ?? second.size ?? "",
+              ),
+              undefined,
+              {
+                numeric: true,
+              },
+            );
+          })[0];
+
+          return firstConfiguration?.id
+            ? String(firstConfiguration.id)
+            : null;
+        })
+        .filter((id): id is string => Boolean(id)),
+    ),
+  );
+
+  /*
+   * Fetch only assignment metadata relevant to those first configurations.
+   *
+   * Previously every product_images page embedded product_image_variants
+   * for every configuration. That made each 500-row image request perform
+   * and transfer substantially more relational work.
+   *
+   * The base photographs remain complete. Nothing is omitted from the
+   * product-level legacy fallback.
+   */
+  const directoryAssignmentsPromise = (async () => {
+    const assignments: DirectoryImageAssignment[] = [];
+    let assignmentsError: { message: string } | null = null;
+    let assignmentPageNumber = 0;
+
+    const assignmentsStartedAt =
+      performance.now();
+
+    if (firstConfigurationIds.length > 0) {
+      for (
+        let from = 0;
+        ;
+        from += directoryAssignmentPageSize
+      ) {
+        const to =
+          from +
+          directoryAssignmentPageSize -
+          1;
+
+        const pageStartedAt =
+          performance.now();
+
+        const result = await supabase
+          .from("product_image_variants")
+          .select(
+            `
+            image_id,
             variant_id,
             position,
             is_primary
+          `,
           )
-        `,
-        )
-        .in("product_id", productIds)
-        .order("product_id", { ascending: true })
-        .order("position", { ascending: true })
-        .range(from, to);
+          .in(
+            "variant_id",
+            firstConfigurationIds,
+          )
+          .order("variant_id", {
+            ascending: true,
+          })
+          .order("position", {
+            ascending: true,
+          })
+          .order("image_id", {
+            ascending: true,
+          })
+          .range(from, to);
 
-      if (pageResult.error) {
-        directoryImagesError = pageResult.error;
-        break;
-      }
+        console.log(
+          `[PRODUCTS PERF] assignment page ${assignmentPageNumber + 1}: ${(performance.now() - pageStartedAt).toFixed(1)}ms | rows=${result.data?.length ?? 0}`,
+        );
 
-      const pageImages = pageResult.data ?? [];
+        if (result.error) {
+          assignmentsError =
+            result.error;
+          break;
+        }
 
-      directoryImages.push(...pageImages);
+        const pageAssignments =
+          result.data ?? [];
 
-      if (pageImages.length < directoryImagePageSize) {
-        break;
+        assignments.push(
+          ...pageAssignments,
+        );
+
+        assignmentPageNumber += 1;
+
+        if (
+          pageAssignments.length <
+          directoryAssignmentPageSize
+        ) {
+          break;
+        }
       }
     }
+
+    console.log(
+      `[PRODUCTS PERF] all assignments: ${(performance.now() - assignmentsStartedAt).toFixed(1)}ms | pages=${assignmentPageNumber} | rows=${assignments.length}`,
+    );
+
+    return {
+      assignments,
+      error: assignmentsError,
+    };
+  })();
+
+  /*
+   * Base product images still load completely.
+   *
+   * Keep the existing complete pagination and five-request parallel batch.
+   * The only removed work is the nested assignment relation above.
+   */
+  let directoryImageRows: Array<{
+    id: string;
+    product_id: string;
+    image_url: string | null;
+    storage_path: string | null;
+    alt_text: string | null;
+    position: number;
+    is_primary: boolean;
+  }> = [];
+
+  let directoryImagesError:
+    | { message: string }
+    | null = null;
+
+  const directoryImagesStartedAt =
+    performance.now();
+
+  let directoryImagePageNumber = 0;
+
+  if (productIds.length > 0) {
+    const directoryImageParallelBatchSize = 5;
+
+    let batchStartPageIndex = 0;
+    let reachedFinalImagePage = false;
+
+    while (
+      !reachedFinalImagePage &&
+      !directoryImagesError
+    ) {
+      const pageRequests = Array.from(
+        {
+          length:
+            directoryImageParallelBatchSize,
+        },
+        (_, batchOffset) => {
+          const pageIndex =
+            batchStartPageIndex +
+            batchOffset;
+
+          const pageNumber =
+            pageIndex + 1;
+
+          const from =
+            pageIndex *
+            directoryImagePageSize;
+
+          const to =
+            from +
+            directoryImagePageSize -
+            1;
+
+          const startedAt =
+            performance.now();
+
+          return {
+            pageNumber,
+            startedAt,
+            request: supabase
+              .from("product_images")
+              .select(
+                `
+                id,
+                product_id,
+                image_url,
+                storage_path,
+                alt_text,
+                position,
+                is_primary
+              `,
+              )
+              .in(
+                "product_id",
+                productIds,
+              )
+              .order("product_id", {
+                ascending: true,
+              })
+              .order("position", {
+                ascending: true,
+              })
+              .range(from, to),
+          };
+        },
+      );
+
+      const pageResults =
+        await Promise.all(
+          pageRequests.map(
+            async ({
+              pageNumber,
+              startedAt,
+              request,
+            }) => {
+              const result =
+                await request;
+
+              console.log(
+                `[PRODUCTS PERF] image page ${pageNumber}: ${(performance.now() - startedAt).toFixed(1)}ms | rows=${result.data?.length ?? 0}`,
+              );
+
+              return {
+                pageNumber,
+                result,
+              };
+            },
+          ),
+        );
+
+      pageResults.sort(
+        (first, second) =>
+          first.pageNumber -
+          second.pageNumber,
+      );
+
+      for (
+        const {
+          pageNumber,
+          result,
+        } of pageResults
+      ) {
+        if (result.error) {
+          directoryImagesError =
+            result.error;
+          break;
+        }
+
+        const pageImages =
+          result.data ?? [];
+
+        directoryImageRows.push(
+          ...pageImages,
+        );
+
+        directoryImagePageNumber =
+          pageNumber;
+
+        if (
+          pageImages.length <
+          directoryImagePageSize
+        ) {
+          reachedFinalImagePage =
+            true;
+          break;
+        }
+      }
+
+      batchStartPageIndex +=
+        directoryImageParallelBatchSize;
+    }
   }
+
+  console.log(
+    `[PRODUCTS PERF] all base images: ${(performance.now() - directoryImagesStartedAt).toFixed(1)}ms | pages=${directoryImagePageNumber} | rows=${directoryImageRows.length}`,
+  );
 
   if (directoryImagesError) {
     console.error(
@@ -184,7 +453,84 @@ export default async function AdminProductsPage({
     );
   }
 
-  type DirectoryImage = (typeof directoryImages)[number];
+  const {
+    assignments:
+      directoryAssignments,
+    error:
+      directoryAssignmentsError,
+  } =
+    await directoryAssignmentsPromise;
+
+  if (directoryAssignmentsError) {
+    console.error(
+      "Product directory image assignments query error:",
+      directoryAssignmentsError,
+    );
+  }
+
+  const directoryAssignmentsByImageId =
+    new Map<
+      string,
+      Array<{
+        variant_id: string;
+        position: number;
+        is_primary: boolean;
+      }>
+    >();
+
+  for (
+    const assignment of
+    directoryAssignments
+  ) {
+    const imageId =
+      String(assignment.image_id);
+
+    const imageAssignments =
+      directoryAssignmentsByImageId.get(
+        imageId,
+      ) ?? [];
+
+    imageAssignments.push({
+      variant_id:
+        String(assignment.variant_id),
+      position:
+        Number(
+          assignment.position ?? 0,
+        ),
+      is_primary:
+        Boolean(
+          assignment.is_primary,
+        ),
+    });
+
+    directoryAssignmentsByImageId.set(
+      imageId,
+      imageAssignments,
+    );
+  }
+
+  /*
+   * Recreate the exact shape expected by storefrontConfigurationImages().
+   *
+   * For directory-thumbnail selection it only inspects the assignment for
+   * the first configuration, so pruning unrelated configuration assignments
+   * is behaviorally equivalent while the full base-image fallback remains.
+   */
+  const directoryImages:
+    DirectoryImage[] =
+    directoryImageRows.map(
+      (image) => ({
+        ...image,
+        product_image_variants:
+          directoryAssignmentsByImageId.get(
+            String(image.id),
+          ) ?? [],
+      }),
+    );
+
+  console.log(
+    `[PRODUCTS PERF] media ready: images=${directoryImages.length} | relevant assignments=${directoryAssignments.length}`,
+  );
 
   const directoryImagesByProductId =
     new Map<string, DirectoryImage[]>();
@@ -199,33 +545,14 @@ export default async function AdminProductsPage({
     directoryImagesByProductId.set(productId, productImages);
   }
 
-  const categoryIds = Array.from(
-    new Set(
-      (products ?? [])
-        .map((product) => product.category_id)
-        .filter((id): id is string => Boolean(id)),
-    ),
-  );
-
-  const brandIds = Array.from(
-    new Set(
-      (products ?? [])
-        .map((product) => product.brand_id)
-        .filter((id): id is string => Boolean(id)),
-    ),
-  );
-
   const [
     { data: directoryCategories, error: directoryCategoriesError },
     { data: directoryBrands, error: directoryBrandsError },
-  ] = await Promise.all([
-    categoryIds.length
-      ? supabase.from("categories").select("id, name").in("id", categoryIds)
-      : Promise.resolve({ data: [], error: null }),
-    brandIds.length
-      ? supabase.from("brands").select("id, name").in("id", brandIds)
-      : Promise.resolve({ data: [], error: null }),
-  ]);
+  ] = await directoryLookupsPromise;
+
+  console.log(
+    `[PRODUCTS PERF] data ready: ${(performance.now() - productsPerfStartedAt).toFixed(1)}ms | products=${products?.length ?? 0} | images=${directoryImages.length} | categories=${directoryCategories?.length ?? 0} | brands=${directoryBrands?.length ?? 0}`,
+  );
 
   if (directoryCategoriesError) {
     console.error(
@@ -253,59 +580,6 @@ export default async function AdminProductsPage({
   );
 
   return (
-    <AdminShell
-      role={admin.role}
-      pageTitle="Products"
-      pageDescription="Manage electronics, product images, configurations, pricing and inventory."
-    >
-      <div className="st-admin-products-v2">
-        <div className="st-admin-products-v2__inner">
-          <div className="st-admin-products-v2__actions">
-
-            <Link
-              href="/admin/products/new"
-              className="st-admin-products-v2__add"
-            >
-              <Plus aria-hidden="true" />
-              <span>Add product</span>
-            </Link>
-          </div>
-
-          {savedState === "draft" ? (
-            <div className="mt-6 flex items-center justify-between gap-5 rounded-[18px] border border-emerald-500/20 bg-[#effbf5] px-5 py-4 text-[#16815d]">
-              <div>
-                <p className="text-sm font-semibold">
-                  Draft saved successfully
-                </p>
-
-                <p className="mt-1 text-xs text-[#16815d]/70">
-                  The product is saved in Draft products and remains hidden from
-                  customers.
-                </p>
-              </div>
-
-              <span className="rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.13em] shadow-sm">
-                Draft
-              </span>
-            </div>
-          ) : savedState === "published" ? (
-            <div className="mt-6 flex items-center justify-between gap-5 rounded-[18px] border border-emerald-500/20 bg-[#effbf5] px-5 py-4 text-[#16815d]">
-              <div>
-                <p className="text-sm font-semibold">
-                  Product published successfully
-                </p>
-
-                <p className="mt-1 text-xs text-[#16815d]/70">
-                  The product is now live on the storefront.
-                </p>
-              </div>
-
-              <span className="rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.13em] shadow-sm">
-                Live
-              </span>
-            </div>
-          ) : null}
-
           <section className="st-admin-products-v2__directory">
             {!products?.length ? (
               <div className="flex min-h-[340px] flex-col items-center justify-center px-6 text-center">
@@ -653,6 +927,109 @@ export default async function AdminProductsPage({
               </div>
             )}
           </section>
+  );
+}
+
+export default async function AdminProductsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{
+    saved?: string;
+    filter?: string;
+  }>;
+}) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+
+  const savedState = resolvedSearchParams.saved ?? "";
+
+  const initialProductFilter =
+    resolvedSearchParams.filter === "live"
+      ? "published"
+      : resolvedSearchParams.filter === "draft"
+        ? "draft"
+        : resolvedSearchParams.filter === "archived"
+          ? "archived"
+          : "all";
+
+  const supabase = await createClient();
+
+  const { data: claimsData } = await supabase.auth.getClaims();
+
+  const userId = claimsData?.claims?.sub;
+
+  if (!userId) {
+    redirect("/admin/login");
+  }
+
+  const { data: admin } = await supabase
+    .from("admin_users")
+    .select("role, is_active")
+    .eq("user_id", userId)
+    .single();
+
+  if (!admin?.is_active) {
+    redirect("/admin/login");
+  }
+
+  const productsDirectory = await ProductsDirectory({
+    initialProductFilter,
+  });
+
+  return (
+    <AdminShell
+      role={admin.role}
+      pageTitle="Products"
+      pageDescription="Manage electronics, product images, configurations, pricing and inventory."
+    >
+      <div className="st-admin-products-v2">
+        <div className="st-admin-products-v2__inner">
+          <div className="st-admin-products-v2__actions">
+
+            <Link
+              href="/admin/products/new"
+              className="st-admin-products-v2__add"
+            >
+              <Plus aria-hidden="true" />
+              <span>Add product</span>
+            </Link>
+          </div>
+
+          {savedState === "draft" ? (
+            <div className="mt-6 flex items-center justify-between gap-5 rounded-[18px] border border-emerald-500/20 bg-[#effbf5] px-5 py-4 text-[#16815d]">
+              <div>
+                <p className="text-sm font-semibold">
+                  Draft saved successfully
+                </p>
+
+                <p className="mt-1 text-xs text-[#16815d]/70">
+                  The product is saved in Draft products and remains hidden from
+                  customers.
+                </p>
+              </div>
+
+              <span className="rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.13em] shadow-sm">
+                Draft
+              </span>
+            </div>
+          ) : savedState === "published" ? (
+            <div className="mt-6 flex items-center justify-between gap-5 rounded-[18px] border border-emerald-500/20 bg-[#effbf5] px-5 py-4 text-[#16815d]">
+              <div>
+                <p className="text-sm font-semibold">
+                  Product published successfully
+                </p>
+
+                <p className="mt-1 text-xs text-[#16815d]/70">
+                  The product is now live on the storefront.
+                </p>
+              </div>
+
+              <span className="rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.13em] shadow-sm">
+                Live
+              </span>
+            </div>
+          ) : null}
+
+          {productsDirectory}
         </div>
       </div>
     </AdminShell>

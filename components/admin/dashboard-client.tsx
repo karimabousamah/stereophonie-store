@@ -89,6 +89,7 @@ function MetricCard({
   description,
   tone,
   href,
+  prefetchProducts = true,
 }: {
   icon: React.ComponentType<{
     className?: string;
@@ -98,6 +99,7 @@ function MetricCard({
   description: string;
   tone: "green" | "blue" | "orange" | "rose" | "violet";
   href?: string;
+  prefetchProducts?: boolean;
 }) {
   const content = (
     <>
@@ -117,7 +119,7 @@ function MetricCard({
     return (
       <Link
         href={href}
-        prefetch
+        prefetch={prefetchProducts}
         className={`st-dash-intel-metric st-dash-intel-metric--link is-${tone}`}
       >
         {content}
@@ -365,6 +367,7 @@ export default function DashboardClient({
               description="Visible on the storefront"
               tone="green"
               href="/admin/products?filter=live"
+              prefetchProducts={false}
             />
 
             <MetricCard
@@ -374,6 +377,7 @@ export default function DashboardClient({
               description="Hidden from customers"
               tone="blue"
               href="/admin/products?filter=draft"
+              prefetchProducts={false}
             />
 
             <MetricCard
@@ -468,6 +472,7 @@ export default function DashboardClient({
                     return (
                       <Link
                         href={item.href}
+                        prefetch={false}
                         key={item.title}
                         className="st-admin-action-center__issue"
                       >
@@ -531,6 +536,7 @@ export default function DashboardClient({
                   return (
                     <Link
                       href={item.href}
+                      prefetch={false}
                       key={item.title}
                       className={`st-admin-action-center__check ${
                         clear ? "is-clear" : "needs-review"

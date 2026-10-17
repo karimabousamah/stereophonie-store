@@ -53,6 +53,7 @@ type ElectronicsVariantEditorProps = {
  categoryName?: string;
  brandName?: string;
  saveExistingConfigurationIntent?: "publish" | "draft";
+ initialTechnicalSpecsExpanded?: boolean;
 };
 
 type OptionLevel = {
@@ -3526,11 +3527,12 @@ export default function ElectronicsVariantEditor({
  variants,
  onChange,
  saveExistingConfigurationIntent,
+ initialTechnicalSpecsExpanded = true,
 }: ElectronicsVariantEditorProps) {
  const [specificationsPortalTarget, setSpecificationsPortalTarget] =
  useState<HTMLElement | null>(null);
 
- useEffect(() => {
+ useLayoutEffect(() => {
  setSpecificationsPortalTarget(
  document.getElementById("st-product-information-specifications"),
     );
@@ -3551,7 +3553,8 @@ export default function ElectronicsVariantEditor({
 
  const [customSpecError, setCustomSpecError] = useState("");
  const [technicalSpecsMessage, setTechnicalSpecsMessage] = useState("");
- const [technicalSpecsExpanded, setTechnicalSpecsExpanded] = useState(true);
+ const [technicalSpecsExpanded, setTechnicalSpecsExpanded] =
+ useState(initialTechnicalSpecsExpanded);
  const orderedVariants = useMemo(
     () =>
  [...variants].sort(

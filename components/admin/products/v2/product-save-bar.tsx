@@ -10,6 +10,10 @@ import {
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
+import {
+  requestProductDirectoryReturnRestore,
+} from "@/components/admin/products/product-directory-return-state";
+
 type ProductSaveBarProps = {
   productName: string;
   isSubmitting: boolean;
@@ -113,6 +117,11 @@ export default function ProductSaveBar({
         <div className="st-admin-product-fixed-header__context">
           <Link
             href="/admin/products"
+              onClick={() => {
+                if (editMode) {
+                  requestProductDirectoryReturnRestore();
+                }
+              }}
             className="st-admin-product-fixed-header__back"
             aria-label="Back to products"
           >
@@ -274,7 +283,10 @@ export default function ProductSaveBar({
                 type="submit"
                 name="intent"
                 value={editIntent === "publish" ? "publish" : "publish"}
-                disabled={isSubmitting || !hasUnsavedChanges}
+                disabled={
+                    isSubmitting ||
+                    (editIntent === "publish" && !hasUnsavedChanges)
+                  }
                 onClick={onPublish}
                 className="st-admin-product-fixed-header__publish"
                 form={formId}

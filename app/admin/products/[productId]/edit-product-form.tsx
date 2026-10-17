@@ -987,6 +987,7 @@ export default function EditProductForm({
                 onChange={setVariants}
                 categoryName={selectedCategoryName}
                 brandName={selectedBrandName}
+                initialTechnicalSpecsExpanded={false}
                 saveExistingConfigurationIntent={
                   product.status === "published"
                     ? "publish"

@@ -149,13 +149,13 @@ export default function CategoryTreeManager({
     setPendingCreatedCategorySlug,
   ] = useState<string | null>(null);
 
-  const [selection, setSelection] = useState<Selection | null>(
-    categories[0] ? { type: "category", id: categories[0].id } : null,
-  );
+  const [selection, setSelection] =
+    useState<Selection | null>(null);
 
-  const [expanded, setExpanded] = useState<Set<string>>(
-    () => new Set(categories.map((category) => `category:${category.id}`)),
-  );
+  const [expanded, setExpanded] =
+    useState<Set<string>>(
+      () => new Set<string>(),
+    );
 
   const [addingTo, setAddingTo] = useState<{
     categoryId: string;
@@ -197,6 +197,7 @@ export default function CategoryTreeManager({
       setAddingRootCategory(true);
       setAddingTo(null);
       setSelection(null);
+      setExpanded(new Set<string>());
     }
 
     window.addEventListener(
@@ -242,16 +243,11 @@ export default function CategoryTreeManager({
       id: createdCategory.id,
     });
 
-    setExpanded((current) => {
-      const next =
-        new Set(current);
-
-      next.add(
-        `category:${createdCategory.id}`,
-      );
-
-      return next;
-    });
+    setExpanded(
+      expandedCategoryHierarchy(
+        createdCategory.id,
+      ),
+    );
 
     setAddingRootCategory(false);
 
@@ -842,6 +838,49 @@ export default function CategoryTreeManager({
     });
   }
 
+  function expandedCategoryHierarchy(
+    categoryId: string,
+  ) {
+    const next =
+      new Set<string>();
+
+    next.add(
+      `category:${categoryId}`,
+    );
+
+    for (
+      const node of subcategories
+    ) {
+      if (
+        node.category_id ===
+        categoryId
+      ) {
+        next.add(
+          `subcategory:${node.id}`,
+        );
+      }
+    }
+
+    return next;
+  }
+
+  function toggleCategoryHierarchy(
+    categoryId: string,
+  ) {
+    const key =
+      `category:${categoryId}`;
+
+    setExpanded((current) => {
+      if (current.has(key)) {
+        return new Set<string>();
+      }
+
+      return expandedCategoryHierarchy(
+        categoryId,
+      );
+    });
+  }
+
   function selectCategoryNode(categoryId: string) {
     setAddingRootCategory(false);
     setAddingTo(null);
@@ -863,7 +902,11 @@ export default function CategoryTreeManager({
       return;
     }
 
-    toggleCategoryNode(categoryId);
+    setExpanded(
+      expandedCategoryHierarchy(
+        categoryId,
+      ),
+    );
 
     setSelection({
       type: "category",
@@ -1046,7 +1089,11 @@ export default function CategoryTreeManager({
                     <button
                       type="button"
                       className="st-category-tree__expand"
-                      onClick={() => toggleCategoryNode(category.id)}
+                      onClick={() =>
+                        toggleCategoryHierarchy(
+                          category.id,
+                        )
+                      }
                       aria-label={`${
                         isExpanded ? "Collapse" : "Expand"
                       } ${category.name}`}

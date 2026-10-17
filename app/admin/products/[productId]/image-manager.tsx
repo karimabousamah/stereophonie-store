@@ -112,6 +112,13 @@ export default function ImageManager({
    */
   const [managedImages, setManagedImages] = useState<ProductImage[]>(images);
   const [pendingImageOperation, setPendingImageOperation] = useState("");
+  const [usageSaveProgress, setUsageSaveProgress] = useState<{
+    imageId: string;
+    percentage: number;
+  } | null>(null);
+
+  const usageSaveProgressTimerRef =
+    useRef<number | null>(null);
   const [pendingMovementImageId, setPendingMovementImageId] = useState("");
   const [pendingMovementDirection, setPendingMovementDirection] = useState("");
   const [imageOperationErrorMessage, setImageOperationErrorMessage] =
@@ -179,6 +186,16 @@ export default function ImageManager({
   useEffect(() => {
     setManagedImages(images);
   }, [images]);
+
+  useEffect(() => {
+    return () => {
+      if (usageSaveProgressTimerRef.current !== null) {
+        window.clearInterval(
+          usageSaveProgressTimerRef.current,
+        );
+      }
+    };
+  }, []);
 
   /*
    * Initial values are the configurations already stored in the
@@ -1935,6 +1952,53 @@ const difference =
 
     setPendingImageOperation(operationLabel);
 
+    if (operation === "usage" && imageId) {
+      if (usageSaveProgressTimerRef.current !== null) {
+        window.clearInterval(
+          usageSaveProgressTimerRef.current,
+        );
+      }
+
+      setUsageSaveProgress({
+        imageId,
+        percentage: 0,
+      });
+
+      usageSaveProgressTimerRef.current =
+        window.setInterval(() => {
+          setUsageSaveProgress((current) => {
+            if (
+              !current ||
+              current.imageId !== imageId
+            ) {
+              return current;
+            }
+
+            if (current.percentage >= 92) {
+              return current;
+            }
+
+            const remaining =
+              92 - current.percentage;
+
+            const step =
+              Math.max(
+                1,
+                Math.ceil(remaining * 0.16),
+              );
+
+            return {
+              ...current,
+              percentage:
+                Math.min(
+                  92,
+                  current.percentage + step,
+                ),
+            };
+          });
+        }, 90);
+    }
+
     if (operation === "move") {
       setPendingMovementImageId(imageId);
       setPendingMovementDirection(direction);
@@ -2245,6 +2309,27 @@ const difference =
        * the exact rows returned by the server.
        */
       setManagedImages(result.images as ProductImage[]);
+
+      if (operation === "usage" && imageId) {
+        if (
+          usageSaveProgressTimerRef.current !== null
+        ) {
+          window.clearInterval(
+            usageSaveProgressTimerRef.current,
+          );
+
+          usageSaveProgressTimerRef.current = null;
+        }
+
+        setUsageSaveProgress({
+          imageId,
+          percentage: 100,
+        });
+
+        await new Promise<void>((resolve) => {
+          window.setTimeout(resolve, 220);
+        });
+      }
     } catch (error) {
       /*
        * Server failed: put the image manager exactly back where it was.
@@ -2260,6 +2345,21 @@ const difference =
       controls.forEach((control, index) => {
         control.disabled = previousDisabledState[index];
       });
+
+      if (operation === "usage") {
+        if (
+          usageSaveProgressTimerRef.current !== null
+        ) {
+          window.clearInterval(
+            usageSaveProgressTimerRef.current,
+          );
+
+          usageSaveProgressTimerRef.current = null;
+        }
+
+        setUsageSaveProgress(null);
+      }
+
 
       setPendingImageOperation("");
       setPendingMovementImageId("");
@@ -3386,6 +3486,12 @@ const difference =
 
               const isActiveMain = index === 0;
 
+
+              const usageProgress =
+                usageSaveProgress?.imageId === image.id
+                  ? usageSaveProgress.percentage
+                  : null;
+
               return (
                 <article
                     key={image.id}
@@ -3416,6 +3522,11 @@ const difference =
                       .join(" ")}
                     data-admin-product-image-card="true"
                     data-admin-edit-product-reorder-image={image.id}
+                    data-admin-usage-saving={
+                      usageProgress !== null
+                        ? "true"
+                        : undefined
+                    }
                     onPointerDown={(event) =>
                       handleSavedImagePointerDown(event, image.id)
                     }
@@ -3448,6 +3559,39 @@ const difference =
                         Main
                       </span>
                     ) : null}
+
+                    {usageProgress !== null ? (
+                      <>
+                        <div
+                          className="st-admin-inline-upload-v33__veil"
+                          aria-hidden="true"
+                        />
+
+                        <div
+                          className="st-admin-inline-upload-v33__progress"
+                          role="progressbar"
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={usageProgress}
+                          aria-label="Saving photo usage"
+                          style={{
+                            "--st-admin-inline-upload-progress":
+                              `${usageProgress * 3.6}deg`,
+                          } as React.CSSProperties}
+                        >
+                          <div className="st-admin-inline-upload-v33__ring">
+                            <div className="st-admin-inline-upload-v33__ring-core">
+                              <strong>
+                                {usageProgress}%
+                              </strong>
+
+                              <span>Saving</span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    ) : null}
+
                   </div>
 
                   <div className="st-admin-media-item__body">
@@ -3477,8 +3621,10 @@ const difference =
                             return;
                           }
 
+                          const usageForm = event.currentTarget;
+
                           window.requestAnimationFrame(() => {
-                            event.currentTarget.requestSubmit();
+                            usageForm.requestSubmit();
                           });
                         }}
                         className="st-admin-media-item__usage-panel"

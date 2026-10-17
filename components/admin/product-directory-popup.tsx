@@ -82,12 +82,15 @@ export default function ProductDirectoryPopup({
   multiselect = false,
   statusContent,
   footerContent,
+  preserveOptionOrder = false,
   open,
 }: ProductDirectoryPopupProps) {
-  const orderedOptions = [
-    ...options.filter((option) => option.selected),
-    ...options.filter((option) => !option.selected),
-  ];
+  const orderedOptions = preserveOptionOrder
+    ? options
+    : [
+        ...options.filter((option) => option.selected),
+        ...options.filter((option) => !option.selected),
+      ];
 
   return (
     <div
