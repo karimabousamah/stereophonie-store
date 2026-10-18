@@ -109,9 +109,9 @@ const loadShopCatalogueIndex = unstable_cache(
 
     return (data ?? []) as ShopIndexRow[];
   },
-  ["stereophonie-shop-catalogue-index-v2"],
+  ["stereophonie-shop-catalogue-index-v3"],
   {
-    revalidate: 3600,
+    revalidate: 5,
     tags: [SHOP_CATALOGUE_CACHE_TAG],
   },
 );
