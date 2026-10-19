@@ -441,9 +441,13 @@ export default function CategorySubcategoryNavigation({
                 )}
               </div>
 
-              {hasOverflow ? (
+              {navigation.items.length > 1 ? (
                 <div
-                  className="st3-shop-subcategories__scroll-hint"
+                  className={`st3-shop-subcategories__scroll-hint ${
+                    hasOverflow
+                      ? "is-overflowing"
+                      : ""
+                  }`}
                   aria-hidden="true"
                 >
                   <span className="st3-shop-subcategories__scroll-hint-mobile">

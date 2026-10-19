@@ -85794,3 +85794,315 @@ html
 }
 
 /* === ST SUBCATEGORY EXPLORE ARROW MOTION FINAL V1 END === */
+
+/* === ST CATEGORY SUBCATEGORY BELOW FILTERS FINAL V2 START === */
+
+/*
+ * CATEGORY PAGE — BELOW-FILTER SUBCATEGORY NAVIGATION
+ *
+ * Goals:
+ *
+ * 1. Search, Filters, separator, "Explore the range" and the
+ *    Subcategory row share the exact same left/right geometry.
+ *
+ * 2. The vertical distance from the Filters separator to
+ *    "Explore the range" matches the breathing room between
+ *    the Subcategory navigation and the Product grid.
+ *
+ * 3. Desktop keeps the Scroll cue only when true overflow exists.
+ *
+ * 4. Phone always keeps the Swipe cue visible when the category
+ *    has more than one Subcategory choice.
+ */
+
+
+/* ----------------------------------------------------------
+   REMOVE THE OLD FILTER -> CONTENT GAP
+   ---------------------------------------------------------- */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-v4__controls:has(
+  ~ .st3-shop-subcategories.is-compact-mode
+) {
+  margin-bottom: 0 !important;
+}
+
+
+/*
+ * Same rule when the active-filter status row sits between
+ * Filters and the Subcategory navigation.
+ */
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-v4__active-state:has(
+  + .st3-shop-subcategories.is-compact-mode
+) {
+  margin-bottom: 0 !important;
+}
+
+
+/* ----------------------------------------------------------
+   VERTICAL RHYTHM
+   ---------------------------------------------------------- */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-subcategories.is-compact-mode {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  /*
+   * Top:
+   * separator -> Explore the range
+   *
+   * Bottom:
+   * navigation / hint -> Product cards
+   *
+   * Same visual rhythm on both sides.
+   */
+  margin: 0 0 12px !important;
+  padding: 12px 0 0 !important;
+}
+
+
+/* ----------------------------------------------------------
+   EXACT HORIZONTAL ALIGNMENT
+   ---------------------------------------------------------- */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-subcategories.is-compact-mode
+.st3-shop-subcategories__inner {
+  width: 100% !important;
+  max-width: none !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+/*
+ * Preserve the list's existing 4px shadow/hover breathing space.
+ * Its -4px margin + 4px padding cancel each other, so the actual
+ * Subcategory cards still align to the same catalogue edge.
+ */
+
+
+/* ----------------------------------------------------------
+   SCROLL CUE
+   ---------------------------------------------------------- */
+
+/*
+ * The component now always renders the cue when there is more
+ * than one Subcategory.
+ *
+ * Desktop hides it unless ResizeObserver detects true overflow.
+ */
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-subcategories__scroll-hint {
+  display: none !important;
+}
+
+
+/* Genuine desktop overflow. */
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-subcategories__scroll-hint.is-overflowing {
+  display: flex !important;
+}
+
+
+/* ----------------------------------------------------------
+   PHONE
+   ---------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-subcategories.is-compact-mode {
+    margin: 0 0 12px !important;
+    padding: 12px 0 0 !important;
+  }
+
+
+  /*
+   * Override the old:
+   * width: calc(100% - 32px)
+   *
+   * The catalogue-inner already owns the phone side margins.
+   * Applying another 32px reduction is what caused the visible
+   * right shift in the screenshot.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-subcategories.is-compact-mode
+  .st3-shop-subcategories__inner {
+    width: 100% !important;
+    max-width: none !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+
+  /*
+   * Important mobile affordance:
+   * if more than one Subcategory exists, the JSX is present and
+   * the phone always shows "Swipe to explore →".
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-subcategories__scroll-hint {
+    display: flex !important;
+
+    margin-top: 10px !important;
+  }
+}
+
+/* === ST CATEGORY SUBCATEGORY BELOW FILTERS FINAL V2 END === */
+
+/* === ST CATEGORY FILTER TO SUBCATEGORY GAP FINAL V1 START === */
+
+/*
+ * CATEGORY PAGE ONLY
+ *
+ * The Subcategory block already owns the intended 12px spacing.
+ * Older Storefront layers still give the complete catalogue/filter
+ * component an exterior bottom margin (historically 24–46px).
+ *
+ * Remove only that exterior margin when Subcategories immediately
+ * follow Filters. Do not alter the Search, Filter controls, divider,
+ * Subcategory cards or Product grid geometry.
+ */
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-v4__controls:has(
+  ~ .st3-shop-subcategories.is-compact-mode
+)
+.st-v2-catalog-tools {
+  margin-bottom: 0 !important;
+}
+
+
+/*
+ * Some revisions place the visible Filter interface in an inner
+ * st-filter-v4 root. It must not add a second exterior bottom gap.
+ */
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-v4__controls:has(
+  ~ .st3-shop-subcategories.is-compact-mode
+)
+.st-filter-v4 {
+  margin-bottom: 0 !important;
+}
+
+/* === ST CATEGORY FILTER TO SUBCATEGORY GAP FINAL V1 END === */
+
+/* === ST CATEGORY SUBCATEGORY READABILITY FINAL V1 START === */
+
+/*
+ * Category-page compact Subcategory navigation only.
+ *
+ * Slightly increase label readability and give the control
+ * enough height to keep the larger typography visually balanced.
+ */
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-subcategories.is-compact-mode
+.st3-shop-subcategories__item {
+  min-width: 164px !important;
+  height: 62px !important;
+
+  padding:
+    7px
+    12px
+    7px
+    7px !important;
+
+  gap: 10px !important;
+}
+
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-subcategories.is-compact-mode
+.st3-shop-subcategories__thumb {
+  width: 46px !important;
+  height: 46px !important;
+  flex-basis: 46px !important;
+}
+
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+section.st3-shop-v4__catalog
+.st3-shop-subcategories.is-compact-mode
+.st3-shop-subcategories__name {
+  max-width: 184px !important;
+
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  font-weight: 600 !important;
+}
+
+
+/* Phone keeps the same hierarchy, just slightly more compact. */
+@media (max-width: 720px) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-subcategories.is-compact-mode
+  .st3-shop-subcategories__item {
+    min-width: 154px !important;
+    height: 58px !important;
+
+    padding:
+      6px
+      11px
+      6px
+      6px !important;
+
+    gap: 9px !important;
+  }
+
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-subcategories.is-compact-mode
+  .st3-shop-subcategories__thumb {
+    width: 42px !important;
+    height: 42px !important;
+    flex-basis: 42px !important;
+  }
+
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-subcategories.is-compact-mode
+  .st3-shop-subcategories__name {
+    max-width: 158px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* === ST CATEGORY SUBCATEGORY READABILITY FINAL V1 END === */

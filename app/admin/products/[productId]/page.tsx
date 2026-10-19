@@ -123,8 +123,13 @@ export default async function EditProductPage({
     redirect("/admin/login");
   }
 
-  const [productResult, categoriesResult, subcategoriesResult, brandsResult] =
-    await Promise.all([
+  const [
+    productResult,
+    categoriesResult,
+    subcategoriesResult,
+    additionalCategoriesResult,
+    brandsResult,
+  ] = await Promise.all([
       supabase
         .from("products")
         .select(
@@ -192,6 +197,22 @@ export default async function EditProductPage({
         .order("name", { ascending: true }),
 
       supabase
+        .from("product_category_assignments")
+        .select(
+          "id, category_id, subcategory_id, created_at, display_position",
+        )
+        .eq("product_id", productId)
+        .order("display_position", {
+          ascending: true,
+        })
+        .order("created_at", {
+          ascending: true,
+        })
+        .order("id", {
+          ascending: true,
+        }),
+
+      supabase
         .from("brands")
         .select("id, name")
         .order("sort_order", { ascending: true })
@@ -250,8 +271,27 @@ export default async function EditProductPage({
       subcategoriesResult.data ?? [],
     );
 
+  const validProductCategoryOptionIds = new Set(
+    productCategoryOptions.map((option) => option.id),
+  );
+
+  const additionalCategoryIds = (
+    additionalCategoriesResult.data ?? []
+  )
+    .map(
+      (assignment) =>
+        assignment.subcategory_id ??
+        assignment.category_id,
+    )
+    .filter((id) =>
+      validProductCategoryOptionIds.has(id),
+    );
+
   const loadingError =
-    categoriesResult.error || subcategoriesResult.error || brandsResult.error;
+    categoriesResult.error ||
+    subcategoriesResult.error ||
+    additionalCategoriesResult.error ||
+    brandsResult.error;
 
   const errorMessage =
     resolvedSearchParams.error ??
@@ -324,6 +364,7 @@ export default async function EditProductPage({
               description: product.description ?? "",
               categoryId: product.category_id ?? "",
               subcategoryId: product.subcategory_id ?? "",
+              additionalCategoryIds,
               brandId: product.brand_id ?? "",
               status: product.status,
               availability: product.availability,

@@ -32,6 +32,12 @@ type ShopCategoryFilterNodeRow = {
 type ShopCategoryProductAssignmentRow = {
   category_id: string | null;
   subcategory_id: string | null;
+  product_category_assignments:
+    | {
+        category_id: string | null;
+        subcategory_id: string | null;
+      }[]
+    | null;
 };
 
 export const getShopCategoryFilterOptions = unstable_cache(
@@ -68,11 +74,18 @@ export const getShopCategoryFilterOptions = unstable_cache(
         }),
 
       supabase
-        .from("products")
-        .select(
-          "category_id, subcategory_id",
-        )
-        .eq("status", "published"),
+          .from("products")
+          .select(
+            `
+              category_id,
+              subcategory_id,
+              product_category_assignments (
+                category_id,
+                subcategory_id
+              )
+            `,
+          )
+          .eq("status", "published"),
     ]);
 
     if (categoriesResult.error) {
@@ -121,18 +134,36 @@ export const getShopCategoryFilterOptions = unstable_cache(
       new Set<string>();
 
     for (const product of assignments) {
-      if (product.category_id) {
-        populatedRoots.add(
-          product.category_id,
-        );
-      }
+        if (product.category_id) {
+          populatedRoots.add(
+            product.category_id,
+          );
+        }
 
-      if (product.subcategory_id) {
-        populatedLeaves.add(
-          product.subcategory_id,
-        );
+        if (product.subcategory_id) {
+          populatedLeaves.add(
+            product.subcategory_id,
+          );
+        }
+
+        for (
+          const assignment
+          of product.product_category_assignments ??
+            []
+        ) {
+          if (assignment.category_id) {
+            populatedRoots.add(
+              assignment.category_id,
+            );
+          }
+
+          if (assignment.subcategory_id) {
+            populatedLeaves.add(
+              assignment.subcategory_id,
+            );
+          }
+        }
       }
-    }
 
     const nodesByCategory =
       new Map<
@@ -269,7 +300,7 @@ export const getShopCategoryFilterOptions = unstable_cache(
     return options;
   },
   [
-    "stereophonie-shop-category-filter-options-v3",
+    "stereophonie-shop-category-filter-options-v4",
   ],
   {
     revalidate: 300,
@@ -303,6 +334,11 @@ export async function getShopBrandFilterOptionsForCategory(
         categories (
           name
         ),
+        product_category_assignments (
+          categories (
+            name
+          )
+        ),
         brands (
           name,
           is_active
@@ -323,19 +359,53 @@ export async function getShopBrandFilterOptionsForCategory(
   const brands = new Set<string>();
 
   for (const product of data ?? []) {
-    const categoryRelation = product.categories;
-    const category = Array.isArray(categoryRelation)
-      ? categoryRelation[0]
-      : categoryRelation;
+    const categoryRelation =
+        product.categories;
 
-    if (
-      String(category?.name ?? "").trim().toLowerCase() !==
-      normalizedCategory.toLowerCase()
-    ) {
-      continue;
-    }
+      const category =
+        Array.isArray(categoryRelation)
+          ? categoryRelation[0]
+          : categoryRelation;
 
-    const brandRelation = product.brands;
+      const primaryCategoryMatches =
+        String(
+          category?.name ?? "",
+        )
+          .trim()
+          .toLowerCase() ===
+        normalizedCategory.toLowerCase();
+
+      const additionalCategoryMatches =
+        (
+          product.product_category_assignments ??
+          []
+        ).some((assignment) => {
+          const relation =
+            assignment.categories;
+
+          const assignedCategory =
+            Array.isArray(relation)
+              ? relation[0]
+              : relation;
+
+          return (
+            String(
+              assignedCategory?.name ?? "",
+            )
+              .trim()
+              .toLowerCase() ===
+            normalizedCategory.toLowerCase()
+          );
+        });
+
+      if (
+        !primaryCategoryMatches &&
+        !additionalCategoryMatches
+      ) {
+        continue;
+      }
+
+      const brandRelation = product.brands;
     const brand = Array.isArray(brandRelation)
       ? brandRelation[0]
       : brandRelation;

@@ -6,6 +6,9 @@ import { redirect } from "next/navigation";
 
 import { processStockNotificationsForProduct } from "@/lib/email/process-stock-notifications";
 import { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-shop-loader";
+import {
+  SHOP_CATEGORY_FILTER_TAG,
+} from "@/lib/storefront-shop-filter-options";
 import { updateProductImageVariantUsageBulk } from "./image-actions";
 import { createClient } from "@/lib/supabase/server";
 
@@ -238,6 +241,10 @@ export async function updateProduct(formData: FormData) {
 
   const subcategoryId = String(formData.get("subcategory_id") ?? "").trim();
 
+  const additionalCategoryAssignmentsJson = String(
+    formData.get("additional_category_assignments_json") ?? "[]",
+  );
+
   const collectionId = String(formData.get("collection_id") ?? "").trim();
 
   const brandId = String(formData.get("brand_id") ?? "").trim();
@@ -282,6 +289,84 @@ export async function updateProduct(formData: FormData) {
 
   if (!categoryId) {
     redirectWithError(productId, "Please select a category.");
+  }
+
+  let additionalCategoryAssignments: {
+    category_id: string;
+    subcategory_id: string | null;
+  }[] = [];
+
+  try {
+    const parsed = JSON.parse(
+      additionalCategoryAssignmentsJson,
+    );
+
+    if (!Array.isArray(parsed)) {
+      throw new Error(
+        "Invalid category assignments.",
+      );
+    }
+
+    const unique = new Map<
+      string,
+      {
+        category_id: string;
+        subcategory_id: string | null;
+      }
+    >();
+
+    for (const entry of parsed) {
+      const additionalCategoryId =
+        String(
+          entry?.category_id ?? "",
+        ).trim();
+
+      const additionalSubcategoryId =
+        String(
+          entry?.subcategory_id ?? "",
+        ).trim();
+
+      if (!additionalCategoryId) {
+        continue;
+      }
+
+      const normalizedSubcategoryId =
+        additionalSubcategoryId ||
+        null;
+
+      /*
+       * The canonical destination stays only on products.
+       * product_category_assignments stores additional
+       * destinations only.
+       */
+      if (
+        additionalCategoryId === categoryId &&
+        normalizedSubcategoryId ===
+          (subcategoryId || null)
+      ) {
+        continue;
+      }
+
+      unique.set(
+        `${additionalCategoryId}:${
+          normalizedSubcategoryId ?? ""
+        }`,
+        {
+          category_id:
+            additionalCategoryId,
+          subcategory_id:
+            normalizedSubcategoryId,
+        },
+      );
+    }
+
+    additionalCategoryAssignments =
+      [...unique.values()];
+  } catch {
+    redirectWithError(
+      productId,
+      "The additional product categories could not be processed.",
+    );
   }
 
   let variants: VariantInput[];
@@ -471,6 +556,213 @@ export async function updateProduct(formData: FormData) {
 
   if (productUpdateError) {
     redirectWithError(productId, productUpdateError.message);
+  }
+
+  const {
+    data: existingCategoryAssignments,
+    error: existingCategoryAssignmentsError,
+  } = await supabase
+    .from("product_category_assignments")
+    .select(
+      "id, category_id, subcategory_id, display_position",
+    )
+    .eq("product_id", productId);
+
+  if (existingCategoryAssignmentsError) {
+    redirectWithError(
+      productId,
+      existingCategoryAssignmentsError.message,
+    );
+  }
+
+  const requestedCategoryAssignmentKeys =
+    new Set(
+      additionalCategoryAssignments.map(
+        (assignment) =>
+          `${assignment.category_id}:${
+            assignment.subcategory_id ?? ""
+          }`,
+      ),
+    );
+
+  const existingCategoryAssignmentKeys =
+    new Set(
+      (existingCategoryAssignments ?? []).map(
+        (assignment) =>
+          `${assignment.category_id}:${
+            assignment.subcategory_id ?? ""
+          }`,
+      ),
+    );
+
+  const requestedCategoryAssignmentPositions =
+    new Map(
+      additionalCategoryAssignments.map(
+        (assignment, index) => [
+          `${assignment.category_id}:${
+            assignment.subcategory_id ?? ""
+          }`,
+          index,
+        ],
+      ),
+    );
+
+  const categoryAssignmentsToInsert =
+    additionalCategoryAssignments.filter(
+      (assignment) =>
+        !existingCategoryAssignmentKeys.has(
+          `${assignment.category_id}:${
+            assignment.subcategory_id ?? ""
+          }`,
+        ),
+    );
+
+  if (
+    categoryAssignmentsToInsert.length > 0
+  ) {
+    const {
+      error:
+        insertCategoryAssignmentsError,
+    } = await supabase
+      .from(
+        "product_category_assignments",
+      )
+      .insert(
+        categoryAssignmentsToInsert.map(
+          (assignment) => ({
+            product_id: productId,
+            ...assignment,
+            display_position:
+              requestedCategoryAssignmentPositions.get(
+                `${assignment.category_id}:${
+                  assignment.subcategory_id ?? ""
+                }`,
+              ) ?? 0,
+          }),
+        ),
+      );
+
+    if (
+      insertCategoryAssignmentsError
+    ) {
+      redirectWithError(
+        productId,
+        insertCategoryAssignmentsError.message ||
+          "The additional product categories could not be saved.",
+      );
+    }
+  }
+
+  const retainedCategoryAssignments =
+    (
+      existingCategoryAssignments ?? []
+    ).filter((assignment) =>
+      requestedCategoryAssignmentKeys.has(
+        `${assignment.category_id}:${
+          assignment.subcategory_id ?? ""
+        }`,
+      ),
+    );
+
+  const categoryAssignmentPositionUpdates =
+    await Promise.all(
+      retainedCategoryAssignments.map(
+        async (assignment) => {
+          const assignmentKey =
+            `${assignment.category_id}:${
+              assignment.subcategory_id ?? ""
+            }`;
+
+          const requestedPosition =
+            requestedCategoryAssignmentPositions.get(
+              assignmentKey,
+            );
+
+          if (
+            requestedPosition === undefined ||
+            Number(
+              assignment.display_position,
+            ) === requestedPosition
+          ) {
+            return null;
+          }
+
+          const { error } = await supabase
+            .from(
+              "product_category_assignments",
+            )
+            .update({
+              display_position:
+                requestedPosition,
+            })
+            .eq("id", assignment.id)
+            .eq(
+              "product_id",
+              productId,
+            );
+
+          return error;
+        },
+      ),
+    );
+
+  const categoryAssignmentPositionError =
+    categoryAssignmentPositionUpdates.find(
+      (error) => Boolean(error),
+    );
+
+  if (categoryAssignmentPositionError) {
+    redirectWithError(
+      productId,
+      categoryAssignmentPositionError.message ||
+        "The product category order could not be updated.",
+    );
+  }
+
+  const categoryAssignmentIdsToDelete =
+    (
+      existingCategoryAssignments ?? []
+    )
+      .filter(
+        (assignment) =>
+          !requestedCategoryAssignmentKeys.has(
+            `${assignment.category_id}:${
+              assignment.subcategory_id ?? ""
+            }`,
+          ),
+      )
+      .map(
+        (assignment) =>
+          assignment.id,
+      );
+
+  if (
+    categoryAssignmentIdsToDelete.length >
+    0
+  ) {
+    const {
+      error:
+        deleteCategoryAssignmentsError,
+    } = await supabase
+      .from(
+        "product_category_assignments",
+      )
+      .delete()
+      .eq("product_id", productId)
+      .in(
+        "id",
+        categoryAssignmentIdsToDelete,
+      );
+
+    if (
+      deleteCategoryAssignmentsError
+    ) {
+      redirectWithError(
+        productId,
+        deleteCategoryAssignmentsError.message ||
+          "The removed product categories could not be updated.",
+      );
+    }
   }
 
   const { data: existingVariants, error: existingVariantsError } =
@@ -855,6 +1147,7 @@ export async function updateProduct(formData: FormData) {
   revalidatePath("/shop");
   revalidatePath(`/shop/${productId}`);
   updateTag(SHOP_CATALOGUE_CACHE_TAG);
+  updateTag(SHOP_CATEGORY_FILTER_TAG);
 
   if (productStatus === "archived" && !isSetupIntent) {
     redirect("/admin/products?filter=archived");
@@ -894,6 +1187,7 @@ export async function archiveProduct(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/");
   updateTag(SHOP_CATALOGUE_CACHE_TAG);
+  updateTag(SHOP_CATEGORY_FILTER_TAG);
 
   redirect("/admin/products?filter=archived");
 }
@@ -985,6 +1279,7 @@ export async function deleteProduct(formData: FormData) {
   revalidatePath("/shop");
   revalidatePath(`/shop/${productId}`);
   updateTag(SHOP_CATALOGUE_CACHE_TAG);
+  updateTag(SHOP_CATEGORY_FILTER_TAG);
 
   redirect("/admin/products?deleted=true");
 }

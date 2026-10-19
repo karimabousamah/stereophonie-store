@@ -111,6 +111,7 @@ type EditProductFormProps = {
     description: string;
     categoryId: string;
     subcategoryId: string;
+    additionalCategoryIds: string[];
     brandId: string;
     status: string;
     availability: string | null;
@@ -218,11 +219,35 @@ export default function EditProductForm({
     initialCategorySubcategoryId,
   );
 
+  const [selectedAdditionalCategoryIds, setSelectedAdditionalCategoryIds] =
+    useState<string[]>(product.additionalCategoryIds);
+
   const [selectedBrandId, setSelectedBrandId] = useState(
     product.brandId,
   );
 
   const [selectedBrandName, setSelectedBrandName] = useState(initialBrandName);
+
+  const additionalCategoryAssignments = useMemo(
+    () =>
+      selectedAdditionalCategoryIds.flatMap((selectedId) => {
+        const option = categories.find(
+          (category) => category.id === selectedId,
+        );
+
+        if (!option) {
+          return [];
+        }
+
+        return [
+          {
+            category_id: option.rootCategoryId ?? option.id,
+            subcategory_id: option.subcategoryId ?? null,
+          },
+        ];
+      }),
+    [categories, selectedAdditionalCategoryIds],
+  );
 
   const [productDescription, setProductDescription] = useState(
     product.description,
@@ -247,6 +272,8 @@ export default function EditProductForm({
       selectedBrandId !== product.brandId ||
       selectedCategoryId !== initialCategoryRootId ||
       selectedSubcategoryId !== initialCategorySubcategoryId ||
+      JSON.stringify([...selectedAdditionalCategoryIds].sort()) !==
+        JSON.stringify([...product.additionalCategoryIds].sort()) ||
       placementSelection.featured !== product.isFeatured ||
       placementSelection.trending !== product.isTrending ||
       placementSelection.newArrival !== product.isNewArrival ||
@@ -258,6 +285,7 @@ export default function EditProductForm({
     selectedBrandId,
     selectedCategoryId,
     selectedSubcategoryId,
+    selectedAdditionalCategoryIds,
     placementSelection,
     variants,
     product.name,
@@ -722,6 +750,12 @@ export default function EditProductForm({
           name="subcategory_id"
           value={selectedSubcategoryId}
         />
+
+        <input
+          type="hidden"
+          name="additional_category_assignments_json"
+          value={JSON.stringify(additionalCategoryAssignments)}
+        />
         <ProductWorkspace
             actionBar={
               <ProductSaveBar
@@ -811,19 +845,35 @@ export default function EditProductForm({
                       <ProductCategoryPicker
                         categories={categories}
                         defaultValue={initialCategorySelectionId}
-                        onCategoryChange={(category) => {
+                        defaultAdditionalValues={
+                          product.additionalCategoryIds
+                        }
+                        multiselect
+                        onCategoriesChange={(selectedCategories) => {
+                          const primary =
+                            selectedCategories[0] ?? null;
+
                           setSelectedCategoryId(
-                            category?.rootCategoryId ??
-                              category?.id ??
+                            primary?.rootCategoryId ??
+                              primary?.id ??
                               "",
                           );
 
                           setSelectedCategoryName(
-                            category?.name ?? "",
+                            primary?.name ?? "",
                           );
 
                           setSelectedSubcategoryId(
-                            category?.subcategoryId ?? "",
+                            primary?.subcategoryId ?? "",
+                          );
+
+                          setSelectedAdditionalCategoryIds(
+                            selectedCategories
+                              .slice(1)
+                              .map(
+                                (category) =>
+                                  category.id,
+                              ),
                           );
                         }}
                       />

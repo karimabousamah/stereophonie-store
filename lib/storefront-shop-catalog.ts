@@ -12,6 +12,12 @@ export type ShopNamedRelation =
     }[]
   | null;
 
+export type ShopCategoryAssignment = {
+  category_id: string;
+  subcategory_id: string | null;
+  categories: ShopNamedRelation;
+};
+
 export type ShopCatalogueProduct = {
   id: string;
   name: string;
@@ -22,6 +28,9 @@ export type ShopCatalogueProduct = {
   new_drop_started_at: string | null;
   created_at: string | null;
   categories: ShopNamedRelation;
+  product_category_assignments?:
+    | ShopCategoryAssignment[]
+    | null;
   brands: ShopNamedRelation;
   product_variants: StoreProductVariant[] | null;
 };
@@ -57,6 +66,67 @@ export function shopRelationName(
 
 export function shopCategoryName(product: ShopCatalogueProduct) {
   return shopRelationName(product.categories, "Technology");
+}
+
+export function shopProductInCategory(
+  product: ShopCatalogueProduct,
+  categoryName: string,
+) {
+  const normalizedCategory =
+    categoryName.trim().toLowerCase();
+
+  if (!normalizedCategory) {
+    return true;
+  }
+
+  if (
+    shopCategoryName(product)
+      .toLowerCase() ===
+    normalizedCategory
+  ) {
+    return true;
+  }
+
+  return (
+    product.product_category_assignments ??
+    []
+  ).some((assignment) => {
+    return (
+      shopRelationName(
+        assignment.categories,
+        "",
+      ).toLowerCase() ===
+      normalizedCategory
+    );
+  });
+}
+
+export function shopProductInSubcategory(
+  product: ShopCatalogueProduct,
+  subcategoryId: string,
+) {
+  const normalizedSubcategory =
+    subcategoryId.trim();
+
+  if (!normalizedSubcategory) {
+    return true;
+  }
+
+  if (
+    product.subcategory_id ===
+    normalizedSubcategory
+  ) {
+    return true;
+  }
+
+  return (
+    product.product_category_assignments ??
+    []
+  ).some(
+    (assignment) =>
+      assignment.subcategory_id ===
+      normalizedSubcategory,
+  );
 }
 
 export function shopBrandName(product: ShopCatalogueProduct) {

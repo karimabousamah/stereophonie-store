@@ -8,6 +8,8 @@ import type {
 import {
   shopBrandName,
   shopCategoryName,
+  shopProductInCategory,
+  shopProductInSubcategory,
   shopMatchesPriceRange,
   shopRelevantSearchProducts,
   shopProductInStock,
@@ -76,6 +78,14 @@ const loadShopCatalogueIndex = unstable_cache(
             name
           ),
 
+          product_category_assignments (
+            category_id,
+            subcategory_id,
+            categories (
+              name
+            )
+          ),
+
           brands (
             name
           ),
@@ -109,7 +119,7 @@ const loadShopCatalogueIndex = unstable_cache(
 
     return (data ?? []) as ShopIndexRow[];
   },
-  ["stereophonie-shop-catalogue-index-v3"],
+  ["stereophonie-shop-catalogue-index-v4"],
   {
     revalidate: 5,
     tags: [SHOP_CATALOGUE_CACHE_TAG],
@@ -477,16 +487,20 @@ export async function loadShopProductBatch({
 
     if (
       filters.category &&
-      shopCategoryName(product).toLowerCase() !==
-        filters.category.toLowerCase()
+      !shopProductInCategory(
+        product,
+        filters.category,
+      )
     ) {
       return false;
     }
 
     if (
       filters.subcategoryId &&
-      product.subcategory_id !==
-        filters.subcategoryId
+      !shopProductInSubcategory(
+        product,
+        filters.subcategoryId,
+      )
     ) {
       return false;
     }
@@ -533,16 +547,20 @@ export async function loadShopProductBatch({
 
     if (
       filters.category &&
-      shopCategoryName(product).toLowerCase() !==
-        filters.category.toLowerCase()
+      !shopProductInCategory(
+        product,
+        filters.category,
+      )
     ) {
       return false;
     }
 
     if (
       filters.subcategoryId &&
-      product.subcategory_id !==
-        filters.subcategoryId
+      !shopProductInSubcategory(
+        product,
+        filters.subcategoryId,
+      )
     ) {
       return false;
     }

@@ -161,8 +161,31 @@ export default function ProductForm({
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState("");
+  const [selectedAdditionalCategoryIds, setSelectedAdditionalCategoryIds] =
+    useState<string[]>([]);
 
   const [selectedBrandName, setSelectedBrandName] = useState("");
+
+  const additionalCategoryAssignments = useMemo(
+    () =>
+      selectedAdditionalCategoryIds.flatMap((selectedId) => {
+        const option = categories.find(
+          (category) => category.id === selectedId,
+        );
+
+        if (!option) {
+          return [];
+        }
+
+        return [
+          {
+            category_id: option.rootCategoryId ?? option.id,
+            subcategory_id: option.subcategoryId ?? null,
+          },
+        ];
+      }),
+    [categories, selectedAdditionalCategoryIds],
+  );
 
   const totalStock = useMemo(() => {
     return variants.reduce((total, variant) => {
@@ -1097,6 +1120,12 @@ export default function ProductForm({
         name="subcategory_id"
         value={selectedSubcategoryId}
       />
+
+      <input
+        type="hidden"
+        name="additional_category_assignments_json"
+        value={JSON.stringify(additionalCategoryAssignments)}
+      />
       <ProductWorkspace
         actionBar={
           <ProductSaveBar
@@ -1163,19 +1192,32 @@ export default function ProductForm({
 
                   <ProductCategoryPicker
                     categories={categories}
-                    onCategoryChange={(category) => {
+                    multiselect
+                    onCategoriesChange={(selectedCategories) => {
+                      const primary =
+                        selectedCategories[0] ?? null;
+
                       setSelectedCategoryId(
-                        category?.rootCategoryId ??
-                          category?.id ??
+                        primary?.rootCategoryId ??
+                          primary?.id ??
                           "",
                       );
 
                       setSelectedCategoryName(
-                        category?.name ?? "",
+                        primary?.name ?? "",
                       );
 
                       setSelectedSubcategoryId(
-                        category?.subcategoryId ?? "",
+                        primary?.subcategoryId ?? "",
+                      );
+
+                      setSelectedAdditionalCategoryIds(
+                        selectedCategories
+                          .slice(1)
+                          .map(
+                            (category) =>
+                              category.id,
+                          ),
                       );
                     }}
                   />

@@ -303,14 +303,6 @@ export default function V2ShopPage({
       <V3Header />
 
       <main className="st3-shop-v4 st-retail-shop st-retail-shop-v4">
-        {subcategoryNavigation ? (
-          <CategorySubcategoryNavigation
-            navigation={subcategoryNavigation}
-            selectedSubcategoryId={selectedSubcategoryId}
-            variant="compact"
-          />
-        ) : null}
-
         <section className="st3-shop-v4__catalog">
           <div className="st3-shop-v4__catalog-inner">
             <div
@@ -343,6 +335,14 @@ export default function V2ShopPage({
 
                 <Link href={clearFiltersHref}>Clear all</Link>
               </div>
+            ) : null}
+
+            {subcategoryNavigation ? (
+              <CategorySubcategoryNavigation
+                navigation={subcategoryNavigation}
+                selectedSubcategoryId={selectedSubcategoryId}
+                variant="compact"
+              />
             ) : null}
 
             <section className="st3-shop-v4__results" aria-label="Products">

@@ -60,10 +60,17 @@ export type ProductCategoryOption = {
 };
 
 type Props = {
- categories: ProductCategoryOption[];
- defaultValue?: string;
- name?: string;
- onCategoryChange?: (category: ProductCategoryOption | null) => void;
+  categories: ProductCategoryOption[];
+  defaultValue?: string;
+  defaultAdditionalValues?: string[];
+  name?: string;
+  multiselect?: boolean;
+  onCategoryChange?: (
+    category: ProductCategoryOption | null
+  ) => void;
+  onCategoriesChange?: (
+    categories: ProductCategoryOption[]
+  ) => void;
 };
 
 function normalize(value: string) {
@@ -71,18 +78,42 @@ function normalize(value: string) {
 }
 
 export default function ProductCategoryPicker({
- categories,
- defaultValue = "",
- name = "category_id",
- onCategoryChange,
+  categories,
+  defaultValue = "",
+  defaultAdditionalValues,
+  name = "category_id",
+  multiselect = false,
+  onCategoryChange,
+  onCategoriesChange,
 }: Props) {
- const triggerRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
  const dropdownRef = useRef<HTMLDivElement>(null);
  const searchRef = useRef<HTMLInputElement>(null);
 
- const [options, setOptions] = useState(categories);
- const [selectedId, setSelectedId] = useState(defaultValue);
- const [query, setQuery] = useState("");
+ const [options, setOptions] =
+    useState(categories);
+
+  /*
+   * The first checked destination remains the invisible
+   * canonical destination for legacy product fields.
+   *
+   * The administrator simply sees one multi-select.
+   */
+  const [selectedId, setSelectedId] =
+    useState(defaultValue);
+
+  const [
+    selectedAdditionalIds,
+    setSelectedAdditionalIds,
+  ] = useState<string[]>(() =>
+    (defaultAdditionalValues ?? []).filter(
+      (id) =>
+        Boolean(id) &&
+        id !== defaultValue,
+    ),
+  );
+
+  const [query, setQuery] = useState("");
  const [open, setOpen] = useState(false);
  const [activeIndex, setActiveIndex] = useState(-1);
  const [popupPresent, setPopupPresent] = useState(false);
@@ -169,13 +200,114 @@ export default function ProductCategoryPicker({
   }, [categories]);
 
  useEffect(() => {
- setSelectedId(defaultValue);
+    setSelectedId(defaultValue);
   }, [defaultValue]);
 
- const selectedCategory =
- options.find((category) => category.id === selectedId) ?? null;
+  useEffect(() => {
+    const nextAdditionalIds = (
+      defaultAdditionalValues ?? []
+    ).filter(
+      (id) =>
+        Boolean(id) &&
+        id !== defaultValue,
+    );
 
- const cleanQuery = normalize(query);
+    setSelectedAdditionalIds(
+      (current) =>
+        JSON.stringify(current) ===
+        JSON.stringify(nextAdditionalIds)
+          ? current
+          : nextAdditionalIds,
+    );
+  }, [
+    defaultAdditionalValues,
+    defaultValue,
+  ]);
+
+  const selectedCategory =
+    options.find(
+      (category) =>
+        category.id === selectedId,
+    ) ?? null;
+
+  const selectedIds = Array.from(
+    new Set(
+      [
+        selectedId,
+        ...selectedAdditionalIds,
+      ].filter(Boolean),
+    ),
+  );
+
+  const selectedCategories =
+    selectedIds.flatMap((id) => {
+      const category =
+        options.find(
+          (candidate) =>
+            candidate.id === id,
+        );
+
+      return category
+        ? [category]
+        : [];
+    });
+
+  const categoryTriggerLabel =
+    selectedCategories.length > 1
+      ? `${selectedCategory?.name ?? selectedCategories[0]?.name} +${
+          selectedCategories.length - 1
+        }`
+      : selectedCategory?.name ??
+        "Select category";
+
+  function emitSelection(
+    nextPrimaryId: string,
+    nextAdditionalIds: string[],
+    extraCategory?: ProductCategoryOption,
+  ) {
+    const candidateOptions =
+      extraCategory
+        ? [
+            ...options.filter(
+              (category) =>
+                category.id !== extraCategory.id,
+            ),
+            extraCategory,
+          ]
+        : options;
+
+    const nextIds = Array.from(
+      new Set(
+        [
+          nextPrimaryId,
+          ...nextAdditionalIds,
+        ].filter(Boolean),
+      ),
+    );
+
+    const nextCategories =
+      nextIds.flatMap((id) => {
+        const category =
+          candidateOptions.find(
+            (candidate) =>
+              candidate.id === id,
+          );
+
+        return category
+          ? [category]
+          : [];
+      });
+
+    onCategoryChange?.(
+      nextCategories[0] ?? null,
+    );
+
+    onCategoriesChange?.(
+      nextCategories,
+    );
+  }
+
+  const cleanQuery = normalize(query);
 
  const filtered = useMemo(() => {
  const matchingOptions = cleanQuery
@@ -373,17 +505,76 @@ export default function ProductCategoryPicker({
   }, [open]);
 
  function choose(category: ProductCategoryOption) {
- setSelectedId(category.id);
- setQuery("");
- setOpen(false);
- setActiveIndex(-1);
- setError("");
- setCreationMessage("");
+    if (!multiselect) {
+      setSelectedId(category.id);
+      setSelectedAdditionalIds([]);
+      setQuery("");
+      setOpen(false);
+      setActiveIndex(-1);
+      setError("");
+      setCreationMessage("");
 
- onCategoryChange?.(category);
+      onCategoryChange?.(category);
+      onCategoriesChange?.([category]);
+
+      return;
+    }
+
+    let nextPrimaryId =
+      selectedId;
+
+    let nextAdditionalIds = [
+      ...selectedAdditionalIds,
+    ];
+
+    if (category.id === selectedId) {
+      if (nextAdditionalIds.length > 0) {
+        nextPrimaryId =
+          nextAdditionalIds[0];
+
+        nextAdditionalIds =
+          nextAdditionalIds.slice(1);
+      } else {
+        nextPrimaryId = "";
+      }
+    } else if (
+      nextAdditionalIds.includes(category.id)
+    ) {
+      nextAdditionalIds =
+        nextAdditionalIds.filter(
+          (id) => id !== category.id,
+        );
+    } else if (!nextPrimaryId) {
+      nextPrimaryId =
+        category.id;
+    } else {
+      nextAdditionalIds.push(
+        category.id,
+      );
+    }
+
+    setSelectedId(
+      nextPrimaryId,
+    );
+
+    setSelectedAdditionalIds(
+      nextAdditionalIds,
+    );
+
+    /*
+     * Keep the popup open while checking/unchecking categories.
+     */
+    setActiveIndex(-1);
+    setError("");
+    setCreationMessage("");
+
+    emitSelection(
+      nextPrimaryId,
+      nextAdditionalIds,
+    );
   }
 
- function resetCreationFlow() {
+  function resetCreationFlow() {
  setCreationEditingKey(null);
  setCreationEditValue("");
  setCreationEditBusy(false);
@@ -416,52 +607,111 @@ function beginCreationFlow() {
 }
 
 function finishCreatedSelection(
- nextCategory: ProductCategoryOption,
- message: string,
- previousLeafId?: string,
-) {
- setOptions((current) =>
-   [
-     ...current.filter(
-       (category) =>
-         category.id !== nextCategory.id &&
-         category.id !== previousLeafId,
-     ),
-     nextCategory,
-   ].sort((first, second) =>
-     first.name.localeCompare(
-       second.name,
-       undefined,
-       {
-         sensitivity: "base",
-         numeric: true,
-       },
-     ),
-   ),
- );
+    nextCategory: ProductCategoryOption,
+    message: string,
+    previousLeafId?: string,
+  ) {
+    setOptions((current) =>
+      [
+        ...current.filter(
+          (category) =>
+            category.id !== nextCategory.id &&
+            category.id !== previousLeafId,
+        ),
+        nextCategory,
+      ].sort((first, second) =>
+        first.name.localeCompare(
+          second.name,
+          undefined,
+          {
+            sensitivity: "base",
+            numeric: true,
+          },
+        ),
+      ),
+    );
 
- setSelectedId(nextCategory.id);
- setQuery("");
- setActiveIndex(-1);
- setError("");
- setCreationMessage(message);
+    let nextIds = [
+      selectedId,
+      ...selectedAdditionalIds,
+    ].filter(Boolean);
 
- onCategoryChange?.(nextCategory);
+    if (multiselect) {
+      if (
+        previousLeafId &&
+        nextIds.includes(previousLeafId)
+      ) {
+        nextIds =
+          nextIds.map((id) =>
+            id === previousLeafId
+              ? nextCategory.id
+              : id,
+          );
+      } else if (
+        !nextIds.includes(nextCategory.id)
+      ) {
+        nextIds.push(
+          nextCategory.id,
+        );
+      }
 
- setCreationStep("idle");
- setCreationName("");
- setCreationRootId("");
- setCreationParentId(null);
- setCreationRoots([]);
- setCreationNodes([]);
+      nextIds = Array.from(
+        new Set(nextIds),
+      );
+    } else {
+      nextIds = [
+        nextCategory.id,
+      ];
+    }
 
- window.setTimeout(() => {
-   setOpen(false);
-   triggerRef.current?.focus();
- }, 450);
-}
+    const nextPrimaryId =
+      nextIds[0] ??
+      nextCategory.id;
 
-async function createRequestedRootCategory() {
+    const nextAdditionalIds =
+      nextIds.slice(1);
+
+    setSelectedId(
+      nextPrimaryId,
+    );
+
+    setSelectedAdditionalIds(
+      nextAdditionalIds,
+    );
+
+    setQuery("");
+    setActiveIndex(-1);
+    setError("");
+    setCreationMessage(message);
+
+    emitSelection(
+      nextPrimaryId,
+      nextAdditionalIds,
+      nextCategory,
+    );
+
+    setCreationStep("idle");
+    setCreationName("");
+    setCreationRootId("");
+    setCreationParentId(null);
+    setCreationRoots([]);
+    setCreationNodes([]);
+
+    if (multiselect) {
+      requestAnimationFrame(() => {
+        searchRef.current?.focus();
+      });
+
+      return;
+    }
+
+    window.setTimeout(() => {
+      setOpen(false);
+      triggerRef.current?.focus();
+    }, 450);
+  }
+
+  async function createRequestedRootCategory() {
  if (!creationName || creating) {
    return;
  }
@@ -925,11 +1175,12 @@ async function saveCategoryRename(categoryId: string) {
              directoryLabel="Category directory"
              countLabelSingular="category"
              countLabelPlural="categories"
-             preserveOptionOrder
+             preserveOptionOrder={!multiselect}
+             multiselect={multiselect}
              options={filtered.map((category) => ({
                key: category.id,
                label: category.name,
-               selected: category.id === selectedId,
+               selected: selectedIds.includes(category.id),
                editable: category.editable !== false,
              }))}
              activeIndex={activeIndex}
@@ -1654,27 +1905,35 @@ async function saveCategoryRename(categoryId: string) {
 
         <span className="st-admin-category-picker__trigger-copy">
           <small>Category</small>
-          <strong>{selectedCategory?.name ?? "Select category"}</strong>
+          <strong>{categoryTriggerLabel}</strong>
         </span>
 
         <ChevronDown className="st-admin-category-picker__chevron h-4 w-4" />
       </button>
 
-      {selectedCategory ? (
+      {selectedCategories.length > 0 ? (
         <button
- type="button"
- onClick={() => {
- setSelectedId("");
- setQuery("");
- setOpen(false);
- setActiveIndex(-1);
- setError("");
- setCreationMessage("");
- onCategoryChange?.(null);
+          type="button"
+          onClick={() => {
+            setSelectedId("");
+            setSelectedAdditionalIds([]);
+            setQuery("");
+            setOpen(false);
+            setActiveIndex(-1);
+            setError("");
+            setCreationMessage("");
+
+            onCategoryChange?.(null);
+            onCategoriesChange?.([]);
           }}
- className="st-admin-organization-clear-chip-v2"
+          className="st-admin-organization-clear-chip-v2"
         >
-          <span>Clear category</span>
+          <span>
+            {selectedCategories.length > 1
+              ? "Clear categories"
+              : "Clear category"}
+          </span>
+
           <X aria-hidden="true" />
         </button>
       ) : null}

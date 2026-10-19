@@ -93,10 +93,18 @@ async function loadVisibleSubcategoryNavigation({
       }),
 
     supabase
-      .from("products")
-      .select("subcategory_id")
-      .eq("category_id", category.id)
-      .eq("status", "published"),
+        .from("products")
+        .select(
+          `
+            category_id,
+            subcategory_id,
+            product_category_assignments (
+              category_id,
+              subcategory_id
+            )
+          `,
+        )
+        .eq("status", "published"),
   ]);
 
   if (subcategoriesResult.error) {
@@ -158,30 +166,63 @@ async function loadVisibleSubcategoryNavigation({
   }
 
   /*
-   * Only published products count.
-   *
-   * A NULL subcategory_id belongs only to the root Category.
-   * It must not make any child Subcategory visible.
-   */
-  const directlyPopulated =
-    new Set<string>();
+     * Only published products count.
+     *
+     * Both the canonical destination and explicit additional
+     * destinations can populate storefront Subcategories.
+     *
+     * A NULL subcategory_id belongs only to the root Category.
+     * It must not make a child Subcategory visible.
+     */
+    const directlyPopulated =
+      new Set<string>();
 
-  for (
-    const product
-    of publishedProductsResult.data ?? []
-  ) {
-    const subcategoryId =
-      typeof product.subcategory_id ===
-      "string"
-        ? product.subcategory_id.trim()
-        : "";
+    for (
+      const product
+      of publishedProductsResult.data ?? []
+    ) {
+      if (
+        product.category_id ===
+        category.id
+      ) {
+        const primarySubcategoryId =
+          typeof product.subcategory_id ===
+          "string"
+            ? product.subcategory_id.trim()
+            : "";
 
-    if (subcategoryId) {
-      directlyPopulated.add(
-        subcategoryId,
-      );
+        if (primarySubcategoryId) {
+          directlyPopulated.add(
+            primarySubcategoryId,
+          );
+        }
+      }
+
+      for (
+        const assignment
+        of product.product_category_assignments ??
+          []
+      ) {
+        if (
+          assignment.category_id !==
+          category.id
+        ) {
+          continue;
+        }
+
+        const additionalSubcategoryId =
+          typeof assignment.subcategory_id ===
+          "string"
+            ? assignment.subcategory_id.trim()
+            : "";
+
+        if (additionalSubcategoryId) {
+          directlyPopulated.add(
+            additionalSubcategoryId,
+          );
+        }
+      }
     }
-  }
 
   /*
    * An active node must also have a complete active path

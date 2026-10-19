@@ -8,6 +8,9 @@ import {
   SHOP_CATALOGUE_CACHE_TAG,
   STOREFRONT_RECOMMENDATION_CACHE_TAG,
 } from "@/lib/storefront-cache-tags";
+import {
+  SHOP_CATEGORY_FILTER_TAG,
+} from "@/lib/storefront-shop-filter-options";
 import { createClient } from "@/lib/supabase/server";
 
 type AvailabilityStatus =
@@ -262,6 +265,9 @@ async function createProductUnsafe(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "").trim();
   const subcategoryId = String(formData.get("subcategory_id") ?? "").trim();
+  const additionalCategoryAssignmentsJson = String(
+    formData.get("additional_category_assignments_json") ?? "[]",
+  );
   const brandId = String(formData.get("brand_id") ?? "").trim();
   const collectionId = String(formData.get("collection_id") ?? "").trim();
 
@@ -293,6 +299,65 @@ async function createProductUnsafe(formData: FormData) {
 
   if (!categoryId) {
     redirectWithError("Please select a category.");
+  }
+
+  let additionalCategoryAssignments: {
+    category_id: string;
+    subcategory_id: string | null;
+  }[] = [];
+
+  try {
+    const parsed = JSON.parse(additionalCategoryAssignmentsJson);
+
+    if (!Array.isArray(parsed)) {
+      throw new Error("Invalid category assignments.");
+    }
+
+    const unique = new Map<
+      string,
+      {
+        category_id: string;
+        subcategory_id: string | null;
+      }
+    >();
+
+    for (const entry of parsed) {
+      const additionalCategoryId = String(
+        entry?.category_id ?? "",
+      ).trim();
+
+      const additionalSubcategoryId = String(
+        entry?.subcategory_id ?? "",
+      ).trim();
+
+      if (!additionalCategoryId) {
+        continue;
+      }
+
+      const normalizedSubcategoryId =
+        additionalSubcategoryId || null;
+
+      if (
+        additionalCategoryId === categoryId &&
+        normalizedSubcategoryId === (subcategoryId || null)
+      ) {
+        continue;
+      }
+
+      unique.set(
+        `${additionalCategoryId}:${normalizedSubcategoryId ?? ""}`,
+        {
+          category_id: additionalCategoryId,
+          subcategory_id: normalizedSubcategoryId,
+        },
+      );
+    }
+
+    additionalCategoryAssignments = [...unique.values()];
+  } catch {
+    redirectWithError(
+      "The additional product categories could not be processed.",
+    );
   }
 
   let variants: VariantInput[];
@@ -758,6 +823,30 @@ async function createProductUnsafe(formData: FormData) {
     );
   }
 
+  if (additionalCategoryAssignments.length > 0) {
+    const { error: additionalCategoriesError } = await supabase
+      .from("product_category_assignments")
+      .insert(
+        additionalCategoryAssignments.map((assignment, index) => ({
+          product_id: product.id,
+          ...assignment,
+            display_position: index,
+        })),
+      );
+
+    if (additionalCategoriesError) {
+      await supabase
+        .from("products")
+        .delete()
+        .eq("id", product.id);
+
+      redirectWithError(
+        additionalCategoriesError.message ||
+          "The additional product categories could not be saved.",
+      );
+    }
+  }
+
   const variantsToInsert = variants.map((variant) => {
     const unavailable =
       variant.availability_status === "out_of_stock" ||
@@ -1158,6 +1247,7 @@ async function createProductUnsafe(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/shop");
   updateTag(SHOP_CATALOGUE_CACHE_TAG);
+  updateTag(SHOP_CATEGORY_FILTER_TAG);
   revalidateTag(STOREFRONT_RECOMMENDATION_CACHE_TAG, "max");
 
   redirect(
