@@ -37,14 +37,19 @@ const nextConfig: NextConfig = {
           {
             key: "Permissions-Policy",
             value:
-              "camera=(), microphone=(), geolocation=(self), payment=()",
+              "camera=(self), microphone=(), geolocation=(self), payment=()",
           },
         ],
       },
     ];
   },
 
-  allowedDevOrigins: ["192.168.1.74", "10.222.2.69"],
+  allowedDevOrigins: [
+    "192.168.1.74",
+    "192.168.1.76",
+    "10.222.2.69",
+    "Kimos-MacBook-Air-2.local",
+  ],
 
   images: {
     /*

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 import { processStockNotificationsForProduct } from "@/lib/email/process-stock-notifications";
 import { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-shop-loader";
+import { updateProductImageVariantUsageBulk } from "./image-actions";
 import { createClient } from "@/lib/supabase/server";
 
 type AvailabilityStatus =
@@ -13,6 +14,7 @@ type AvailabilityStatus =
 
 type VariantInput = {
   id: string | null;
+  client_id?: string | null;
   variant_name: string;
   display_position?: number;
   attributes: Record<string, string>;
@@ -264,6 +266,10 @@ export async function updateProduct(formData: FormData) {
 
   const variantsJson = String(formData.get("variants_json") ?? "[]");
 
+  const pendingPhotoUsageJson = String(
+    formData.get("pending_photo_usage_json") ?? "[]",
+  );
+
   let isFeatured = formData.get("is_featured") === "on";
 
   let isTrending = formData.get("is_trending") === "on";
@@ -286,6 +292,47 @@ export async function updateProduct(formData: FormData) {
     redirectWithError(
       productId,
       "The product configurations could not be processed.",
+    );
+  }
+
+  let pendingPhotoUsage: {
+    image_id: string;
+    client_variant_ids: string[];
+  }[] = [];
+
+  try {
+    const parsedPendingPhotoUsage =
+      JSON.parse(pendingPhotoUsageJson);
+
+    if (!Array.isArray(parsedPendingPhotoUsage)) {
+      throw new Error("Invalid pending photo usage.");
+    }
+
+    pendingPhotoUsage = parsedPendingPhotoUsage
+      .map((entry) => ({
+        image_id:
+          String(entry?.image_id ?? "").trim(),
+        client_variant_ids: Array.from(
+          new Set<string>(
+            Array.isArray(entry?.client_variant_ids)
+              ? entry.client_variant_ids
+                  .map((value: unknown) =>
+                    String(value ?? "").trim(),
+                  )
+                  .filter(Boolean)
+              : [],
+          ),
+        ),
+      }))
+      .filter(
+        (entry) =>
+          entry.image_id &&
+          entry.client_variant_ids.length > 0,
+      );
+  } catch {
+    redirectWithError(
+      productId,
+      "Pending photo assignments could not be processed.",
     );
   }
 
@@ -535,6 +582,13 @@ export async function updateProduct(formData: FormData) {
         availability_status: variant.availability_status,
       };
 
+      const clientId =
+        String(
+          variant.client_id ??
+          variant.id ??
+          "",
+        ).trim();
+
       if (variant.id) {
         const { error: updateVariantError } = await supabase
           .from("product_variants")
@@ -542,24 +596,221 @@ export async function updateProduct(formData: FormData) {
           .eq("id", variant.id)
           .eq("product_id", productId);
 
-        return updateVariantError?.message ?? null;
+        return {
+          error: updateVariantError?.message ?? null,
+          clientId,
+          id: variant.id,
+        };
       }
 
-      const { error: insertVariantError } = await supabase
+      const {
+        data: insertedVariant,
+        error: insertVariantError,
+      } = await supabase
         .from("product_variants")
         .insert({
           product_id: productId,
           ...variantValues,
-        });
+        })
+        .select("id")
+        .single();
 
-      return insertVariantError?.message ?? null;
+      return {
+        error:
+          insertVariantError?.message ??
+          (!insertedVariant?.id
+            ? "The new product configuration could not be identified."
+            : null),
+        clientId,
+        id: insertedVariant?.id ?? null,
+      };
     }),
   );
 
-  const variantSaveError = variantSaveResults.find(Boolean);
+  const variantSaveFailure =
+    variantSaveResults.find((result) => result.error);
 
-  if (variantSaveError) {
-    redirectWithError(productId, variantSaveError);
+  if (variantSaveFailure?.error) {
+    redirectWithError(
+      productId,
+      variantSaveFailure.error,
+    );
+  }
+
+  /*
+   * Bridge editor client IDs to the database IDs that now exist.
+   *
+   * Existing configurations map to themselves.
+   * Newly-created configurations map their stable editor clientId
+   * to the UUID returned by the insert above.
+   */
+  const variantIdByClientId =
+    new Map<string, string>();
+
+  for (const result of variantSaveResults) {
+    if (result.clientId && result.id) {
+      variantIdByClientId.set(
+        result.clientId,
+        result.id,
+      );
+    }
+  }
+
+  /*
+   * Media can be assigned to a brand-new configuration before
+   * Save Changes.
+   *
+   * Until this point those assignments are intentionally kept
+   * client-side because product_image_variants requires a genuine
+   * product_variants UUID.
+   *
+   * Now that the variants exist, merge those pending assignments
+   * with whatever persisted usage Media already saved.
+   */
+  if (pendingPhotoUsage.length > 0) {
+    const resolvedPendingUsage =
+      pendingPhotoUsage
+        .map((entry) => ({
+          image_id: entry.image_id,
+          variant_ids: Array.from(
+            new Set(
+              entry.client_variant_ids
+                .map((clientId) =>
+                  variantIdByClientId.get(clientId),
+                )
+                .filter(
+                  (variantId): variantId is string =>
+                    Boolean(variantId),
+                ),
+            ),
+          ),
+        }))
+        .filter(
+          (entry) =>
+            entry.image_id &&
+            entry.variant_ids.length > 0,
+        );
+
+    if (resolvedPendingUsage.length > 0) {
+      const pendingImageIds =
+        Array.from(
+          new Set(
+            resolvedPendingUsage.map(
+              (entry) => entry.image_id,
+            ),
+          ),
+        );
+
+      const [
+        pendingImagesResult,
+        currentAssignmentsResult,
+      ] = await Promise.all([
+        supabase
+          .from("product_images")
+          .select("id")
+          .eq("product_id", productId)
+          .in("id", pendingImageIds),
+
+        supabase
+          .from("product_image_variants")
+          .select("image_id, variant_id")
+          .in("image_id", pendingImageIds),
+      ]);
+
+      if (pendingImagesResult.error) {
+        redirectWithError(
+          productId,
+          pendingImagesResult.error.message,
+        );
+      }
+
+      if (currentAssignmentsResult.error) {
+        redirectWithError(
+          productId,
+          currentAssignmentsResult.error.message,
+        );
+      }
+
+      const validImageIds =
+        new Set(
+          (pendingImagesResult.data ?? []).map(
+            (image) => image.id,
+          ),
+        );
+
+      const currentVariantIdsByImage =
+        new Map<string, string[]>();
+
+      for (
+        const assignment of
+          currentAssignmentsResult.data ?? []
+      ) {
+        if (!validImageIds.has(assignment.image_id)) {
+          continue;
+        }
+
+        const current =
+          currentVariantIdsByImage.get(
+            assignment.image_id,
+          ) ?? [];
+
+        current.push(assignment.variant_id);
+
+        currentVariantIdsByImage.set(
+          assignment.image_id,
+          current,
+        );
+      }
+
+      const mergedUsage =
+        resolvedPendingUsage
+          .filter((entry) =>
+            validImageIds.has(entry.image_id),
+          )
+          .map((entry) => ({
+            image_id: entry.image_id,
+            variant_ids: Array.from(
+              new Set([
+                ...(
+                  currentVariantIdsByImage.get(
+                    entry.image_id,
+                  ) ?? []
+                ),
+                ...entry.variant_ids,
+              ]),
+            ),
+          }));
+
+      if (mergedUsage.length > 0) {
+        const usageFormData = new FormData();
+
+        usageFormData.set(
+          "_client_image_operation",
+          "1",
+        );
+        usageFormData.set(
+          "product_id",
+          productId,
+        );
+        usageFormData.set(
+          "usage_json",
+          JSON.stringify(mergedUsage),
+        );
+
+        try {
+          await updateProductImageVariantUsageBulk(
+            usageFormData,
+          );
+        } catch (error) {
+          redirectWithError(
+            productId,
+            error instanceof Error
+              ? error.message
+              : "Pending photo assignments could not be saved.",
+          );
+        }
+      }
+    }
   }
 
   /*

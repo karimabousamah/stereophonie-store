@@ -127,6 +127,17 @@ export default function ImageManager({
   const [photoUsageSavedMessage, setPhotoUsageSavedMessage] = useState("");
 
   /*
+   * Assignments to newly-created configurations cannot enter
+   * product_image_variants until Save Changes gives those
+   * configurations genuine database UUIDs.
+   */
+  const pendingClientUsageRef =
+    useRef<Record<string, string[]>>({});
+
+  const [pendingClientUsage, setPendingClientUsage] =
+    useState<Record<string, string[]>>({});
+
+  /*
    * One exact configuration at a time keeps the media manager simple:
    * choose configuration → upload → arrange → choose Main.
    */
@@ -268,6 +279,276 @@ export default function ImageManager({
     };
   }, []);
 
+  function splitConfigurationIds(
+    configurationIds: string[],
+  ) {
+    const persistedIds = new Set(
+      liveConfigurations
+        .filter((configuration) => configuration.persisted)
+        .map((configuration) => configuration.id),
+    );
+
+    const knownIds = new Set(
+      liveConfigurations.map(
+        (configuration) => configuration.id,
+      ),
+    );
+
+    return {
+      persistedIds: configurationIds.filter(
+        (configurationId) =>
+          persistedIds.has(configurationId),
+      ),
+
+      clientIds: configurationIds.filter(
+        (configurationId) =>
+          knownIds.has(configurationId) &&
+          !persistedIds.has(configurationId),
+      ),
+    };
+  }
+
+  function writePendingClientUsageInput(
+    nextUsage: Record<string, string[]>,
+  ) {
+    const input =
+      document.querySelector<HTMLInputElement>(
+        'input[data-admin-pending-photo-usage="true"]',
+      );
+
+    if (!input) {
+      return;
+    }
+
+    const payload = Object.entries(nextUsage)
+      .map(([imageId, clientVariantIds]) => ({
+        image_id: imageId,
+        client_variant_ids: Array.from(
+          new Set(
+            clientVariantIds
+              .map((value) =>
+                String(value ?? "").trim(),
+              )
+              .filter(Boolean),
+          ),
+        ),
+      }))
+      .filter(
+        (entry) =>
+          entry.image_id &&
+          entry.client_variant_ids.length > 0,
+      );
+
+    input.value = JSON.stringify(payload);
+  }
+
+  function commitPendingClientUsage(
+    nextUsage: Record<string, string[]>,
+  ) {
+    pendingClientUsageRef.current = nextUsage;
+    setPendingClientUsage(nextUsage);
+    writePendingClientUsageInput(nextUsage);
+  }
+
+  function updatePendingClientUsageForImage(
+    imageId: string,
+    clientVariantIds: string[],
+  ) {
+    if (!imageId) {
+      return;
+    }
+
+    const cleanedIds = Array.from(
+      new Set(
+        clientVariantIds
+          .map((value) =>
+            String(value ?? "").trim(),
+          )
+          .filter(Boolean),
+      ),
+    );
+
+    const nextUsage = {
+      ...pendingClientUsageRef.current,
+    };
+
+    if (cleanedIds.length > 0) {
+      nextUsage[imageId] = cleanedIds;
+    } else {
+      delete nextUsage[imageId];
+    }
+
+    commitPendingClientUsage(nextUsage);
+  }
+
+  function mergePendingClientUsage(
+    entries: {
+      imageId: string;
+      clientVariantIds: string[];
+    }[],
+  ) {
+    if (entries.length === 0) {
+      return;
+    }
+
+    const nextUsage = {
+      ...pendingClientUsageRef.current,
+    };
+
+    for (const entry of entries) {
+      const cleanedIds = Array.from(
+        new Set(
+          entry.clientVariantIds
+            .map((value) =>
+              String(value ?? "").trim(),
+            )
+            .filter(Boolean),
+        ),
+      );
+
+      if (!entry.imageId || cleanedIds.length === 0) {
+        continue;
+      }
+
+      nextUsage[entry.imageId] = cleanedIds;
+    }
+
+    commitPendingClientUsage(nextUsage);
+  }
+
+  function capturePendingUsageForm(
+    form: HTMLFormElement,
+  ) {
+    const formData = new FormData(form);
+    const imageId =
+      String(
+        formData.get("image_id") ?? "",
+      ).trim();
+
+    if (!imageId) {
+      return;
+    }
+
+    const requestedIds = Array.from(
+      new Set(
+        formData
+          .getAll("variant_ids")
+          .map((value) =>
+            String(value ?? "").trim(),
+          )
+          .filter(Boolean),
+      ),
+    );
+
+    const { clientIds } =
+      splitConfigurationIds(requestedIds);
+
+    updatePendingClientUsageForImage(
+      imageId,
+      clientIds,
+    );
+  }
+
+  function replacePendingClientUsageFromForms(
+    usage: {
+      image_id: string;
+      variant_ids: string[];
+    }[],
+  ) {
+    /*
+     * Only forms in the currently visible configuration gallery
+     * are mounted in the DOM.
+     *
+     * Preserve pending assignments for images that are currently
+     * off-screen. Otherwise saving from e.g. Obsidian would erase
+     * a pending Fog-only assignment simply because the Fog image
+     * cards are not rendered.
+     */
+    const nextUsage: Record<string, string[]> = {
+      ...pendingClientUsageRef.current,
+    };
+
+    for (const entry of usage) {
+      if (!entry.image_id) {
+        continue;
+      }
+
+      const { clientIds } =
+        splitConfigurationIds(
+          entry.variant_ids,
+        );
+
+      if (clientIds.length > 0) {
+        nextUsage[entry.image_id] =
+          clientIds;
+      } else {
+        /*
+         * The image is visible and its unsaved configuration
+         * selections were explicitly cleared.
+         */
+        delete nextUsage[entry.image_id];
+      }
+    }
+
+    commitPendingClientUsage(nextUsage);
+  }
+
+  useEffect(() => {
+    const validImageIds =
+      new Set(
+        managedImages.map((image) => image.id),
+      );
+
+    const validClientIds =
+      new Set(
+        liveConfigurations
+          .filter(
+            (configuration) =>
+              !configuration.persisted,
+          )
+          .map(
+            (configuration) =>
+              configuration.id,
+          ),
+      );
+
+    const current =
+      pendingClientUsageRef.current;
+
+    const nextUsage: Record<string, string[]> = {};
+
+    for (
+      const [imageId, clientVariantIds]
+      of Object.entries(current)
+    ) {
+      if (!validImageIds.has(imageId)) {
+        continue;
+      }
+
+      const validIds =
+        clientVariantIds.filter(
+          (clientVariantId) =>
+            validClientIds.has(
+              clientVariantId,
+            ),
+        );
+
+      if (validIds.length > 0) {
+        nextUsage[imageId] =
+          validIds;
+      }
+    }
+
+    if (
+      JSON.stringify(nextUsage) !==
+      JSON.stringify(current)
+    ) {
+      commitPendingClientUsage(
+        nextUsage,
+      );
+    }
+  }, [liveConfigurations, managedImages]);
+
   useEffect(() => {
     if (liveConfigurations.length === 0) {
       if (selectedGalleryConfigurationId) {
@@ -384,9 +665,9 @@ export default function ImageManager({
   );
 
   const configurationName = new Map(
-    configurations.map((configuration) => [
+    liveConfigurations.map((configuration) => [
       configuration.id,
-      configuration.variant_name,
+      configuration.variant_name || configuration.fallbackLabel,
     ]),
   );
 
@@ -1875,13 +2156,25 @@ export default function ImageManager({
   const selectedConfigurationImages = selectedGalleryConfigurationId
     ? [...orderedImages]
         .filter((image) => {
-          const assignments = image.product_image_variants ?? [];
+          const assignments =
+            image.product_image_variants ?? [];
+
+          const pendingConfigurationIds =
+            pendingClientUsage[image.id] ?? [];
+
+          const isShared =
+            assignments.length === 0 &&
+            pendingConfigurationIds.length === 0;
 
           return (
-            assignments.length === 0 ||
+            isShared ||
             assignments.some(
               (assignment) =>
-                assignment.variant_id === selectedGalleryConfigurationId,
+                assignment.variant_id ===
+                selectedGalleryConfigurationId,
+            ) ||
+            pendingConfigurationIds.includes(
+              selectedGalleryConfigurationId,
             )
           );
         })
@@ -1914,9 +2207,18 @@ const difference =
         })
     : orderedImages;
 
-  const sharedImages = orderedImages.filter(
-    (image) => (image.product_image_variants ?? []).length === 0,
-  );
+  const sharedImages = orderedImages.filter((image) => {
+    const assignments =
+      image.product_image_variants ?? [];
+
+    const pendingConfigurationIds =
+      pendingClientUsage[image.id] ?? [];
+
+    return (
+      assignments.length === 0 &&
+      pendingConfigurationIds.length === 0
+    );
+  });
 
   async function handleImageOperation(
     event: FormEvent<HTMLFormElement>,
@@ -2261,6 +2563,44 @@ const difference =
       }
     }
 
+    if (operation === "usage" && imageId) {
+      const requestedUsageVariantIds =
+        Array.from(
+          new Set(
+            formData
+              .getAll("variant_ids")
+              .map((value) =>
+                String(value ?? "").trim(),
+              )
+              .filter(Boolean),
+          ),
+        );
+
+      const {
+        persistedIds,
+        clientIds,
+      } = splitConfigurationIds(
+        requestedUsageVariantIds,
+      );
+
+      updatePendingClientUsageForImage(
+        imageId,
+        clientIds,
+      );
+
+      formData.delete("variant_ids");
+
+      for (
+        const persistedId
+        of persistedIds
+      ) {
+        formData.append(
+          "variant_ids",
+          persistedId,
+        );
+      }
+    }
+
     const controls = Array.from(form.elements).filter(
       (
         element,
@@ -2391,21 +2731,40 @@ const difference =
         const formData = new FormData(form);
 
         return {
-          image_id: String(formData.get("image_id") ?? "").trim(),
+          image_id:
+            String(
+              formData.get("image_id") ?? "",
+            ).trim(),
+
           variant_ids: Array.from(
             new Set(
               formData
                 .getAll("variant_ids")
-                .map((value) => String(value ?? "").trim())
+                .map((value) =>
+                  String(value ?? "").trim(),
+                )
                 .filter(Boolean),
             ),
           ),
         };
       });
 
+      replacePendingClientUsageFromForms(
+        usage,
+      );
+
+      const persistedUsage =
+        usage.map((entry) => ({
+          image_id: entry.image_id,
+          variant_ids:
+            splitConfigurationIds(
+              entry.variant_ids,
+            ).persistedIds,
+        }));
+
       const formData = new FormData();
       formData.set("product_id", productId);
-      formData.set("usage_json", JSON.stringify(usage));
+      formData.set("usage_json", JSON.stringify(persistedUsage));
 
       const result = await updateProductImageVariantUsageBulk(formData);
 
@@ -2564,6 +2923,29 @@ const difference =
   ) {
     setUploadError("");
 
+    const persistedVariantIdsByFile =
+      variantIdsByFile.map(
+        (variantIds) =>
+          splitConfigurationIds(
+            variantIds,
+          ).persistedIds,
+      );
+
+    const pendingClientIdsByFile =
+      variantIdsByFile.map(
+        (variantIds) =>
+          splitConfigurationIds(
+            variantIds,
+          ).clientIds,
+      );
+
+    const previousImageIds =
+      new Set(
+        managedImages.map(
+          (image) => image.id,
+        ),
+      );
+
     if (files.length === 0) {
       setUploadError("Select at least one image.");
       return;
@@ -2710,7 +3092,7 @@ const difference =
           alt_text: "",
           variant_ids: Array.from(
             new Set(
-              (variantIdsByFile[index] ?? [])
+              (persistedVariantIdsByFile[index] ?? [])
                 .map((variantId) =>
                   String(variantId ?? "").trim(),
                 )
@@ -2779,7 +3161,33 @@ const difference =
         );
       }
 
-      setManagedImages(result.images as ProductImage[]);
+      const nextImages =
+        result.images as ProductImage[];
+
+      const createdImages =
+        nextImages
+          .filter(
+            (image) =>
+              !previousImageIds.has(image.id),
+          )
+          .sort(
+            (first, second) =>
+              Number(first.position ?? 0) -
+              Number(second.position ?? 0),
+          );
+
+      mergePendingClientUsage(
+        createdImages.map(
+          (image, index) => ({
+            imageId: image.id,
+            clientVariantIds:
+              pendingClientIdsByFile[index] ??
+              [],
+          }),
+        ),
+      );
+
+      setManagedImages(nextImages);
 
       if (inlineBatch) {
         setInlineUploadCards((current) =>
@@ -3041,15 +3449,26 @@ const difference =
                   configuration.id === selectedGalleryConfigurationId;
 
                 const count = managedImages.filter((image) => {
-                  const assignments = image.product_image_variants ?? [];
+                  const assignments =
+                    image.product_image_variants ?? [];
 
-                  if (assignments.length === 0) {
-                    return true;
-                  }
+                  const pendingConfigurationIds =
+                    pendingClientUsage[image.id] ?? [];
 
-                  return assignments.some(
-                    (assignment) =>
-                      assignment.variant_id === configuration.id,
+                  const isShared =
+                    assignments.length === 0 &&
+                    pendingConfigurationIds.length === 0;
+
+                  return (
+                    isShared ||
+                    assignments.some(
+                      (assignment) =>
+                        assignment.variant_id ===
+                        configuration.id,
+                    ) ||
+                    pendingConfigurationIds.includes(
+                      configuration.id,
+                    )
                   );
                 }).length;
 
@@ -3447,7 +3866,16 @@ const difference =
                   Number(second.position ?? 0),
               );
 
-              const isShared = assignments.length === 0;
+              const pendingConfigurationIds =
+                pendingClientUsage[image.id] ?? [];
+
+              const isShared =
+                assignments.length === 0 &&
+                pendingConfigurationIds.length === 0;
+
+              const selectedUsageCount =
+                assignments.length +
+                pendingConfigurationIds.length;
 
               const sharedIndex = isShared
                 ? sharedImages.findIndex(
@@ -3604,7 +4032,7 @@ const difference =
                         <small>
                           {isShared
                             ? "All configurations"
-                            : `${assignments.length} selected`}
+                            : `${selectedUsageCount} selected`}
                         </small>
                       </summary>
 
@@ -3622,6 +4050,10 @@ const difference =
                           }
 
                           const usageForm = event.currentTarget;
+
+                          capturePendingUsageForm(
+                            usageForm,
+                          );
 
                           window.requestAnimationFrame(() => {
                             usageForm.requestSubmit();
@@ -3657,17 +4089,35 @@ const difference =
                               .forEach((input) => {
                                 input.checked = false;
                               });
+
+                            capturePendingUsageForm(
+                              form,
+                            );
+
+                            window.requestAnimationFrame(() => {
+                              form.requestSubmit();
+                            });
                           }}
                         >
                           Shared with all configurations
                         </button>
 
                         <div className="st-admin-media-item__configuration-list">
-                          {configurations.map((configuration) => {
-                            const checked = assignments.some(
-                              (assignment) =>
-                                assignment.variant_id === configuration.id,
-                            );
+                          {liveConfigurations
+                            .map((configuration) => {
+                            const checked =
+                              assignments.some(
+                                (assignment) =>
+                                  assignment.variant_id ===
+                                  configuration.id,
+                              ) ||
+                              (
+                                pendingClientUsage[
+                                  image.id
+                                ] ?? []
+                              ).includes(
+                                configuration.id,
+                              );
 
                             return (
                               <label key={configuration.id}>
@@ -3821,10 +4271,33 @@ const difference =
                       <details className="st-admin-existing-media-v2__galleries">
                         <summary>
                           Configuration galleries
-                          <small>{assignments.length}</small>
+                          <small>{selectedUsageCount}</small>
                         </summary>
 
                         <div>
+                          {pendingConfigurationIds.map(
+                            (pendingConfigurationId) => {
+                              const label =
+                                configurationName.get(
+                                  pendingConfigurationId,
+                                ) ||
+                                "Unsaved configuration";
+
+                              return (
+                                <section
+                                  key={`pending-${pendingConfigurationId}`}
+                                >
+                                  <div>
+                                    <strong>{label}</strong>
+                                    <span>
+                                      Pending Save Changes
+                                    </span>
+                                  </div>
+                                </section>
+                              );
+                            },
+                          )}
+
                           {assignments.map((assignment) => {
                             const label =
                               configurationName.get(

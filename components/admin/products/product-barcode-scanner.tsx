@@ -2593,7 +2593,7 @@ export default function ProductBarcodeScanner({
               {torchSupported ? (
                 <button
                   type="button"
-                  className={`st-admin-barcode-scanner__utility-button ${
+                  className={`st-admin-barcode-scanner__utility-button st-admin-barcode-scanner__flash-button ${
                     torchOn
                       ? "is-active"
                       : ""
@@ -2609,10 +2609,21 @@ export default function ProductBarcodeScanner({
                       : "Turn flash on"
                   }
                 >
-                  <Zap aria-hidden="true" />
-                  {torchOn
-                    ? "Flash on"
-                    : "Flash"}
+                  <span
+                    className="st-admin-barcode-scanner__flash-face st-admin-barcode-scanner__flash-face--off"
+                    aria-hidden="true"
+                  >
+                    <Zap />
+                    <span>Flash</span>
+                  </span>
+
+                  <span
+                    className="st-admin-barcode-scanner__flash-face st-admin-barcode-scanner__flash-face--on"
+                    aria-hidden="true"
+                  >
+                    <Zap />
+                    <span>Flash on</span>
+                  </span>
                 </button>
               ) : null}
 

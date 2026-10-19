@@ -12,6 +12,7 @@ import { STOREFRONT_RECOMMENDATION_CACHE_TAG } from "@/lib/storefront-cache-tags
 
 import ProductConfigurationPrice from "./product-configuration-price";
 import ProductConfigurationAvailability from "./product-configuration-availability";
+import ProductConfigurationSpecifications from "./product-configuration-specifications";
 import ProductGallery from "./product-gallery";
 import ProductPurchaseControls from "./product-purchase-controls";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
@@ -1478,11 +1479,6 @@ export default async function ProductPage({
 
   const available = hasPurchasableVariant;
 
-  const firstAttributes =
-    variants.find(
-      (variant) => variant.attributes && typeof variant.attributes === "object",
-    )?.attributes ?? {};
-
   /*
    * Google product data follows the same initial configuration and
    * price semantics as the customer-visible product price.
@@ -1716,91 +1712,18 @@ export default async function ProductPage({
               <p>{product.description || `${product.name} by ${brandName}.`}</p>
             </div>
 
-            <div className="st-product-v5__specifications">
-              <span>Specifications</span>
-
-              <h2>Specifications.</h2>
-
-              {(() => {
-                const rawTechnicalSpecs = firstAttributes.__technical_specs;
-
-                const technicalSpecs = Array.isArray(rawTechnicalSpecs)
-                  ? rawTechnicalSpecs.filter(
-                      (
-                        spec,
-                      ): spec is {
-                        name: string;
-                        value: string;
-                      } =>
-                        typeof spec === "object" &&
-                        spec !== null &&
-                        typeof (spec as { name?: unknown }).name === "string" &&
-                        typeof (spec as { value?: unknown }).value === "string",
-                    )
-                  : [];
-
-                /*
-                 * Customer-facing specifications should contain actual
-                 * product/configuration information, not internal colour
-                 * rendering metadata.
-                 *
-                 * Keep these attributes in the variant data because the
-                 * storefront colourway controls use them for their exact
-                 * swatch colours; hide them only from this specification list.
-                 */
-                const hiddenStorefrontSpecificationKeys = new Set([
-                  "color_hex",
-                  "colour_hex",
-                  "swatch_hex",
-                  "hex",
-                ]);
-
-                const configurationSpecs = Object.entries(
-                  firstAttributes,
-                ).filter(
-                  ([key]) =>
-                    !key.startsWith("__") &&
-                    !hiddenStorefrontSpecificationKeys.has(
-                      key.trim().toLowerCase(),
-                    ),
-                );
-
-                return (
-                  <dl>
-                    <div>
-                      <dt>Brand</dt>
-                      <dd>{brandName}</dd>
-                    </div>
-
-                    <div>
-                      <dt>Category</dt>
-                      <dd>{categoryName}</dd>
-                    </div>
-
-                    {technicalSpecs.map((spec, index) => (
-                      <div key={`technical-${spec.name}-${index}`}>
-                        <dt>{spec.name}</dt>
-                        <dd>{spec.value}</dd>
-                      </div>
-                    ))}
-
-                    {configurationSpecs.map(([key, value]) => (
-                      <div key={`configuration-${key}`}>
-                        <dt>
-                          {key
-                            .replace(/[_-]+/g, " ")
-                            .replace(/\b\w/g, (character) =>
-                              character.toUpperCase(),
-                            )}
-                        </dt>
-
-                        <dd>{String(value)}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                );
-              })()}
-            </div>
+            <ProductConfigurationSpecifications
+              brandName={brandName}
+              categoryName={categoryName}
+              variants={variants.map((variant) => ({
+                id: variant.id,
+                variant_name: variant.variant_name,
+                display_position: variant.display_position,
+                attributes: variant.attributes,
+                stock_quantity: variant.stock_quantity,
+                availability_status: variant.availability_status,
+              }))}
+            />
           </section>
 
           <Suspense fallback={null}>

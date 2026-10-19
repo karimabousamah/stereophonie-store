@@ -18,6 +18,41 @@ export type InlineCategoryResult =
       error: string;
     };
 
+export type InlineCategoryHierarchyResult =
+  | {
+      ok: true;
+      categories: {
+        id: string;
+        name: string;
+      }[];
+      subcategories: {
+        id: string;
+        category_id: string;
+        parent_subcategory_id: string | null;
+        name: string;
+      }[];
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
+export type InlineSubcategoryResult =
+  | {
+      ok: true;
+      category: {
+        id: string;
+        name: string;
+        categoryId: string;
+        parentSubcategoryId: string | null;
+      };
+      created: true;
+    }
+  | {
+      ok: false;
+      error: string;
+    };
+
 function slugify(value: string) {
   return value
     .normalize("NFKD")
@@ -360,6 +395,263 @@ export async function renameSubcategoryInline(
   return {
     ok: true,
     category: updatedSubcategory,
+  };
+}
+
+
+export async function loadCategoryCreationHierarchyInline(): Promise<InlineCategoryHierarchyResult> {
+  const supabase = await requireAdministrator();
+
+  if (!supabase) {
+    return {
+      ok: false,
+      error: "Administrator authentication is required.",
+    };
+  }
+
+  const [categoriesResult, subcategoriesResult] = await Promise.all([
+    supabase
+      .from("categories")
+      .select("id, name")
+      .order("name", {
+        ascending: true,
+      }),
+
+    supabase
+      .from("subcategories")
+      .select("id, category_id, parent_subcategory_id, name")
+      .eq("is_active", true)
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("name", {
+        ascending: true,
+      }),
+  ]);
+
+  if (categoriesResult.error || subcategoriesResult.error) {
+    return {
+      ok: false,
+      error:
+        categoriesResult.error?.message ??
+        subcategoriesResult.error?.message ??
+        "The category hierarchy could not be loaded.",
+    };
+  }
+
+  return {
+    ok: true,
+    categories: categoriesResult.data ?? [],
+    subcategories: subcategoriesResult.data ?? [],
+  };
+}
+
+export async function createSubcategoryInline(
+  rawName: string,
+  rawCategoryId: string,
+  rawParentSubcategoryId: string | null,
+): Promise<InlineSubcategoryResult> {
+  const supabase = await requireAdministrator();
+
+  if (!supabase) {
+    return {
+      ok: false,
+      error: "Administrator authentication is required.",
+    };
+  }
+
+  const name = rawName.replace(/\s+/g, " ").trim();
+  const categoryId = rawCategoryId.trim();
+  const parentSubcategoryId =
+    rawParentSubcategoryId?.trim() || null;
+
+  if (!name) {
+    return {
+      ok: false,
+      error: "Enter a subcategory name.",
+    };
+  }
+
+  if (name.length > 120) {
+    return {
+      ok: false,
+      error: "Subcategory name is too long.",
+    };
+  }
+
+  if (!categoryId) {
+    return {
+      ok: false,
+      error: "Choose the category this subcategory belongs to.",
+    };
+  }
+
+  const slug = slugify(name);
+
+  if (!slug) {
+    return {
+      ok: false,
+      error: "Enter a valid subcategory name.",
+    };
+  }
+
+  const { data: rootCategory, error: rootError } =
+    await supabase
+      .from("categories")
+      .select("id")
+      .eq("id", categoryId)
+      .maybeSingle();
+
+  if (rootError || !rootCategory) {
+    return {
+      ok: false,
+      error:
+        rootError?.message ??
+        "The selected category could not be loaded.",
+    };
+  }
+
+  if (parentSubcategoryId) {
+    const { data: parent, error: parentError } =
+      await supabase
+        .from("subcategories")
+        .select("id, category_id")
+        .eq("id", parentSubcategoryId)
+        .maybeSingle();
+
+    if (parentError || !parent) {
+      return {
+        ok: false,
+        error:
+          parentError?.message ??
+          "The selected parent subcategory could not be loaded.",
+      };
+    }
+
+    if (parent.category_id !== categoryId) {
+      return {
+        ok: false,
+        error:
+          "The selected parent belongs to another category.",
+      };
+    }
+  }
+
+  const duplicateQuery = supabase
+    .from("subcategories")
+    .select("id")
+    .eq("category_id", categoryId)
+    .ilike("name", name)
+    .limit(1);
+
+  const {
+    data: duplicate,
+    error: duplicateError,
+  } = parentSubcategoryId
+    ? await duplicateQuery
+        .eq(
+          "parent_subcategory_id",
+          parentSubcategoryId,
+        )
+        .maybeSingle()
+    : await duplicateQuery
+        .is(
+          "parent_subcategory_id",
+          null,
+        )
+        .maybeSingle();
+
+  if (duplicateError) {
+    return {
+      ok: false,
+      error: duplicateError.message,
+    };
+  }
+
+  if (duplicate) {
+    return {
+      ok: false,
+      error:
+        "A subcategory with this name already exists in this location.",
+    };
+  }
+
+  const siblingOrderQuery = supabase
+    .from("subcategories")
+    .select("sort_order")
+    .eq("category_id", categoryId)
+    .order("sort_order", {
+      ascending: false,
+    })
+    .limit(1);
+
+  const {
+    data: siblingRows,
+    error: siblingError,
+  } = parentSubcategoryId
+    ? await siblingOrderQuery.eq(
+        "parent_subcategory_id",
+        parentSubcategoryId,
+      )
+    : await siblingOrderQuery.is(
+        "parent_subcategory_id",
+        null,
+      );
+
+  if (siblingError) {
+    return {
+      ok: false,
+      error: siblingError.message,
+    };
+  }
+
+  const sortOrder =
+    Number(siblingRows?.[0]?.sort_order ?? 0) + 1;
+
+  const {
+    data: createdSubcategory,
+    error: createError,
+  } = await supabase
+    .from("subcategories")
+    .insert({
+      category_id: categoryId,
+      parent_subcategory_id: parentSubcategoryId,
+      name,
+      slug,
+      description: null,
+      sort_order: sortOrder,
+      is_active: true,
+    })
+    .select(
+      "id, name, category_id, parent_subcategory_id",
+    )
+    .single();
+
+  if (createError || !createdSubcategory) {
+    return {
+      ok: false,
+      error:
+        createError?.message ??
+        "The subcategory could not be created.",
+    };
+  }
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/admin/products");
+  revalidatePath("/shop");
+  revalidatePath("/");
+  revalidatePath("/api/storefront/header-categories");
+
+  return {
+    ok: true,
+    category: {
+      id: createdSubcategory.id,
+      name: createdSubcategory.name,
+      categoryId: createdSubcategory.category_id,
+      parentSubcategoryId:
+        createdSubcategory.parent_subcategory_id,
+    },
+    created: true,
   };
 }
 

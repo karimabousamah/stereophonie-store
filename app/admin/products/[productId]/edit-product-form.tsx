@@ -686,6 +686,7 @@ export default function EditProductForm({
           value={JSON.stringify(
             variants.map((variant) => ({
               id: variant.id ?? null,
+              client_id: variant.clientId,
               variant_name: variant.variant_name,
 
               /*
@@ -707,6 +708,13 @@ export default function EditProductForm({
               availability_status: variant.availability_status,
             })),
           )}
+        />
+
+        <input
+          type="hidden"
+          name="pending_photo_usage_json"
+          defaultValue="[]"
+          data-admin-pending-photo-usage="true"
         />
 
         <input
