@@ -54,7 +54,7 @@ type ProductImage = {
 };
 
 type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 type ProductVariant = {
   id: string;
@@ -292,7 +292,7 @@ function productHasLowStock(
   variants: Array<{
     stock_quantity: number;
     availability_status:
-      "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+      "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
   }>,
 ) {
   return variants.some(
@@ -1463,19 +1463,26 @@ export default async function ProductPage({
     (variant) => variant.availability_status === "coming_soon",
   );
 
+  const hasAskForPriceVariant = variants.some(
+    (variant) => variant.availability_status === "ask_for_price",
+  );
+
   /*
    * Product-level storefront status.
    *
    * Priority:
    * 1. Any purchasable configuration -> available
    * 2. Otherwise any Coming Soon configuration -> coming soon
-   * 3. Otherwise -> out of stock
+   * 3. Otherwise any Ask for Price configuration -> ask for price
+   * 4. Otherwise -> out of stock
    */
   const productAvailabilityStatus = hasPurchasableVariant
     ? "in_stock"
     : hasComingSoonVariant
       ? "coming_soon"
-      : "out_of_stock";
+      : hasAskForPriceVariant
+        ? "ask_for_price"
+        : "out_of_stock";
 
   const available = hasPurchasableVariant;
 
@@ -1497,7 +1504,9 @@ export default async function ProductPage({
     typeof value === "number" && Number.isFinite(value) && value > 0;
 
   const regularPrice =
-    initialVariant && validPositivePrice(initialVariant.regular_price)
+    initialVariant &&
+    initialVariant.availability_status !== "ask_for_price" &&
+    validPositivePrice(initialVariant.regular_price)
       ? Number(initialVariant.regular_price)
       : null;
 

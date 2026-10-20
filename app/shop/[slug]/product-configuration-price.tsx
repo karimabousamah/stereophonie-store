@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 type ProductVariant = {
   id: string;
@@ -28,7 +28,11 @@ function validPositivePrice(value: number | null) {
 }
 
 function priceForVariant(variant: ProductVariant | null) {
-  if (!variant || variant.availability_status === "coming_soon") {
+  if (
+    !variant ||
+    variant.availability_status === "coming_soon" ||
+    variant.availability_status === "ask_for_price"
+  ) {
     return null;
   }
 
@@ -218,7 +222,14 @@ export default function ProductConfigurationPrice({ variants }: Props) {
 
   const price = priceForVariant(selected);
 
-  if (selected?.availability_status === "coming_soon") {
+  if (
+    selected?.availability_status === "coming_soon" ||
+    selected?.availability_status === "ask_for_price" ||
+    (
+      selected?.availability_status === "out_of_stock" &&
+      !price
+    )
+  ) {
     return null;
   }
 

@@ -36,7 +36,7 @@ export type V3ProductVariant = {
   attributes?: Record<string, unknown> | null;
   is_active?: boolean | null;
   availability_status:
-    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | null;
+    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price" | null;
 };
 
 export type V3Product = {

@@ -27,6 +27,7 @@ type MerchantVariant = {
     | "low_stock"
     | "out_of_stock"
     | "coming_soon"
+    | "ask_for_price"
     | null;
 };
 
@@ -96,6 +97,14 @@ function positivePrice(value: unknown) {
 }
 
 function merchantPrice(variant: MerchantVariant) {
+  /*
+   * Ask-for-Price products must never enter Google Merchant
+   * with a fabricated or stale numeric price.
+   */
+  if (variant.availability_status === "ask_for_price") {
+    return null;
+  }
+
   const regular = positivePrice(variant.regular_price);
   const sale = positivePrice(variant.sale_price);
 

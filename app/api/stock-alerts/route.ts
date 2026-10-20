@@ -77,6 +77,77 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
 
     const {
+      data: alertProduct,
+      error: alertProductError,
+    } = await supabase
+      .from("products")
+      .select("availability")
+      .eq("id", productId)
+      .maybeSingle();
+
+    if (alertProductError || !alertProduct) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "The selected product is invalid.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (alertProduct.availability === "ask_for_price") {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Ask for Price products do not use stock notifications.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    if (variantId !== null) {
+      const {
+        data: alertVariant,
+        error: alertVariantError,
+      } = await supabase
+        .from("product_variants")
+        .select("availability_status")
+        .eq("id", variantId)
+        .eq("product_id", productId)
+        .maybeSingle();
+
+      if (alertVariantError || !alertVariant) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "The selected size or option is invalid.",
+          },
+          {
+            status: 400,
+          },
+        );
+      }
+
+      if (alertVariant.availability_status === "ask_for_price") {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "Ask for Price configurations do not use stock notifications.",
+          },
+          {
+            status: 400,
+          },
+        );
+      }
+    }
+
+    const {
       data: { user },
     } = await supabase.auth.getUser();
 

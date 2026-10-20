@@ -13,7 +13,7 @@ import { updateProductImageVariantUsageBulk } from "./image-actions";
 import { createClient } from "@/lib/supabase/server";
 
 type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 type VariantInput = {
   id: string | null;
@@ -35,6 +35,7 @@ const validAvailabilityStatuses: AvailabilityStatus[] = [
   "low_stock",
   "out_of_stock",
   "coming_soon",
+  "ask_for_price",
 ];
 
 async function requireAdministrator() {
@@ -66,15 +67,11 @@ function redirectWithError(productId: string, message: string): never {
 
 function calculateProductAvailability(
   variants: VariantInput[],
-): "in_stock" | "out_of_stock" | "coming_soon" {
-  const allComingSoon = variants.every(
-    (variant) => variant.availability_status === "coming_soon",
-  );
-
-  if (allComingSoon) {
-    return "coming_soon";
-  }
-
+):
+  | "in_stock"
+  | "out_of_stock"
+  | "coming_soon"
+  | "ask_for_price" {
   const hasAvailableConfiguration = variants.some(
     (variant) =>
       variant.availability_status === "in_stock" ||
@@ -83,6 +80,22 @@ function calculateProductAvailability(
 
   if (hasAvailableConfiguration) {
     return "in_stock";
+  }
+
+  const hasComingSoonConfiguration = variants.some(
+    (variant) => variant.availability_status === "coming_soon",
+  );
+
+  if (hasComingSoonConfiguration) {
+    return "coming_soon";
+  }
+
+  const hasAskForPriceConfiguration = variants.some(
+    (variant) => variant.availability_status === "ask_for_price",
+  );
+
+  if (hasAskForPriceConfiguration) {
+    return "ask_for_price";
   }
 
   return "out_of_stock";
@@ -177,7 +190,7 @@ function validateVariants(
 
     if (
       publishingIntent === "publish" &&
-      variant.availability_status !== "coming_soon" &&
+      !("coming_soon" === variant.availability_status || "out_of_stock" === variant.availability_status || "ask_for_price" === variant.availability_status) &&
       (!Number.isFinite(regularPrice) || regularPrice <= 0)
     ) {
       redirectWithError(
@@ -824,9 +837,21 @@ export async function updateProduct(formData: FormData) {
 
   const variantSaveResults = await Promise.all(
     variants.map(async (variant) => {
+      const submittedRegularPrice =
+        Number(variant.regular_price);
+
+      const hasRegularPrice =
+        Number.isFinite(submittedRegularPrice) &&
+        submittedRegularPrice > 0;
+
+      const availabilityStatus: AvailabilityStatus =
+        hasRegularPrice &&
+        variant.availability_status === "out_of_stock"
+          ? "in_stock"
+          : variant.availability_status;
+
       const unavailable =
-        variant.availability_status === "out_of_stock" ||
-        variant.availability_status === "coming_soon";
+        availabilityStatus === "out_of_stock";
 
       const configurationName =
         variant.variant_name.trim() ||
@@ -856,10 +881,9 @@ export async function updateProduct(formData: FormData) {
 
         barcode: String(variant.barcode ?? "").trim() || null,
         regular_price:
-          Number.isFinite(configurationRegularPrice) &&
-          configurationRegularPrice > 0
+          hasRegularPrice
             ? configurationRegularPrice
-            : 0,
+            : null,
 
         sale_price:
           Number.isFinite(configurationRegularPrice) &&
@@ -871,7 +895,7 @@ export async function updateProduct(formData: FormData) {
 
         low_stock_threshold: Number(variant.low_stock_threshold),
 
-        availability_status: variant.availability_status,
+        availability_status: availabilityStatus,
       };
 
       const clientId =

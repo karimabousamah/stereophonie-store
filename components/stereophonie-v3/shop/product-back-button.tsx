@@ -11,22 +11,24 @@ export default function ProductBackButton() {
       return;
     }
 
-    const referrer = document.referrer;
-
-    if (referrer) {
-      try {
-        const previousUrl = new URL(referrer);
-
-        if (previousUrl.origin === window.location.origin) {
-          router.back();
-          return;
-        }
-      } catch {
-        // Fall through to the safe storefront destination.
-      }
+    /*
+     * Use the browser history as the source of truth.
+     *
+     * This returns the customer to the exact page they visited
+     * immediately before the product page, preserving that route's
+     * category, search, filters, query parameters and native browser
+     * scroll restoration.
+     */
+    if (window.history.length > 1) {
+      router.back();
+      return;
     }
 
-    router.push("/shop");
+    /*
+     * A product opened directly with no usable previous history
+     * falls back safely to the main storefront.
+     */
+    router.replace("/shop");
   }
 
   return (

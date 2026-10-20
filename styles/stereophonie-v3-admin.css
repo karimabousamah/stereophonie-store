@@ -65749,3 +65749,223 @@ html body
 /* ============================================================
    END ADMIN V2 — PRODUCT CATEGORY / SUBCATEGORY CREATE FLOW V92
    ============================================================ */
+
+/* === ADMIN V2 CONFIG DETAIL ACTIONS STATIONARY V1 START === */
+
+/*
+ * Configuration Details toolbar.
+ *
+ * Interaction may change paint only.
+ * Neither buttons nor their icons physically move.
+ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:hover
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:focus
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:focus-visible
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button:active
+> svg {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  animation: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   DELETE CONFIGURATION — DELETE PRODUCT / PHOTO PARITY
+   ------------------------------------------------------------ */
+
+/*
+ * Resting state:
+ * same restrained destructive language as Delete product/photo.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button.st-admin-config-delete-v3 {
+  border-color: #d8a5a1 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #b42318 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button.st-admin-config-delete-v3
+> span {
+  color: inherit !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button.st-admin-config-delete-v3
+> svg {
+  color: inherit !important;
+  stroke: currentColor !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/*
+ * Hover:
+ * approved pale-red destructive treatment.
+ * No solid-red fill.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button.st-admin-config-delete-v3:hover:not(:disabled) {
+  border-color: #c96d66 !important;
+
+  background: #fff6f5 !important;
+  background-color: #fff6f5 !important;
+  background-image: none !important;
+
+  color: #9f1f16 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button.st-admin-config-delete-v3:hover:not(:disabled)
+> span {
+  color: #9f1f16 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button.st-admin-config-delete-v3:hover:not(:disabled)
+> svg {
+  color: #9f1f16 !important;
+  stroke: #9f1f16 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/*
+ * Keyboard focus mirrors the existing destructive controls.
+ */
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-detail-toolbar-v2
+> button.st-admin-config-delete-v3:focus-visible {
+  outline: 2px solid rgba(180, 35, 24, 0.20) !important;
+  outline-offset: 2px !important;
+
+  border-color: #c96d66 !important;
+
+  background: #fff6f5 !important;
+  background-color: #fff6f5 !important;
+
+  color: #9f1f16 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* === ADMIN V2 CONFIG DETAIL ACTIONS STATIONARY V1 END === */

@@ -6,7 +6,8 @@ type AvailabilityStatus =
   | "in_stock"
   | "low_stock"
   | "out_of_stock"
-  | "coming_soon";
+  | "coming_soon"
+  | "ask_for_price";
 
 type ProductVariant = {
   id: string;
@@ -63,6 +64,13 @@ function availabilityFor(variant: ProductVariant | null) {
     return {
       className: "",
       label: "Coming soon",
+    };
+  }
+
+  if (variant.availability_status === "ask_for_price") {
+    return {
+      className: "",
+      label: "Ask for price",
     };
   }
 

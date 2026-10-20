@@ -53,7 +53,8 @@ async function ProductsDirectory({
         barcode,
         regular_price,
         sale_price,
-        stock_quantity
+        stock_quantity,
+        availability_status
       )
     `,
     )
@@ -623,6 +624,13 @@ async function ProductsDirectory({
                         product.availability === "coming_soon",
                     ).length
                   }
+                  askForPriceTotal={
+                    products.filter(
+                      (product) =>
+                        product.status === "published" &&
+                        product.availability === "ask_for_price",
+                    ).length
+                  }
                   archivedTotal={
                     products.filter((product) => product.status === "archived")
                       .length
@@ -641,7 +649,10 @@ async function ProductsDirectory({
                         return false;
                       }
 
-                      if (product.availability === "coming_soon") {
+                      if (
+                        product.availability === "coming_soon" ||
+                        product.availability === "ask_for_price"
+                      ) {
                         return false;
                       }
 
@@ -687,15 +698,24 @@ async function ProductsDirectory({
                         product.status === "published" &&
                         product.availability === "coming_soon";
 
+                      const isAskForPrice =
+                        product.status === "published" &&
+                        product.availability === "ask_for_price";
+
                       const isOutOfStock =
                         product.status === "published" &&
                         !isComingSoon &&
+                        !isAskForPrice &&
                         variants.length > 0 &&
                         variants.every(
                           (variant) => Number(variant.stock_quantity ?? 0) <= 0,
                         );
 
                       const prices = variants
+                        .filter(
+                          (variant) =>
+                            variant.availability_status !== "ask_for_price",
+                        )
                         .map(
                           (variant) =>
                             variant.sale_price ?? variant.regular_price,
@@ -847,7 +867,7 @@ async function ProductsDirectory({
                           <div className="st-admin-products-directory__cell st-admin-products-directory__inventory">
                             <strong
                               className={
-                                isComingSoon
+                                isComingSoon || isAskForPrice
                                   ? ""
                                   : isOutOfStock
                                     ? "is-empty"
@@ -858,11 +878,13 @@ async function ProductsDirectory({
                             >
                               {isComingSoon
                                 ? "Coming soon"
-                                : variants.length === 0
-                                  ? "No configurations"
-                                  : isOutOfStock
-                                    ? "Out of stock"
-                                    : `${totalStock} in stock`}
+                                : isAskForPrice
+                                  ? "Ask for price"
+                                  : variants.length === 0
+                                    ? "No configurations"
+                                    : isOutOfStock
+                                      ? "Out of stock"
+                                      : `${totalStock} in stock`}
                             </strong>
 
                             {variants.length > 1 ? (

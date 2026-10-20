@@ -44,6 +44,7 @@ type Props = {
   liveTotal: number;
   draftTotal: number;
   comingSoonTotal: number;
+  askForPriceTotal: number;
   outOfStockTotal: number;
   archivedTotal: number;
   initialFilter?: ProductStatusFilter;
@@ -54,6 +55,7 @@ export default function ProductSearch({
   liveTotal,
   draftTotal,
   comingSoonTotal,
+  askForPriceTotal,
   outOfStockTotal,
   archivedTotal,
   initialFilter = "all",
@@ -197,9 +199,11 @@ export default function ProductSearch({
         status === "all" ||
         (status === "coming_soon"
           ? productAvailability === "coming_soon"
-          : status === "out_of_stock"
-            ? productOutOfStock
-            : productStatus === status);
+          : status === "ask_for_price"
+            ? productAvailability === "ask_for_price"
+            : status === "out_of_stock"
+              ? productOutOfStock
+              : productStatus === status);
 
       const matches = matchesQuery && matchesStatus;
 
@@ -292,11 +296,13 @@ export default function ProductSearch({
         ? draftTotal
         : status === "coming_soon"
           ? comingSoonTotal
-          : status === "out_of_stock"
-            ? outOfStockTotal
-            : status === "archived"
-              ? archivedTotal
-              : total;
+          : status === "ask_for_price"
+            ? askForPriceTotal
+            : status === "out_of_stock"
+              ? outOfStockTotal
+              : status === "archived"
+                ? archivedTotal
+                : total;
 
   return (
     <section
@@ -395,6 +401,15 @@ export default function ProductSearch({
           >
             <span>Coming soon</span>
             <strong>{comingSoonTotal}</strong>
+          </button>
+
+          <button
+            type="button"
+            className={status === "ask_for_price" ? "is-active" : ""}
+            onClick={() => setStatus("ask_for_price")}
+          >
+            <span>Ask for price</span>
+            <strong>{askForPriceTotal}</strong>
           </button>
 
           <button

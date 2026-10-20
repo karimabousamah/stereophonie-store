@@ -118,7 +118,11 @@ function toNumber(value: number | string | null | undefined) {
 
 function getProductPrices(variants: ProductVariant[]) {
   const prices = variants
-    .filter((variant) => variant.is_active !== false)
+    .filter(
+      (variant) =>
+        variant.is_active !== false &&
+        normalizeAvailability(variant.availability_status) !== "ask_for_price",
+    )
     .map((variant) => {
       const regularPrice = toNumber(variant.regular_price);
       const salePrice = toNumber(variant.sale_price);
@@ -187,7 +191,9 @@ function getAvailability(variants: ProductVariant[]) {
 
   if (
     normalized.some(
-      (variant) => variant.status === "low_stock" || variant.stock > 0,
+      (variant) =>
+        variant.status === "low_stock" &&
+        variant.stock > 0,
     )
   ) {
     return {
@@ -200,6 +206,13 @@ function getAvailability(variants: ProductVariant[]) {
     return {
       label: "Coming soon",
       status: "coming_soon",
+    };
+  }
+
+  if (normalized.some((variant) => variant.status === "ask_for_price")) {
+    return {
+      label: "Ask for price",
+      status: "ask_for_price",
     };
   }
 

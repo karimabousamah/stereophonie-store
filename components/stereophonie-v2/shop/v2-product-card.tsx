@@ -4,11 +4,22 @@ import { calculateProductAvailability } from "@/lib/stereophonie-v2/product-vari
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, CheckCircle2, Eye, Bookmark, ImageOff, LoaderCircle, Mail, X } from "lucide-react";
+import {
+  Check,
+  CheckCircle2,
+  CircleDollarSign,
+  Eye,
+  Bookmark,
+  ImageOff,
+  LoaderCircle,
+  Mail,
+  X,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import StorefrontStockNotificationModal from "@/components/storefront/storefront-stock-notification-modal";
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 import { isNewDropActive, newDropRemainingMs } from "@/lib/storefront/new-drop";
 import {
@@ -257,7 +268,11 @@ function resolveProductCardSticker({
   onSale,
 }: {
   productAvailability:
-    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+    | "in_stock"
+    | "low_stock"
+    | "out_of_stock"
+    | "coming_soon"
+    | "ask_for_price";
   badge: string | null;
   onSale: boolean;
 }) {
@@ -267,6 +282,10 @@ function resolveProductCardSticker({
 
   if (productAvailability === "coming_soon") {
     return "Coming Soon";
+  }
+
+  if (productAvailability === "ask_for_price") {
+    return badge;
   }
 
   if (badge === "Low Stock") {
@@ -608,6 +627,7 @@ function productCardBadgeClass(badge: string | null) {
 }
 
 export default function V2ProductCard({ product, index = 0 }: Props) {
+  const { whatsappNumber } = useStoreSettings();
   const router = useRouter();
   const defaultImages = useMemo(
     () =>
@@ -799,7 +819,7 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
   const price = useMemo(() => getPrice(product), [product]);
   const available = useMemo(() => isAvailable(product), [product]);
   const productAvailability = calculateProductAvailability(product.variants);
-  const outOfStock = !available && productAvailability !== "coming_soon";
+  const outOfStock = productAvailability === "out_of_stock";
   const lowStock = useMemo(() => isLowStockProduct(product), [product]);
   const [clock, setClock] = useState(() => Date.now());
 
@@ -830,6 +850,40 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
   });
 
   const href = product.slug ? `/shop/${product.slug}` : "/shop";
+
+  function openCardAskForPriceChat() {
+    const phone = whatsappNumber.replace(/\D/g, "");
+
+    if (!phone) {
+      setPreorderMessage("WhatsApp contact is unavailable right now.");
+      setPreorderMessageType("error");
+      return;
+    }
+
+    if (!product.slug) {
+      setPreorderMessage("This product link is unavailable right now.");
+      setPreorderMessageType("error");
+      return;
+    }
+
+    const productUrl = new URL(
+      `/shop/${encodeURIComponent(product.slug)}`,
+      window.location.origin,
+    ).toString();
+
+    const message = [
+      "Hello, I would like to ask for the price of:",
+      product.name,
+      "",
+      `Product link: ${productUrl}`,
+    ].join("\n");
+
+    window.open(
+      `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
 
 
   function prefetchProductRoute() {
@@ -1261,7 +1315,8 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
 
           <div className="st-retail-card__footer">
             <div className="st-retail-card__price">
-              {productAvailability === "coming_soon" ? null : price ? (
+              {productAvailability === "coming_soon" ||
+              productAvailability === "ask_for_price" ? null : price ? (
                 <>
                   <strong>${price.current.toFixed(2)}</strong>
 
@@ -1288,7 +1343,21 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                 ) : (
                   <Mail />
                 )}
+
                 <span>Pre-order</span>
+              </button>
+            ) : productAvailability === "ask_for_price" ? (
+              <button
+                type="button"
+                className="st-retail-card__preorder"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  openCardAskForPriceChat();
+                }}
+              >
+                <CircleDollarSign />
+                <span>Get Price</span>
               </button>
             ) : (
               <span
@@ -1407,7 +1476,11 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                   <h2>{product.name}</h2>
 
                   <div className="st-retail-qv__price">
-                    {productAvailability === "coming_soon" ? null : price ? (
+                    {productAvailability === "coming_soon" ||
+                (productAvailability === "out_of_stock" && !price) ? null :
+                productAvailability === "ask_for_price" ? (
+                  <strong>Ask for price</strong>
+                ) : price ? (
                       <>
                         <strong>${price.current.toFixed(2)}</strong>
 
@@ -1431,10 +1504,12 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                   >
                     <i />
                     {productAvailability === "coming_soon"
-                      ? "Available soon"
-                      : available
-                        ? "Available"
-                        : "Currently unavailable"}
+       ? "Available soon"
+       : productAvailability === "ask_for_price"
+         ? "Ask for price"
+         : available
+           ? "Available"
+           : "Currently unavailable"}
                   </div>
 
                   {product.description ? <p>{product.description}</p> : null}

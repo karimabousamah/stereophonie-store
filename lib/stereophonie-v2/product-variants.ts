@@ -1,5 +1,5 @@
 export type ProductAvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 export type ProductVariantAttributes = Record<string, string>;
 
@@ -8,7 +8,7 @@ export type ElectronicsProductVariant = {
   variant_name: string;
   attributes: ProductVariantAttributes;
   sku: string;
-  regular_price: number;
+  regular_price: number | null;
   sale_price: number | null;
   stock_quantity: number;
   low_stock_threshold: number;
@@ -20,6 +20,7 @@ export const PRODUCT_AVAILABILITY_STATUSES: ProductAvailabilityStatus[] = [
   "low_stock",
   "out_of_stock",
   "coming_soon",
+  "ask_for_price",
 ];
 
 export const PRODUCT_ATTRIBUTE_PRESETS = [
@@ -123,7 +124,7 @@ export function calculateProductAvailability(
     availability_status: ProductAvailabilityStatus | null;
     stock_quantity?: number;
   }>,
-): "in_stock" | "out_of_stock" | "coming_soon" {
+): "in_stock" | "out_of_stock" | "coming_soon" | "ask_for_price" {
   const hasAvailableVariant = variants.some(
     (variant) =>
       (variant.availability_status === "in_stock" ||
@@ -141,6 +142,15 @@ export function calculateProductAvailability(
 
   if (hasComingSoonVariant) {
     return "coming_soon";
+  }
+
+  const hasAskForPriceVariant = variants.some(
+    (variant) =>
+      variant.availability_status === "ask_for_price",
+  );
+
+  if (hasAskForPriceVariant) {
+    return "ask_for_price";
   }
 
   return "out_of_stock";
@@ -187,8 +197,15 @@ export function validateElectronicsVariants(
     }
 
     if (
-      !Number.isFinite(Number(variant.regular_price)) ||
-      Number(variant.regular_price) <= 0
+      ![
+        "coming_soon",
+        "out_of_stock",
+        "ask_for_price",
+      ].includes(variant.availability_status) &&
+      (
+        !Number.isFinite(Number(variant.regular_price)) ||
+        Number(variant.regular_price) <= 0
+      )
     ) {
       return {
         valid: false as const,

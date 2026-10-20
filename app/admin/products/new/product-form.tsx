@@ -190,8 +190,7 @@ export default function ProductForm({
   const totalStock = useMemo(() => {
     return variants.reduce((total, variant) => {
       const unavailable =
-        variant.availability_status === "out_of_stock" ||
-        variant.availability_status === "coming_soon";
+        variant.availability_status === "out_of_stock";
 
       return total + (unavailable ? 0 : Number(variant.stock_quantity) || 0);
     }, 0);
@@ -224,17 +223,25 @@ export default function ProductForm({
       return false;
     }
 
-    const allComingSoon = variants.every(
-      (variant) => variant.availability_status === "coming_soon",
-    );
-
     const hasAvailableConfiguration = variants.some(
       (variant) =>
         variant.availability_status === "in_stock" ||
         variant.availability_status === "low_stock",
     );
 
-    return !allComingSoon && !hasAvailableConfiguration;
+    const hasComingSoonConfiguration = variants.some(
+      (variant) => variant.availability_status === "coming_soon",
+    );
+
+    const hasAskForPriceConfiguration = variants.some(
+      (variant) => variant.availability_status === "ask_for_price",
+    );
+
+    return (
+      !hasAvailableConfiguration &&
+      !hasComingSoonConfiguration &&
+      !hasAskForPriceConfiguration
+    );
   }, [variants]);
 
   const handleImagesChange = useCallback(
@@ -458,6 +465,7 @@ export default function ProductForm({
         "low_stock",
         "out_of_stock",
         "coming_soon",
+        "ask_for_price",
       ]);
 
       for (
@@ -489,8 +497,7 @@ export default function ProductForm({
           Number(variant.regular_price);
 
         if (
-          variant.availability_status !==
-            "coming_soon" &&
+          !("coming_soon" === variant.availability_status || "out_of_stock" === variant.availability_status || "ask_for_price" === variant.availability_status) &&
           (!Number.isFinite(regularPrice) ||
             regularPrice <= 0)
         ) {

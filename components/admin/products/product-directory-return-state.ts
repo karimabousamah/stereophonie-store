@@ -3,6 +3,7 @@ export type ProductDirectoryStatusFilter =
   | "published"
   | "draft"
   | "coming_soon"
+  | "ask_for_price"
   | "out_of_stock"
   | "archived";
 
@@ -35,6 +36,7 @@ const validStatuses:
     "published",
     "draft",
     "coming_soon",
+    "ask_for_price",
     "out_of_stock",
     "archived",
   ];

@@ -674,6 +674,7 @@ export type AssistantProductAvailability =
   | "low_stock"
   | "partially_available"
   | "coming_soon"
+  | "ask_for_price"
   | "out_of_stock"
   | "unavailable";
 
@@ -700,15 +701,23 @@ export function assistantProductAvailability(
     (variant) => variant.availabilityStatus === "coming_soon",
   );
 
+  const askForPrice = variants.some(
+    (variant) => variant.availabilityStatus === "ask_for_price",
+  );
+
   const unavailable = variants.some(
     (variant) =>
       variant.availabilityStatus === "out_of_stock" ||
       variant.availabilityStatus === "unavailable" ||
       (variant.stockQuantity <= 0 &&
-        variant.availabilityStatus !== "coming_soon"),
+        variant.availabilityStatus !== "coming_soon" &&
+        variant.availabilityStatus !== "ask_for_price"),
   );
 
-  if ((inStock || lowStock) && (comingSoon || unavailable)) {
+  if (
+    (inStock || lowStock) &&
+    (comingSoon || askForPrice || unavailable)
+  ) {
     return "partially_available";
   }
 
@@ -720,8 +729,16 @@ export function assistantProductAvailability(
     return "low_stock";
   }
 
-  if (comingSoon && !unavailable) {
+  if (
+    comingSoon &&
+    !askForPrice &&
+    !unavailable
+  ) {
     return "coming_soon";
+  }
+
+  if (askForPrice && !unavailable) {
+    return "ask_for_price";
   }
 
   if (unavailable) {
@@ -735,9 +752,10 @@ export function assistantProductIsPurchasable(product: RankedAssistantProduct) {
   return product.variants.some(
     (variant) =>
       variant.stockQuantity > 0 &&
-      variant.availabilityStatus !== "out_of_stock" &&
-      variant.availabilityStatus !== "coming_soon" &&
-      variant.availabilityStatus !== "unavailable",
+      (
+        variant.availabilityStatus === "in_stock" ||
+        variant.availabilityStatus === "low_stock"
+      ),
   );
 }
 

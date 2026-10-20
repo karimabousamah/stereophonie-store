@@ -94,7 +94,7 @@ export async function updateProductVariantQuickPrice(
   const { data: existingVariant, error: existingVariantError } =
     await supabase
       .from("product_variants")
-      .select("id")
+      .select("id, availability_status")
       .eq("id", variantId)
       .eq("product_id", productId)
       .maybeSingle();
@@ -113,11 +113,17 @@ export async function updateProductVariantQuickPrice(
     };
   }
 
+  const shouldBecomeInStock =
+    existingVariant.availability_status === "out_of_stock";
+
   const { error: updateError } = await supabase
     .from("product_variants")
     .update({
       regular_price: regularPrice,
       sale_price: salePrice,
+      ...(shouldBecomeInStock
+        ? { availability_status: "in_stock" }
+        : {}),
     })
     .eq("id", variantId)
     .eq("product_id", productId);
@@ -127,6 +133,22 @@ export async function updateProductVariantQuickPrice(
       ok: false,
       message: updateError.message,
     };
+  }
+
+  if (shouldBecomeInStock) {
+    const { error: productAvailabilityError } = await supabase
+      .from("products")
+      .update({
+        availability: "in_stock",
+      })
+      .eq("id", productId);
+
+    if (productAvailabilityError) {
+      return {
+        ok: false,
+        message: productAvailabilityError.message,
+      };
+    }
   }
 
   updateTag(SHOP_CATALOGUE_CACHE_TAG);

@@ -20283,6 +20283,12 @@ body {
   color: #fff;
 }
 
+.st-purchase-v6__buy.st-purchase-v6__ask-price {
+  background: var(--st-mustard);
+
+  color: #171719;
+}
+
 .st-purchase-v6__notify {
   width: 100%;
 

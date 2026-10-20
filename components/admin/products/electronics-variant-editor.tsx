@@ -30,7 +30,7 @@ import {
 import { canonicalizeProductColorwayName } from "@/lib/product-colorways";
 
 type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 export type AdminElectronicsVariant = {
  clientId: string;
@@ -88,6 +88,12 @@ const availabilityOptions: {
  value: "coming_soon",
  label: "Coming soon",
  description: "Visible before this configuration becomes available.",
+  },
+  {
+    value: "ask_for_price",
+    label: "Ask for price",
+    description:
+      "Customers contact us on WhatsApp to request the price.",
   },
 ];
 
@@ -4763,10 +4769,7 @@ export default function ElectronicsVariantEditor({
  variant.clientId;
 
  const unavailable =
- variant.availability_status ===
-                    "out_of_stock" ||
- variant.availability_status ===
-                    "coming_soon";
+                  variant.availability_status === "out_of_stock";
 
  const label =
  clean(
@@ -4843,28 +4846,31 @@ export default function ElectronicsVariantEditor({
                       ) =>
  event.stopPropagation()
                       }
- onChange={(
- event,
-                      ) =>
- updateVariant(
- variant.clientId,
+ onChange={(event) => {
+                        const nextRegularPrice =
+                          event.target.value === ""
+                            ? ""
+                            : Math.max(
+                                0,
+                                Number(event.target.value),
+                              );
+
+                        const pricedStatus =
+                          nextRegularPrice !== "" &&
+                          nextRegularPrice > 0 &&
+                          variant.availability_status === "out_of_stock";
+
+                        updateVariant(
+                          variant.clientId,
                           {
- regular_price:
- event.target
-                                .value ===
-                              ""
-                                ? ""
-                                : Math.max(
- 0,
- Number(
- event
-                                        .target
-                                        .value,
-                                    ),
-                                  ),
+                            regular_price: nextRegularPrice,
+                            availability_status:
+                              pricedStatus
+                                ? "in_stock"
+                                : variant.availability_status,
                           },
-                        )
-                      }
+                        );
+                      }}
                     />
 
                     <input
@@ -5126,8 +5132,8 @@ export default function ElectronicsVariantEditor({
                 )
               }
             >
+              Generate name
               <Check />
- Generate name
             </button>
 
             <button
@@ -5138,23 +5144,31 @@ export default function ElectronicsVariantEditor({
                 )
               }
             >
+              Duplicate
               <Copy />
- Duplicate
             </button>
 
             {orderedVariants.length >
  1 ? (
-              <button className="st-admin-destructive-control-v2"
+              <button className="st-admin-destructive-control-v2 st-admin-config-delete-v3"
  type="button"
- onClick={() =>
- removeVariant(
- activeVariant.clientId,
-                  )
-                }
+ onClick={() => {
+                  const confirmed = window.confirm(
+                    "Are you sure you want to delete this configuration?",
+                  );
+
+                  if (!confirmed) {
+                    return;
+                  }
+
+                  removeVariant(
+                    activeVariant.clientId,
+                  );
+                }}
               >
-                <Trash2 />
- Remove
-              </button>
+<span>Delete configuration</span>
+                            <Trash2 />
+            </button>
             ) : null}
           </div>
 

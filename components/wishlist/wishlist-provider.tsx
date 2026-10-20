@@ -29,7 +29,7 @@ export type WishlistProductVariant = {
   sale_price: number | null;
   stock_quantity: number;
   availability_status:
-    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | null;
+    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price" | null;
 };
 
 export type WishlistProduct = {

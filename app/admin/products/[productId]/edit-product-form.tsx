@@ -38,7 +38,7 @@ import { deleteProduct, updateProduct } from "./actions";
 import { rememberProductSaveScrollPosition } from "@/components/admin/product-save-result-scroll";
 
 type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 type ExistingVariant = {
   id: string;
@@ -53,7 +53,7 @@ type ExistingVariant = {
   stock_quantity: number;
   low_stock_threshold: number;
   availability_status:
-    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+    "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 };
 
 function createInitialVariants(
@@ -326,8 +326,7 @@ export default function EditProductForm({
     () =>
       variants.reduce((total, variant) => {
         if (
-          variant.availability_status === "out_of_stock" ||
-          variant.availability_status === "coming_soon"
+          variant.availability_status === "out_of_stock"
         ) {
           return total;
         }
@@ -357,17 +356,25 @@ export default function EditProductForm({
       return false;
     }
 
-    const allComingSoon = variants.every(
-      (variant) => variant.availability_status === "coming_soon",
-    );
-
     const hasAvailableConfiguration = variants.some(
       (variant) =>
         variant.availability_status === "in_stock" ||
         variant.availability_status === "low_stock",
     );
 
-    return !allComingSoon && !hasAvailableConfiguration;
+    const hasComingSoonConfiguration = variants.some(
+      (variant) => variant.availability_status === "coming_soon",
+    );
+
+    const hasAskForPriceConfiguration = variants.some(
+      (variant) => variant.availability_status === "ask_for_price",
+    );
+
+    return (
+      !hasAvailableConfiguration &&
+      !hasComingSoonConfiguration &&
+      !hasAskForPriceConfiguration
+    );
   }, [variants]);
 
   const productEffectiveStatus = useMemo(() => {
@@ -378,35 +385,44 @@ export default function EditProductForm({
       };
     }
 
-    const allComingSoon =
-      variants.length > 0 &&
-      variants.every(
-        (variant) => variant.availability_status === "coming_soon",
-      );
+    const hasAvailableConfiguration = variants.some(
+      (variant) =>
+        variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock",
+    );
 
-    if (allComingSoon) {
+    if (hasAvailableConfiguration) {
+      return {
+        tone: "live",
+        label: "Published",
+      };
+    }
+
+    const hasComingSoonConfiguration = variants.some(
+      (variant) => variant.availability_status === "coming_soon",
+    );
+
+    if (hasComingSoonConfiguration) {
       return {
         tone: "coming-soon",
         label: "Coming soon",
       };
     }
 
-    const allOutOfStock =
-      variants.length > 0 &&
-      variants.every(
-        (variant) => Number(variant.stock_quantity ?? 0) <= 0,
-      );
+    const hasAskForPriceConfiguration = variants.some(
+      (variant) => variant.availability_status === "ask_for_price",
+    );
 
-    if (allOutOfStock) {
+    if (hasAskForPriceConfiguration) {
       return {
-        tone: "out-of-stock",
-        label: "Out of stock",
+        tone: "live",
+        label: "Ask for price",
       };
     }
 
     return {
-      tone: "live",
-      label: "Published",
+      tone: "out-of-stock",
+      label: "Out of stock",
     };
   }, [product.status, variants]);
   return (

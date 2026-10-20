@@ -137,9 +137,7 @@ function variantIsPurchasable(variant: ProductVariantRow) {
 
   return (
     stock > 0 &&
-    status !== "out_of_stock" &&
-    status !== "coming_soon" &&
-    status !== "unavailable"
+    (status === "in_stock" || status === "low_stock")
   );
 }
 
@@ -261,6 +259,10 @@ export async function GET(request: NextRequest) {
     .filter((product) => productMatchesSearch(product, terms))
     .map((product) => {
       const variants = (product.product_variants ?? [])
+        .filter(
+          (variant) =>
+            normalizeStatus(variant.availability_status) !== "ask_for_price",
+        )
         .map((variant) => {
           const prices = getVariantPrice(variant);
 

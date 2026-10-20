@@ -22,6 +22,7 @@ type AssistantProductCard = {
     | "in_stock"
     | "low_stock"
     | "out_of_stock"
+    | "ask_for_price"
     | "mixed"
     | "unavailable";
 
@@ -42,6 +43,7 @@ function normalizeAssistantAvailabilityStatus(
     value === "in_stock" ||
     value === "low_stock" ||
     value === "out_of_stock" ||
+    value === "ask_for_price" ||
     value === "mixed" ||
     value === "unavailable"
   ) {
@@ -262,12 +264,17 @@ function ProductRecommendationCard({
 
   const hasSale = Boolean(saleVariant);
 
-  const currentPrice = product.price ?? saleVariant?.salePrice ?? null;
+  const currentPrice =
+    product.availabilityStatus === "ask_for_price"
+      ? null
+      : product.price ?? saleVariant?.salePrice ?? null;
 
   const availabilityLabel =
-    product.availabilityStatus === "coming_soon"
-      ? "Coming soon"
-      : product.availabilityStatus === "out_of_stock"
+    product.availabilityStatus === "ask_for_price"
+      ? "Ask for price"
+      : product.availabilityStatus === "coming_soon"
+        ? "Coming soon"
+        : product.availabilityStatus === "out_of_stock"
         ? "Out of stock"
         : product.availabilityStatus === "low_stock"
           ? "Low stock"

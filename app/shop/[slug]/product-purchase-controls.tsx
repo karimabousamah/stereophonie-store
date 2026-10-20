@@ -9,6 +9,7 @@ import {
   Check,
   CheckCircle2,
   Bookmark,
+  CircleDollarSign,
   LoaderCircle,
   Mail,
   Minus,
@@ -18,11 +19,13 @@ import {
   X,
   Zap,
 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 
 import StorefrontStockNotificationModal from "@/components/storefront/storefront-stock-notification-modal";
 import { useCart } from "@/components/cart/cart-provider";
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 import {
   storefrontImageDisplayUrl,
   storefrontPrimaryImageForVariant,
@@ -33,7 +36,7 @@ import {
 } from "@/components/wishlist/wishlist-provider";
 
 type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 type ProductVariant = {
   id: string;
@@ -293,6 +296,14 @@ function statusFor(variant: ProductVariant) {
     };
   }
 
+  if (variant.availability_status === "ask_for_price") {
+    return {
+      className: "is-waiting",
+      title: "ASK FOR PRICE",
+      text: "Contact us for the current price of this configuration.",
+    };
+  }
+
   if (
     variant.availability_status === "out_of_stock" ||
     variant.stock_quantity < 1
@@ -409,6 +420,7 @@ export default function ProductPurchaseControls({
   const router = useRouter();
 
   const { addItem, openCart } = useCart();
+  const { whatsappNumber } = useStoreSettings();
 
   const {
     hydrated: wishlistReady,
@@ -553,6 +565,8 @@ export default function ProductPurchaseControls({
   const selected = ordered.find((variant) => variant.id === selectedId) ?? null;
 
   const selectedAvailable = selected ? purchasable(selected) : false;
+  const selectedAskForPrice =
+    selected?.availability_status === "ask_for_price";
   const selectedPrice = selected ? getPrice(selected) : null;
   const selectedStatus = selected ? statusFor(selected) : null;
   const attributes = selected ? variantAttributes(selected) : [];
@@ -665,7 +679,11 @@ export default function ProductPurchaseControls({
       return;
     }
 
-    const unavailable = ordered.find((variant) => !purchasable(variant));
+    const unavailable = ordered.find(
+      (variant) =>
+        !purchasable(variant) &&
+        variant.availability_status !== "ask_for_price",
+    );
 
     if (unavailable) {
       setSelectedId(unavailable.id);
@@ -888,8 +906,50 @@ export default function ProductPurchaseControls({
     }
   }
 
+
+  function openAskForPrice() {
+    if (
+      !selected ||
+      selected.availability_status !== "ask_for_price"
+    ) {
+      setMessage("Select an Ask for Price configuration first.");
+      setMessageType("error");
+      return;
+    }
+
+    const phone = whatsappNumber.replace(/\D/g, "");
+
+    if (!phone) {
+      setMessage("WhatsApp contact is unavailable right now.");
+      setMessageType("error");
+      return;
+    }
+
+    const productUrl = new URL(
+      `/shop/${encodeURIComponent(product.slug)}`,
+      window.location.origin,
+    ).toString();
+
+    const message = [
+      "Hello, I would like to ask for the price of:",
+      `${product.name} — ${variantName(selected)}`,
+      "",
+      `Product link: ${productUrl}`,
+    ].join("\n");
+
+    window.open(
+      `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
+
   async function requestNotification(address?: string) {
-    if (!selected || purchasable(selected)) {
+    if (
+      !selected ||
+      purchasable(selected) ||
+      selected.availability_status === "ask_for_price"
+    ) {
       setMessage("Select an unavailable configuration first.");
       setMessageType("error");
       return;
@@ -1202,6 +1262,21 @@ export default function ProductPurchaseControls({
                 <span>Buy now</span>
               </button>
             </div>
+          </div>
+        ) : selectedAskForPrice ? (
+          <div
+            className="st-purchase-v6__primary-actions"
+            style={{ gridTemplateColumns: "1fr" }}
+          >
+            <button
+              type="button"
+              className="st-purchase-v6__buy st-purchase-v6__ask-price"
+              onClick={openAskForPrice}
+            >
+              <CircleDollarSign />
+
+              <span>Ask for price</span>
+            </button>
           </div>
         ) : selected ? (
           <button

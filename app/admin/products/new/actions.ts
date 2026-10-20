@@ -14,7 +14,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 type AvailabilityStatus =
-  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+  "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
 
 type VariantInput = {
   /*
@@ -377,6 +377,7 @@ async function createProductUnsafe(formData: FormData) {
     "low_stock",
     "out_of_stock",
     "coming_soon",
+    "ask_for_price",
   ];
 
   if (
@@ -488,7 +489,7 @@ async function createProductUnsafe(formData: FormData) {
      */
     if (
       publishingIntent === "publish" &&
-      variant.availability_status !== "coming_soon" &&
+      !("coming_soon" === variant.availability_status || "out_of_stock" === variant.availability_status || "ask_for_price" === variant.availability_status) &&
       (!Number.isFinite(configurationRegularPrice) ||
         configurationRegularPrice <= 0)
     ) {
@@ -760,22 +761,32 @@ async function createProductUnsafe(formData: FormData) {
 
   const status = publishingIntent === "publish" ? "published" : "draft";
 
-  const allComingSoon = variants.every(
-    (variant) => variant.availability_status === "coming_soon",
-  );
-
   const hasAvailableConfiguration = variants.some(
     (variant) =>
       variant.availability_status === "in_stock" ||
       variant.availability_status === "low_stock",
   );
 
-  let availability: "in_stock" | "out_of_stock" | "coming_soon";
+  const hasComingSoonConfiguration = variants.some(
+    (variant) => variant.availability_status === "coming_soon",
+  );
 
-  if (allComingSoon) {
-    availability = "coming_soon";
-  } else if (hasAvailableConfiguration) {
+  const hasAskForPriceConfiguration = variants.some(
+    (variant) => variant.availability_status === "ask_for_price",
+  );
+
+  let availability:
+    | "in_stock"
+    | "out_of_stock"
+    | "coming_soon"
+    | "ask_for_price";
+
+  if (hasAvailableConfiguration) {
     availability = "in_stock";
+  } else if (hasComingSoonConfiguration) {
+    availability = "coming_soon";
+  } else if (hasAskForPriceConfiguration) {
+    availability = "ask_for_price";
   } else {
     availability = "out_of_stock";
   }
@@ -848,9 +859,21 @@ async function createProductUnsafe(formData: FormData) {
   }
 
   const variantsToInsert = variants.map((variant) => {
-    const unavailable =
-      variant.availability_status === "out_of_stock" ||
-      variant.availability_status === "coming_soon";
+    const submittedRegularPrice =
+        Number(variant.regular_price);
+
+      const hasRegularPrice =
+        Number.isFinite(submittedRegularPrice) &&
+        submittedRegularPrice > 0;
+
+      const availabilityStatus: AvailabilityStatus =
+        hasRegularPrice &&
+        variant.availability_status === "out_of_stock"
+          ? "in_stock"
+          : variant.availability_status;
+
+      const unavailable =
+        availabilityStatus === "out_of_stock";
 
     const configurationName =
       variant.variant_name.trim() ||
@@ -873,10 +896,9 @@ async function createProductUnsafe(formData: FormData) {
       sku: variant.sku.trim() || null,
       barcode: String(variant.barcode ?? "").trim() || null,
       regular_price:
-        Number.isFinite(Number(variant.regular_price)) &&
-        Number(variant.regular_price) > 0
-          ? Number(variant.regular_price)
-          : 0,
+        hasRegularPrice
+          ? submittedRegularPrice
+          : null,
 
       sale_price:
         Number.isFinite(Number(variant.regular_price)) &&
@@ -888,7 +910,7 @@ async function createProductUnsafe(formData: FormData) {
           : null,
       stock_quantity: unavailable ? 0 : Number(variant.stock_quantity),
       low_stock_threshold: Number(variant.low_stock_threshold),
-      availability_status: variant.availability_status,
+      availability_status: availabilityStatus,
     };
   });
 

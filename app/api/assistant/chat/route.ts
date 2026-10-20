@@ -174,7 +174,7 @@ type IncomingWishlistProduct = {
     sale_price: number | null;
     stock_quantity: number;
     availability_status:
-      "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | null;
+      "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price" | null;
   }[];
 };
 
@@ -483,9 +483,10 @@ function mapVariant(variant: ProductVariantRow): AssistantVariant {
 
   const purchasable =
     stockQuantity > 0 &&
-    availabilityStatus !== "out_of_stock" &&
-    availabilityStatus !== "coming_soon" &&
-    availabilityStatus !== "unavailable";
+    (
+      availabilityStatus === "in_stock" ||
+      availabilityStatus === "low_stock"
+    );
 
   return {
     id: variant.id,
@@ -2348,7 +2349,8 @@ function toWishlistProduct(
         variant.availabilityStatus === "in_stock" ||
         variant.availabilityStatus === "low_stock" ||
         variant.availabilityStatus === "out_of_stock" ||
-        variant.availabilityStatus === "coming_soon"
+        variant.availabilityStatus === "coming_soon" ||
+        variant.availabilityStatus === "ask_for_price"
           ? variant.availabilityStatus
           : null,
     })),

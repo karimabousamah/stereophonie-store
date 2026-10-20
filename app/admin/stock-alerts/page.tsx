@@ -41,14 +41,14 @@ type VariantRelation =
       size: string;
       sku: string | null;
       availability_status:
-        "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+        "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
       stock_quantity: number;
     }
   | {
       size: string;
       sku: string | null;
       availability_status:
-        "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
+        "in_stock" | "low_stock" | "out_of_stock" | "coming_soon" | "ask_for_price";
       stock_quantity: number;
     }[]
   | null;
