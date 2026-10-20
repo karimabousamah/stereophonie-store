@@ -65969,3 +65969,278 @@ html body
 }
 
 /* === ADMIN V2 CONFIG DETAIL ACTIONS STATIONARY V1 END === */
+
+/* === ADMIN V2 PRODUCTS ASK PRICE PURPLE AUTHORITY START === */
+
+/*
+ * PRODUCT DIRECTORY AVAILABILITY COLOR AUTHORITY
+ *
+ * Ask for price:
+ *   purple
+ *
+ * Out of stock:
+ *   red
+ *
+ * This intentionally keys styling from data-product-filter and
+ * product availability instead of button position, so inserting
+ * or reordering filters cannot accidentally swap semantic colors.
+ */
+
+
+/* ============================================================
+   ASK FOR PRICE — ACTIVE FILTER
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="ask_for_price"]
+.st-admin-product-directory-v2__filters
+> button.is-active {
+  border-color: rgba(124, 58, 237, 0.43) !important;
+
+  background: #f5f1ff !important;
+  background-color: #f5f1ff !important;
+
+  color: #6d28d9 !important;
+
+  box-shadow:
+    0 0 0 1px rgba(124, 58, 237, 0.04),
+    0 4px 14px rgba(124, 58, 237, 0.10)
+    !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="ask_for_price"]
+.st-admin-product-directory-v2__filters
+> button.is-active
+> span {
+  color: #6d28d9 !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="ask_for_price"]
+.st-admin-product-directory-v2__filters
+> button.is-active
+> strong {
+  border-color: rgba(124, 58, 237, 0.18) !important;
+
+  background: rgba(124, 58, 237, 0.10) !important;
+  background-color: rgba(124, 58, 237, 0.10) !important;
+
+  color: #6d28d9 !important;
+}
+
+
+/* ============================================================
+   OUT OF STOCK — ACTIVE FILTER
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="out_of_stock"]
+.st-admin-product-directory-v2__filters
+> button.is-active {
+  border-color: rgba(180, 35, 24, 0.43) !important;
+
+  background: #fff0f0 !important;
+  background-color: #fff0f0 !important;
+
+  color: #b42318 !important;
+
+  box-shadow:
+    0 0 0 1px rgba(180, 35, 24, 0.035),
+    0 4px 14px rgba(180, 35, 24, 0.085)
+    !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="out_of_stock"]
+.st-admin-product-directory-v2__filters
+> button.is-active
+> span {
+  color: #b42318 !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="out_of_stock"]
+.st-admin-product-directory-v2__filters
+> button.is-active
+> strong {
+  border-color: rgba(180, 35, 24, 0.16) !important;
+
+  background: rgba(180, 35, 24, 0.09) !important;
+  background-color: rgba(180, 35, 24, 0.09) !important;
+
+  color: #b42318 !important;
+}
+
+
+/* ============================================================
+   ASK FOR PRICE — ALL PRODUCTS MODE
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="all"]
+~ .st-admin-products-directory
+.st-admin-products-directory__row[
+  data-admin-product-availability="ask_for_price"
+]:not([hidden]) {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(124, 58, 237, 0.095) 0%,
+      rgba(124, 58, 237, 0.043) 48%,
+      rgba(124, 58, 237, 0.016) 100%
+    )
+    !important;
+
+  box-shadow:
+    inset 3px 0 0 rgba(124, 58, 237, 0.43)
+    !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="all"]
+~ .st-admin-products-directory
+.st-admin-products-directory__row[
+  data-admin-product-availability="ask_for_price"
+]:not([hidden]):hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(124, 58, 237, 0.135) 0%,
+      rgba(124, 58, 237, 0.065) 48%,
+      rgba(124, 58, 237, 0.025) 100%
+    )
+    !important;
+
+  box-shadow:
+    inset 3px 0 0 rgba(124, 58, 237, 0.52)
+    !important;
+}
+
+
+/* ============================================================
+   ASK FOR PRICE — FILTERED MODE
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="ask_for_price"]
+~ .st-admin-products-directory
+.st-admin-products-directory__row:not([hidden]) {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(124, 58, 237, 0.100) 0%,
+      rgba(124, 58, 237, 0.047) 48%,
+      rgba(124, 58, 237, 0.018) 100%
+    )
+    !important;
+
+  box-shadow:
+    inset 3px 0 0 rgba(124, 58, 237, 0.46)
+    !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="ask_for_price"]
+~ .st-admin-products-directory
+.st-admin-products-directory__row:not([hidden]):hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(124, 58, 237, 0.140) 0%,
+      rgba(124, 58, 237, 0.067) 48%,
+      rgba(124, 58, 237, 0.026) 100%
+    )
+    !important;
+
+  box-shadow:
+    inset 3px 0 0 rgba(124, 58, 237, 0.56)
+    !important;
+}
+
+
+/* ============================================================
+   OUT OF STOCK — FILTERED MODE
+   Red remains reserved for true Out of stock.
+   ============================================================ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="out_of_stock"]
+~ .st-admin-products-directory
+.st-admin-products-directory__row:not([hidden]) {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(180, 35, 24, 0.095) 0%,
+      rgba(180, 35, 24, 0.043) 48%,
+      rgba(180, 35, 24, 0.016) 100%
+    )
+    !important;
+
+  box-shadow:
+    inset 3px 0 0 rgba(180, 35, 24, 0.43)
+    !important;
+}
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2[data-product-filter="out_of_stock"]
+~ .st-admin-products-directory
+.st-admin-products-directory__row:not([hidden]):hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(180, 35, 24, 0.135) 0%,
+      rgba(180, 35, 24, 0.063) 48%,
+      rgba(180, 35, 24, 0.024) 100%
+    )
+    !important;
+
+  box-shadow:
+    inset 3px 0 0 rgba(180, 35, 24, 0.52)
+    !important;
+}
+
+
+/*
+ * Ask-for-price inventory copy also follows its purple semantic
+ * color without recoloring unrelated cells in the row.
+ */
+
+html body
+.st3-admin
+.st-admin-products-v2
+.st-admin-products-directory
+.st-admin-products-directory__row[
+  data-admin-product-availability="ask_for_price"
+]
+.st-admin-products-directory__inventory
+> :first-child {
+  color: #6d28d9 !important;
+}
+
+
+/* === ADMIN V2 PRODUCTS ASK PRICE PURPLE AUTHORITY END === */
