@@ -126,6 +126,28 @@ const loadShopCatalogueIndex = unstable_cache(
   },
 );
 
+/*
+ * Authoritative lightweight whole-catalogue search.
+ *
+ * Live autocomplete and the submitted Shop page must search the exact
+ * same published catalogue rather than maintaining separate partial
+ * product sets.
+ *
+ * The cached index contains no product images, so this remains cheap.
+ * Callers can hydrate only the small set of matching product IDs they
+ * actually need to render.
+ */
+export async function loadShopSearchIndex(
+  search: string,
+): Promise<ShopCatalogueProduct[]> {
+  const products = await loadShopCatalogueIndex();
+
+  return shopRelevantSearchProducts(
+    products,
+    search,
+  );
+}
+
 type ShopFullImage = StoreProductImage & {
   id: string;
   storage_path: string | null;

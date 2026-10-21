@@ -291,6 +291,87 @@ export default function ImageManager({
    */
   const [selectedVariantIds, setSelectedVariantIds] = useState<string[][]>([]);
 
+  /*
+   * Configuration-safe New Product media.
+   *
+   * Regenerating/removing configurations can retire temporary
+   * client IDs that were previously assigned to an image.
+   *
+   * Never leave those stale IDs attached to media. Keep every
+   * still-valid assignment and let an image with no remaining
+   * assignment become Shared with all configurations.
+   */
+  useEffect(() => {
+    const validConfigurationIds = new Set(
+      liveConfigurations.map(
+        (configuration) => configuration.id,
+      ),
+    );
+
+    setManagedImages((currentImages) => {
+      let changed = false;
+
+      const nextImages = currentImages.map((image) => {
+        const assignments =
+          image.product_image_variants ?? [];
+
+        const validAssignments =
+          assignments.filter(
+            (assignment) =>
+              validConfigurationIds.has(
+                assignment.variant_id,
+              ),
+          );
+
+        if (
+          validAssignments.length ===
+          assignments.length
+        ) {
+          return image;
+        }
+
+        changed = true;
+
+        return {
+          ...image,
+          product_image_variants:
+            validAssignments,
+        };
+      });
+
+      return changed
+        ? nextImages
+        : currentImages;
+    });
+
+    setSelectedVariantIds((current) => {
+      let changed = false;
+
+      const next = current.map((configurationIds) => {
+        const validIds =
+          configurationIds.filter(
+            (configurationId) =>
+              validConfigurationIds.has(
+                configurationId,
+              ),
+          );
+
+        if (
+          validIds.length !==
+          configurationIds.length
+        ) {
+          changed = true;
+        }
+
+        return validIds;
+      });
+
+      return changed
+        ? next
+        : current;
+    });
+  }, [liveConfigurations]);
+
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadError, setUploadError] = useState("");
   const [isUploading, setIsUploading] = useState(false);

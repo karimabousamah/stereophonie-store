@@ -2434,7 +2434,9 @@ export default function CheckoutPage() {
                               <button
                                 type="button"
                                 onClick={enterDifferentAddress}
-                                className={`flex w-full items-center justify-between rounded-[16px] border p-4 text-left transition sm:p-5 ${
+                                  data-checkout-different-address="true"
+                                  data-selected={selectedAddressId === "manual" ? "true" : "false"}
+                                className={`st-checkout-different-address flex w-full items-center justify-between rounded-[18px] border p-4 text-left transition sm:p-5 ${
                                   selectedAddressId === "manual"
                                     ? "border-[#e4ad43] bg-[#fffaf1] text-[#1d1d1f]"
                                     : "border-black/[0.09] bg-white text-[#1d1d1f] hover:border-[#e4ad43]/70"
@@ -2881,7 +2883,7 @@ export default function CheckoutPage() {
                         <Check className="h-4 w-4" />
                       </button>
 
-                      <div className="flex items-start justify-center gap-2 text-center text-[11px] leading-5 text-black/40">
+                      <div className="st-checkout-payment-note flex items-start justify-center gap-2 text-center text-[11px] leading-5 text-black/40">
                         <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
 
                         <p>No payment will be collected during this step.</p>

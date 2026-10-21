@@ -215,6 +215,8 @@ export default function CouponBox({
       </div>
 
       <div
+        data-checkout-coupon-entry="true"
+        data-error={hasError ? "true" : "false"}
         className={`mt-4 flex min-h-[50px] w-full items-stretch overflow-hidden rounded-[14px] border transition ${
           hasError
             ? "border-red-500 bg-white ring-2 ring-red-500/10"

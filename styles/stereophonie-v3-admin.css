@@ -66240,3 +66240,132 @@ html body
 
 
 /* === ADMIN V2 PRODUCTS ASK PRICE PURPLE AUTHORITY END === */
+
+/* === ADMIN V2 CONFIG CREATION ACTIONS STATIONARY V1 START === */
+
+/*
+ * Add option / Generate configurations / Add configuration
+ *
+ * Icons sit after their labels in JSX and remain physically
+ * stationary through every interaction state.
+ */
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:active,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:hover,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:focus,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:focus-visible,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:active {
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+}
+
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:hover
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:focus
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:focus-visible
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+.st-admin-config-option-builder-v2
+> button:active
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:hover
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:focus
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:focus-visible
+> svg,
+html body
+.st3-admin
+.st-admin-product-editor-form
+button.st-admin-config-add-manual-v2:active
+> svg {
+  flex: 0 0 auto !important;
+
+  margin: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: 1 !important;
+
+  animation: none !important;
+}
+
+/* === ADMIN V2 CONFIG CREATION ACTIONS STATIONARY V1 END === */

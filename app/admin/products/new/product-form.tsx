@@ -901,6 +901,27 @@ export default function ProductForm({
 
   return (
     <div className="st-admin-edit-composition-v2">
+      {(errorMessage || submissionError) && (
+        <ProductActionNotice
+          key={`new-product-error-${submissionError || errorMessage}`}
+          variant="error"
+          title="Product not saved"
+          message={
+            submissionError ||
+            errorMessage ||
+            "The product could not be saved."
+          }
+          clearQueryParams={
+            errorMessage
+              ? ["error"]
+              : []
+          }
+          onDismiss={() => {
+            setSubmissionError("");
+          }}
+        />
+      )}
+
       <form
       id="st-admin-new-product-form"
       className="st-admin-product-editor-form"
@@ -1100,27 +1121,6 @@ export default function ProductForm({
         )}
         readOnly
       />
-
-      {(errorMessage || submissionError) && (
-        <ProductActionNotice
-          key={`new-product-error-${submissionError || errorMessage}`}
-          variant="error"
-          title="Product not saved"
-          message={
-            submissionError ||
-            errorMessage ||
-            "The product could not be saved."
-          }
-          clearQueryParams={
-            errorMessage
-              ? ["error"]
-              : []
-          }
-          onDismiss={() => {
-            setSubmissionError("");
-          }}
-        />
-      )}
 
       <input
         type="hidden"

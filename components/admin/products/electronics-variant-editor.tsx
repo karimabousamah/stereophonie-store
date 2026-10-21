@@ -4689,8 +4689,8 @@ export default function ElectronicsVariantEditor({
               !clean(newLevelName)
             }
           >
+            Add option
             <Plus />
- Add option
           </button>
 
           <button
@@ -4702,8 +4702,8 @@ export default function ElectronicsVariantEditor({
  levels.length === 0
             }
           >
+            Generate configurations
             <RefreshCw />
- Generate configurations
           </button>
         </div>
 
@@ -4746,8 +4746,8 @@ export default function ElectronicsVariantEditor({
             }
  className="st-admin-config-add-manual-v2"
           >
+            Add configuration
             <CirclePlus />
- Add configuration
           </button>
         </div>
 

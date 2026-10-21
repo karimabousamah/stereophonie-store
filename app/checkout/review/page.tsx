@@ -770,9 +770,11 @@ export default function CheckoutReviewPage() {
                         </span>
                       </span>
 
-                      <span className="st-checkout-payment-selected-badge st-checkout-payment-option__badge shrink-0">
-                        Selected
-                      </span>
+                      {selectedPaymentMethod === "cash_on_delivery" ? (
+                        <span className="st-checkout-payment-selected-badge st-checkout-payment-option__badge shrink-0">
+                          Selected
+                        </span>
+                      ) : null}
                     </button>
 
                     <div

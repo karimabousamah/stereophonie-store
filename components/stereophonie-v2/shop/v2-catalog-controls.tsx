@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   ChevronDown,
   Filter,
@@ -590,8 +589,22 @@ export default function V2CatalogControls({
     setSuggestionsOpen(false);
     setActiveSuggestion(-1);
 
-    navigate({
-      search: cleanQuery,
+    /*
+     * Storefront search is global.
+     *
+     * A customer may start searching while browsing a Category or
+     * Subcategory, but the query must search the complete Stereophonie
+     * catalogue rather than inherit the current route/filter context.
+     *
+     * This intentionally mirrors the Header search destination.
+     */
+    startTransition(() => {
+      router.push(
+        `/shop?search=${encodeURIComponent(cleanQuery)}`,
+        {
+          scroll: false,
+        },
+      );
     });
   }
 
@@ -840,16 +853,17 @@ export default function V2CatalogControls({
                     >
                       <span className="st-filter-v4__suggestion-image">
                         {result.imageUrl ? (
-                          <Image
-                            src={result.imageUrl}
-                            alt={result.imageAlt}
-                            width={58}
-                            height={58}
-                            sizes="58px"
-                          />
-                        ) : (
-                          <Search aria-hidden="true" />
-                        )}
+                            <img
+                              src={result.imageUrl}
+                              alt={result.imageAlt}
+                              width={58}
+                              height={58}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <Search aria-hidden="true" />
+                          )}
                       </span>
 
                       <span className="st-filter-v4__suggestion-copy">
@@ -871,9 +885,18 @@ export default function V2CatalogControls({
                   type="button"
                   className="st-filter-v4__view-results"
                   onClick={() => {
-                    setSuggestionsOpen(false);
-                    navigate({ search: cleanQuery });
-                  }}
+                      setSuggestionsOpen(false);
+                      setActiveSuggestion(-1);
+
+                      startTransition(() => {
+                        router.push(
+                          `/shop?search=${encodeURIComponent(cleanQuery)}`,
+                          {
+                            scroll: false,
+                          },
+                        );
+                      });
+                    }}
                 >
                   View all results for “{cleanQuery}”
                 </button>

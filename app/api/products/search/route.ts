@@ -7,6 +7,7 @@ import {
   normalizeStorefrontSearchText,
   storefrontSearchValueScore,
 } from "@/lib/storefront-search";
+import { loadShopSearchIndex } from "@/lib/storefront-shop-loader";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -308,7 +309,34 @@ export async function GET(request: NextRequest) {
 
   const normalizedQuery = normalizeStorefrontSearchText(searchQuery);
 
+  /*
+   * Search the complete published catalogue first.
+   *
+   * Previously this endpoint hydrated only the first 150 products
+   * alphabetically and then searched inside that incomplete subset.
+   * A valid product such as Samsung Galaxy S26 could therefore appear
+   * on the submitted Shop results page but be missing from autocomplete.
+   *
+   * The Shop catalogue index is lightweight, cached briefly, and is the
+   * same authoritative search source used by the full Shop experience.
+   */
+  const matchingIndexProducts =
+    await loadShopSearchIndex(searchQuery);
+
+  const topProductIds =
+    matchingIndexProducts
+      .slice(0, 8)
+      .map((product) => product.id);
+
   const supabase = await createClient();
+
+  if (topProductIds.length === 0) {
+    return NextResponse.json({
+      results: [],
+      brands: [],
+      categories: [],
+    });
+  }
 
   const { data, error } = await supabase
     .from("products")
@@ -358,10 +386,7 @@ export async function GET(request: NextRequest) {
       `,
     )
     .eq("status", "published")
-    .order("name", {
-      ascending: true,
-    })
-    .limit(150);
+    .in("id", topProductIds);
 
   if (error) {
     console.error("Live product search failed:", error);
@@ -379,17 +404,29 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const matchingProducts = ((data ?? []) as ProductRow[])
-    .filter((product) => matchesProduct(product, normalizedQuery))
-    .sort((a, b) => {
-      const score = ranking(a, normalizedQuery) - ranking(b, normalizedQuery);
+  const hydratedProductById =
+    new Map(
+      ((data ?? []) as ProductRow[]).map(
+        (product) => [
+          product.id,
+          product,
+        ],
+      ),
+    );
 
-      if (score !== 0) {
-        return score;
-      }
-
-      return a.name.localeCompare(b.name);
-    });
+  /*
+   * Supabase does not guarantee the order of an IN() result.
+   * Restore the authoritative whole-catalog search ranking here.
+   */
+  const matchingProducts =
+    topProductIds
+      .map((productId) =>
+        hydratedProductById.get(productId),
+      )
+      .filter(
+        (product): product is ProductRow =>
+          Boolean(product),
+      );
 
   const results = matchingProducts.slice(0, 8).map((product) => {
     const image =
@@ -413,12 +450,19 @@ export async function GET(request: NextRequest) {
 
       category: relationName(product.categories, "Technology"),
 
+      /*
+       * Autocomplete must always have a dependable product photograph.
+       *
+       * The generated storefront thumbnail is optional and may not exist
+       * for every older/imported image. The original saved image URL is
+       * authoritative and is known to work on the normal storefront card.
+       */
       imageUrl:
+        image?.image_url ??
         storefrontImageUrl(
           supabase,
           image?.storage_path,
         ) ??
-        image?.image_url ??
         null,
 
       imageAlt: image?.alt_text ?? product.name,
@@ -434,7 +478,7 @@ export async function GET(request: NextRequest) {
 
   const brands = Array.from(
     new Set(
-      matchingProducts
+      matchingIndexProducts
         .map((product) => relationName(product.brands))
         .filter(Boolean)
         .filter(
@@ -445,7 +489,7 @@ export async function GET(request: NextRequest) {
 
   const categories = Array.from(
     new Set(
-      matchingProducts
+      matchingIndexProducts
         .map((product) => relationName(product.categories))
         .filter(Boolean)
         .filter(

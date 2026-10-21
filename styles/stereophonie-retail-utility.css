@@ -10025,3 +10025,173 @@ html
 }
 
 /* === ST MOBILE PREORDER ONE-LINE AUTHORITY V6 END === */
+
+/* ==========================================================
+   HEADER SEARCH CLEAR — MATCH SHOP SEARCH FINAL
+   ========================================================== */
+
+/*
+ * Safari's native search cancel control is intentionally removed.
+ * The Header uses the same explicit stationary X architecture as
+ * the Shop/category search.
+ */
+.st3-mega--search
+  .st3-utility-search__form
+  input[type="search"]::-webkit-search-cancel-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+.st3-mega--search .st3-utility-search__clear-search {
+  box-sizing: border-box !important;
+
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 50% !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+
+  color: #777 !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition:
+    color 160ms ease,
+    background-color 160ms ease !important;
+}
+
+.st3-mega--search .st3-utility-search__clear-search svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  stroke-width: 2 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+@media (hover: hover) {
+  .st3-mega--search .st3-utility-search__clear-search:hover {
+    background: transparent !important;
+    color: #d92d20 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+  }
+}
+
+.st3-mega--search .st3-utility-search__clear-search:focus,
+.st3-mega--search .st3-utility-search__clear-search:focus-visible,
+.st3-mega--search .st3-utility-search__clear-search:active,
+.st3-mega--search .st3-utility-search__clear-search:hover {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+.st3-mega--search .st3-utility-search__clear-search:focus-visible {
+  outline: 2px solid rgba(217, 45, 32, 0.22) !important;
+  outline-offset: 2px !important;
+}
+
+.st3-mega--search .st3-utility-search__clear-search:hover svg,
+.st3-mega--search .st3-utility-search__clear-search:focus svg,
+.st3-mega--search .st3-utility-search__clear-search:focus-visible svg,
+.st3-mega--search .st3-utility-search__clear-search:active svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/*
+ * Give the final column enough room for the same 34px X geometry
+ * used by the Shop search.
+ */
+.st3-mega--search .st3-utility-search__form {
+  grid-template-columns: 30px minmax(0, 1fr) 34px !important;
+}
+
+@media (max-width: 900px) {
+  .st3-mega--search .st3-utility-search__form {
+    grid-template-columns: 26px minmax(0, 1fr) 34px !important;
+  }
+}
+
+/* ==========================================================
+   HEADER SEARCH VIEW ALL — COMPLETELY STATIONARY FINAL
+   ========================================================== */
+
+/*
+ * Keep the Header search "View all" control completely stationary.
+ * Previous hover behavior translated the arrow horizontally.
+ * Hover may still change paint/color, but never geometry.
+ */
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:hover,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:focus,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:focus-visible,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button
+  svg,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:hover
+  svg,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:focus
+  svg,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:focus-visible
+  svg,
+.st3-mega--search
+  .st3-utility-search__results-heading
+  > button:active
+  svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}

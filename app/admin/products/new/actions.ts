@@ -581,21 +581,35 @@ async function createProductUnsafe(formData: FormData) {
         ? [image.configuration_id]
         : [];
 
+    /*
+     * Configuration IDs originate in the browser while the product
+     * is still unsaved. If the administrator regenerates or removes
+     * a configuration after assigning a photo, an older browser
+     * payload may still contain the retired temporary client ID.
+     *
+     * Preserve every assignment that still resolves against the
+     * submitted configuration set and discard only stale IDs.
+     *
+     * An image with no remaining exact assignments is Shared,
+     * which is the existing canonical media behavior.
+     */
     const configurationIds = Array.from(
       new Set(
         submittedIds
-          .map((configurationId) => String(configurationId ?? "").trim())
-          .filter(Boolean),
+          .map((configurationId) =>
+            String(
+              configurationId ?? "",
+            ).trim(),
+          )
+          .filter(
+            (configurationId) =>
+              Boolean(configurationId) &&
+              configurationNameByClientId.has(
+                configurationId,
+              ),
+          ),
       ),
     );
-
-    for (const configurationId of configurationIds) {
-      if (!configurationNameByClientId.has(configurationId)) {
-        redirectWithError(
-          "A image is assigned to a configuration that could not be resolved. Reassign the image and try again.",
-        );
-      }
-    }
 
     return {
       ...image,

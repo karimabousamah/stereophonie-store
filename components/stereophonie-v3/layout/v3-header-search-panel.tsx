@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -225,7 +224,21 @@ export default function V3HeaderSearchPanel({
           aria-label="Search products, brands, and categories"
           autoComplete="off"
         />
-        {loading ? <LoaderCircle className="st3-utility-spin" /> : null}
+        {loading ? (
+            <LoaderCircle className="st3-utility-spin" />
+          ) : query ? (
+            <button
+              type="button"
+              className="st3-utility-search__clear-search"
+              aria-label="Clear search"
+              onClick={() => {
+                updateQuery("");
+                window.requestAnimationFrame(() => inputRef.current?.focus());
+              }}
+            >
+              <X aria-hidden="true" />
+            </button>
+          ) : null}
       </form>
 
       {!cleanQuery ? (
@@ -334,16 +347,17 @@ export default function V3HeaderSearchPanel({
               >
                 <div className="st3-utility-search-card__image">
                   {result.imageUrl ? (
-                    <Image
-                      src={result.imageUrl}
-                      alt={result.imageAlt}
-                      width={140}
-                      height={140}
-                      sizes="140px"
-                    />
-                  ) : (
-                    <Search />
-                  )}
+                      <img
+                        src={result.imageUrl}
+                        alt={result.imageAlt}
+                        width={140}
+                        height={140}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <Search />
+                    )}
                 </div>
                 <div>
                   <p>{result.brand || result.category}</p>

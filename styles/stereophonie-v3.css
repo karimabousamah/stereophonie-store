@@ -86112,3 +86112,830 @@ section.st3-shop-v4__catalog
 }
 
 /* === ST CATEGORY SUBCATEGORY READABILITY FINAL V1 END === */
+
+/* ==========================================================
+   STOREFRONT SEARCH CLEAR — STATIONARY RED HOVER FINAL
+   ========================================================== */
+
+/*
+ * The Shop/category search clear control must never physically move.
+ * Hover changes paint only.
+ */
+html body .st-filter-v4__clear-search,
+html body .st-filter-v4__clear-search:hover,
+html body .st-filter-v4__clear-search:focus,
+html body .st-filter-v4__clear-search:focus-visible,
+html body .st-filter-v4__clear-search:active {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+html body .st-filter-v4__clear-search {
+  background: transparent !important;
+  color: #777 !important;
+  box-shadow: none !important;
+
+  transition:
+    color 160ms ease,
+    background-color 160ms ease !important;
+}
+
+@media (hover: hover) {
+  html body .st-filter-v4__clear-search:hover {
+    background: transparent !important;
+    color: #d92d20 !important;
+    box-shadow: none !important;
+  }
+}
+
+html body .st-filter-v4__clear-search svg,
+html body .st-filter-v4__clear-search:hover svg,
+html body .st-filter-v4__clear-search:focus svg,
+html body .st-filter-v4__clear-search:focus-visible svg,
+html body .st-filter-v4__clear-search:active svg {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/*
+ * Safari supplies its own cancel glyph for input[type="search"].
+ * The storefront uses our explicit clear button instead.
+ */
+html body .st-filter-v4__search input[type="search"]::-webkit-search-cancel-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/* ==========================================================
+   SHOP SORT — REMOVE INTERNAL SAFARI DIVIDER FINAL
+   ========================================================== */
+
+/*
+ * The rounded Sort shell owns the focus border/glow.
+ *
+ * Safari can visually expose the native select's left edge while the
+ * control is focused, producing a thin mustard vertical separator
+ * between "Sort" and the selected value.
+ *
+ * Keep the outer shell completely unchanged and neutralize only
+ * internal label/select borders, shadows and pseudo-elements.
+ */
+html body .st-retail-shop .st-filter-v4__sort > span,
+html body .st-retail-shop .st-filter-v4__sort > span:hover,
+html body .st-retail-shop .st-filter-v4__sort > span:focus,
+html body .st-retail-shop .st-filter-v4__sort > span:active {
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-inline: 0 !important;
+
+  box-shadow: none !important;
+
+  background: transparent !important;
+}
+
+html body .st-retail-shop .st-filter-v4__sort > span::before,
+html body .st-retail-shop .st-filter-v4__sort > span::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body .st-retail-shop .st-filter-v4__sort select,
+html body .st-retail-shop .st-filter-v4__sort select:hover,
+html body .st-retail-shop .st-filter-v4__sort select:focus,
+html body .st-retail-shop .st-filter-v4__sort select:focus-visible,
+html body .st-retail-shop .st-filter-v4__sort select:active {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-inline: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body .st-retail-shop .st-filter-v4__sort select::before,
+html body .st-retail-shop .st-filter-v4__sort select::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* === ST CHECKOUT CLEAN FIELD FOCUS FINAL START === */
+
+/*
+ * Checkout fields use the same restrained active/focus language as
+ * the rest of the Stereophonie storefront:
+ *
+ * - one clean mustard perimeter
+ * - one very soft outer halo
+ * - white focused surface
+ * - no inner black ring
+ * - no double focus effect
+ * - no movement
+ *
+ * Error fields intentionally keep their red validation treatment.
+ */
+
+/* Standard Contact Information fields. */
+html body
+  .st-checkout-v2
+  [data-checkout-field]
+  > input:not([aria-invalid="true"]):focus,
+html body
+  .st-checkout-v2
+  [data-checkout-field]
+  > input:not([aria-invalid="true"]):focus-visible {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  background: #ffffff !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+  -webkit-box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Phone is a composite control.
+ * The outer shell owns the focus treatment so the country selector
+ * and phone input never draw separate competing rings.
+ */
+html body
+  .st-checkout-v2
+  [data-checkout-field="phone"]
+  > div:focus-within {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  background: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+  -webkit-box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+html body
+  .st-checkout-v2
+  [data-checkout-field="phone"]
+  > div:focus-within
+  input:focus,
+html body
+  .st-checkout-v2
+  [data-checkout-field="phone"]
+  > div:focus-within
+  input:focus-visible,
+html body
+  .st-checkout-v2
+  [data-checkout-field="phone"]
+  > div:focus-within
+  select:focus,
+html body
+  .st-checkout-v2
+  [data-checkout-field="phone"]
+  > div:focus-within
+  select:focus-visible {
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Preserve validation red when a standard field is invalid.
+ */
+html body
+  .st-checkout-v2
+  [data-checkout-field]
+  > input[aria-invalid="true"]:focus,
+html body
+  .st-checkout-v2
+  [data-checkout-field]
+  > input[aria-invalid="true"]:focus-visible {
+  border-color: rgba(220, 38, 38, 0.82) !important;
+
+  background: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+  -webkit-box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/* === ST CHECKOUT CLEAN FIELD FOCUS FINAL END === */
+
+
+/* === ST CHECKOUT COUPON + ADDRESS UX FINAL START === */
+
+/*
+ * ============================================================
+ * COUPON CODE — MATCH CONTACT INFORMATION FOCUS
+ * ============================================================
+ *
+ * One cohesive control owns the focus state.
+ * No inner input ring, no double border, no heavy glow.
+ */
+
+html body
+  .st-checkout-v2
+  [data-checkout-coupon-entry="true"][data-error="false"]:focus-within {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+  -webkit-box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+  .st-checkout-v2
+  [data-checkout-coupon-entry="true"]
+  input:focus,
+html body
+  .st-checkout-v2
+  [data-checkout-coupon-entry="true"]
+  input:focus-visible {
+  border: 0 !important;
+  border-color: transparent !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  transform: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Preserve coupon validation red.
+ */
+html body
+  .st-checkout-v2
+  [data-checkout-coupon-entry="true"][data-error="true"]:focus-within {
+  border-color: rgba(220, 38, 38, 0.82) !important;
+
+  background: #ffffff !important;
+
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+  -webkit-box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/*
+ * ============================================================
+ * DELIVERY DETAILS — SAME CLEAN FOCUS LANGUAGE
+ * ============================================================
+ *
+ * Applies to:
+ * - saved-address editor
+ * - new-address editor
+ * - delivery-module fields
+ */
+
+html body
+  .st-checkout-v2
+  input[id^="checkout-address-"]:not([aria-invalid="true"]):focus,
+html body
+  .st-checkout-v2
+  input[id^="checkout-address-"]:not([aria-invalid="true"]):focus-visible,
+html body
+  .st-checkout-v2
+  select[id^="checkout-address-"]:not([aria-invalid="true"]):focus,
+html body
+  .st-checkout-v2
+  select[id^="checkout-address-"]:not([aria-invalid="true"]):focus-visible,
+html body
+  .st-checkout-v2
+  textarea[id^="checkout-address-"]:focus,
+html body
+  .st-checkout-v2
+  textarea[id^="checkout-address-"]:focus-visible,
+html body
+  .st-checkout-v2
+  .st-checkout-delivery-module
+  input:not([aria-invalid="true"]):focus,
+html body
+  .st-checkout-v2
+  .st-checkout-delivery-module
+  input:not([aria-invalid="true"]):focus-visible,
+html body
+  .st-checkout-v2
+  .st-checkout-delivery-module
+  select:not([aria-invalid="true"]):focus,
+html body
+  .st-checkout-v2
+  .st-checkout-delivery-module
+  select:not([aria-invalid="true"]):focus-visible,
+html body
+  .st-checkout-v2
+  .st-checkout-delivery-module
+  textarea:focus,
+html body
+  .st-checkout-v2
+  .st-checkout-delivery-module
+  textarea:focus-visible {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+  -webkit-box-shadow: 0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+/*
+ * Required delivery fields remain red when invalid.
+ */
+html body
+  .st-checkout-v2
+  input[id^="checkout-address-"][aria-invalid="true"]:focus,
+html body
+  .st-checkout-v2
+  input[id^="checkout-address-"][aria-invalid="true"]:focus-visible,
+html body
+  .st-checkout-v2
+  select[id^="checkout-address-"][aria-invalid="true"]:focus,
+html body
+  .st-checkout-v2
+  select[id^="checkout-address-"][aria-invalid="true"]:focus-visible {
+  border-color: rgba(220, 38, 38, 0.82) !important;
+
+  background: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+  -webkit-box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/*
+ * ============================================================
+ * "USE A DIFFERENT ADDRESS" — SAVED ADDRESS CARD ARCHITECTURE
+ * ============================================================
+ *
+ * Same card family:
+ * - 18px corners
+ * - fine neutral border
+ * - white surface
+ * - restrained spacing
+ * - mustard selected perimeter + halo
+ *
+ * It remains visually distinct through its Plus icon/content,
+ * not through a different container architecture.
+ */
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 88px !important;
+
+  padding: 18px 20px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.09) !important;
+  border-radius: 18px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 200ms ease !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address
+  > div {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address
+  > div
+  > span:first-child {
+  width: 40px !important;
+  height: 40px !important;
+
+  min-width: 40px !important;
+  flex: 0 0 40px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.07) !important;
+  border-radius: 12px !important;
+
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-v2
+    button.st-checkout-different-address:hover {
+    border-color: rgba(228, 173, 67, 0.68) !important;
+
+    background: #ffffff !important;
+
+    box-shadow:
+      0 0 0 3px rgba(253, 183, 62, 0.045),
+      0 7px 20px rgba(29, 29, 31, 0.025) !important;
+
+    transform: none !important;
+  }
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address[data-selected="true"] {
+  border-color: #e4ad43 !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(253, 183, 62, 0.08),
+      rgba(253, 183, 62, 0.015) 68%,
+      #ffffff
+    ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.075),
+    0 7px 20px rgba(189, 116, 0, 0.06) !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address[data-selected="true"]
+  > div
+  > span:first-child {
+  border-color: rgba(228, 173, 67, 0.42) !important;
+
+  background: rgba(253, 183, 62, 0.16) !important;
+
+  color: #8a5700 !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:focus,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:focus-visible,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:focus-visible {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  outline: 0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.085),
+    0 7px 20px rgba(29, 29, 31, 0.025) !important;
+}
+
+
+/*
+ * ============================================================
+ * CONTINUE TO REVIEW — PAYMENT NOTE SPACING
+ * ============================================================
+ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-payment-note {
+  margin-top: 12px !important;
+
+  padding-top: 0 !important;
+}
+
+/* === ST CHECKOUT COUPON + ADDRESS UX FINAL END === */
+
+
+/* === ST CHECKOUT ADDRESS CARD + PAYMENT NOTE REAL FIX START === */
+
+/*
+ * ============================================================
+ * USE DIFFERENT ADDRESS
+ * Force the same card geometry family as a saved address.
+ * This deliberately outranks the generic checkout rule that
+ * gives buttons a 999px pill radius.
+ * ============================================================
+ */
+
+html body button.st-checkout-different-address,
+html body button.st-checkout-different-address:hover,
+html body button.st-checkout-different-address:focus,
+html body button.st-checkout-different-address:focus-visible,
+html body button.st-checkout-different-address:active {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 92px !important;
+
+  padding: 18px 20px !important;
+
+  border-width: 1px !important;
+  border-style: solid !important;
+
+  border-radius: 18px !important;
+  -webkit-border-radius: 18px !important;
+
+  clip-path: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+html body button.st-checkout-different-address {
+  border-color: rgba(29, 29, 31, 0.09) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+html body button.st-checkout-different-address::before,
+html body button.st-checkout-different-address::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body
+  button.st-checkout-different-address
+  > div {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+html body
+  button.st-checkout-different-address
+  > div
+  > span:first-child {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+
+  flex: 0 0 40px !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.07) !important;
+  border-radius: 12px !important;
+
+  background: #f7f7f8 !important;
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body button.st-checkout-different-address:hover {
+    border-color: rgba(228, 173, 67, 0.68) !important;
+
+    background: #ffffff !important;
+
+    box-shadow:
+      0 0 0 3px rgba(253, 183, 62, 0.045),
+      0 7px 20px rgba(29, 29, 31, 0.025) !important;
+  }
+}
+
+html body
+  button.st-checkout-different-address[data-selected="true"] {
+  border-color: #e4ad43 !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(253, 183, 62, 0.08),
+      rgba(253, 183, 62, 0.015) 68%,
+      #ffffff
+    ) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.075),
+    0 7px 20px rgba(189, 116, 0, 0.06) !important;
+}
+
+html body
+  button.st-checkout-different-address[data-selected="true"]
+  > div
+  > span:first-child {
+  border-color: rgba(228, 173, 67, 0.42) !important;
+
+  background: rgba(253, 183, 62, 0.16) !important;
+
+  color: #8a5700 !important;
+}
+
+html body button.st-checkout-different-address:focus-visible {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  outline: 0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.085),
+    0 7px 20px rgba(29, 29, 31, 0.025) !important;
+}
+
+
+/*
+ * ============================================================
+ * PAYMENT NOTE
+ * Give the lock/text row deliberate breathing room below CTA.
+ * ============================================================
+ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-payment-note {
+  margin-top: 16px !important;
+  padding-top: 0 !important;
+}
+
+@media (max-width: 640px) {
+  html body
+    .st-checkout-v2
+    .st-checkout-payment-note {
+    margin-top: 14px !important;
+  }
+}
+
+/* === ST CHECKOUT ADDRESS CARD + PAYMENT NOTE REAL FIX END === */
+
+/* === ST ADD SAVED ADDRESS MATCH CONTINUE HOVER FINAL START === */
+
+/*
+ * + ADD SAVED ADDRESS
+ *
+ * Match the approved Continue to review interaction exactly:
+ * - warm cream surface
+ * - stronger mustard border
+ * - soft mustard halo
+ * - no physical movement
+ *
+ * Geometry, typography and click behavior remain unchanged.
+ */
+
+html body
+  .st-checkout-v2
+  button.st-checkout-polish__saved-address-button {
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-v2
+    button.st-checkout-polish__saved-address-button:hover:not(:disabled) {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+  }
+
+  html body
+    .st-checkout-v2
+    button.st-checkout-polish__saved-address-button:hover::before {
+    content: none !important;
+    display: none !important;
+    opacity: 0 !important;
+  }
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-polish__saved-address-button:focus-visible {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  outline: none !important;
+
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.15) !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+/* === ST ADD SAVED ADDRESS MATCH CONTINUE HOVER FINAL END === */
