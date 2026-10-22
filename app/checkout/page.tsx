@@ -13,7 +13,6 @@ import {
   Pencil,
   Plus,
   ShoppingBag,
-  Trash2,
   UserRound,
   X,
   Truck,
@@ -34,6 +33,7 @@ import {
 } from "react";
 
 import CheckoutProgress from "@/components/checkout/checkout-progress";
+import CheckoutActionNotice from "@/components/checkout/checkout-action-notice";
 import CouponBox, {
   type AppliedCoupon,
 } from "@/components/checkout/coupon-box";
@@ -477,7 +477,7 @@ function AddressEditor({
   return (
     <div
       onKeyDown={handleEditorKeyDown}
-      className="border-b border-black/10 bg-[#fafaf8] p-4 sm:p-6"
+      className="st-checkout-address-editor-surface border-b border-black/10 bg-[#fafaf8] p-4 sm:p-6"
     >
       <div className="flex items-start justify-between gap-5 border-b border-black/10 pb-5">
         <div>
@@ -501,7 +501,7 @@ function AddressEditor({
           onClick={onClose}
           disabled={saving}
           aria-label="Close address editor"
-          className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full border border-[#c58b22]/55 bg-white text-[#1d1d1f] shadow-[0_2px_8px_rgba(29,29,31,0.035)] transition-all duration-300 hover:border-[#c58b22]/80 hover:bg-[#fffaf0] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.11),0_10px_30px_rgba(196,135,27,0.13)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#f5b335]/15 disabled:cursor-not-allowed disabled:opacity-40"
+          className="st-checkout-address-editor-close"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -894,9 +894,13 @@ export default function CheckoutPage() {
 
   const [addressSaving, setAddressSaving] = useState(false);
 
+  const [addressEditorClosing, setAddressEditorClosing] = useState(false);
+
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const addressEditorRef = useRef<HTMLDivElement | null>(null);
+
+  const addressEditorCloseTimerRef = useRef<number | null>(null);
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
 
@@ -1239,6 +1243,13 @@ export default function CheckoutPage() {
   ======================================================= */
 
   function openNewAddressEditor() {
+    if (addressEditorCloseTimerRef.current !== null) {
+      window.clearTimeout(addressEditorCloseTimerRef.current);
+      addressEditorCloseTimerRef.current = null;
+    }
+
+    setAddressEditorClosing(false);
+
     setAddressEditorMode("new");
     setEditingAddressId(null);
 
@@ -1262,6 +1273,13 @@ export default function CheckoutPage() {
   }
 
   function openEditAddressEditor(address: SavedAddress) {
+    if (addressEditorCloseTimerRef.current !== null) {
+      window.clearTimeout(addressEditorCloseTimerRef.current);
+      addressEditorCloseTimerRef.current = null;
+    }
+
+    setAddressEditorClosing(false);
+
     setAddressEditorMode("edit");
     setEditingAddressId(address.id);
 
@@ -1280,11 +1298,26 @@ export default function CheckoutPage() {
   }
 
   function closeAddressEditor() {
-    setAddressEditorMode("closed");
-    setEditingAddressId(null);
-    setAddressErrors({});
-    setAddressActionError("");
-    setAddressSaving(false);
+    if (addressSaving || addressEditorClosing) {
+      return;
+    }
+
+    setAddressEditorClosing(true);
+
+    if (addressEditorCloseTimerRef.current !== null) {
+      window.clearTimeout(addressEditorCloseTimerRef.current);
+    }
+
+    addressEditorCloseTimerRef.current = window.setTimeout(() => {
+      setAddressEditorMode("closed");
+      setEditingAddressId(null);
+      setAddressErrors({});
+      setAddressActionError("");
+      setAddressSaving(false);
+      setAddressEditorClosing(false);
+
+      addressEditorCloseTimerRef.current = null;
+    }, 320);
   }
 
   function updateAddressDraft(
@@ -1695,9 +1728,7 @@ export default function CheckoutPage() {
     });
   }
 
-  function submitCheckout(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  function continueToReview() {
     const nextErrors = validateForm();
 
     if (Object.keys(nextErrors).length > 0) {
@@ -1785,6 +1816,11 @@ export default function CheckoutPage() {
     router.push("/checkout/review");
   }
 
+  function submitCheckout(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    continueToReview();
+  }
+
   /* =======================================================
      LOADING
   ======================================================= */
@@ -1859,7 +1895,10 @@ export default function CheckoutPage() {
               </div>
             </section>
 
-            <CheckoutProgress currentStep={1} />
+            <CheckoutProgress
+              currentStep={1}
+              onReviewClick={continueToReview}
+            />
 
             {items.length === 0 ? (
               <div className="flex min-h-[440px] flex-col items-center justify-center border border-dashed border-black/15 bg-white px-6 text-center">
@@ -1877,7 +1916,7 @@ export default function CheckoutPage() {
 
                 <Link
                   href="/shop"
-                  className="mt-7 bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.17em] !text-white transition hover:bg-[#242424]"
+                  className="mt-7 bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.17em] !text-black transition hover:bg-[#242424]"
                 >
                   Browse products
                 </Link>
@@ -1891,15 +1930,12 @@ export default function CheckoutPage() {
               >
                 <div className="min-w-0 space-y-6 sm:space-y-8">
                   {errorMessage ? (
-                    <div
-                      role="alert"
-                      className="flex items-start gap-3 border border-red-200 bg-red-50 px-4 py-4 text-sm leading-6 text-red-700 sm:px-5"
-                    >
-                      <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-
-                      <span>{errorMessage}</span>
-                    </div>
-                  ) : null}
+              <CheckoutActionNotice
+                key={errorMessage}
+                message={errorMessage}
+                onDismiss={() => setErrorMessage("")}
+              />
+            ) : null}
 
                   {accountError ? (
                     <div className="flex items-start gap-3 border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-800 sm:px-5">
@@ -1911,7 +1947,7 @@ export default function CheckoutPage() {
 
                   {signedIn ? (
                     <section className="border border-emerald-200 bg-emerald-50/50">
-                      <div className="flex items-start gap-4 px-4 py-5 sm:px-6">
+                      <div className="flex items-center gap-4 px-4 py-5 sm:px-6">
                         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-white">
                           <UserRound className="h-5 w-5" />
                         </div>
@@ -1929,8 +1965,6 @@ export default function CheckoutPage() {
                             {accountEmail}
                           </p>
                         </div>
-
-                        <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
                       </div>
                     </section>
                   ) : (
@@ -2034,7 +2068,10 @@ export default function CheckoutPage() {
                   {/* CONTACT INFORMATION */}
 
                   <section className="st-checkout-module border border-black/10 bg-white">
-                    <div className="border-b border-black/10 px-4 py-5 sm:px-6">
+                    <div
+                      id="st-checkout-details-contact-header"
+                      className="st-checkout-section-header-divider px-4 py-5 sm:px-6"
+                    >
                       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                         Step 01
                       </p>
@@ -2287,7 +2324,7 @@ export default function CheckoutPage() {
                       data-checkout-delivery="true"
                       className="st-checkout-module border border-black/10 bg-white st-checkout-delivery-module"
                     >
-                      <div className="flex flex-col gap-5 border-b border-black/10 px-4 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6">
+                      <div className="st-checkout-section-header-divider flex flex-col gap-5 px-4 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-6">
                         <div>
                           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                             Step 02
@@ -2331,7 +2368,14 @@ export default function CheckoutPage() {
                       ) : null}
 
                       {signedIn && addressEditorMode !== "closed" ? (
-                        <div ref={addressEditorRef}>
+                        <div
+                          ref={addressEditorRef}
+                          className={`st-checkout-address-editor-motion ${
+                            addressEditorClosing
+                              ? "is-closing"
+                              : "is-opening"
+                          }`}
+                        >
                           <AddressEditor
                             mode={addressEditorMode}
                             draft={addressDraft}
@@ -2348,7 +2392,10 @@ export default function CheckoutPage() {
                       ) : null}
 
                       {signedIn ? (
-                        <div className="border-b border-black/10 bg-[#fafaf8] p-4 sm:p-6">
+                        <div
+                          id="st-checkout-saved-addresses-surface"
+                          className="border-b border-black/10 bg-[#fafaf8] p-4 sm:p-6"
+                        >
                           <div className="flex items-start justify-between gap-5">
                             <div>
                               <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-black/40">
@@ -2361,7 +2408,6 @@ export default function CheckoutPage() {
                               </p>
                             </div>
 
-                            <MapPin className="h-5 w-5 shrink-0 text-black/35" />
                           </div>
 
                           {savedAddresses.length > 0 ? (
@@ -2432,6 +2478,7 @@ export default function CheckoutPage() {
                               })}
 
                               <button
+                                id="st-checkout-different-address"
                                 type="button"
                                 onClick={enterDifferentAddress}
                                   data-checkout-different-address="true"
@@ -2728,7 +2775,10 @@ export default function CheckoutPage() {
 
                 <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
                   <section className="st-checkout-module overflow-hidden rounded-[18px] border border-black/[0.09] bg-white shadow-[0_10px_34px_rgba(29,29,31,0.035)]">
-                    <div className="border-b border-black/[0.08] px-4 py-4 sm:px-5">
+                    <div
+                      data-checkout-flat-divider="true"
+                      className="st-checkout-section-header-divider px-4 py-4 sm:px-5"
+                    >
                       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                         Order terminal
                       </p>
@@ -2773,34 +2823,31 @@ export default function CheckoutPage() {
                                 </p>
                               </div>
 
-                              <button
-                                type="button"
-                                onClick={() => removeItem(item.cartItemId)}
-                                aria-label={`Remove ${item.name}`}
-                                className="flex h-8 w-8 shrink-0 items-center justify-center text-black/30 transition hover:text-red-600"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
+
                             </div>
 
                             <div className="mt-3 flex flex-wrap items-center justify-between gap-2.5">
-                              <div className="st-checkout-quantity-control flex h-9 items-center overflow-hidden rounded-full border border-black/10">
+                              <div className="st-checkout-quantity-control flex h-8 items-center overflow-hidden rounded-full border border-black/10">
                                 <button
                                   type="button"
-                                  onClick={() =>
+                                  onClick={() => {
+                                    if (item.quantity <= 1) {
+                                      removeItem(item.cartItemId);
+                                      return;
+                                    }
+
                                     updateQuantity(
                                       item.cartItemId,
                                       item.quantity - 1,
-                                    )
-                                  }
-                                  disabled={item.quantity <= 1}
+                                    );
+                                  }}
                                   aria-label="Decrease quantity"
-                                  className="flex h-full w-9 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
+                                  className="flex h-full w-6 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
                                 >
-                                  <Minus className="h-3.5 w-3.5" />
+                                  <Minus className="h-2.5 w-2.5" />
                                 </button>
 
-                                <span className="st-checkout-quantity-value flex h-full min-w-9 items-center justify-center px-2 text-[13px] font-semibold">
+                                <span className="st-checkout-quantity-value flex h-full min-w-6 items-center justify-center px-0.5 text-[11px] font-semibold">
                                   {item.quantity}
                                 </span>
 
@@ -2816,9 +2863,9 @@ export default function CheckoutPage() {
                                     item.quantity >= item.maximumQuantity
                                   }
                                   aria-label="Increase quantity"
-                                  className="flex h-full w-10 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
+                                  className="flex h-full w-6 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
                                 >
-                                  <Plus className="h-3.5 w-3.5" />
+                                  <Plus className="h-2.5 w-2.5" />
                                 </button>
                               </div>
 
@@ -2831,7 +2878,10 @@ export default function CheckoutPage() {
                       ))}
                     </div>
 
-                    <div className="space-y-3.5 border-t border-black/[0.08] p-4 sm:p-4">
+                    <div
+                      id="st-checkout-order-terminal-totals"
+                      className="space-y-3.5 border-t border-black/[0.08] p-4 sm:p-4"
+                    >
                       <CouponBox
                         subtotal={subtotal}
                         customerEmail={accountEmail || form.email}
@@ -2866,7 +2916,10 @@ export default function CheckoutPage() {
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between border-t border-black/[0.08] pt-3.5">
+                      <div
+                          id="st-checkout-current-total-row"
+                          className="flex items-center justify-between border-t border-black/[0.08] pt-3.5"
+                        >
                         <span className="font-semibold">Current total</span>
 
                         <span className="text-[18px] font-semibold">

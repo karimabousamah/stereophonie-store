@@ -7,11 +7,9 @@ import {
   Banknote,
   CheckCircle2,
   LockKeyhole,
-  MapPin,
   Mail,
   Phone,
   ShoppingBag,
-  User,
   UserRound,
   WalletCards,
   Truck,
@@ -468,7 +466,10 @@ export default function CheckoutReviewPage() {
           </Link>
         </section>
 
-        <CheckoutProgress currentStep={2} />
+        <CheckoutProgress
+          currentStep={2}
+          onDetailsClick={() => router.push("/checkout")}
+        />
 
         <section className="st-checkout-content mx-auto max-w-[1180px] px-4 py-6 sm:px-6 sm:py-8">
           {errorMessage ? (
@@ -505,7 +506,7 @@ export default function CheckoutReviewPage() {
               <div className="min-w-0 space-y-6 sm:space-y-8">
                 {customerAccount?.signedIn ? (
                   <section className="border border-emerald-200 bg-emerald-50/50">
-                    <div className="flex items-start gap-4 px-5 py-5 sm:px-6">
+                    <div className="flex items-center gap-4 px-5 py-5 sm:px-6">
                       <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-700 text-white">
                         <UserRound className="h-5 w-5" />
                       </div>
@@ -523,8 +524,6 @@ export default function CheckoutReviewPage() {
                           {customerAccount.email || customer.email}
                         </p>
                       </div>
-
-                      <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" />
                     </div>
                   </section>
                 ) : (
@@ -543,7 +542,10 @@ export default function CheckoutReviewPage() {
                 )}
 
                 <section className="border border-black/10 bg-white">
-                  <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
+                  <div
+                    data-checkout-flat-divider="true"
+                    className="st-checkout-section-header-divider flex items-center justify-between px-5 py-5 sm:px-6"
+                  >
                     <div>
                       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                         Customer
@@ -554,7 +556,6 @@ export default function CheckoutReviewPage() {
                       </h2>
                     </div>
 
-                    <User className="h-5 w-5 text-black/35" />
                   </div>
 
                   <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
@@ -569,8 +570,12 @@ export default function CheckoutReviewPage() {
                     </div>
 
                     <div className="st-checkout-review-info-card border border-black/10 p-4">
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-black/35" />
+                      <div id="st-checkout-review-email-label"
+                        className="st-checkout-review-email-label-row flex items-center gap-2">
+                        <Mail
+                          id="st-checkout-review-email-icon"
+                          className="st-checkout-review-email-icon text-black/35"
+                        />
 
                         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
                           Email address
@@ -583,8 +588,12 @@ export default function CheckoutReviewPage() {
                     </div>
 
                     <div className="st-checkout-review-info-card border border-black/10 p-4 sm:col-span-2">
-                      <div className="flex items-center gap-2 st-checkout-review-phone-clean">
-                        <Phone className="h-4 w-4 text-black/35" />
+                      <div id="st-checkout-review-phone-label"
+                        className="flex items-center gap-2 st-checkout-review-phone-clean">
+                        <Phone
+                          id="st-checkout-review-phone-icon"
+                          className="st-checkout-review-phone-icon text-black/35"
+                        />
 
                         <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-black/40">
                           Phone number
@@ -607,7 +616,11 @@ export default function CheckoutReviewPage() {
 
                 {fulfillmentMethod === "delivery" ? (
                   <section className="overflow-hidden rounded-[22px] border border-black/[0.08] bg-white shadow-[0_10px_36px_rgba(29,29,31,0.035)]">
-                    <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
+                    <div
+                      id="st-checkout-review-delivery-header"
+                      data-checkout-flat-divider="true"
+                      className="st-checkout-section-header-divider flex items-center justify-between px-5 py-5 sm:px-6"
+                    >
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                           Delivery
@@ -618,7 +631,6 @@ export default function CheckoutReviewPage() {
                         </h2>
                       </div>
 
-                      <MapPin className="h-5 w-5 text-black/35" />
                     </div>
 
                     <div className="space-y-5 p-5 sm:p-6">
@@ -679,6 +691,7 @@ export default function CheckoutReviewPage() {
                       ) : null}
 
                       <Link
+                        id="st-checkout-edit-delivery-details"
                         href="/checkout"
                         className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-black/45 transition hover:text-black"
                       >
@@ -719,7 +732,10 @@ export default function CheckoutReviewPage() {
                   id="payment-methods"
                   className="scroll-mt-8 overflow-hidden rounded-[22px] border border-black/[0.08] bg-white shadow-[0_10px_36px_rgba(29,29,31,0.035)]"
                 >
-                  <div className="border-b border-black/10 px-5 py-5 sm:px-6">
+                  <div
+                    data-checkout-flat-divider="true"
+                    className="st-checkout-section-header-divider px-5 py-5 sm:px-6"
+                  >
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                       Payment
                     </p>
@@ -812,7 +828,10 @@ export default function CheckoutReviewPage() {
                 </section>
 
                 <section className="border border-black/10 bg-white">
-                  <div className="border-b border-black/10 px-5 py-5 sm:px-6">
+                  <div
+                    data-checkout-flat-divider="true"
+                    className="st-checkout-section-header-divider px-5 py-5 sm:px-6"
+                  >
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                       Products
                     </p>
@@ -881,7 +900,10 @@ export default function CheckoutReviewPage() {
 
               <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
                 <section className="overflow-hidden border border-black/10 bg-white">
-                  <div className="border-b border-black/10 px-5 py-5">
+                  <div
+                    data-checkout-flat-divider="true"
+                    className="st-checkout-section-header-divider px-5 py-5"
+                  >
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
                       Order summary
                     </p>
@@ -944,7 +966,11 @@ export default function CheckoutReviewPage() {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-black/10 pt-4">
+                    <div
+                      id="st-checkout-review-order-total-divider"
+                      data-checkout-flat-divider="true"
+                      className="flex items-center justify-between border-t border-black/10 pt-4"
+                    >
                       <span className="font-semibold">Order total</span>
 
                       <span className="text-xl font-semibold">
@@ -959,9 +985,18 @@ export default function CheckoutReviewPage() {
                       </span>
                     </div>
 
-                    <div className="border border-emerald-200 bg-emerald-50 p-4">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
+                    <div
+                        id="st-checkout-review-ready-banner"
+                        className="border border-emerald-200 bg-emerald-50 p-4"
+                      >
+                        <div
+                          id="st-checkout-review-ready-row"
+                          className="flex items-center gap-3"
+                        >
+                          <CheckCircle2
+                            id="st-checkout-review-ready-icon"
+                            className="h-5 w-5 shrink-0 text-emerald-700"
+                          />
 
                         <p className="text-xs leading-5 text-emerald-800">
                           {fulfillmentMethod === "pickup"
@@ -972,6 +1007,7 @@ export default function CheckoutReviewPage() {
                     </div>
 
                     <button
+                      id="st-checkout-review-place-order"
                       type="button"
                       onClick={continueToOrderSubmission}
                       disabled={!selectedPaymentMethod || isPlacingOrder}

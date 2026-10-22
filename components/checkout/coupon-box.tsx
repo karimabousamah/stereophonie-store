@@ -219,7 +219,7 @@ export default function CouponBox({
         data-error={hasError ? "true" : "false"}
         className={`mt-4 flex min-h-[50px] w-full items-stretch overflow-hidden rounded-[14px] border transition ${
           hasError
-            ? "border-red-500 bg-white ring-2 ring-red-500/10"
+            ? "border-red-500 bg-[#f7f7f9] ring-2 ring-red-500/10"
             : "border-black/[0.11] bg-[#f7f7f9] focus-within:border-[#e4ad43] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#fdb73e]/10"
         }`}
       >
@@ -253,10 +253,16 @@ export default function CouponBox({
           className="flex min-w-[82px] shrink-0 items-center justify-center gap-1.5 !rounded-none !border-0 !border-l !border-black/[0.08] !bg-transparent px-4 font-[inherit] text-[13px] font-semibold tracking-[-0.01em] !text-[#1d1d1f] !shadow-none transition hover:!bg-[#fff7e8] disabled:cursor-not-allowed disabled:opacity-35"
         >
           {isApplying ? (
-            <>
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Checking
-            </>
+              <>
+                <span>Checking</span>
+                <span
+                  id="st-checkout-coupon-spinner"
+                  className="st-checkout-coupon-spinner"
+                  aria-hidden="true"
+                >
+                  <Loader2 className="h-3.5 w-3.5" />
+                </span>
+              </>
           ) : (
             "Apply"
           )}
@@ -266,7 +272,7 @@ export default function CouponBox({
       {message ? (
         <div
           role={hasError ? "alert" : undefined}
-          className={`mt-3 flex items-start gap-2 text-xs leading-5 ${
+          className={`st-checkout-coupon-message mt-3 flex items-start gap-2 text-xs leading-5 ${
             hasError ? "text-red-600" : "text-black/50"
           }`}
         >

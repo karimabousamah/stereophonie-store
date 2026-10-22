@@ -86939,3 +86939,3546 @@ html body
 }
 
 /* === ST ADD SAVED ADDRESS MATCH CONTINUE HOVER FINAL END === */
+
+/* === ST STOREFRONT STATIONARY INTERACTION + ADDRESS EDITOR FINAL START === */
+
+/*
+ * ============================================================
+ * PUBLIC STOREFRONT — BUTTONS DO NOT PHYSICALLY MOVE ON HOVER
+ * ============================================================
+ *
+ * The public storefront always renders the V3 header.
+ * Scoping through :has(.st3-header) keeps this authority away
+ * from Admin V2 while removing lift / slide / scale hover motion
+ * from storefront buttons.
+ *
+ * Hover may still change:
+ * - background
+ * - border
+ * - shadow
+ * - color
+ *
+ * but never geometry or icon position.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html body:has(.st3-header)
+    :is(
+      button,
+      [role="button"],
+      a.st-retail-button,
+      a[class*="button"],
+      .st3-header__icon,
+      .st3-header__visit-us,
+      .st3-footer__store-location,
+      .st-product-v5__back,
+      .st-about-visit__directions
+    ):hover {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body:has(.st3-header)
+    :is(
+      button,
+      [role="button"],
+      a.st-retail-button,
+      a[class*="button"],
+      .st3-header__icon,
+      .st3-header__visit-us,
+      .st3-footer__store-location,
+      .st-product-v5__back,
+      .st-about-visit__directions
+    ):hover
+    svg,
+  html body:has(.st3-header)
+    :is(
+      button,
+      [role="button"],
+      a.st-retail-button,
+      a[class*="button"],
+      .st3-header__icon,
+      .st3-header__visit-us,
+      .st3-footer__store-location,
+      .st-product-v5__back,
+      .st-about-visit__directions
+    ):hover
+    svg * {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+/*
+ * ============================================================
+ * SAVED ADDRESS PENCIL — BARE ICON
+ * ============================================================
+ *
+ * Keep a comfortable invisible click target for accessibility,
+ * but remove every visible surrounding box.
+ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-saved-address-edit-slot {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-saved-address-edit,
+html body
+  .st-checkout-v2
+  button.st-checkout-saved-address-edit:hover,
+html body
+  .st-checkout-v2
+  button.st-checkout-saved-address-edit:active {
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  color: #1d1d1f !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-v2
+    button.st-checkout-saved-address-edit:hover {
+    color: #9a680d !important;
+  }
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-saved-address-edit:focus-visible {
+  outline: 2px solid rgba(197, 139, 34, 0.34) !important;
+  outline-offset: 2px !important;
+
+  border-radius: 8px !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-saved-address-edit svg,
+html body
+  .st-checkout-v2
+  button.st-checkout-saved-address-edit:hover svg,
+html body
+  .st-checkout-v2
+  button.st-checkout-saved-address-edit:active svg {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  color: currentColor !important;
+}
+
+
+/*
+ * ============================================================
+ * ADDRESS EDITOR — PROFESSIONAL OPEN / CLOSE MOTION
+ * ============================================================
+ *
+ * Grid-row collapse lets the actual page layout slide open and
+ * closed instead of merely fading an overlay.
+ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-address-editor-motion {
+  display: grid !important;
+  grid-template-rows: 1fr;
+
+  min-width: 0 !important;
+
+  overflow: hidden !important;
+
+  transform-origin: top center !important;
+}
+
+html body
+  .st-checkout-v2
+  .st-checkout-address-editor-motion
+  > .st-checkout-address-editor-surface {
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+html body
+  .st-checkout-v2
+  .st-checkout-address-editor-motion.is-opening {
+  animation:
+    stCheckoutAddressEditorOpen
+    360ms
+    cubic-bezier(0.22, 0.61, 0.36, 1)
+    both !important;
+}
+
+html body
+  .st-checkout-v2
+  .st-checkout-address-editor-motion.is-closing {
+  pointer-events: none !important;
+
+  animation:
+    stCheckoutAddressEditorClose
+    320ms
+    cubic-bezier(0.4, 0, 0.2, 1)
+    both !important;
+}
+
+@keyframes stCheckoutAddressEditorOpen {
+  0% {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes stCheckoutAddressEditorClose {
+  0% {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  45% {
+    opacity: 0.75;
+  }
+
+  100% {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+
+/*
+ * ============================================================
+ * ADDRESS EDITOR CLOSE — STOREFRONT SOFT-SQUARE X
+ * ============================================================
+ */
+
+html body
+  .st-checkout-v2
+  button.st-checkout-address-editor-close {
+  box-sizing: border-box !important;
+
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  flex: 0 0 40px !important;
+
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 11px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #666666 !important;
+
+  box-shadow: 0 2px 8px rgba(29, 29, 31, 0.035) !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-v2
+    button.st-checkout-address-editor-close:hover:not(:disabled) {
+    border-color: rgba(197, 139, 34, 0.5) !important;
+
+    background: #fffaf0 !important;
+
+    color: #9a680d !important;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.08),
+      0 7px 18px rgba(196, 135, 27, 0.08) !important;
+
+    transform: none !important;
+  }
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-address-editor-close:focus-visible {
+  outline: 2px solid rgba(197, 139, 34, 0.34) !important;
+  outline-offset: 2px !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-address-editor-close:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.4 !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-address-editor-close
+  svg,
+html body
+  .st-checkout-v2
+  button.st-checkout-address-editor-close:hover
+  svg {
+  width: 15px !important;
+  height: 15px !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+    .st-checkout-v2
+    .st-checkout-address-editor-motion.is-opening,
+  html body
+    .st-checkout-v2
+    .st-checkout-address-editor-motion.is-closing {
+    animation-duration: 1ms !important;
+  }
+}
+
+/* === ST STOREFRONT STATIONARY INTERACTION + ADDRESS EDITOR FINAL END === */
+
+/* === ST SAVED ADDRESS PENCIL NO HOVER FINAL START === */
+
+/*
+ * Address edit pencil:
+ * mouse hover must produce ZERO visual change.
+ *
+ * Keep:
+ * - click target
+ * - accessibility focus-visible state
+ * - edit functionality
+ *
+ * Remove on hover:
+ * - surrounding box
+ * - background
+ * - border
+ * - glow / shadow
+ * - color change
+ * - movement / scale
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2.is-selected
+    button.st-checkout-saved-address-edit:hover,
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2
+    button.st-checkout-saved-address-edit:hover {
+    border: 0 !important;
+    border-left: 0 !important;
+    border-color: transparent !important;
+
+    border-radius: 0 !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+
+    color: #1d1d1f !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+
+    outline: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2.is-selected
+    button.st-checkout-saved-address-edit:hover
+    svg,
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2
+    button.st-checkout-saved-address-edit:hover
+    svg,
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2.is-selected
+    button.st-checkout-saved-address-edit:hover
+    svg
+    *,
+  html
+    body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2
+    button.st-checkout-saved-address-edit:hover
+    svg
+    * {
+    color: #1d1d1f !important;
+    stroke: currentColor !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+
+    filter: none !important;
+  }
+}
+
+/* === ST SAVED ADDRESS PENCIL NO HOVER FINAL END === */
+
+/* === ST SAVED ADDRESS SMALL PENCIL SEPARATOR FINAL START === */
+
+/*
+ * Preserve the original short separator beside the pencil.
+ * The separator belongs to the 42px pencil button itself,
+ * NOT to the full-height edit slot.
+ *
+ * Hover remains otherwise completely visually neutral.
+ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-saved-address-v2
+  button.st-checkout-saved-address-edit,
+html body
+  .st-checkout-v2
+  .st-checkout-saved-address-v2.is-selected
+  button.st-checkout-saved-address-edit {
+  border: 0 !important;
+  border-left: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2
+    button.st-checkout-saved-address-edit:hover,
+  html body
+    .st-checkout-v2
+    .st-checkout-saved-address-v2.is-selected
+    button.st-checkout-saved-address-edit:hover {
+    border: 0 !important;
+    border-left: 1px solid rgba(29, 29, 31, 0.1) !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+
+    box-shadow: none !important;
+
+    color: #1d1d1f !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+/* === ST SAVED ADDRESS SMALL PENCIL SEPARATOR FINAL END === */
+
+/* === ST CHECKOUT FULFILLMENT + PAYMENT HOVER FINAL START === */
+
+/*
+ * Fulfillment + enabled payment choices now share the approved
+ * checkout button hover language:
+ *
+ * - warm cream surface
+ * - mustard perimeter
+ * - soft mustard halo
+ * - absolutely no movement
+ */
+
+
+/* ============================================================
+ * FULFILLMENT
+ * ============================================================ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-fulfillment__choice {
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-v2
+    .st-checkout-fulfillment__choice:hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body
+    .st-checkout-v2
+    .st-checkout-fulfillment__choice:hover
+    :is(
+      .st-checkout-fulfillment__icon,
+      .st-checkout-fulfillment__radio,
+      svg
+    ) {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+/* ============================================================
+ * PAYMENT METHOD
+ * ============================================================ */
+
+html body
+  .st-checkout-review-v2
+  button.st-checkout-payment-card {
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-review-v2
+    button.st-checkout-payment-card:not([aria-disabled="true"]):hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body
+    .st-checkout-review-v2
+    button.st-checkout-payment-card:not([aria-disabled="true"]):hover
+    svg,
+  html body
+    .st-checkout-review-v2
+    button.st-checkout-payment-card:not([aria-disabled="true"]):hover
+    svg
+    * {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+/*
+ * Coming-soon payment options remain completely inert.
+ */
+html body
+  .st-checkout-review-v2
+  .st-checkout-payment-card[aria-disabled="true"],
+html body
+  .st-checkout-review-v2
+  .st-checkout-payment-card[aria-disabled="true"]:hover {
+  border-color: rgba(29, 29, 31, 0.07) !important;
+
+  background: #f7f7f9 !important;
+  background-color: #f7f7f9 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* === ST CHECKOUT FULFILLMENT + PAYMENT HOVER FINAL END === */
+
+/* === ST CHECKOUT REAL PAYMENT OPTION HOVER FINAL START === */
+
+/*
+ * Actual Review-page cash payment button.
+ *
+ * Match the approved checkout hover language:
+ * - warm cream surface
+ * - mustard border
+ * - soft mustard halo
+ * - zero movement
+ *
+ * The disabled Whish Money row is a DIV, not this button,
+ * so it remains completely untouched.
+ */
+
+html body
+  .st-checkout-review-v2
+  button.st-checkout-payment-option {
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-review-v2
+    button.st-checkout-payment-option:hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body
+    .st-checkout-review-v2
+    button.st-checkout-payment-option:hover
+    .st-checkout-payment-option__icon,
+  html body
+    .st-checkout-review-v2
+    button.st-checkout-payment-option:hover
+    svg,
+  html body
+    .st-checkout-review-v2
+    button.st-checkout-payment-option:hover
+    svg
+    * {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+/* === ST CHECKOUT REAL PAYMENT OPTION HOVER FINAL END === */
+
+/* === ST DIFFERENT ADDRESS ZERO MOTION FINAL START === */
+
+/*
+ * "Use a different address for this order"
+ *
+ * Keep all approved hover paint effects, but absolutely no
+ * physical movement on the button OR any content inside it.
+ */
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:hover,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:focus,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:focus-visible,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition-property:
+    border-color,
+    background-color,
+    box-shadow,
+    color !important;
+}
+
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address
+  > *,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:hover
+  > *,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address
+  > *
+  > *,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:hover
+  > *
+  > *,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address
+  svg,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:hover
+  svg,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address
+  svg
+  *,
+html body
+  .st-checkout-v2
+  button.st-checkout-different-address:hover
+  svg
+  * {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-v2
+    button.st-checkout-different-address:hover {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body
+    .st-checkout-v2
+    button.st-checkout-different-address:hover
+    > *,
+  html body
+    .st-checkout-v2
+    button.st-checkout-different-address:hover
+    > *
+    > * {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+/* === ST DIFFERENT ADDRESS ZERO MOTION FINAL END === */
+
+/* === ST REAL CHECKOUT ADDRESS HOVER FINAL START === */
+
+/*
+ * REAL LIVE CHECKOUT ADDRESS CONTROLS
+ *
+ * Important:
+ * The current checkout DOM does NOT rely on .st-checkout-v2
+ * around these controls, so these selectors intentionally
+ * target the actual classes directly.
+ *
+ * Approved interaction:
+ * - warm cream surface
+ * - stronger mustard border
+ * - soft mustard halo
+ * - ZERO movement
+ */
+
+
+/* ============================================================
+ * ADD SAVED ADDRESS — ACTUAL BUTTON
+ * ============================================================ */
+
+html body button.st-checkout-polish__saved-address-button,
+html body button.st-checkout-polish__saved-address-button:hover,
+html body button.st-checkout-polish__saved-address-button:focus,
+html body button.st-checkout-polish__saved-address-button:focus-visible,
+html body button.st-checkout-polish__saved-address-button:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+}
+
+html body button.st-checkout-polish__saved-address-button::before,
+html body button.st-checkout-polish__saved-address-button::after,
+html body button.st-checkout-polish__saved-address-button:hover::before,
+html body button.st-checkout-polish__saved-address-button:hover::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    button.st-checkout-polish__saved-address-button:hover:not(:disabled) {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body
+    button.st-checkout-polish__saved-address-button:hover
+    > *,
+  html body
+    button.st-checkout-polish__saved-address-button:hover
+    svg,
+  html body
+    button.st-checkout-polish__saved-address-button:hover
+    svg
+    * {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+/* ============================================================
+ * SAVED ADDRESS CARD
+ *
+ * Trigger hover only from the ADDRESS-SELECTION side.
+ * Hovering the pencil itself remains visually neutral.
+ * ============================================================ */
+
+html body .st-checkout-saved-address-v2 {
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-saved-address-v2:has(
+      > div > button:first-child:hover
+    ) {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body
+    .st-checkout-saved-address-v2
+    > div
+    > button:first-child:hover,
+  html body
+    .st-checkout-saved-address-v2
+    > div
+    > button:first-child:hover
+    *,
+  html body
+    .st-checkout-saved-address-v2
+    > div
+    > button:first-child:hover
+    svg {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+/* === ST REAL CHECKOUT ADDRESS HOVER FINAL END === */
+
+/* === ST DIFFERENT ADDRESS UNIQUE ID FINAL START === */
+
+/*
+ * One exact control only:
+ * "Use a different address for this order"
+ *
+ * Do not depend on .st-checkout-v2.
+ * Do not depend on pointer/hover media queries.
+ * Do not allow generic checkout button motion.
+ */
+
+
+/* ------------------------------------------------------------
+ * BASE + ALL INTERACTION STATES — GEOMETRY NEVER CHANGES
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-different-address,
+html body #st-checkout-different-address:hover,
+html body #st-checkout-different-address:focus,
+html body #st-checkout-different-address:focus-visible,
+html body #st-checkout-different-address:active {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 92px !important;
+
+  padding: 18px 20px !important;
+
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-radius: 18px !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+}
+
+
+/* ------------------------------------------------------------
+ * NORMAL UNSELECTED STATE
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-different-address:not([data-selected="true"]) {
+  border-color: rgba(29, 29, 31, 0.09) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * EXACT CONTINUE-TO-REVIEW HOVER
+ * NO MEDIA QUERY.
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-different-address:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * SELECTED + HOVER
+ * Same hover paint, still completely stationary.
+ * ------------------------------------------------------------ */
+
+html body
+  #st-checkout-different-address[data-selected="true"]:hover {
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  background: #fffaf0 !important;
+  background-color: #fffaf0 !important;
+  background-image: none !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * KILL LEGACY GENERATED SURFACES
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-different-address::before,
+html body #st-checkout-different-address::after,
+html body #st-checkout-different-address:hover::before,
+html body #st-checkout-different-address:hover::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+
+  transform: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * NOTHING INSIDE THE CARD MAY MOVE
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-different-address > *,
+html body #st-checkout-different-address:hover > *,
+html body #st-checkout-different-address > * > *,
+html body #st-checkout-different-address:hover > * > *,
+html body #st-checkout-different-address span,
+html body #st-checkout-different-address:hover span,
+html body #st-checkout-different-address p,
+html body #st-checkout-different-address:hover p,
+html body #st-checkout-different-address svg,
+html body #st-checkout-different-address:hover svg,
+html body #st-checkout-different-address svg *,
+html body #st-checkout-different-address:hover svg * {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * FOCUS + PRESS
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-different-address:focus-visible {
+  outline: none !important;
+
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.15) !important;
+}
+
+html body #st-checkout-different-address:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* === ST DIFFERENT ADDRESS UNIQUE ID FINAL END === */
+
+/* === ST CHECKOUT COUPON CONTACT + PLACE ORDER FINAL START === */
+
+/*
+ * DETAILS — COUPON
+ *
+ * Architecture:
+ * white section
+ *   -> gray entry control
+ *      -> white clean field treatment ONLY while the text input itself
+ *         is focused.
+ *
+ * Focusing/clicking Apply must not turn the whole entry white.
+ */
+
+html body section.st-checkout-coupon {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
+
+/* Normal / validation coupon-entry surface = light gray. */
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"],
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"]:focus-within,
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"][data-error="true"],
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"][data-error="true"]:focus-within {
+  background: #f7f7f9 !important;
+  background-color: #f7f7f9 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+
+/*
+ * Match the regular fill-in fields when the USER IS ACTUALLY TYPING.
+ * This deliberately uses :has(input:focus), not generic :focus-within,
+ * because clicking Apply should leave the fill surface gray.
+ */
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"][data-error="false"]:has(input:focus) {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+
+  transform: none !important;
+}
+
+
+/* Invalid field stays red but otherwise uses the same focused surface. */
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"][data-error="true"]:has(input:focus) {
+  border-color: rgba(220, 38, 38, 0.82) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  outline: 0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+}
+
+
+/* Input itself stays transparent; parent owns the physical surface. */
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"]
+  input,
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"]
+  input:focus,
+html body
+  section.st-checkout-coupon
+  [data-checkout-coupon-entry="true"]
+  input:focus-visible {
+  background: transparent !important;
+  background-color: transparent !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/*
+ * Result / validation copy is TEXT ONLY.
+ * No white pill, no background strip, no card behind the message.
+ */
+html body .st-checkout-coupon-message {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  padding: 0 !important;
+
+  overflow: visible !important;
+}
+
+html body .st-checkout-coupon-message::before,
+html body .st-checkout-coupon-message::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/*
+ * Coupon loader.
+ *
+ * The storefront-wide stationary-icon policy correctly prevents button
+ * SVGs from translating/scaling, but that also neutralized Lucide's
+ * normal animate-spin transform. Rotate a dedicated wrapper instead.
+ */
+@keyframes st-checkout-coupon-loader-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+html body .st-checkout-coupon-spinner {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 14px !important;
+  height: 14px !important;
+
+  flex: 0 0 14px !important;
+
+  animation:
+    st-checkout-coupon-loader-spin 700ms linear infinite !important;
+
+  transform-origin: 50% 50% !important;
+}
+
+html body .st-checkout-coupon-spinner > svg {
+  display: block !important;
+
+  width: 14px !important;
+  height: 14px !important;
+
+  /*
+   * The wrapper rotates. The SVG itself remains geometrically stable.
+   */
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+
+/*
+ * REVIEW — EMAIL LABEL
+ *
+ * Remove the legacy gray strip/pseudo surface behind EMAIL ADDRESS.
+ */
+html body .st-checkout-review-email-label-row {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  overflow: visible !important;
+
+  transform: none !important;
+}
+
+html body .st-checkout-review-email-label-row::before,
+html body .st-checkout-review-email-label-row::after {
+  content: none !important;
+  display: none !important;
+  background: transparent !important;
+}
+
+
+/*
+ * REVIEW — PHONE ICON
+ *
+ * Keep the Lucide stroke fully visible. No clipping/mask/crop from old
+ * contact-card rules.
+ */
+html body .st-checkout-review-phone-clean {
+  overflow: visible !important;
+  clip-path: none !important;
+}
+
+html body svg.st-checkout-review-phone-icon {
+  display: block !important;
+
+  overflow: visible !important;
+
+  clip-path: none !important;
+  mask: none !important;
+  -webkit-mask: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/*
+ * REVIEW — CONTINUE TO PLACE ORDER
+ *
+ * Unique ID authority.
+ * Existing approved hover paint remains untouched.
+ * Only physical movement is removed.
+ */
+html body #st-checkout-review-place-order,
+html body #st-checkout-review-place-order:hover,
+html body #st-checkout-review-place-order:focus,
+html body #st-checkout-review-place-order:focus-visible,
+html body #st-checkout-review-place-order:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition-property:
+    background-color,
+    border-color,
+    box-shadow,
+    color,
+    opacity !important;
+}
+
+
+/* Text/icon inside CTA must also remain physically stationary. */
+html body #st-checkout-review-place-order > *,
+html body #st-checkout-review-place-order:hover > *,
+html body #st-checkout-review-place-order:focus > *,
+html body #st-checkout-review-place-order:focus-visible > *,
+html body #st-checkout-review-place-order:active > *,
+html body #st-checkout-review-place-order svg,
+html body #st-checkout-review-place-order:hover svg,
+html body #st-checkout-review-place-order svg *,
+html body #st-checkout-review-place-order:hover svg * {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* === ST CHECKOUT COUPON CONTACT + PLACE ORDER FINAL END === */
+
+/* === ST CHECKOUT SPINNER + REVIEW LABEL UNIQUE FINAL START === */
+
+
+/* ============================================================
+ * COUPON — REAL LOADING SPINNER
+ * ============================================================ */
+
+@keyframes st-checkout-coupon-spinner-rotate-final {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/*
+ * Unique spinner wrapper.
+ *
+ * It appears AFTER "Checking" in the JSX:
+ *
+ * Checking  [spinner]
+ *
+ * Rotate the wrapper, not the Lucide SVG. This prevents the
+ * global stationary-SVG storefront rule from freezing it.
+ */
+html body #st-checkout-coupon-spinner {
+  display: inline-flex !important;
+
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+
+  flex: 0 0 14px !important;
+
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  animation-name: st-checkout-coupon-spinner-rotate-final !important;
+  animation-duration: 650ms !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+  animation-play-state: running !important;
+
+  transform-origin: 50% 50% !important;
+
+  will-change: transform;
+}
+
+html body #st-checkout-coupon-spinner > svg {
+  display: block !important;
+
+  width: 14px !important;
+  height: 14px !important;
+
+  min-width: 14px !important;
+  min-height: 14px !important;
+
+  overflow: visible !important;
+
+  /*
+   * SVG stays stationary relative to its rotating wrapper.
+   */
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* ============================================================
+ * REVIEW — EMAIL ADDRESS LABEL
+ * ============================================================ */
+
+/*
+ * Unique ID authority intentionally beats the old generic:
+ *
+ * .st-checkout-review-info-card div { ...gray surface... }
+ *
+ * The title row and everything inside it must sit directly
+ * on the white information card.
+ */
+html body #st-checkout-review-email-label,
+html body #st-checkout-review-email-label:hover,
+html body #st-checkout-review-email-label:focus,
+html body #st-checkout-review-email-label:focus-within {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  filter: none !important;
+
+  overflow: visible !important;
+
+  transform: none !important;
+}
+
+html body #st-checkout-review-email-label > *,
+html body #st-checkout-review-email-label * {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+html body #st-checkout-review-email-label::before,
+html body #st-checkout-review-email-label::after,
+html body #st-checkout-review-email-label *::before,
+html body #st-checkout-review-email-label *::after {
+  content: none !important;
+
+  display: none !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+
+/*
+ * Email icon visually matches the compact uppercase title.
+ */
+html body #st-checkout-review-email-icon {
+  display: block !important;
+
+  width: 13px !important;
+  height: 13px !important;
+
+  min-width: 13px !important;
+  min-height: 13px !important;
+
+  flex: 0 0 13px !important;
+
+  overflow: visible !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* ============================================================
+ * REVIEW — PHONE NUMBER LABEL + ICON
+ * ============================================================ */
+
+/*
+ * IMPORTANT:
+ *
+ * An older, more-specific rule currently says:
+ *
+ * .st-checkout-review-v2 .st-checkout-review-phone-clean {
+ *   overflow: hidden !important;
+ * }
+ *
+ * This unique ID explicitly defeats it.
+ */
+html body #st-checkout-review-phone-label,
+html body #st-checkout-review-phone-label:hover,
+html body #st-checkout-review-phone-label:focus,
+html body #st-checkout-review-phone-label:focus-within {
+  overflow: visible !important;
+
+  clip: auto !important;
+  clip-path: none !important;
+
+  mask: none !important;
+  -webkit-mask: none !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/*
+ * Every child in the title row is allowed to paint outside
+ * its own box so no Lucide stroke can be shaved at an edge.
+ */
+html body #st-checkout-review-phone-label > *,
+html body #st-checkout-review-phone-label * {
+  overflow: visible !important;
+
+  clip: auto !important;
+  clip-path: none !important;
+}
+
+
+/*
+ * Match the Phone icon visually to the title text, exactly like
+ * the Email icon above.
+ */
+html body #st-checkout-review-phone-icon {
+  display: block !important;
+
+  width: 13px !important;
+  height: 13px !important;
+
+  min-width: 13px !important;
+  min-height: 13px !important;
+
+  flex: 0 0 13px !important;
+
+  overflow: visible !important;
+
+  clip: auto !important;
+  clip-path: none !important;
+
+  mask: none !important;
+  -webkit-mask: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* === ST CHECKOUT SPINNER + REVIEW LABEL UNIQUE FINAL END === */
+
+/* === ST CHECKOUT COMPACT SHELL + SAFE NAV FINAL START === */
+
+
+/* ============================================================
+ * REMOVE THE THREE OVERSIZED CHECKOUT TOP SECTIONS
+ * ============================================================ */
+
+/*
+ * Details:
+ * remove "Delivery details" hero.
+ */
+html body
+  .st-checkout-v2
+  .st-checkout-top-hero {
+  display: none !important;
+}
+
+
+/*
+ * Review:
+ * remove "Review your order" hero/back strip.
+ *
+ * Navigation back to Details now lives in CheckoutProgress.
+ */
+html body
+  .st-checkout-review-v2
+  > .st-checkout-compact-head {
+  display: none !important;
+}
+
+
+/*
+ * Confirmation:
+ * remove the large success hero from the vertical checkout flow.
+ *
+ * Confirmation state remains communicated by the third progress card.
+ * Order submission/business logic is untouched.
+ */
+html body
+  .st-order-success-v2
+  > .st-checkout-success-head {
+  display: none !important;
+}
+
+
+/* ============================================================
+ * SHIFT THE CHECKOUT CONTENT UP
+ * ============================================================ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-content {
+  padding-top: 18px !important;
+}
+
+
+html body
+  .st-checkout-review-v2
+  > .st-checkout-progress-three,
+html body
+  .st-order-success-v2
+  > .st-checkout-progress-three {
+  margin-top: 18px !important;
+}
+
+
+html body
+  .st-checkout-review-v2
+  .st-checkout-content,
+html body
+  .st-order-success-v2
+  .st-checkout-content {
+  padding-top: 18px !important;
+}
+
+
+/* ============================================================
+ * CHECKOUT PROGRESS — REAL SAFE NAVIGATION
+ * ============================================================ */
+
+/*
+ * CheckoutProgress may now render a card as <button>.
+ * Reset native button geometry so it remains visually identical
+ * to the existing cards.
+ */
+html body
+  button.st-checkout-progress-three__card {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  width: 100% !important;
+
+  margin: 0 !important;
+
+  font: inherit !important;
+  text-align: left !important;
+
+  cursor: pointer !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease,
+    color 220ms ease !important;
+}
+
+
+html body
+  button.st-checkout-progress-three__card
+  > *,
+html body
+  button.st-checkout-progress-three__card
+  svg {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/*
+ * Clickable cue without changing position.
+ */
+@media (hover: hover) and (pointer: fine) {
+  html body
+    button.st-checkout-progress-three__card.is-clickable:hover {
+    box-shadow:
+      0 0 0 3px rgba(253, 183, 62, 0.065),
+      0 9px 24px rgba(29, 29, 31, 0.055) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+html body
+  button.st-checkout-progress-three__card.is-clickable:focus-visible {
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.13),
+    0 8px 22px rgba(29, 29, 31, 0.045) !important;
+}
+
+
+/*
+ * Confirmation is status-only.
+ * Never make the upcoming Confirmation card look interactive.
+ */
+html body
+  .st-checkout-progress-three__card.is-upcoming[aria-disabled="true"] {
+  cursor: default !important;
+}
+
+
+/* ============================================================
+ * REVIEW — EDIT DELIVERY DETAILS
+ * ZERO ICON MOVEMENT
+ * ============================================================ */
+
+html body #st-checkout-edit-delivery-details,
+html body #st-checkout-edit-delivery-details:hover,
+html body #st-checkout-edit-delivery-details:focus,
+html body #st-checkout-edit-delivery-details:focus-visible,
+html body #st-checkout-edit-delivery-details:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+html body #st-checkout-edit-delivery-details svg,
+html body #st-checkout-edit-delivery-details:hover svg,
+html body #st-checkout-edit-delivery-details:focus svg,
+html body #st-checkout-edit-delivery-details:active svg {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition: color 200ms ease !important;
+}
+
+
+/* ============================================================
+ * DETAILS VALIDATION — ADMIN V2 ERROR NOTICE ARCHITECTURE
+ * ============================================================ */
+
+html body .st-checkout-action-notice-v1 {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  gap: 16px !important;
+
+  overflow: hidden !important;
+
+  border-style: solid !important;
+  border-color: #e3b4af !important;
+  border-radius: 17px !important;
+
+  background: #fff3f2 !important;
+  background-color: #fff3f2 !important;
+  background-image: none !important;
+
+  color: #9f1f16 !important;
+
+  box-shadow:
+    0 1px 2px rgba(29, 29, 31, 0.015),
+    0 6px 20px rgba(180, 35, 24, 0.04) !important;
+
+  cursor: default !important;
+  pointer-events: none !important;
+
+  transition:
+    opacity 220ms ease,
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    min-height 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    max-height 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-width 220ms ease !important;
+}
+
+
+html body
+  .st-checkout-action-notice-v1__icon {
+  width: 20px !important;
+  min-width: 20px !important;
+  height: 20px !important;
+
+  flex: 0 0 20px !important;
+
+  color: #b42318 !important;
+
+  transform: none !important;
+}
+
+
+html body
+  .st-checkout-action-notice-v1__copy {
+  min-width: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  gap: 3px !important;
+
+  background: transparent !important;
+}
+
+
+html body
+  .st-checkout-action-notice-v1__title {
+  margin: 0 !important;
+
+  font-size: 8.5px !important;
+  font-weight: 700 !important;
+  line-height: 1.15 !important;
+
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+
+  color: #9f1f16 !important;
+}
+
+
+html body
+  .st-checkout-action-notice-v1__message {
+  margin: 0 !important;
+
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+
+  color: #7f443f !important;
+}
+
+
+/*
+ * Same visible geometry as approved Admin Product alert.
+ */
+html body
+  .st-checkout-action-notice-v1.is-shown {
+  opacity: 1 !important;
+
+  min-height: 58px !important;
+  max-height: 100px !important;
+
+  margin-bottom: 16px !important;
+
+  padding: 12px 16px !important;
+
+  border-width: 1px !important;
+
+  transform: translate3d(0, 0, 0) !important;
+}
+
+
+html body
+  .st-checkout-action-notice-v1.is-enter,
+html body
+  .st-checkout-action-notice-v1.is-exit {
+  opacity: 0 !important;
+
+  min-height: 0 !important;
+  max-height: 0 !important;
+
+  margin-bottom: 0 !important;
+
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+
+  border-width: 0 !important;
+
+  transform: translate3d(0, -6px, 0) !important;
+}
+
+
+@media (max-width: 640px) {
+  html body
+    .st-checkout-review-v2
+    > .st-checkout-progress-three,
+  html body
+    .st-order-success-v2
+    > .st-checkout-progress-three {
+    margin-top: 12px !important;
+  }
+
+  html body
+    .st-checkout-v2
+    .st-checkout-content,
+  html body
+    .st-checkout-review-v2
+    .st-checkout-content,
+  html body
+    .st-order-success-v2
+    .st-checkout-content {
+    padding-top: 12px !important;
+  }
+}
+
+
+/* === ST CHECKOUT COMPACT SHELL + SAFE NAV FINAL END === */
+
+/* === ST CHECKOUT FLAT DIVIDERS + CLEAN PROGRESS FINAL START === */
+
+
+/* ============================================================
+ * CHECKOUT PROGRESS — REMOVE THE STRAY FULL-WIDTH STRIP
+ * ============================================================ */
+
+/*
+ * The Details / Review / Confirmation CARDS keep their own
+ * approved surfaces.
+ *
+ * The NAV itself must paint absolutely nothing.
+ */
+html body .st-checkout-progress-three,
+html body .st-checkout-page-stack .st-checkout-progress-three,
+html body .st-checkout-review-v2 > .st-checkout-progress-three,
+html body .st-order-success-v2 > .st-checkout-progress-three {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  outline: 0 !important;
+}
+
+
+/*
+ * Older checkout/confirmation layers created page-width
+ * pseudo backgrounds behind the progress navigation.
+ *
+ * They are no longer needed now that the oversized heroes
+ * have been removed.
+ */
+html body .st-checkout-progress-three::before,
+html body .st-checkout-progress-three::after,
+html body .st-checkout-page-stack .st-checkout-progress-three::before,
+html body .st-checkout-page-stack .st-checkout-progress-three::after,
+html body .st-checkout-review-v2 > .st-checkout-progress-three::before,
+html body .st-checkout-review-v2 > .st-checkout-progress-three::after,
+html body .st-order-success-v2 > .st-checkout-progress-three::before,
+html body .st-order-success-v2 > .st-checkout-progress-three::after {
+  content: none !important;
+
+  display: none !important;
+
+  width: 0 !important;
+  height: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+
+  box-shadow: none !important;
+}
+
+
+/*
+ * The grid also owns no background layer.
+ */
+html body .st-checkout-progress-three__grid {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/* ============================================================
+ * CHECKOUT INTERNAL SEPARATORS — ONE TRUE STRAIGHT LINE
+ * ============================================================ */
+
+/*
+ * These hooks are applied ONLY to the actual section-divider
+ * rows:
+ *
+ * - Contact information
+ * - Payment
+ * - Order items
+ * - Your total / Order summary
+ * - Order total internal separator
+ * - Details Order terminal
+ *
+ * Outer checkout cards KEEP their rounded corners.
+ */
+html body [data-checkout-flat-divider="true"] {
+  box-sizing: border-box !important;
+
+  border-radius: 0 !important;
+
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  background-clip: border-box !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/*
+ * HEADER -> CONTENT separators.
+ *
+ * Even the older malformed `justify-betweenborder-b` class
+ * contains "border-b", so this final authority still catches
+ * it correctly.
+ */
+html body
+  [data-checkout-flat-divider="true"][class*="border-b"] {
+  border-top: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+
+  border-bottom:
+    1px solid rgba(29, 29, 31, 0.10) !important;
+
+  border-radius: 0 !important;
+}
+
+
+/*
+ * CONTENT -> TOTAL separator.
+ */
+html body
+  [data-checkout-flat-divider="true"][class*="border-t"] {
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+
+  border-top:
+    1px solid rgba(29, 29, 31, 0.10) !important;
+
+  border-radius: 0 !important;
+}
+
+
+/*
+ * Absolutely no curved pseudo decoration at either end
+ * of a divider.
+ */
+html body [data-checkout-flat-divider="true"]::before,
+html body [data-checkout-flat-divider="true"]::after {
+  content: none !important;
+
+  display: none !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+
+/*
+ * Children cannot redraw a rounded border over the separator.
+ */
+html body
+  [data-checkout-flat-divider="true"]
+  > * {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+
+/* ============================================================
+ * REVIEW SECTION-SPECIFIC SAFETY
+ * ============================================================ */
+
+/*
+ * Payment header.
+ */
+html body
+  #payment-methods
+  > [data-checkout-flat-divider="true"] {
+  border-bottom:
+    1px solid rgba(29, 29, 31, 0.10) !important;
+
+  border-radius: 0 !important;
+}
+
+
+/*
+ * Ensure overflow clipping belongs ONLY to the outer rounded
+ * card, never to the internal separator itself.
+ */
+html body
+  .st-checkout-review-v2
+  [data-checkout-flat-divider="true"],
+html body
+  .st-checkout-v2
+  [data-checkout-flat-divider="true"] {
+  overflow: visible !important;
+}
+
+
+/* === ST CHECKOUT FLAT DIVIDERS + CLEAN PROGRESS FINAL END === */
+
+/* === ST ORDER TOTAL TRUE STRAIGHT DIVIDER FINAL START === */
+
+/*
+ * Review -> Order summary -> Order total.
+ *
+ * Do NOT use the element border to draw this separator.
+ * Older checkout rules can round/clamp element borders.
+ *
+ * Instead:
+ * 1. remove every border/background/radius from the row;
+ * 2. draw one independent 1px horizontal line with ::before.
+ */
+
+html body #st-checkout-review-order-total-divider {
+  position: relative !important;
+
+  isolation: isolate !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  outline: 0 !important;
+
+  /*
+   * Preserve the existing spacing underneath the new line.
+   */
+  padding-top: 16px !important;
+}
+
+
+/*
+ * The real separator.
+ *
+ * One flat 1px line.
+ * No radius.
+ * No clipped ends.
+ * No capsule.
+ */
+html body #st-checkout-review-order-total-divider::before {
+  content: "" !important;
+
+  display: block !important;
+
+  position: absolute !important;
+
+  z-index: 0 !important;
+
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  width: 100% !important;
+  height: 1px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.10) !important;
+  background-color: rgba(29, 29, 31, 0.10) !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  pointer-events: none !important;
+}
+
+
+html body #st-checkout-review-order-total-divider::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/*
+ * Text/value stay above the separator.
+ */
+html body #st-checkout-review-order-total-divider > * {
+  position: relative !important;
+  z-index: 1 !important;
+
+  border-radius: 0 !important;
+}
+
+
+/*
+ * No hover/focus interaction may alter its geometry.
+ */
+html body #st-checkout-review-order-total-divider:hover,
+html body #st-checkout-review-order-total-divider:focus,
+html body #st-checkout-review-order-total-divider:focus-within {
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+/* === ST ORDER TOTAL TRUE STRAIGHT DIVIDER FINAL END === */
+
+/* === ST CHECKOUT TRUE HEADER SEPARATORS FINAL START === */
+
+/*
+ * ONE ARCHITECTURE FOR CHECKOUT CARD HEADERS.
+ *
+ * Outer cards remain rounded.
+ * Header rows have ZERO radius and ZERO native borders.
+ * The separator itself is an independent 1px pseudo-element.
+ */
+
+html body .st-checkout-section-header-divider {
+  position: relative !important;
+  isolation: isolate !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/*
+ * THE ONLY SEPARATOR.
+ *
+ * Square-ended.
+ * Exactly 1px.
+ * Full width of the header row.
+ */
+html body .st-checkout-section-header-divider::after {
+  content: "" !important;
+
+  display: block !important;
+
+  position: absolute !important;
+  z-index: 50 !important;
+
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  width: 100% !important;
+  height: 1px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.10) !important;
+  background-color: rgba(29, 29, 31, 0.10) !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  pointer-events: none !important;
+}
+
+
+html body .st-checkout-section-header-divider::before {
+  content: none !important;
+  display: none !important;
+}
+
+
+/*
+ * Kill legacy nested-radius styling on the header's direct children.
+ */
+html body .st-checkout-section-header-divider > * {
+  position: relative !important;
+  z-index: 1 !important;
+
+  border-radius: 0 !important;
+}
+
+
+/*
+ * REVIEW PAGE
+ *
+ * Beat the old generic:
+ * .st-checkout-review-v2 section { border-radius: 22px ... }
+ * and any first-child/nested-div architecture.
+ *
+ * IMPORTANT:
+ * this affects ONLY the header row, not the outer section.
+ */
+html body
+  .st-checkout-review-v2
+  section
+  > .st-checkout-section-header-divider,
+html body
+  .st-checkout-review-v2
+  section
+  > .st-checkout-section-header-divider:first-child {
+  position: relative !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/*
+ * DETAILS PAGE
+ *
+ * Same treatment for Delivery address + Order terminal.
+ */
+html body
+  .st-checkout-v2
+  .st-checkout-module
+  > .st-checkout-section-header-divider,
+html body
+  .st-checkout-v2
+  .st-checkout-module
+  > .st-checkout-section-header-divider:first-child {
+  position: relative !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+/*
+ * The old data-checkout-flat-divider rules must not redraw
+ * a native border underneath our new independent line.
+ */
+html body
+  [data-checkout-flat-divider="true"].st-checkout-section-header-divider,
+html body
+  [data-checkout-flat-divider="true"].st-checkout-section-header-divider[class*="border-b"] {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-radius: 0 !important;
+}
+
+
+/*
+ * No interaction may change separator geometry.
+ */
+html body .st-checkout-section-header-divider:hover,
+html body .st-checkout-section-header-divider:focus,
+html body .st-checkout-section-header-divider:focus-within {
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+/* === ST CHECKOUT TRUE HEADER SEPARATORS FINAL END === */
+
+/* === ST CHECKOUT HEADER BOUNDARY MASK FINAL START === */
+
+/*
+ * IMPORTANT
+ * ---------
+ *
+ * The remaining curved shape is NOT our divider.
+ *
+ * Legacy checkout CSS still gives surrounding section/content
+ * surfaces rounded geometry and overflow clipping.
+ *
+ * We therefore flatten ONLY the visual boundary between:
+ *
+ *     section header
+ *          |
+ *          v
+ *     section content
+ *
+ * without removing the outer card radius.
+ */
+
+
+/* ------------------------------------------------------------
+ * HEADER ROW
+ * ------------------------------------------------------------ */
+
+html body .st-checkout-section-header-divider {
+  position: relative !important;
+
+  isolation: isolate !important;
+
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * WHITE BOUNDARY MASK
+ *
+ * This covers the curved TOP EDGE of whatever surrounding /
+ * following legacy surface is painting underneath the header.
+ *
+ * It deliberately extends slightly BELOW the header boundary.
+ * Content starts with padding, so it does not cover real copy,
+ * products, addresses, or payment controls.
+ * ------------------------------------------------------------ */
+
+html body .st-checkout-section-header-divider::before {
+  content: "" !important;
+
+  display: block !important;
+
+  position: absolute !important;
+
+  z-index: 40 !important;
+
+  left: 0 !important;
+  right: 0 !important;
+
+  bottom: -9px !important;
+
+  width: 100% !important;
+  height: 18px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  pointer-events: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * REAL STRAIGHT SEPARATOR
+ *
+ * Always painted ABOVE the mask.
+ * ------------------------------------------------------------ */
+
+html body .st-checkout-section-header-divider::after {
+  content: "" !important;
+
+  display: block !important;
+
+  position: absolute !important;
+
+  z-index: 50 !important;
+
+  left: 0 !important;
+  right: 0 !important;
+
+  bottom: 0 !important;
+
+  width: 100% !important;
+  height: 1px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.10) !important;
+  background-color: rgba(29, 29, 31, 0.10) !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  pointer-events: none !important;
+}
+
+
+/* Header contents remain above both layers. */
+html body .st-checkout-section-header-divider > * {
+  position: relative !important;
+  z-index: 60 !important;
+}
+
+
+/* ------------------------------------------------------------
+ * LEGACY V2 SURROUNDING-SURFACE SAFETY
+ *
+ * Do NOT remove the outer card radius.
+ *
+ * Only prevent the first content boundary immediately following
+ * our explicit checkout header from drawing another top border /
+ * shadow over our mask.
+ * ------------------------------------------------------------ */
+
+html body
+  .st-checkout-section-header-divider
+  + div {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+
+  box-shadow: none !important;
+}
+
+
+html body
+  .st-checkout-section-header-divider
+  + div[class*="border"] {
+  border-top: 0 !important;
+
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+
+/*
+ * Some Review content starts with an article/list wrapper rather
+ * than a plain div.
+ */
+html body
+  .st-checkout-section-header-divider
+  + article,
+html body
+  .st-checkout-section-header-divider
+  + section {
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+
+/* ------------------------------------------------------------
+ * ORDER TOTAL
+ *
+ * Keep the already-isolated total separator completely square.
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-review-order-total-divider {
+  border-radius: 0 !important;
+}
+
+html body #st-checkout-review-order-total-divider::before {
+  border-radius: 0 !important;
+}
+
+
+/* ------------------------------------------------------------
+ * INTERACTION SAFETY
+ * ------------------------------------------------------------ */
+
+html body .st-checkout-section-header-divider:hover,
+html body .st-checkout-section-header-divider:focus,
+html body .st-checkout-section-header-divider:focus-within {
+  transform: none !important;
+
+  border-radius: 0 !important;
+
+  background: #ffffff !important;
+
+  box-shadow: none !important;
+}
+
+
+/* === ST CHECKOUT HEADER BOUNDARY MASK FINAL END === */
+
+/* === ST CHECKOUT EXACT INNER FLAT SURFACES FINAL START === */
+
+/*
+ * Legacy V2 rounds nested checkout divs whose class contains
+ * "border". These two wrappers use border-t / border-b only
+ * as internal dividers and must therefore stay square.
+ */
+
+
+/* CURRENT TOTAL */
+
+html body #st-checkout-current-total-row,
+html body
+  .st-checkout-content
+  section[class*="border"]
+  #st-checkout-current-total-row {
+  border-radius: 0 !important;
+
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+html body #st-checkout-current-total-row::before,
+html body #st-checkout-current-total-row::after {
+  border-radius: 0 !important;
+}
+
+
+/* SAVED ADDRESSES */
+
+html body #st-checkout-saved-addresses-surface,
+html body
+  .st-checkout-content
+  section[class*="border"]
+  #st-checkout-saved-addresses-surface {
+  border-radius: 0 !important;
+
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  box-shadow: none !important;
+}
+
+
+/* === ST CHECKOUT EXACT INNER FLAT SURFACES FINAL END === */
+
+/* === ST CHECKOUT TRUE EDGE TO EDGE INTERNAL DIVIDERS START === */
+
+/*
+ * FINAL INTERNAL DIVIDER RULE:
+ *
+ * Separators must touch the LEFT and RIGHT borders of the
+ * containing checkout section.
+ *
+ * No inset.
+ * No rounded ends.
+ * No tray effect.
+ */
+
+
+/* ------------------------------------------------------------
+ * CURRENT TOTAL
+ *
+ * Parent totals block uses p-4 = 16px horizontal padding.
+ * Remove native border and draw a full-bleed line 16px beyond
+ * the row on both sides.
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-current-total-row {
+  position: relative !important;
+
+  border-top: 0 !important;
+  border-radius: 0 !important;
+
+  overflow: visible !important;
+}
+
+html body #st-checkout-current-total-row::before {
+  content: "" !important;
+
+  display: block !important;
+
+  position: absolute !important;
+
+  z-index: 5 !important;
+
+  top: 0 !important;
+
+  left: -16px !important;
+  right: -16px !important;
+
+  width: auto !important;
+  height: 1px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.10) !important;
+  background-color: rgba(29, 29, 31, 0.10) !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+
+  pointer-events: none !important;
+}
+
+html body #st-checkout-current-total-row::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * DETAILS -> CONTACT INFORMATION
+ * REVIEW -> DELIVERY ADDRESS
+ *
+ * Both now use the shared header-divider architecture.
+ * Force the separator to span the complete header width.
+ * ------------------------------------------------------------ */
+
+html body #st-checkout-details-contact-header::after,
+html body #st-checkout-review-delivery-header::after {
+  left: 0 !important;
+  right: 0 !important;
+
+  width: 100% !important;
+
+  height: 1px !important;
+
+  border-radius: 0 !important;
+}
+
+
+/*
+ * Ensure no old native border survives underneath.
+ */
+html body #st-checkout-details-contact-header,
+html body #st-checkout-review-delivery-header {
+  border: 0 !important;
+  border-bottom: 0 !important;
+
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+}
+
+
+/* === ST CHECKOUT TRUE EDGE TO EDGE INTERNAL DIVIDERS END === */
+
+/* === ST CHECKOUT FINAL FULL BLEED INTERNAL LINES START === */
+
+/*
+ * Every INTERNAL checkout separator covered here must:
+ *
+ * - be perfectly straight
+ * - have square ends
+ * - touch the left section border
+ * - touch the right section border
+ */
+
+
+/* ============================================================
+ * 1. ORDER TERMINAL -> COUPON / TOTALS TOP EDGE
+ *
+ * Legacy V2 gives nested div[class*="border"] a 14px radius.
+ * This wrapper uses border-t only, so it must never be rounded.
+ * ============================================================ */
+
+html body #st-checkout-order-terminal-totals,
+html body
+  .st-checkout-content
+  section[class*="border"]
+  #st-checkout-order-terminal-totals {
+  position: relative !important;
+
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+
+  box-shadow: none !important;
+
+  overflow: visible !important;
+}
+
+html body #st-checkout-order-terminal-totals::before,
+html body #st-checkout-order-terminal-totals::after {
+  border-radius: 0 !important;
+}
+
+
+/* ============================================================
+ * 2. FULFILLMENT TAX NOTE
+ *
+ * Old rule:
+ *   margin: 0 18px 17px;
+ *
+ * That makes the BORDER itself 18px short on each side.
+ *
+ * New architecture:
+ * - border spans full card width
+ * - content stays padded 18px
+ * ============================================================ */
+
+html body .st-checkout-v2 .st-checkout-fulfillment__note {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  padding-top: 13px !important;
+  padding-left: 18px !important;
+  padding-right: 18px !important;
+
+  border-top: 1px solid rgba(29, 29, 31, 0.10) !important;
+
+  border-radius: 0 !important;
+}
+
+
+/* Mobile keeps the line full width too. */
+@media (max-width: 680px) {
+  html body .st-checkout-v2 .st-checkout-fulfillment__note {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
+
+
+/* ============================================================
+ * 3. REVIEW -> ORDER TOTAL
+ *
+ * Parent is p-5 = 20px horizontal padding.
+ * The line therefore has to extend 20px outside the row.
+ * ============================================================ */
+
+html body #st-checkout-review-order-total-divider {
+  position: relative !important;
+
+  border-top: 0 !important;
+
+  border-radius: 0 !important;
+
+  overflow: visible !important;
+}
+
+html body #st-checkout-review-order-total-divider::before {
+  content: "" !important;
+
+  display: block !important;
+
+  position: absolute !important;
+
+  z-index: 5 !important;
+
+  top: 0 !important;
+
+  left: -20px !important;
+  right: -20px !important;
+
+  width: auto !important;
+  height: 1px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.10) !important;
+  background-color: rgba(29, 29, 31, 0.10) !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+
+  pointer-events: none !important;
+}
+
+html body #st-checkout-review-order-total-divider::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* ============================================================
+ * 4. REVIEW DELIVERY HEADER CLASS SAFETY
+ * ============================================================ */
+
+html body #st-checkout-review-delivery-header {
+  border: 0 !important;
+  border-bottom: 0 !important;
+
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+}
+
+
+/* === ST CHECKOUT FINAL FULL BLEED INTERNAL LINES END === */
+
+/* === ST REVIEW REMOVE OUTER WHITE SHEET FINAL START === */
+
+/*
+ * REVIEW PAGE OUTER ARCHITECTURE
+ *
+ * The Review page must match Details:
+ *
+ * - page itself = light gray checkout background
+ * - progress cards = their own surfaces
+ * - every review card/section = its own surface
+ * - NO large white sheet behind the complete review content
+ *
+ * Do not alter the nested cards themselves.
+ */
+
+html body
+  .st-checkout-review-v2
+  > .st-checkout-content,
+html body
+  .st-checkout-review-v2
+  > .st-checkout-progress-three
+  + .st-checkout-content {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  border: 0 !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+
+  border-radius: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  outline: 0 !important;
+
+  overflow: visible !important;
+}
+
+
+/*
+ * Never allow pseudo-elements on the large Review content
+ * wrapper to recreate a page-sized white surface.
+ */
+
+html body
+  .st-checkout-review-v2
+  > .st-checkout-content::before,
+html body
+  .st-checkout-review-v2
+  > .st-checkout-content::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/*
+ * Keep actual Review cards as independent surfaces.
+ *
+ * We intentionally do NOT target special status cards such as
+ * the green account-linked banner.
+ */
+
+html body
+  .st-checkout-review-v2
+  .st-checkout-content
+  section[class*="bg-white"],
+html body
+  .st-checkout-review-v2
+  .st-checkout-content
+  section[class*="border"][class*="bg-white"] {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+
+/* === ST REVIEW REMOVE OUTER WHITE SHEET FINAL END === */
+
+/* === ST REVIEW PROGRESS MATCH CONTENT WIDTH FINAL START === */
+
+/*
+ * REVIEW PAGE:
+ *
+ * Details / Review / Confirmation must begin and end on
+ * the exact same horizontal boundaries as the Review content.
+ *
+ * Desktop Review content:
+ *   width: calc(100% - 48px)
+ *   max-width: 1180px
+ *
+ * Tablet:
+ *   width: calc(100% - 28px)
+ *
+ * Mobile:
+ *   width: calc(100% - 20px)
+ */
+
+html body
+  .st-checkout-review-v2
+  > .st-checkout-progress-three {
+  box-sizing: border-box !important;
+
+  width: calc(100% - 48px) !important;
+  max-width: var(--st-review-max-width, 1180px) !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+
+/* Tablet — match Review content exactly. */
+@media (max-width: 900px) {
+  html body
+    .st-checkout-review-v2
+    > .st-checkout-progress-three {
+    width: calc(100% - 28px) !important;
+  }
+}
+
+
+/* Mobile — match Review content exactly. */
+@media (max-width: 640px) {
+  html body
+    .st-checkout-review-v2
+    > .st-checkout-progress-three {
+    width: calc(100% - 20px) !important;
+  }
+}
+
+
+/* === ST REVIEW PROGRESS MATCH CONTENT WIDTH FINAL END === */
+
+/* === ST REVIEW TRUE PROGRESS CARD ALIGNMENT FINAL START === */
+
+/*
+ * REVIEW PAGE — FINAL PROGRESS GEOMETRY
+ *
+ * The Review .st-checkout-content outer box is centered,
+ * but its actual cards begin/end inside that box because
+ * the content wrapper has horizontal padding.
+ *
+ * Therefore:
+ *
+ * - keep the progress NAV on the same outer width
+ * - inset its GRID by exactly the same horizontal padding
+ * - this makes Details / Review / Confirmation align with
+ *   the actual Review cards below, not merely the wrapper
+ */
+
+
+/* ------------------------------------------------------------
+ * REMOVE WHITE STRIP ABOVE PROGRESS
+ *
+ * The first visible child's top margin was able to collapse
+ * outside the Review main, exposing the white page behind it.
+ *
+ * flow-root creates a formatting context and keeps that margin
+ * inside the gray Review page.
+ * ------------------------------------------------------------ */
+
+html body .st-checkout-review-v2 {
+  display: flow-root !important;
+}
+
+
+/* ------------------------------------------------------------
+ * DESKTOP
+ *
+ * Review content uses sm:px-6 = 24px each side.
+ * Match that on the progress NAV itself.
+ * ------------------------------------------------------------ */
+
+html body
+  .st-checkout-review-v2
+  > .st-checkout-progress-three {
+  box-sizing: border-box !important;
+
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
+
+/*
+ * The grid must occupy the remaining inner width naturally.
+ */
+html body
+  .st-checkout-review-v2
+  > .st-checkout-progress-three
+  > .st-checkout-progress-three__grid {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+
+/* ------------------------------------------------------------
+ * TABLET / MOBILE
+ *
+ * Existing checkout CSS reduces .st-checkout-content
+ * horizontal padding to 14px at <= 768px.
+ * ------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  html body
+    .st-checkout-review-v2
+    > .st-checkout-progress-three {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
+
+
+/* === ST REVIEW TRUE PROGRESS CARD ALIGNMENT FINAL END === */
+
+/* === ST SAVED ADDRESSES TOP FILL + REVIEW READY ICON CENTER START === */
+
+/*
+ * 1) DETAILS PAGE
+ *    The Saved Addresses surface must visually begin immediately
+ *    below the divider line — no cut / no white strip.
+ *
+ *    We lift the whole surface upward and give the exact same
+ *    amount back as top padding, so the content stays in place
+ *    while the background fills the top fully.
+ */
+
+html body #st-checkout-saved-addresses-surface {
+  position: relative !important;
+  z-index: 0 !important;
+
+  margin-top: -12px !important;
+  padding-top: calc(1rem + 12px) !important;
+
+  background: #fafaf8 !important;
+}
+
+@media (min-width: 640px) {
+  html body #st-checkout-saved-addresses-surface {
+    padding-top: calc(1.5rem + 12px) !important;
+  }
+}
+
+
+/*
+ * 2) REVIEW PAGE
+ *    The green success notice icon inside Order Summary is slightly high.
+ *    Center the whole notice row vertically, and nudge only the icon down
+ *    by 1px for optical centering.
+ *
+ *    These selectors are intentionally scoped to checkout-action-notice.
+ */
+
+html body .st-checkout-action-notice {
+  align-items: center !important;
+}
+
+html body .st-checkout-action-notice__icon,
+html body .st-checkout-action-notice [data-checkout-action-notice-icon] {
+  align-self: center !important;
+  transform: translateY(1px) !important;
+}
+
+/* === ST SAVED ADDRESSES TOP FILL + REVIEW READY ICON CENTER END === */
+
+/* === ST SAVED ADDRESS SEPARATOR + REAL READY ICON FINAL START === */
+
+
+/* ============================================================
+ * SAVED ADDRESSES
+ *
+ * We intentionally keep the -18px background-fill correction
+ * from the previous fix.
+ *
+ * The original visual boundary is therefore exactly 18px below
+ * the shifted surface top.
+ *
+ * Draw one real straight separator there.
+ * ============================================================ */
+
+html body #st-checkout-saved-addresses-surface {
+  z-index: auto !important;
+
+  border-top: 0 !important;
+}
+
+html body #st-checkout-saved-addresses-surface::before {
+  content: "" !important;
+
+  position: absolute !important;
+
+  z-index: 60 !important;
+
+  top: 12px !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  width: auto !important;
+  height: 1px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: rgba(29, 29, 31, 0.10) !important;
+  background-color: rgba(29, 29, 31, 0.10) !important;
+
+  box-shadow: none !important;
+
+  pointer-events: none !important;
+}
+
+
+/* ============================================================
+ * REVIEW ORDER SUMMARY — GREEN READY BANNER
+ *
+ * Vertically center the REAL CheckCircle2 against the two-line
+ * success message, then lower it 1px for optical centering.
+ * ============================================================ */
+
+html body #st-checkout-review-ready-row {
+  display: flex !important;
+
+  align-items: center !important;
+}
+
+html body #st-checkout-review-ready-icon {
+  position: relative !important;
+
+  top: 1px !important;
+
+  margin-top: 0 !important;
+
+  align-self: center !important;
+
+  flex: 0 0 auto !important;
+}
+
+
+/* === ST SAVED ADDRESS SEPARATOR + REAL READY ICON FINAL END === */
+
+/* === ST SAVED ADDRESSES TRANSPARENT FINAL START === */
+
+/*
+ * Saved Addresses does not need its own gray surface.
+ *
+ * Keep:
+ * - separator
+ * - spacing
+ * - address cards
+ * - different-address button
+ *
+ * Remove only the wrapper background.
+ */
+
+html body #st-checkout-saved-addresses-surface {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* === ST SAVED ADDRESSES TRANSPARENT FINAL END === */
+
+/* === ST QUANTITY REAL FIXED SIDE WIDTH FINAL START === */
+
+/*
+ * JSX already uses narrow widths, but a broader checkout button
+ * rule is keeping the rendered + / - cells wider.
+ *
+ * Force ONLY the two side cells to their real final width.
+ * Do not alter:
+ * - height
+ * - center quantity cell
+ * - hover/focus styling
+ * - minus-at-1 deletion behavior
+ */
+
+html body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  > button[aria-label="Decrease quantity"],
+html body
+  .st-checkout-v2
+  .st-checkout-quantity-control
+  > button[aria-label="Increase quantity"] {
+  box-sizing: border-box !important;
+
+  flex: 0 0 30px !important;
+  flex-basis: 30px !important;
+
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* === ST QUANTITY REAL FIXED SIDE WIDTH FINAL END === */
