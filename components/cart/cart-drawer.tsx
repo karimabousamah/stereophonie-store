@@ -8,7 +8,6 @@ import {
   PackageCheck,
   Plus,
   ShoppingBag,
-  Trash2,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useSyncExternalStore } from "react";
@@ -205,24 +204,23 @@ export default function CartDrawer() {
                           </Link>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => removeItem(item.cartItemId)}
-                          aria-label={`Remove ${item.name}`}
-                          tabIndex={isCartOpen ? 0 : -1}
-                        >
-                          <Trash2 />
-                        </button>
                       </div>
 
                       <div className="st-retail-cart-item__bottom">
                         <div className="st-retail-cart-item__quantity">
                           <button
                             type="button"
-                            onClick={() =>
-                              updateQuantity(item.cartItemId, item.quantity - 1)
-                            }
-                            disabled={item.quantity <= 1}
+                            onClick={() => {
+                              if (item.quantity <= 1) {
+                                removeItem(item.cartItemId);
+                                return;
+                              }
+
+                              updateQuantity(
+                                item.cartItemId,
+                                item.quantity - 1,
+                              );
+                            }}
                             aria-label={`Decrease ${item.name} quantity`}
                             tabIndex={isCartOpen ? 0 : -1}
                           >

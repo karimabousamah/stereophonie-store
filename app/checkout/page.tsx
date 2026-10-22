@@ -2827,7 +2827,7 @@ export default function CheckoutPage() {
                             </div>
 
                             <div className="mt-3 flex flex-wrap items-center justify-between gap-2.5">
-                              <div className="st-checkout-quantity-control flex h-8 items-center overflow-hidden rounded-full border border-black/10">
+                              <div className="st-retail-cart-item__quantity st-checkout-order-item__quantity">
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2842,12 +2842,11 @@ export default function CheckoutPage() {
                                     );
                                   }}
                                   aria-label="Decrease quantity"
-                                  className="flex h-full w-6 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
                                 >
-                                  <Minus className="h-2.5 w-2.5" />
+                                  <Minus />
                                 </button>
 
-                                <span className="st-checkout-quantity-value flex h-full min-w-6 items-center justify-center px-0.5 text-[11px] font-semibold">
+                                <span aria-label={`Quantity ${item.quantity}`}>
                                   {item.quantity}
                                 </span>
 
@@ -2863,9 +2862,8 @@ export default function CheckoutPage() {
                                     item.quantity >= item.maximumQuantity
                                   }
                                   aria-label="Increase quantity"
-                                  className="flex h-full w-6 items-center justify-center bg-white text-black transition hover:bg-black hover:text-white disabled:opacity-25"
                                 >
-                                  <Plus className="h-2.5 w-2.5" />
+                                  <Plus />
                                 </button>
                               </div>
 

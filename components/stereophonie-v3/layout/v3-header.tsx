@@ -208,6 +208,18 @@ export function V3Header() {
   const [renderedPanel, setRenderedPanel] = useState<HeaderPanel>(null);
   const [panelClosing, setPanelClosing] = useState(false);
   const closeTimer = useRef<number | null>(null);
+
+  const [panelSwitchPhase, setPanelSwitchPhase] = useState<
+    "out" | "in" | null
+  >(null);
+  const panelSwitchTimer = useRef<number | null>(null);
+
+  const panelInnerRef = useRef<HTMLDivElement | null>(null);
+  const [panelHeight, setPanelHeight] = useState<number | null>(null);
+
+  const [navigationMotionMode, setNavigationMotionMode] = useState<
+    "initial" | "switch"
+  >("initial");
   const { totalItems, isCartReady, isCartOpen, openCart, closeCart } =
     useCart();
 
@@ -251,19 +263,107 @@ export function V3Header() {
     }
   }, []);
 
+  const cancelPanelSwitch = useCallback(() => {
+    if (panelSwitchTimer.current !== null) {
+      window.clearTimeout(panelSwitchTimer.current);
+      panelSwitchTimer.current = null;
+    }
+
+    setPanelSwitchPhase(null);
+  }, []);
+
   const openPanel = useCallback(
     (panel: OpenHeaderPanel) => {
       cancelClose();
       closeCart();
+
+      const currentPanel = activePanel ?? renderedPanel;
+
+      const currentIsNavigation =
+        currentPanel === "store" ||
+        currentPanel === "support" ||
+        Boolean(currentPanel?.startsWith("category:"));
+
+      const nextIsNavigation =
+        panel === "store" ||
+        panel === "support" ||
+        panel.startsWith("category:");
+
+      /*
+       * Navigation -> navigation:
+       *
+       * Keep the physical white sheet open.
+       * Fade the old content, swap it, resize the sheet, then
+       * fade the new content in.
+       *
+       * Do NOT replay the initial unfold animation.
+       */
+      if (
+        currentIsNavigation &&
+        nextIsNavigation &&
+        currentPanel !== panel &&
+        !panelClosing
+      ) {
+        /*
+         * Restore the original category-to-category feel:
+         *
+         * - swap immediately
+         * - keep the outer white sheet open
+         * - allow its measured height to morph smoothly
+         * - animate the NEW inner content with the original
+         *   250ms Apple-style fade + 5px rise
+         *
+         * No unfold animation is replayed here.
+         */
+        if (panelSwitchTimer.current !== null) {
+          window.clearTimeout(panelSwitchTimer.current);
+          panelSwitchTimer.current = null;
+        }
+
+        setNavigationMotionMode("switch");
+        setRenderedPanel(panel);
+        setActivePanel(panel);
+        setPanelSwitchPhase("in");
+
+        panelSwitchTimer.current = window.setTimeout(() => {
+          /*
+           * Remove only the short switch animation class.
+           *
+           * navigationMotionMode intentionally remains "switch"
+           * for the rest of this open session, preventing the
+           * initial unfold from ever replaying.
+           */
+          setPanelSwitchPhase(null);
+          panelSwitchTimer.current = null;
+        }, 270);
+
+        return;
+      }
+
+      cancelPanelSwitch();
+
+      /*
+       * A real opening cycle starts here.
+       * This is the ONLY path allowed to replay the text unfold.
+       */
+      setNavigationMotionMode("initial");
       setPanelClosing(false);
       setRenderedPanel(panel);
       setActivePanel(panel);
     },
-    [cancelClose, closeCart],
+    [
+      activePanel,
+      renderedPanel,
+      panelClosing,
+      cancelClose,
+      cancelPanelSwitch,
+      closeCart,
+    ],
   );
 
   const closePanel = useCallback(() => {
     cancelClose();
+    cancelPanelSwitch();
 
     const currentPanel = isCartOpen ? "cart" : (activePanel ?? renderedPanel);
 
@@ -276,18 +376,32 @@ export function V3Header() {
     setActivePanel(null);
     closeCart();
 
-    const closeDuration =
-      currentPanel === "search" &&
-      window.matchMedia("(max-width: 900px)").matches
+    const navigationPanel =
+      currentPanel === "store" ||
+      currentPanel === "support" ||
+      currentPanel.startsWith("category:");
+
+    const closeDuration = navigationPanel
+      ? 740
+      : currentPanel === "search" &&
+          window.matchMedia("(max-width: 900px)").matches
         ? 950
         : 430;
 
     closeTimer.current = window.setTimeout(() => {
       setRenderedPanel(null);
       setPanelClosing(false);
+      setNavigationMotionMode("initial");
       closeTimer.current = null;
     }, closeDuration);
-  }, [activePanel, cancelClose, closeCart, isCartOpen, renderedPanel]);
+  }, [
+    activePanel,
+    cancelClose,
+    cancelPanelSwitch,
+    closeCart,
+    isCartOpen,
+    renderedPanel,
+  ]);
 
   const scheduleClose = useCallback(() => {
     cancelClose();
@@ -308,6 +422,14 @@ export function V3Header() {
   useEffect(() => {
     return () => cancelClose();
   }, [cancelClose]);
+
+  useEffect(() => {
+    return () => {
+      if (panelSwitchTimer.current !== null) {
+        window.clearTimeout(panelSwitchTimer.current);
+      }
+    };
+  }, []);
 
   /*
    * Do not silently hide catalogue categories.
@@ -330,6 +452,30 @@ export function V3Header() {
         (category) => `category:${category.id}` === panelForContent,
       ) ?? null)
     : null;
+
+  useEffect(() => {
+    const inner = panelInnerRef.current;
+
+    if (!inner || utilityPanel || !panelForContent) {
+      setPanelHeight(null);
+      return;
+    }
+
+    const updatePanelHeight = () => {
+      const nextHeight = Math.ceil(inner.getBoundingClientRect().height);
+
+      setPanelHeight((currentHeight) =>
+        currentHeight === nextHeight ? currentHeight : nextHeight,
+      );
+    };
+
+    updatePanelHeight();
+
+    const observer = new ResizeObserver(updatePanelHeight);
+    observer.observe(inner);
+
+    return () => observer.disconnect();
+  }, [panelForContent, utilityPanel]);
 
   function toggleSearch() {
     if (panelIsOpen && panelForContent === "search") {
@@ -592,7 +738,18 @@ export function V3Header() {
                 : "st3-mega--closed"
           } ${utilityPanel ? "st3-mega--utility" : ""} ${
             panelForContent === "search" ? "st3-mega--search" : ""
-          } ${panelForContent === "cart" ? "st3-mega--cart" : ""}`}
+          } ${panelForContent === "cart" ? "st3-mega--cart" : ""} ${
+            panelSwitchPhase ? `st3-mega--switch-${panelSwitchPhase}` : ""
+          } ${
+            !utilityPanel
+              ? `st3-mega--motion-${navigationMotionMode}`
+              : ""
+          }`}
+          style={
+            !utilityPanel && panelHeight !== null
+              ? { height: `${panelHeight}px` }
+              : undefined
+          }
           aria-hidden={!panelIsOpen}
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
@@ -600,6 +757,7 @@ export function V3Header() {
           {panelForContent ? (
             <div
               key={panelForContent}
+              ref={panelInnerRef}
               className={`st3-mega__inner st3-mega__inner--switch ${
                 utilityPanel ? "st3-mega__inner--utility" : ""
               }`}

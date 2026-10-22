@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -8,7 +7,6 @@ import {
   Package,
   Plus,
   ShoppingBag,
-  Trash2,
   UserRound,
 } from "lucide-react";
 
@@ -108,13 +106,13 @@ export default function V3HeaderCartPanel({
                   className="st3-utility-cart-item__image"
                 >
                   {item.imageUrl ? (
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      width={112}
-                      height={112}
-                      sizes="112px"
-                    />
+                    <img
+                        src={item.imageUrl}
+                        alt={item.name}
+                        loading="eager"
+                        decoding="async"
+                        draggable={false}
+                      />
                   ) : (
                     <ShoppingBag />
                   )}
@@ -129,10 +127,17 @@ export default function V3HeaderCartPanel({
                     <div>
                       <button
                         type="button"
-                        onClick={() =>
-                          updateQuantity(item.cartItemId, item.quantity - 1)
-                        }
-                        disabled={item.quantity <= 1}
+                        onClick={() => {
+                          if (item.quantity <= 1) {
+                            removeItem(item.cartItemId);
+                            return;
+                          }
+
+                          updateQuantity(
+                            item.cartItemId,
+                            item.quantity - 1,
+                          );
+                        }}
                         aria-label={`Decrease ${item.name} quantity`}
                       >
                         <Minus />
@@ -153,14 +158,6 @@ export default function V3HeaderCartPanel({
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => removeItem(item.cartItemId)}
-                  className="st3-utility-cart-item__remove"
-                  aria-label={`Remove ${item.name}`}
-                >
-                  <Trash2 />
-                </button>
               </article>
             );
           })}

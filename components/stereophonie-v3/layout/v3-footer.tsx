@@ -41,7 +41,6 @@ export default function V3Footer() {
 
             <Link href="/track-order" className="st3-footer__secondary-action">
               Track an order
-              <span aria-hidden="true">›</span>
             </Link>
           </div>
         </div>

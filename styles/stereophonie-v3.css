@@ -194,16 +194,16 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 7px;
+  gap: 9px;
 }
 
 .st3-mega__primary-link {
   color: var(--st3-black);
   text-decoration: none;
-  font-size: clamp(22px, 2.15vw, 28px);
-  line-height: 1.12;
-  font-weight: 600;
-  letter-spacing: -0.035em;
+  font-size: clamp(22px, 1.75vw, 25px);
+  line-height: 1.16;
+  font-weight: 550;
+  letter-spacing: -0.025em;
   transition:
     color 140ms ease,
     transform 140ms ease;
@@ -6743,13 +6743,34 @@ html {
 }
 
 .st3-footer__secondary-action span {
-  font-size: 21px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  transition: transform 170ms ease;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+
+  position: relative;
+  top: -3px;
+
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+
+  transition: none;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
 }
 
 .st3-footer__secondary-action:hover span {
-  transform: translateX(3px);
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
 }
 
 /* ----------------------------------------------------------
@@ -20170,9 +20191,9 @@ body {
 .st-purchase-v6__stepper {
   width: 118px;
 
-  height: 44px;
+  height: 48px;
 
-  margin-top: 7px;
+  margin-top: 0;
 
   display: grid;
 
@@ -20192,7 +20213,7 @@ body {
 .st-purchase-v6__stepper button {
   width: 36px;
 
-  height: 42px;
+  height: 46px;
 
   display: flex;
   align-items: center;
@@ -86973,7 +86994,7 @@ html body
       .st3-footer__store-location,
       .st-product-v5__back,
       .st-about-visit__directions
-    ):hover {
+    ):not(.st-retail-card__quick):hover {
     transform: none !important;
     translate: none !important;
     scale: 1 !important;
@@ -86991,7 +87012,7 @@ html body
       .st3-footer__store-location,
       .st-product-v5__back,
       .st-about-visit__directions
-    ):hover
+    ):not(.st-retail-card__quick):hover
     svg,
   html body:has(.st3-header)
     :is(
@@ -87004,7 +87025,7 @@ html body
       .st3-footer__store-location,
       .st-product-v5__back,
       .st-about-visit__directions
-    ):hover
+    ):not(.st-retail-card__quick):hover
     svg * {
     transform: none !important;
     translate: none !important;
@@ -90482,3 +90503,1917 @@ html body
 }
 
 /* === ST QUANTITY REAL FIXED SIDE WIDTH FINAL END === */
+
+/* === ST STOREFRONT ZERO BUTTON MOTION FINAL START === */
+
+/*
+ * ============================================================
+ * PUBLIC STOREFRONT — ZERO PHYSICAL BUTTON MOVEMENT
+ * ============================================================
+ *
+ * Storefront buttons may still change:
+ * - background
+ * - foreground color
+ * - border color
+ * - shadow
+ * - opacity
+ *
+ * They may NOT lift, slide, rotate or scale on mouse hover.
+ *
+ * Admin is intentionally untouched.
+ */
+
+
+/* ------------------------------------------------------------
+ * QUICK VIEW
+ *
+ * This control is absolutely positioned with:
+ *   left: 50%
+ *
+ * Therefore translateX(-50%) is POSITIONING, not hover motion.
+ *
+ * Keep it permanently centered and let product-card hover
+ * change only opacity.
+ * ------------------------------------------------------------ */
+
+html body .st-retail-card .st-retail-card__quick,
+html body .st-retail-card:hover .st-retail-card__quick,
+html body .st-retail-card .st-retail-card__quick:hover,
+html body .st-retail-card .st-retail-card__quick:focus,
+html body .st-retail-card .st-retail-card__quick:focus-visible,
+html body .st-retail-card .st-retail-card__quick:active {
+  transform: translate(-50%, 0) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition-property:
+    opacity,
+    background-color,
+    color,
+    border-color,
+    box-shadow !important;
+}
+
+
+/*
+ * Product-card hover reveals Quick View by opacity ONLY.
+ * Absolutely no slide.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st-retail-card:hover .st-retail-card__quick {
+    opacity: 1 !important;
+
+    transform: translate(-50%, 0) !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body .st-retail-card .st-retail-card__quick:hover {
+    transform: translate(-50%, 0) !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+/* Quick View eye icon never shifts independently. */
+
+html body .st-retail-card .st-retail-card__quick svg,
+html body .st-retail-card .st-retail-card__quick:hover svg,
+html body .st-retail-card .st-retail-card__quick:focus-visible svg,
+html body .st-retail-card .st-retail-card__quick:active svg,
+html body .st-retail-card .st-retail-card__quick svg * {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* ------------------------------------------------------------
+ * GENERAL STOREFRONT BUTTONS
+ *
+ * Kill old translateY(-1px), scale(...), etc.
+ *
+ * Quick View is excluded because it has its own permanent
+ * translateX(-50%) positioning above.
+ *
+ * Controls whose transform is structural are restored below.
+ * ------------------------------------------------------------ */
+
+@media (hover: hover) and (pointer: fine) {
+  html body:has(.st3-header)
+    :is(
+      button,
+      [role="button"],
+      a.st-retail-button,
+      a[class*="button"],
+      .st3-header__icon,
+      .st3-header__visit-us,
+      .st3-footer__store-location,
+      .st-product-v5__back,
+      .st-about-visit__directions
+    ):not(.st-retail-card__quick):hover {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  /*
+   * Icons inside storefront buttons must not slide/scale either.
+   */
+  html body:has(.st3-header)
+    :is(
+      button,
+      [role="button"],
+      a.st-retail-button,
+      a[class*="button"],
+      .st3-header__icon,
+      .st3-header__visit-us,
+      .st3-footer__store-location,
+      .st-product-v5__back,
+      .st-about-visit__directions
+    ):not(.st-retail-card__quick):hover svg,
+  html body:has(.st3-header)
+    :is(
+      button,
+      [role="button"],
+      a.st-retail-button,
+      a[class*="button"],
+      .st3-header__icon,
+      .st3-header__visit-us,
+      .st3-footer__store-location,
+      .st-product-v5__back,
+      .st-about-visit__directions
+    ):not(.st-retail-card__quick):hover svg * {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+ * STRUCTURAL TRANSFORM EXCEPTIONS
+ *
+ * These controls require translateY(-50%) simply to remain
+ * vertically centered. Preserve the SAME transform on hover,
+ * so they remain stationary rather than jumping.
+ * ------------------------------------------------------------ */
+
+html body .st-pg-immersive__arrow,
+html body .st-pg-immersive__arrow:hover,
+html body .st-pg-immersive__arrow:focus,
+html body .st-pg-immersive__arrow:focus-visible,
+html body .st-pg-immersive__arrow:active {
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:hover,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:focus,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:focus-visible,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:active {
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* === ST STOREFRONT ZERO BUTTON MOTION FINAL END === */
+
+/* === ST STOREFRONT ALL BUTTONS STATIONARY FINAL START === */
+
+/*
+ * ============================================================
+ * PUBLIC STOREFRONT — BUTTONS / BUTTON-LIKE LINKS NEVER MOVE
+ * ============================================================
+ *
+ * Hover may change paint only:
+ * - color
+ * - background
+ * - border
+ * - shadow
+ * - opacity
+ *
+ * Hover must never change physical position.
+ *
+ * IMPORTANT:
+ * :not() and :hover are attached directly to :is().
+ * There is intentionally NO descendant whitespace between them.
+ */
+
+
+/* ============================================================
+ * ALL NORMAL STOREFRONT INTERACTIVE CONTROLS
+ * ============================================================ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body:has(.st3-header) :is(
+    button,
+    [role="button"],
+    a[href],
+    .st3-header__icon,
+    .st3-header__visit-us,
+    .st3-footer__store-location,
+    .st-product-v5__back,
+    .st-about-visit__directions,
+    .st3-home-product-shelf__see-all,
+    .st-retail-card__preorder,
+    .st-carousel-nav-arrow
+  ):not(.st-retail-card__quick):not(.st-pg-immersive__arrow):not(.st-stock-notification-modal__close):hover {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+/* ============================================================
+ * QUICK VIEW
+ *
+ * translateX(-50%) is permanent positioning, not hover motion.
+ * Keep exactly the same transform in every state.
+ * ============================================================ */
+
+html body .st-retail-card .st-retail-card__quick,
+html body .st-retail-card:hover .st-retail-card__quick,
+html body .st-retail-card .st-retail-card__quick:hover,
+html body .st-retail-card .st-retail-card__quick:focus,
+html body .st-retail-card .st-retail-card__quick:focus-visible,
+html body .st-retail-card .st-retail-card__quick:active {
+  transform: translate(-50%, 0) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+html body .st-retail-card .st-retail-card__quick {
+  transition-property:
+    opacity,
+    background-color,
+    color,
+    border-color,
+    box-shadow !important;
+}
+
+
+/* ============================================================
+ * GLOBAL LAST-CHILD ICON HOVER MOTION
+ *
+ * globals.css contains:
+ *
+ *   button:hover > svg:last-child
+ *   a:hover > svg:last-child
+ *
+ * which moves icons 1.5px to the right.
+ *
+ * Remove that hover-only movement from ordinary controls.
+ * Do NOT interfere with aria-expanded controls because their
+ * icon rotation represents actual state, not hover animation.
+ * ============================================================ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body:has(.st3-header)
+    button:not([aria-expanded]):hover > svg:last-child,
+
+  html body:has(.st3-header)
+    a[href]:not([aria-expanded]):hover > svg:last-child,
+
+  html body:has(.st3-header)
+    [role="button"]:not([aria-expanded]):hover > svg:last-child {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+  }
+}
+
+
+/* ============================================================
+ * STRUCTURAL POSITIONING EXCEPTIONS
+ *
+ * These transforms are required for permanent centering.
+ * Their transform is identical before and during hover.
+ * ============================================================ */
+
+html body .st-pg-immersive__arrow,
+html body .st-pg-immersive__arrow:hover,
+html body .st-pg-immersive__arrow:focus,
+html body .st-pg-immersive__arrow:focus-visible,
+html body .st-pg-immersive__arrow:active {
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:hover,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:focus,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:focus-visible,
+html body
+  .st-purchase-v6-modal__window
+  > header
+  > .st-stock-notification-modal__close:active {
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* === ST STOREFRONT ALL BUTTONS STATIONARY FINAL END === */
+
+/* === ST FOOTER TRACK ORDER OUTLINED PILL FINAL START === */
+
+/*
+ * Footer hero secondary CTA.
+ *
+ * Apple-style filled / outlined pairing:
+ * Explore store  = existing filled mustard CTA
+ * Track an order = outlined mustard CTA
+ *
+ * No arrow.
+ * No hover movement.
+ */
+
+html body .st3-footer__secondary-action {
+  box-sizing: border-box !important;
+
+  min-height: 46px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 0 !important;
+
+  padding: 0 22px !important;
+
+  border: 1.5px solid #9a6500 !important;
+  border-radius: 999px !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #9a6500 !important;
+  -webkit-text-fill-color: #9a6500 !important;
+
+  text-decoration: none !important;
+  white-space: nowrap !important;
+
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+
+/* Hover changes paint only — absolutely no movement. */
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-footer__secondary-action:hover {
+    border-color: #895900 !important;
+
+    background: rgba(154, 101, 0, 0.055) !important;
+    background-color: rgba(154, 101, 0, 0.055) !important;
+
+    color: #895900 !important;
+    -webkit-text-fill-color: #895900 !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+html body .st3-footer__secondary-action:focus-visible {
+  outline: 2px solid rgba(154, 101, 0, 0.35) !important;
+  outline-offset: 3px !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+html body .st3-footer__secondary-action:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/* === ST FOOTER TRACK ORDER OUTLINED PILL FINAL END === */
+
+/* === ST DESKTOP HEADER FIXED CATEGORY REVEAL START === */
+
+/*
+ * ============================================================
+ * FINAL DESKTOP HEADER SHEET MOTION
+ * ============================================================
+ *
+ * FRESH OPEN:
+ * - white sheet unfolds from header edge
+ * - text unfolds top -> bottom
+ *
+ * CATEGORY SWITCH WHILE ALREADY OPEN:
+ * - white sheet remains open
+ * - height morphs smoothly
+ * - ONLY original 250ms category-switch animation runs
+ * - initial unfold CANNOT replay
+ *
+ * CLOSE:
+ * - text folds upward in reverse
+ * - white sheet retracts into header
+ *
+ * Physical timing:
+ * - open  = 900ms
+ * - close = 700ms
+ */
+
+
+/* ============================================================
+ * FRESH-OPEN TEXT UNFOLD
+ * ============================================================ */
+
+@keyframes st3HeaderInitialRowUnfold {
+  0% {
+    opacity: 0;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    );
+    clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    );
+
+    transform: translate3d(-2px, -3px, 0);
+
+    filter: blur(5.5px);
+    -webkit-filter: blur(5.5px);
+  }
+
+  24% {
+    opacity: 0.24;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      46% 0,
+      0 46%,
+      0 46%,
+      0 0
+    );
+    clip-path: polygon(
+      0 0,
+      46% 0,
+      0 46%,
+      0 46%,
+      0 0
+    );
+
+    transform: translate3d(-1.25px, -2px, 0);
+
+    filter: blur(3.6px);
+    -webkit-filter: blur(3.6px);
+  }
+
+  55% {
+    opacity: 0.72;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      100% 0,
+      42% 100%,
+      0 100%,
+      0 0
+    );
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      42% 100%,
+      0 100%,
+      0 0
+    );
+
+    transform: translate3d(-0.45px, -0.6px, 0);
+
+    filter: blur(1.35px);
+    -webkit-filter: blur(1.35px);
+  }
+
+  80% {
+    opacity: 0.96;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 74%,
+      74% 100%,
+      0 100%
+    );
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 74%,
+      74% 100%,
+      0 100%
+    );
+
+    transform: translate3d(0, -0.1px, 0);
+
+    filter: blur(0.3px);
+    -webkit-filter: blur(0.3px);
+  }
+
+  100% {
+    opacity: 1;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 100%
+    );
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 100%
+    );
+
+    transform: translate3d(0, 0, 0);
+
+    filter: blur(0);
+    -webkit-filter: blur(0);
+  }
+}
+
+
+/* ============================================================
+ * REVERSE TEXT FOLD FOR CLOSING
+ * ============================================================ */
+
+@keyframes st3HeaderRowFoldUp {
+  0% {
+    opacity: 1;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 100%
+    );
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 100%
+    );
+
+    transform: translate3d(0, 0, 0);
+
+    filter: blur(0);
+    -webkit-filter: blur(0);
+  }
+
+  22% {
+    opacity: 0.94;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 74%,
+      74% 100%,
+      0 100%
+    );
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 74%,
+      74% 100%,
+      0 100%
+    );
+
+    transform: translate3d(-0.1px, -0.2px, 0);
+
+    filter: blur(0.4px);
+    -webkit-filter: blur(0.4px);
+  }
+
+  55% {
+    opacity: 0.6;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      100% 0,
+      42% 100%,
+      0 100%,
+      0 0
+    );
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      42% 100%,
+      0 100%,
+      0 0
+    );
+
+    transform: translate3d(-0.55px, -1px, 0);
+
+    filter: blur(1.7px);
+    -webkit-filter: blur(1.7px);
+  }
+
+  80% {
+    opacity: 0.18;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      42% 0,
+      0 42%,
+      0 42%,
+      0 0
+    );
+    clip-path: polygon(
+      0 0,
+      42% 0,
+      0 42%,
+      0 42%,
+      0 0
+    );
+
+    transform: translate3d(-1.35px, -2.2px, 0);
+
+    filter: blur(3.8px);
+    -webkit-filter: blur(3.8px);
+  }
+
+  100% {
+    opacity: 0;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    );
+    clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    );
+
+    transform: translate3d(-2px, -3px, 0);
+
+    filter: blur(5.5px);
+    -webkit-filter: blur(5.5px);
+  }
+}
+
+
+@media (min-width: 901px) {
+
+  /* ==========================================================
+   * ACTUAL HEADER — NEVER MOVES
+   * ========================================================== */
+
+  html body .st3-header,
+  html body .st3-header__bar,
+  html body .st3-header__inner {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body .st3-header__bar {
+    position: relative !important;
+
+    height: var(--st3-header-height, 58px) !important;
+    min-height: var(--st3-header-height, 58px) !important;
+    max-height: var(--st3-header-height, 58px) !important;
+
+    z-index: 30 !important;
+    overflow: visible !important;
+  }
+
+  html body .st3-header__inner {
+    position: relative !important;
+
+    top: 0 !important;
+    bottom: auto !important;
+
+    height: 100% !important;
+    min-height: 100% !important;
+
+    align-items: center !important;
+  }
+
+
+  /* ==========================================================
+   * WHITE NAVIGATION SHEET
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links) {
+    top: var(--st3-header-height, 58px) !important;
+
+    z-index: 10 !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+
+    opacity: 1 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+
+    transform-origin: top center !important;
+
+    animation: none !important;
+
+    transition:
+      height 330ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+
+    will-change:
+      height,
+      clip-path;
+  }
+
+
+  /*
+   * Kill all historical automatic inner animations.
+   * We explicitly re-enable the correct animation for each
+   * motion state below.
+   */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links)
+    .st3-mega__inner--switch {
+    opacity: 1 !important;
+
+    transform: none !important;
+    translate: none !important;
+
+    animation: none !important;
+
+    transition: none !important;
+  }
+
+
+  /* ==========================================================
+   * CLOSED
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closed {
+    visibility: hidden !important;
+    pointer-events: none !important;
+
+    clip-path: inset(0 0 100% 0) !important;
+
+    transform: none !important;
+    translate: none !important;
+
+    transition: none !important;
+  }
+
+
+  /* ==========================================================
+   * OPEN WHITE SHEET — 900ms
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--open {
+    visibility: visible !important;
+    pointer-events: auto !important;
+
+    opacity: 1 !important;
+
+    clip-path: inset(0 0 0 0) !important;
+
+    transform: none !important;
+    translate: none !important;
+
+    transition:
+      clip-path 900ms cubic-bezier(0.16, 1, 0.3, 1),
+      height 330ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0ms linear 0ms !important;
+  }
+
+
+  /* ==========================================================
+   * CLOSING WHITE SHEET — 700ms
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closing {
+    visibility: visible !important;
+    pointer-events: none !important;
+
+    opacity: 1 !important;
+
+    clip-path: inset(0 0 100% 0) !important;
+
+    transform: none !important;
+    translate: none !important;
+
+    transition:
+      clip-path 700ms cubic-bezier(0.4, 0, 0.2, 1),
+      height 330ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0ms linear 700ms !important;
+  }
+
+
+  /* ==========================================================
+   * INNER GEOMETRY NEVER MOVES AS A WHOLE DURING OPENING
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links)
+    .st3-mega__inner {
+    transform: none !important;
+    translate: none !important;
+  }
+
+
+  /* ==========================================================
+   * INITIAL MODE ONLY
+   *
+   * THIS IS THE IMPORTANT FIX:
+   *
+   * The hidden/folded row state exists ONLY when React tells us
+   * this is a truly fresh opening.
+   *
+   * It therefore cannot return after changing categories.
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--motion-initial
+    :is(
+      .st3-mega__eyebrow,
+      .st3-mega__primary-link,
+      .st3-mega__secondary-link
+    ) {
+    opacity: 0;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    );
+    clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    );
+
+    transform: translate3d(-2px, -3px, 0);
+
+    filter: blur(5.5px);
+    -webkit-filter: blur(5.5px);
+
+    transform-origin: top left;
+
+    will-change:
+      opacity,
+      clip-path,
+      transform,
+      filter;
+  }
+
+
+  /* ==========================================================
+   * INITIAL OPEN — SHOP / LEFT HEADING
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--open.st3-mega--motion-initial
+    .st3-mega__inner > div:first-child > .st3-mega__eyebrow {
+    animation:
+      st3HeaderInitialRowUnfold
+      145ms
+      cubic-bezier(0.22, 1, 0.36, 1)
+      8ms
+      both !important;
+  }
+
+
+  /* ==========================================================
+   * INITIAL OPEN — PRIMARY ROWS
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--open.st3-mega--motion-initial
+    .st3-mega__links > .st3-mega__primary-link {
+    animation:
+      st3HeaderInitialRowUnfold
+      155ms
+      cubic-bezier(0.22, 1, 0.36, 1)
+      var(--st3-nav-row-delay, 18ms)
+      both !important;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(1) {
+    --st3-nav-row-delay: 18ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(2) {
+    --st3-nav-row-delay: 25ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(3) {
+    --st3-nav-row-delay: 32ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(4) {
+    --st3-nav-row-delay: 39ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(5) {
+    --st3-nav-row-delay: 46ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(6) {
+    --st3-nav-row-delay: 53ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(7) {
+    --st3-nav-row-delay: 60ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(8) {
+    --st3-nav-row-delay: 67ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(9) {
+    --st3-nav-row-delay: 74ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(10) {
+    --st3-nav-row-delay: 81ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(11) {
+    --st3-nav-row-delay: 88ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(12) {
+    --st3-nav-row-delay: 95ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(13) {
+    --st3-nav-row-delay: 102ms;
+  }
+
+  html body .st3-mega__links > .st3-mega__primary-link:nth-child(14) {
+    --st3-nav-row-delay: 109ms;
+  }
+
+
+  /* ==========================================================
+   * INITIAL OPEN — QUICK LINKS
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--open.st3-mega--motion-initial
+    .st3-mega__secondary > .st3-mega__eyebrow {
+    animation:
+      st3HeaderInitialRowUnfold
+      145ms
+      cubic-bezier(0.22, 1, 0.36, 1)
+      58ms
+      both !important;
+  }
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--open.st3-mega--motion-initial
+    .st3-mega__secondary-links > .st3-mega__secondary-link {
+    animation:
+      st3HeaderInitialRowUnfold
+      150ms
+      cubic-bezier(0.22, 1, 0.36, 1)
+      var(--st3-quick-delay, 70ms)
+      both !important;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-child(1) {
+    --st3-quick-delay: 70ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-child(2) {
+    --st3-quick-delay: 80ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-child(3) {
+    --st3-quick-delay: 90ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-child(4) {
+    --st3-quick-delay: 100ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-child(5) {
+    --st3-quick-delay: 110ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-child(6) {
+    --st3-quick-delay: 120ms;
+  }
+
+
+  /* ==========================================================
+   * SWITCH MODE
+   *
+   * Once the user has moved to another category while the sheet
+   * is already open, these rows stay fully unfolded forever
+   * until the sheet closes.
+   *
+   * This blocks the initial unfold from replaying after the
+   * 250ms switch class disappears.
+   * ========================================================== */
+
+  /*
+   * SWITCH MODE VISIBILITY LOCK
+   *
+   * IMPORTANT:
+   * This applies ONLY while the sheet is OPEN.
+   *
+   * Previously these !important declarations also remained active
+   * during .st3-mega--closing, which prevented the reverse text
+   * fold keyframes from changing opacity / clip-path / transform.
+   */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--open.st3-mega--motion-switch
+    :is(
+      .st3-mega__eyebrow,
+      .st3-mega__primary-link,
+      .st3-mega__secondary-link
+    ) {
+    opacity: 1 !important;
+
+    clip-path: inset(0 0 0 0) !important;
+
+    transform: none !important;
+
+    filter: blur(0) !important;
+    -webkit-filter: blur(0) !important;
+
+    animation: none !important;
+    transition: none !important;
+  }
+
+
+  /* ==========================================================
+   * CATEGORY -> CATEGORY
+   *
+   * EXACT PREVIOUS ANIMATION:
+   * opacity .35 -> 1
+   * translateY(5px) -> 0
+   * 250ms
+   *
+   * No unfold.
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--motion-switch.st3-mega--switch-in
+    .st3-mega__inner--switch {
+    opacity: 1 !important;
+
+    animation:
+      st3AppleCategorySwitch
+      250ms
+      cubic-bezier(0.22, 0.61, 0.36, 1)
+      both !important;
+  }
+
+
+  /* ==========================================================
+   * CLOSE — INNER CONTAINER STAYS STABLE
+   *
+   * Rows themselves perform the fold-up.
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closing
+    .st3-mega__inner--switch {
+    opacity: 1 !important;
+
+    transform: none !important;
+
+    animation: none !important;
+    transition: none !important;
+  }
+
+
+  /* ==========================================================
+   * CLOSE — EYEBROWS FOLD LAST
+   * ========================================================== */
+
+  /*
+   * RIGHT eyebrow — independent close.
+   */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closing
+    .st3-mega__secondary > .st3-mega__eyebrow {
+    animation:
+      st3HeaderRowFoldUp
+      145ms
+      cubic-bezier(0.4, 0, 0.2, 1)
+      44ms
+      both !important;
+  }
+
+
+  /*
+   * LEFT / Shop eyebrow — final top-left text to fold.
+   */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closing
+    .st3-mega__inner > div:first-child > .st3-mega__eyebrow {
+    animation:
+      st3HeaderRowFoldUp
+      145ms
+      cubic-bezier(0.4, 0, 0.2, 1)
+      138ms
+      both !important;
+  }
+
+
+  /* ==========================================================
+   * CLOSE — PRIMARY ROWS FOLD BOTTOM -> TOP
+   *
+   * nth-last-child makes this work correctly regardless of how
+   * many links that specific category contains.
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closing
+    .st3-mega__links > .st3-mega__primary-link {
+    animation:
+      st3HeaderRowFoldUp
+      150ms
+      cubic-bezier(0.4, 0, 0.2, 1)
+      var(--st3-close-row-delay, 50ms)
+      both !important;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(1) {
+    --st3-close-row-delay: 50ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(2) {
+    --st3-close-row-delay: 56ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(3) {
+    --st3-close-row-delay: 62ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(4) {
+    --st3-close-row-delay: 68ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(5) {
+    --st3-close-row-delay: 74ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(6) {
+    --st3-close-row-delay: 80ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(7) {
+    --st3-close-row-delay: 86ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(8) {
+    --st3-close-row-delay: 92ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(9) {
+    --st3-close-row-delay: 98ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(10) {
+    --st3-close-row-delay: 104ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(11) {
+    --st3-close-row-delay: 110ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(12) {
+    --st3-close-row-delay: 116ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(13) {
+    --st3-close-row-delay: 122ms;
+  }
+
+  html body
+    .st3-mega__links
+    > .st3-mega__primary-link:nth-last-child(14) {
+    --st3-close-row-delay: 128ms;
+  }
+
+
+  /* ==========================================================
+   * CLOSE — QUICK LINKS BOTTOM -> TOP
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closing
+    .st3-mega__secondary-links > .st3-mega__secondary-link {
+    animation:
+      st3HeaderRowFoldUp
+      145ms
+      cubic-bezier(0.4, 0, 0.2, 1)
+      var(--st3-close-quick-delay, 0ms)
+      both !important;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-last-child(1) {
+    --st3-close-quick-delay: 0ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-last-child(2) {
+    --st3-close-quick-delay: 7ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-last-child(3) {
+    --st3-close-quick-delay: 14ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-last-child(4) {
+    --st3-close-quick-delay: 21ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-last-child(5) {
+    --st3-close-quick-delay: 28ms;
+  }
+
+  html body
+    .st3-mega__secondary-links
+    > .st3-mega__secondary-link:nth-last-child(6) {
+    --st3-close-quick-delay: 35ms;
+  }
+
+
+  /* ==========================================================
+   * COMPLETELY CLOSED RESET
+   * ========================================================== */
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links).st3-mega--closed
+    :is(
+      .st3-mega__eyebrow,
+      .st3-mega__primary-link,
+      .st3-mega__secondary-link
+    ) {
+    opacity: 0 !important;
+
+    -webkit-clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    ) !important;
+    clip-path: polygon(
+      0 0,
+      0 0,
+      0 0,
+      0 0,
+      0 0
+    ) !important;
+
+    transform: translate3d(-2px, -3px, 0) !important;
+
+    filter: blur(5.5px) !important;
+    -webkit-filter: blur(5.5px) !important;
+
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* ============================================================
+ * REDUCED MOTION
+ * ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links) {
+    transition-duration: 1ms !important;
+  }
+
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links)
+    .st3-mega__inner--switch,
+  html body
+    .st3-header
+    .st3-mega:has(.st3-mega__links)
+    :is(
+      .st3-mega__eyebrow,
+      .st3-mega__primary-link,
+      .st3-mega__secondary-link
+    ) {
+    opacity: 1 !important;
+
+    clip-path: inset(0 0 0 0) !important;
+
+    transform: none !important;
+
+    filter: blur(0) !important;
+    -webkit-filter: blur(0) !important;
+
+    animation: none !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+
+/* === ST DESKTOP HEADER FIXED CATEGORY REVEAL END === */
+
+/* === ST CATEGORY ACTIVE FILTER ROW SPACING FINAL START === */
+
+/*
+ * CATEGORY PAGE + ACTIVE FILTER + COMPACT SUBCATEGORIES
+ *
+ * ROOT CAUSE:
+ *
+ * An older storefront rule applies:
+ *
+ *   transform: translateY(-16px)
+ *
+ * to .st3-shop-v4__active-state.
+ *
+ * That visually drags:
+ *   - "Showing filtered results"
+ *   - "Clear all"
+ *
+ * upward onto the Filters separator.
+ *
+ * Padding alone cannot fix that because transform moves the complete
+ * rendered row after normal layout has already been calculated.
+ *
+ * This final authority removes that translation ONLY when the active
+ * filter row is followed by compact Subcategory navigation.
+ */
+
+
+/* ==========================================================
+   DESKTOP / TABLET
+   ========================================================== */
+
+@media (min-width: 721px) {
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-v4__active-state:has(
+    + .st3-shop-subcategories.is-compact-mode
+  ) {
+    box-sizing: border-box !important;
+
+    min-height: 38px !important;
+
+    margin:
+      0
+      0
+      8px
+      0 !important;
+
+    padding:
+      10px
+      0
+      6px
+      0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 20px !important;
+
+    /*
+     * CRITICAL:
+     * neutralize the historical translateY(-16px)
+     */
+    transform: none !important;
+    translate: none !important;
+
+    line-height: 1.25 !important;
+  }
+
+
+  /*
+   * The status row now owns the vertical separation.
+   * Do not add the Subcategory block's older 12px top padding again.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-v4__active-state
+  + .st3-shop-subcategories.is-compact-mode {
+    padding-top: 0 !important;
+  }
+}
+
+
+/* ==========================================================
+   PHONE
+   ========================================================== */
+
+@media (max-width: 720px) {
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-v4__active-state:has(
+    + .st3-shop-subcategories.is-compact-mode
+  ) {
+    box-sizing: border-box !important;
+
+    min-height: 34px !important;
+
+    margin:
+      0
+      0
+      7px
+      0 !important;
+
+    padding:
+      8px
+      0
+      5px
+      0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    gap: 14px !important;
+
+    /*
+     * Also neutralize the historical mobile translateY(-10px).
+     */
+    transform: none !important;
+    translate: none !important;
+
+    line-height: 1.25 !important;
+  }
+
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  section.st3-shop-v4__catalog
+  .st3-shop-v4__active-state
+  + .st3-shop-subcategories.is-compact-mode {
+    padding-top: 0 !important;
+  }
+}
+
+/* === ST CATEGORY ACTIVE FILTER ROW SPACING FINAL END === */
+
+/* === ST CHECKOUT COMPACT STATIC QUANTITY FINAL START === */
+
+/*
+ * CHECKOUT ORDER TERMINAL — COMPACT QUANTITY
+ *
+ * The checkout now reuses the approved bag counter markup,
+ * but owns smaller checkout-specific geometry.
+ *
+ * There is deliberately NO visual hover animation:
+ * - no background change
+ * - no mustard glow
+ * - no lift / scale
+ * - no pseudo-element
+ *
+ * Quantity 1 remains clickable:
+ * pressing minus removes that cart line.
+ */
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  grid-template-columns:
+    27px
+    30px
+    27px !important;
+
+  width: 84px !important;
+  min-width: 84px !important;
+  max-width: 84px !important;
+
+  height: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+
+  align-items: center !important;
+
+  overflow: hidden !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.11) !important;
+
+  border-radius: 999px !important;
+
+  background: #fff !important;
+  background-color: #fff !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  width: 27px !important;
+  min-width: 27px !important;
+  max-width: 27px !important;
+
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition: none !important;
+}
+
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button:last-child {
+  width: 27px !important;
+  min-width: 27px !important;
+  max-width: 27px !important;
+}
+
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> span {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+
+  height: 28px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+
+  color: #1d1d1f !important;
+
+  text-align: center !important;
+
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+}
+
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button
+svg {
+  width: 12px !important;
+  height: 12px !important;
+
+  stroke-width: 2 !important;
+
+  transform: none !important;
+  transition: none !important;
+}
+
+
+/*
+ * ZERO HOVER EFFECT.
+ *
+ * These selectors intentionally come at the end of the V3
+ * stylesheet so they beat all previous checkout quantity hover
+ * systems.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  .st-checkout-v2
+  .st-checkout-order-item__quantity
+  > button:hover:not(:disabled) {
+    border: 0 !important;
+    border-color: transparent !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+    -webkit-text-fill-color: #1d1d1f !important;
+
+    box-shadow: none !important;
+
+    opacity: 1 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+  }
+
+
+  html body
+  .st-checkout-v2
+  .st-checkout-order-item__quantity
+  > button:hover:not(:disabled)
+  svg {
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+  }
+}
+
+
+/*
+ * Prevent old checkout pseudo/glow systems.
+ */
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button::before,
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button::after,
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button:hover::before,
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button:hover::after {
+  content: none !important;
+  display: none !important;
+
+  opacity: 0 !important;
+
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+
+
+/*
+ * Pressing does not visually jump either.
+ */
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button:active:not(:disabled) {
+  background: transparent !important;
+  background-color: transparent !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+}
+
+
+/*
+ * Maximum quantity:
+ * keep + visibly unavailable, but still no hover card/glow.
+ */
+
+html body
+.st-checkout-v2
+.st-checkout-order-item__quantity
+> button:disabled {
+  background: transparent !important;
+  background-color: transparent !important;
+
+  color: rgba(29, 29, 31, 0.24) !important;
+  -webkit-text-fill-color:
+    rgba(29, 29, 31, 0.24) !important;
+
+  opacity: 1 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+
+  cursor: not-allowed !important;
+}
+
+/* === ST CHECKOUT COMPACT STATIC QUANTITY FINAL END === */

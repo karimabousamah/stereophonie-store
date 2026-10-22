@@ -1214,8 +1214,6 @@ export default function ProductPurchaseControls({
         {selectedAvailable ? (
           <div className="st-purchase-v6__commerce">
             <div className="st-purchase-v6__quantity">
-              <span>Quantity</span>
-
               <div className="st-purchase-v6__stepper">
                 <button
                   type="button"
