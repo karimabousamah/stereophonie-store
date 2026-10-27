@@ -17,7 +17,10 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
+import { Gift as GiftWrapIcon } from "lucide-react";
+import SlideToPlaceOrder from "@/components/checkout/slide-to-place-order";
 import CheckoutProgress from "@/components/checkout/checkout-progress";
 import { submitOrder } from "../place-order/actions";
 import { type CartItem, useCart } from "@/components/cart/cart-provider";
@@ -74,6 +77,7 @@ type StoredCheckoutDetails = {
   discountAmount?: number;
 
   paymentMethod?: PaymentMethod;
+  giftWrappingRequested?: boolean;
 
   cart: CartItem[];
   subtotal: number;
@@ -89,6 +93,7 @@ type NormalizedCheckoutDetails = {
   coupon: StoredCoupon | null;
   discountAmount: number;
   paymentMethod: PaymentMethod | null;
+  giftWrappingRequested: boolean;
   cart: CartItem[];
   subtotal: number;
   deliveryFee: number;
@@ -121,6 +126,8 @@ function normalizeCheckoutDetails(
 
     paymentMethod:
       details.paymentMethod === "cash_on_delivery" ? "cash_on_delivery" : null,
+
+    giftWrappingRequested: details.giftWrappingRequested === true,
 
     cart: details.cart,
 
@@ -156,6 +163,10 @@ export default function CheckoutReviewPage() {
     useState<PaymentMethod | null>(null);
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+
+  // ST_CONFIRMATION_CLEAN_HEADERS_SUCCESS_TRANSITION_V1
+  const [orderSubmissionPhase, setOrderSubmissionPhase] =
+    useState<"submitting" | "success" | "leaving">("submitting");
 
   const orderSubmissionStarted = useRef(false);
 
@@ -322,6 +333,7 @@ export default function CheckoutReviewPage() {
 
     orderSubmissionStarted.current = true;
     setErrorMessage("");
+    setOrderSubmissionPhase("submitting");
     setIsPlacingOrder(true);
 
     try {
@@ -335,6 +347,9 @@ export default function CheckoutReviewPage() {
         couponCode: updatedCheckoutDetails.coupon?.code ?? null,
 
         paymentMethod: selectedPaymentMethod,
+
+        giftWrappingRequested:
+          updatedCheckoutDetails.giftWrappingRequested,
 
         items: updatedCheckoutDetails.cart.map((item) => ({
           variantId: item.variantId,
@@ -364,6 +379,7 @@ export default function CheckoutReviewPage() {
           success: true as const,
           order_id: result.order_id,
           order_number: result.order_number,
+          receipt_token: result.receipt_token ?? null,
           subtotal: Number(result.subtotal ?? 0),
           discount_amount: Number(result.discount_amount ?? 0),
           delivery_fee: Number(result.delivery_fee ?? 0),
@@ -384,6 +400,10 @@ export default function CheckoutReviewPage() {
         createdAt: new Date().toISOString(),
 
         fulfillmentMethod,
+
+        // ST_CONFIRMATION_FULFILLMENT_SUMMARY_V2
+        giftWrappingRequested:
+          updatedCheckoutDetails.giftWrappingRequested === true,
       };
 
       window.sessionStorage.setItem(
@@ -408,6 +428,27 @@ export default function CheckoutReviewPage() {
       });
 
       clearCart();
+
+      /*
+       * The server has accepted the order and the confirmed
+       * snapshot is saved. Only now display success.
+       *
+       * Keep the green confirmation visible for two seconds,
+       * then fade out before navigating to confirmation.
+       *
+       * These timers never submit an order.
+       */
+      setOrderSubmissionPhase("success");
+
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 2000);
+      });
+
+      setOrderSubmissionPhase("leaving");
+
+      await new Promise<void>((resolve) => {
+        window.setTimeout(resolve, 560);
+      });
 
       router.push("/checkout/place-order");
     } catch (error) {
@@ -966,6 +1007,22 @@ export default function CheckoutReviewPage() {
                       </span>
                     </div>
 
+                    {/*
+                      ST_GIFT_WRAP_REVIEW_V1
+                      Show the selected option without modifying totals.
+                    */}
+                    {checkoutDetails?.giftWrappingRequested && (
+                      <div className="flex items-center justify-between gap-4 text-sm">
+                        <span className="flex items-center gap-2 text-black/60">
+                          <GiftWrapIcon className="h-4 w-4" aria-hidden="true" />
+                          Gift wrapping
+                        </span>
+                        <span className="text-right font-semibold text-black">
+                          Requested · Free
+                        </span>
+                      </div>
+                    )}
+
                     <div
                       id="st-checkout-review-order-total-divider"
                       data-checkout-flat-divider="true"
@@ -981,7 +1038,7 @@ export default function CheckoutReviewPage() {
                     <div className="st-checkout-review-tax-note">
                       <ShieldCheck />
                       <span>
-                        Taxes are included in the price of every item.
+                        11% VAT is already included in the price of every item. No additional VAT will be charged at checkout.
                       </span>
                     </div>
 
@@ -1006,16 +1063,15 @@ export default function CheckoutReviewPage() {
                       </div>
                     </div>
 
-                    <button
-                      id="st-checkout-review-place-order"
-                      type="button"
-                      onClick={continueToOrderSubmission}
-                      disabled={!selectedPaymentMethod || isPlacingOrder}
-                      className="st-checkout-review-place-order st-checkout-review-place-order-v2"
-                    >
-                      Continue to place order
-                      <CheckCircle2 className="h-4 w-4" />
-                    </button>
+                    {/*
+                      ST_SLIDE_TO_PLACE_ORDER_V1
+                      Genuine drag-to-confirm order submission.
+                    */}
+                    <SlideToPlaceOrder
+                      disabled={!selectedPaymentMethod}
+                      loading={isPlacingOrder}
+                      onConfirm={continueToOrderSubmission}
+                    />
 
                     <div className="flex items-start justify-center gap-2 text-center text-[11px] leading-5 text-black/40">
                       <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -1033,55 +1089,89 @@ export default function CheckoutReviewPage() {
           )}
         </section>
 
-        {isPlacingOrder ? (
+        {isPlacingOrder && typeof document !== "undefined" ? createPortal(
           <div
-            className="st-checkout-submit-overlay"
+            className={`st-checkout-submit-overlay ${
+              orderSubmissionPhase !== "submitting" ? "is-confirmed" : ""
+            } ${orderSubmissionPhase === "leaving" ? "is-leaving" : ""}`}
             role="status"
             aria-live="polite"
-            aria-label="Placing your order"
+            aria-label={
+              orderSubmissionPhase === "submitting"
+                ? "Placing your order"
+                : "Order confirmed"
+            }
           >
             <div className="st-checkout-submit-overlay__backdrop" />
 
-            <div className="st-checkout-submit-overlay__card">
-              <div
-                className="st-checkout-submit-overlay__loader"
-                aria-hidden="true"
-              >
-                <span className="st-checkout-submit-overlay__orbit" />
-                <span className="st-checkout-submit-overlay__core">
-                  <ShieldCheck />
-                </span>
+            <div className="st-checkout-submit-overlay__card st-order-cinematic-card">
+              {/* ST_ORDER_CINEMATIC_HANDOFF_V1:
+                  Both scenes stay mounted, preventing layout jumps. */}
+              <div className="st-order-cinematic-scenes">
+
+                <div
+                  className={`st-order-cinematic-scene st-order-cinematic-scene--loading ${
+                    orderSubmissionPhase === "submitting" ? "is-active" : ""
+                  }`}
+                  aria-hidden={orderSubmissionPhase !== "submitting"}
+                >
+                  <div
+                    className="st-checkout-submit-overlay__loader"
+                    aria-hidden="true"
+                  >
+                    <span className="st-checkout-submit-overlay__orbit" />
+                    <span className="st-checkout-submit-overlay__core">
+                      <ShieldCheck />
+                    </span>
+                  </div>
+
+                  <p className="st-checkout-submit-overlay__eyebrow">
+                    Secure checkout
+                  </p>
+
+                  <h2>Placing your order</h2>
+
+                  <p className="st-checkout-submit-overlay__message">
+                    We are securely confirming your products, fulfillment,
+                    discount and payment information.
+                  </p>
+
+                  <div
+                    className="st-checkout-submit-overlay__activity"
+                    aria-hidden="true"
+                  >
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+
+                  <div className="st-checkout-submit-overlay__progress">
+                    <span />
+                  </div>
+
+                  <p className="st-checkout-submit-overlay__caption">
+                    Please keep this page open for a moment.
+                  </p>
+                </div>
+
+                <div
+                  className={`st-order-cinematic-scene st-order-cinematic-scene--success ${
+                    orderSubmissionPhase !== "submitting" ? "is-active" : ""
+                  }`}
+                  aria-hidden={orderSubmissionPhase === "submitting"}
+                >
+                  <div className="st-checkout-submit-overlay__confirmed">
+                    <CheckCircle2 aria-hidden="true" />
+                    <span className="sr-only">
+                      Your order has been placed successfully.
+                    </span>
+                  </div>
+                </div>
+
               </div>
-
-              <p className="st-checkout-submit-overlay__eyebrow">
-                Secure checkout
-              </p>
-
-              <h2>Placing your order</h2>
-
-              <p className="st-checkout-submit-overlay__message">
-                We are securely confirming your products, fulfillment, discount
-                and payment information.
-              </p>
-
-              <div
-                className="st-checkout-submit-overlay__activity"
-                aria-hidden="true"
-              >
-                <span />
-                <span />
-                <span />
-              </div>
-
-              <div className="st-checkout-submit-overlay__progress">
-                <span />
-              </div>
-
-              <p className="st-checkout-submit-overlay__caption">
-                Please keep this page open for a moment.
-              </p>
             </div>
-          </div>
+          </div>,
+          document.body,
         ) : null}
       </main>
     </>

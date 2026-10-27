@@ -1,5 +1,7 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
+
 import { processStockNotificationsForVariants } from "@/lib/email/process-stock-notifications";
 import { sendAdminOrderNotificationEmail } from "@/lib/email/send-admin-order-notification";
 import { sendOrderConfirmationEmail } from "@/lib/email/send-order-confirmation";
@@ -46,6 +48,7 @@ type PlaceOrderInput = {
   customerAccount?: CustomerAccountDetails;
   couponCode?: string | null;
   paymentMethod?: PaymentMethod;
+  giftWrappingRequested?: boolean;
   items: PlaceOrderItem[];
 };
 
@@ -53,6 +56,7 @@ type PlaceOrderResult = {
   success: boolean;
   order_id?: string;
   order_number?: string;
+  receipt_token?: string | null;
   subtotal?: number;
   discount_amount?: number;
   delivery_fee?: number;
@@ -174,6 +178,87 @@ function applySavedAddress(
 
     deliveryNotes: buildDeliveryNotes(savedAddress),
   };
+}
+
+
+/* ST_CONFIRMATION_VARIANTS_RECEIPTS_V1 */
+
+const confirmationReceiptPattern = /^[a-f0-9]{64}$/i;
+
+const confirmationUuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Issue a strong receipt token only when one is missing.
+ *
+ * The conditional update prevents an existing valid token
+ * from being overwritten by a concurrent request.
+ */
+async function ensureConfirmedReceiptToken(
+  admin: ReturnType<typeof createAdminClient>,
+  orderId: string,
+  existingToken: unknown,
+): Promise<string | null> {
+  const existing =
+    typeof existingToken === "string"
+      ? existingToken.trim()
+      : "";
+
+  if (confirmationReceiptPattern.test(existing)) {
+    return existing;
+  }
+
+  try {
+    const minted = randomBytes(32).toString("hex");
+
+    const update = existing
+      ? admin
+          .from("orders")
+          .update({ receipt_token: minted })
+          .eq("id", orderId)
+          .eq("receipt_token", existing)
+      : admin
+          .from("orders")
+          .update({ receipt_token: minted })
+          .eq("id", orderId)
+          .is("receipt_token", null);
+
+    const { data, error } = await update
+      .select("receipt_token")
+      .maybeSingle();
+
+    if (error) {
+      console.error(
+        "Confirmed order receipt issuance failed:",
+        error.message,
+      );
+    }
+
+    const issued = String(data?.receipt_token ?? "").trim();
+
+    if (confirmationReceiptPattern.test(issued)) {
+      return issued;
+    }
+
+    // If another request issued the token first, use it.
+    const { data: latest } = await admin
+      .from("orders")
+      .select("receipt_token")
+      .eq("id", orderId)
+      .maybeSingle();
+
+    const recovered = String(latest?.receipt_token ?? "").trim();
+
+    return confirmationReceiptPattern.test(recovered)
+      ? recovered
+      : null;
+  } catch (error) {
+    console.error(
+      "Receipt issuance could not complete:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
+    return null;
+  }
 }
 
 export async function submitOrder(
@@ -363,6 +448,34 @@ export async function submitOrder(
     };
   }
 
+  /*
+   * ST_GIFT_WRAP_PERSISTENCE_V2
+   *
+   * Prevent creating a gift-wrapping order unless
+   * the database has the required column.
+   *
+   * Regular orders preserve the existing path.
+   */
+  if (input.giftWrappingRequested === true) {
+    const { error: giftCapabilityError } = await admin
+      .from("orders")
+      .select("gift_wrapping_requested")
+      .limit(1);
+
+    if (giftCapabilityError) {
+      console.error(
+        "Gift wrapping capability is unavailable:",
+        giftCapabilityError,
+      );
+
+      return {
+        success: false,
+        message:
+          "Gift wrapping is temporarily unavailable. No order was placed. Please try again later or continue without gift wrapping.",
+      };
+    }
+  }
+
   const { data, error } = await supabase.rpc("place_order", {
     coupon_code: cleanText(input.couponCode) || null,
 
@@ -411,6 +524,46 @@ export async function submitOrder(
     };
   }
 
+  /*
+   * ST_GIFT_WRAP_ORDER_WRITE_V2
+   *
+   * Persist the optional choice using the trusted
+   * server-only admin client.
+   *
+   * A failed post-creation write must never encourage
+   * the customer to submit a duplicate order.
+   */
+  if (input.giftWrappingRequested === true) {
+    const saveGiftWrapping = () =>
+      admin
+        .from("orders")
+        .update({ gift_wrapping_requested: true })
+        .eq("id", result.order_id)
+        .select("id")
+        .single();
+
+    let giftWrite = await saveGiftWrapping();
+
+    if (giftWrite.error || !giftWrite.data) {
+      giftWrite = await saveGiftWrapping();
+    }
+
+    if (giftWrite.error || !giftWrite.data) {
+      console.error(
+        `Gift wrapping could not be saved for ${result.order_number}:`,
+        giftWrite.error,
+      );
+
+      return {
+        success: false,
+        order_id: result.order_id,
+        order_number: result.order_number,
+        message:
+          `Order ${result.order_number} was created, but gift wrapping could not be confirmed. Contact Stereophonie about this existing order. Please do not submit another order.`,
+      };
+    }
+  }
+
   const { data: authoritativeOrder, error: authoritativeOrderError } =
     await admin
       .from("orders")
@@ -431,6 +584,18 @@ export async function submitOrder(
       message:
         "Your order was created, but its final totals could not be verified.",
     };
+  }
+
+  // Ensure a newly confirmed order has a usable PDF receipt.
+  // A receipt-token failure never changes the order's result.
+  const issuedReceiptToken = await ensureConfirmedReceiptToken(
+    admin,
+    result.order_id,
+    authoritativeOrder.receipt_token,
+  );
+
+  if (issuedReceiptToken) {
+    authoritativeOrder.receipt_token = issuedReceiptToken;
   }
 
   const subtotal = Number(authoritativeOrder.subtotal ?? 0);
@@ -740,6 +905,13 @@ export async function submitOrder(
 
     order_number: authoritativeOrderNumber,
 
+    // ST_CONFIRMATION_MINIMAL_RECEIPT_V1
+    receipt_token: /^[a-f0-9]{64}$/i.test(
+      String(authoritativeOrder.receipt_token ?? "").trim(),
+    )
+      ? String(authoritativeOrder.receipt_token).trim()
+      : null,
+
     subtotal,
 
     discount_amount: discountAmount,
@@ -756,4 +928,159 @@ export async function submitOrder(
       ? undefined
       : emailResult.message,
   };
+}
+
+/**
+ * Read-only product configuration counts, plus authenticated
+ * receipt recovery for the current user's confirmed order.
+ *
+ * Configuration counts are not sensitive customer data.
+ * Receipt tokens are returned only for an order whose
+ * customer email matches the verified signed-in user.
+ */
+export async function getConfirmationExtras(
+  orderId: string,
+  variantIds: string[],
+): Promise<{
+  variantCounts: Record<string, number>;
+  receiptToken: string | null;
+}> {
+  const result: {
+    variantCounts: Record<string, number>;
+    receiptToken: string | null;
+  } = {
+    variantCounts: {},
+    receiptToken: null,
+  };
+
+  const validVariantIds = Array.from(
+    new Set(
+      (Array.isArray(variantIds) ? variantIds : [])
+        .filter(
+          (value): value is string =>
+            typeof value === "string" &&
+            confirmationUuidPattern.test(value),
+        )
+        .slice(0, 32),
+    ),
+  );
+
+  const admin = createAdminClient();
+
+  if (validVariantIds.length > 0) {
+    const { data: selected, error: selectedError } =
+      await admin
+        .from("product_variants")
+        .select("id, product_id")
+        .in("id", validVariantIds);
+
+    if (selectedError) {
+      console.error(
+        "Configuration count lookup failed:",
+        selectedError.message,
+      );
+    } else {
+      const productIds = Array.from(
+        new Set(
+          (selected ?? [])
+            .map((variant) => String(variant.product_id ?? ""))
+            .filter(Boolean),
+        ),
+      );
+
+      if (productIds.length > 0) {
+        const { data: siblings, error: siblingsError } =
+          await admin
+            .from("product_variants")
+            .select("product_id")
+            .in("product_id", productIds);
+
+        if (siblingsError) {
+          console.error(
+            "Configuration count lookup failed:",
+            siblingsError.message,
+          );
+        } else {
+          const counts = new Map<string, number>();
+
+          for (const sibling of siblings ?? []) {
+            const productId = String(sibling.product_id ?? "");
+
+            counts.set(
+              productId,
+              (counts.get(productId) ?? 0) + 1,
+            );
+          }
+
+          for (const variant of selected ?? []) {
+            const id = String(variant.id ?? "");
+            const productId = String(variant.product_id ?? "");
+
+            if (id) {
+              result.variantCounts[id] = counts.get(productId) ?? 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Never recover a receipt from an unverified order ID.
+  if (
+    typeof orderId !== "string" ||
+    !confirmationUuidPattern.test(orderId)
+  ) {
+    return result;
+  }
+
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    const verifiedEmail =
+      !authError && user?.email
+        ? user.email.trim().toLowerCase()
+        : null;
+
+    if (!verifiedEmail) {
+      return result;
+    }
+
+    const { data: order, error: orderError } =
+      await admin
+        .from("orders")
+        .select("id, customer_email, receipt_token")
+        .eq("id", orderId)
+        .maybeSingle();
+
+    if (orderError || !order) {
+      return result;
+    }
+
+    const ownerEmail = String(
+      order.customer_email ?? "",
+    ).trim().toLowerCase();
+
+    // Compare exact normalized email strings.
+    if (ownerEmail !== verifiedEmail) {
+      return result;
+    }
+
+    result.receiptToken = await ensureConfirmedReceiptToken(
+      admin,
+      orderId,
+      order.receipt_token,
+    );
+  } catch (error) {
+    console.error(
+      "Confirmed receipt recovery failed:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
+  }
+
+  return result;
 }

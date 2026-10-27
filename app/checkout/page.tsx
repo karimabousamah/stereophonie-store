@@ -20,7 +20,6 @@ import {
   Banknote,
   WalletCards,
   ShieldCheck,
-  BadgeCheck,
 } from "lucide-react";
 import {
   type FormEvent,
@@ -32,6 +31,7 @@ import {
   useState,
 } from "react";
 
+import { Gift as GiftWrapIcon } from "lucide-react";
 import CheckoutProgress from "@/components/checkout/checkout-progress";
 import CheckoutActionNotice from "@/components/checkout/checkout-action-notice";
 import CouponBox, {
@@ -885,6 +885,33 @@ export default function CheckoutPage() {
 
   const [addressDraft, setAddressDraft] =
     useState<AddressDraft>(initialAddressDraft);
+
+  /*
+   * ST_GIFT_WRAP_CHECKOUT_V1
+   *
+   * One optional preference for the entire order.
+   * Existing checkout details restore the selection
+   * when returning from the review page.
+   */
+  const [giftWrappingRequested, setGiftWrappingRequested] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = window.sessionStorage.getItem(
+        "stereophonie-checkout-details",
+      );
+
+      if (!saved) return;
+
+      const details = JSON.parse(saved) as {
+        giftWrappingRequested?: unknown;
+      };
+
+      setGiftWrappingRequested(details.giftWrappingRequested === true);
+    } catch {
+      setGiftWrappingRequested(false);
+    }
+  }, []);
 
   const [addressErrors, setAddressErrors] = useState<AddressErrors>({});
 
@@ -1748,6 +1775,7 @@ export default function CheckoutPage() {
 
     const checkoutDetails = {
       fulfillmentMethod,
+      giftWrappingRequested,
       customer: {
         ...form,
         country: "Lebanon",
@@ -2059,10 +2087,6 @@ export default function CheckoutPage() {
                       </button>
                     </div>
 
-                    <div className="st-checkout-fulfillment__note">
-                      <BadgeCheck />
-                      <span>Taxes are already included in product prices.</span>
-                    </div>
                   </section>
 
                   {/* CONTACT INFORMATION */}
@@ -2880,6 +2904,67 @@ export default function CheckoutPage() {
                       id="st-checkout-order-terminal-totals"
                       className="space-y-3.5 border-t border-black/[0.08] p-4 sm:p-4"
                     >
+                      {/*
+                        ST_GIFT_WRAP_TOGGLE_V1
+                        ST_GIFT_WRAP_MUSTARD_V2
+                        ST_GIFT_WRAP_SHARED_STATES_V3
+                        A single order-level gift-wrapping option.
+                        No separate gift flag, price, or additional input.
+                      */}
+                      <label
+                        htmlFor="st-checkout-gift-wrapping"
+                        data-selected={giftWrappingRequested ? "true" : "false"}
+                        className={`st-checkout-fulfillment__choice group mb-4 flex w-full cursor-pointer items-center gap-3 rounded-[16px] px-3.5 py-4 text-left focus-within:ring-2 focus-within:ring-[#fdb73e]/20 sm:px-4 ${
+                          giftWrappingRequested ? "is-selected" : ""
+                        }`}
+                      >
+                        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border transition-colors duration-200 ${
+                            giftWrappingRequested
+                              ? "border-[#e4ad43]/60 bg-[#fff2d5] text-[#865600]"
+                              : "border-black/10 bg-white text-black group-hover:border-[#e4ad43]/50"
+                          }`}>
+                          <GiftWrapIcon className="h-[19px] w-[19px]" aria-hidden="true" />
+                        </span>
+
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[13px] font-semibold text-black">
+                            Gift Wrap This Order
+                          </span>
+                          <span className="mt-1 block text-[11px] leading-[1.6] text-black/50">
+                            Have your order beautifully wrapped as a gift.
+                            No additional charge.
+                          </span>
+                        </span>
+
+                        <input
+                          id="st-checkout-gift-wrapping"
+                          type="checkbox"
+                          role="switch"
+                          checked={giftWrappingRequested}
+                          onChange={(event) =>
+                            setGiftWrappingRequested(event.target.checked)
+                          }
+                          className="peer sr-only"
+                        />
+
+                        <span
+                          aria-hidden="true"
+                          className={`flex h-[26px] w-[46px] shrink-0 items-center rounded-full p-[3px] transition-colors duration-200 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#e4ad43] ${
+                            giftWrappingRequested
+                              ? "bg-[#fdb73e] shadow-[inset_0_0_0_1px_rgba(189,116,0,0.20)]"
+                              : "bg-black/20 group-hover:bg-[#e4ad43]/45"
+                          }`}
+                        >
+                          <span
+                            className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                              giftWrappingRequested
+                                ? "translate-x-5"
+                                : "translate-x-0"
+                            }`}
+                          />
+                        </span>
+                      </label>
+
                       <CouponBox
                         subtotal={subtotal}
                         customerEmail={accountEmail || form.email}
@@ -2922,6 +3007,14 @@ export default function CheckoutPage() {
 
                         <span className="text-[18px] font-semibold">
                           ${orderTotal.toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* ST_CHECKOUT_VISIBLE_VAT_HAPTICS_V2 */}
+                      <div className="st-checkout-tax-note" role="note">
+                        <ShieldCheck aria-hidden="true" />
+                        <span>
+                          11% VAT is already included in the price of every item. No additional VAT will be charged at checkout.
                         </span>
                       </div>
 

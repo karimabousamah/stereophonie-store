@@ -32,7 +32,7 @@ function safeFilename(value: string) {
   return value.replace(/[^a-zA-Z0-9_-]+/g, "-");
 }
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: Request, context: RouteContext) {
   const { token: rawToken } = await context.params;
   const token = rawToken.trim();
 
@@ -212,11 +212,18 @@ export async function GET(_request: Request, context: RouteContext) {
 
   const orderNumber = clean(order.order_number) || "Order";
 
+  // ST_CONFIRMATION_MINIMAL_RECEIPT_V1
+  // Inline PDF for printing, attachment for direct downloading.
+  const disposition =
+    new URL(request.url).searchParams.get("download") === "1"
+      ? "attachment"
+      : "inline";
+
   return new NextResponse(new Uint8Array(pdf), {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="Stereophonie-Receipt-${safeFilename(
+      "Content-Disposition": `${disposition}; filename="Stereophonie-Receipt-${safeFilename(
         orderNumber,
       )}.pdf"`,
 

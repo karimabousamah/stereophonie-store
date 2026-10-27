@@ -4,16 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
-  ArrowRight,
-  CheckCircle2,
   Loader2,
-  Mail,
-  MapPin,
-  PackageCheck,
-  Phone,
-  ShoppingBag,
-  UserRound,
   ShieldCheck,
+  ArrowRight,
+  Printer,
+  FileDown,
+  UserRoundCheck,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -21,9 +17,10 @@ import { useCart } from "@/components/cart/cart-provider";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
-import { submitOrder } from "./actions";
+import { getConfirmationExtras, submitOrder } from "./actions";
 
 import CheckoutProgress from "@/components/checkout/checkout-progress";
+import "./confirmation-v4.css";
 
 type CustomerDetails = {
   firstName: string;
@@ -85,6 +82,7 @@ type StoredCheckoutDetails = {
   coupon?: StoredCoupon | null;
   discountAmount?: number;
   paymentMethod?: PaymentMethod;
+  giftWrappingRequested?: boolean;
   cart: StoredCartItem[];
   subtotal: number;
   deliveryFee: number;
@@ -95,6 +93,7 @@ type OrderResult = {
   success: true;
   order_id: string;
   order_number: string;
+  receipt_token?: string | null;
   subtotal: number;
   discount_amount: number;
   delivery_fee: number;
@@ -112,6 +111,7 @@ type SavedOrderSnapshot = {
   cart: StoredCartItem[];
   createdAt: string;
   fulfillmentMethod: FulfillmentMethod;
+  giftWrappingRequested?: boolean;
 };
 
 type SubmitOrderResponse = Awaited<ReturnType<typeof submitOrder>>;
@@ -161,6 +161,59 @@ export default function PlaceOrderPage() {
 
   const [confirmedOrder, setConfirmedOrder] =
     useState<SavedOrderSnapshot | null>(null);
+
+  /* ST_CONFIRMATION_VARIANTS_RECEIPTS_V1 */
+  const [configurationCounts, setConfigurationCounts] =
+    useState<Record<string, number>>({});
+
+  const [recoveredReceiptTokens, setRecoveredReceiptTokens] =
+    useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!confirmedOrder) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const orderId = confirmedOrder.result.order_id;
+    const variantIds = confirmedOrder.cart.map(
+      (item) => item.variantId,
+    );
+
+    void getConfirmationExtras(orderId, variantIds)
+      .then((extras) => {
+        if (cancelled) {
+          return;
+        }
+
+        setConfigurationCounts(extras.variantCounts);
+
+        if (
+          extras.receiptToken &&
+          /^[a-f0-9]{64}$/i.test(extras.receiptToken)
+        ) {
+          setRecoveredReceiptTokens((previous) => ({
+            ...previous,
+            [orderId]: extras.receiptToken!,
+          }));
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.error(
+            "Confirmation details could not be refreshed:",
+            error instanceof Error
+              ? error.message
+              : "Unknown error",
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [confirmedOrder]);
 
   useEffect(() => {
     if (!isCartReady || submissionStarted.current) {
@@ -259,6 +312,9 @@ export default function PlaceOrderPage() {
 
             paymentMethod: checkoutDetails.paymentMethod,
 
+            giftWrappingRequested:
+              checkoutDetails.giftWrappingRequested === true,
+
             items: checkoutDetails.cart.map((item) => ({
               variantId: item.variantId,
 
@@ -299,6 +355,7 @@ export default function PlaceOrderPage() {
           order_id: result.order_id,
 
           order_number: result.order_number,
+          receipt_token: result.receipt_token ?? null,
 
           subtotal: Number(result.subtotal ?? 0),
 
@@ -330,6 +387,9 @@ export default function PlaceOrderPage() {
           phoneCountry: checkoutDetails.phoneCountry,
 
           cart: checkoutDetails.cart,
+
+          giftWrappingRequested:
+            checkoutDetails.giftWrappingRequested === true,
 
           createdAt: new Date().toISOString(),
         };
@@ -463,357 +523,286 @@ export default function PlaceOrderPage() {
     result,
     customer,
     customerAccount,
-    phoneCountry,
     cart,
     fulfillmentMethod,
+    giftWrappingRequested,
   } = confirmedOrder;
 
   const accountLinked = customerAccount?.signedIn === true;
 
   const emailFailed = result.confirmation_email_sent === false;
 
-  const fullAddress = [
-    customer.address,
-
-    customer.building ? `Building: ${customer.building}` : null,
-
-    customer.floor ? `Floor/apartment: ${customer.floor}` : null,
-
-    customer.area,
-
-    customer.city,
-
-    customer.country || "Lebanon",
-  ].filter(Boolean);
 
   const totalQuantity = cart.reduce(
     (sum, item) => sum + Number(item.quantity),
     0,
   );
+  // Only link a correctly formed receipt token.
+  const receiptToken =
+    [result.receipt_token, recoveredReceiptTokens[result.order_id]]
+      .find(
+        (value): value is string =>
+          typeof value === "string" &&
+          /^[a-f0-9]{64}$/i.test(value),
+      ) ?? null;
+
+  const receiptUrl = receiptToken
+    ? `/order-receipt/${receiptToken}`
+    : null;
+
 
   return (
     <>
       <V3Header />
-      <main className="st-order-success-v2 min-h-screen bg-[#f6f5f2] text-black">
-        <CheckoutProgress currentStep={3} />
 
-        <section className="st-checkout-success-head">
-          <div className="st-checkout-success-head__message">
-            <div className="st-checkout-success-head__icon">
-              <CheckCircle2 />
-            </div>
-            <div>
-              <p className="st-checkout-success-head__eyebrow">
-                Order confirmed
-              </p>
-              <h1>Thank you, {customer.firstName}.</h1>
-              <p>
-                Your order is safely recorded.{" "}
-                {fulfillmentMethod === "pickup"
-                  ? "Your order is confirmed. We will contact you when it is ready to collect."
-                  : "Your order is confirmed. The Stereophonie team will contact you about delivery."}
-              </p>
-            </div>
-          </div>
+      {/* ST_CONFIRMATION_CLEAN_V4 */}
+      <main className="st-confirmation-v4">
+        <div className="st-confirmation-v4__container">
 
-          <div className="st-checkout-success-head__number">
-            <span>Order number</span>
-            <strong>{result.order_number}</strong>
-            <p>
-              <PackageCheck />
-              Keep this number for questions about your purchase.
+          <section className="st-confirmation-v4__card st-confirmation-v4__welcome">
+            <p className="st-confirmation-v4__eyebrow">
+              Order confirmed
             </p>
-            {accountLinked ? (
-              <Link href="/account">
-                View my account orders
-                <ArrowRight />
-              </Link>
-            ) : null}
-          </div>
 
-          {accountLinked || emailFailed ? (
-            <div className="st-checkout-success-head__notices">
-              {accountLinked ? (
-                <div className="is-success">
-                  <UserRound />
+            <h1>
+              Thank you for your order, {customer.firstName}!
+            </h1>
+
+            <p className="st-confirmation-v4__description">
+              {fulfillmentMethod === "pickup"
+                ? "Your order has been placed successfully. We will contact you when it is ready for pickup."
+                : "Your order has been placed successfully. Our team will contact you to arrange delivery."}
+            </p>
+
+            <div className="st-confirmation-v4__reference">
+              <span>Order number</span>
+              <strong>{result.order_number}</strong>
+            </div>
+
+            {accountLinked ? (
+              <div className="st-confirmation-v4__account" role="status">
+                {/* ST_CONFIRMATION_ACCOUNT_BADGE_V1 */}
+                <span
+                  className="st-confirmation-v4__account-badge"
+                  aria-hidden="true"
+                >
+                  <UserRoundCheck />
+                </span>
+                <div>
+                  <strong>Account connected</strong>
                   <p>
-                    <strong>Account connected</strong>
                     This order is available in your account history.
                   </p>
                 </div>
-              ) : null}
-              {emailFailed ? (
-                <div className="is-warning">
-                  <AlertCircle />
-                  <p>
-                    <strong>Confirmation email delayed</strong>
-                    Your order is saved, but the email could not be sent.
-                    {result.confirmation_email_message
-                      ? ` ${result.confirmation_email_message}`
-                      : ""}
-                  </p>
-                </div>
-              ) : null}
+              </div>
+            ) : null}
+
+            {emailFailed ? (
+              <div className="st-confirmation-v4__email-warning" role="status">
+                <strong>Confirmation email delayed</strong>
+                <p>
+                  Your order was saved, but the confirmation email
+                  could not be sent.
+                  {result.confirmation_email_message
+                    ? ` ${result.confirmation_email_message}`
+                    : ""}
+                </p>
+              </div>
+            ) : null}
+          </section>
+
+          <section
+            className="st-confirmation-v4__card st-confirmation-v4__summary"
+            aria-labelledby="st-confirmation-summary-heading"
+          >
+            <div className="st-confirmation-v4__heading">
+              <h2 id="st-confirmation-summary-heading">
+                Order summary
+              </h2>
+              <span>
+                {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
+              </span>
             </div>
-          ) : null}
-        </section>
 
-        <section className="st-checkout-content mx-auto max-w-[1180px] px-5 py-8 sm:px-6 sm:py-10">
-          <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
-            <div className="min-w-0 space-y-8">
-              <section className="st-checkout-success-card border border-black/10 bg-white">
-                <div className="flex items-center justify-between border-b border-black/10 px-5 py-5 sm:px-6">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                      Purchased products
-                    </p>
+            <div className="st-confirmation-v4__products">
+              {cart.map((item) => (
+                <article
+                  key={item.cartItemId}
+                  className="st-confirmation-v4__product"
+                >
+                  <Link
+                    href={`/shop/${item.slug}`}
+                    className="st-confirmation-v4__photo"
+                    aria-label={`View ${item.name}`}
+                  >
+                    {item.imageUrl ? (
+                      <img
+                        className="st-confirmation-v4__photo-image"
+                        src={item.imageUrl}
+                        alt={item.name}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="st-confirmation-v4__photo-empty">
+                        No image
+                      </span>
+                    )}
+                  </Link>
 
-                    <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em]">
-                      {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
-                    </h2>
-                  </div>
-
-                  <ShoppingBag className="h-5 w-5 text-black/35" />
-                </div>
-
-                <div className="divide-y divide-black/10">
-                  {cart.map((item) => (
-                    <article
-                      key={item.cartItemId}
-                      className="grid grid-cols-[86px_minmax(0,1fr)] gap-4 p-5 sm:grid-cols-[105px_minmax(0,1fr)_auto] sm:items-center sm:px-6"
+                  <div className="st-confirmation-v4__product-info">
+                    <Link
+                      href={`/shop/${item.slug}`}
+                      className="st-confirmation-v4__product-name"
                     >
-                      <Link
-                        href={`/shop/${item.slug}`}
-                        className="aspect-[4/5] overflow-hidden bg-neutral-100"
-                      >
-                        {item.imageUrl ? (
-                          <img
-                            src={item.imageUrl}
-                            alt={item.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center">
-                            <ShoppingBag className="h-5 w-5 text-black/20" />
-                          </div>
-                        )}
-                      </Link>
+                      {item.name}
+                    </Link>
 
-                      <div className="min-w-0">
-                        <Link
-                          href={`/shop/${item.slug}`}
-                          className="block truncate font-semibold transition hover:text-black/55"
-                        >
-                          {item.name}
-                        </Link>
-
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/45">
-                          <span>Configuration {item.size}</span>
-
-                          <span>Quantity {item.quantity}</span>
-                        </div>
-
-                        <p className="mt-3 text-sm font-semibold sm:hidden">
-                          {money(item.unitPrice * item.quantity)}
-                        </p>
-                      </div>
-
-                      <p className="hidden text-base font-semibold sm:block">
-                        {money(item.unitPrice * item.quantity)}
+                    {item.size &&
+                    (configurationCounts[item.variantId] ?? 0) > 1 ? (
+                      <p className="st-confirmation-v4__configuration">
+                        {item.size}
                       </p>
-                    </article>
-                  ))}
-                </div>
-              </section>
+                    ) : null}
 
-              <section className="grid gap-5 md:grid-cols-2">
-                <div className="st-checkout-success-card border border-black/10 bg-white p-5 sm:p-6">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-black/35" />
-
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                      Contact
-                    </p>
+                    <div className="st-confirmation-v4__product-bottom">
+                      <span>Quantity: {item.quantity}</span>
+                      <strong>
+                        {money(item.unitPrice * item.quantity)}
+                      </strong>
+                    </div>
                   </div>
+                </article>
+              ))}
+            </div>
 
-                  <h2 className="mt-6 text-2xl font-semibold">
-                    {customer.firstName} {customer.lastName}
-                  </h2>
 
-                  <p className="mt-4 break-all text-sm text-black/50">
-                    {customer.email}
+            {/* ST_CONFIRMATION_FULFILLMENT_SUMMARY_V2 */}
+            <div className="st-confirmation-v4__fulfillment">
+
+              {giftWrappingRequested === true ? (
+                <div className="st-confirmation-v4__detail-row">
+                  <span>Gift wrapping</span>
+                  <strong>Requested</strong>
+                </div>
+              ) : null}
+
+              <div className="st-confirmation-v4__detail-row">
+                <span>
+                  {fulfillmentMethod === "pickup"
+                    ? "Pickup in store"
+                    : "Delivery fee"}
+                </span>
+                <strong>
+                  {fulfillmentMethod === "pickup"
+                    ? "Free"
+                    : money(result.delivery_fee)}
+                </strong>
+              </div>
+
+              {fulfillmentMethod === "delivery" ? (
+                <div className="st-confirmation-v4__address">
+                  <strong>Delivery address</strong>
+
+                  <p className="st-confirmation-v4__street">
+                    {customer.address}
                   </p>
 
-                  <div className="mt-3 flex items-center gap-2 text-sm text-black/50">
-                    <Phone className="h-4 w-4 shrink-0" />
-
-                    <span>{customer.phone}</span>
-                  </div>
-
-                  {phoneCountry ? (
-                    <p className="mt-3 text-xs text-black/40">
-                      {phoneCountry.flag} {phoneCountry.country}
-                    </p>
+                  {customer.building ? (
+                    <p>Building: {customer.building}</p>
                   ) : null}
-                </div>
 
-                <div className="st-checkout-success-card border border-black/10 bg-white p-5 sm:p-6">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-black/35" />
+                  {customer.floor ? (
+                    <p>Floor/apartment: {customer.floor}</p>
+                  ) : null}
 
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-black/40">
-                      {fulfillmentMethod === "pickup"
-                        ? "Fulfillment"
-                        : "Delivery address"}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 space-y-2">
-                    {fulfillmentMethod === "pickup" ? (
-                      <>
-                        <p className="font-semibold">Pick up in store</p>
-                        <p className="text-sm leading-6 text-black/50">
-                          No delivery fee. We will contact you when your order
-                          is ready to collect.
-                        </p>
-                      </>
-                    ) : (
-                      fullAddress.map((line, index) => (
-                        <p
-                          key={`${line}-${index}`}
-                          className={
-                            index === 0
-                              ? "font-semibold"
-                              : "text-sm text-black/50"
-                          }
-                        >
-                          {line}
-                        </p>
-                      ))
-                    )}
-                  </div>
+                  <p>
+                    {[
+                      customer.area,
+                      customer.city,
+                      customer.country || "Lebanon",
+                    ].filter(Boolean).join(", ")}
+                  </p>
 
                   {customer.deliveryNotes ? (
-                    <div className="mt-5 border-t border-black/10 pt-4">
-                      <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-black/35">
-                        Delivery notes
-                      </p>
-
-                      <p className="mt-2 whitespace-pre-line text-sm leading-6 text-black/50">
-                        {customer.deliveryNotes}
-                      </p>
-                    </div>
+                    <p className="st-confirmation-v4__delivery-notes">
+                      Delivery notes: {customer.deliveryNotes}
+                    </p>
                   ) : null}
                 </div>
-              </section>
+              ) : null}
+
+              {Number(result.discount_amount) > 0 ? (
+                <div className="st-confirmation-v4__detail-row">
+                  <span>Discount</span>
+                  <strong>
+                    -{money(result.discount_amount)}
+                  </strong>
+                </div>
+              ) : null}
+
             </div>
 
-            <aside className="xl:sticky xl:top-6 xl:self-start">
-              <section className="st-checkout-success-card border border-black/10 bg-white">
-                <div className="border-b border-black/10 px-5 py-5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/40">
-                    Payment summary
-                  </p>
 
-                  <h2 className="mt-2 text-2xl font-semibold">Order total</h2>
-                </div>
+            <div className="st-confirmation-v4__total">
+              <span>Order total</span>
+              <strong>{money(result.total)}</strong>
+            </div>
 
-                <div className="space-y-4 p-5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-black/50">Subtotal</span>
+            {/* ST_CONFIRMATION_RECEIPT_VAT_POLISH_V1 */}
+            <div className="st-confirmation-v4__vat-wrap">
+              <div className="st-confirmation-v4__vat-notice">
+                <ShieldCheck aria-hidden="true" />
+                <p>
+                  11% VAT is already included in the price of every item.
+                  No additional VAT will be charged at checkout.
+                </p>
+              </div>
+            </div>
 
-                    <span className="font-semibold">
-                      {money(result.subtotal)}
-                    </span>
-                  </div>
+            {receiptUrl ? (
+              <div className="st-confirmation-v4__receipt-actions">
+                <a
+                  href={receiptUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  referrerPolicy="no-referrer"
+                >
+                  <span>Print receipt</span>
+                  <Printer aria-hidden="true" />
+                </a>
 
-                  {Number(result.discount_amount ?? 0) > 0 ? (
-                    <div className="flex items-center justify-between gap-4 text-sm text-emerald-700">
-                      <span>
-                        Discount
-                        {result.coupon_code ? ` (${result.coupon_code})` : ""}
-                      </span>
+                <a
+                  href={`${receiptUrl}?download=1`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  referrerPolicy="no-referrer"
+                >
+                  <span>Download receipt</span>
+                  <FileDown aria-hidden="true" />
+                </a>
+              </div>
+            ) : null}
 
-                      <span className="font-semibold">
-                        −{money(Number(result.discount_amount))}
-                      </span>
-                    </div>
-                  ) : null}
+            <div className="st-confirmation-v4__actions">
+              <Link
+                href={accountLinked ? "/account" : "/track-order"}
+                className="st-confirmation-v4__button st-confirmation-v4__button--white"
+              >
+                <span>View my order</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
 
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-black/50">
-                      {fulfillmentMethod === "pickup"
-                        ? "Store pickup"
-                        : "Delivery"}
-                    </span>
+              <Link
+                href="/shop"
+                className="st-confirmation-v4__button st-confirmation-v4__button--mustard"
+              >
+                <span>Continue shopping</span>
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </div>
+          </section>
 
-                    <span className="text-right font-medium">
-                      {fulfillmentMethod === "pickup"
-                        ? "Free"
-                        : money(result.delivery_fee)}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-black/10 pt-4">
-                    <span className="font-semibold">Current total</span>
-
-                    <span className="text-2xl font-semibold">
-                      {money(result.total)}
-                    </span>
-                  </div>
-
-                  <div className="st-checkout-success-tax-note">
-                    <ShieldCheck />
-                    <span>Taxes are included in product prices.</span>
-                  </div>
-
-                  <div className="border border-black/10 bg-[#f7f7f5] p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                      What happens next?
-                    </p>
-
-                    <div className="mt-4 space-y-4">
-                      {[
-                        "Stereophonie reviews your order.",
-                        fulfillmentMethod === "pickup"
-                          ? "You are contacted when your order is ready to collect."
-                          : "You are contacted to confirm delivery.",
-                        fulfillmentMethod === "pickup"
-                          ? "Pay cash when collecting your order."
-                          : "Pay cash when your order is delivered.",
-                      ].map((step, index) => (
-                        <div key={step} className="flex gap-3">
-                          <span className="st-checkout-success-step-number">
-                            {index + 1}
-                          </span>
-
-                          <p className="text-xs leading-6 text-black/50">
-                            {step}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {accountLinked ? (
-                    <Link
-                      href="/account"
-                      className="st-checkout-success-action"
-                    >
-                      View my orders
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  ) : null}
-
-                  <Link href="/shop" className="st-checkout-success-action">
-                    Continue shopping
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </section>
-            </aside>
-          </div>
-        </section>
+        </div>
       </main>
     </>
   );

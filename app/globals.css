@@ -25179,3 +25179,247 @@ html body
 }
 
 /* === ST DELETE ACCOUNT FINAL ALIGNMENT V1 END === */
+
+/* ============================================================
+   ST_ACCOUNT_CHECKOUT_VISUAL_ALIGNMENT_V2
+
+   Account UI presentation only:
+   1. Center success-toast close button vertically.
+   2. Match checkout input focus styling.
+   3. Match checkout choice-button hover styling.
+   No authentication or checkout logic changes.
+   ============================================================ */
+
+/* 1. SUCCESS NOTIFICATIONS — VERTICALLY CENTER THE X */
+
+html body
+:is(
+  .st-account-signin-toast__card,
+  .st-account-signout-toast__card
+) > button.st-account-toast-close {
+  position: absolute !important;
+
+  top: 50% !important;
+  bottom: auto !important;
+  right: 12px !important;
+
+  width: 32px !important;
+  height: 32px !important;
+
+  margin-top: -16px !important;
+  margin-bottom: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+  :is(
+    .st-account-signin-toast__card,
+    .st-account-signout-toast__card
+  ) > button.st-account-toast-close:hover {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+
+/* ============================================================
+   ST_ACCOUNT_CHECKOUT_FOCUS_HOVER_V3
+
+   Exact checkout-inspired focus and selection visuals.
+   Account forms only. No changes to authentication logic.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   FIELD HOVER — SUBTLE MUSTARD OUTLINE, NO MOVEMENT
+   ------------------------------------------------------------ */
+
+@media (hover: hover) and (pointer: fine) {
+  html body main.st-auth-clean
+  .st-auth-clean-form
+  .st-auth-clean-field > input:not(:focus):hover,
+  html body main.st-auth-clean
+  .st-auth-clean-form
+  :is(.st-auth-clean-password, .st-auth-clean-phone)
+  :is(.st-auth-clean-password, .st-auth-clean-phone):hover:not(:focus-within) {
+    border-color: rgba(245, 179, 53, 0.55) !important;
+    background-color: #ffffff !important;
+
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      box-shadow 180ms ease !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   FIELD FOCUS — SAME WHITE SURFACE + MUSTARD RING AS CHECKOUT
+   ------------------------------------------------------------ */
+
+html body main.st-auth-clean
+.st-auth-clean-form
+.st-auth-clean-field
+> input:is(:focus, :focus-visible) {
+  border-color: #f5b335 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.16) !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.16) !important;
+}
+
+/* Password and telephone have composite field shells.
+   Only the outer shell receives the mustard focus ring. */
+
+html body main.st-auth-clean
+.st-auth-clean-form
+:is(
+  .st-auth-clean-password,
+  .st-auth-clean-phone
+):focus-within {
+  border-color: #f5b335 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.16) !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.16) !important;
+}
+
+/* Remove the inner ring without disabling Safari autofill. */
+
+html body main.st-auth-clean
+.st-auth-clean-form
+:is(
+  .st-auth-clean-password,
+  .st-auth-clean-phone
+)
+:is(input, select):is(:focus, :focus-visible) {
+  border-color: transparent !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-form
+.st-auth-clean-password input:focus {
+  background: transparent !important;
+}
+
+/* ------------------------------------------------------------
+   SIGN IN / CREATE ACCOUNT — CHECKOUT-STYLE BUTTONS
+   ------------------------------------------------------------ */
+
+html body main.st-auth-clean
+button.st-auth-clean-submit {
+  border: 1px solid rgba(197, 139, 34, 0.5) !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow:
+    0 3px 12px rgba(29, 29, 31, 0.025) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease,
+    opacity 200ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body main.st-auth-clean
+  button.st-auth-clean-submit:not(:disabled):hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+html body main.st-auth-clean
+button.st-auth-clean-submit:focus-visible {
+  outline: none !important;
+
+  border-color: #f5b335 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.16) !important;
+}
+
+/* Icons must also remain stationary on hover. */
+
+html body main.st-auth-clean
+button.st-auth-clean-submit > svg,
+html body main.st-auth-clean
+button.st-auth-clean-submit:hover > svg {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition: color 200ms ease !important;
+}
+
+html body main.st-auth-clean
+button.st-auth-clean-submit:disabled {
+  cursor: wait !important;
+  opacity: 0.65 !important;
+}
+
+/* === END ST_ACCOUNT_CHECKOUT_FOCUS_HOVER_V3 === */
+
+/* === END ST_ACCOUNT_CHECKOUT_VISUAL_ALIGNMENT_V2 === */

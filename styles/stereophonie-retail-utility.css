@@ -2311,10 +2311,6 @@
   gap: 22px;
 }
 
-.st-retail-wishlist .st-retail-card__visual {
-  height: clamp(270px, 24vw, 330px);
-  margin: 12px 12px 0;
-}
 
 .st-retail-assistance {
   gap: 24px;
@@ -7062,8 +7058,8 @@
     .st-retail-card__name {
     display: -webkit-box !important;
 
-    min-height: calc(2em * 1.13) !important;
-    max-height: calc(2em * 1.13) !important;
+    min-height: calc(2em * 1.35) !important;
+    max-height: none !important;
 
     overflow: hidden !important;
 
@@ -7071,7 +7067,7 @@
 
     font-weight: 650 !important;
 
-    line-height: 1.13 !important;
+    line-height: 1.35 !important;
 
     letter-spacing: -0.035em !important;
 
@@ -8928,13 +8924,53 @@ html
  * Do not let Wishlist invent its own card proportions anymore.
  */
 
-html
-  body
-  .st-retail-wishlist.st-product-grid-canonical
-  .st-product-card-canonical
-  .st-retail-card__visual {
-  min-height: unset !important;
+/* ============================================================
+   ST_WISHLIST_REAL_CARD_GEOMETRY_V3
+
+   Repair the actual nested Wishlist card geometry.
+   Reuse the existing StoreProductCard without enlargement.
+
+   Keep the card's content and remove action unchanged.
+   ============================================================ */
+
+html body main.st-retail-wishlist
+.st-retail-wishlist__grid.st-product-grid-canonical
+> .st-retail-wishlist-card
+> article.st-retail-card.st-product-card-canonical {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
 }
+
+html body main.st-retail-wishlist
+.st-retail-wishlist__grid.st-product-grid-canonical
+> .st-retail-wishlist-card
+> article.st-retail-card.st-product-card-canonical
+> .st-retail-card__visual {
+  box-sizing: border-box !important;
+
+  /* Same compact image-stage proportions as desktop Shop cards. */
+  height: 210px !important;
+  min-height: 210px !important;
+  max-height: 210px !important;
+
+  flex: 0 0 auto !important;
+}
+
+@media screen and (max-width: 767px) {
+  html body main.st-retail-wishlist
+.st-retail-wishlist__grid.st-product-grid-canonical
+> .st-retail-wishlist-card
+> article.st-retail-card.st-product-card-canonical
+  > .st-retail-card__visual {
+    /* Match the existing compact mobile Shop photo stage. */
+    height: 172px !important;
+    min-height: 172px !important;
+    max-height: 172px !important;
+  }
+}
+
+/* === END ST_WISHLIST_REAL_CARD_GEOMETRY_V3 === */
 
 /* ------------------------------------------------------------
    PRODUCT CARD ITSELF
@@ -9829,7 +9865,7 @@ html
    visible -> y 0
    exiting -> y -64
 
-   The header remains visually above the island.
+   The Island stays above storefront dialogs and backdrops.
    ========================================================== */
 
 .st-storefront-transition-layer {
@@ -9861,10 +9897,11 @@ html
   transition: none !important;
 
   /*
-   * V2 header is z-index 50.
-   * Island stays underneath it.
+   * The loading Island must remain above storefront
+   * headers, popup windows and modal backdrops.
+   * Pointer events remain disabled.
    */
-  z-index: 49 !important;
+  z-index: 2147483600 !important;
 }
 
 .st-storefront-transition-layer
@@ -9974,13 +10011,17 @@ html
   > .st-retail-card__preorder {
   position: absolute !important;
 
-  left: 50% !important;
-  right: auto !important;
+  /* ST_PRODUCT_ACTION_TRANSFORM_FREE_CENTER_V2 */
+  left: 0 !important;
+  right: 0 !important;
 
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+  width: max-content !important;
 
-  transform: translateX(-50%) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  transform: none !important;
+  translate: none !important;
 }
 
 /* === ST PREORDER REAL HORIZONTAL CENTER V4 END === */
@@ -10008,7 +10049,9 @@ html
     white-space: nowrap !important;
     word-break: keep-all !important;
 
-    transform: translate(-50%, -12px) !important;
+    transform: none !important;
+    translate: none !important;
+    margin-top: -12px !important;
   }
 
   html
@@ -10195,3 +10238,3141 @@ html
   scale: none !important;
   rotate: none !important;
 }
+
+/* ============================================================
+   ST_STOREFRONT_CONTENT_FIRST_DESIGN_V2
+
+   Seven customer-facing pages:
+   - Track Order
+   - Wishlist
+   - Delivery
+   - About Stereophonie
+   - Returns / Privacy / Terms
+
+   No decorative introduction banners.
+
+   Existing useful sections begin close to the header.
+   Product cards, checkout, header and admin remain untouched.
+   ============================================================ */
+
+html body main.st-retail-page.st-retail-compact-v1 {
+  padding-top: clamp(20px, 2.4vw, 36px) !important;
+  padding-bottom: clamp(48px, 5vw, 76px) !important;
+}
+
+/* CONTENT STARTS IMMEDIATELY */
+
+html body main.st-retail-compact-v1.st-retail-track
+> .st-retail-track__lookup,
+html body main.st-retail-compact-v1.st-retail-wishlist
+> .st-retail-wishlist__library,
+html body main.st-retail-compact-v1.st-delivery-page
+> .st-delivery-page__facts,
+html body main.st-retail-compact-v1.st-about-page
+> .st-about-page__story,
+html body main.st-retail-compact-v1.st-support-page
+> .st-support-page__layout {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Compact, consistent page titles inside useful content */
+
+html body main.st-retail-compact-v1
+.st-retail-track__form-card h1,
+html body main.st-retail-compact-v1
+.st-retail-wishlist__library h1,
+html body main.st-retail-compact-v1
+.st-delivery-page__facts h1,
+html body main.st-retail-compact-v1
+.st-about-page__story h1 {
+  margin: 6px 0 0 !important;
+  font-size: clamp(29px, 3vw, 42px) !important;
+  line-height: 1.12 !important;
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  color: #1d1d1f;
+}
+
+/* Stop oversized secondary section headings */
+
+html body main.st-retail-compact-v1
+.st-retail-section__heading h2,
+html body main.st-retail-compact-v1
+.st-delivery-page__process-copy h2,
+html body main.st-retail-compact-v1
+.st-about-page__categories h2 {
+  font-size: clamp(24px, 2.5vw, 34px) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.045em;
+}
+
+/* TRACK ORDER */
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__lookup {
+  align-items: start;
+  gap: 18px;
+  padding-bottom: 28px !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card,
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__help-card {
+  padding: clamp(20px, 2.4vw, 30px) !important;
+  border-radius: 20px !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card .st-retail-section__heading {
+  align-items: center !important;
+  gap: 16px;
+  margin-bottom: 23px !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card
+.st-retail-section__heading > svg {
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__help-card h2 {
+  font-size: clamp(23px, 2.25vw, 30px) !important;
+  line-height: 1.15 !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__help-card li {
+  align-items: center !important;
+}
+
+/* WISHLIST */
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist__library {
+  padding-bottom: 28px !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist__library .st-retail-section__heading {
+  align-items: center !important;
+  margin-bottom: 22px !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist-card__remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* DELIVERY */
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__facts {
+  padding-bottom: clamp(26px, 3vw, 44px) !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__facts .st-retail-section__heading {
+  margin-bottom: 22px !important;
+}
+
+/* Keep the fact icon directly beside its label,
+   with both vertically aligned. */
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article {
+  display: grid !important;
+  grid-template-columns: 26px minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 8px;
+  align-content: start;
+  min-height: 0 !important;
+  padding: 20px !important;
+  border-radius: 18px !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article > svg {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  width: 22px;
+  height: 22px;
+  margin: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article > p {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  margin: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article > h3 {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0 !important;
+  font-size: clamp(18px, 1.7vw, 22px) !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article > span {
+  grid-column: 2;
+  grid-row: 3;
+  margin: 0 !important;
+  line-height: 1.55;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__process {
+  gap: 26px !important;
+  margin-bottom: 28px !important;
+  padding: clamp(20px, 2.8vw, 34px) !important;
+  border: 1px solid #e8e8eb;
+  border-radius: 20px !important;
+  background: #fafafa;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__steps article,
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid article {
+  align-items: center !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment {
+  padding-block: 24px 32px !important;
+}
+
+/* ABOUT STEREOPHONIE */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story {
+  gap: clamp(20px, 3vw, 44px) !important;
+  padding-bottom: 32px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story > div:last-child {
+  padding-top: 0 !important;
+  border-top: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__values {
+  padding-block: 22px 34px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-grid article {
+  min-height: 0 !important;
+  padding: 20px !important;
+  border-radius: 18px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-grid article > svg {
+  width: 24px;
+  height: 24px;
+  margin-top: 20px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-grid h3 {
+  margin-top: 13px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__categories {
+  gap: 28px !important;
+  margin-bottom: 34px !important;
+  padding: clamp(20px, 2.8vw, 34px) !important;
+  border-radius: 20px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__category-list a {
+  align-items: center !important;
+}
+
+/* POLICY PAGES */
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__layout {
+  gap: 20px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__document-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 22px;
+  margin-bottom: 10px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid #e9e9eb;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__document-head h1 {
+  margin: 0;
+  color: #1d1d1f;
+  font-size: clamp(28px, 3vw, 38px) !important;
+  font-weight: 650;
+  letter-spacing: -0.05em;
+  line-height: 1.15;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__document-head > span {
+  color: #77777d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__navigation {
+  align-self: start;
+  padding: 18px !important;
+  border-radius: 18px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__navigation nav a {
+  align-items: center !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__sections {
+  gap: 12px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__sections > section {
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+  gap: 14px !important;
+  padding: clamp(18px, 2.2vw, 26px) !important;
+  border-radius: 18px !important;
+  scroll-margin-top: 100px;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__number {
+  display: grid;
+  width: 32px !important;
+  height: 32px !important;
+  place-items: center;
+  margin: 0;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__sections h2 {
+  margin-top: 3px !important;
+  font-size: clamp(21px, 2vw, 27px) !important;
+  line-height: 1.2;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__content {
+  margin-top: 12px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__related {
+  padding: clamp(20px, 2.5vw, 28px) !important;
+  border-radius: 20px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__related .st-retail-section__heading {
+  margin-bottom: 16px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__related .st-retail-section__heading h2 {
+  font-size: clamp(23px, 2.3vw, 31px) !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__related > div:last-child > a {
+  align-items: center !important;
+  min-height: 68px !important;
+  padding: 13px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__related > div:last-child > a > svg {
+  align-self: center;
+}
+
+/* MOBILE / TABLET */
+
+@media (max-width: 760px) {
+  html body main.st-retail-page.st-retail-compact-v1 {
+    padding-top: 18px !important;
+  }
+
+  html body main.st-retail-compact-v1.st-support-page
+  .st-support-page__sections > section {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    gap: 12px !important;
+    padding: 18px 15px !important;
+  }
+
+  html body main.st-retail-compact-v1.st-support-page
+  .st-support-page__number {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  html body main.st-retail-compact-v1
+  .st-retail-section__heading {
+    gap: 14px;
+  }
+}
+
+
+/* ============================================================
+   ST_STOREFRONT_REFINEMENT_V3
+
+   Refine the existing content-first storefront pages.
+   Keep these rules scoped to the affected customer pages.
+   ============================================================ */
+
+/* ABOUT — editorial introduction */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story {
+  align-items: center;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  column-gap: clamp(28px, 4vw, 64px) !important;
+  row-gap: 18px;
+  padding-block: 28px 36px !important;
+  border-bottom: 1px solid #e9e9eb;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story h1 {
+  margin: 10px 0 0 !important;
+  font-size: clamp(36px, 4vw, 56px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.065em;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__established {
+  display: block;
+  margin: 10px 0 0;
+  color: #a86f0b;
+  font-size: clamp(14px, 1.2vw, 17px);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story > div:last-child {
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story > div:last-child p {
+  max-width: 700px;
+  font-size: clamp(14px, 1.12vw, 16px) !important;
+  line-height: 1.7 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story > div:last-child p + p {
+  margin-top: 14px !important;
+}
+
+/* ABOUT — icon and title on the same line */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-grid article {
+  min-height: 0 !important;
+  padding: 21px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-title > svg {
+  display: block;
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px;
+  margin: 0 !important;
+  color: #ad750e;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-title > h3 {
+  margin: 0 !important;
+  font-size: 17px !important;
+  line-height: 1.3;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__value-grid article > p {
+  margin-top: 11px !important;
+  line-height: 1.6;
+}
+
+/* LEGAL — help icon level with heading */
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__help {
+  padding: 16px !important;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__help-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__help-heading > svg {
+  display: block;
+  width: 17px !important;
+  height: 17px !important;
+  flex: 0 0 17px;
+  margin: 0 !important;
+  color: #ad750e;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__help-heading > h2 {
+  margin: 0 !important;
+  font-size: 17px !important;
+  line-height: 1.3;
+}
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__help > p {
+  margin: 12px 0 !important;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* WISHLIST — restrained destructive action */
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist-card__remove {
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px;
+
+  background: #fff;
+  border-color: #e5e5e8;
+  color: #6e6e73;
+
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist-card__remove > svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body main.st-retail-compact-v1.st-retail-wishlist
+  .st-retail-wishlist-card__remove:hover {
+    background: #fff3f3 !important;
+    border-color: #e7a1a1 !important;
+    color: #b42323 !important;
+    box-shadow: 0 3px 12px rgba(180, 35, 35, 0.065);
+    transform: none !important;
+  }
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist-card__remove:focus-visible {
+  outline: 2px solid #b42323;
+  outline-offset: 3px;
+}
+
+/* DELIVERY — smaller icons aligned with the label */
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article {
+  grid-template-columns: 17px minmax(0, 1fr) !important;
+  gap: 9px 11px !important;
+  padding: 19px !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article > svg {
+  width: 16px !important;
+  height: 16px !important;
+  align-self: center;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article > p {
+  align-self: center;
+  font-size: 11px !important;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__fact-grid article > h3 {
+  font-size: clamp(17px, 1.6vw, 21px) !important;
+  line-height: 1.3;
+}
+
+/* DELIVERY — clean payment options */
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid article {
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr) 24px;
+  align-items: center !important;
+  column-gap: 12px;
+  min-height: 105px !important;
+  padding: 18px 20px !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid article.is-active {
+  background: #fffaf0;
+  border-color: rgba(245, 179, 53, 0.72);
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid article.is-coming-soon {
+  background: #fafafa;
+  border-color: #e8e8eb;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid article > svg:first-child {
+  width: 22px !important;
+  height: 22px !important;
+  align-self: center;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid article > svg:last-child:not(:first-child) {
+  position: static !important;
+  grid-column: 3;
+  width: 23px !important;
+  height: 23px !important;
+  padding: 5px !important;
+  justify-self: end;
+  align-self: center;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid article > div {
+  min-width: 0;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid span {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid h3 {
+  margin: 5px 0 0 !important;
+  font-size: 17px !important;
+  line-height: 1.3;
+}
+
+html body main.st-retail-compact-v1.st-delivery-page
+.st-delivery-page__payment-grid p {
+  margin: 5px 0 0 !important;
+  font-size: 12px !important;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  html body main.st-retail-compact-v1.st-about-page
+  .st-about-page__story {
+    grid-template-columns: 1fr !important;
+    padding-block: 16px 25px !important;
+  }
+
+  html body main.st-retail-compact-v1.st-delivery-page
+  .st-delivery-page__payment-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* === END ST_STOREFRONT_REFINEMENT_V3 === */
+
+
+/* ============================================================
+   ST_ABOUT_WISHLIST_FINISH_V4
+
+   Scoped improvements:
+   - Smaller About and store-location titles
+   - Cleaner store details and hours
+   - Centered holiday notice
+   - Checkout-inspired Get Directions action
+   - Consistent red Wishlist delete controls
+
+   No changes to other storefront or admin pages.
+   ============================================================ */
+
+/* ABOUT — smaller top heading */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__story h1 {
+  font-size: clamp(30px, 3.05vw, 42px) !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.055em !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-page__established {
+  margin-top: 8px !important;
+  font-size: 14px !important;
+}
+
+/* ABOUT — less oversized Find Us heading */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__inner {
+  padding-top: clamp(40px, 5vw, 68px) !important;
+  padding-bottom: clamp(40px, 5vw, 68px) !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__heading {
+  align-items: center !important;
+  gap: 22px 36px !important;
+  margin-bottom: 28px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__heading h2 {
+  margin-top: 8px !important;
+  font-size: clamp(29px, 3.1vw, 41px) !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.05em !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__intro {
+  max-width: 450px;
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+
+/* ABOUT — store details */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__details {
+  padding: clamp(23px, 2.6vw, 38px) !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location {
+  align-items: center !important;
+  gap: 13px !important;
+  padding-bottom: 23px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__detail-icon {
+  width: 40px !important;
+  height: 40px !important;
+  flex: 0 0 40px !important;
+  border: 1px solid #f0dfbf !important;
+  border-radius: 12px !important;
+  background: #fffaf0 !important;
+  color: #a46d08 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__detail-icon svg {
+  width: 19px !important;
+  height: 19px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location h3 {
+  margin-top: 5px !important;
+  font-size: 19px !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.025em;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location p:last-child {
+  margin-top: 5px !important;
+  color: #717177;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+}
+
+/* ABOUT — clock beside Opening Hours, never right-aligned */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours {
+  padding: 23px 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 13px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head > svg {
+  width: 20px !important;
+  height: 20px !important;
+  flex: 0 0 20px !important;
+  color: #a46d08 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours h3 {
+  margin-top: 5px !important;
+  font-size: 19px !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.025em;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__schedule {
+  margin-top: 19px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__schedule-row {
+  min-height: 49px !important;
+  gap: 12px !important;
+  font-size: 12px !important;
+}
+
+/* ABOUT — vertically center the holiday notice icon */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__notice {
+  align-items: center !important;
+  gap: 11px !important;
+  padding: 13px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__notice > svg {
+  flex: 0 0 16px !important;
+  align-self: center !important;
+  margin-top: 0 !important;
+}
+
+/* ABOUT — checkout-style Get Directions action */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__directions {
+  min-height: 54px !important;
+  padding-inline: 19px !important;
+  border: 1px solid #ecc478 !important;
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  color: #242424 !important;
+  box-shadow: 0 3px 12px rgba(29, 29, 31, 0.025);
+
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__directions > svg {
+  width: 17px !important;
+  height: 17px !important;
+  color: #a46d08 !important;
+  transform: none !important;
+  transition: color 220ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body main.st-retail-compact-v1.st-about-page
+  .st-about-visit__directions:hover {
+    /* ST_ABOUT_DIRECTIONS_CHECKOUT_HOVER_MATCH_V1 */
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+
+    border-color: rgba(197, 139, 34, 0.8) !important;
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body main.st-retail-compact-v1.st-about-page
+  .st-about-visit__directions:hover::before {
+    opacity: 0 !important;
+  }
+
+  html body main.st-retail-compact-v1.st-about-page
+  .st-about-visit__directions:hover > svg {
+    transform: none !important;
+  }
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__directions:focus-visible {
+  outline: 2px solid #e7a62c;
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   WISHLIST — shared destructive action presentation
+
+   Clear wishlist: trash on left.
+   Remove from wishlist: trash on right.
+
+   Existing geometry, padding, size, and functionality retained.
+   ============================================================ */
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-button--danger,
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist-card__remove {
+  border-color: #df9696 !important;
+  background: #ffffff !important;
+  color: #b4232e !important;
+  box-shadow: none !important;
+  transform: none !important;
+
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-button--danger > svg {
+  width: 15px;
+  height: 15px;
+  order: 0;
+  transform: none !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist-card__remove > svg {
+  width: 15px !important;
+  height: 15px !important;
+  order: 1;
+  transform: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body main.st-retail-compact-v1.st-retail-wishlist
+  .st-retail-button--danger:hover,
+  html body main.st-retail-compact-v1.st-retail-wishlist
+  .st-retail-wishlist-card__remove:hover {
+    border-color: #d84b56 !important;
+    background: #fff2f3 !important;
+    color: #a81724 !important;
+    transform: none !important;
+
+    box-shadow:
+      0 0 0 3px rgba(216, 75, 86, 0.08),
+      0 7px 20px rgba(174, 32, 45, 0.09) !important;
+  }
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-button--danger:focus-visible,
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-wishlist-card__remove:focus-visible {
+  outline: 2px solid #c93644 !important;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body main.st-retail-compact-v1.st-retail-wishlist
+  .st-retail-button--danger,
+  html body main.st-retail-compact-v1.st-retail-wishlist
+  .st-retail-wishlist-card__remove,
+  html body main.st-retail-compact-v1.st-about-page
+  .st-about-visit__directions {
+    transition: none !important;
+  }
+}
+
+/* === END ST_ABOUT_WISHLIST_FINISH_V4 === */
+
+
+/* ============================================================
+   ST_WISHLIST_ABOUT_TRACKING_POLISH_V5
+
+   Small interaction and alignment corrections only.
+   No changes to shared product cards, admin or checkout.
+   ============================================================ */
+
+/* WISHLIST — trash icon after Clear wishlist */
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-section__heading
+button.st-retail-button--danger {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-wishlist
+.st-retail-section__heading
+button.st-retail-button--danger > svg {
+  order: 1 !important;
+  transform: none !important;
+}
+
+/* ABOUT — small label icons, not large decorative boxes */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location,
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location > div,
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__detail-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
+  flex: 0 0 12px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #a46d08 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__detail-icon > svg,
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head > svg {
+  display: block !important;
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
+  flex: 0 0 12px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  align-self: flex-start !important;
+  color: #a46d08 !important;
+  stroke-width: 2 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__label {
+  font-size: 10px !important;
+  line-height: 12px !important;
+  margin: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location h3,
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head h3 {
+  margin-top: 7px !important;
+}
+
+/* TRACK ORDER — error icon centered against entire message */
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__error {
+  align-items: center !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__error > svg {
+  align-self: center !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+/* TRACK ORDER — keep one outer mustard focus ring.
+   Remove the inner Safari/input focus rectangle. */
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card
+.st-retail-field {
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card
+.st-retail-field:focus-within {
+  border-color: #f5b335 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 4px rgba(245, 179, 53, 0.12) !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card
+.st-retail-field input,
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card
+.st-retail-field input:focus,
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__form-card
+.st-retail-field input:focus-visible {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+/* TRACK ORDER — loader after text, with its own rotation.
+   Do not rely on generic icon transforms. */
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 11px !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit svg.st-retail-track__loading-spinner {
+  display: block !important;
+  width: 17px !important;
+  height: 17px !important;
+  flex: 0 0 17px !important;
+
+  transform-origin: center center !important;
+  animation: stTrackOrderLoadingSpinV5 780ms linear infinite !important;
+}
+
+@keyframes stTrackOrderLoadingSpinV5 {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body main.st-retail-compact-v1.st-retail-track
+  .st-retail-track__submit svg.st-retail-track__loading-spinner {
+    animation: none !important;
+  }
+}
+
+/* === END ST_WISHLIST_ABOUT_TRACKING_POLISH_V5 === */
+
+/* === END ST_STOREFRONT_CONTENT_FIRST_DESIGN_V2 === */
+
+/* ============================================================
+   ST_STOREFRONT_FINAL_DETAIL_POLISH_V6
+
+   Track Order, shared Policy pages, About Stereophonie.
+   Existing checkout, admin and product cards untouched.
+   ============================================================ */
+
+/* TRACK ORDER — persistent spinner */
+/* The spinner rotates while hidden, avoiding a fresh
+   animation start when the loading state becomes visible. */
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit-icon {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit-icon > svg {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit-icon
+> svg.st-retail-track__submit-arrow {
+  opacity: 1 !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit-icon.is-loading
+> svg.st-retail-track__submit-arrow {
+  opacity: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit-icon
+> svg.st-retail-track__loading-spinner {
+  opacity: 0 !important;
+  transform-origin: 50% 50% !important;
+  animation: stTrackPersistentSpinV6 680ms linear infinite !important;
+  animation-delay: -340ms !important;
+  animation-play-state: running !important;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+html body main.st-retail-compact-v1.st-retail-track
+.st-retail-track__submit-icon.is-loading
+> svg.st-retail-track__loading-spinner {
+  opacity: 1 !important;
+}
+
+@keyframes stTrackPersistentSpinV6 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* POLICY PAGES — number badges aligned with heading */
+
+html body main.st-retail-compact-v1.st-support-page
+.st-support-page__sections
+> section
+> .st-support-page__number {
+  /* Center against the entire card's content height,
+     including its heading and all description paragraphs. */
+  align-self: center !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ABOUT — icon with label on first line,
+   larger text starts at the left edge below it. */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location {
+  position: relative !important;
+  display: block !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location > .st-about-visit__detail-icon {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location > div {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location
+.st-about-visit__label {
+  padding-left: 21px !important;
+  margin: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location h3,
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__location > div > p:last-child {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* ABOUT — opening hours uses the same alignment */
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head {
+  position: relative !important;
+  display: block !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head > svg {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head > div {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head
+.st-about-visit__label {
+  padding-left: 21px !important;
+  margin: 0 !important;
+}
+
+html body main.st-retail-compact-v1.st-about-page
+.st-about-visit__hours-head h3 {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Reduced-motion accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  html body main.st-retail-compact-v1.st-retail-track
+  .st-retail-track__submit-icon
+  > svg.st-retail-track__loading-spinner {
+    animation: none !important;
+    will-change: auto !important;
+  }
+}
+
+/* === END ST_STOREFRONT_FINAL_DETAIL_POLISH_V6 === */
+
+/* ============================================================
+   ST_DESKTOP_TITLE_AND_WISHLIST_CONSISTENCY_V2
+
+   Shop / Category:
+   Allow both product-title lines their full rendering height.
+
+   Wishlist:
+   Use the existing StoreProductCard with standard proportions.
+   No wishlist-only enlarged photo stage.
+
+   No changes to admin, checkout or product-card actions.
+   ============================================================ */
+
+@media screen and (min-width: 768px) {
+  /*
+   * Desktop Shop and Category product titles.
+   *
+   * Earlier changes targeted mobile-only CSS.
+   * This rule explicitly targets desktop cards.
+   */
+  html body main.st3-shop-v4
+  .st3-shop-v4__grid.st-product-grid-canonical
+  .st-product-card-canonical
+  .st-retail-card__name {
+    display: -webkit-box !important;
+
+    box-sizing: content-box !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+
+    flex-shrink: 0 !important;
+
+    line-height: 1.3 !important;
+    padding-bottom: 6px !important;
+
+    overflow: hidden !important;
+
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+  }
+
+  /*
+   * Match the familiar desktop Shop card column footprint,
+   * including when only one item is saved.
+   */
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    justify-content: start !important;
+    align-items: flex-start !important;
+    gap: 18px !important;
+  }
+
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical
+  > .st-retail-wishlist-card {
+    box-sizing: border-box !important;
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+/*
+ * The separate Remove action can change colors on hover,
+ * but cannot move.
+ */
+html body main.st-retail-wishlist
+.st-retail-wishlist-card__remove,
+html body main.st-retail-wishlist
+.st-retail-wishlist-card__remove:hover,
+html body main.st-retail-wishlist
+.st-retail-wishlist-card__remove:focus-visible {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* === END ST_DESKTOP_TITLE_AND_WISHLIST_CONSISTENCY_V2 === */
+
+/* ============================================================
+   ST_WISHLIST_CENTERED_LAYOUT_V4
+
+   Desktop: center all rows of canonical Wishlist cards.
+   Mobile: center only Wishlist heading and count.
+   ============================================================ */
+
+
+/* ============================================================
+   ST_WISHLIST_ROW_ALIGNED_GRID_V5
+
+   Desktop/tablet:
+   Heading and cards share one centered layout width.
+   Grid rows fill left-to-right, like the Shop page.
+
+   Mobile layout remains unchanged.
+   ============================================================ */
+
+@media screen and (min-width: 768px) {
+  html body main.st-retail-wishlist
+  section.st-retail-wishlist__library {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 1054px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* Medium tablets: three columns */
+@media screen and (min-width: 860px) and (max-width: 999px) {
+  html body main.st-retail-wishlist
+  section.st-retail-wishlist__library {
+    max-width: 786px !important;
+  }
+
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Smaller tablets: two columns */
+@media screen and (min-width: 768px) and (max-width: 859px) {
+  html body main.st-retail-wishlist
+  section.st-retail-wishlist__library {
+    max-width: 518px !important;
+  }
+
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__grid.st3-shop-v4__grid.st-product-grid-canonical {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* === END ST_WISHLIST_ROW_ALIGNED_GRID_V5 === */
+
+@media screen and (max-width: 767px) {
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__library
+  .st-retail-section__heading > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-inline: auto !important;
+    text-align: center !important;
+  }
+
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__library
+  .st-retail-section__heading > div > .st-retail-eyebrow,
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__library
+  .st-retail-section__heading > div > h1,
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__library
+  .st-retail-section__heading > div > h2,
+  html body main.st-retail-wishlist
+  .st-retail-wishlist__library
+  .st-retail-section__heading > div > p {
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* === END ST_WISHLIST_CENTERED_LAYOUT_V4 === */
+
+/* ============================================================
+   ST_STOREFRONT_POPUP_CLOSE_STANDARD_V1
+
+   Storefront popup close controls:
+   - original dimensions and shape remain unchanged
+   - checkout-style mustard hover treatment
+   - no hover movement
+   - stock modal uses transform-free vertical centering
+
+   Backdrop buttons and custom fullscreen viewer controls
+   are deliberately excluded.
+   ============================================================ */
+
+/* Stock notification header label aligns with body content. */
+
+html body
+.st-purchase-v6-modal__window > header {
+  padding-left: 28px !important;
+}
+
+/*
+ * Stock popup X:
+ * Replace translateY(-50%) with actual absolute centering.
+ * Same position in default, hover, focus and active states.
+ */
+
+html body
+.st-purchase-v6-modal__window
+> header
+> button.st-stock-notification-modal__close,
+html body
+.st-purchase-v6-modal__window
+> header
+> button.st-stock-notification-modal__close:hover,
+html body
+.st-purchase-v6-modal__window
+> header
+> button.st-stock-notification-modal__close:focus,
+html body
+.st-purchase-v6-modal__window
+> header
+> button.st-stock-notification-modal__close:focus-visible,
+html body
+.st-purchase-v6-modal__window
+> header
+> button.st-stock-notification-modal__close:active {
+  position: absolute !important;
+
+  top: 0 !important;
+  bottom: 0 !important;
+  right: 20px !important;
+
+  width: 36px !important;
+  height: 36px !important;
+
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition-property:
+    background-color,
+    border-color,
+    color,
+    box-shadow !important;
+}
+
+/*
+ * Standard checkout-inspired hover for ordinary storefront
+ * popup close controls, without replacing their base design.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+  button:is(
+    .st-storefront-popup-close,
+    .st-retail-qv__close,
+    .st-checkout-address-editor-close,
+    .st-retail-cart__close,
+    [data-st-welcome-close="true"]
+  ):hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+  }
+}
+
+/* Matching keyboard focus treatment. */
+
+html body
+button:is(
+  .st-storefront-popup-close,
+  .st-retail-qv__close,
+  .st-checkout-address-editor-close,
+  .st-retail-cart__close,
+  [data-st-welcome-close="true"]
+):focus-visible {
+  outline: none !important;
+
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+}
+
+/*
+ * The audited stock and account close buttons never move.
+ * Other popup controls keep their existing positioning logic.
+ */
+
+html body button.st-storefront-popup-close,
+html body button.st-storefront-popup-close:hover,
+html body button.st-storefront-popup-close:focus-visible,
+html body button.st-storefront-popup-close:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* Stock email input: same focus treatment as checkout. */
+
+html body
+.st-purchase-v6-modal__window
+.st-purchase-v6-modal__body
+> input[type="email"]:is(:focus, :focus-visible) {
+  border-color: #f5b335 !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  outline: none !important;
+  outline-width: 0 !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.16) !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.16) !important;
+}
+
+/* === END ST_STOREFRONT_POPUP_CLOSE_STANDARD_V1 === */
+
+/* ============================================================
+   ST_SPINNER_SECURITY_HEADER_MOTION_V1
+
+   1. Dedicated Pre-order loading rotation.
+   2. Preserve shared storefront popup-close treatment.
+   3. Match desktop Search/Cart sheet motion to Category.
+   ============================================================ */
+
+/*
+ * The original spinner animates "transform", which can
+ * conflict with existing high-specificity button/icon
+ * transform rules.
+ *
+ * Animate the independent CSS "rotate" property instead.
+ * This remains animated even when another rule fixes
+ * transform:none on the icon or its parent button.
+ */
+
+@keyframes stPreorderIndependentRotateV1 {
+  from {
+    rotate: 0deg;
+  }
+
+  to {
+    rotate: 360deg;
+  }
+}
+
+html body
+.st-retail-card
+button.st-retail-card__preorder
+svg.st-preorder-loading-spinner,
+
+html body
+.st-product-v5
+button.st-purchase-v6__notify
+svg.st-preorder-loading-spinner,
+
+html body
+.st-purchase-v6-modal
+.st-purchase-v6-modal__body
+> button
+svg.st-preorder-loading-spinner {
+  display: inline-block !important;
+
+  flex-shrink: 0 !important;
+
+  transform: none !important;
+  transform-origin: center center !important;
+
+  animation:
+    stPreorderIndependentRotateV1
+    720ms linear infinite !important;
+
+  animation-play-state: running !important;
+
+  will-change: rotate;
+}
+
+/*
+ * Match the physical desktop Search and Cart header sheet
+ * to the established Category panel unfolding behavior.
+ *
+ * Same clip-path motion:
+ *   Open: 900ms
+ *   Close: 700ms
+ *
+ * The header JS separately keeps the closing sheet mounted
+ * for 740ms, as it already does for Category panels.
+ *
+ * Content, panel dimensions, cart logic and search logic
+ * are deliberately unchanged.
+ */
+
+@media screen and (min-width: 901px) {
+  html body
+  .st3-header
+  .st3-mega.st3-mega--utility:is(
+    .st3-mega--search,
+    .st3-mega--cart
+  ) {
+    transform: none !important;
+    opacity: 1 !important;
+
+    clip-path: inset(0 0 100% 0) !important;
+
+    will-change: clip-path;
+  }
+
+  html body
+  .st3-header
+  .st3-mega.st3-mega--utility:is(
+    .st3-mega--search,
+    .st3-mega--cart
+  ).st3-mega--open {
+    clip-path: inset(0 0 0 0) !important;
+
+    transform: none !important;
+    opacity: 1 !important;
+
+    visibility: visible !important;
+    pointer-events: auto !important;
+
+    transition:
+      clip-path 900ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0ms linear 0ms !important;
+  }
+
+  html body
+  .st3-header
+  .st3-mega.st3-mega--utility:is(
+    .st3-mega--search,
+    .st3-mega--cart
+  ).st3-mega--closing {
+    clip-path: inset(0 0 100% 0) !important;
+
+    transform: none !important;
+    opacity: 1 !important;
+
+    visibility: visible !important;
+    pointer-events: none !important;
+
+    transition:
+      clip-path 700ms cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0ms linear 700ms !important;
+  }
+
+  html body
+  .st3-header
+  .st3-mega.st3-mega--utility:is(
+    .st3-mega--search,
+    .st3-mega--cart
+  ).st3-mega--closed {
+    clip-path: inset(0 0 100% 0) !important;
+
+    transform: none !important;
+    opacity: 1 !important;
+
+    visibility: hidden !important;
+    pointer-events: none !important;
+
+    transition: none !important;
+  }
+
+  /*
+   * Avoid competing Search-only content translations
+   * while the shared sheet unfolds.
+   */
+  html body
+  .st3-header
+  .st3-mega.st3-mega--utility
+  .st3-mega__inner--utility {
+    transform: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* === END ST_SPINNER_SECURITY_HEADER_MOTION_V1 === */
+
+/* ============================================================
+   ST_SEARCH_HISTORY_RED_ACTIONS_V1
+
+   Search history only:
+   - Clear history matches the red Wishlist action language
+   - trash icon remains to the right of the text
+   - individual remove controls display a bare X
+   - neither buttons nor history rows move on hover
+
+   Search behavior and header-panel motion are untouched.
+   ============================================================ */
+
+/* Red-outline Clear history button */
+
+html body .st3-header .st3-mega--search
+button.st3-utility-search__history-clear {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 13px !important;
+
+  border: 1px solid rgba(202, 43, 54, 0.48) !important;
+  border-radius: 999px !important;
+
+  background: #ffffff !important;
+  background-image: none !important;
+  color: #c52b36 !important;
+
+  box-shadow: none !important;
+
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html body .st3-header .st3-mega--search
+button.st3-utility-search__history-clear > svg {
+  width: 13px !important;
+  height: 13px !important;
+  flex: 0 0 13px !important;
+  stroke-width: 1.8 !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-header .st3-mega--search
+  button.st3-utility-search__history-clear:hover {
+    border-color: #cf303b !important;
+    background: #fff1f2 !important;
+    color: #ba2330 !important;
+
+    box-shadow:
+      0 0 0 3px rgba(207, 48, 59, 0.08),
+      0 5px 15px rgba(180, 33, 45, 0.07) !important;
+  }
+}
+
+/* Individual search history removal: bare X, no circle */
+
+html body .st3-header .st3-mega--search
+button.st3-utility-search__history-remove {
+  display: grid !important;
+  place-items: center !important;
+
+  width: 31px !important;
+  min-width: 31px !important;
+  height: 31px !important;
+  min-height: 31px !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  background: transparent !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+  color: #88888d !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+
+  transition: color 160ms ease !important;
+}
+
+html body .st3-header .st3-mega--search
+button.st3-utility-search__history-remove > svg {
+  display: block !important;
+  width: 15px !important;
+  height: 15px !important;
+  stroke-width: 1.9 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st3-header .st3-mega--search
+  button.st3-utility-search__history-remove:hover {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+
+    color: #c62835 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+  }
+}
+
+/* Preserve a visible keyboard focus indicator. */
+
+html body .st3-header .st3-mega--search
+button:is(
+  .st3-utility-search__history-clear,
+  .st3-utility-search__history-remove
+):focus-visible {
+  outline: 2px solid rgba(202, 43, 54, 0.65) !important;
+  outline-offset: 3px !important;
+}
+
+/* No press-down or hover shift on either action. */
+
+html body .st3-header .st3-mega--search
+button:is(
+  .st3-utility-search__history-clear,
+  .st3-utility-search__history-remove
+):is(:hover, :active, :focus-visible) {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* Keep the parent search-history row stationary too. */
+
+html body .st3-header .st3-mega--search
+.st3-utility-search__history-item:hover {
+  transform: none !important;
+  translate: none !important;
+}
+
+/* === END ST_SEARCH_HISTORY_RED_ACTIONS_V1 === */
+
+/* ============================================================
+   ST_HOME_RESPONSIVE_INFINITE_PRODUCT_LOOP_V1
+
+   Applies only while a homepage shelf has hidden products.
+   Existing product cards, dimensions and inactive shelves
+   continue to use their original storefront styling.
+   ============================================================ */
+
+html body
+.st3-home-shop-products
+.st3-home-product-shelf.st-home-product-shelf--autoloop {
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+  overscroll-behavior-x: contain;
+}
+
+/* === END ST_HOME_RESPONSIVE_INFINITE_PRODUCT_LOOP_V1 === */
+
+/* ============================================================
+   ST_HOME_CAROUSEL_RESUME_QUICKVIEW_V3
+
+   Quick View close button:
+   same stationary mustard-hover treatment as standard
+   storefront popup X buttons.
+
+   Preserve its existing absolute top/right positioning,
+   popup animation and click action.
+   ============================================================ */
+
+html body
+.st-retail-qv
+.st-retail-qv__window
+> button.st-retail-qv__close.st-storefront-popup-close {
+  display: grid !important;
+  place-items: center !important;
+
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+
+  padding: 0 !important;
+
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 11px !important;
+
+  background: #f7f7f8 !important;
+  background-color: #f7f7f8 !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html body
+.st-retail-qv
+.st-retail-qv__window
+> button.st-retail-qv__close.st-storefront-popup-close
+> svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition: color 180ms ease !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body
+  .st-retail-qv
+  .st-retail-qv__window
+  > button.st-retail-qv__close.st-storefront-popup-close:hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+html body
+.st-retail-qv
+.st-retail-qv__window
+> button.st-retail-qv__close.st-storefront-popup-close:focus-visible {
+  outline: none !important;
+
+  border-color: rgba(197, 139, 34, 0.8) !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.11),
+    0 10px 30px rgba(196, 135, 27, 0.13) !important;
+}
+
+/* === END ST_HOME_CAROUSEL_RESUME_QUICKVIEW_V3 === */
+
+/* ============================================================
+   ST_SHOP_LOAD_MORE_ANIMATION_V1
+
+   Shared Shop / Category Load More action.
+
+   Keep the existing button geometry, label,
+   click handler, hover design and pagination behavior.
+
+   Replace the former bottom progress sweep
+   with a soft in-button shimmer wave, while
+   retaining the spinning mustard loader.
+   ============================================================ */
+
+@keyframes stShopLoadMoreSpinV1 {
+  from {
+    rotate: 0deg;
+  }
+
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes stShopLoadMoreShimmerV1 {
+  0% {
+    transform: translateX(-70%) skewX(-18deg);
+    opacity: 0.65;
+  }
+
+  12% {
+    opacity: 0.85;
+  }
+
+  48% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translateX(90%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+/* Preserve button dimensions and positioning. */
+html body
+button.st3-shop-v4__load-more-button {
+  position: relative !important;
+  isolation: isolate;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* Loading state visual treatment. */
+html body
+button.st3-shop-v4__load-more-button[aria-busy="true"] {
+  position: relative !important;
+  overflow: hidden !important;
+
+  cursor: progress !important;
+  opacity: 1 !important;
+
+  border-color: rgba(197, 139, 34, 0.82) !important;
+  background-color: #ffffff !important;
+  color: #1d1d1f !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* Apple-Island-like shimmer wave inside the button. */
+html body
+button.st3-shop-v4__load-more-button[aria-busy="true"]::before {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: -1px !important;
+
+  border-radius: inherit !important;
+
+  background: linear-gradient(
+    112deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(245, 179, 53, 0) 32%,
+    rgba(245, 179, 53, 0.10) 42%,
+    rgba(255, 255, 255, 0.62) 49%,
+    rgba(255, 255, 255, 0.78) 50%,
+    rgba(245, 179, 53, 0.18) 56%,
+    rgba(245, 179, 53, 0) 66%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+
+  pointer-events: none !important;
+  z-index: 0 !important;
+
+  /*
+   * Transform is controlled by the keyframes.
+   * Never use !important here: it would freeze the wave.
+   */
+  animation: stShopLoadMoreShimmerV1 1.08s ease-in-out infinite !important;
+}
+
+/* Keep visible content above the shimmer. */
+html body
+button.st3-shop-v4__load-more-button[aria-busy="true"] > * {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Spinning mustard loader on the right. */
+html body
+button.st3-shop-v4__load-more-button
+.st3-shop-v4__load-more-spinner {
+  display: inline-grid !important;
+  place-items: center !important;
+
+  width: 18px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 18px !important;
+
+  color: #bd7e00 !important;
+
+  transform: none !important;
+  transform-origin: center center !important;
+
+  animation: stShopLoadMoreSpinV1 750ms linear infinite !important;
+  animation-play-state: running !important;
+}
+
+html body
+button.st3-shop-v4__load-more-button
+.st3-shop-v4__load-more-spinner > svg {
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 2.2 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+}
+
+/* Never let button states move the action. */
+html body
+button.st3-shop-v4__load-more-button:is(
+  :hover,
+  :focus,
+  :focus-visible,
+  :active,
+  :disabled
+) {
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+  rotate: none !important;
+}
+
+/* Reduced motion support. */
+@media (prefers-reduced-motion: reduce) {
+  html body
+  button.st3-shop-v4__load-more-button[aria-busy="true"]::before,
+  html body
+  button.st3-shop-v4__load-more-button
+  .st3-shop-v4__load-more-spinner {
+    animation: none !important;
+  }
+}
+
+/* === END ST_SHOP_LOAD_MORE_ANIMATION_V1 === */
+
+/* ============================================================
+   ST_LOAD_MORE_WHITE_MOBILE_HEADER_COORDINATION_V1
+   ============================================================ */
+
+/*
+ * Loading button stays white, including hover,
+ * keyboard focus and disabled/loading states.
+ * Keep its existing mustard outline, spinner and shimmer.
+ */
+
+html body
+button.st3-shop-v4__load-more-button[aria-busy="true"]:is(
+  :hover,
+  :focus,
+  :focus-visible,
+  :active,
+  :disabled
+) {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/*
+ * Desktop keeps the Clear history label.
+ * The mobile label is hidden outside small screens.
+ */
+
+html body .st3-header .st3-mega--search
+.st3-utility-search__history-clear
+.st3-utility-search__clear-mobile {
+  display: none !important;
+}
+
+/*
+ * Mobile: restore a readable Clear all button.
+ * Previous CSS intentionally hid the text and fixed
+ * the entire button to a 32px icon-only circle.
+ */
+
+@media (max-width: 767px) {
+  html body .st3-header .st3-mega--search
+  button.st3-utility-search__history-clear {
+    width: auto !important;
+    min-width: 0 !important;
+    height: 34px !important;
+    min-height: 34px !important;
+
+    padding: 0 12px !important;
+    gap: 7px !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    white-space: nowrap !important;
+  }
+
+  html body .st3-header .st3-mega--search
+  button.st3-utility-search__history-clear
+  .st3-utility-search__clear-desktop {
+    display: none !important;
+  }
+
+  html body .st3-header .st3-mega--search
+  button.st3-utility-search__history-clear
+  .st3-utility-search__clear-mobile {
+    display: inline !important;
+
+    position: static !important;
+
+    width: auto !important;
+    height: auto !important;
+
+    overflow: visible !important;
+    clip: auto !important;
+    clip-path: none !important;
+
+    white-space: nowrap !important;
+    line-height: 1 !important;
+  }
+
+  html body .st3-header .st3-mega--search
+  button.st3-utility-search__history-clear > svg {
+    width: 13px !important;
+    height: 13px !important;
+    flex: 0 0 13px !important;
+  }
+}
+
+/* === END ST_LOAD_MORE_WHITE_MOBILE_HEADER_COORDINATION_V1 === */
+
+/* ============================================================
+   ST_MOBILE_CART_CLEAR_BAG_TITLE_ALIGNMENT_V1
+
+   Mobile cart header:
+   - eyebrow remains above the item-count heading
+   - Clear bag centers vertically with the item-count heading
+   - desktop and tablet cart layouts remain unchanged
+   - no fixed vertical offset or button movement
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+  html body
+  .st3-utility-cart--filled
+  .st3-utility-cart__heading {
+    display: grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr) max-content !important;
+
+    grid-template-rows:
+      auto auto !important;
+
+    column-gap: 12px !important;
+    row-gap: 0 !important;
+
+    align-items: center !important;
+  }
+
+  /*
+   * Let the label and heading occupy their own grid
+   * rows without changing their React markup.
+   */
+
+  html body
+  .st3-utility-cart--filled
+  .st3-utility-cart__heading > div {
+    display: contents !important;
+  }
+
+  /* YOUR BAG: unchanged position above the heading. */
+
+  html body
+  .st3-utility-cart--filled
+  .st3-utility-cart__heading
+  > div > .st3-utility-label {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  /* 3 items in your bag: main heading row. */
+
+  html body
+  .st3-utility-cart--filled
+  .st3-utility-cart__heading > div > h2 {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+
+    min-width: 0 !important;
+  }
+
+  /*
+   * Clear bag: centered against the actual height
+   * of the item-count heading, even if it wraps.
+   */
+
+  html body
+  .st3-utility-cart--filled
+  .st3-utility-cart__heading > button {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+
+    align-self: center !important;
+    justify-self: end !important;
+
+    margin: 0 !important;
+
+    /*
+     * Fine-tune optical alignment with the item counter.
+     * Static positioning only; no hover movement.
+     */
+    position: relative !important;
+    top: 10px !important;
+    right: 12px !important;
+
+    transform: none !important;
+    translate: none !important;
+
+    white-space: nowrap !important;
+  }
+}
+
+/* === END ST_MOBILE_CART_CLEAR_BAG_TITLE_ALIGNMENT_V1 === */
+
+/* ============================================================
+   ST_RELATED_AUTOLOOP_IPAD_QUICKVIEW_V1
+
+   Reuse homepage auto-loop for product recommendations.
+   Keep existing recommendation card sizing and layout.
+   ============================================================ */
+
+/* Disable snap only while the recommendation loop runs. */
+html body main.st-product-v5
+.st-product-v5__related.st-product-v5__related-explore
+> .st-related-products-grid.st-product-v5__related-grid.st-product-related-shelf.st-home-product-shelf--autoloop {
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+  overscroll-behavior-x: contain;
+}
+
+/* Touch-only devices: invisible Quick View is never clickable. */
+@media (any-hover: none) {
+  html body .st-retail-card .st-retail-card__quick {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+/*
+ * An external hover-capable mouse/trackpad on iPad restores
+ * the existing Quick View hover architecture.
+ * The React handler still rejects finger and pen taps.
+ */
+@media (any-hover: hover) and (any-pointer: fine) {
+  html body .st-retail-card .st-retail-card__quick {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* === END ST_RELATED_AUTOLOOP_IPAD_QUICKVIEW_V1 === */
+
+/* ============================================================
+ * ST_MOBILE_GALLERY_SWATCH_FOOTER_V1
+ *
+ * Footer: compact location link without trailing chevron.
+ * Gallery: image layers must not intercept arrow taps.
+ * Colour: preserve circular swatch selection on mobile.
+ * ============================================================ */
+
+html body .st3-footer__store-location {
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding-inline-end: 12px !important;
+}
+
+@media (max-width: 700px) {
+  /*
+   * Keep BOTH fullscreen arrows above the image stage.
+   * Preserve their existing positioning and appearance.
+   */
+  html body .st-pg-immersive__canvas
+    > button.st-pg-immersive__arrow {
+    display: inline-flex !important;
+    z-index: 1 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+
+  /*
+   * Images are visual content, not buttons.
+   * Swipes still reach the existing canvas touch handlers.
+   */
+  html body .st-pg-immersive__canvas
+    > .st-pg-immersive__stage {
+    z-index: 2 !important;
+    pointer-events: none !important;
+  }
+
+  html body .st-pg-immersive__stage
+    .st-pg-immersive__image {
+    pointer-events: none !important;
+  }
+
+  /*
+   * Remove the square selected-state decoration.
+   * The existing round colour-shell selection stays intact.
+   */
+  html body .st-purchase-apple__option.is-colour.is-active {
+    border-radius: 999px !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  html body .st-purchase-apple__option.is-colour.is-active::before,
+  html body .st-purchase-apple__option.is-colour.is-active::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  /*
+   * Keyboard focus remains visible and circular.
+   */
+  html body .st-purchase-apple__option.is-colour:focus-visible {
+    border-radius: 999px !important;
+    outline: 2px solid #1d1d1f !important;
+    outline-offset: 3px !important;
+  }
+}
+
+/* END ST_MOBILE_GALLERY_SWATCH_FOOTER_V1 */
+
+/* ============================================================
+ * ST_HEADER_NAV_COMPACT_FIT_V1
+ *
+ * Shorten only the horizontal spacing between
+ * Store / category shortcuts / Support.
+ *
+ * The existing React width-fit controller reads the
+ * computed gap and decides how many categories fit.
+ *
+ * Store, Support, account utilities and social links
+ * keep their existing collision protection.
+ *
+ * The <=900px mobile header stays untouched.
+ * ============================================================ */
+
+@media (min-width: 901px) {
+  html body .st3-header__nav {
+    gap: clamp(8px, 0.7vw, 12px) !important;
+    column-gap: clamp(8px, 0.7vw, 12px) !important;
+  }
+}
+
+/* END ST_HEADER_NAV_COMPACT_FIT_V1 */
+
+/* ============================================================
+ * ST_CHECKOUT_CONFIRMATION_GALLERY_POLISH_V1
+ * Confirmation, overlay, gallery, and header corrections.
+ * ============================================================ */
+
+/* Center the actual loading overlay in the visual viewport. */
+html body > .st-checkout-submit-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  place-items: center !important;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left)) !important;
+  overflow-y: auto !important;
+}
+
+html body
+  > .st-checkout-submit-overlay
+  > .st-checkout-submit-overlay__card {
+  box-sizing: border-box !important;
+  justify-self: center !important;
+  align-self: center !important;
+  margin: 0 auto !important;
+  max-width: 100% !important;
+  max-height: calc(100dvh - 40px) !important;
+  overflow-y: auto !important;
+}
+
+/* Restore the existing confirmation heading and order number. */
+html body
+  .st-order-success-v2
+  > .st-checkout-success-head {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, 1fr) minmax(220px, 320px) !important;
+  width: calc(100% - 40px) !important;
+  max-width: 1180px !important;
+  box-sizing: border-box !important;
+  margin: 18px auto 0 !important;
+  padding: 18px 22px !important;
+  gap: 18px !important;
+  align-items: center !important;
+  overflow: visible !important;
+}
+
+html body
+  .st-order-success-v2
+  .st-checkout-success-head__message,
+html body
+  .st-order-success-v2
+  .st-checkout-success-head__number {
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+html body
+  .st-order-success-v2
+  .st-checkout-success-head__message h1 {
+  font-size: clamp(22px, 2vw, 29px) !important;
+  line-height: 1.18 !important;
+}
+
+html body
+  .st-order-success-v2
+  .st-checkout-success-head__notices {
+  grid-column: 1 / -1 !important;
+}
+
+/* Center the numbered circle against multiline text. */
+html body
+  .st-order-success-v2
+  .st-checkout-success-step-number {
+  align-self: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* Add a subtle divider after the logo, without changing layout width. */
+@media (min-width: 901px) {
+  html body .st3-header__logo {
+    position: relative !important;
+  }
+
+  html body .st3-header__logo::after {
+    content: "" !important;
+    position: absolute !important;
+    display: block !important;
+    top: 50% !important;
+    right: -14px !important;
+    width: 1px !important;
+    height: 20px !important;
+    background: rgba(29, 29, 31, 0.085) !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Stack confirmation content on tablets and phones. */
+@media (max-width: 900px) {
+  html body
+    .st-order-success-v2
+    > .st-checkout-success-head {
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: calc(100% - 32px) !important;
+    margin-top: 14px !important;
+    padding: 16px !important;
+    gap: 14px !important;
+  }
+
+  html body
+    .st-order-success-v2
+    .st-checkout-success-head__message,
+  html body
+    .st-order-success-v2
+    .st-checkout-success-head__number {
+    grid-column: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Restore original mobile gallery arrow design and interactions. */
+@media (max-width: 700px) {
+  html body
+    .st-pg-immersive__canvas
+    > button.st-pg-immersive__arrow {
+    position: absolute !important;
+    display: grid !important;
+    place-items: center !important;
+    top: 50% !important;
+    z-index: 40 !important;
+    transform: translateY(-50%) !important;
+    translate: none !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+
+  html body
+    .st-pg-immersive__canvas
+    > .st-pg-immersive__stage {
+    z-index: 1 !important;
+    pointer-events: none !important;
+  }
+
+  html body
+    .st-pg-immersive__stage
+    .st-pg-immersive__image {
+    pointer-events: none !important;
+  }
+}
+
+/* END ST_CHECKOUT_CONFIRMATION_GALLERY_POLISH_V1 */
+
+/* ============================================================
+ * ST_CONFIRMATION_CLEAN_HEADERS_SUCCESS_TRANSITION_V1
+ * Exact confirmation sections only.
+ * ============================================================ */
+
+/*
+ * Preserve rounded OUTER cards but use perfectly
+ * straight, full-width INTERNAL separators.
+ */
+html body main.st-order-success-v2
+.st-confirmation-products > .st-confirmation-products__heading,
+html body main.st-order-success-v2
+.st-confirmation-payment > .st-confirmation-payment__heading {
+  border: 0 !important;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.10) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+html body main.st-order-success-v2
+.st-confirmation-contact > .st-confirmation-contact__heading,
+html body main.st-order-success-v2
+.st-confirmation-address > .st-confirmation-address__heading {
+  border: 0 !important;
+  border-bottom: 1px solid rgba(29, 29, 31, 0.10) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding-bottom: 14px !important;
+}
+
+html body main.st-order-success-v2
+.st-confirmation-delivery-notes,
+html body main.st-order-success-v2
+.st-confirmation-total-row {
+  border-top: 1px solid rgba(29, 29, 31, 0.10) !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/*
+ * The existing full-screen portal already centers
+ * the submission card. Keep it centered through all
+ * three phases without changing its position.
+ */
+html body > .st-checkout-submit-overlay {
+  opacity: 1 !important;
+  transition: opacity 350ms ease !important;
+}
+
+html body > .st-checkout-submit-overlay.is-leaving {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html body > .st-checkout-submit-overlay
+> .st-checkout-submit-overlay__card {
+  transition:
+    background-color 420ms ease,
+    border-color 420ms ease,
+    box-shadow 420ms ease !important;
+}
+
+html body > .st-checkout-submit-overlay.is-confirmed
+> .st-checkout-submit-overlay__card {
+  border-color: rgba(30, 158, 94, 0.65) !important;
+  background: #f4fff8 !important;
+  box-shadow:
+    0 0 0 5px rgba(30, 158, 94, 0.06),
+    0 22px 65px rgba(14, 88, 45, 0.12) !important;
+
+  min-height: min(320px, 65dvh) !important;
+
+  display: grid !important;
+  place-items: center !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-checkout-submit-overlay__confirmed {
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  min-height: 200px !important;
+  color: #16824c !important;
+  animation: st-order-confirmed-check 460ms ease both;
+}
+
+html body > .st-checkout-submit-overlay
+.st-checkout-submit-overlay__confirmed > svg {
+  display: block !important;
+  width: 88px !important;
+  height: 88px !important;
+  stroke-width: 1.6 !important;
+  color: #16824c !important;
+}
+
+@keyframes st-order-confirmed-check {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body > .st-checkout-submit-overlay,
+  html body > .st-checkout-submit-overlay
+  > .st-checkout-submit-overlay__card,
+  html body > .st-checkout-submit-overlay
+  .st-checkout-submit-overlay__confirmed {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* END ST_CONFIRMATION_CLEAN_HEADERS_SUCCESS_TRANSITION_V1 */
+
+/* ============================================================
+ * ST_ORDER_CINEMATIC_HANDOFF_V1
+ * Soft crossfade, drawn check, and covered route handoff.
+ * ============================================================ */
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-card {
+  transition:
+    background-color 580ms cubic-bezier(.22, 1, .36, 1),
+    border-color 580ms cubic-bezier(.22, 1, .36, 1),
+    box-shadow 580ms cubic-bezier(.22, 1, .36, 1),
+    opacity 480ms ease,
+    transform 560ms cubic-bezier(.22, 1, .36, 1) !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scenes {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  align-items: stretch !important;
+  isolation: isolate;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene {
+  grid-area: 1 / 1 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition:
+    opacity 500ms cubic-bezier(.22, 1, .36, 1),
+    transform 620ms cubic-bezier(.22, 1, .36, 1) !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--loading {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  transform: translateY(-9px) scale(.985) !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--success {
+  display: grid !important;
+  place-items: center !important;
+  align-self: stretch !important;
+  transform: translateY(12px) scale(.94) !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene.is-active {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* ST_ORDER_SUCCESS_CHECK_VISIBILITY_V2 */
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--success.is-active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 3 !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--loading
+.st-checkout-submit-overlay__progress {
+  width: 100% !important;
+}
+
+/*
+ * The existing green confirmation keeps its design.
+ * Only the check illustration receives a drawing effect.
+ */
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--success
+.st-checkout-submit-overlay__confirmed {
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  min-height: 200px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 3 !important;
+  animation: none !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--success
+.st-checkout-submit-overlay__confirmed > svg {
+  display: block !important;
+  width: 88px !important;
+  height: 88px !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  color: #16824c !important;
+  stroke: #16824c !important;
+  fill: none !important;
+  transform-origin: center !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--success.is-active
+.st-checkout-submit-overlay__confirmed > svg {
+  animation:
+    st-order-check-arrive 620ms cubic-bezier(.16, 1, .3, 1)
+    540ms both !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--success svg circle {
+  stroke: #16824c !important;
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+  animation: none !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-order-cinematic-scene--success svg path {
+  stroke: #16824c !important;
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+  animation: none !important;
+}
+
+@keyframes st-order-check-arrive {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(.78);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.035);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/*
+ * The final phase covers the Review page with the same
+ * background colour used by Confirmation. This avoids
+ * revealing the Review form during route navigation.
+ */
+html body > .st-checkout-submit-overlay {
+  transition:
+    background-color 560ms cubic-bezier(.22, 1, .36, 1)
+    !important;
+}
+
+html body > .st-checkout-submit-overlay.is-leaving {
+  opacity: 1 !important;
+  background-color: #f7f7f5 !important;
+  pointer-events: auto !important;
+}
+
+html body > .st-checkout-submit-overlay
+.st-checkout-submit-overlay__backdrop {
+  transition: opacity 560ms ease !important;
+}
+
+html body > .st-checkout-submit-overlay.is-leaving
+.st-checkout-submit-overlay__backdrop {
+  opacity: 0 !important;
+}
+
+html body > .st-checkout-submit-overlay.is-leaving
+.st-order-cinematic-card {
+  opacity: 0 !important;
+  transform: translateY(-7px) scale(.98) !important;
+  pointer-events: none !important;
+}
+
+/* Accessibility: never require motion to recognize success. */
+@media (prefers-reduced-motion: reduce) {
+  html body > .st-checkout-submit-overlay
+  .st-order-cinematic-scene,
+  html body > .st-checkout-submit-overlay
+  .st-order-cinematic-card,
+  html body > .st-checkout-submit-overlay
+  .st-order-cinematic-scene svg,
+  html body > .st-checkout-submit-overlay
+  .st-order-cinematic-scene svg circle,
+  html body > .st-checkout-submit-overlay
+  .st-order-cinematic-scene svg path {
+    animation: none !important;
+    transition: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* END ST_ORDER_CINEMATIC_HANDOFF_V1 */

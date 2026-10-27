@@ -167,6 +167,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   ) => {
     /* BUY_NOW_SILENT_CART_V4 */
     const shouldOpenCart = options?.openCart ?? true;
+    if (!Number.isFinite(input.unitPrice) || input.unitPrice <= 0) {
+      return {
+        success: false,
+        message:
+          "This configuration does not have a valid price. Please contact support.",
+      };
+    }
+
     if (input.maximumQuantity < 1) {
       return {
         success: false,
