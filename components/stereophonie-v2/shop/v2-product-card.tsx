@@ -994,7 +994,53 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
   const quickViewTrigger = useRef<HTMLButtonElement>(null);
   const quickViewClose = useRef<HTMLButtonElement>(null);
 
-  const openQuickView = useCallback(() => {
+  // ST_RELATED_AUTOLOOP_IPAD_QUICKVIEW_V1
+  // A touch-generated click must never open hidden Quick View.
+  const quickViewPointerRef = useRef<string | null>(null);
+
+  const openQuickView = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+    const button = event.currentTarget;
+
+    // Any-hover detects a connected mouse/trackpad on iPad,
+    // even when the primary device input remains touch.
+    const mouseAvailable =
+      window.matchMedia(
+        "(any-hover: hover) and (any-pointer: fine)",
+      ).matches;
+
+    const pointerType = quickViewPointerRef.current;
+    quickViewPointerRef.current = null;
+
+    const mouseClick =
+      pointerType === "mouse" &&
+      button.matches(":hover");
+
+    const keyboardClick =
+      event.detail === 0 &&
+      button.matches(":focus-visible");
+
+    // Touch and pen never activate Quick View.
+    // No hover-capable mouse = no Quick View.
+    if (
+      !mouseAvailable ||
+      (!mouseClick && !keyboardClick)
+    ) {
+      return;
+    }
+
+    // Guard against an invisible overlay receiving clicks.
+    const style = window.getComputedStyle(button);
+
+    if (
+      style.display === "none" ||
+      style.visibility !== "visible" ||
+      style.pointerEvents === "none" ||
+      Number.parseFloat(style.opacity) < 0.1
+    ) {
+      return;
+    }
+
     if (closeTimer.current !== null) {
       window.clearTimeout(closeTimer.current);
       closeTimer.current = null;
@@ -1200,6 +1246,9 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
             ref={quickViewTrigger}
             type="button"
             className="st-retail-card__quick"
+            onPointerDown={(event) => {
+              quickViewPointerRef.current = event.pointerType;
+            }}
             onClick={openQuickView}
           >
             <Eye />
@@ -1338,13 +1387,13 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                   void requestPreorderNotification();
                 }}
               >
+                <span>Pre-order</span>
+
                 {preorderLoading ? (
-                  <LoaderCircle className="is-spin" />
+                  <LoaderCircle className="is-spin st-preorder-loading-spinner" aria-hidden="true" />
                 ) : (
                   <Mail />
                 )}
-
-                <span>Pre-order</span>
               </button>
             ) : productAvailability === "ask_for_price" ? (
               <button
@@ -1356,8 +1405,8 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                   openCardAskForPriceChat();
                 }}
               >
-                <CircleDollarSign />
                 <span>Get Price</span>
+                <CircleDollarSign />
               </button>
             ) : (
               <span
@@ -1433,7 +1482,7 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                 <button
                   ref={quickViewClose}
                   type="button"
-                  className="st-retail-qv__close"
+                  className="st-retail-qv__close st-storefront-popup-close"
                   onClick={closeQuickView}
                   aria-label="Close quick view"
                 >

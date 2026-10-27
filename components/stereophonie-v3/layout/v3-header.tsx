@@ -3,9 +3,18 @@
 import Link from "next/link";
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa6";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { MouseEvent as ReactMouseEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { useCart } from "@/components/cart/cart-provider";
+import { useWishlist } from "@/components/wishlist/wishlist-provider";
 import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 import V3HeaderCartPanel from "@/components/stereophonie-v3/layout/v3-header-cart-panel";
 import V3HeaderSearchPanel from "@/components/stereophonie-v3/layout/v3-header-search-panel";
@@ -106,7 +115,64 @@ export function V3Header() {
     : "https://www.instagram.com/stereophoniestore";
 
   const pathname = usePathname();
+
+  // ST_WISHLIST_READY_AND_VALID_CART_PRICE_V1
+  // Keep the customer on the current page until initial
+  // saved-product synchronization has completed.
+  const wishlistRouter = useRouter();
+  const { hydrated: wishlistReady } = useWishlist();
+  const [wishlistNavigationQueued, setWishlistNavigationQueued] =
+    useState(false);
+
+  useEffect(() => {
+    if (!wishlistNavigationQueued || !wishlistReady) {
+      return;
+    }
+
+    setWishlistNavigationQueued(false);
+    wishlistRouter.push("/wishlist");
+  }, [wishlistNavigationQueued, wishlistReady, wishlistRouter]);
+
+  function holdWishlistNavigation(
+    event: ReactMouseEvent<HTMLAnchorElement>,
+  ) {
+    // Preserve normal new-tab and modified-click behavior.
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    if (!wishlistReady) {
+      event.preventDefault();
+      setWishlistNavigationQueued(true);
+    }
+  }
+
   const [categories, setCategories] = useState<HeaderCategory[]>([]);
+
+  /*
+   * DESKTOP / TABLET HEADER FIT CONTROLLER
+   *
+   * The right-side customer actions are protected.
+   * Store and Support are protected.
+   *
+   * Only catalogue category shortcuts are allowed to disappear when
+   * the available horizontal space becomes too small.
+   *
+   * The phone header is a separate architecture and is not affected.
+   */
+  const desktopHeaderInnerRef = useRef<HTMLDivElement>(null);
+  const desktopNavRef = useRef<HTMLElement>(null);
+  const desktopRightZoneRef = useRef<HTMLDivElement>(null);
+
+  const [visibleTopCategoryCount, setVisibleTopCategoryCount] =
+    useState(6);
 
   const [mobileCategoryMenuOpen, setMobileCategoryMenuOpen] = useState(false);
   const [mobileCategoryMenuRendered, setMobileCategoryMenuRendered] =
@@ -114,6 +180,18 @@ export function V3Header() {
   const [mobileCategoryMenuClosing, setMobileCategoryMenuClosing] =
     useState(false);
   const mobileCategoryCloseTimerRef = useRef<number | null>(null);
+
+  // ST_LOAD_MORE_WHITE_MOBILE_HEADER_COORDINATION_V1
+  // Only one mobile header panel should be active at a time.
+  const mobilePanelSwitchTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (mobilePanelSwitchTimerRef.current !== null) {
+        window.clearTimeout(mobilePanelSwitchTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!mobileCategoryMenuOpen) {
@@ -376,17 +454,17 @@ export function V3Header() {
     setActivePanel(null);
     closeCart();
 
-    const navigationPanel =
-      currentPanel === "store" ||
-      currentPanel === "support" ||
-      currentPanel.startsWith("category:");
-
-    const closeDuration = navigationPanel
-      ? 740
-      : currentPanel === "search" &&
-          window.matchMedia("(max-width: 900px)").matches
+    /*
+     * Search and Cart use the same desktop closing cycle
+     * as Store, Support and Category panels.
+     *
+     * Preserve the existing special mobile Search timing.
+     */
+    const closeDuration =
+      currentPanel === "search" &&
+      window.matchMedia("(max-width: 900px)").matches
         ? 950
-        : 430;
+        : 740;
 
     closeTimer.current = window.setTimeout(() => {
       setRenderedPanel(null);
@@ -441,6 +519,198 @@ export function V3Header() {
    */
   const visibleCategories = categories.slice(0, 12);
   const topCategories = visibleCategories.slice(0, 6);
+
+  const topCategoryFitKey = topCategories
+    .map((category) => `${category.id}:${category.name}`)
+    .join("|");
+
+  const updateDesktopHeaderCategoryFit = useCallback(() => {
+    /*
+     * <= 900px is the existing phone architecture.
+     * Never interfere with it.
+     */
+    if (
+      typeof window === "undefined" ||
+      window.matchMedia("(max-width: 900px)").matches
+    ) {
+      setVisibleTopCategoryCount(6);
+      return;
+    }
+
+    const inner = desktopHeaderInnerRef.current;
+    const nav = desktopNavRef.current;
+    const rightZone = desktopRightZoneRef.current;
+
+    if (!inner || !nav || !rightZone) {
+      return;
+    }
+
+    const store = nav.querySelector<HTMLElement>(
+      '[data-st-header-fixed-nav="store"]',
+    );
+
+    const support = nav.querySelector<HTMLElement>(
+      '[data-st-header-fixed-nav="support"]',
+    );
+
+    const categoryNodes = Array.from(
+      nav.querySelectorAll<HTMLElement>(
+        "[data-st-header-category-index]",
+      ),
+    ).sort((a, b) => {
+      const aIndex = Number(
+        a.dataset.stHeaderCategoryIndex ?? 0,
+      );
+
+      const bIndex = Number(
+        b.dataset.stHeaderCategoryIndex ?? 0,
+      );
+
+      return aIndex - bIndex;
+    });
+
+    if (!store || !support) {
+      return;
+    }
+
+    const navStyle = window.getComputedStyle(nav);
+
+    const gap =
+      Number.parseFloat(
+        navStyle.columnGap ||
+          navStyle.gap ||
+          "0",
+      ) || 0;
+
+    const navLeft =
+      nav.getBoundingClientRect().left;
+
+    const protectedRightEdge =
+      rightZone.getBoundingClientRect().left;
+
+    /*
+     * Keep a real safety channel between Support and the utility divider.
+     * The category list must yield before it reaches the customer actions.
+     */
+    const safetyGap = 14;
+
+    const availableWidth = Math.max(
+      0,
+      protectedRightEdge - navLeft - safetyGap,
+    );
+
+    const fixedWidth =
+      store.getBoundingClientRect().width +
+      support.getBoundingClientRect().width;
+
+    /*
+     * With zero category shortcuts there is still:
+     *
+     * Store | gap | Support
+     */
+    let requiredWidth = fixedWidth + gap;
+    let nextVisibleCount = 0;
+
+    for (const categoryNode of categoryNodes) {
+      /*
+       * Inserting one category adds:
+       * - its own rendered width
+       * - one extra navigation gap
+       *
+       * Hidden category nodes remain measurable because the final CSS
+       * removes them from layout with position:absolute rather than
+       * display:none.
+       */
+      const candidateWidth =
+        requiredWidth +
+        categoryNode.getBoundingClientRect().width +
+        gap;
+
+      if (candidateWidth > availableWidth) {
+        break;
+      }
+
+      requiredWidth = candidateWidth;
+      nextVisibleCount += 1;
+    }
+
+    nextVisibleCount = Math.min(
+      nextVisibleCount,
+      topCategories.length,
+    );
+
+    setVisibleTopCategoryCount(
+      (currentCount) =>
+        currentCount === nextVisibleCount
+          ? currentCount
+          : nextVisibleCount,
+    );
+  }, [
+    topCategories.length,
+    topCategoryFitKey,
+  ]);
+
+  useLayoutEffect(() => {
+    /*
+     * Phone header remains fully controlled by the existing <=900px
+     * mobile architecture.
+     */
+    if (
+      typeof window === "undefined" ||
+      window.matchMedia("(max-width: 900px)").matches
+    ) {
+      setVisibleTopCategoryCount(6);
+      return;
+    }
+
+    updateDesktopHeaderCategoryFit();
+
+    const inner = desktopHeaderInnerRef.current;
+    const rightZone = desktopRightZoneRef.current;
+
+    if (!inner || !rightZone) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      updateDesktopHeaderCategoryFit();
+    });
+
+    observer.observe(inner);
+    observer.observe(rightZone);
+
+    window.addEventListener(
+      "resize",
+      updateDesktopHeaderCategoryFit,
+    );
+
+    let cancelled = false;
+
+    /*
+     * Font metrics can settle after the first layout.
+     * Re-measure once fonts are ready so long category names can never
+     * become a late collision source.
+     */
+    if (document.fonts?.ready) {
+      void document.fonts.ready.then(() => {
+        if (!cancelled) {
+          updateDesktopHeaderCategoryFit();
+        }
+      });
+    }
+
+    return () => {
+      cancelled = true;
+
+      observer.disconnect();
+
+      window.removeEventListener(
+        "resize",
+        updateDesktopHeaderCategoryFit,
+      );
+    };
+  }, [updateDesktopHeaderCategoryFit]);
+
   const panelForContent: HeaderPanel = isCartOpen
     ? "cart"
     : (activePanel ?? renderedPanel);
@@ -500,6 +770,85 @@ export function V3Header() {
     openCart();
   }
 
+  /*
+   * Mobile panel coordination.
+   *
+   * Finish the previous panel's closing animation before
+   * opening the requested panel.
+   *
+   * Search, Cart and Categories remain mutually exclusive.
+   * Existing animation speeds are preserved.
+   */
+  function cancelMobilePanelSwitch() {
+    if (mobilePanelSwitchTimerRef.current !== null) {
+      window.clearTimeout(mobilePanelSwitchTimerRef.current);
+      mobilePanelSwitchTimerRef.current = null;
+    }
+  }
+
+  function scheduleMobilePanelSwitch(
+    action: () => void,
+    delay: number,
+  ) {
+    cancelMobilePanelSwitch();
+
+    mobilePanelSwitchTimerRef.current = window.setTimeout(() => {
+      mobilePanelSwitchTimerRef.current = null;
+      action();
+    }, delay);
+  }
+
+  function handleCoordinatedSearchClick() {
+    cancelMobilePanelSwitch();
+
+    if (mobileCategoryMenuRendered) {
+      closeMobileCategoryMenu();
+      scheduleMobilePanelSwitch(toggleSearch, 720);
+      return;
+    }
+
+    toggleSearch();
+  }
+
+  function handleCoordinatedCartClick() {
+    cancelMobilePanelSwitch();
+
+    if (mobileCategoryMenuRendered) {
+      closeMobileCategoryMenu();
+      scheduleMobilePanelSwitch(toggleCart, 720);
+      return;
+    }
+
+    toggleCart();
+  }
+
+  function handleCoordinatedCategoryClick() {
+    cancelMobilePanelSwitch();
+
+    if (mobileCategoryMenuOpen || mobileCategoryMenuClosing) {
+      toggleMobileCategoryMenu();
+      return;
+    }
+
+    if (panelIsOpen || panelClosing) {
+      const closeDelay =
+        panelForContent === "search" &&
+        window.matchMedia("(max-width: 900px)").matches
+          ? 980
+          : 780;
+
+      closePanel();
+
+      scheduleMobilePanelSwitch(
+        openMobileCategoryMenu,
+        closeDelay,
+      );
+      return;
+    }
+
+    toggleMobileCategoryMenu();
+  }
+
   return (
     <>
       <header
@@ -508,7 +857,10 @@ export function V3Header() {
         onMouseLeave={scheduleClose}
       >
         <div className="st3-header__bar">
-          <div className="st3-header__inner">
+          <div
+            ref={desktopHeaderInnerRef}
+            className="st3-header__inner"
+          >
             <a
               href="https://maps.app.goo.gl/kCsBPgCRFXaK298i6?g_st=ic"
               target="_blank"
@@ -535,9 +887,14 @@ export function V3Header() {
               <V3BrandLogo priority />
             </Link>
 
-            <nav className="st3-header__nav" aria-label="Main navigation">
+            <nav
+              ref={desktopNavRef}
+              className="st3-header__nav"
+              aria-label="Main navigation"
+            >
               <button
                 type="button"
+                data-st-header-fixed-nav="store"
                 className={`st3-header__nav-item ${
                   activePanel === "store" ? "st3-header__nav-item--active" : ""
                 }`}
@@ -549,20 +906,41 @@ export function V3Header() {
                 Store
               </button>
 
-              {topCategories.map((category) => {
+              {topCategories.map((category, index) => {
                 const panel: OpenHeaderPanel = `category:${category.id}`;
                 const active = activePanel === panel;
+                const visible =
+                  index < visibleTopCategoryCount;
 
                 return (
                   <Link
                     key={category.id}
                     href={storefrontCategoryHref(category)}
-                    className={`st3-header__nav-item ${
-                      active ? "st3-header__nav-item--active" : ""
-                    }`}
-                    onMouseEnter={() => openPanel(panel)}
-                    onFocus={() => openPanel(panel)}
-                    aria-expanded={active}
+                    data-st-header-category-index={index}
+                    className={[
+                      "st3-header__nav-item",
+                      active
+                        ? "st3-header__nav-item--active"
+                        : "",
+                      visible
+                        ? ""
+                        : "st3-header__nav-category--hidden",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    onMouseEnter={() => {
+                      if (visible) {
+                        openPanel(panel);
+                      }
+                    }}
+                    onFocus={() => {
+                      if (visible) {
+                        openPanel(panel);
+                      }
+                    }}
+                    aria-expanded={visible ? active : undefined}
+                    aria-hidden={!visible ? true : undefined}
+                    tabIndex={visible ? undefined : -1}
                   >
                     {category.name}
                   </Link>
@@ -571,6 +949,7 @@ export function V3Header() {
 
               <button
                 type="button"
+                data-st-header-fixed-nav="support"
                 className={`st3-header__nav-item ${
                   activePanel === "support"
                     ? "st3-header__nav-item--active"
@@ -585,7 +964,11 @@ export function V3Header() {
               </button>
             </nav>
 
-            <div className="st3-header__right-zone">
+            <div
+              ref={desktopRightZoneRef}
+              className="st3-header__right-zone"
+              data-st-header-protected-zone="true"
+            >
               <div className="st3-header__utility-divider" aria-hidden="true" />
 
               <div className="st3-header__actions">
@@ -600,7 +983,7 @@ export function V3Header() {
                   aria-expanded={panelIsOpen && panelForContent === "search"}
                   aria-controls="st3-header-panel"
                   onMouseEnter={cancelClose}
-                  onClick={toggleSearch}
+                  onClick={handleCoordinatedSearchClick}
                 >
                   <SearchIcon />
                 </button>
@@ -615,7 +998,7 @@ export function V3Header() {
                     pathname.startsWith("/wishlist") ? "page" : undefined
                   }
                   onMouseEnter={closePanel}
-                >
+                  onClick={holdWishlistNavigation}>
                   <WishlistIcon />
                 </Link>
 
@@ -644,7 +1027,7 @@ export function V3Header() {
                   aria-expanded={isCartOpen}
                   aria-controls="st3-header-panel"
                   onMouseEnter={cancelClose}
-                  onClick={toggleCart}
+                  onClick={handleCoordinatedCartClick}
                 >
                   <BagIcon />
                   {isCartReady && totalItems > 0 ? (
@@ -673,7 +1056,7 @@ export function V3Header() {
                   className={`st3-header__icon st3-header__menu-button ${
                     mobileCategoryMenuOpen ? "is-active" : ""
                   }`}
-                  onClick={toggleMobileCategoryMenu}
+                  onClick={handleCoordinatedCategoryClick}
                   aria-expanded={mobileCategoryMenuOpen}
                   aria-controls="st3-mobile-category-navigation"
                   aria-label={
@@ -689,6 +1072,11 @@ export function V3Header() {
                   </span>
                 </button>
               </div>
+
+              <div
+                className="st3-header__social-divider"
+                aria-hidden="true"
+              />
 
               <div
                 className="st3-header__socials"
@@ -803,7 +1191,7 @@ export function V3Header() {
                       <Link
                         href="/wishlist"
                         className="st3-mega__secondary-link"
-                        onClick={closePanel}
+                        onClick={(event) => { closePanel(); holdWishlistNavigation(event); }}
                       >
                         Wishlist
                       </Link>
@@ -934,7 +1322,7 @@ export function V3Header() {
                       <Link
                         href="/wishlist"
                         className="st3-mega__secondary-link"
-                        onClick={closePanel}
+                        onClick={(event) => { closePanel(); holdWishlistNavigation(event); }}
                       >
                         Wishlist
                       </Link>
@@ -1024,7 +1412,7 @@ export function V3Header() {
                 Your account
               </Link>
 
-              <Link href="/wishlist" onClick={closeMobileCategoryMenu}>
+              <Link href="/wishlist" onClick={(event) => { closeMobileCategoryMenu(); holdWishlistNavigation(event); }}>
                 Saved products
               </Link>
             </div>

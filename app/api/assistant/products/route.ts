@@ -259,10 +259,6 @@ export async function GET(request: NextRequest) {
     .filter((product) => productMatchesSearch(product, terms))
     .map((product) => {
       const variants = (product.product_variants ?? [])
-        .filter(
-          (variant) =>
-            normalizeStatus(variant.availability_status) !== "ask_for_price",
-        )
         .map((variant) => {
           const prices = getVariantPrice(variant);
 
@@ -278,17 +274,31 @@ export async function GET(request: NextRequest) {
             purchasable: variantIsPurchasable(variant),
           };
         })
-        .filter((variant) => variant.currentPrice > 0)
+        .filter(
+          (variant) =>
+            variant.availabilityStatus === "ask_for_price" ||
+            variant.currentPrice > 0,
+        )
         .filter((variant) => {
           if (requestedSize && variant.size.toLowerCase() !== requestedSize) {
             return false;
           }
 
-          if (maximumPrice !== null && variant.currentPrice > maximumPrice) {
+          if (
+            maximumPrice !== null &&
+            (
+              variant.availabilityStatus === "ask_for_price" ||
+              variant.currentPrice > maximumPrice
+            )
+          ) {
             return false;
           }
 
-          if (onlyAvailable && !variant.purchasable) {
+          if (
+            onlyAvailable &&
+            variant.availabilityStatus !== "ask_for_price" &&
+            !variant.purchasable
+          ) {
             return false;
           }
 
@@ -303,9 +313,19 @@ export async function GET(request: NextRequest) {
       const primaryImage = canonicalImages[0];
       const hoverImage = canonicalImages[1];
 
+      const pricedVariants =
+        variants.filter(
+          (variant) =>
+            variant.currentPrice > 0,
+        );
+
       const lowestPrice =
-        variants.length > 0
-          ? Math.min(...variants.map((variant) => variant.currentPrice))
+        pricedVariants.length > 0
+          ? Math.min(
+              ...pricedVariants.map(
+                (variant) => variant.currentPrice,
+              ),
+            )
           : null;
 
       return {

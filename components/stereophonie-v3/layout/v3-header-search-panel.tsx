@@ -258,8 +258,13 @@ export default function V3HeaderSearchPanel({
                 className="st3-utility-search__history-clear"
                 onClick={() => persistSearchHistory([])}
               >
+                <span className="st3-utility-search__clear-desktop">
+                  Clear history
+                </span>
+                <span className="st3-utility-search__clear-mobile">
+                  Clear all
+                </span>
                 <Trash2 aria-hidden="true" />
-                <span>Clear history</span>
               </button>
             ) : null}
           </div>

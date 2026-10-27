@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, ChevronRight, PackageSearch } from "lucide-react";
+import { ArrowRight, ChevronRight, LoaderCircle, PackageSearch } from "lucide-react";
 
 import type { StoreProductCardProduct } from "@/components/storefront/store-product-card";
 
@@ -397,9 +397,21 @@ export default function V2ShopPage({
                                 : "Load more products"}
                           </span>
 
-                          <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M12 5v14M5 12h14" />
-                          </svg>
+                          {/* ST_SHOP_LOAD_MORE_ANIMATION_V1 */}
+                          {isLoadingMore ? (
+                            <span
+                              className="st3-shop-v4__load-more-spinner"
+                              aria-hidden="true"
+                            >
+                              <LoaderCircle />
+                            </span>
+                          ) : (
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M12 5v14M5 12h14" />
+                            </svg>
+                          )}
+
+
                         </button>
                       ) : (
                         <div className="st3-shop-v4__load-more-complete">

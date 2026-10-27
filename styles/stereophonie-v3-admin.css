@@ -30267,9 +30267,17 @@ html body .st3-admin
 .st-admin-product-directory-v2__toolbar {
   display: grid !important;
 
+  /*
+   * ST_ADMIN_PRODUCTS_TOOLBAR_SYMMETRY_V1
+   *
+   * Only two toolbar elements remain:
+   * search and filters.
+   *
+   * Remove the empty third grid track previously
+   * reserved for the products counter.
+   */
   grid-template-columns:
     minmax(360px, 1fr)
-    max-content
     max-content !important;
 
   align-items: center !important;
@@ -66369,3 +66377,48 @@ button.st-admin-config-add-manual-v2:active
 }
 
 /* === ADMIN V2 CONFIG CREATION ACTIONS STATIONARY V1 END === */
+
+/* ============================================================
+   ST_ADMIN_PRODUCT_SEARCH_ACTION_SYMMETRY_V1
+
+   Products directory search only.
+
+   Camera button | equal gap | separator | equal gap | X
+
+   Preserve:
+   - original icon sizes and positions within their buttons
+   - original outside/end padding
+   - barcode camera functionality
+   - clear-search functionality
+   - existing hover and focus interactions
+   ============================================================ */
+
+/* Remove extra inner-facing camera margin, if present. */
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2__toolbar
+.st-admin-directory-search__field
+> .st-admin-product-barcode-trigger {
+  margin-right: 0 !important;
+}
+
+/* Identical spacing on both sides of the separator. */
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2__toolbar
+.st-admin-directory-search__field
+> .st-admin-product-search-separator {
+  margin-left: 12px !important;
+  margin-right: 12px !important;
+}
+
+/* Remove extra inner-facing X margin, if present. */
+html body .st3-admin
+.st-admin-products-v2
+.st-admin-product-directory-v2__toolbar
+.st-admin-directory-search__field
+> button[aria-label="Clear product search"] {
+  margin-left: 0 !important;
+}
+
+/* === END ST_ADMIN_PRODUCT_SEARCH_ACTION_SYMMETRY_V1 === */

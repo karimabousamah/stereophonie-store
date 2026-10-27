@@ -6,6 +6,8 @@ import Image from "next/image";
 
 import HeroCanvasVideo from "./v3-hero-canvas-video";
 import {
+  type TouchEvent,
+  type WheelEvent,
   useCallback,
   useEffect,
   useRef,
@@ -73,6 +75,26 @@ export default function V3HeroMediaCarousel({
    * the previous dissolve is still visually completing.
    */
   const queuedIndexRef = useRef<number | null>(null);
+
+  /*
+   * HERO DIRECT GESTURE NAVIGATION
+   *
+   * Touch:
+   * - one-finger horizontal swipe
+   * - vertical scrolling remains native
+   *
+   * Trackpad:
+   * - horizontal two-finger wheel gesture
+   * - accumulated so tiny deltaX noise does not change media
+   * - locked until the current gesture's inertia finishes
+   */
+  const gestureTouchStartRef =
+    useRef<{ x: number; y: number } | null>(null);
+  const gestureWheelDeltaRef = useRef(0);
+  const gestureWheelLockedRef = useRef(false);
+  const gestureWheelEndTimerRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const activeVideoRef =
     useRef<HTMLVideoElement | null>(null);
 
@@ -326,6 +348,117 @@ export default function V3HeroMediaCarousel({
     prepare(activeIndexRef.current + 1);
   }, [prepare]);
 
+  const navigateByGesture = useCallback(
+    (direction: -1 | 1) => {
+      if (count <= 1) {
+        return;
+      }
+
+      /*
+       * If a crossfade is already being prepared, continue from the
+       * visitor's currently selected destination rather than jumping
+       * backward to the old active item.
+       */
+      const baseIndex =
+        pendingIndexRef.current ??
+        activeIndexRef.current;
+
+      prepare(baseIndex + direction);
+    },
+    [count, prepare],
+  );
+
+  function handleHeroTouchStart(
+    event: TouchEvent<HTMLDivElement>,
+  ) {
+    if (event.touches.length !== 1) {
+      gestureTouchStartRef.current = null;
+      return;
+    }
+
+    const touch = event.touches[0];
+
+    gestureTouchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+  }
+
+  function handleHeroTouchEnd(
+    event: TouchEvent<HTMLDivElement>,
+  ) {
+    const start = gestureTouchStartRef.current;
+    gestureTouchStartRef.current = null;
+
+    if (!start || event.changedTouches.length !== 1) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+
+    /*
+     * Require a deliberate horizontal gesture.
+     * Ordinary vertical homepage scrolling must never change the hero.
+     */
+    if (
+      Math.abs(deltaX) < 48 ||
+      Math.abs(deltaX) <= Math.abs(deltaY) * 1.2
+    ) {
+      return;
+    }
+
+    navigateByGesture(deltaX < 0 ? 1 : -1);
+  }
+
+  function handleHeroWheel(
+    event: WheelEvent<HTMLDivElement>,
+  ) {
+    if (count <= 1) {
+      return;
+    }
+
+    /*
+     * Trackpad vertical movement belongs to normal page scrolling.
+     * Only a clearly horizontal two-finger gesture enters the carousel.
+     */
+    if (
+      Math.abs(event.deltaX) < 1 ||
+      Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 1.15
+    ) {
+      return;
+    }
+
+    if (gestureWheelEndTimerRef.current) {
+      clearTimeout(gestureWheelEndTimerRef.current);
+    }
+
+    gestureWheelEndTimerRef.current = setTimeout(() => {
+      gestureWheelDeltaRef.current = 0;
+      gestureWheelLockedRef.current = false;
+      gestureWheelEndTimerRef.current = null;
+    }, 180);
+
+    if (gestureWheelLockedRef.current) {
+      return;
+    }
+
+    gestureWheelDeltaRef.current += event.deltaX;
+
+    if (Math.abs(gestureWheelDeltaRef.current) < 48) {
+      return;
+    }
+
+    const direction: -1 | 1 =
+      gestureWheelDeltaRef.current > 0 ? 1 : -1;
+
+    gestureWheelDeltaRef.current = 0;
+    gestureWheelLockedRef.current = true;
+
+    navigateByGesture(direction);
+  }
+
   /*
    * IMAGE:
    * exactly four seconds before preparing the next media.
@@ -397,6 +530,11 @@ export default function V3HeroMediaCarousel({
       clearImageTimer();
       clearFadeTimer();
       clearFrames();
+
+      if (gestureWheelEndTimerRef.current) {
+        clearTimeout(gestureWheelEndTimerRef.current);
+        gestureWheelEndTimerRef.current = null;
+      }
 
       /* Safari: never visibly pause active hero video */
     };
@@ -577,7 +715,19 @@ export default function V3HeroMediaCarousel({
       aria-roledescription="carousel"
       aria-label="Homepage featured media"
     >
-      <div className="st3-hero-carousel__frame">
+      <div
+        className="st3-hero-carousel__frame"
+        onTouchStart={handleHeroTouchStart}
+        onTouchEnd={handleHeroTouchEnd}
+        onTouchCancel={() => {
+          gestureTouchStartRef.current = null;
+        }}
+        onWheel={handleHeroWheel}
+        style={{
+          touchAction: "pan-y",
+          overscrollBehaviorX: "contain",
+        }}
+      >
         <div className="st3-hero-carousel__stage">
 
           {/* ==================================================

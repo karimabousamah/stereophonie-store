@@ -10,11 +10,11 @@ import {
   shopSingleParameter,
 } from "@/lib/storefront-shop-catalog";
 import {
+  loadShopBrandFacetOptions,
   loadShopProductBatch,
   SHOP_PRODUCTS_PER_BATCH,
 } from "@/lib/storefront-shop-loader";
 import {
-  getShopBrandFilterOptionsForCategory,
   getShopCategoryFilterOptions,
 } from "@/lib/storefront-shop-filter-options";
 import type {
@@ -162,7 +162,15 @@ export async function StereophonieShopPage({
     }),
 
       getShopCategoryFilterOptions(),
-      getShopBrandFilterOptionsForCategory(category),
+      loadShopBrandFacetOptions({
+        search,
+        category,
+        subcategoryId,
+        offers,
+        availability,
+        requestedMinimumPrice,
+        requestedMaximumPrice,
+      }),
     ]);
   } catch (error) {
     console.error(

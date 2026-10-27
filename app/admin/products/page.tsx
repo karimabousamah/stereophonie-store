@@ -72,6 +72,18 @@ async function ProductsDirectory({
 
   const productIds = (products ?? []).map((product) => product.id);
 
+  /*
+   * ST_ADMIN_PRODUCT_IMAGES_QUERY_LENGTH_FIX_V1
+   *
+   * Keep the existing product-scope filtering, but perform it
+   * locally instead of passing hundreds of UUIDs through a
+   * very long PostgREST URL.
+   *
+   * The image pagination still retrieves every page.
+   * No image records, product data, or database policies change.
+   */
+  const directoryProductIdSet = new Set(productIds);
+
   const categoryIds = Array.from(
     new Set(
       (products ?? [])
@@ -201,6 +213,20 @@ async function ProductsDirectory({
    * The base photographs remain complete. Nothing is omitted from the
    * product-level legacy fallback.
    */
+  /*
+   * ST_ADMIN_PRODUCT_ASSIGNMENTS_QUERY_LENGTH_FIX_V1
+   *
+   * The previous query placed every first-configuration UUID
+   * into one very long PostgREST URL.
+   *
+   * Read the assignment table using normal pagination, then
+   * keep only assignments belonging to the same first
+   * configurations used by the existing directory resolver.
+   *
+   * No assignment records or selection priorities change.
+   */
+  const firstConfigurationIdSet = new Set(firstConfigurationIds);
+
   const directoryAssignmentsPromise = (async () => {
     const assignments: DirectoryImageAssignment[] = [];
     let assignmentsError: { message: string } | null = null;
@@ -233,10 +259,6 @@ async function ProductsDirectory({
             is_primary
           `,
           )
-          .in(
-            "variant_id",
-            firstConfigurationIds,
-          )
           .order("variant_id", {
             ascending: true,
           })
@@ -262,7 +284,9 @@ async function ProductsDirectory({
           result.data ?? [];
 
         assignments.push(
-          ...pageAssignments,
+          ...pageAssignments.filter((assignment) =>
+            firstConfigurationIdSet.has(assignment.variant_id),
+          ),
         );
 
         assignmentPageNumber += 1;
@@ -362,10 +386,6 @@ async function ProductsDirectory({
                 is_primary
               `,
               )
-              .in(
-                "product_id",
-                productIds,
-              )
               .order("product_id", {
                 ascending: true,
               })
@@ -422,7 +442,9 @@ async function ProductsDirectory({
           result.data ?? [];
 
         directoryImageRows.push(
-          ...pageImages,
+          ...pageImages.filter((image) =>
+            directoryProductIdSet.has(image.product_id),
+          ),
         );
 
         directoryImagePageNumber =

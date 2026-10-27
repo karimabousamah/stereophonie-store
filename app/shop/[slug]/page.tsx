@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Gamepad2, PackageCheck, Zap } from "lucide-react";
 
-import StoreProductCard from "@/components/storefront/store-product-card";
+import HomeProductShelfAutoLoop from "@/components/stereophonie-v3/home/home-product-shelf-auto-loop";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 import { STOREFRONT_RECOMMENDATION_CACHE_TAG } from "@/lib/storefront-cache-tags";
@@ -393,7 +393,7 @@ async function RelatedProductsSection({
    * taxonomy, merchandising flags, variant attributes and
    * availability to calculate exactly the same relevance score.
    *
-   * The final maximum-four products are hydrated separately
+   * The final maximum-eight products are hydrated separately
    * after scoring.
    */
   const relatedProductsPromise =
@@ -1083,9 +1083,20 @@ async function RelatedProductsSection({
    *
    * Exclude the current product locally before scoring candidates.
    */
+  /*
+   * ST_RELATED_EIGHT_RECOMMENDATIONS_V1
+   *
+   * Score the complete cached published catalogue instead
+   * of only its first 120 products.
+   *
+   * Product availability and compatibility requirements
+   * remain unchanged.
+   *
+   * Only the selected eight cards receive full image and
+   * configuration hydration.
+   */
   const relatedData = (relatedDataRaw ?? [])
-    .filter((item) => item.id !== product.id)
-    .slice(0, 120);
+    .filter((item) => item.id !== product.id);
 
   const scoredRelatedProducts = ((relatedData ?? []) as any[])
     .filter(isCandidateAvailable)
@@ -1150,14 +1161,14 @@ async function RelatedProductsSection({
   const usedFamilies = new Map<RecommendationFamily, number>();
 
   for (const candidate of strongRecommendations) {
-    if (diversifiedRecommendations.length >= 4) {
+    if (diversifiedRecommendations.length >= 8) {
       break;
     }
 
     const familyCount = usedFamilies.get(candidate.candidateFamily) ?? 0;
 
     /*
-     * Avoid filling all four cards with almost identical
+     * Avoid filling all eight cards with almost identical
      * alternatives when complementary items exist.
      */
     if (
@@ -1181,10 +1192,10 @@ async function RelatedProductsSection({
    * Only the final recommendation cards need their complete
    * storefront image + sellable variant graph.
    *
-   * Maximum database hydration size here is four products.
+   * Maximum database hydration size here is eight products.
    */
   const selectedRecommendationItems = diversifiedRecommendations
-    .slice(0, 4)
+    .slice(0, 8)
     .map(({ item }) => item);
 
   const selectedRecommendationIds = selectedRecommendationItems.map(
@@ -1352,15 +1363,10 @@ async function RelatedProductsSection({
         </div>
       </header>
 
-      <div className="st-related-products-grid st-product-v5__related-grid">
-        {relatedProducts.map((relatedProduct, index) => (
-          <StoreProductCard
-            key={relatedProduct.id}
-            product={relatedProduct}
-            index={index}
-          />
-        ))}
-      </div>
+      <HomeProductShelfAutoLoop
+        products={relatedProducts}
+        variant="related"
+      />
 
       <div
         className="st3-home-product-shelf__scroll-hint"
@@ -1371,7 +1377,7 @@ async function RelatedProductsSection({
         </span>
 
         <span className="st3-home-product-shelf__scroll-hint-desktop">
-          Scroll to explore
+          Swipe to explore
         </span>
 
         <span className="st3-home-product-shelf__scroll-hint-arrow">

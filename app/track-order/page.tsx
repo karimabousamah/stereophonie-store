@@ -175,24 +175,15 @@ export default function TrackOrderPage() {
     <div className="st-retail-shell">
       <V3Header />
 
-      <main className="st-retail-page st-retail-track">
-        <section className="st-retail-hero st-retail-track__hero">
-          <div className="st-retail-hero__copy">
-            <p className="st-retail-eyebrow">Delivery status</p>
-            <h1>Track your order.</h1>
-            <p>
-              Enter the order number from your confirmation and the matching
-              checkout email to see the latest status.
-            </p>
-          </div>
-        </section>
+      <main className="st-retail-page st-retail-compact-v1 st-retail-track">
+
 
         <section className="st-retail-track__lookup">
           <div className="st-retail-track__form-card">
             <div className="st-retail-section__heading">
               <div>
                 <p className="st-retail-eyebrow">Secure order lookup</p>
-                <h2>Where is your order?</h2>
+                <h1>Track your order</h1>
                 <p>Both fields must match the details used at checkout.</p>
               </div>
               <PackageSearch />
@@ -245,16 +236,25 @@ export default function TrackOrderPage() {
                 disabled={isPending}
               >
                 {isPending ? (
-                  <>
-                    <LoaderCircle className="st-retail-spin" />
-                    Looking up your order…
-                  </>
+                  <span>Looking up your order…</span>
                 ) : (
-                  <>
-                    Track order
-                    <ArrowRight />
-                  </>
+                  <span>Track order</span>
                 )}
+
+                {/*
+                  Keep the spinner mounted and rotating even
+                  before loading. Only its visibility changes.
+                  This prevents restarting the animation on click.
+                */}
+                <span
+                  className={`st-retail-track__submit-icon${
+                    isPending ? " is-loading" : ""
+                  }`}
+                  aria-hidden="true"
+                >
+                  <ArrowRight className="st-retail-track__submit-arrow" />
+                  <LoaderCircle className="st-retail-track__loading-spinner" />
+                </span>
               </button>
             </form>
           </div>

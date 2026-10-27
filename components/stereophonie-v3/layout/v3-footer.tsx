@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import WishlistReadyLink from "@/components/wishlist/wishlist-ready-link";
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa6";
 
 import { V3BrandLogo } from "@/components/stereophonie-v3/shared/v3-brand-logo";
@@ -105,13 +106,6 @@ export default function V3Footer() {
 
               <span>Store location</span>
 
-              <svg
-                className="st3-footer__store-location-arrow"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M9 18l6-6-6-6" />
-              </svg>
             </a>
           </div>
 
@@ -125,7 +119,7 @@ export default function V3Footer() {
 
               <Link href="/shop?offers=true">Offers</Link>
 
-              <Link href="/wishlist">Wishlist</Link>
+              <WishlistReadyLink href="/wishlist">Wishlist</WishlistReadyLink>
             </div>
 
             <div className="st3-footer__column">

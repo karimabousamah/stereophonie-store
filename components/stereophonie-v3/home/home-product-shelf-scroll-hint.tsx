@@ -156,7 +156,7 @@ export default function HomeProductShelfScrollHint() {
           </span>
 
           <span className="st3-home-product-shelf__scroll-hint-desktop">
-            Scroll to explore
+            Swipe to explore
           </span>
 
           <span className="st3-home-product-shelf__scroll-hint-arrow">

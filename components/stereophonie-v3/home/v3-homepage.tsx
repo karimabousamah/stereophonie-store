@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import V3Reveal from "@/components/stereophonie-v3/shared/v3-reveal";
-import V2ProductCard from "@/components/stereophonie-v2/shop/v2-product-card";
+import HomeProductShelfAutoLoop from "@/components/stereophonie-v3/home/home-product-shelf-auto-loop";
 import HomeProductShelfScrollHint from "@/components/stereophonie-v3/home/home-product-shelf-scroll-hint";
 import V3EntertainmentCategory from "@/components/stereophonie-v3/home/v3-entertainment-category";
 import ShopRoutePrefetch from "@/components/storefront/shop-route-prefetch";
@@ -202,13 +202,7 @@ function ProductSection({
           </div>
         </div>
 
-        <div className="st3-shop-card-context st3-home-product-shelf-context">
-          <div className="st3-shop-v4__grid st-product-grid-canonical st3-home-product-shelf">
-            {shelfProducts.map((product, index) => (
-              <V2ProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
-        </div>
+        <HomeProductShelfAutoLoop products={shelfProducts} />
 
         <HomeProductShelfScrollHint />
 

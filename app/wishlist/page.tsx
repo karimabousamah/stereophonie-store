@@ -17,45 +17,8 @@ export default function WishlistPage() {
     <div className="st-retail-shell">
       <V3Header />
 
-      <main className="st-retail-page st-retail-wishlist">
-        <section className="st-retail-hero st-retail-wishlist__hero st-wishlist-hero-final">
-          <div className="st-retail-hero__copy">
-            <p className="st-retail-eyebrow">Saved products</p>
-            <h1>Your wishlist.</h1>
-            <p>
-              Keep the products you are considering in one calm, useful place.
-              Come back to compare them or move straight to the shop.
-            </p>
+      <main className="st-retail-page st-retail-compact-v1 st-retail-wishlist">
 
-            <div className="st-retail-hero__actions">
-              <a
-                href="#wishlist-products"
-                className="st-retail-button st-retail-button--mustard"
-              >
-                View saved products
-                <ArrowRight />
-              </a>
-              <Link
-                href="/shop"
-                className="st-retail-button st-retail-button--quiet"
-              >
-                Continue shopping
-              </Link>
-            </div>
-          </div>
-
-          <div
-            className="st-retail-wishlist__summary st-wishlist-summary-final"
-            aria-label="Wishlist summary"
-          >
-            <div className="st-retail-wishlist__summary-icon st-wishlist-counter-clean-v2">
-              <Bookmark />
-            </div>
-            <p>Products saved</p>
-            <strong>{String(visibleCount).padStart(2, "0")}</strong>
-            <span>Your selection follows you across the store.</span>
-          </div>
-        </section>
 
         <section
           id="wishlist-products"
@@ -64,7 +27,7 @@ export default function WishlistPage() {
           <div className="st-retail-section__heading">
             <div>
               <p className="st-retail-eyebrow">Your selection</p>
-              <h2>Saved for later.</h2>
+              <h1>Your wishlist</h1>
               <p>
                 {visibleCount} {visibleCount === 1 ? "product" : "products"} in
                 your wishlist
@@ -77,21 +40,13 @@ export default function WishlistPage() {
                 className="st-retail-button st-retail-button--quiet st-retail-button--danger"
                 onClick={clearWishlist}
               >
-                <Trash2 />
                 Clear wishlist
+                <Trash2 aria-hidden="true" />
               </button>
             ) : null}
           </div>
 
-          {!hydrated ? (
-            <div className="st-retail-status-card" role="status">
-              <span className="st-retail-spinner" />
-              <div>
-                <h3>Loading your wishlist</h3>
-                <p>Your saved products will appear in a moment.</p>
-              </div>
-            </div>
-          ) : products.length === 0 ? (
+          {!hydrated ? null : products.length === 0 ? (
             <div className="st-retail-empty-card">
               <div className="st-retail-empty-card__icon">
                 <Bookmark />
@@ -121,8 +76,8 @@ export default function WishlistPage() {
                     className="st-retail-wishlist-card__remove"
                     aria-label={`Remove ${product.name} from wishlist`}
                   >
-                    <Trash2 />
-                    Remove from wishlist
+                    Remove
+                    <Trash2 aria-hidden="true" />
                   </button>
                 </article>
               ))}
@@ -130,21 +85,7 @@ export default function WishlistPage() {
           )}
         </section>
 
-        <section className="st-retail-assistance">
-          <div>
-            <div>
-              <p className="st-retail-eyebrow">Already placed an order?</p>
-              <h2>See where it is now.</h2>
-            </div>
-          </div>
-          <Link
-            href="/track-order"
-            className="st-retail-button st-retail-button--quiet"
-          >
-            Track your order
-            <ArrowRight />
-          </Link>
-        </section>
+
       </main>
 
       <V3Footer />

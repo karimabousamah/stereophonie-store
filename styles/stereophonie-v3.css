@@ -65800,7 +65800,7 @@ html body .st-product-v5 .st-product-v5__related-grid > .st-retail-card {
 
   html body .st-retail-shop .st-filter-v4__bar.is-mobile-open {
     padding-bottom: 22px !important;
-    border-bottom: 1px solid rgba(29, 29, 31, 0.075) !important;
+    border-bottom: 0 !important;
   }
 
   html
@@ -82395,7 +82395,6 @@ html body .st3-home-live
   cursor: pointer;
   box-shadow: 0 5px 14px rgba(245, 179, 53, 0.18);
   transition:
-    transform 180ms ease,
     opacity 180ms ease,
     background 180ms ease,
     box-shadow 180ms ease;
@@ -82410,7 +82409,6 @@ html body .st3-home-live
 .st-retail-card__preorder:hover {
   background: #f5b335;
   box-shadow: 0 7px 18px rgba(245, 179, 53, 0.24);
-  transform: translateY(-1px);
 }
 
 .st-retail-card__preorder:disabled {
@@ -84543,7 +84541,9 @@ html body .st-pg-immersive {
     .st-product-card-canonical
     .st-retail-card__footer
     > .st-retail-card__preorder {
-    transform: translate(-50%, 0) !important;
+    transform: none !important;
+    translate: none !important;
+    margin-top: 0 !important;
   }
 }
 
@@ -90747,7 +90747,7 @@ html body
     .st3-home-product-shelf__see-all,
     .st-retail-card__preorder,
     .st-carousel-nav-arrow
-  ):not(.st-retail-card__quick):not(.st-pg-immersive__arrow):not(.st-stock-notification-modal__close):hover {
+  ):not(.st-retail-card__quick):not(.st-pg-immersive__arrow):not(.st-stock-notification-modal__close):not(.st-retail-card__preorder):hover {
     transform: none !important;
     translate: none !important;
     scale: 1 !important;
@@ -90997,125 +90997,58 @@ html body .st3-footer__secondary-action:active {
  * FRESH-OPEN TEXT UNFOLD
  * ============================================================ */
 
+/*
+ * ST_HEADER_UNFOLD_BLUR_V1
+ *
+ * Opening text now sharpens from the inverse closing
+ * blur profile. Original fold/unfold timing, clipping,
+ * movement, and navigation state handling remain intact.
+ */
+/*
+ * ST_HEADER_MATCHED_REVERSE_UNFOLD_V3
+ *
+ * Fresh desktop opening:
+ * - exact reverse opacity/blur/translation stages of closing
+ * - subtle scaleY expansion creates a fold/unfold impression
+ * - no diagonal polygon cutting of characters
+ *
+ * Preserves the original stagger, timing, sheet expansion,
+ * category-switch behavior, closing fold, and mobile header.
+ */
 @keyframes st3HeaderInitialRowUnfold {
   0% {
     opacity: 0;
-
-    -webkit-clip-path: polygon(
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0
-    );
-    clip-path: polygon(
-      0 0,
-      0 0,
-      0 0,
-      0 0,
-      0 0
-    );
-
-    transform: translate3d(-2px, -3px, 0);
-
     filter: blur(5.5px);
     -webkit-filter: blur(5.5px);
+    transform: translate3d(-2px, -3px, 0) scaleY(0.84);
   }
 
-  24% {
-    opacity: 0.24;
-
-    -webkit-clip-path: polygon(
-      0 0,
-      46% 0,
-      0 46%,
-      0 46%,
-      0 0
-    );
-    clip-path: polygon(
-      0 0,
-      46% 0,
-      0 46%,
-      0 46%,
-      0 0
-    );
-
-    transform: translate3d(-1.25px, -2px, 0);
-
-    filter: blur(3.6px);
-    -webkit-filter: blur(3.6px);
+  20% {
+    opacity: 0.18;
+    filter: blur(3.8px);
+    -webkit-filter: blur(3.8px);
+    transform: translate3d(-1.35px, -2.2px, 0) scaleY(0.89);
   }
 
-  55% {
-    opacity: 0.72;
-
-    -webkit-clip-path: polygon(
-      0 0,
-      100% 0,
-      42% 100%,
-      0 100%,
-      0 0
-    );
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      42% 100%,
-      0 100%,
-      0 0
-    );
-
-    transform: translate3d(-0.45px, -0.6px, 0);
-
-    filter: blur(1.35px);
-    -webkit-filter: blur(1.35px);
+  45% {
+    opacity: 0.6;
+    filter: blur(1.7px);
+    -webkit-filter: blur(1.7px);
+    transform: translate3d(-0.55px, -1px, 0) scaleY(0.95);
   }
 
-  80% {
-    opacity: 0.96;
-
-    -webkit-clip-path: polygon(
-      0 0,
-      100% 0,
-      100% 74%,
-      74% 100%,
-      0 100%
-    );
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% 74%,
-      74% 100%,
-      0 100%
-    );
-
-    transform: translate3d(0, -0.1px, 0);
-
-    filter: blur(0.3px);
-    -webkit-filter: blur(0.3px);
+  78% {
+    opacity: 0.94;
+    filter: blur(0.4px);
+    -webkit-filter: blur(0.4px);
+    transform: translate3d(-0.1px, -0.2px, 0) scaleY(0.99);
   }
 
   100% {
     opacity: 1;
-
-    -webkit-clip-path: polygon(
-      0 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 100%
-    );
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 100%
-    );
-
-    transform: translate3d(0, 0, 0);
-
     filter: blur(0);
     -webkit-filter: blur(0);
+    transform: none;
   }
 }
 
@@ -91991,6 +91924,33 @@ html body .st3-footer__secondary-action:active {
 
 /* === ST DESKTOP HEADER FIXED CATEGORY REVEAL END === */
 
+/* ============================================================
+   ST_HEADER_SOFT_UNFOLD_NO_CLIPPING_V2
+
+   Fresh desktop opening only:
+   - blurred text gradually becomes clear
+   - subtle top-origin unfolding motion
+   - NO polygon clipping across individual characters
+
+   Closing fold, category switching, mobile header and
+   the expanding white sheet are deliberately untouched.
+   ============================================================ */
+
+html body
+  .st3-header
+  .st3-mega:has(.st3-mega__links).st3-mega--open.st3-mega--motion-initial:not(.st3-mega--closing)
+  :is(
+    .st3-mega__eyebrow,
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ) {
+  -webkit-clip-path: none !important;
+  clip-path: none !important;
+}
+
+/* === END ST_HEADER_SOFT_UNFOLD_NO_CLIPPING_V2 === */
+
+
 /* === ST CATEGORY ACTIVE FILTER ROW SPACING FINAL START === */
 
 /*
@@ -92131,6 +92091,71 @@ html body .st3-footer__secondary-action:active {
 }
 
 /* === ST CATEGORY ACTIVE FILTER ROW SPACING FINAL END === */
+
+
+/* === ST MOBILE FILTER TRUE OUTER SEPARATOR FINAL START === */
+
+/*
+ * PHONE FILTER SEPARATOR
+ *
+ * The visible divider belongs between:
+ *
+ *   filter controls / Sort
+ *          ↓
+ *      white gap
+ *          ↓
+ *       separator
+ *          ↓
+ *   filtered-results row / catalogue
+ *
+ * The collapsible filter bar previously owned the border. Its animated
+ * height made spacing changes inside the bar visually ineffective.
+ *
+ * The OUTER shop-controls wrapper is the stable layout boundary, so it
+ * now owns both:
+ *   1. the real white breathing room;
+ *   2. the single separator line.
+ *
+ * Desktop is intentionally untouched.
+ */
+@media (max-width: 768px) {
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__controls:has(.st-filter-v4__bar.is-mobile-open) {
+    box-sizing: border-box !important;
+
+    /*
+     * Guaranteed white space below the Sort pill before the line.
+     */
+    padding-bottom: 18px !important;
+
+    border-bottom:
+      1px solid rgba(29, 29, 31, 0.075) !important;
+  }
+
+  /*
+   * The inner animated bar must never draw a competing separator.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__controls
+  .st-filter-v4__bar.is-mobile-open {
+    border-bottom: 0 !important;
+  }
+
+  /*
+   * Keep the filtered-results row comfortably below the new divider.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__controls.has-active-state:has(
+    .st-filter-v4__bar.is-mobile-open
+  ) {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* === ST MOBILE FILTER TRUE OUTER SEPARATOR FINAL END === */
 
 /* === ST CHECKOUT COMPACT STATIC QUANTITY FINAL START === */
 
@@ -92417,3 +92442,1500 @@ html body
 }
 
 /* === ST CHECKOUT COMPACT STATIC QUANTITY FINAL END === */
+
+/* === ST ADAPTIVE DESKTOP TABLET HEADER FIT FINAL START === */
+
+/*
+ * ============================================================
+ * DESKTOP / TABLET HEADER — REAL WIDTH COLLISION PROTECTION
+ * ============================================================
+ *
+ * Applies ONLY to the existing desktop/tablet header architecture.
+ *
+ * Protected forever:
+ * - Store
+ * - Support
+ * - Search
+ * - Saved / Wishlist
+ * - Account
+ * - Cart
+ * - Track Order
+ * - existing right-zone utilities
+ *
+ * Catalogue category shortcuts are progressively removed from the END
+ * of the six-item shortcut list when real measured space becomes tight.
+ *
+ * The complete catalogue remains accessible through Store.
+ *
+ * <= 900px phone header is intentionally untouched.
+ */
+@media (min-width: 901px) {
+
+  html body .st3-header__nav {
+    position: relative !important;
+
+    min-width: 0 !important;
+
+    flex-shrink: 1 !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  /*
+   * Store and Support are fixed navigation anchors.
+   * They are NEVER allowed to compress or disappear.
+   */
+  html body
+  .st3-header__nav
+  > [data-st-header-fixed-nav="store"],
+  html body
+  .st3-header__nav
+  > [data-st-header-fixed-nav="support"] {
+    flex: 0 0 auto !important;
+
+    flex-shrink: 0 !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  /*
+   * Customer utilities are a protected zone.
+   *
+   * Category links must yield before this region can ever be touched.
+   */
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"] {
+    position: relative !important;
+
+    z-index: 3 !important;
+
+    flex: 0 0 auto !important;
+
+    flex-shrink: 0 !important;
+
+    min-width: max-content !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"]
+  .st3-header__actions {
+    flex: 0 0 auto !important;
+
+    flex-shrink: 0 !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  /*
+   * IMPORTANT:
+   *
+   * Do NOT use display:none here.
+   *
+   * The fit controller must still be able to measure the real width
+   * of every hidden category shortcut when a tablet rotates or a
+   * laptop window grows again.
+   *
+   * Absolute + hidden removes the category from layout while retaining
+   * its intrinsic measurable width.
+   */
+  html body
+  .st3-header__nav
+  > .st3-header__nav-category--hidden {
+    position: absolute !important;
+
+    visibility: hidden !important;
+
+    opacity: 0 !important;
+
+    pointer-events: none !important;
+
+    user-select: none !important;
+
+    white-space: nowrap !important;
+  }
+}
+
+/* === ST ADAPTIVE DESKTOP TABLET HEADER FIT FINAL END === */
+
+/* === ST DESKTOP TABLET HEADER SPACING SYMMETRY FINAL START === */
+
+/*
+ * ============================================================
+ * HEADER HORIZONTAL RHYTHM
+ * ============================================================
+ *
+ * One shared visual gap now governs:
+ *
+ * Store -> category
+ * category -> category
+ * category -> Support
+ * Support -> divider
+ * divider -> Search
+ * Track Order -> divider
+ * divider -> social buttons
+ *
+ * The same physical divider geometry is also used for:
+ *
+ * Store Location | Stereophonie logo
+ * Support | customer actions
+ * Track Order | social buttons
+ *
+ * The existing adaptive category-fit controller remains the authority
+ * for deciding how many category shortcuts can fit.
+ *
+ * Phone header <= 900px is intentionally untouched.
+ */
+
+.st3-header__social-divider {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  html body .st3-header {
+    --st3-header-horizontal-rhythm: 18px;
+    --st3-header-divider-height: 20px;
+    --st3-header-divider-color: rgba(29, 29, 31, 0.085);
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * STORE + CATEGORY LINKS + SUPPORT
+   * ----------------------------------------------------------
+   *
+   * Every visible navigation item gets the exact same white gap.
+   */
+  html body .st3-header__nav {
+    gap: var(--st3-header-horizontal-rhythm) !important;
+
+    column-gap:
+      var(--st3-header-horizontal-rhythm) !important;
+
+    row-gap: 0 !important;
+
+    /*
+     * This is the Support -> divider white gap.
+     */
+    margin-right:
+      var(--st3-header-horizontal-rhythm) !important;
+  }
+
+
+  html body
+  .st3-header__nav
+  > .st3-header__nav-item {
+    margin: 0 !important;
+
+    flex: 0 0 auto !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * ONE PHYSICAL DIVIDER DESIGN
+   * ----------------------------------------------------------
+   *
+   * All three header separators now have identical:
+   *
+   * width
+   * height
+   * color
+   * opacity
+   * vertical alignment
+   */
+  html body .st3-header__visit-divider,
+  html body .st3-header__utility-divider,
+  html body .st3-header__social-divider {
+    box-sizing: border-box !important;
+
+    display: block !important;
+
+    width: 1px !important;
+    min-width: 1px !important;
+    max-width: 1px !important;
+
+    height: var(--st3-header-divider-height) !important;
+    min-height: var(--st3-header-divider-height) !important;
+    max-height: var(--st3-header-divider-height) !important;
+
+    padding: 0 !important;
+
+    flex: 0 0 1px !important;
+
+    align-self: center !important;
+
+    border: 0 !important;
+
+    background:
+      var(--st3-header-divider-color) !important;
+
+    opacity: 1 !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * STORE LOCATION | LOGO
+   * ----------------------------------------------------------
+   *
+   * Same whitespace on both sides of the separator.
+   */
+  html body .st3-header__visit-divider {
+    margin:
+      0
+      var(--st3-header-horizontal-rhythm)
+      0
+      var(--st3-header-horizontal-rhythm) !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * SUPPORT | SEARCH
+   * ----------------------------------------------------------
+   *
+   * Support -> divider is supplied by nav margin-right above.
+   *
+   * This margin is therefore ONLY:
+   *
+   * divider -> Search
+   *
+   * and is exactly equal to Support -> divider.
+   */
+  html body .st3-header__utility-divider {
+    margin:
+      0
+      var(--st3-header-horizontal-rhythm)
+      0
+      0 !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * TRACK ORDER | SOCIALS
+   * ----------------------------------------------------------
+   *
+   * Exact mirror of the Support / Search separator:
+   *
+   * Track Order -> divider = 18px
+   * divider -> Instagram = 18px
+   */
+  html body .st3-header__social-divider {
+    margin:
+      0
+      var(--st3-header-horizontal-rhythm)
+      0
+      var(--st3-header-horizontal-rhythm) !important;
+  }
+
+
+  /*
+   * The old social implementation created separation with both
+   * margin-left AND padding-left.
+   *
+   * The real divider now owns that separation, so remove the old
+   * artificial spacing completely.
+   */
+  html body .st3-header__socials {
+    margin-left: 0 !important;
+
+    padding-left: 0 !important;
+  }
+
+
+  /*
+   * Keep the right-side architecture as one stationary row.
+   */
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"] {
+    gap: 0 !important;
+
+    column-gap: 0 !important;
+  }
+
+
+  /*
+   * Search / Saved / Account / Cart / Track Order remain protected
+   * exactly as before. No icon is removed on tablet/laptop/desktop.
+   */
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"]
+  .st3-header__actions {
+    flex-shrink: 0 !important;
+  }
+
+
+  html body
+  .st3-header__actions
+  > .st3-header__track-icon {
+    display: inline-flex !important;
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+  }
+}
+
+/* === ST DESKTOP TABLET HEADER SPACING SYMMETRY FINAL END === */
+
+/* === ST HEADER TRUE SEPARATOR SYMMETRY REPAIR START === */
+
+/*
+ * ============================================================
+ * TRUE DESKTOP / TABLET HEADER SYMMETRY
+ * ============================================================
+ *
+ * Why the previous version still looked uneven:
+ *
+ * .st3-header__nav is allowed to grow.
+ *
+ * So even with:
+ *
+ *   nav margin-right: 18px
+ *
+ * Support itself could still sit considerably farther than 18px
+ * from the nav's physical right edge.
+ *
+ * FINAL ARCHITECTURE:
+ *
+ * 1. Pack Store / categories / Support against the RIGHT edge
+ *    of their available navigation area.
+ *
+ * 2. Keep one identical 18px gap between every nav item.
+ *
+ * 3. Remove nav margin-right completely.
+ *
+ * 4. Let the ACTUAL separator own 18px on BOTH sides:
+ *
+ *       Support   18px   |   18px   Search
+ *
+ * 5. Do exactly the same for:
+ *
+ *       Track Order   18px   |   18px   Instagram
+ *
+ * 6. Completely neutralize every historical social-group
+ *    separator / border / pseudo-element.
+ *
+ * Existing adaptive category hiding remains untouched.
+ * Phone header <= 900px remains untouched.
+ */
+
+@media (min-width: 901px) {
+
+  /*
+   * ----------------------------------------------------------
+   * NAVIGATION GROUP
+   * ----------------------------------------------------------
+   *
+   * Packing to flex-end removes invisible trailing free space
+   * after Support while moving the whole nav group together.
+   */
+  html body .st3-header__nav {
+    justify-content: flex-end !important;
+
+    gap:
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+
+    column-gap:
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+
+    row-gap: 0 !important;
+
+    margin-right: 0 !important;
+  }
+
+
+  /*
+   * Every visible Store / category / Support item remains
+   * one rigid piece with exactly the shared navigation gap.
+   */
+  html body
+  .st3-header__nav
+  > .st3-header__nav-item:not(
+    .st3-header__nav-category--hidden
+  ) {
+    flex: 0 0 auto !important;
+
+    margin: 0 !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * SUPPORT | SEARCH
+   * ----------------------------------------------------------
+   *
+   * The separator itself now owns BOTH sides.
+   *
+   * No parent margin.
+   * No invisible flex remainder.
+   */
+  html body .st3-header__utility-divider {
+    margin:
+      0
+      var(--st3-header-horizontal-rhythm, 18px)
+      0
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+  }
+
+
+  /*
+   * Right zone contributes no additional spacing around
+   * the Support/Search separator.
+   */
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"] {
+    margin-left: 0 !important;
+
+    padding-left: 0 !important;
+
+    gap: 0 !important;
+
+    column-gap: 0 !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * TRACK ORDER | SOCIALS
+   * ----------------------------------------------------------
+   *
+   * Keep the new real separator as the ONLY divider.
+   */
+  html body .st3-header__social-divider {
+    margin:
+      0
+      var(--st3-header-horizontal-rhythm, 18px)
+      0
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * DESTROY EVERY LEGACY SOCIAL SEPARATOR
+   * ----------------------------------------------------------
+   *
+   * Historical versions created separation using combinations of:
+   *
+   * margin-left
+   * padding-left
+   * border-left
+   * pseudo-elements
+   * box-shadow / background lines
+   *
+   * None of those are allowed anymore.
+   *
+   * The dedicated .st3-header__social-divider is now the sole owner.
+   */
+  html body .st3-header__socials {
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    border: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+
+    outline: 0 !important;
+
+    box-shadow: none !important;
+
+    background-image: none !important;
+  }
+
+
+  html body .st3-header__socials::before,
+  html body .st3-header__socials::after {
+    content: none !important;
+
+    display: none !important;
+
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+
+    height: 0 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 0 !important;
+
+    background: transparent !important;
+    background-image: none !important;
+
+    box-shadow: none !important;
+
+    opacity: 0 !important;
+
+    pointer-events: none !important;
+  }
+
+
+  /*
+   * First social button must also never inherit a historical
+   * left separator from an older social-control implementation.
+   */
+  html body
+  .st3-header__socials
+  > a:first-child {
+    margin-left: 0 !important;
+
+    padding-left: 0 !important;
+
+    border-left: 0 !important;
+
+    box-shadow: none !important;
+  }
+}
+
+/* === ST HEADER TRUE SEPARATOR SYMMETRY REPAIR END === */
+
+/* === ST HEADER EXACT TWO-SIDED SEPARATOR GAPS FINAL START === */
+
+/*
+ * ============================================================
+ * EXACT TWO-SIDED HEADER SEPARATOR GEOMETRY
+ * ============================================================
+ *
+ * FINAL RULE:
+ *
+ * Neighboring controls contribute ZERO external horizontal space.
+ *
+ * The separator itself is the ONLY element allowed to create the
+ * white breathing room on its left and right.
+ *
+ * Therefore:
+ *
+ * Store Location  <18px>  |  <18px>  Logo
+ *
+ * Track Order     <18px>  |  <18px>  Instagram
+ *
+ * Phone header <= 900px remains untouched.
+ */
+
+@media (min-width: 901px) {
+
+  /*
+   * ==========================================================
+   * STORE LOCATION | LOGO
+   * ==========================================================
+   */
+
+  /*
+   * Store Location contributes no external right-side spacing.
+   * Its internal padding remains untouched.
+   */
+  html body .st3-header__visit-us {
+    margin-right: 0 !important;
+  }
+
+
+  /*
+   * The divider alone owns the exact same physical gap
+   * on BOTH sides.
+   */
+  html body .st3-header__visit-divider {
+    margin-top: 0 !important;
+
+    margin-right:
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+
+    margin-bottom: 0 !important;
+
+    margin-left:
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+  }
+
+
+  /*
+   * Logo contributes no external left-side spacing.
+   */
+  html body .st3-header__logo {
+    margin-left: 0 !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * TRACK ORDER | INSTAGRAM
+   * ==========================================================
+   */
+
+  /*
+   * Actions rail contributes no spacing after Track Order.
+   */
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"]
+  .st3-header__actions {
+    margin-right: 0 !important;
+
+    padding-right: 0 !important;
+  }
+
+
+  /*
+   * Track Order itself contributes no right-side spacing.
+   */
+  html body
+  .st3-header__actions
+  > .st3-header__track-icon {
+    margin-right: 0 !important;
+  }
+
+
+  /*
+   * Again, the physical divider is the ONLY spacing owner.
+   */
+  html body .st3-header__social-divider {
+    margin-top: 0 !important;
+
+    margin-right:
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+
+    margin-bottom: 0 !important;
+
+    margin-left:
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+  }
+
+
+  /*
+   * Social container contributes absolutely nothing before Instagram.
+   *
+   * This also permanently defeats the historical:
+   *
+   * margin-left
+   * padding-left
+   * border-left
+   *
+   * implementation.
+   */
+  html body .st3-header__socials {
+    margin-left: 0 !important;
+
+    padding-left: 0 !important;
+
+    border-left: 0 !important;
+  }
+
+
+  /*
+   * Instagram itself also contributes no external left spacing.
+   */
+  html body
+  .st3-header__socials
+  > a:first-child {
+    margin-left: 0 !important;
+
+    padding-left: 0 !important;
+
+    border-left: 0 !important;
+  }
+
+
+  /*
+   * No hidden legacy line may survive between the real divider
+   * and Instagram.
+   */
+  html body .st3-header__socials::before,
+  html body .st3-header__socials::after,
+  html body
+  .st3-header__socials
+  > a:first-child::before,
+  html body
+  .st3-header__socials
+  > a:first-child::after {
+    border-left: 0 !important;
+    border-right: 0 !important;
+
+    box-shadow: none !important;
+  }
+}
+
+/* === ST HEADER EXACT TWO-SIDED SEPARATOR GAPS FINAL END === */
+
+/* === ST HEADER VISIBLE SEPARATOR CALIBRATION FINAL START === */
+
+/*
+ * ============================================================
+ * FINAL VISUAL — NOT BOX — SEPARATOR CALIBRATION
+ * ============================================================
+ *
+ * The previous 18px / 18px margins were mathematically equal,
+ * but the visible result was not:
+ *
+ * 1. The Stereophonie logo artwork contains a small transparent
+ *    inset before its visible pixels.
+ *
+ * 2. Track Order is a transparent 35px utility button whose cube
+ *    glyph sits inset from the button's physical right edge.
+ *
+ * Instagram, by contrast, has a visible mustard button surface.
+ *
+ * Therefore the divider margins below compensate ONLY for those
+ * internal visual insets.
+ *
+ * The target is equal VISIBLE white space in the real header.
+ *
+ * Phone header <= 900px remains untouched.
+ */
+
+@media (min-width: 901px) {
+
+  /*
+   * ----------------------------------------------------------
+   * STORE LOCATION | STEREOPHONIE LOGO
+   * ----------------------------------------------------------
+   *
+   * Keep the Store Location side at the established rhythm.
+   *
+   * Slightly reduce the logo side to compensate for the logo
+   * artwork's transparent left inset.
+   */
+  html body .st3-header__visit-divider {
+    margin-left: 18px !important;
+    margin-right: 15px !important;
+  }
+
+
+  /*
+   * The two neighboring elements are still forbidden from
+   * adding their own external spacing.
+   */
+  html body .st3-header__visit-us {
+    margin-right: 0 !important;
+  }
+
+  html body .st3-header__logo {
+    margin-left: 0 !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * TRACK ORDER | INSTAGRAM
+   * ----------------------------------------------------------
+   *
+   * Track Order is visually inset inside its transparent utility
+   * button. Its visible cube therefore already contributes roughly
+   * 10px of apparent whitespace before the divider.
+   *
+   * Use 8px physical CSS spacing on that side:
+   *
+   *   ~10px internal glyph inset + 8px margin
+   *   ≈
+   *   18px divider -> visible Instagram button edge
+   *
+   * This produces the visually symmetrical result requested.
+   */
+  html body .st3-header__social-divider {
+    margin-left: 8px !important;
+    margin-right: 18px !important;
+  }
+
+
+  /*
+   * Nothing else may distort the calibrated Track/Instagram gap.
+   */
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"]
+  .st3-header__actions {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  html body
+  .st3-header__actions
+  > .st3-header__track-icon {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  html body .st3-header__socials {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    border-left: 0 !important;
+  }
+
+  html body
+  .st3-header__socials
+  > a:first-child {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    border-left: 0 !important;
+  }
+}
+
+/* === ST HEADER VISIBLE SEPARATOR CALIBRATION FINAL END === */
+
+
+/* === ST ASSISTANT TARGETED POLISH — NO LAYOUT REDESIGN START === */
+
+/*
+ * Deliberately untouched:
+ * popup width / height / position / radius
+ * shell architecture
+ * messages
+ * scrolling
+ * composer
+ * product cards
+ * suggestion-card dimensions
+ */
+
+
+/* Remove the unwanted mustard segment around the header divider. */
+.st3-ai-panel__top::before,
+.st3-ai-panel__top::after {
+  content: none !important;
+  display: none !important;
+}
+
+
+/* Eyebrow removed from JSX; defensive rule only. */
+.st3-ai-panel__eyebrow {
+  display: none !important;
+}
+
+
+/* Keep title in its original area after removing the eyebrow. */
+.st3-ai-panel__top h2 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+
+/*
+ * TRUE HEADER ALIGNMENT
+ *
+ * The close button is a normal flex child of .st3-ai-panel__top.
+ * Therefore its center aligns directly with "How can I help?"
+ * instead of being manually nudged from an old absolute position.
+ */
+html body .st3-ai-panel__top > .st-ai-close-final-v20,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:hover,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:active,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:focus,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:focus-visible {
+  position: static !important;
+
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+
+  margin-top: 0 !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: auto !important;
+
+  align-self: center !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+
+  animation: none !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+
+/*
+ * Stop hover/press rules from adding additional movement
+ * to the existing side tab itself.
+ *
+ * The original popup/shell architecture remains unchanged.
+ */
+html body .st3-ai-shell > button.st3-ai-edge-tab,
+html body .st3-ai-shell > button.st3-ai-edge-tab:hover,
+html body .st3-ai-shell > button.st3-ai-edge-tab:active,
+html body .st3-ai-shell > button.st3-ai-edge-tab:focus,
+html body .st3-ai-shell > button.st3-ai-edge-tab:focus-visible {
+  /*
+   * The SHELL owns the open / close movement.
+   *
+   * The TAB is permanently anchored to the left edge of that shell.
+   * Hover, active, focus and open state use EXACTLY the same geometry.
+   */
+  position: absolute !important;
+
+  top: 50% !important;
+  bottom: auto !important;
+
+  left: calc(-1 * var(--st-ai-shell-handle-width)) !important;
+  right: auto !important;
+
+  width: var(--st-ai-shell-handle-width) !important;
+  min-width: var(--st-ai-shell-handle-width) !important;
+  max-width: var(--st-ai-shell-handle-width) !important;
+
+  height: 118px !important;
+  min-height: 118px !important;
+  max-height: 118px !important;
+
+  margin: 0 !important;
+  padding: 8px 4px !important;
+
+  box-sizing: border-box !important;
+
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+
+  animation: none !important;
+  will-change: auto !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+
+/* Proper non-text shortcut icon. */
+.st3-ai-suggestion__icon {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  margin-left: auto !important;
+
+  color: #77777c !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+.st3-ai-suggestion__icon svg {
+  width: 16px !important;
+  height: 16px !important;
+
+  display: block !important;
+
+  transform: none !important;
+  translate: none !important;
+}
+
+.st3-ai-suggestion:hover .st3-ai-suggestion__icon,
+.st3-ai-suggestion:active .st3-ai-suggestion__icon,
+.st3-ai-suggestion:focus-visible .st3-ai-suggestion__icon,
+.st3-ai-suggestion:hover .st3-ai-suggestion__icon svg,
+.st3-ai-suggestion:active .st3-ai-suggestion__icon svg,
+.st3-ai-suggestion:focus-visible .st3-ai-suggestion__icon svg {
+  transform: none !important;
+  translate: none !important;
+}
+
+/* === ST ASSISTANT TARGETED POLISH — NO LAYOUT REDESIGN END === */
+
+
+/* === ST AI ASSISTANT UI STABILITY V8 START === */
+
+/*
+ * Compact viewport geometry.
+ *
+ * Still anchored to the shell.
+ * Still identical in every interaction state.
+ */
+@media (max-width: 640px) {
+  html body .st3-ai-shell {
+    --st-ai-shell-handle-width: 32px !important;
+  }
+
+  html body .st3-ai-shell > button.st3-ai-edge-tab,
+  html body .st3-ai-shell > button.st3-ai-edge-tab:hover,
+  html body .st3-ai-shell > button.st3-ai-edge-tab:active,
+  html body .st3-ai-shell > button.st3-ai-edge-tab:focus,
+  html body .st3-ai-shell > button.st3-ai-edge-tab:focus-visible {
+    top: 50% !important;
+
+    height: 108px !important;
+    min-height: 108px !important;
+    max-height: 108px !important;
+
+    transform: translateY(-50%) !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: 0deg !important;
+  }
+}
+
+/* === ST AI ASSISTANT UI STABILITY V8 END === */
+
+
+/* === ST AI EDGE TAB ZERO PHYSICAL MOTION V9 START === */
+
+/*
+ * The popup shell is the ONLY object allowed to travel.
+ *
+ * The tab is anchored to that shell and has identical geometry
+ * in normal / hover / active / focus states.
+ */
+
+html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"],
+html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:hover,
+html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:active,
+html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:focus,
+html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:focus-visible {
+  position: absolute !important;
+
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: calc(-1 * var(--st-ai-shell-handle-width)) !important;
+
+  width: var(--st-ai-shell-handle-width) !important;
+  min-width: var(--st-ai-shell-handle-width) !important;
+  max-width: var(--st-ai-shell-handle-width) !important;
+
+  height: 118px !important;
+  min-height: 118px !important;
+  max-height: 118px !important;
+
+  margin: 0 !important;
+  padding: 8px 4px !important;
+
+  box-sizing: border-box !important;
+
+  transform: translateY(-50%) !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+
+  animation: none !important;
+  transition: none !important;
+  will-change: auto !important;
+}
+
+
+/*
+ * Freeze every visible child as well.
+ */
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]
+> *,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]:hover
+> *,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]:active
+> *,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]:focus-visible
+> * {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+
+  animation: none !important;
+  transition: none !important;
+}
+
+
+/*
+ * Freeze pseudo-elements too, in case an old generation uses them.
+ */
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]::before,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]::after,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]:hover::before,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]:hover::after,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]:active::before,
+html body
+.st3-ai-shell
+> button[data-st-ai-edge-launcher="true"]:active::after {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+
+  animation: none !important;
+  transition: none !important;
+}
+
+
+@media (max-width: 640px) {
+  html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"],
+  html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:hover,
+  html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:active,
+  html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:focus,
+  html body .st3-ai-shell > button[data-st-ai-edge-launcher="true"]:focus-visible {
+    height: 108px !important;
+    min-height: 108px !important;
+    max-height: 108px !important;
+
+    transform: translateY(-50%) !important;
+  }
+}
+
+/* === ST AI EDGE TAB ZERO PHYSICAL MOTION V9 END === */
+
+/* === ST AI CLOSE X ZERO MOTION FINAL START === */
+
+/*
+ * Global storefront CSS moves direct-child button SVGs on hover.
+ * The AI close icon must never move inside its button.
+ */
+
+html body
+.st3-ai-panel__top
+> .st-ai-close-final-v20
+> .st-ai-close-final-v20__icon,
+
+html body
+.st3-ai-panel__top
+> .st-ai-close-final-v20:hover
+> .st-ai-close-final-v20__icon,
+
+html body
+.st3-ai-panel__top
+> .st-ai-close-final-v20:active
+> .st-ai-close-final-v20__icon,
+
+html body
+.st3-ai-panel__top
+> .st-ai-close-final-v20:focus
+> .st-ai-close-final-v20__icon,
+
+html body
+.st3-ai-panel__top
+> .st-ai-close-final-v20:focus-visible
+> .st-ai-close-final-v20__icon {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+
+  margin: 0 !important;
+
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Keep the button itself physically stationary too. */
+
+html body .st3-ai-panel__top > .st-ai-close-final-v20,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:hover,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:active,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:focus,
+html body .st3-ai-panel__top > .st-ai-close-final-v20:focus-visible {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: 0deg !important;
+
+  animation: none !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+/* === ST AI CLOSE X ZERO MOTION FINAL END === */
+
+
+/* === ST_PAYMENT_FULFILLMENT_PARITY_V1 START === */
+
+/*
+ * Cash on Delivery uses the same visual treatment as
+ * the checkout's Delivery and Pickup selections.
+ *
+ * Keep the original payment component and functionality.
+ * Do not affect the disabled Whish Money Pay option.
+ */
+
+html body
+  .st-checkout-review-v2
+  #payment-methods
+  button.st-checkout-payment-option {
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  background-image: none !important;
+  color: #1d1d1f !important;
+  box-shadow: none !important;
+  transform: none !important;
+  translate: none !important;
+  transition:
+    border-color 300ms ease,
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    color 300ms ease !important;
+}
+
+/* Same resting selected treatment as Delivery/Pickup. */
+html body
+  .st-checkout-review-v2
+  #payment-methods
+  button.st-checkout-payment-option[aria-pressed="true"] {
+  border-color: rgba(253, 183, 62, 0.82) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(253, 183, 62, 0.105),
+    rgba(253, 183, 62, 0.035)
+  ) !important;
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.075),
+    0 7px 22px rgba(29, 29, 31, 0.035) !important;
+}
+
+/* Match the existing Delivery/Pickup hover, without motion. */
+@media (hover: hover) and (pointer: fine) {
+  html body
+    .st-checkout-review-v2
+    #payment-methods
+    button.st-checkout-payment-option:hover {
+    border-color: rgba(197, 139, 34, 0.8) !important;
+    background: #fffaf0 !important;
+    background-color: #fffaf0 !important;
+    background-image: none !important;
+    color: #1d1d1f !important;
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.11),
+      0 10px 30px rgba(196, 135, 27, 0.13) !important;
+    transform: none !important;
+  }
+}
+
+/* Icon rests in a soft mustard tone, not solid mustard. */
+html body
+  .st-checkout-review-v2
+  #payment-methods
+  button.st-checkout-payment-option
+  > .st-checkout-payment-option__icon {
+  border: 1px solid rgba(29, 29, 31, 0.1) !important;
+  background: #f6f6f6 !important;
+  color: #68686d !important;
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    color 300ms ease !important;
+}
+
+/* Selected icon exactly mirrors fulfillment selection styling. */
+html body
+  .st-checkout-review-v2
+  #payment-methods
+  button.st-checkout-payment-option[aria-pressed="true"]
+  > .st-checkout-payment-option__icon {
+  border-color: rgba(253, 183, 62, 0.42) !important;
+  background: rgba(253, 183, 62, 0.2) !important;
+  color: #8a5700 !important;
+}
+
+/* No icon movement or unexpected scaling on hover. */
+html body
+  .st-checkout-review-v2
+  #payment-methods
+  button.st-checkout-payment-option:hover
+  > .st-checkout-payment-option__icon {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+/* === ST_PAYMENT_FULFILLMENT_PARITY_V1 END === */
+
+/* ============================================================
+   ST_RELATED_HORIZONTAL_SHELF_AND_STOCK_V2
+
+   PRODUCT DETAIL — YOU MAY ALSO LIKE
+
+   1. One horizontal row, never a multi-row product grid.
+   2. Scroll right to discover all eight recommendations.
+   3. Preserve existing card design and interactions.
+   4. Center stock status against price vertically.
+
+   Scope: product-detail recommendation shelf only.
+
+   Homepage, Shop, Category and Admin remain unchanged.
+   ============================================================ */
+
+/* ONE ROW — HORIZONTAL SCROLL */
+
+html body
+main.st-product-v5
+.st-product-v5__related.st-product-v5__related-explore
+> .st-related-products-grid.st-product-v5__related-grid {
+  box-sizing: border-box !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+
+  grid-template-columns: none !important;
+  grid-auto-flow: unset !important;
+
+  align-items: stretch !important;
+
+  gap: 20px !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+
+  padding: 8px 0 16px !important;
+
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 0;
+
+  overscroll-behavior-x: contain;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
+}
+
+/* Hide the scrollbar without disabling scrolling. */
+
+html body
+main.st-product-v5
+.st-product-v5__related.st-product-v5__related-explore
+> .st-related-products-grid.st-product-v5__related-grid::-webkit-scrollbar {
+  display: none;
+}
+
+/* Desktop: four cards visible, remaining cards scroll right. */
+
+html body
+main.st-product-v5
+.st-product-v5__related.st-product-v5__related-explore
+> .st-related-products-grid.st-product-v5__related-grid
+> .st-retail-card {
+  box-sizing: border-box !important;
+
+  flex: 0 0 calc((100% - 60px) / 4) !important;
+
+  width: calc((100% - 60px) / 4) !important;
+  max-width: none !important;
+
+  min-width: 0 !important;
+
+  scroll-snap-align: start;
+}
+
+/* Tablet: fewer visible cards, still one horizontal row. */
+
+@media (min-width: 621px) and (max-width: 1000px) {
+  html body
+  main.st-product-v5
+  .st-product-v5__related.st-product-v5__related-explore
+  > .st-related-products-grid.st-product-v5__related-grid
+  > .st-retail-card {
+    flex: 0 0 calc((100% - 40px) / 3) !important;
+
+    width: calc((100% - 40px) / 3) !important;
+
+    max-width: none !important;
+  }
+}
+
+/* Mobile: natural horizontal swipe, never vertical wrapping. */
+
+@media (max-width: 620px) {
+  html body
+  main.st-product-v5
+  .st-product-v5__related.st-product-v5__related-explore
+  > .st-related-products-grid.st-product-v5__related-grid {
+    gap: 12px !important;
+
+    scroll-snap-type: x mandatory;
+  }
+
+  html body
+  main.st-product-v5
+  .st-product-v5__related.st-product-v5__related-explore
+  > .st-related-products-grid.st-product-v5__related-grid
+  > .st-retail-card {
+    flex: 0 0 min(74vw, 218px) !important;
+
+    width: min(74vw, 218px) !important;
+
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+}
+
+/* ============================================================
+   STOCK STATUS — TRUE VERTICAL CENTER WITH PRICE
+
+   Remove the previous upward -2px translation.
+   Let the footer align price and status by their centers.
+
+   Do not affect pricing, badges, colour options,
+   buttons or other product-card contexts.
+   ============================================================ */
+
+html body
+main.st-product-v5
+.st-product-v5__related
+.st-related-products-grid
+.st-retail-card__footer {
+  align-items: center !important;
+}
+
+html body
+main.st-product-v5
+.st-product-v5__related
+.st-related-products-grid
+.st-retail-card__footer
+> span {
+  align-self: center !important;
+
+  top: auto !important;
+
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+
+  transform: none !important;
+}
+
+/* === END ST_RELATED_HORIZONTAL_SHELF_AND_STOCK_V2 === */

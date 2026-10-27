@@ -134,7 +134,7 @@ export default function AccountSigninSuccessToast({
           type="button"
           onClick={closeToast}
           aria-label="Close sign in confirmation"
-          className="st-account-toast-close absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-[10px] border border-black/[0.06] bg-[#f7f7f5] text-black/45 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#f5b335]/12"
+          className="st-account-toast-close st-storefront-popup-close absolute right-3 top-1/2 -mt-4 grid h-8 w-8 place-items-center rounded-[10px] border border-black/[0.06] bg-[#f7f7f5] text-black/45 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#f5b335]/12"
         >
           <X className="h-4 w-4" />
         </button>
@@ -487,19 +487,23 @@ export default function AccountSigninSuccessToast({
             background-color 180ms ease,
             border-color 180ms ease,
             color 180ms ease,
-            transform 180ms ease !important;
+            box-shadow 180ms ease !important;
         }
 
         @media (hover: hover) {
           .st-account-signin-toast__card
             button[aria-label="Close sign in confirmation"]:hover {
-            border-color: rgba(29, 29, 31, 0.1) !important;
+            border-color: rgba(197, 139, 34, 0.8) !important;
 
-            background: #efeff1 !important;
+            background: #fffaf0 !important;
 
             color: #1d1d1f !important;
 
-            transform: scale(0.96);
+            box-shadow:
+              0 0 0 4px rgba(245, 179, 53, 0.11),
+              0 10px 30px rgba(196, 135, 27, 0.13) !important;
+
+            transform: none !important;
           }
         }
 

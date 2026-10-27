@@ -212,7 +212,7 @@ function StableModal({
           type="button"
           onClick={onClose}
           aria-label="Close confirmation"
-          className="absolute right-5 top-5 grid h-9 w-9 place-items-center border border-neutral-200 bg-white text-lg text-neutral-500 transition-[border-color,background-color,color,box-shadow] duration-200 hover:border-[#d9a43d] hover:bg-[#fffaf0] hover:text-[#9a680b] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.12),0_0_18px_rgba(245,179,53,0.18)] focus-visible:border-[#d9a43d] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_rgba(245,179,53,0.16)] active:transform-none"
+          className="st-storefront-popup-close absolute right-5 top-5 grid h-9 w-9 place-items-center border border-neutral-200 bg-white text-lg text-neutral-500 transition-[border-color,background-color,color,box-shadow] duration-200 hover:border-[#d9a43d] hover:bg-[#fffaf0] hover:text-[#9a680b] hover:shadow-[0_0_0_4px_rgba(245,179,53,0.12),0_0_18px_rgba(245,179,53,0.18)] focus-visible:border-[#d9a43d] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_rgba(245,179,53,0.16)] active:transform-none"
         >
           <span
             aria-hidden="true"

@@ -1,15 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
-  ArrowRight,
-  Gamepad2,
-  Headphones,
-  Laptop,
   MessagesSquare,
   PackageCheck,
   ShieldCheck,
-  Smartphone,
-  Sparkles,
   CheckCircle2,
   Clock3,
   MapPin,
@@ -23,7 +16,7 @@ import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 export const metadata: Metadata = {
   title: "About Stereophonie",
   description:
-    "Discover Stereophonie, a Lebanon-based destination for thoughtfully selected consumer technology and support.",
+    "Learn about Stereophonie, a Lebanese electronics store established in 2008.",
 };
 
 const values = [
@@ -53,70 +46,32 @@ const values = [
   },
 ];
 
-const categories = [
-  { icon: Smartphone, label: "Phones & wearables" },
-  { icon: Laptop, label: "Computing" },
-  { icon: Gamepad2, label: "Gaming" },
-  { icon: Headphones, label: "Audio & accessories" },
-];
-
 export default function AboutPage() {
   return (
     <div className="st-retail-shell">
       <V3Header />
 
-      <main className="st-retail-page st-support-page st-about-page">
-        <section className="st-retail-hero st-about-page__hero">
-          <div className="st-retail-hero__copy">
-            <p className="st-retail-eyebrow">About Stereophonie</p>
-            <h1>Technology, chosen with purpose.</h1>
-            <p>
-              Stereophonie is a Lebanon-based technology store built to make
-              discovering, choosing, and receiving the right products feel
-              simpler.
-            </p>
-            <div className="st-retail-hero__actions">
-              <Link
-                href="/shop"
-                className="st-retail-button st-retail-button--mustard"
-              >
-                Explore the store
-                <ArrowRight />
-              </Link>
-              <Link
-                href="/delivery"
-                className="st-retail-button st-retail-button--quiet"
-              >
-                How delivery works
-              </Link>
-            </div>
-          </div>
+      <main className="st-retail-page st-retail-compact-v1 st-support-page st-about-page">
 
-          <div className="st-about-page__wordmark" aria-hidden="true">
-            <img
-              src="/brand/stereophonie-store-logo.png"
-              alt="Stereophonie Store"
-              className="h-auto w-[210px] max-w-[72%] object-contain sm:w-[245px]"
-            />
-          </div>
-        </section>
 
         <section className="st-about-page__story">
           <div>
-            <p className="st-retail-eyebrow">Why we exist</p>
-            <h2>A better way to shop technology.</h2>
+            <p className="st-retail-eyebrow">About our store</p>
+            <h1>Stereophonie</h1>
+            <p className="st-about-page__established">
+              Established in 2008
+            </p>
           </div>
           <div>
             <p>
-              Buying electronics should not feel like decoding a catalogue. We
-              bring phones, computing, gaming, audio, smart devices, and useful
-              accessories into one considered storefront with clearer choices.
+              Since 2008, Stereophonie has served customers in Lebanon
+              with a wide range of electronics, including smartphones,
+              computers, gaming products, audio equipment and accessories.
             </p>
             <p>
-              Our aim is practical: strong products, honest information, an easy
-              cart and checkout, attentive support, and dependable local
-              delivery. Every part of the experience should help you decide with
-              confidence.
+              Visit our store in Mtaileb to explore products in person
+              and receive assistance, or shop online with delivery
+              available across Lebanon.
             </p>
           </div>
         </section>
@@ -125,17 +80,18 @@ export default function AboutPage() {
           <div className="st-retail-section__heading">
             <div>
               <p className="st-retail-eyebrow">What guides us</p>
-              <h2>Built around the customer.</h2>
+              <h2>How we work.</h2>
             </div>
           </div>
           <div className="st-about-page__value-grid">
-            {values.map((value, index) => {
+            {values.map((value) => {
               const Icon = value.icon;
               return (
                 <article key={value.title}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <Icon />
-                  <h3>{value.title}</h3>
+                  <div className="st-about-page__value-title">
+                    <Icon aria-hidden="true" />
+                    <h3>{value.title}</h3>
+                  </div>
                   <p>{value.description}</p>
                 </article>
               );
@@ -143,28 +99,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="st-about-page__categories">
-          <div>
-            <p className="st-retail-eyebrow">What you will find</p>
-            <h2>Technology for work, play, and everyday life.</h2>
-            <p>
-              A focused mix of products that are useful on their own and work
-              even better together.
-            </p>
-          </div>
-          <div className="st-about-page__category-list">
-            {categories.map((category) => {
-              const Icon = category.icon;
-              return (
-                <Link key={category.label} href="/shop">
-                  <Icon />
-                  <span>{category.label}</span>
-                  <ArrowRight />
-                </Link>
-              );
-            })}
-          </div>
-        </section>
+
 
         {/* ====================================================
           VISIT STEREOPHONIE
@@ -204,16 +139,7 @@ export default function AboutPage() {
                   allowFullScreen
                 />
 
-                <div className="st-about-visit__map-label">
-                  <span className="st-about-visit__map-signal">
-                    <MapPin />
-                  </span>
 
-                  <div>
-                    <small>Store location</small>
-                    <strong>Mtaileb, Lebanon</strong>
-                  </div>
-                </div>
               </div>
 
               {/* ================================
@@ -223,27 +149,24 @@ export default function AboutPage() {
               <div className="st-about-visit__details">
                 <div className="st-about-visit__location">
                   <span className="st-about-visit__detail-icon">
-                    <MapPin />
+                    <MapPin aria-hidden="true" />
                   </span>
 
                   <div>
-                    <p className="st-about-visit__label">Stereophonie Store</p>
-
-                    <h3>Mtaileb</h3>
-
-                    <p>Mount Lebanon, Lebanon</p>
+                    <p className="st-about-visit__label">Store location</p>
+                    <h3>Stereophonie Store</h3>
+                    <p>Mtaileb, Mount Lebanon, Lebanon</p>
                   </div>
                 </div>
 
                 <div className="st-about-visit__hours">
                   <div className="st-about-visit__hours-head">
+                    <Clock3 aria-hidden="true" />
+
                     <div>
                       <p className="st-about-visit__label">Opening hours</p>
-
                       <h3>When to visit</h3>
                     </div>
-
-                    <Clock3 />
                   </div>
 
                   <div className="st-about-visit__schedule">
@@ -290,21 +213,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="st-retail-assistance st-about-page__cta">
-          <div>
-            <div>
-              <p className="st-retail-eyebrow">Ready to discover more?</p>
-              <h2>Find your next everyday upgrade.</h2>
-            </div>
-          </div>
-          <Link
-            href="/shop"
-            className="st-retail-button st-retail-button--mustard"
-          >
-            Shop all products
-            <ArrowRight />
-          </Link>
-        </section>
+
       </main>
 
       <V3Footer />

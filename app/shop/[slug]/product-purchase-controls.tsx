@@ -269,14 +269,37 @@ function purchasable(variant: ProductVariant) {
 }
 
 function getPrice(variant: ProductVariant) {
-  const regular =
-    typeof variant.regular_price === "number" ? variant.regular_price : null;
+  // ST_WISHLIST_READY_AND_VALID_CART_PRICE_V1
+  // Use exactly the same positive-price semantics as the
+  // customer-visible product configuration price.
+  const validPositive = (value: number | null) =>
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    value > 0;
+
+  const regular = validPositive(variant.regular_price)
+    ? Number(variant.regular_price)
+    : null;
+
+  const candidateSale = validPositive(variant.sale_price)
+    ? Number(variant.sale_price)
+    : null;
 
   const sale =
-    typeof variant.sale_price === "number" ? variant.sale_price : null;
+    regular !== null &&
+    candidateSale !== null &&
+    candidateSale < regular
+      ? candidateSale
+      : null;
+
+  const current = sale ?? regular;
+
+  if (current === null) {
+    return null;
+  }
 
   return {
-    current: sale ?? regular ?? 0,
+    current,
     regular,
     sale,
   };
@@ -1284,7 +1307,7 @@ export default function ProductPurchaseControls({
             onClick={() => requestNotification()}
           >
             {notificationLoading ? (
-              <LoaderCircle className="is-spin" />
+              <LoaderCircle className="is-spin st-preorder-loading-spinner" aria-hidden="true" />
             ) : (
               <Mail />
             )}

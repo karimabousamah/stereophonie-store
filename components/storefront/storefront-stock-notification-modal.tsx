@@ -47,7 +47,6 @@ export default function StorefrontStockNotificationModal({
       >
         <header>
           <div>
-            <Mail />
             <strong>Stock notification</strong>
           </div>
 
@@ -55,7 +54,7 @@ export default function StorefrontStockNotificationModal({
             type="button"
             onClick={onClose}
             aria-label="Close confirmation"
-            className="st-stock-notification-modal__close"
+            className="st-stock-notification-modal__close st-storefront-popup-close"
           >
             <span aria-hidden="true">×</span>
           </button>
@@ -85,13 +84,13 @@ export default function StorefrontStockNotificationModal({
           ) : null}
 
           <button type="submit" disabled={loading}>
+            <span>Notify me</span>
+
             {loading ? (
-              <LoaderCircle className="is-spin" />
+              <LoaderCircle className="is-spin st-preorder-loading-spinner" aria-hidden="true" />
             ) : (
               <Mail />
             )}
-
-            <span>Notify me</span>
           </button>
         </div>
       </form>

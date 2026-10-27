@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Clock3,
   Mail,
+  Gift,
   MapPin,
   Package,
   Phone,
@@ -54,6 +55,7 @@ type Order = {
   status: OrderStatus;
   payment_status: PaymentStatus;
   fulfillment_method: "delivery" | "pickup";
+  gift_wrapping_requested: boolean;
   customer_first_name: string;
   customer_last_name: string;
   customer_email: string;
@@ -258,6 +260,7 @@ export default async function OrderDetailsPage({
       delivery_building,
       delivery_floor,
       delivery_notes,
+      gift_wrapping_requested,
       admin_notes,
       coupon_code,
       subtotal,
@@ -367,6 +370,13 @@ export default async function OrderDetailsPage({
                   {fulfillmentMethod === "pickup" ? "Store pickup" : "Delivery"}
                 </span>
 
+                {order.gift_wrapping_requested && (
+                  <span className="inline-flex items-center gap-2 border border-white/20 bg-white/[0.07] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/85">
+                    <Gift className="h-4 w-4" aria-hidden="true" />
+                    Gift wrapping
+                  </span>
+                )}
+
                 <span
                   className={`border px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] ${
                     order.payment_status === "paid"
@@ -381,6 +391,32 @@ export default async function OrderDetailsPage({
               </div>
             </div>
           </header>
+
+          {/*
+            ST_GIFT_WRAP_ADMIN_DETAIL_V2
+            Fulfillment instruction for store staff.
+          */}
+          {order.gift_wrapping_requested && (
+            <section
+              data-admin-gift-wrap-request="true"
+              className="mt-5 flex items-start gap-4 border border-white/15 bg-white/[0.045] p-4 sm:p-5"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center border border-white/15 bg-white/[0.06]">
+                <Gift className="h-5 w-5 text-white" aria-hidden="true" />
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                  Gift wrapping requested
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-white/50">
+                  The customer requested gift wrapping for this order.
+                  Wrap the items as a gift before delivery or store pickup.
+                </p>
+              </div>
+            </section>
+          )}
 
           <section
             className="mt-5 overflow-x-auto border border-white/10 bg-[#0d0d0d] p-5"

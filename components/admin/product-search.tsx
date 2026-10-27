@@ -57,7 +57,6 @@ export default function ProductSearch({
   comingSoonTotal,
   askForPriceTotal,
   outOfStockTotal,
-  archivedTotal,
   initialFilter = "all",
 }: Props) {
   const [query, setQuery] = useState("");
@@ -289,21 +288,6 @@ export default function ProductSearch({
     });
   }
 
-  const directoryTotal =
-    status === "published"
-      ? liveTotal
-      : status === "draft"
-        ? draftTotal
-        : status === "coming_soon"
-          ? comingSoonTotal
-          : status === "ask_for_price"
-            ? askForPriceTotal
-            : status === "out_of_stock"
-              ? outOfStockTotal
-              : status === "archived"
-                ? archivedTotal
-                : total;
-
   return (
     <section
       className="st-admin-directory-search st-admin-product-directory-v2"
@@ -422,14 +406,7 @@ export default function ProductSearch({
           </button>
         </div>
 
-        <div className="st-admin-directory-search__count">
-          <strong>{normalizedQuery ? visibleCount : directoryTotal}</strong>
-          <span>
-            {(normalizedQuery ? visibleCount : directoryTotal) === 1
-              ? "product"
-              : "products"}
-          </span>
-        </div>
+        {/* ST_ADMIN_PRODUCTS_RIGHT_COUNT_REMOVED_V1 */}
       </div>
 
       {normalizedQuery ? (

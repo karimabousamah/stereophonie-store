@@ -31,6 +31,7 @@ export type RankedAssistantProduct = {
     | "in_stock"
     | "low_stock"
     | "out_of_stock"
+    | "ask_for_price"
     | "mixed"
     | "unavailable";
 
@@ -208,6 +209,148 @@ function scoreUseCases(
   };
 }
 
+
+function scoreGuidedUseCaseFitV3(
+  product: RankedAssistantProduct,
+  request: ParsedAssistantRequest,
+) {
+  let score = 0;
+  const reasons: string[] = [];
+
+  if (
+    request.intent !== "gift" &&
+    request.intent !== "recommendation"
+  ) {
+    return {
+      score,
+      reasons,
+    };
+  }
+
+  const text = normalize(
+    [
+      product.name,
+      product.category,
+      product.description ?? "",
+      product.knowledgeText ?? "",
+    ].join(" "),
+  );
+
+
+  for (const useCase of request.useCases) {
+    const normalizedUseCase =
+      normalize(useCase);
+
+
+    if (normalizedUseCase === "gaming") {
+      if (
+        /(playstation|ps5|xbox|nintendo|switch|game console|gaming laptop|gaming desktop|gaming pc|gaming monitor|gaming headset|gaming keyboard|gaming mouse|controller|gamepad)/.test(
+          text,
+        )
+      ) {
+        score += 34;
+        reasons.push("strong gaming fit");
+      }
+    }
+
+
+    if (normalizedUseCase === "music") {
+      if (
+        /(airpods|headphone|earbud|earphone|speaker|audio speaker|wireless audio|bluetooth speaker)/.test(
+          text,
+        )
+      ) {
+        score += 34;
+        reasons.push("strong audio fit");
+      }
+
+      if (
+        /(adapter|cable|charger|fm transmitter|car charger)/.test(
+          text,
+        )
+      ) {
+        score -= 14;
+      }
+    }
+
+
+    if (normalizedUseCase === "fitness") {
+      if (
+        /(whoop|fitbit|apple watch|galaxy watch|pixel watch|smartwatch|fitness tracker|fitness watch|activity tracker|sport watch)/.test(
+          text,
+        )
+      ) {
+        score += 40;
+        reasons.push("strong fitness wearable fit");
+      } else if (
+        /(gym|fitness|workout|running|sport)/.test(
+          text,
+        )
+      ) {
+        score += 8;
+      }
+    }
+
+
+    if (
+      normalizedUseCase ===
+      "photography"
+    ) {
+      if (
+        /(camera|gopro|instax|mirrorless|dslr|action camera|instant camera)/.test(
+          text,
+        )
+      ) {
+        score += 36;
+        reasons.push("strong photography fit");
+      }
+    }
+
+
+    if (normalizedUseCase === "school") {
+      if (
+        /(ipad|tablet|macbook|laptop|notebook|stylus|apple pencil)/.test(
+          text,
+        )
+      ) {
+        score += 30;
+        reasons.push("strong school fit");
+      }
+    }
+
+
+    if (normalizedUseCase === "work") {
+      if (
+        /(macbook|laptop|desktop|monitor|keyboard|mouse|webcam|microphone|office|productivity)/.test(
+          text,
+        )
+      ) {
+        score += 28;
+        reasons.push("strong work fit");
+      }
+    }
+
+
+    if (normalizedUseCase === "travel") {
+      if (
+        /(power bank|powerbank|portable charger|headphone|earbud|camera|gopro|portable speaker|travel)/.test(
+          text,
+        )
+      ) {
+        score += 24;
+        reasons.push("strong travel fit");
+      }
+    }
+  }
+
+
+  return {
+    score,
+    reasons,
+  };
+}
+
+
 export function rankAssistantProducts(
   products: RankedAssistantProduct[],
   request: ParsedAssistantRequest,
@@ -272,6 +415,17 @@ export function rankAssistantProducts(
 
     score += useCases.score;
     reasons.push(...useCases.reasons);
+
+    const guidedUseCase =
+      scoreGuidedUseCaseFitV3(
+        product,
+        request,
+      );
+
+    score += guidedUseCase.score;
+    reasons.push(
+      ...guidedUseCase.reasons,
+    );
 
     if (request.wantsAvailableOnly && available) {
       score += 12;
@@ -1233,11 +1387,129 @@ function explicitQueryMatches(
   return matchedRoots.length >= requiredMatches;
 }
 
+/*
+ * ASSISTANT_EXPLICIT_PERIPHERAL_GATE_V39
+ *
+ * The gaming use case is intentionally broad, but a named
+ * product type must not admit unrelated gaming products.
+ *
+ * Use the product's identity (name/category), not incidental
+ * compatibility mentions in descriptions.
+ */
+type ExplicitPeripheralTypeV39 =
+  | "headset"
+  | "headphones"
+  | "mouse"
+  | "keyboard";
+
+function requestedExplicitPeripheralV39(
+  request: ParsedAssistantRequest,
+): ExplicitPeripheralTypeV39 | null {
+  const text = normalizeCatalogMatch(request.raw);
+
+  if (/\bheadsets?\b|\bgaming headphones?\b/.test(text)) {
+    return "headset";
+  }
+
+  if (/\bkeyboards?\b|\bclaviers?\b/.test(text)) {
+    return "keyboard";
+  }
+
+  if (/\b(?:mouse|mice|souris)\b/.test(text)) {
+    return "mouse";
+  }
+
+  if (/\bheadphones?\b|\bcasque audio\b/.test(text)) {
+    return "headphones";
+  }
+
+  return null;
+}
+
+function productMatchesExplicitPeripheralV39(
+  product: RankedAssistantProduct,
+  requestedType: ExplicitPeripheralTypeV39,
+): boolean {
+  const identity = normalizeCatalogMatch(
+    [product.name, product.category].join(" "),
+  );
+
+  switch (requestedType) {
+    case "headset":
+      return /\bheadsets?\b|\bgaming headphones?\b/.test(identity);
+
+    case "headphones":
+      return /\bheadphones?\b/.test(identity);
+
+    case "mouse":
+      return /\b(?:mouse|mice)\b/.test(identity);
+
+    case "keyboard":
+      return /\bkeyboards?\b/.test(identity);
+  }
+}
+
 function passesExplicitCatalogGate(
   item: ReturnType<typeof rankAssistantProducts>[number],
   request: ParsedAssistantRequest,
 ) {
   const understanding = requestProductUnderstanding(request);
+
+  const explicitPeripheral = requestedExplicitPeripheralV39(request);
+
+  /*
+   * ASSISTANT_STRICT_SHOPPING_CONSTRAINTS_V310
+   *
+   * Explicit product type and gaming qualification are
+   * requirements, not merely ranking preferences.
+   *
+   * A generic gaming gift remains unrestricted because it
+   * does not explicitly request one peripheral type.
+   */
+  if (explicitPeripheral) {
+    const requestedText = normalizeCatalogMatch(request.raw);
+
+    const productName = normalizeCatalogMatch(item.product.name);
+
+    const productIdentity = normalizeCatalogMatch(
+      [item.product.name, item.product.category].join(" "),
+    );
+
+    const explicitlyGaming =
+      /\b(?:gaming|gamer|esport|esports)\b/.test(requestedText);
+
+    if (
+      explicitlyGaming &&
+      !/\b(?:gaming|gamer|esport|esports)\b/.test(productIdentity)
+    ) {
+      return false;
+    }
+
+    const keyboardAndMouseBundle =
+      /\bkeyboards?\b/.test(productName) &&
+      /\b(?:mouse|mice)\b/.test(productName);
+
+    const customerRequestedBundle =
+      /\b(?:combo|bundle|kit|set)\b/.test(requestedText);
+
+    if (
+      (explicitPeripheral === "mouse" ||
+        explicitPeripheral === "keyboard") &&
+      keyboardAndMouseBundle &&
+      !customerRequestedBundle
+    ) {
+      return false;
+    }
+
+    if (
+      !productMatchesExplicitPeripheralV39(
+        item.product,
+        explicitPeripheral,
+      )
+    ) {
+      return false;
+    }
+  }
 
   if (understanding.concept) {
     return productIntelligenceTier(item.product, understanding).tier > 0;
@@ -1261,8 +1533,31 @@ export function topAssistantProducts(
 ) {
   const understanding = requestProductUnderstanding(request);
 
+  const maximumBudget = request.budgetMax;
+
   const ranked = rankAssistantProducts(products, request)
     .filter((item) => passesExplicitCatalogGate(item, request))
+    /*
+     * ASSISTANT_HARD_BUDGET_GATE_V310
+     *
+     * Never recommend an above-budget or unknown-price
+     * product as though it satisfies a numeric price cap.
+     * Reuse the existing purchasable-variant price logic.
+     */
+    .filter((item) => {
+      if (maximumBudget === null) {
+        return true;
+      }
+
+      const price = productMinimumPrice(item.product);
+
+      return (
+        price !== null &&
+        Number.isFinite(price) &&
+        price > 0 &&
+        price <= maximumBudget
+      );
+    })
     .filter((item) => item.score > -50);
 
   if (understanding.concept) {

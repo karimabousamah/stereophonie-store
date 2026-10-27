@@ -71,37 +71,12 @@ type AssistantConversationContext = {
   displayedProducts: AssistantConversationProductReference[];
 };
 
-type SuggestedAction = {
-  label: string;
-  prompt?: string;
-  href?: string;
-};
-
 const initialMessage: AssistantMessage = {
   id: "welcome",
   role: "assistant",
   content:
     "Welcome to Stereophonie. I can help you find products, compare options, check offers, or guide you with your order.",
 };
-
-const suggestions: SuggestedAction[] = [
-  {
-    label: "Find me a phone",
-    prompt: "Help me find the right phone.",
-  },
-  {
-    label: "Compare products",
-    prompt: "I want to compare products.",
-  },
-  {
-    label: "View offers",
-    href: "/shop?offers=true",
-  },
-  {
-    label: "Track my order",
-    href: "/track-order",
-  },
-];
 
 function RobotIcon() {
   return (
@@ -683,6 +658,185 @@ export default function V3ShoppingAssistant() {
   }, [open]);
   /* ST_AI_OUTSIDE_CLICK_CLOSE_END */
 
+  /*
+   * ST_AI_DIRECT_CONTROL_GEOMETRY_V10
+   *
+   * Do not rely on the historical CSS cascade for these two controls.
+   *
+   * The AI tab remains INSIDE .st3-ai-shell, so the shell still moves
+   * the tab together with the popup when opening and closing.
+   *
+   * Only the tab's own geometry is locked.
+   */
+  const lockAssistantEdgeTab = (
+    node: HTMLButtonElement | null,
+  ) => {
+    if (!node) {
+      return;
+    }
+
+    const tabHeight =
+      "clamp(108px, calc(98px + 1.5625vw), 118px)";
+
+    const geometry: Array<[string, string]> = [
+      ["position", "absolute"],
+
+      ["top", "50%"],
+      ["right", "auto"],
+      ["bottom", "auto"],
+      [
+        "left",
+        "calc(-1 * var(--st-ai-shell-handle-width))",
+      ],
+
+      ["width", "var(--st-ai-shell-handle-width)"],
+      ["min-width", "var(--st-ai-shell-handle-width)"],
+      ["max-width", "var(--st-ai-shell-handle-width)"],
+
+      ["height", tabHeight],
+      ["min-height", tabHeight],
+      ["max-height", tabHeight],
+
+      ["margin", "0px"],
+      ["padding", "8px 4px"],
+
+      ["box-sizing", "border-box"],
+
+      /*
+       * This value never changes on hover/focus/active.
+       */
+      ["transform", "translateY(-50%)"],
+      ["translate", "none"],
+      ["scale", "1"],
+      ["rotate", "0deg"],
+
+      ["animation", "none"],
+      ["transition", "none"],
+      ["will-change", "auto"],
+    ];
+
+    for (const [property, value] of geometry) {
+      node.style.setProperty(
+        property,
+        value,
+        "important",
+      );
+    }
+  };
+
+  /*
+   * Lock the close button as well.
+   *
+   * It remains a normal flex child of the header and is lowered
+   * slightly so its visual center lines up with "How can I help?".
+   *
+   * Hover cannot replace this transform because it is inline
+   * !important.
+   */
+  const lockAssistantCloseButton = (
+    node: HTMLButtonElement | null,
+  ) => {
+    if (!node) {
+      return;
+    }
+
+    /*
+     * Make the assistant header the exact positioning context
+     * for the close button.
+     */
+    node.parentElement?.style.setProperty(
+      "position",
+      "relative",
+      "important",
+    );
+
+    const geometry: Array<[string, string]> = [
+      ["position", "absolute"],
+
+      ["top", "50%"],
+      ["right", "14px"],
+      ["bottom", "auto"],
+      ["left", "auto"],
+
+      ["margin-top", "0px"],
+      ["margin-right", "0px"],
+      ["margin-bottom", "0px"],
+      ["margin-left", "0px"],
+
+      ["align-self", "center"],
+
+      /*
+       * Requested optical lowering.
+       */
+      ["transform", "translateY(-50%)"],
+      ["translate", "none"],
+      ["scale", "1"],
+      ["rotate", "0deg"],
+
+      ["animation", "none"],
+
+      [
+        "transition",
+        "background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease",
+      ],
+    ];
+
+    for (const [property, value] of geometry) {
+      node.style.setProperty(
+        property,
+        value,
+        "important",
+      );
+    }
+
+    /*
+     * Global storefront CSS moves direct-child SVGs on hover.
+     * Lock only this X icon so it can never slide independently.
+     */
+    const icon =
+      node.querySelector<SVGElement>(
+        ".st-ai-close-final-v20__icon",
+      );
+
+    if (icon) {
+      icon.style.setProperty(
+        "transform",
+        "none",
+        "important",
+      );
+
+      icon.style.setProperty(
+        "translate",
+        "none",
+        "important",
+      );
+
+      icon.style.setProperty(
+        "scale",
+        "1",
+        "important",
+      );
+
+      icon.style.setProperty(
+        "rotate",
+        "0deg",
+        "important",
+      );
+
+      icon.style.setProperty(
+        "animation",
+        "none",
+        "important",
+      );
+
+      icon.style.setProperty(
+        "transition",
+        "none",
+        "important",
+      );
+    }
+  };
+
   return (
     <>
       <div
@@ -690,9 +844,10 @@ export default function V3ShoppingAssistant() {
         data-st-ai-shell="true"
       >
         <button
+          ref={lockAssistantEdgeTab}
           type="button"
           data-st-ai-edge-launcher="true"
-          className={`st3-ai-edge-tab ${open ? "is-open" : ""}`}
+          className="st3-ai-edge-tab"
           onClick={toggleAssistant}
           aria-label={
             open
@@ -719,12 +874,11 @@ export default function V3ShoppingAssistant() {
         >
           <div className="st3-ai-panel__top">
             <div>
-              <p className="st3-ai-panel__eyebrow">Stereophonie</p>
-
               <h2>How can I help?</h2>
             </div>
 
             <button
+              ref={lockAssistantCloseButton}
               type="button"
               className="st-ai-close-final-v20"
               aria-label="Close Stereophonie assistant"
@@ -797,34 +951,6 @@ export default function V3ShoppingAssistant() {
 
             <div ref={endRef} />
           </div>
-
-          {messages.length <= 1 ? (
-            <div className="st3-ai-suggestions">
-              {suggestions.map((suggestion) =>
-                suggestion.href ? (
-                  <Link
-                    key={suggestion.label}
-                    href={suggestion.href}
-                    className="st3-ai-suggestion"
-                    onClick={() => setOpen(false)}
-                  >
-                    {suggestion.label}
-                    <span aria-hidden="true">›</span>
-                  </Link>
-                ) : (
-                  <button
-                    key={suggestion.label}
-                    type="button"
-                    className="st3-ai-suggestion"
-                    onClick={() => void sendMessage(suggestion.prompt)}
-                  >
-                    {suggestion.label}
-                    <span aria-hidden="true">›</span>
-                  </button>
-                ),
-              )}
-            </div>
-          ) : null}
 
           <form className="st3-ai-composer" onSubmit={submit}>
             <input

@@ -82,42 +82,14 @@ export default async function DeliveryPage() {
     <div className="st-retail-shell">
       <V3Header />
 
-      <main className="st-retail-page st-support-page st-delivery-page">
-        <section className="st-retail-hero st-delivery-page__hero">
-          <div className="st-retail-hero__copy">
-            <p className="st-retail-eyebrow">Shipping across Lebanon</p>
-            <h1>Delivery, made clear.</h1>
-            <p>
-              Straightforward fees, realistic timing, and a simple way to follow
-              your order from confirmation to arrival.
-            </p>
-            <div className="st-retail-hero__actions">
-              <Link
-                href="/track-order"
-                className="st-retail-button st-retail-button--mustard"
-              >
-                Track your order
-                <ArrowRight />
-              </Link>
-              <Link
-                href="/shop"
-                className="st-retail-button st-retail-button--quiet"
-              >
-                Shop products
-              </Link>
-            </div>
-          </div>
+      <main className="st-retail-page st-retail-compact-v1 st-support-page st-delivery-page">
 
-          <div className="st-delivery-page__hero-mark" aria-hidden="true">
-            <Truck />
-          </div>
-        </section>
 
         <section className="st-retail-section st-delivery-page__facts">
           <div className="st-retail-section__heading">
             <div>
               <p className="st-retail-eyebrow">At a glance</p>
-              <h2>What to expect.</h2>
+              <h1>Delivery information</h1>
             </div>
           </div>
 
@@ -180,7 +152,7 @@ export default async function DeliveryPage() {
           <div className="st-retail-section__heading">
             <div>
               <p className="st-retail-eyebrow">Payment methods</p>
-              <h2>Pay your way.</h2>
+              <h2>Payment options</h2>
               <p>Available methods are always confirmed before you order.</p>
             </div>
           </div>
@@ -206,28 +178,7 @@ export default async function DeliveryPage() {
           </div>
         </section>
 
-        <section className="st-delivery-page__notice">
-          <div>
-            <div>
-              <p className="st-retail-eyebrow">Before your order arrives</p>
-              <h2>Keep your phone nearby.</h2>
-              <p>
-                Provide a complete address and active number so the delivery
-                team can reach you. Inspect the package when it arrives and
-                contact Stereophonie promptly if anything is wrong.
-              </p>
-            </div>
-          </div>
-          <a
-            href="https://wa.me/9613161285"
-            target="_blank"
-            rel="noreferrer"
-            className="st-retail-button st-retail-button--quiet"
-          >
-            WhatsApp support
-            <ArrowRight />
-          </a>
-        </section>
+
       </main>
 
       <V3Footer />

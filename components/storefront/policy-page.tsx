@@ -1,11 +1,4 @@
-import Link from "next/link";
-import {
-  ArrowRight,
-  CircleHelp,
-  PackageSearch,
-  RotateCcw,
-  Truck,
-} from "lucide-react";
+import { ArrowRight, CircleHelp } from "lucide-react";
 import type { ReactNode } from "react";
 
 import V3Footer from "@/components/stereophonie-v3/layout/v3-footer";
@@ -17,9 +10,7 @@ type PolicySection = {
 };
 
 export default function PolicyPage({
-  eyebrow,
   title,
-  introduction,
   updated,
   sections,
 }: {
@@ -33,23 +24,8 @@ export default function PolicyPage({
     <div className="st-retail-shell">
       <V3Header />
 
-      <main className="st-retail-page st-support-page">
-        <section className="st-retail-hero st-support-page__hero">
-          <div className="st-retail-hero__copy">
-            <p className="st-retail-eyebrow">{eyebrow}</p>
-            <h1>{title}.</h1>
-            <p>{introduction}</p>
-          </div>
+      <main className="st-retail-page st-retail-compact-v1 st-support-page">
 
-          <div className="st-support-page__updated">
-            <CircleHelp />
-            <div>
-              <span>Current version</span>
-              <strong>Updated {updated}</strong>
-              <p>Clear information for confident shopping.</p>
-            </div>
-          </div>
-        </section>
 
         <div className="st-support-page__layout">
           <aside className="st-support-page__navigation">
@@ -64,8 +40,10 @@ export default function PolicyPage({
             </nav>
 
             <div className="st-support-page__help">
-              <CircleHelp />
-              <h2>Still have a question?</h2>
+              <div className="st-support-page__help-heading">
+                <CircleHelp aria-hidden="true" />
+                <h2>Still have a question?</h2>
+              </div>
               <p>Our team can help clarify an order or store policy.</p>
               <a
                 href="https://wa.me/9613161285"
@@ -80,6 +58,11 @@ export default function PolicyPage({
           </aside>
 
           <div className="st-support-page__sections">
+            <div className="st-support-page__document-head">
+              <h1>{title}</h1>
+              <span>Updated {updated}</span>
+            </div>
+
             {sections.map((section, index) => (
               <section key={section.title} id={`policy-section-${index + 1}`}>
                 <span className="st-support-page__number">
@@ -96,41 +79,7 @@ export default function PolicyPage({
           </div>
         </div>
 
-        <section className="st-support-page__related">
-          <div className="st-retail-section__heading">
-            <div>
-              <p className="st-retail-eyebrow">Customer care</p>
-              <h2>Useful next steps.</h2>
-            </div>
-          </div>
 
-          <div>
-            <Link href="/delivery">
-              <Truck />
-              <span>
-                <small>Shipping information</small>
-                Delivery
-              </span>
-              <ArrowRight />
-            </Link>
-            <Link href="/returns">
-              <RotateCcw />
-              <span>
-                <small>Order issues</small>
-                Returns policy
-              </span>
-              <ArrowRight />
-            </Link>
-            <Link href="/track-order">
-              <PackageSearch />
-              <span>
-                <small>Delivery status</small>
-                Track your order
-              </span>
-              <ArrowRight />
-            </Link>
-          </div>
-        </section>
       </main>
 
       <V3Footer />

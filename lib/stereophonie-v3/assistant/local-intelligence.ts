@@ -259,6 +259,31 @@ function detectLanguage(raw: string): AssistantLanguage {
     return "ar";
   }
 
+  /*
+   * ASSISTANT_MULTILINGUAL_LANGUAGE_FIX_V311
+   *
+   * Detect natural French grammar before falling back
+   * to the original language vocabulary.
+   *
+   * Preserve Arabic detection and the existing parser.
+   */
+  const frenchLanguageSignalV311 = raw
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[’']/g, " ")
+    .replace(/[-?!.,;:]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (
+    /\b(?:vous etes|etes vous|est ce que vous|vous ouvrez|vous fermez|vos horaires|votre magasin|le magasin est|a quelle heure|jusqu a quelle heure|quel jour|quels jours|je voudrais|j aimerais|je souhaite|je recherche|me conseillez|recommandez moi|ma commande|livraison)\b/.test(
+      frenchLanguageSignalV311,
+    )
+  ) {
+    return "fr";
+  }
+
   const value = clean(raw);
 
   if (

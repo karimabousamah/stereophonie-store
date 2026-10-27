@@ -19,7 +19,6 @@ import {
 import { useEffect, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 
-import { Gift as GiftWrapIcon } from "lucide-react";
 import SlideToPlaceOrder from "@/components/checkout/slide-to-place-order";
 import CheckoutProgress from "@/components/checkout/checkout-progress";
 import { submitOrder } from "../place-order/actions";
@@ -1013,8 +1012,7 @@ export default function CheckoutReviewPage() {
                     */}
                     {checkoutDetails?.giftWrappingRequested && (
                       <div className="flex items-center justify-between gap-4 text-sm">
-                        <span className="flex items-center gap-2 text-black/60">
-                          <GiftWrapIcon className="h-4 w-4" aria-hidden="true" />
+                        <span className="text-black/60">
                           Gift wrapping
                         </span>
                         <span className="text-right font-semibold text-black">

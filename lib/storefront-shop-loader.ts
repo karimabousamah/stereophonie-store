@@ -382,6 +382,143 @@ function clampPriceRange({
   };
 }
 
+
+/*
+ * ============================================================
+ * CONTEXTUAL SHOP BRAND FACET
+ * ============================================================
+ *
+ * The Brand picker must represent the products that genuinely
+ * belong to the customer's CURRENT Shop scope.
+ *
+ * Examples:
+ *
+ * /shop
+ *   -> brands represented by published Shop products
+ *
+ * /shop?category=Fitness Devices
+ *   -> brands represented by that category
+ *
+ * /shop?...&subcategory=<id>
+ *   -> brands represented by that exact Subcategory
+ *
+ * Search / Offers / Availability / Price filters are also respected.
+ *
+ * IMPORTANT:
+ * The currently selected Brand is deliberately NOT applied here.
+ * Otherwise choosing one Brand would make every other valid Brand
+ * disappear from the picker and the customer could not switch cleanly.
+ *
+ * This reuses the exact same catalogue index and membership helpers
+ * as the product grid itself, so Brand facets cannot drift from what
+ * the Shop considers a category or Subcategory product.
+ */
+export async function loadShopBrandFacetOptions(
+  filters: Omit<ShopBatchFilters, "brand" | "sort">,
+): Promise<string[]> {
+  const products = await loadShopCatalogueIndex();
+
+  /*
+   * Establish the current page scope WITHOUT Brand.
+   */
+  const scopedCandidates = products.filter(
+    (product) => {
+      if (
+        filters.offers &&
+        !shopProductOnOffer(product)
+      ) {
+        return false;
+      }
+
+      if (
+        filters.category &&
+        !shopProductInCategory(
+          product,
+          filters.category,
+        )
+      ) {
+        return false;
+      }
+
+      if (
+        filters.subcategoryId &&
+        !shopProductInSubcategory(
+          product,
+          filters.subcategoryId,
+        )
+      ) {
+        return false;
+      }
+
+      if (
+        filters.availability === "in-stock" &&
+        !shopProductInStock(product)
+      ) {
+        return false;
+      }
+
+      return true;
+    },
+  );
+
+  /*
+   * Use the exact same authoritative search semantics as the Shop grid.
+   */
+  const searchScopedProducts =
+    shopRelevantSearchProducts(
+      scopedCandidates,
+      filters.search,
+    );
+
+  /*
+   * Apply the currently requested price window against the page scope,
+   * still without applying Brand.
+   */
+  const {
+    minimumPrice,
+    maximumPrice,
+  } = clampPriceRange({
+    products: searchScopedProducts,
+    requestedMinimumPrice:
+      filters.requestedMinimumPrice,
+    requestedMaximumPrice:
+      filters.requestedMaximumPrice,
+  });
+
+  const brands = new Set<string>();
+
+  for (const product of searchScopedProducts) {
+    if (
+      !shopMatchesPriceRange(
+        product,
+        minimumPrice,
+        maximumPrice,
+      )
+    ) {
+      continue;
+    }
+
+    const brandName =
+      shopBrandName(product).trim();
+
+    if (brandName) {
+      brands.add(brandName);
+    }
+  }
+
+  return Array.from(brands).sort(
+    (first, second) =>
+      first.localeCompare(
+        second,
+        undefined,
+        {
+          sensitivity: "base",
+        },
+      ),
+  );
+}
+
+
 async function loadFreshShopProductCardsByIds(
   productIds: string[],
 ): Promise<StoreProductCardProduct[]> {

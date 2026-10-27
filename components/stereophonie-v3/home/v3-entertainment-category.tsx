@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {
+  type TouchEvent,
+  type WheelEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import type { StereophonieEntertainmentItem } from "@/lib/stereophonie-entertainment";
 
@@ -45,6 +51,20 @@ export default function V3EntertainmentCategory({
   const volumeFadeFrameRef = useRef<number | null>(null);
   const soundPreferenceRef = useRef(false);
   const titleSwitchTokenRef = useRef(0);
+
+  /*
+   * MOVIES & SERIES DIRECT GESTURE NAVIGATION
+   *
+   * Finger swipe and trackpad swipe both feed the existing select()
+   * pipeline so poster timing, trailer handoff, sound fading and the
+   * approved cinematic transition remain the single authority.
+   */
+  const gestureTouchStartRef =
+    useRef<{ x: number; y: number } | null>(null);
+  const gestureWheelDeltaRef = useRef(0);
+  const gestureWheelLockedRef = useRef(false);
+  const gestureWheelEndTimerRef =
+    useRef<number | null>(null);
 
   useEffect(() => {
     const section = cinemaSectionRef.current;
@@ -382,6 +402,116 @@ export default function V3EntertainmentCategory({
     }, 360);
   }
 
+  function navigateMoviesByGesture(
+    direction: -1 | 1,
+  ) {
+    if (items.length <= 1 || transitioning) {
+      return;
+    }
+
+    select(activeIndex + direction);
+  }
+
+  function handleMoviesTouchStart(
+    event: TouchEvent<HTMLElement>,
+  ) {
+    if (event.touches.length !== 1) {
+      gestureTouchStartRef.current = null;
+      return;
+    }
+
+    const touch = event.touches[0];
+
+    gestureTouchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+  }
+
+  function handleMoviesTouchEnd(
+    event: TouchEvent<HTMLElement>,
+  ) {
+    const start = gestureTouchStartRef.current;
+    gestureTouchStartRef.current = null;
+
+    if (!start || event.changedTouches.length !== 1) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+
+    if (
+      Math.abs(deltaX) < 48 ||
+      Math.abs(deltaX) <= Math.abs(deltaY) * 1.2
+    ) {
+      return;
+    }
+
+    navigateMoviesByGesture(deltaX < 0 ? 1 : -1);
+  }
+
+  function handleMoviesWheel(
+    event: WheelEvent<HTMLElement>,
+  ) {
+    if (items.length <= 1) {
+      return;
+    }
+
+    if (
+      Math.abs(event.deltaX) < 1 ||
+      Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 1.15
+    ) {
+      return;
+    }
+
+    if (gestureWheelEndTimerRef.current !== null) {
+      window.clearTimeout(
+        gestureWheelEndTimerRef.current,
+      );
+    }
+
+    gestureWheelEndTimerRef.current =
+      window.setTimeout(() => {
+        gestureWheelDeltaRef.current = 0;
+        gestureWheelLockedRef.current = false;
+        gestureWheelEndTimerRef.current = null;
+      }, 180);
+
+    if (
+      gestureWheelLockedRef.current ||
+      transitioning
+    ) {
+      return;
+    }
+
+    gestureWheelDeltaRef.current += event.deltaX;
+
+    if (Math.abs(gestureWheelDeltaRef.current) < 48) {
+      return;
+    }
+
+    const direction: -1 | 1 =
+      gestureWheelDeltaRef.current > 0 ? 1 : -1;
+
+    gestureWheelDeltaRef.current = 0;
+    gestureWheelLockedRef.current = true;
+
+    navigateMoviesByGesture(direction);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (gestureWheelEndTimerRef.current !== null) {
+        window.clearTimeout(
+          gestureWheelEndTimerRef.current,
+        );
+        gestureWheelEndTimerRef.current = null;
+      }
+    };
+  }, []);
+
   if (!active || !items.length) {
     return null;
   }
@@ -390,6 +520,16 @@ export default function V3EntertainmentCategory({
     <section
       ref={cinemaSectionRef}
       className="st-entertainment-home st-entertainment-home--cinema"
+      onTouchStart={handleMoviesTouchStart}
+      onTouchEnd={handleMoviesTouchEnd}
+      onTouchCancel={() => {
+        gestureTouchStartRef.current = null;
+      }}
+      onWheel={handleMoviesWheel}
+      style={{
+        touchAction: "pan-y",
+        overscrollBehaviorX: "contain",
+      }}
     >
       <div
         className={`st-entertainment-cinema ${

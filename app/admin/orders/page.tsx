@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Clock3,
   History,
+  Gift,
   PackageCheck,
   PackageOpen,
   RotateCcw,
@@ -44,6 +45,7 @@ type Order = {
   order_number: string;
   status: OrderStatus;
   fulfillment_method: "delivery" | "pickup";
+  gift_wrapping_requested: boolean;
   payment_status: PaymentStatus;
   customer_first_name: string;
   customer_last_name: string;
@@ -269,6 +271,7 @@ export default async function AdminOrdersPage({
         order_number,
         status,
         fulfillment_method,
+        gift_wrapping_requested,
         payment_status,
         customer_first_name,
         customer_last_name,
@@ -598,6 +601,9 @@ export default async function AdminOrdersPage({
                         order.status,
                         order.payment_status,
                         order.fulfillment_method,
+                        order.gift_wrapping_requested
+                          ? "gift wrapping requested"
+                          : "",
                         order.customer_first_name,
                         order.customer_last_name,
                         order.customer_email,
@@ -640,6 +646,20 @@ export default async function AdminOrdersPage({
                                 ? "Store pickup"
                                 : "Delivery"}
                             </span>
+
+                            {/*
+                              ST_GIFT_WRAP_ADMIN_V2
+                              One gift indicator for wrapping requests.
+                            */}
+                            {order.gift_wrapping_requested && (
+                              <span
+                                className="st-admin-order-chip border border-white/20 bg-white/[0.07] text-white/85"
+                                title="Gift wrapping requested by customer"
+                              >
+                                <Gift aria-hidden="true" />
+                                Gift wrap
+                              </span>
+                            )}
 
                             <span
                               className={`st-admin-order-chip ${
