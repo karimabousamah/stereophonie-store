@@ -438,6 +438,7 @@ export default function V3ShoppingAssistant() {
   ]);
 
   const [input, setInput] = useState("");
+  const [composerFocused, setComposerFocused] = useState(false);
   const [dictating, setDictating] = useState(false);
   /* ST_ASSISTANT_DIRECT_VOICE_SEND_V2 */
   const [voiceProcessing, setVoiceProcessing] = useState(false);
@@ -449,12 +450,262 @@ export default function V3ShoppingAssistant() {
 
   useEffect(() => {
     const field = textAreaRef.current;
-    if (!field) return;
 
-    field.style.height = "38px";
-    field.style.height =
-      `${Math.min(Math.max(field.scrollHeight, 38), 160)}px`;
-  }, [input, dictating]);
+    if (
+      !field ||
+      dictating
+    ) {
+      return;
+    }
+
+    /*
+     * ST_ASSISTANT_MEASURED_TEXT_CENTERING_V2
+     *
+     * Measure the REAL wrapped text block.
+     *
+     * Remaining vertical space is divided equally above
+     * and below the text, regardless of line count.
+     *
+     * 1 line -> centered
+     * 2 lines -> centered
+     * 3 lines -> centered
+     * etc.
+     */
+    const measureAndCenterText = () => {
+      /*
+       * Idle + empty keeps the approved placeholder appearance.
+       */
+      if (
+        !composerFocused &&
+        input.length === 0
+      ) {
+        field.style.removeProperty(
+          "--st-ai-textarea-height",
+        );
+
+        field.style.removeProperty(
+          "--st-ai-textarea-pad-top",
+        );
+
+        field.style.removeProperty(
+          "--st-ai-textarea-pad-bottom",
+        );
+
+        field.style.removeProperty(
+          "--st-ai-textarea-overflow",
+        );
+
+        field.style.removeProperty(
+          "--st-ai-textarea-optical-shift",
+        );
+
+        return;
+      }
+
+      const composer =
+        field.closest(
+          ".st3-ai-composer",
+        );
+
+      const submitButton =
+        composer?.querySelector<HTMLButtonElement>(
+          'button[type="submit"]',
+        );
+
+      const fieldRect =
+        field.getBoundingClientRect();
+
+      if (
+        fieldRect.width <= 0
+      ) {
+        return;
+      }
+
+      const style =
+        window.getComputedStyle(
+          field,
+        );
+
+      const mirror =
+        document.createElement(
+          "div",
+        );
+
+      mirror.setAttribute(
+        "aria-hidden",
+        "true",
+      );
+
+      Object.assign(
+        mirror.style,
+        {
+          position: "fixed",
+          left: "-100000px",
+          top: "0",
+          visibility: "hidden",
+          pointerEvents: "none",
+
+          boxSizing: "border-box",
+
+          width:
+            `${fieldRect.width}px`,
+
+          margin: "0",
+          padding: "0",
+          border: "0",
+
+          whiteSpace: "pre-wrap",
+          overflowWrap: "anywhere",
+          wordBreak: "break-word",
+
+          fontFamily:
+            style.fontFamily,
+
+          fontSize:
+            style.fontSize,
+
+          fontWeight:
+            style.fontWeight,
+
+          fontStyle:
+            style.fontStyle,
+
+          letterSpacing:
+            style.letterSpacing,
+
+          lineHeight:
+            style.lineHeight,
+        },
+      );
+
+      /*
+       * Preserve an active empty line and final newline.
+       */
+      mirror.textContent =
+        `${input}\u200b`;
+
+      document.body.appendChild(
+        mirror,
+      );
+
+      const resolvedLineHeight =
+        Number.parseFloat(
+          style.lineHeight,
+        ) || 18;
+
+      const measuredTextHeight =
+        Math.max(
+          resolvedLineHeight,
+          Math.ceil(
+            mirror
+              .getBoundingClientRect()
+              .height,
+          ),
+        );
+
+      mirror.remove();
+
+      /*
+       * Center relative to the real mic/send control lane.
+       */
+      const controlLaneHeight =
+        Math.max(
+          38,
+          submitButton
+            ?.getBoundingClientRect()
+            .height ?? 38,
+        );
+
+      const maximumHeight =
+        160;
+
+      const targetHeight =
+        Math.min(
+          maximumHeight,
+          Math.max(
+            controlLaneHeight,
+            measuredTextHeight,
+          ),
+        );
+
+      const remainingSpace =
+        Math.max(
+          0,
+          targetHeight -
+            measuredTextHeight,
+        );
+
+      const equalPadding =
+        remainingSpace / 2;
+
+      /*
+       * ST_ASSISTANT_OPTICAL_CENTER_V3
+       *
+       * Safari draws textarea glyphs/caret visually above the
+       * geometric center of the line box.
+       *
+       * Do NOT use a fixed pixel offset.
+       *
+       * Derive the downward optical correction from the actual
+       * unused vertical space around the measured text block.
+       *
+       * One line has more available breathing room and therefore
+       * receives a larger correction.
+       *
+       * As the message becomes 2, 3, 4... lines tall, the available
+       * room becomes smaller automatically, so the correction also
+       * becomes smaller automatically.
+       */
+      const opticalShift =
+        equalPadding / 2;
+
+      field.style.setProperty(
+        "--st-ai-textarea-optical-shift",
+        `${opticalShift}px`,
+      );
+
+      field.style.setProperty(
+        "--st-ai-textarea-height",
+        `${targetHeight}px`,
+      );
+
+      field.style.setProperty(
+        "--st-ai-textarea-pad-top",
+        `${equalPadding}px`,
+      );
+
+      field.style.setProperty(
+        "--st-ai-textarea-pad-bottom",
+        `${equalPadding}px`,
+      );
+
+      field.style.setProperty(
+        "--st-ai-textarea-overflow",
+        measuredTextHeight >
+          maximumHeight
+          ? "auto"
+          : "hidden",
+      );
+    };
+
+    measureAndCenterText();
+
+    window.addEventListener(
+      "resize",
+      measureAndCenterText,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        measureAndCenterText,
+      );
+    };
+  }, [
+    input,
+    dictating,
+    composerFocused,
+  ]);
 
 
   const [sending, setSending] = useState(false);
@@ -1189,6 +1440,12 @@ export default function V3ShoppingAssistant() {
                 onChange={(event) =>
                   setInput(event.target.value)
                 }
+                onFocus={() => {
+                  setComposerFocused(true);
+                }}
+                onBlur={() => {
+                  setComposerFocused(false);
+                }}
                 onKeyDown={(event) => {
                   if (
                     event.key === "Enter" &&
@@ -1201,7 +1458,17 @@ export default function V3ShoppingAssistant() {
                     }
                   }
                 }}
-                placeholder="Ask about products, offers or orders"
+                data-st-composer-focused={
+                  composerFocused ? "true" : "false"
+                }
+                data-st-composer-has-value={
+                  input.length > 0 ? "true" : "false"
+                }
+                placeholder={
+                  composerFocused
+                    ? ""
+                    : "Ask about product"
+                }
                 aria-label="Message Stereophonie assistant"
               />
             )}

@@ -23,6 +23,7 @@ import SlideToPlaceOrder from "@/components/checkout/slide-to-place-order";
 import CheckoutProgress from "@/components/checkout/checkout-progress";
 import { submitOrder } from "../place-order/actions";
 import { type CartItem, useCart } from "@/components/cart/cart-provider";
+import { useStoreSettings } from "@/components/storefront/store-settings-provider";
 import { V3Header } from "@/components/stereophonie-v3/layout/v3-header";
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 
@@ -151,6 +152,11 @@ export default function CheckoutReviewPage() {
 
   const { removeProduct } = useWishlist();
 
+  const {
+    deliveryFee: configuredDeliveryFee,
+    freeDeliveryThreshold,
+  } = useStoreSettings();
+
   const [checkoutDetails, setCheckoutDetails] =
     useState<NormalizedCheckoutDetails | null>(null);
 
@@ -240,7 +246,23 @@ export default function CheckoutReviewPage() {
   const fulfillmentMethod: FulfillmentMethod =
     checkoutDetails?.fulfillmentMethod === "pickup" ? "pickup" : "delivery";
 
-  const deliveryFee = fulfillmentMethod === "delivery" ? 4 : 0;
+  /*
+   * ST_FREE_DELIVERY_THRESHOLD_REVIEW_V1
+   *
+   * Use the exact same rule as the Details page.
+   */
+  const qualifiesForFreeDelivery =
+    fulfillmentMethod === "delivery" &&
+    Number.isFinite(freeDeliveryThreshold) &&
+    freeDeliveryThreshold > 0 &&
+    reviewSubtotal >= freeDeliveryThreshold;
+
+  const deliveryFee =
+    fulfillmentMethod === "delivery"
+      ? qualifiesForFreeDelivery
+        ? 0
+        : Math.max(0, configuredDeliveryFee)
+      : 0;
 
   const couponSubtotalMatches =
     Math.abs(reviewSubtotal - (checkoutDetails?.subtotal ?? reviewSubtotal)) <
@@ -990,7 +1012,9 @@ export default function CheckoutReviewPage() {
                       </span>
 
                       <span className="text-right font-medium">
-                        {fulfillmentMethod === "pickup" ? "Free" : "$4.00"}
+                        {deliveryFee === 0
+                          ? "Free"
+                          : `$${deliveryFee.toFixed(2)}`}
                       </span>
                     </div>
 

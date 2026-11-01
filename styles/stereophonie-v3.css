@@ -97415,3 +97415,1017 @@ html body
 }
 
 /* === ST DELIVERY FACT CARD ALIGNMENT FINAL END === */
+
+/* === ST MOBILE ASSISTANT TRUE COMPOSER CENTER FINAL START === */
+
+/*
+ * MOBILE ASSISTANT COMPOSER
+ *
+ * Both states must be vertically centered inside the same bracket:
+ *
+ * NORMAL
+ * text / placeholder + mic + send
+ *
+ * DICTATING
+ * waveform + Listening + voice controls + send
+ *
+ * No arbitrary top offset.
+ * The composer itself owns the vertical centering.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer {
+    align-items: center !important;
+  }
+
+
+  /*
+   * NORMAL TYPING STATE
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea {
+    position: static !important;
+
+    align-self: center !important;
+
+    min-height: 38px !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * DICTATING STATE
+   *
+   * Waveform + Listening text occupy the same centered 38px lane.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > .st3-ai-composer__recording {
+    position: static !important;
+
+    align-self: center !important;
+    align-items: center !important;
+
+    min-height: 38px !important;
+    height: 38px !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * Voice / dictation control lane.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > .st3-ai-dictation {
+    position: relative !important;
+
+    align-self: center !important;
+    align-items: center !important;
+
+    min-height: 38px !important;
+    height: 38px !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * Every direct dictation control sits on the same vertical center.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > .st3-ai-dictation
+  > button {
+    align-self: center !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * SEND BUTTON
+   *
+   * Override the historical align-self:flex-end rule.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > button[type="submit"] {
+    position: static !important;
+
+    align-self: center !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * Interaction states never move the send button.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > button[type="submit"]:hover,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > button[type="submit"]:focus,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > button[type="submit"]:focus-visible,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > button[type="submit"]:active {
+    align-self: center !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+/* === ST MOBILE ASSISTANT TRUE COMPOSER CENTER FINAL END === */
+
+/* === ST MOBILE ASSISTANT TEXTAREA TEXT CENTER FINAL START === */
+
+/*
+ * Mobile only.
+ *
+ * The composer row itself is already correctly centered.
+ * This adjusts only the TEXT inside the textarea so the placeholder
+ * and typed message no longer sit visually too low.
+ *
+ * Outer composer / mic / send / dictation geometry stays untouched.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea {
+    padding-top: 6px !important;
+    padding-bottom: 14px !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+  }
+
+}
+
+/* === ST MOBILE ASSISTANT TEXTAREA TEXT CENTER FINAL END === */
+
+/* === ST MOBILE AI COMPOSER PERFECT VERTICAL CENTER V1 START === */
+
+/*
+ * Mobile assistant composer:
+ * make placeholder text, typed text, listening state,
+ * mic controls, and send button share the same vertical center.
+ *
+ * Desktop stays untouched.
+ */
+
+@media (max-width: 600px) {
+
+  html body .st3-ai-panel .st3-ai-composer {
+    align-items: center !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-composer > textarea {
+    align-self: center !important;
+    min-height: 42px !important;
+    padding-top: 11px !important;
+    padding-bottom: 11px !important;
+    line-height: 20px !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-composer__recording {
+    align-self: center !important;
+    min-height: 42px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  html body .st3-ai-panel .st3-ai-composer .st3-ai-dictation,
+  html body .st3-ai-panel .st3-ai-composer button[type="submit"] {
+    align-self: center !important;
+  }
+}
+
+/* === ST MOBILE AI COMPOSER PERFECT VERTICAL CENTER V1 END === */
+
+/* === ST MOBILE AI TEXT STATE CENTERING FINAL START === */
+
+/*
+ * Mobile assistant textarea text alignment.
+ *
+ * EMPTY FIELD:
+ * keep the placeholder balance that visually worked.
+ *
+ * TYPED / DICTATED TEXT:
+ * move the actual entered text slightly further upward so its
+ * baseline sits visually centered inside the composer.
+ *
+ * Outer bracket, microphone, dictation controls and send button
+ * remain completely unchanged.
+ */
+
+@media (max-width: 600px) {
+
+  /*
+   * Empty state / placeholder.
+   */
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:placeholder-shown {
+    padding-top: 6px !important;
+    padding-bottom: 14px !important;
+
+    line-height: 18px !important;
+  }
+
+
+  /*
+   * Typed text or completed dictation text.
+   *
+   * Slightly stronger upward optical correction than placeholder.
+   */
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:not(:placeholder-shown) {
+    padding-top: 4px !important;
+    padding-bottom: 16px !important;
+
+    line-height: 18px !important;
+  }
+
+
+  /*
+   * Same geometry while focused / active.
+   */
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus:placeholder-shown,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus-visible:placeholder-shown {
+    padding-top: 6px !important;
+    padding-bottom: 14px !important;
+  }
+
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus-visible:not(:placeholder-shown) {
+    padding-top: 4px !important;
+    padding-bottom: 16px !important;
+  }
+
+}
+
+/* === ST MOBILE AI TEXT STATE CENTERING FINAL END === */
+
+/* === ST MOBILE AI EMPTY PLACEHOLDER FINAL CENTER START === */
+
+/*
+ * ONLY the empty placeholder:
+ * "Ask about products, offers or orders"
+ *
+ * Move it slightly upward.
+ *
+ * Typed text, dictated text, mic, send button,
+ * recording state and outer composer stay untouched.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:placeholder-shown,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus:placeholder-shown,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus-visible:placeholder-shown {
+    padding-top: 4px !important;
+    padding-bottom: 16px !important;
+
+    line-height: 18px !important;
+  }
+
+}
+
+/* === ST MOBILE AI EMPTY PLACEHOLDER FINAL CENTER END === */
+
+/* === ST MOBILE AI MULTILINE TEXT BLOCK CENTER FINAL START === */
+
+/*
+ * MOBILE — NON-EMPTY ASSISTANT TEXT ONLY
+ *
+ * Keep the complete text block vertically centered:
+ *
+ * 1 line  -> centered
+ * 2 lines -> both lines centered together
+ * 3 lines -> all three lines centered together
+ *
+ * Empty placeholder styling is intentionally NOT touched.
+ *
+ * Equal top/bottom textarea padding keeps the multiline block
+ * geometrically balanced while the existing auto-height logic
+ * grows the textarea with its content.
+ *
+ * A tiny 2px optical correction compensates for iOS textarea
+ * baseline rendering.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus-visible:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:active:not(:placeholder-shown) {
+    box-sizing: border-box !important;
+
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+
+    line-height: 18px !important;
+
+    align-self: center !important;
+
+    position: relative !important;
+    top: -2px !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+/* === ST MOBILE AI MULTILINE TEXT BLOCK CENTER FINAL END === */
+
+/* === ST MOBILE AI NONEMPTY TRUE GEOMETRIC CENTER FINAL START === */
+
+/*
+ * NON-EMPTY TEXT ONLY.
+ *
+ * 1 line, 2 lines, 3 lines, etc. must remain centered
+ * as one complete text block.
+ *
+ * Remove the previous -2px optical offset.
+ * Equal padding + the existing auto-height logic gives the
+ * textarea true geometric centering as it grows.
+ *
+ * Placeholder styling is not touched.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus-visible:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:active:not(:placeholder-shown) {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+
+    line-height: 18px !important;
+
+    position: relative !important;
+    top: 0 !important;
+    bottom: auto !important;
+
+    align-self: center !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+/* === ST MOBILE AI NONEMPTY TRUE GEOMETRIC CENTER FINAL END === */
+
+/* === ST MOBILE AI CONTENT-HEIGHT VERTICAL CENTER FINAL START === */
+
+/*
+ * RULE-BASED CENTERING — NOT PIXEL GUESSING
+ *
+ * When actual text exists:
+ *
+ * textarea height = actual text block height
+ * composer align-items:center = vertical centering
+ *
+ * Therefore the same rule works automatically for:
+ *
+ * 1 line
+ * 2 lines
+ * 3 lines
+ * 4 lines
+ * ...
+ *
+ * The EMPTY placeholder state is intentionally untouched.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer {
+    align-items: center !important;
+  }
+
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:focus-visible:not(:placeholder-shown),
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea:active:not(:placeholder-shown) {
+    /*
+     * Critical:
+     *
+     * No vertical padding is used to position the text.
+     * The textarea itself fits the text block.
+     */
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+    min-height: 18px !important;
+    max-height: 160px !important;
+
+    line-height: 18px !important;
+
+    align-self: center !important;
+
+    position: static !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+/* === ST MOBILE AI CONTENT-HEIGHT VERTICAL CENTER FINAL END === */
+
+/* === ST ASSISTANT PLACEHOLDER HIDE ON FOCUS FINAL START === */
+
+/*
+ * Assistant input placeholder behavior:
+ *
+ * idle + empty  -> visible
+ * focused       -> hidden
+ * typed text    -> naturally hidden
+ * blur + empty  -> visible again
+ */
+
+html body
+.st3-ai-panel
+.st3-ai-composer
+> textarea::placeholder {
+  opacity: 1 !important;
+
+  transition:
+    opacity 140ms ease !important;
+}
+
+html body
+.st3-ai-panel
+.st3-ai-composer
+> textarea:focus::placeholder,
+
+html body
+.st3-ai-panel
+.st3-ai-composer
+> textarea:focus-visible::placeholder {
+  opacity: 0 !important;
+  color: transparent !important;
+}
+
+/* === ST ASSISTANT PLACEHOLDER HIDE ON FOCUS FINAL END === */
+
+/* === ST MOBILE AI TRUE TEXT BLOCK CENTERING FINAL START === */
+
+/*
+ * This is the authoritative mobile textarea geometry.
+ *
+ * We do NOT vertically position text using asymmetric padding.
+ *
+ * ACTIVE EMPTY:
+ * textarea = exactly one line tall.
+ *
+ * HAS TEXT:
+ * textarea height is controlled by the existing JS scrollHeight
+ * measurement, so its box equals the actual rendered text block.
+ *
+ * The composer itself uses align-items:center, therefore the
+ * complete text block is automatically centered for any line count.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer {
+    align-items: center !important;
+  }
+
+
+  /*
+   * Focused but still empty:
+   * center the caret itself as one true line.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-focused="true"][data-st-composer-has-value="false"] {
+    height: 18px !important;
+    min-height: 18px !important;
+    max-height: 18px !important;
+
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+    line-height: 18px !important;
+
+    align-self: center !important;
+
+    position: static !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * Any real typed OR dictated text:
+   *
+   * No vertical padding.
+   * No minimum 38/42px textarea box.
+   *
+   * Its inline height comes from the existing scrollHeight logic:
+   *
+   * 1 line  = ~18px
+   * 2 lines = ~36px
+   * 3 lines = ~54px
+   * etc.
+   *
+   * Then flexbox centers that complete box inside the bracket.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"] {
+    min-height: 18px !important;
+    max-height: 160px !important;
+
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+    line-height: 18px !important;
+
+    align-self: center !important;
+
+    position: static !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * Focus / active state must not alter the geometry.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"]:focus,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"]:focus-visible,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"]:active {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+    align-self: center !important;
+
+    position: static !important;
+
+    top: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+  }
+
+}
+
+/* === ST MOBILE AI TRUE TEXT BLOCK CENTERING FINAL END === */
+
+/* === ST MOBILE AI MEASURED TEXT CENTERING FINAL START === */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer {
+    align-items: center !important;
+  }
+
+
+  /*
+   * Active empty field OR field containing text.
+   *
+   * JS measures the real wrapped text block and provides:
+   *
+   * --st-ai-textarea-height
+   * --st-ai-textarea-pad-top
+   * --st-ai-textarea-pad-bottom
+   *
+   * Top and bottom padding are exactly equal.
+   */
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-focused="true"],
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"] {
+    box-sizing: border-box !important;
+
+    height:
+      var(
+        --st-ai-textarea-height,
+        38px
+      ) !important;
+
+    min-height: 0 !important;
+    max-height: 160px !important;
+
+    padding-top:
+      var(
+        --st-ai-textarea-pad-top,
+        10px
+      ) !important;
+
+    padding-bottom:
+      var(
+        --st-ai-textarea-pad-bottom,
+        10px
+      ) !important;
+
+    overflow-y:
+      var(
+        --st-ai-textarea-overflow,
+        hidden
+      ) !important;
+
+    line-height: 18px !important;
+
+    align-self: center !important;
+
+    position: static !important;
+
+    top: auto !important;
+    bottom: auto !important;
+
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-focused="true"]:focus,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-focused="true"]:focus-visible,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"]:focus,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"]:focus-visible {
+    height:
+      var(
+        --st-ai-textarea-height,
+        38px
+      ) !important;
+
+    padding-top:
+      var(
+        --st-ai-textarea-pad-top,
+        10px
+      ) !important;
+
+    padding-bottom:
+      var(
+        --st-ai-textarea-pad-bottom,
+        10px
+      ) !important;
+
+    position: static !important;
+
+    top: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+  }
+
+}
+
+/* === ST MOBILE AI MEASURED TEXT CENTERING FINAL END === */
+
+/* === ST MOBILE AI MEASURED OPTICAL CENTER V3 START === */
+
+/*
+ * Mobile active/typed assistant input.
+ *
+ * The textarea's geometric height and padding are already calculated
+ * from the actual wrapped text block.
+ *
+ * Safari's textarea glyph/caret rendering sits visually high inside
+ * that geometric line box, so the final optical correction is supplied
+ * by JS as:
+ *
+ * --st-ai-textarea-optical-shift
+ *
+ * That value is derived from the remaining measured vertical space,
+ * not from a fixed px guess.
+ */
+
+@media (max-width: 600px) {
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-focused="true"],
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"] {
+    position: relative !important;
+
+    top:
+      var(
+        --st-ai-textarea-optical-shift,
+        0px
+      ) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-focused="true"]:focus,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"]:focus,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-focused="true"]:focus-visible,
+
+  html body
+  .st3-ai-panel
+  .st3-ai-composer
+  > textarea[data-st-composer-has-value="true"]:focus-visible {
+    position: relative !important;
+
+    top:
+      var(
+        --st-ai-textarea-optical-shift,
+        0px
+      ) !important;
+
+    transform: none !important;
+    translate: none !important;
+  }
+
+}
+
+/* === ST MOBILE AI MEASURED OPTICAL CENTER V3 END === */
+
+/* === ST PRODUCT MESSAGE BODY PORTAL FINAL START === */
+
+/*
+ * Product purchase notifications are now rendered directly into
+ * document.body through createPortal().
+ *
+ * Therefore they are not trapped inside the PDP or cart drawer's
+ * stacking context.
+ *
+ * Applies to:
+ *
+ * - item added successfully
+ * - quantity updated
+ * - maximum available quantity already in cart
+ * - purchase-control errors
+ */
+
+html body > .st-purchase-v6__message {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+}
+
+/* === ST PRODUCT MESSAGE BODY PORTAL FINAL END === */

@@ -602,13 +602,74 @@ export async function submitOrder(
 
   const discountAmount = Number(authoritativeOrder.discount_amount ?? 0);
 
-  const deliveryFee = Number(authoritativeOrder.delivery_fee ?? 0);
+  let deliveryFee = Number(authoritativeOrder.delivery_fee ?? 0);
 
-  const total = Number(authoritativeOrder.total ?? 0);
+  let total = Number(authoritativeOrder.total ?? 0);
 
   const authoritativeOrderNumber = String(
     authoritativeOrder.order_number ?? result.order_number,
   ).trim();
+
+  /*
+   * ST_FREE_DELIVERY_THRESHOLD_SERVER_V1
+   *
+   * Security / accounting authority lives on the server.
+   *
+   * Never rely only on the browser's checkout total.
+   * If a delivery order reaches the live configured threshold,
+   * force the persisted order delivery fee to zero before:
+   *
+   * - confirmation email
+   * - admin notification
+   * - receipt
+   * - final response
+   */
+  const qualifiesForFreeDelivery =
+    fulfillmentMethod === "delivery" &&
+    Number.isFinite(storeSettings.freeDeliveryThreshold) &&
+    storeSettings.freeDeliveryThreshold > 0 &&
+    subtotal >= storeSettings.freeDeliveryThreshold;
+
+  if (
+    qualifiesForFreeDelivery &&
+    deliveryFee !== 0
+  ) {
+    const correctedTotal =
+      Math.max(
+        0,
+        subtotal - discountAmount,
+      );
+
+    const { error: freeDeliveryUpdateError } =
+      await admin
+        .from("orders")
+        .update({
+          delivery_fee: 0,
+          total: correctedTotal,
+        })
+        .eq("id", result.order_id);
+
+    if (freeDeliveryUpdateError) {
+      console.error(
+        `Free delivery could not be applied to order ${authoritativeOrderNumber}:`,
+        freeDeliveryUpdateError,
+      );
+
+      return {
+        success: false,
+        order_id: result.order_id,
+        order_number: authoritativeOrderNumber,
+        message:
+          `Order ${authoritativeOrderNumber} was created, but its free-delivery total could not be finalized. Please contact Stereophonie about this existing order and do not submit another order.`,
+      };
+    }
+
+    deliveryFee = 0;
+    total = correctedTotal;
+
+    authoritativeOrder.delivery_fee = 0;
+    authoritativeOrder.total = correctedTotal;
+  }
 
   const receiptVariantIds = Array.from(
     new Set(

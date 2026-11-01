@@ -933,7 +933,26 @@ export default function CheckoutPage() {
 
   const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
 
-  const deliveryFee = fulfillmentMethod === "delivery" ? 4 : 0;
+  /*
+   * ST_FREE_DELIVERY_THRESHOLD_CHECKOUT_V1
+   *
+   * Delivery is free when the merchandise subtotal reaches or exceeds
+   * the live store free-delivery threshold.
+   *
+   * The threshold is applied to the product subtotal before coupons.
+   */
+  const qualifiesForFreeDelivery =
+    fulfillmentMethod === "delivery" &&
+    Number.isFinite(freeDeliveryThreshold) &&
+    freeDeliveryThreshold > 0 &&
+    subtotal >= freeDeliveryThreshold;
+
+  const deliveryFee =
+    fulfillmentMethod === "delivery"
+      ? qualifiesForFreeDelivery
+        ? 0
+        : Math.max(0, configuredDeliveryFee)
+      : 0;
 
   const orderTotal = useMemo(
     () => Math.max(0, subtotal - discountAmount + deliveryFee),
@@ -2057,7 +2076,14 @@ export default function CheckoutPage() {
                         </span>
 
                         <span className="st-checkout-fulfillment__price">
-                          $4.00
+                          {Number.isFinite(freeDeliveryThreshold) &&
+                          freeDeliveryThreshold > 0 &&
+                          subtotal >= freeDeliveryThreshold
+                            ? "Free"
+                            : `$${Math.max(
+                                0,
+                                configuredDeliveryFee,
+                              ).toFixed(2)}`}
                         </span>
 
                       </button>
@@ -2994,8 +3020,10 @@ export default function CheckoutPage() {
                       <div className="flex items-center justify-between gap-4 text-sm">
                         <span className="text-black/50">Delivery</span>
 
-                        <span className="text-right text-black/45">
-                          Confirmed later
+                        <span className="text-right font-medium">
+                          {deliveryFee === 0
+                            ? "Free"
+                            : `$${deliveryFee.toFixed(2)}`}
                         </span>
                       </div>
 

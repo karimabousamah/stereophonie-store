@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 
 import StorefrontStockNotificationModal from "@/components/storefront/storefront-stock-notification-modal";
@@ -1047,6 +1048,29 @@ export default function ProductPurchaseControls({
 
   return (
     <>
+      {typeof document !== "undefined" && message
+        ? createPortal(
+            <div
+              data-st-product-message={messageType || undefined}
+              data-st-product-message-variant={
+                message ===
+                "The maximum available quantity is already in your cart."
+                  ? "mustard"
+                  : undefined
+              }
+              className={`st-purchase-v6__message ${
+                messageType === "success" ? "is-success" : "is-error"
+              }${messageLeaving ? " is-leaving" : ""}`}
+              role="status"
+            >
+              {messageType === "success" ? <CheckCircle2 /> : <Zap />}
+
+              <span>{message}</span>
+            </div>,
+            document.body,
+          )
+        : null}
+
       <section id="stock-notification-controls" className="st-purchase-v6">
         {ordered.length > 1 ? (
           structuredConfigurator ? (
@@ -1217,26 +1241,6 @@ export default function ProductPurchaseControls({
               <strong>{selectedStatus.title}</strong>
               <span>{selectedStatus.text}</span>
             </div>
-          </div>
-        ) : null}
-
-        {message ? (
-          <div
-            data-st-product-message={messageType || undefined}
-            data-st-product-message-variant={
-              message ===
-              "The maximum available quantity is already in your cart."
-                ? "mustard"
-                : undefined
-            }
-            className={`st-purchase-v6__message ${
-              messageType === "success" ? "is-success" : "is-error"
-            }${messageLeaving ? " is-leaving" : ""}`}
-            role="status"
-          >
-            {messageType === "success" ? <CheckCircle2 /> : <Zap />}
-
-            <span>{message}</span>
           </div>
         ) : null}
 
