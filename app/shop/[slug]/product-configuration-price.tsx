@@ -234,24 +234,35 @@ export default function ProductConfigurationPrice({ variants }: Props) {
   }
 
   return (
-    <div
-      className={`st-product-v5__price${
-        priceChanging ? " is-price-changing" : ""
-      }`}
-      data-product-configuration-price="true"
-      data-selected-variant-id={selected?.id ?? ""}
-    >
-      {price ? (
-        <>
-          <strong>${price.current.toFixed(2)}</strong>
+    <>
+      <div
+        className={`st-product-v5__price${
+          priceChanging ? " is-price-changing" : ""
+        }`}
+        data-product-configuration-price="true"
+        data-selected-variant-id={selected?.id ?? ""}
+      >
+        {price ? (
+          <>
+            <strong>${price.current.toFixed(2)}</strong>
 
-          {price.sale && price.regular ? (
-            <del>${price.regular.toFixed(2)}</del>
-          ) : null}
-        </>
-      ) : (
-        <strong>Price unavailable</strong>
-      )}
-    </div>
+            {price.sale && price.regular ? (
+              <del>${price.regular.toFixed(2)}</del>
+            ) : null}
+          </>
+        ) : (
+          <strong>Price unavailable</strong>
+        )}
+      </div>
+
+      {price ? (
+        <span
+          className="st-product-v5__vat-badge"
+          data-product-vat-badge="true"
+        >
+          Including VAT
+        </span>
+      ) : null}
+    </>
   );
 }

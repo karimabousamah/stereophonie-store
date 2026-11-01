@@ -1,5 +1,6 @@
 import type { StoreProductVariant } from "@/components/storefront/store-product-card";
 import {
+  storefrontSearchCategoryRelevance,
   storefrontSearchProductRelevance,
 } from "@/lib/storefront-search";
 
@@ -33,6 +34,10 @@ export type ShopCatalogueProduct = {
     | null;
   brands: ShopNamedRelation;
   product_variants: StoreProductVariant[] | null;
+
+  // ST_CATEGORY_AWARE_SEARCH_V1
+  // Names of assigned subcategories and their ancestors.
+  searchCategoryNames?: string[];
 };
 
 export type ShopAvailabilityFilter = "" | "in-stock";
@@ -257,6 +262,54 @@ export function shopMatchesPriceRange(
   });
 }
 
+
+function shopUnifiedSearchRelevance(
+  product: ShopCatalogueProduct,
+  query: string,
+) {
+  const brand = shopBrandName(product);
+
+  const productMatch = storefrontSearchProductRelevance({
+    name: product.name,
+    brand,
+    query,
+  });
+
+  const categoryNames = Array.from(
+    new Set(
+      [
+        shopCategoryName(product),
+        ...(product.product_category_assignments ?? []).map(
+          (assignment) =>
+            shopRelationName(assignment.categories, ""),
+        ),
+        ...(product.searchCategoryNames ?? []),
+      ].filter(Boolean),
+    ),
+  );
+
+  const categoryMatch = storefrontSearchCategoryRelevance({
+    categoryNames,
+    brand,
+    query,
+  });
+
+  if (!productMatch) {
+    return categoryMatch;
+  }
+
+  if (!categoryMatch) {
+    return productMatch;
+  }
+
+  // Preserve strong product and exact-brand relevance.
+  return productMatch.tier < categoryMatch.tier ||
+    (productMatch.tier === categoryMatch.tier &&
+      productMatch.score <= categoryMatch.score)
+    ? productMatch
+    : categoryMatch;
+}
+
 export function shopMatchesSearch(
   product: ShopCatalogueProduct,
   search: string,
@@ -266,11 +319,7 @@ export function shopMatchesSearch(
   }
 
   return (
-    storefrontSearchProductRelevance({
-      name: product.name,
-      brand: shopBrandName(product),
-      query: search,
-    }) !== null
+    shopUnifiedSearchRelevance(product, search) !== null
   );
 }
 
@@ -290,11 +339,7 @@ export function shopRelevantSearchProducts<
   const scored = products
     .map((product) => {
       const relevance =
-        storefrontSearchProductRelevance({
-          name: product.name,
-          brand: shopBrandName(product),
-          query,
-        });
+        shopUnifiedSearchRelevance(product, query);
 
       return relevance
         ? {

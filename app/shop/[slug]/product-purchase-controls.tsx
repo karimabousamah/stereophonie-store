@@ -1223,6 +1223,12 @@ export default function ProductPurchaseControls({
         {message ? (
           <div
             data-st-product-message={messageType || undefined}
+            data-st-product-message-variant={
+              message ===
+              "The maximum available quantity is already in your cart."
+                ? "mustard"
+                : undefined
+            }
             className={`st-purchase-v6__message ${
               messageType === "success" ? "is-success" : "is-error"
             }${messageLeaving ? " is-leaving" : ""}`}
@@ -1268,9 +1274,9 @@ export default function ProductPurchaseControls({
                 className="st-purchase-v6__cart"
                 onClick={() => addSelected(false)}
               >
-                <ShoppingBag />
-
                 <span>Add to bag</span>
+
+                <ShoppingBag />
               </button>
 
               <button
@@ -1278,9 +1284,9 @@ export default function ProductPurchaseControls({
                 className="st-purchase-v6__buy"
                 onClick={() => addSelected(true)}
               >
-                <Zap />
-
                 <span>Buy now</span>
+
+                <Zap />
               </button>
             </div>
           </div>
@@ -1294,9 +1300,9 @@ export default function ProductPurchaseControls({
               className="st-purchase-v6__buy st-purchase-v6__ask-price"
               onClick={openAskForPrice}
             >
-              <CircleDollarSign />
-
               <span>Ask for price</span>
+
+              <CircleDollarSign />
             </button>
           </div>
         ) : selected ? (
@@ -1306,19 +1312,22 @@ export default function ProductPurchaseControls({
             disabled={notificationLoading}
             onClick={() => requestNotification()}
           >
+            <span>Notify me when available</span>
+
             {notificationLoading ? (
-              <LoaderCircle className="is-spin st-preorder-loading-spinner" aria-hidden="true" />
+              <LoaderCircle
+                className="is-spin st-preorder-loading-spinner"
+                aria-hidden="true"
+              />
             ) : (
               <Mail />
             )}
-
-            <span>Notify me when available</span>
           </button>
         ) : (
           <button type="button" className="st-purchase-v6__disabled" disabled>
-            <Package />
-
             <span>Select a configuration</span>
+
+            <Package />
           </button>
         )}
 
@@ -1329,9 +1338,9 @@ export default function ProductPurchaseControls({
           onClick={() => toggleProduct(wishlistProduct)}
           aria-pressed={wishlisted}
         >
-          <Bookmark className={wishlisted ? "fill-current" : ""} />
-
           <span>{wishlisted ? "Saved" : "Save for later"}</span>
+
+          <Bookmark className={wishlisted ? "fill-current" : ""} />
         </button>
       </section>
 

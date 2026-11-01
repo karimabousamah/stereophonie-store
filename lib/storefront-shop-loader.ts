@@ -117,9 +117,111 @@ const loadShopCatalogueIndex = unstable_cache(
       return [];
     }
 
-    return (data ?? []) as ShopIndexRow[];
+    const catalogue = (data ?? []) as ShopIndexRow[];
+
+    if (catalogue.length === 0) {
+      return catalogue;
+    }
+
+    /*
+     * ST_CATEGORY_AWARE_SEARCH_V1
+     *
+     * Resolve the actual admin-defined taxonomy.
+     *
+     * This includes:
+     * - a product's primary subcategory
+     * - every secondary assigned subcategory
+     * - parent subcategories in nested hierarchies
+     *
+     * Only IDs and names are used. Product photographs and
+     * other expensive storefront data are not loaded.
+     */
+    const {
+      data: subcategoryRows,
+      error: subcategoryError,
+    } = await supabase
+      .from("subcategories")
+      .select("id, name, parent_subcategory_id");
+
+    if (subcategoryError) {
+      console.error(
+        "Storefront search taxonomy lookup failed:",
+        subcategoryError.message,
+      );
+
+      // Retain existing product-name, brand and category search
+      // if the supplementary taxonomy lookup is unavailable.
+      return catalogue;
+    }
+
+    const taxonomy = new Map<
+      string,
+      { name: string; parentId: string | null }
+    >();
+
+    for (const row of subcategoryRows ?? []) {
+      taxonomy.set(String(row.id), {
+        name: String(row.name ?? "").trim(),
+        parentId:
+          typeof row.parent_subcategory_id === "string"
+            ? row.parent_subcategory_id
+            : null,
+      });
+    }
+
+    function namesInSubcategoryHierarchy(
+      startId: string | null | undefined,
+    ): string[] {
+      const names: string[] = [];
+      const visited = new Set<string>();
+
+      let currentId = startId ?? null;
+
+      // Bound traversal even if bad hierarchy data contains a cycle.
+      for (let depth = 0; currentId && depth < 12; depth += 1) {
+        if (visited.has(currentId)) {
+          break;
+        }
+
+        visited.add(currentId);
+
+        const node = taxonomy.get(currentId);
+
+        if (!node) {
+          break;
+        }
+
+        if (node.name) {
+          names.push(node.name);
+        }
+
+        currentId = node.parentId;
+      }
+
+      return names;
+    }
+
+    return catalogue.map((product) => {
+      const subcategoryIds = [
+        product.subcategory_id,
+        ...(product.product_category_assignments ?? []).map(
+          (assignment) => assignment.subcategory_id,
+        ),
+      ];
+
+      return {
+        ...product,
+        searchCategoryNames: Array.from(
+          new Set(
+            subcategoryIds.flatMap(
+              namesInSubcategoryHierarchy,
+            ),
+          ),
+        ),
+      };
+    });
   },
-  ["stereophonie-shop-catalogue-index-v4"],
+  ["stereophonie-shop-catalogue-index-v5"],
   {
     revalidate: 5,
     tags: [SHOP_CATALOGUE_CACHE_TAG],

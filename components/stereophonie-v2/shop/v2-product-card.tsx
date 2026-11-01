@@ -1580,9 +1580,11 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
                     disabled={!hydrated}
                     onClick={() => toggleProduct(product)}
                   >
-                    {wishlisted ? <Check /> : <Bookmark />}
+                    <span>
+                      {wishlisted ? "Saved" : "Add to wishlist"}
+                    </span>
 
-                    {wishlisted ? "Saved" : "Add to wishlist"}
+                    {wishlisted ? <Check /> : <Bookmark />}
                   </button>
                 </div>
               </section>

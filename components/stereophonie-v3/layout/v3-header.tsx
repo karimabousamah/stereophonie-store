@@ -16,6 +16,7 @@ import {
 import { useCart } from "@/components/cart/cart-provider";
 import { useWishlist } from "@/components/wishlist/wishlist-provider";
 import { useStoreSettings } from "@/components/storefront/store-settings-provider";
+import { useHeaderNavigation } from "@/components/storefront/header-navigation-provider";
 import V3HeaderCartPanel from "@/components/stereophonie-v3/layout/v3-header-cart-panel";
 import V3HeaderSearchPanel from "@/components/stereophonie-v3/layout/v3-header-search-panel";
 import { V3BrandLogo } from "@/components/stereophonie-v3/shared/v3-brand-logo";
@@ -78,6 +79,12 @@ type HeaderCategory = {
   id: string;
   name: string;
   slug?: string | null;
+  subcategories?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    sort_order: number;
+  }>;
 };
 
 type HeaderPanel =
@@ -107,6 +114,7 @@ function storefrontCategoryHref(
 
 export function V3Header() {
   const { instagramHandle } = useStoreSettings();
+  const { categories: initialHeaderCategories } = useHeaderNavigation();
 
   const instagramUsername = instagramHandle.replace(/^@/, "").trim();
 
@@ -154,7 +162,35 @@ export function V3Header() {
     }
   }
 
-  const [categories, setCategories] = useState<HeaderCategory[]>([]);
+  /*
+   * TOP NAVIGATION FIRST PAINT
+   *
+   * Start with server-rendered top-level Categories immediately.
+   * The existing client fetch below remains responsible for
+   * enriching those same Categories with Mega Menu Subcategories.
+   */
+  const [categories, setCategories] =
+    useState<HeaderCategory[]>(
+      initialHeaderCategories,
+    );
+
+  /*
+   * Keep Subcategory data independently keyed by Category ID.
+   *
+   * This prevents an already-rendered Category panel from falling
+   * back to its old utility links while the enriched Category
+   * payload is being refreshed.
+   */
+  const [
+    headerSubcategoriesByCategoryId,
+    setHeaderSubcategoriesByCategoryId,
+  ] = useState<
+    Record<
+      string,
+      NonNullable<HeaderCategory["subcategories"]>
+    >
+  >({});
+
 
   /*
    * DESKTOP / TABLET HEADER FIT CONTROLLER
@@ -171,8 +207,40 @@ export function V3Header() {
   const desktopNavRef = useRef<HTMLElement>(null);
   const desktopRightZoneRef = useRef<HTMLDivElement>(null);
 
-  const [visibleTopCategoryCount, setVisibleTopCategoryCount] =
-    useState(6);
+    /*
+   * EXACT TOP-HEADER FIRST PAINT
+   *
+   * Server HTML begins with Category shortcuts hidden but measurable.
+   *
+   * A synchronous script immediately below the desktop Header measures
+   * the REAL available width before first paint and stores the exact
+   * visible count on window.
+   *
+   * During hydration React starts from that SAME count, so there is no:
+   *
+   * - all-Categories flash
+   * - six-Categories flash
+   * - Category pop-in
+   * - collision with Support / customer actions
+   */
+  /*
+   * EXACT ADAPTIVE TOP HEADER
+   *
+   * Server and first client React render begin identically with
+   * the catalogue shortcuts hidden-but-measurable.
+   *
+   * useLayoutEffect performs the real geometry calculation and
+   * reveals only the shortcuts that fit the customer's actual
+   * available Header width.
+   *
+   * No hard-coded viewport/category-count breakpoints.
+   */
+  const [
+    visibleTopCategoryCount,
+    setVisibleTopCategoryCount,
+  ] = useState<number>(0);
+
+
 
   const [mobileCategoryMenuOpen, setMobileCategoryMenuOpen] = useState(false);
   const [mobileCategoryMenuRendered, setMobileCategoryMenuRendered] =
@@ -306,21 +374,52 @@ export function V3Header() {
 
     async function loadCategories() {
       try {
-        const response = await fetch("/api/storefront/header-categories");
+        const response = await fetch(
+          "/api/storefront/header-categories?mega=v6",
+          {
+            cache: "force-cache",
+          },
+        );
 
         if (!response.ok) {
           return;
         }
 
         const data = await response.json();
-        const nextCategories = Array.isArray(data)
-          ? data
-          : Array.isArray(data.categories)
-            ? data.categories
-            : [];
+        const rawCategories: HeaderCategory[] =
+          Array.isArray(data)
+            ? (data as HeaderCategory[])
+            : Array.isArray(data.categories)
+              ? (data.categories as HeaderCategory[])
+              : [];
+
+        const nextCategories: HeaderCategory[] =
+          rawCategories.map((category: HeaderCategory) => ({
+            ...category,
+
+            subcategories:
+              Array.isArray(category.subcategories)
+                ? category.subcategories
+                : [],
+          }));
+
+        const nextSubcategoriesByCategoryId =
+          Object.fromEntries(
+            nextCategories.map((category) => [
+              category.id,
+              category.subcategories ?? [],
+            ]),
+          ) as Record<
+            string,
+            NonNullable<HeaderCategory["subcategories"]>
+          >;
 
         if (!cancelled) {
           setCategories(nextCategories);
+
+          setHeaderSubcategoriesByCategoryId(
+            nextSubcategoriesByCategoryId,
+          );
         }
       } catch {
         // The fixed navigation remains usable if categories cannot load.
@@ -518,7 +617,14 @@ export function V3Header() {
    * then cutting the visible navigation again at 6.
    */
   const visibleCategories = categories.slice(0, 12);
-  const topCategories = visibleCategories.slice(0, 6);
+  /*
+   * Desktop/tablet category pool.
+   *
+   * The existing adaptive width fitter decides how many of these
+   * can actually remain visible, so do not artificially cap the
+   * header at only six categories on wide screens.
+   */
+  const topCategories = visibleCategories;
 
   const topCategoryFitKey = topCategories
     .map((category) => `${category.id}:${category.name}`)
@@ -645,6 +751,20 @@ export function V3Header() {
           ? currentCount
           : nextVisibleCount,
     );
+
+
+    /* ST_HEADER_FIT_PERSIST_V1 */
+    /*
+     * The normal React fitter remains the authority after hydration
+     * for:
+     *
+     * - window resizing
+     * - browser zoom changes
+     * - font metric settlement
+     *
+     * It starts from the pre-paint count, so there is no temporary
+     * incorrect Header state.
+     */
   }, [
     topCategories.length,
     topCategoryFitKey,
@@ -663,6 +783,15 @@ export function V3Header() {
       return;
     }
 
+    /*
+     * FIRST HYDRATED LAYOUT:
+     *
+     * Measure the customer's REAL available Header width and reveal
+     * only the catalogue shortcuts that genuinely fit.
+     *
+     * useLayoutEffect runs before the browser paints React's committed
+     * layout, preventing the visible all-Category overflow state.
+     */
     updateDesktopHeaderCategoryFit();
 
     const inner = desktopHeaderInnerRef.current;
@@ -722,6 +851,18 @@ export function V3Header() {
         (category) => `category:${category.id}` === panelForContent,
       ) ?? null)
     : null;
+
+  const activeCategorySubcategories =
+    activeCategory
+      ? (
+          headerSubcategoriesByCategoryId[
+            activeCategory.id
+          ] ??
+          activeCategory.subcategories ??
+          []
+        )
+      : [];
+
 
   useEffect(() => {
     const inner = panelInnerRef.current;
@@ -1116,7 +1257,7 @@ export function V3Header() {
           </div>
         </div>
 
-        <div
+<div
           id="st3-header-panel"
           className={`st3-mega ${
             panelIsOpen
@@ -1158,7 +1299,7 @@ export function V3Header() {
                 <>
                   <div>
                     <p className="st3-mega__eyebrow">Shop</p>
-                    <div className="st3-mega__links">
+                    <div className="st3-mega__links st3-mega__links--store-categories">
                       <Link
                         href="/shop"
                         className="st3-mega__primary-link"
@@ -1173,7 +1314,7 @@ export function V3Header() {
                       >
                         Offers
                       </Link>
-                      {visibleCategories.map((category) => (
+                      {categories.map((category) => (
                         <Link
                           key={category.id}
                           href={storefrontCategoryHref(category)}
@@ -1310,29 +1451,66 @@ export function V3Header() {
                     </div>
                   </div>
                   <div className="st3-mega__secondary">
-                    <p className="st3-mega__eyebrow">{activeCategory.name}</p>
-                    <div className="st3-mega__secondary-links">
-                      <Link
-                        href={storefrontCategoryHref(activeCategory)}
-                        className="st3-mega__secondary-link"
-                        onClick={closePanel}
-                      >
-                        View all products
-                      </Link>
-                      <Link
-                        href="/wishlist"
-                        className="st3-mega__secondary-link"
-                        onClick={(event) => { closePanel(); holdWishlistNavigation(event); }}
-                      >
-                        Wishlist
-                      </Link>
-                      <Link
-                        href="/track-order"
-                        className="st3-mega__secondary-link"
-                        onClick={closePanel}
-                      >
-                        Track an order
-                      </Link>
+                    <p className="st3-mega__eyebrow">
+                      {activeCategorySubcategories.length > 0
+                        ? "Shop by subcategory"
+                        : activeCategory.name}
+                    </p>
+
+                    <div
+                      className={`st3-mega__secondary-links ${
+                        activeCategorySubcategories.length > 0
+                          ? "st3-mega__secondary-links--subcategories"
+                          : ""
+                      }`}
+                    >
+                      {activeCategorySubcategories.length > 0 ? (
+                        activeCategorySubcategories.map(
+                          (subcategory) => (
+                            <Link
+                              key={subcategory.id}
+                              href={storefrontCategoryHref(
+                                activeCategory,
+                                `subcategory=${encodeURIComponent(
+                                  subcategory.id,
+                                )}`,
+                              )}
+                              className="st3-mega__secondary-link"
+                              onClick={closePanel}
+                            >
+                              {subcategory.name}
+                            </Link>
+                          ),
+                        )
+                      ) : (
+                        <>
+                          <Link
+                            href={storefrontCategoryHref(
+                              activeCategory,
+                            )}
+                            className="st3-mega__secondary-link"
+                            onClick={closePanel}
+                          >
+                            View all products
+                          </Link>
+
+                          <Link
+                            href="/wishlist"
+                            className="st3-mega__secondary-link"
+                            onClick={closePanel}
+                          >
+                            Wishlist
+                          </Link>
+
+                          <Link
+                            href="/track-order"
+                            className="st3-mega__secondary-link"
+                            onClick={closePanel}
+                          >
+                            Track an order
+                          </Link>
+                        </>
+                      )}
                     </div>
                   </div>
                 </>

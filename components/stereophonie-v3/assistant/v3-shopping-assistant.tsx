@@ -1,6 +1,7 @@
 "use client";
 
 import { useStoreSettings } from "@/components/storefront/store-settings-provider";
+import AssistantVoiceDictation from "./assistant-voice-dictation";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,6 +59,7 @@ type AssistantMessage = {
   role: "assistant" | "user";
   content: string;
   products?: AssistantProductCard[];
+  links?: { label: string; url: string }[];
 };
 
 type AssistantConversationProductReference = {
@@ -326,6 +328,71 @@ function ProductRecommendationCard({
   );
 }
 
+
+/*
+ * ST_ASSISTANT_VERIFIED_STORE_KNOWLEDGE_V1
+ * Only render the known Maps destination, not arbitrary URLs
+ * supplied by a network response.
+ */
+function normalizeAssistantLinks(data: unknown) {
+  /*
+   * ST_ASSISTANT_TRUSTED_MAP_LINKS_V2
+   *
+   * Only the two authoritative store navigation URLs
+   * may appear as external assistant shortcuts.
+   *
+   * Reject arbitrary URLs, duplicates and malformed entries.
+   */
+  const trustedLocationUrls = new Set<string>([
+    "https://www.google.com/maps/dir/?api=1&destination=Stereophonie+Store%2C+Mtaileb%2C+Lebanon&destination_place_id=ChIJ70H5JvE-HxURCdXRMYTxE_c",
+    "https://maps.apple.com/?daddr=Stereophonie%20Store%2C%20Mtaileb%2C%20Lebanon",
+  ]);
+
+  if (!data || typeof data !== "object") {
+    return [];
+  }
+
+  const links = (data as Record<string, unknown>).links;
+
+  if (!Array.isArray(links)) {
+    return [];
+  }
+
+  const verified: { label: string; url: string }[] = [];
+  const seen = new Set<string>();
+
+  for (const item of links) {
+    if (!item || typeof item !== "object") {
+      continue;
+    }
+
+    const record = item as Record<string, unknown>;
+
+    if (
+      typeof record.label !== "string" ||
+      typeof record.url !== "string" ||
+      !record.label.trim() ||
+      !trustedLocationUrls.has(record.url) ||
+      seen.has(record.url)
+    ) {
+      continue;
+    }
+
+    seen.add(record.url);
+
+    verified.push({
+      label: record.label.trim().slice(0, 80),
+      url: record.url,
+    });
+
+    if (verified.length === 2) {
+      break;
+    }
+  }
+
+  return verified;
+}
+
 function normalizeAssistantResponse(data: unknown): string {
   if (data && typeof data === "object") {
     const record = data as Record<string, unknown>;
@@ -371,8 +438,34 @@ export default function V3ShoppingAssistant() {
   ]);
 
   const [input, setInput] = useState("");
+  const [dictating, setDictating] = useState(false);
+  /* ST_ASSISTANT_DIRECT_VOICE_SEND_V2 */
+  const [voiceProcessing, setVoiceProcessing] = useState(false);
+  const [voiceLevel, setVoiceLevel] = useState(0);
+  const [voiceStatus, setVoiceStatus] = useState("");
+  const voiceDirectSendRef = useRef<(() => void) | null>(null);
+  /* ST_ASSISTANT_MULTILINE_V3 */
+  const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    const field = textAreaRef.current;
+    if (!field) return;
+
+    field.style.height = "38px";
+    field.style.height =
+      `${Math.min(Math.max(field.scrollHeight, 38), 160)}px`;
+  }, [input, dictating]);
+
 
   const [sending, setSending] = useState(false);
+
+  /* ST_ASSISTANT_STOP_RESPONSE_V1 */
+  const pendingAssistantRequestRef = useRef<{
+    id: number;
+    controller: AbortController;
+  } | null>(null);
+
+  const assistantRequestSequenceRef = useRef(0);
 
   const [error, setError] = useState("");
 
@@ -516,12 +609,41 @@ export default function V3ShoppingAssistant() {
     };
   }
 
+  function stopAssistantResponse() {
+    const active = pendingAssistantRequestRef.current;
+
+    if (!active) return;
+
+    // Invalidate before aborting, so even a late
+    // response cannot appear after Stop is pressed.
+    pendingAssistantRequestRef.current = null;
+    assistantRequestSequenceRef.current += 1;
+
+    active.controller.abort();
+
+    // Preserve the conversation and any typed draft.
+    setSending(false);
+    setError("");
+  }
+
   async function sendMessage(rawValue?: string) {
     const value = (rawValue ?? input).trim();
 
-    if (!value || sending) {
+    if (
+      !value ||
+      sending ||
+      pendingAssistantRequestRef.current
+    ) {
       return;
     }
+
+    const controller = new AbortController();
+    const requestId = ++assistantRequestSequenceRef.current;
+
+    pendingAssistantRequestRef.current = {
+      id: requestId,
+      controller,
+    };
 
     setError("");
     setInput("");
@@ -540,6 +662,7 @@ export default function V3ShoppingAssistant() {
     try {
       const response = await fetch("/api/assistant/chat", {
         method: "POST",
+        signal: controller.signal,
         headers: {
           "Content-Type": "application/json",
         },
@@ -567,25 +690,58 @@ export default function V3ShoppingAssistant() {
 
       const data = await response.json();
 
+      // A cancelled or superseded request must never
+      // append a late assistant response.
+      if (
+        controller.signal.aborted ||
+        pendingAssistantRequestRef.current?.id !== requestId
+      ) {
+        return;
+      }
+
       const assistantMessage: AssistantMessage = {
         id: crypto.randomUUID(),
         role: "assistant",
         content: normalizeAssistantResponse(data),
         products: normalizeAssistantProducts(data),
+        links: normalizeAssistantLinks(data),
       };
 
       setMessages((current) => [...current, assistantMessage]);
     } catch {
+      // Customer cancellation is not a connection error.
+      if (
+        controller.signal.aborted ||
+        pendingAssistantRequestRef.current?.id !== requestId
+      ) {
+        return;
+      }
+
       setError(
         "I couldn’t connect right now. You can still browse the store or try again in a moment.",
       );
     } finally {
-      setSending(false);
+      // An older request must not clear the loading
+      // state belonging to a newer request.
+      if (
+        pendingAssistantRequestRef.current?.id === requestId
+      ) {
+        pendingAssistantRequestRef.current = null;
+        setSending(false);
+      }
     }
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (sending || voiceProcessing) return;
+
+    if (dictating) {
+      voiceDirectSendRef.current?.();
+      return;
+    }
+
     void sendMessage();
   }
 
@@ -905,8 +1061,49 @@ export default function V3ShoppingAssistant() {
                 <div
                   className={`st3-ai-message st3-ai-message--${message.role}`}
                 >
+
                   <p>{message.content}</p>
+                {message.role === "assistant" &&
+                message.links &&
+                message.links.length > 0 ? (
+                  <div
+                    className="st3-ai-verified-links"
+                    style={{
+                      marginTop: 12,
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 8,
+                    }}
+                  >
+                    {message.links.map((link) => (
+                      <a
+                        key={link.url}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 9,
+                          padding: "10px 13px",
+                          border: "1px solid rgba(0,0,0,0.12)",
+                          borderRadius: 12,
+                          background: "#fff",
+                          color: "#181818",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          textDecoration: "none",
+                        }}
+                      >
+                        <span>{link.label}</span>
+                        <span aria-hidden="true">↗</span>
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
                 </div>
+
+
 
                 {message.role === "assistant" &&
                 message.products &&
@@ -953,19 +1150,121 @@ export default function V3ShoppingAssistant() {
           </div>
 
           <form className="st3-ai-composer" onSubmit={submit}>
-            <input
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask about products, offers or orders"
-              aria-label="Message Stereophonie assistant"
+            {dictating ? (
+              <div
+                className="st3-ai-composer__recording"
+                role="status"
+                aria-label="Listening to your question"
+              >
+                <span
+                  className="st3-ai-composer__wave"
+                  aria-hidden="true"
+                >
+                  {Array.from({ length: 13 }, (_, index) => {
+                    const shape =
+                      0.3 + 0.7 * Math.abs(Math.sin(index * 1.21));
+
+                    return (
+                      <i
+                        key={index}
+                        style={{
+                          height:
+                            `${Math.round(4 + voiceLevel * shape * 18)}px`,
+                        }}
+                      />
+                    );
+                  })}
+                </span>
+                <span className="st3-ai-composer__listening">
+                  {voiceProcessing
+                    ? voiceStatus || "Processing..."
+                    : "Listening..."}
+                </span>
+              </div>
+            ) : (
+              <textarea
+                ref={textAreaRef}
+                rows={1}
+                value={input}
+                onChange={(event) =>
+                  setInput(event.target.value)
+                }
+                onKeyDown={(event) => {
+                  if (
+                    event.key === "Enter" &&
+                    !event.shiftKey &&
+                    !event.nativeEvent.isComposing
+                  ) {
+                    event.preventDefault();
+                    if (!sending && input.trim()) {
+                      void sendMessage();
+                    }
+                  }
+                }}
+                placeholder="Ask about products, offers or orders"
+                aria-label="Message Stereophonie assistant"
+              />
+            )}
+
+            <AssistantVoiceDictation
+              draft={input}
+              onDraftChange={setInput}
+              onRecordingChange={setDictating}
+              onProcessingChange={setVoiceProcessing}
+              onAudioLevel={setVoiceLevel}
+              onStatusChange={setVoiceStatus}
+              onSendText={(text) => sendMessage(text)}
+              directSendRef={voiceDirectSendRef}
+              disabled={sending}
+              open={open}
             />
 
             <button
               type="submit"
-              disabled={sending || !input.trim()}
-              aria-label="Send message"
+              onClick={
+                sending
+                  ? (event) => {
+                      event.preventDefault();
+                      stopAssistantResponse();
+                    }
+                  : undefined
+              }
+              disabled={
+                !sending &&
+                (
+                  voiceProcessing ||
+                  (!dictating && !input.trim())
+                )
+              }
+              aria-label={
+                sending
+                  ? "Stop assistant response"
+                  : "Send message"
+              }
+              title={
+                sending
+                  ? "Stop response"
+                  : "Send message"
+              }
             >
-              <SendIcon />
+              {sending ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  fill="none"
+                >
+                  <rect
+                    x="7"
+                    y="7"
+                    width="10"
+                    height="10"
+                    rx="2"
+                    fill="currentColor"
+                  />
+                </svg>
+              ) : (
+                <SendIcon />
+              )}
             </button>
           </form>
 

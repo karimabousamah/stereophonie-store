@@ -127,7 +127,7 @@ export default async function DeliveryPage() {
               const Icon = step.icon;
               return (
                 <article key={step.title}>
-                  <span className="st-delivery-page__step-number">
+                  <span className="st-support-page__number">
                     {String(index + 1).padStart(2, "0")}
                   </span>
 
@@ -159,20 +159,47 @@ export default async function DeliveryPage() {
 
           <div className="st-delivery-page__payment-grid">
             <article className="is-active">
-              <Banknote />
-              <div>
-                <span>Available now</span>
+              <span
+                className="st-delivery-page__payment-icon"
+                aria-hidden="true"
+              >
+                <Banknote />
+              </span>
+
+              <div className="st-delivery-page__payment-copy">
+                <span className="st-delivery-page__payment-status">
+                  Available now
+                </span>
+
                 <h3>Cash on delivery</h3>
-                <p>Pay the courier when your order arrives.</p>
+
+                <p>
+                  Pay the courier when your order arrives.
+                </p>
               </div>
-              <Check />
             </article>
-            <article className="is-coming-soon" aria-disabled="true">
-              <WalletCards />
-              <div>
-                <span>Coming soon</span>
+
+            <article
+              className="is-coming-soon"
+              aria-disabled="true"
+            >
+              <span
+                className="st-delivery-page__payment-icon"
+                aria-hidden="true"
+              >
+                <WalletCards />
+              </span>
+
+              <div className="st-delivery-page__payment-copy">
+                <span className="st-delivery-page__payment-status">
+                  Coming soon
+                </span>
+
                 <h3>Whish Money</h3>
-                <p>Digital payment will be added when fully enabled.</p>
+
+                <p>
+                  Digital payment will be added when fully enabled.
+                </p>
               </div>
             </article>
           </div>

@@ -48307,7 +48307,7 @@ html body .st3-header__socials > a:focus-visible {
 
     margin: 0 !important;
 
-    margin-left: 8px !important;
+    margin-left: 22px !important;
 
     padding-left: 18px !important;
 
@@ -48708,7 +48708,7 @@ html body .st3-header__socials > a:focus-visible {
   }
 
   html body .st3-header__right-zone {
-    margin-left: 22px !important;
+    margin-left: 17px !important;
   }
 
   html body .st3-header__utility-divider {
@@ -93939,3 +93939,3479 @@ main.st-product-v5
 }
 
 /* === END ST_RELATED_HORIZONTAL_SHELF_AND_STOCK_V2 === */
+
+/* === ST_ASSISTANT_WAVEFORM_CSS_V3 START === */
+
+/* Allow long typed/transcribed messages to wrap and grow. */
+.st3-ai-composer {
+  align-items: flex-end !important;
+  gap: 6px !important;
+}
+
+.st3-ai-composer textarea {
+  display: block !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 38px !important;
+  max-height: 160px !important;
+  margin: 0 !important;
+  padding: 10px 0 !important;
+  resize: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: #252529 !important;
+  font: inherit !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+  box-sizing: border-box !important;
+  scrollbar-width: thin;
+}
+
+.st3-ai-composer textarea::placeholder {
+  color: #929297 !important;
+  opacity: 1 !important;
+}
+
+/* Recording occupies the exact input slot. */
+.st3-ai-composer__recording {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 2px;
+  color: #45454b;
+}
+
+.st3-ai-composer__listening {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.st3-ai-composer__wave {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.st3-ai-composer__wave i {
+  display: block;
+  width: 2px;
+  height: 5px;
+  border-radius: 99px;
+  background: #424247;
+  animation: st-ai-waveform-v3 900ms ease-in-out infinite alternate;
+}
+
+.st3-ai-composer__wave i:nth-child(5n + 1) {
+  animation-delay: -210ms;
+}
+.st3-ai-composer__wave i:nth-child(5n + 2) {
+  animation-delay: -430ms;
+}
+.st3-ai-composer__wave i:nth-child(5n + 3) {
+  animation-delay: -660ms;
+}
+.st3-ai-composer__wave i:nth-child(5n + 4) {
+  animation-delay: -120ms;
+}
+.st3-ai-composer__wave i:nth-child(5n) {
+  animation-delay: -790ms;
+}
+
+@keyframes st-ai-waveform-v3 {
+  0% { height: 4px; opacity: .5; }
+  100% { height: 19px; opacity: 1; }
+}
+
+/* Minimal transparent controls. No recording background. */
+.st3-ai-composer .st3-ai-dictation {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 1px !important;
+  position: relative !important;
+  min-height: 38px !important;
+}
+
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__mic {
+  position: relative !important;
+  flex: 0 0 34px !important;
+  width: 34px !important;
+  min-width: 34px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #29292e !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: pointer;
+  transition: color 160ms ease, opacity 160ms ease !important;
+}
+
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__mic:hover:not(:disabled) {
+  border: 0 !important;
+  background: transparent !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__mic[data-phase="listening"],
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__mic[data-phase="starting"],
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__mic[data-phase="stopping"] {
+  border: 0 !important;
+  background: transparent !important;
+  color: #111 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.st3-ai-composer .st3-ai-dictation__mic::after {
+  content: none !important;
+  animation: none !important;
+}
+
+.st3-ai-composer .st3-ai-dictation__mic svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.st3-ai-composer .st3-ai-dictation__mic[data-phase="starting"] svg rect,
+.st3-ai-composer .st3-ai-dictation__mic[data-phase="listening"] svg rect,
+.st3-ai-composer .st3-ai-dictation__mic[data-phase="stopping"] svg rect {
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__cancel {
+  flex: 0 0 24px !important;
+  width: 24px !important;
+  min-width: 24px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #83838a !important;
+  box-shadow: none !important;
+  font-size: 21px !important;
+  font-weight: 400 !important;
+  cursor: pointer;
+}
+
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__cancel:hover {
+  background: transparent !important;
+  color: #1d1d1f !important;
+  transform: none !important;
+}
+
+.st3-ai-dictation__notice {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  z-index: 30;
+  width: min(260px, calc(100vw - 36px));
+  padding: 11px 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid #e6e6e9;
+  border-radius: 12px;
+  background: #fff;
+  color: #424248;
+  box-shadow: 0 10px 28px rgba(0,0,0,.09);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.st3-ai-composer .st3-ai-dictation__notice button {
+  width: 20px !important;
+  min-width: 20px !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #666 !important;
+  box-shadow: none !important;
+  font-size: 18px !important;
+}
+
+/* Send remains the original Stereophonie button. */
+.st3-ai-composer button[type="submit"] {
+  align-self: flex-end !important;
+}
+
+@media (max-width: 430px) {
+  .st3-ai-composer {
+    gap: 4px !important;
+  }
+  .st3-ai-composer__wave {
+    gap: 1.5px;
+  }
+  .st3-ai-composer__listening {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st3-ai-composer__wave i {
+    animation: none !important;
+    height: 8px;
+  }
+  .st3-ai-composer .st3-ai-dictation__mic {
+    transition: none !important;
+  }
+}
+/* === ST_ASSISTANT_WAVEFORM_CSS_V3 END === */
+
+/* ST_ASSISTANT_CLOSE_AND_FOCUS_POLISH_V2 */
+
+/*
+ * Remove the new inner rectangular focus treatment.
+ * Do not change the original composer focus-within rule.
+ */
+.st3-ai-composer > textarea,
+.st3-ai-composer > textarea:focus,
+.st3-ai-composer > textarea:focus-visible,
+.st3-ai-composer > textarea:active {
+  border: 0 !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  background: transparent !important;
+  background-image: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/*
+ * Both X controls use the same centered, minimal icon.
+ * Their dimensions are fixed without changing the composer.
+ */
+.st3-ai-composer .st3-ai-dictation button.st3-ai-dictation__cancel {
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  flex: 0 0 28px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #17171a !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  cursor: pointer;
+}
+
+/* Align error-popup text and its close button vertically. */
+.st3-ai-dictation__notice {
+  align-items: center !important;
+}
+
+.st3-ai-dictation__notice > span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__notice > button {
+  display: grid !important;
+  place-items: center !important;
+  align-self: center !important;
+  flex: 0 0 28px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #17171a !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  cursor: pointer;
+}
+
+/* Matching SVG geometry for both X icons. */
+.st3-ai-composer
+  .st3-ai-dictation
+  button.st3-ai-dictation__cancel svg,
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__notice > button svg {
+  display: block !important;
+  width: 16px !important;
+  height: 16px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+/*
+ * Hover changes only the X from black to red.
+ * No mustard, background, glow, scale or animation.
+ */
+.st3-ai-composer
+  .st3-ai-dictation
+  button.st3-ai-dictation__cancel:hover,
+.st3-ai-composer
+  .st3-ai-dictation
+  button.st3-ai-dictation__cancel:hover:not(:disabled),
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__notice > button:hover,
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__notice > button:hover:not(:disabled) {
+  color: #dc2626 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__cancel:focus:not(:focus-visible),
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__notice > button:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Retain a keyboard-visible accessibility outline. */
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__cancel:focus-visible,
+.st3-ai-composer
+  .st3-ai-dictation
+  .st3-ai-dictation__notice > button:focus-visible {
+  outline: 2px solid #55555b !important;
+  outline-offset: 2px !important;
+}
+
+/* ST_ASSISTANT_LIVE_WAVEFORM_V2 */
+.st3-ai-composer__wave i {
+  animation: none !important;
+  transition: height 75ms ease-out !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .st3-ai-composer__wave i {
+    transition: none !important;
+  }
+}
+
+
+
+/* === ST FLUID DESKTOP HEADER V3 START === */
+
+/*
+ * ============================================================
+ * RESPONSIVE DESKTOP / TABLET HEADER — V3
+ * ============================================================
+ *
+ * 1. Full usable width on large screens.
+ * 2. Existing adaptive fitting decides category count.
+ * 3. Compact category spacing — never stretch labels apart.
+ * 4. Existing logo separator only — no new divider.
+ * 5. Visually equal logo-to-separator whitespace on both sides.
+ * 6. Protected utility controls remain untouched.
+ * 7. Mobile <= 900px remains untouched.
+ */
+
+@media (min-width: 901px) {
+
+  /*
+   * Allow the header to use the user's real screen width.
+   */
+  html body .st3-header__inner {
+    width: calc(100% - 32px) !important;
+    max-width: none !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+
+    gap: 0 !important;
+    column-gap: 0 !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * STORE LOCATION | LOGO
+   * ----------------------------------------------------------
+   *
+   * Preserve the existing left separator calibration.
+   */
+  html body .st3-header__visit-divider {
+    margin-left: 18px !important;
+    margin-right: 15px !important;
+  }
+
+
+  /*
+   * The logo itself must NOT generate another divider.
+   */
+  html body .st3-header__logo {
+    margin: 0 !important;
+    padding-right: 0 !important;
+
+    border-right: 0 !important;
+    box-shadow: none !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * EXISTING LOGO -> STORE SEPARATOR
+   * ----------------------------------------------------------
+   *
+   * This is the separator that already existed before the recent
+   * patches. Move it slightly closer to the visible logo artwork.
+   *
+   * No second separator is created.
+   */
+  /*
+   * ----------------------------------------------------------
+   * CATEGORY NAVIGATION
+   * ----------------------------------------------------------
+   *
+   * Restore compact spacing.
+   *
+   * DO NOT use space-between: that creates the huge white gaps
+   * visible in the screenshot.
+   *
+   * The existing JS width fitter will expose additional categories
+   * whenever the middle rail has room for them.
+   */
+  html body .st3-header__nav {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+
+    justify-content: center!important;
+
+    /*
+     * Existing separator is 10px beyond the logo.
+     * 22px layout margin gives approximately 12px from the
+     * separator to the first Store label.
+     */
+    margin-left: 32px !important;
+    margin-right: 0 !important;
+
+    gap: clamp(8px, 0.7vw, 12px) !important;
+    column-gap: clamp(8px, 0.7vw, 12px) !important;
+    row-gap: 0 !important;
+  }
+
+
+  html body
+  .st3-header__nav
+  > .st3-header__nav-item:not(
+    .st3-header__nav-category--hidden
+  ) {
+    flex: 0 0 auto !important;
+
+    margin: 0 !important;
+
+    white-space: nowrap !important;
+  }
+
+
+  /*
+   * Keep hidden categories measurable for the existing adaptive
+   * fitting system rather than permanently removing them.
+   */
+  html body
+  .st3-header__nav
+  > .st3-header__nav-category--hidden {
+    pointer-events: none !important;
+  }
+
+
+  /*
+   * ----------------------------------------------------------
+   * PROTECTED RIGHT-SIDE UTILITIES
+   * ----------------------------------------------------------
+   */
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"] {
+    flex: 0 0 auto !important;
+
+    margin-left:
+      var(--st3-header-horizontal-rhythm, 18px)
+      !important;
+
+    padding-left: 0 !important;
+
+    gap: 0 !important;
+    column-gap: 0 !important;
+  }
+
+
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"]
+  .st3-header__actions {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* === ST FLUID DESKTOP HEADER V3 END === */
+
+/* === ST HEADER UTILITY VISUAL CENTERING NO WIDTH COST START === */
+
+@media (min-width: 901px) {
+
+  html body
+  .st3-header__right-zone[data-st-header-protected-zone="true"]
+  > .st3-header__actions {
+    position: relative !important;
+
+    /*
+     * Screenshot-calibrated visual correction.
+     *
+     * This centers:
+     *
+     * | Search · Wishlist · Account · Cart · Track Order |
+     *
+     * between the two EXISTING separators without consuming
+     * any extra horizontal layout width.
+     */
+    transform: translateX(-4px) !important;
+  }
+
+}
+
+/* === ST HEADER UTILITY VISUAL CENTERING NO WIDTH COST END === */
+
+/* === ST PRODUCT INCLUDING VAT BADGE START === */
+
+/*
+ * Customer-facing PDP price metadata.
+ *
+ * This replaces the previous top availability label.
+ *
+ * Visibility is controlled by ProductConfigurationPrice:
+ * the badge exists ONLY when the selected configuration has
+ * a real customer-visible numeric price.
+ */
+
+html body .st-product-v5 .st-product-v5__vat-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: fit-content !important;
+
+  margin: 0 !important;
+  padding: 6px 9px !important;
+
+  border: 0 !important;
+  border-radius: 6px !important;
+
+  background: #f5b335 !important;
+  color: #1d1d1f !important;
+
+  font-size: 10px !important;
+  line-height: 1 !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.01em !important;
+
+  white-space: nowrap !important;
+
+  box-shadow: none !important;
+}
+
+/* === ST PRODUCT INCLUDING VAT BADGE END === */
+
+/* === ST PDP MESSAGE + ACTION + VAT POLISH START === */
+
+/*
+ * ============================================================
+ * INCLUDING VAT — TRUE OPTICAL CENTER
+ * ============================================================
+ */
+
+html body
+.st-product-v5
+.st-product-v5__vat-badge {
+  box-sizing: border-box !important;
+
+  display: inline-grid !important;
+  place-items: center !important;
+
+  width: fit-content !important;
+  min-width: 0 !important;
+  height: 22px !important;
+
+  margin: 0 !important;
+  padding: 0 10px !important;
+
+  background: #f5b335 !important;
+  color: #1d1d1f !important;
+
+  border: 0 !important;
+  border-radius: 6px !important;
+
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.01em !important;
+
+  text-align: center !important;
+  white-space: nowrap !important;
+
+  box-shadow: none !important;
+}
+
+
+/*
+ * ============================================================
+ * PDP FEEDBACK MESSAGE
+ * ============================================================
+ *
+ * Make messages such as:
+ *
+ * "The maximum available quantity is already in your cart."
+ *
+ * a true viewport-centered, content-sized toast.
+ *
+ * No useless empty horizontal tail.
+ * Existing React lifecycle remains unchanged.
+ */
+
+html body
+.st-product-v5
+[data-st-product-message].st-purchase-v6__message {
+  position: fixed !important;
+
+  left: 50% !important;
+  right: auto !important;
+  bottom: 28px !important;
+  top: auto !important;
+
+  z-index: 10020 !important;
+
+  box-sizing: border-box !important;
+
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: min(760px, calc(100vw - 32px)) !important;
+
+  margin: 0 !important;
+  padding: 13px 17px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 9px !important;
+
+  transform: translate3d(-50%, 0, 0) !important;
+
+  white-space: normal !important;
+  text-align: left !important;
+
+  pointer-events: none !important;
+}
+
+
+/*
+ * Smooth centered entrance.
+ */
+
+@keyframes stPdpCenteredMessageEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, 10px, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+html body
+.st-product-v5
+[data-st-product-message].st-purchase-v6__message:not(.is-leaving) {
+  animation:
+    stPdpCenteredMessageEnter
+    300ms
+    cubic-bezier(0.22, 0.61, 0.36, 1)
+    both !important;
+}
+
+
+/*
+ * Smooth centered exit.
+ */
+
+@keyframes stPdpCenteredMessageLeave {
+  0% {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, 10px, 0);
+  }
+}
+
+html body
+.st-product-v5
+[data-st-product-message].st-purchase-v6__message.is-leaving {
+  animation:
+    stPdpCenteredMessageLeave
+    340ms
+    cubic-bezier(0.4, 0, 0.2, 1)
+    both !important;
+}
+
+
+/*
+ * Mobile toast remains centered but uses the available screen width.
+ */
+
+@media (max-width: 600px) {
+  html body
+  .st-product-v5
+  [data-st-product-message].st-purchase-v6__message {
+    width: calc(100vw - 28px) !important;
+    max-width: calc(100vw - 28px) !important;
+
+    bottom: 20px !important;
+
+    padding: 12px 14px !important;
+  }
+}
+
+
+/*
+ * ============================================================
+ * PDP ACTION ICONS — LABEL FIRST, ICON SECOND
+ * ============================================================
+ *
+ * JSX now places every icon to the right.
+ * This block preserves clean centered spacing consistently.
+ */
+
+html body
+.st-product-v5
+:is(
+  .st-purchase-v6__cart,
+  .st-purchase-v6__buy,
+  .st-purchase-v6__ask-price,
+  .st-purchase-v6__notify,
+  .st-purchase-v6__disabled,
+  .st-purchase-v6__save
+) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  gap: 9px !important;
+}
+
+html body
+.st-product-v5
+:is(
+  .st-purchase-v6__cart,
+  .st-purchase-v6__buy,
+  .st-purchase-v6__ask-price,
+  .st-purchase-v6__notify,
+  .st-purchase-v6__disabled,
+  .st-purchase-v6__save
+)
+> span {
+  order: 1 !important;
+}
+
+html body
+.st-product-v5
+:is(
+  .st-purchase-v6__cart,
+  .st-purchase-v6__buy,
+  .st-purchase-v6__ask-price,
+  .st-purchase-v6__notify,
+  .st-purchase-v6__disabled,
+  .st-purchase-v6__save
+)
+> svg {
+  order: 2 !important;
+
+  flex: 0 0 auto !important;
+}
+
+
+/*
+ * Loading spinner occupies the same right-side icon position.
+ */
+
+html body
+.st-product-v5
+.st-purchase-v6__notify
+> .st-preorder-loading-spinner {
+  order: 2 !important;
+  flex: 0 0 auto !important;
+}
+
+
+/*
+ * Respect reduced-motion preference.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  html body
+  .st-product-v5
+  [data-st-product-message].st-purchase-v6__message {
+    animation-duration: 1ms !important;
+  }
+}
+
+/* === ST PDP MESSAGE + ACTION + VAT POLISH END === */
+
+/* === ST HOMEPAGE NO-COMING-SOON FALLBACK GAP START === */
+
+/*
+ * When Coming Soon has no products, its wrapper is absent and
+ * More for Less becomes the direct sibling of Movies & Series.
+ *
+ * In that fallback state ONLY, cancel the normal negative
+ * More-for-Less pull-up and give it the same section-entry
+ * spacing normally used by Coming Soon.
+ *
+ * Normal state with Coming Soon present is untouched.
+ */
+
+/* Desktop / laptop */
+html body .st3-home-live
+  .st3-cat-world:has(.st3-reveal--movies-series)
+  + .st3-home-more-for-less-section {
+  margin-top: 0 !important;
+}
+
+html body .st3-home-live
+  .st3-cat-world:has(.st3-reveal--movies-series)
+  + .st3-home-more-for-less-section
+  .st3-products-section.st3-home-shop-products {
+  margin-top: 0 !important;
+  padding-top: 24px !important;
+  transform: none !important;
+}
+
+
+/* Tablet */
+@media (max-width: 900px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-more-for-less-section {
+    margin-top: 0 !important;
+  }
+
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-more-for-less-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 20px !important;
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-more-for-less-section {
+    margin-top: 0 !important;
+  }
+
+  html body .st3-home-live
+    .st3-cat-world:has(.st3-reveal--movies-series)
+    + .st3-home-more-for-less-section
+    .st3-products-section.st3-home-shop-products {
+    padding-top: 18px !important;
+  }
+}
+
+/* === ST HOMEPAGE NO-COMING-SOON FALLBACK GAP END === */
+
+/* === ST MOVIES WIDE SCREEN CINEMA WIDTH START === */
+
+/*
+ * Movies & Series — large-screen width aligned with the
+ * Explore Premium Technology cinematic hero.
+ *
+ * The previous 1200px cap was too narrow.
+ *
+ * Large displays use the same ~1500px cinematic footprint.
+ * Tablet/mobile Movies geometry remains untouched.
+ */
+
+@media (min-width: 1440px) {
+
+  html body
+  .st3-home-live
+  .st3-reveal--movies-series
+  .st-entertainment-home--cinema {
+    width: min(
+      calc(100% - 36px),
+      1500px
+    ) !important;
+
+    max-width: 1500px !important;
+
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+}
+
+/* === ST MOVIES WIDE SCREEN CINEMA WIDTH END === */
+
+/* === ST MOVIES REQUEST CHECKOUT-STYLE POLISH START === */
+
+/*
+ * ============================================================
+ * REQUEST FORM INPUT FOCUS
+ * ============================================================
+ *
+ * Exact storefront checkout focus language:
+ * - mustard perimeter
+ * - very soft outer halo
+ * - white surface
+ * - no black/double browser ring
+ * - no movement
+ */
+
+html body
+.st-media-request
+.st-media-request__field--title
+> input {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease !important;
+}
+
+html body
+.st-media-request
+.st-media-request__field--title
+> input:focus,
+html body
+.st-media-request
+.st-media-request__field--title
+> input:focus-visible,
+html body
+.st-media-request
+.st-media-request__field
+> textarea:focus,
+html body
+.st-media-request
+.st-media-request__field
+> textarea:focus-visible {
+  border-color: rgba(228, 173, 67, 0.78) !important;
+
+  background: #ffffff !important;
+
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-offset: 0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+
+  -webkit-box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+
+/*
+ * ============================================================
+ * REQUEST QUANTITY — INPUT-HEIGHT / INPUT-RADIUS VERSION
+ * ============================================================
+ *
+ * Match the Movie Title field more closely:
+ * - same visual height
+ * - same corner language
+ * - expands further across the quantity column
+ * - cleaner, more balanced desktop geometry
+ */
+
+html body
+.st-media-request
+.st-media-request__field--quantity {
+  align-self: end !important;
+  justify-self: stretch !important;
+
+  width: 100% !important;
+  min-width: 170px !important;
+  max-width: none !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  grid-template-columns:
+    44px
+    minmax(0, 1fr)
+    44px !important;
+
+  width: 100% !important;
+  min-width: 170px !important;
+  max-width: none !important;
+
+  height: 46px !important;
+  min-height: 46px !important;
+  max-height: 46px !important;
+
+  align-items: center !important;
+
+  overflow: hidden !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.11) !important;
+
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell:focus-within {
+  border-color:
+    rgba(228, 173, 67, 0.78) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(253, 183, 62, 0.085) !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> button {
+  box-sizing: border-box !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+
+  box-shadow: none !important;
+
+  opacity: 1 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: none !important;
+
+  transition: none !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  .st-media-request
+  .st-media-request__quantity-shell
+  > button:hover {
+    border: 0 !important;
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+  }
+
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> input {
+  box-sizing: border-box !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+
+  margin: 0 !important;
+  padding: 0 4px !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+
+  outline: 0 !important;
+
+  background: transparent !important;
+
+  color: #1d1d1f !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  line-height: 44px !important;
+
+  text-align: center !important;
+
+  box-shadow: none !important;
+
+  appearance: textfield !important;
+  -moz-appearance: textfield !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> input:focus,
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> input:focus-visible {
+  outline: 0 !important;
+
+  border: 0 !important;
+
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+
+  --tw-ring-offset-width: 0px !important;
+  --tw-ring-offset-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> input::-webkit-inner-spin-button,
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> input::-webkit-outer-spin-button {
+  margin: 0 !important;
+  -webkit-appearance: none !important;
+}
+
+@media (max-width: 700px) {
+
+  html body
+  .st-media-request
+  .st-media-request__field--quantity {
+    min-width: 100% !important;
+  }
+
+  html body
+  .st-media-request
+  .st-media-request__quantity-shell {
+    width: 100% !important;
+    min-width: 100% !important;
+
+    grid-template-columns:
+      44px
+      minmax(0, 1fr)
+      44px !important;
+  }
+
+}
+
+/* === ST MOVIES REQUEST CHECKOUT-STYLE POLISH END === */
+
+/* === ST MOVIES REQUEST QUANTITY EXACT HEIGHT ALIGNMENT START === */
+
+/*
+ * Match Quantity perfectly to Movie Title:
+ * - identical 52px control height
+ * - identical label vertical position
+ * - existing width / radius / focus styling preserved
+ */
+
+html body
+.st-media-request
+.st-media-request__field--quantity
+.st-media-request__label {
+  height: 12px !important;
+  min-height: 12px !important;
+
+  margin: 0 0 9px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  line-height: 12px !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell {
+  height: 52px !important;
+  min-height: 52px !important;
+  max-height: 52px !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> button {
+  height: 50px !important;
+  min-height: 50px !important;
+  max-height: 50px !important;
+}
+
+html body
+.st-media-request
+.st-media-request__quantity-shell
+> input {
+  height: 50px !important;
+  min-height: 50px !important;
+  max-height: 50px !important;
+
+  line-height: 50px !important;
+}
+
+/* === ST MOVIES REQUEST QUANTITY EXACT HEIGHT ALIGNMENT END === */
+
+/* === ST CATEGORY MOUSE SUBCATEGORY ARROWS START === */
+
+/*
+ * Touch / phone / iPad:
+ * keep the existing native horizontal swipe.
+ *
+ * Mouse / fine pointer:
+ * show minimal Previous / Next controls when overflow exists.
+ */
+
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__scroller {
+  position: relative !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+
+/*
+ * Default is hidden so touch behavior remains visually unchanged.
+ */
+html body
+main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+.st3-shop-subcategories__scroll-button {
+  display: none !important;
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button {
+    position: absolute !important;
+
+    top: 50% !important;
+    z-index: 20 !important;
+
+    width: 38px !important;
+    height: 38px !important;
+
+    display: grid !important;
+    place-items: center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border:
+      1px solid rgba(29, 29, 31, 0.08) !important;
+
+    border-radius: 50% !important;
+
+    background:
+      rgba(255, 255, 255, 0.97) !important;
+
+    color: #1d1d1f !important;
+
+    box-shadow:
+      0 4px 18px rgba(0, 0, 0, 0.06) !important;
+
+    cursor: pointer !important;
+
+    transform:
+      translateY(-50%) !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease,
+      opacity 180ms ease !important;
+  }
+
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button--previous {
+    left: 5px !important;
+  }
+
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button--next {
+    right: 5px !important;
+  }
+
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button
+  > svg {
+    width: 18px !important;
+    height: 18px !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    pointer-events: none !important;
+
+    transform: none !important;
+  }
+
+
+  /*
+   * Same restrained visual language as the product gallery arrows.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:hover:not(:disabled) {
+    border-color: #d9a43d !important;
+
+    background: #fffaf0 !important;
+
+    color: #9a680b !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.10),
+      0 0 18px rgba(245, 179, 53, 0.14),
+      0 5px 16px rgba(0, 0, 0, 0.05) !important;
+
+    transform:
+      translateY(-50%) !important;
+  }
+
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:focus-visible {
+    outline:
+      2px solid #f5b335 !important;
+
+    outline-offset:
+      3px !important;
+  }
+
+
+  /*
+   * Beginning/end of rail:
+   * don't show a useless disabled control.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:disabled {
+    opacity: 0 !important;
+    visibility: hidden !important;
+
+    pointer-events: none !important;
+  }
+
+
+  /*
+   * Mouse users now have explicit arrows.
+   * The old desktop text cue is therefore unnecessary.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-hint {
+    display: none !important;
+  }
+
+}
+
+
+/*
+ * Explicit touch protection.
+ */
+@media (hover: none), (pointer: coarse) {
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button {
+    display: none !important;
+  }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button {
+    transition: none !important;
+  }
+
+}
+
+/* === ST CATEGORY MOUSE SUBCATEGORY ARROWS END === */
+
+/* === ST CATEGORY SUBCATEGORY ARROW STATIONARY GRAY FINAL START === */
+
+/*
+ * Final authority for desktop/mouse Subcategory navigation arrows.
+ *
+ * Requirements:
+ * - visible soft-gray surface against white page
+ * - absolutely NO physical movement on hover/focus/active
+ * - icon itself never shifts
+ * - retain restrained mustard hover feedback
+ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:hover,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:focus,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:focus-visible,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:active {
+    background:
+      rgba(232, 232, 237, 0.96) !important;
+
+    color:
+      #1d1d1f !important;
+
+    border:
+      1px solid rgba(29, 29, 31, 0.08) !important;
+
+    transform:
+      translateY(-50%) !important;
+
+    translate:
+      0 0 !important;
+
+    scale:
+      1 !important;
+
+    rotate:
+      0deg !important;
+  }
+
+
+  /*
+   * Hover changes paint only.
+   * Absolutely no movement.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:hover:not(:disabled) {
+    background:
+      #f3f3f5 !important;
+
+    border-color:
+      #d9a43d !important;
+
+    color:
+      #9a680b !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.09),
+      0 0 16px rgba(245, 179, 53, 0.12),
+      0 4px 16px rgba(0, 0, 0, 0.055) !important;
+
+    transform:
+      translateY(-50%) !important;
+
+    translate:
+      0 0 !important;
+
+    scale:
+      1 !important;
+
+    rotate:
+      0deg !important;
+  }
+
+
+  /*
+   * Lock the arrow glyph itself as well.
+   *
+   * This neutralizes the storefront's generic
+   * "last SVG icon moves on hover" behavior.
+   */
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button
+  > svg,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:hover
+  > svg,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:focus
+  > svg,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:focus-visible
+  > svg,
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-subcategories__scroll-button:active
+  > svg {
+    transform:
+      none !important;
+
+    translate:
+      0 0 !important;
+
+    scale:
+      1 !important;
+
+    rotate:
+      0deg !important;
+
+    margin:
+      0 !important;
+  }
+
+}
+
+/* === ST CATEGORY SUBCATEGORY ARROW STATIONARY GRAY FINAL END === */
+
+/* === ST CATEGORY SUBCATEGORY ARROW ABSOLUTE ZERO MOTION FINAL START === */
+
+/*
+ * FINAL POSITIONING AUTHORITY
+ *
+ * Previous architecture vertically centered the controls with:
+ *
+ *     top: 50%;
+ *     transform: translateY(-50%);
+ *
+ * That left the button vulnerable to global storefront hover-transform
+ * rules.
+ *
+ * These controls now use NO transform for positioning whatsoever.
+ *
+ * Vertical centering:
+ *
+ *     top: 0;
+ *     bottom: 0;
+ *     margin-block: auto;
+ *
+ * Therefore normal / hover / focus / active all occupy the exact
+ * same physical coordinates.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:hover,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:focus,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:focus-visible,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:active {
+
+    position: absolute !important;
+
+    top: 0 !important;
+    bottom: 0 !important;
+
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+
+    width: 38px !important;
+    height: 38px !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+
+    vertical-align: initial !important;
+  }
+
+
+  /*
+   * Horizontal coordinates are also fixed in every state.
+   */
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--previous,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--previous:hover,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--previous:focus,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--previous:active {
+    left: 5px !important;
+    right: auto !important;
+  }
+
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--next,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--next:hover,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--next:focus,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--next:active {
+    right: 5px !important;
+    left: auto !important;
+  }
+
+
+  /*
+   * Keep the approved soft-gray visibility.
+   */
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button {
+    background:
+      rgba(232, 232, 237, 0.96) !important;
+
+    border:
+      1px solid rgba(29, 29, 31, 0.09) !important;
+
+    color:
+      #1d1d1f !important;
+
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.055) !important;
+
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      box-shadow 180ms ease,
+      opacity 180ms ease !important;
+  }
+
+
+  /*
+   * Hover = paint only.
+   *
+   * Position, size and geometry are completely unchanged.
+   */
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:hover:not(:disabled) {
+    background:
+      #f1f1f3 !important;
+
+    border-color:
+      #d9a43d !important;
+
+    color:
+      #9a680b !important;
+
+    box-shadow:
+      0 0 0 4px rgba(245, 179, 53, 0.09),
+      0 0 16px rgba(245, 179, 53, 0.12),
+      0 4px 16px rgba(0, 0, 0, 0.055) !important;
+
+    top: 0 !important;
+    bottom: 0 !important;
+
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * The chevron itself must also never move.
+   */
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button
+  > svg,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:hover
+  > svg,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:focus
+  > svg,
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:active
+  > svg {
+    margin: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+/* === ST CATEGORY SUBCATEGORY ARROW ABSOLUTE ZERO MOTION FINAL END === */
+
+/* === ST SUBCATEGORY ARROW MATCH BACK BUTTON HOVER FINAL START === */
+
+/*
+ * Subcategory mouse arrows:
+ *
+ * Hover appearance matches the approved
+ * "← Accessories" Subcategory back button.
+ *
+ * IMPORTANT:
+ * paint may change;
+ * geometry must NEVER change.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:hover:not(:disabled) {
+    border-color:
+      rgba(225, 157, 25, 0.66) !important;
+
+    background:
+      #fffaf1 !important;
+
+    background-color:
+      #fffaf1 !important;
+
+    color:
+      #1d1d1f !important;
+
+    box-shadow:
+      0 0 0 3px rgba(245, 179, 53, 0.07),
+      0 7px 21px rgba(197, 131, 8, 0.11) !important;
+
+    /*
+     * ABSOLUTE ZERO MOVEMENT
+     */
+    top: 0 !important;
+    bottom: 0 !important;
+
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * Previous arrow horizontal position is identical
+   * before / during / after hover.
+   */
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--previous:hover:not(:disabled) {
+    left: 5px !important;
+    right: auto !important;
+  }
+
+
+  /*
+   * Next arrow horizontal position is identical
+   * before / during / after hover.
+   */
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button--next:hover:not(:disabled) {
+    right: 5px !important;
+    left: auto !important;
+  }
+
+
+  /*
+   * Chevron itself is also completely stationary.
+   */
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:hover:not(:disabled)
+  > svg,
+  html body:has(.st3-header)
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  button.st3-shop-subcategories__scroll-button:hover:not(:disabled)
+  > svg * {
+    margin: 0 !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+/* === ST SUBCATEGORY ARROW MATCH BACK BUTTON HOVER FINAL END === */
+
+/* === ST PDP MAX QUANTITY MUSTARD TOAST START === */
+
+/*
+ * Maximum-cart-quantity notice only.
+ *
+ * Match the approved solid mustard Storefront notification family.
+ *
+ * Position, dimensions, lifecycle and enter/leave animations
+ * remain owned by the existing PDP toast architecture.
+ */
+
+html body
+.st-product-v5
+[data-st-product-message-variant="mustard"].st-purchase-v6__message {
+  background: #fdb73e !important;
+  background-color: #fdb73e !important;
+
+  border-color: #fdb73e !important;
+
+  color: #1d1d1f !important;
+}
+
+html body
+.st-product-v5
+[data-st-product-message-variant="mustard"].st-purchase-v6__message
+> span {
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+}
+
+html body
+.st-product-v5
+[data-st-product-message-variant="mustard"].st-purchase-v6__message
+svg,
+html body
+.st-product-v5
+[data-st-product-message-variant="mustard"].st-purchase-v6__message
+svg path,
+html body
+.st-product-v5
+[data-st-product-message-variant="mustard"].st-purchase-v6__message
+svg circle,
+html body
+.st-product-v5
+[data-st-product-message-variant="mustard"].st-purchase-v6__message
+svg polyline,
+html body
+.st-product-v5
+[data-st-product-message-variant="mustard"].st-purchase-v6__message
+svg line {
+  color: #1d1d1f !important;
+  stroke: #1d1d1f !important;
+}
+
+/* === ST PDP MAX QUANTITY MUSTARD TOAST END === */
+
+/* === ST HEADER COMPLETE CATEGORY + SUBCATEGORY MEGA START === */
+
+/*
+ * ============================================================
+ * HEADER MEGA MENU — FINAL CONTENT ARCHITECTURE
+ * ============================================================
+ *
+ * STORE
+ * - restore original premium vertical list
+ * - Shop All
+ * - Offers
+ * - every Category underneath, in order
+ *
+ * CATEGORY
+ * - left side remains Explore / Category / Newest / Offers
+ * - right side becomes Shop by subcategory whenever real
+ *   Subcategories exist
+ * - fallback utility links appear ONLY for Categories with
+ *   zero Subcategories
+ *
+ * Hover
+ * - appearance may change
+ * - text/icons never physically move
+ */
+
+@media (min-width: 901px) {
+
+  /*
+   * ==========================================================
+   * STORE — ORIGINAL VERTICAL STYLE
+   * ==========================================================
+   */
+
+  html body
+  .st3-header
+  .st3-mega__inner:has(
+    .st3-mega__links--store-categories
+  ) {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(210px, 0.45fr) !important;
+
+    column-gap:
+      clamp(72px, 9vw, 150px) !important;
+
+    align-items:
+      start !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega__links--store-categories {
+    display:
+      flex !important;
+
+    flex-direction:
+      column !important;
+
+    align-items:
+      flex-start !important;
+
+    justify-content:
+      flex-start !important;
+
+    gap:
+      0 !important;
+
+    width:
+      auto !important;
+
+    max-width:
+      none !important;
+  }
+
+
+  /*
+   * Restore the exact normal mega-menu typography.
+   * Do not use the smaller compact-grid font from the last patch.
+   */
+
+  html body
+  .st3-header
+  .st3-mega__links--store-categories
+  > .st3-mega__primary-link {
+    font-size:
+      inherit !important;
+
+    line-height:
+      inherit !important;
+
+    letter-spacing:
+      inherit !important;
+
+    white-space:
+      normal !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * REAL CATEGORY SUBCATEGORIES
+   * ==========================================================
+   */
+
+  html body
+  .st3-header
+  .st3-mega__inner:has(
+    .st3-mega__secondary-links--subcategories
+  ) {
+    grid-template-columns:
+      minmax(260px, 0.82fr)
+      minmax(360px, 1.18fr) !important;
+
+    column-gap:
+      clamp(70px, 9vw, 145px) !important;
+
+    align-items:
+      start !important;
+  }
+
+
+  /*
+   * Up to six Subcategories remain one clean vertical column.
+   * Larger collections continue into another column so
+   * Accessories/Gaming remain professional.
+   */
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories {
+    display:
+      grid !important;
+
+    grid-template-rows:
+      repeat(
+        6,
+        max-content
+      ) !important;
+
+    grid-auto-flow:
+      column !important;
+
+    grid-auto-columns:
+      max-content !important;
+
+    justify-content:
+      start !important;
+
+    align-content:
+      start !important;
+
+    column-gap:
+      clamp(42px, 5vw, 76px) !important;
+
+    row-gap:
+      0 !important;
+
+    width:
+      fit-content !important;
+
+    max-width:
+      100% !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories
+  > .st3-mega__secondary-link {
+    white-space:
+      nowrap !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * ZERO-MOVEMENT HOVER
+   * ==========================================================
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ),
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):hover,
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):focus,
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):active {
+    transform:
+      none !important;
+
+    translate:
+      none !important;
+
+    scale:
+      1 !important;
+
+    rotate:
+      none !important;
+  }
+
+}
+
+/* === ST HEADER COMPLETE CATEGORY + SUBCATEGORY MEGA END === */
+
+/* === ST HEADER MEGA RIGHT PANEL SYMMETRY FINAL START === */
+
+@media (min-width: 901px) {
+
+  /*
+   * ==========================================================
+   * STORE
+   * ==========================================================
+   *
+   * Keep Store using the exact same primary-link visual
+   * hierarchy as:
+   *
+   * Fitness Devices
+   * Newest
+   * Offers
+   */
+
+  html body
+  .st3-header
+  .st3-mega__links--store-categories {
+    gap: 7px !important;
+  }
+
+  html body
+  .st3-header
+  .st3-mega__links--store-categories
+  > .st3-mega__primary-link {
+    font-size:
+      clamp(22px, 2.15vw, 28px) !important;
+
+    line-height:
+      1.12 !important;
+
+    font-weight:
+      600 !important;
+
+    letter-spacing:
+      -0.035em !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * CATEGORY WITH SUBCATEGORIES — COLUMN POSITION
+   * ==========================================================
+   *
+   * IMPORTANT:
+   *
+   * Use the exact same two-column geometry as a normal
+   * Category panel such as Gaming Laptops.
+   *
+   * Therefore "Shop by subcategory" begins at the exact same
+   * horizontal position as:
+   *
+   * Gaming Laptops
+   * View all products
+   * Wishlist
+   * Track an order
+   */
+
+  html body
+  .st3-header
+  .st3-mega__inner:has(
+    .st3-mega__secondary-links--subcategories
+  ) {
+    grid-template-columns:
+      minmax(300px, 1.25fr)
+      minmax(180px, 0.75fr) !important;
+
+    gap:
+      80px !important;
+
+    column-gap:
+      80px !important;
+
+    align-items:
+      start !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * SHOP BY SUBCATEGORY
+   * ==========================================================
+   *
+   * Restore the ORIGINAL right-side hierarchy.
+   *
+   * The gray eyebrow uses exactly the same design as the
+   * "Gaming Laptops" gray label in a fallback panel.
+   */
+
+  html body
+  .st3-header
+  .st3-mega__secondary:has(
+    .st3-mega__secondary-links--subcategories
+  )
+  > .st3-mega__eyebrow {
+    margin:
+      0 0 17px !important;
+
+    color:
+      var(--st3-gray-500) !important;
+
+    font-size:
+      12px !important;
+
+    line-height:
+      normal !important;
+
+    font-weight:
+      500 !important;
+
+    letter-spacing:
+      normal !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * SUBCATEGORY OPTIONS
+   * ==========================================================
+   *
+   * Match exactly:
+   *
+   * View all products
+   * Wishlist
+   * Track an order
+   *
+   * No giant/bold Subcategory text anymore.
+   */
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories {
+    display:
+      flex !important;
+
+    flex-direction:
+      column !important;
+
+    align-items:
+      flex-start !important;
+
+    justify-content:
+      flex-start !important;
+
+    gap:
+      12px !important;
+
+    width:
+      auto !important;
+
+    max-width:
+      none !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories
+  > .st3-mega__secondary-link {
+    width:
+      fit-content !important;
+
+    color:
+      var(--st3-black) !important;
+
+    text-decoration:
+      none !important;
+
+    font-size:
+      13px !important;
+
+    line-height:
+      normal !important;
+
+    font-weight:
+      550 !important;
+
+    letter-spacing:
+      normal !important;
+
+    white-space:
+      normal !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * ZERO MOVEMENT
+   * ==========================================================
+   *
+   * Hover is visual only.
+   */
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories
+  > .st3-mega__secondary-link,
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories
+  > .st3-mega__secondary-link:hover,
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories
+  > .st3-mega__secondary-link:focus,
+
+  html body
+  .st3-header
+  .st3-mega__secondary-links--subcategories
+  > .st3-mega__secondary-link:active {
+    transform:
+      none !important;
+
+    translate:
+      none !important;
+
+    scale:
+      1 !important;
+
+    rotate:
+      none !important;
+  }
+
+}
+
+/* === ST HEADER MEGA RIGHT PANEL SYMMETRY FINAL END === */
+
+/* === ST HEADER MEGA UNIFIED TYPOGRAPHY + HOVER FINAL START === */
+
+@media (min-width: 901px) {
+
+  /*
+   * ==========================================================
+   * ONE TYPOGRAPHY SYSTEM FOR ALL PRIMARY MEGA OPTIONS
+   * ==========================================================
+   *
+   * Store:
+   *   Shop All
+   *   Offers
+   *   Mobile Phones
+   *   Smart Watches
+   *   ...
+   *
+   * Category:
+   *   Mobile Phones
+   *   Newest
+   *   Offers
+   *
+   * They now use EXACTLY the same final typography.
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__links {
+    gap: 7px !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__primary-link {
+    width: fit-content !important;
+
+    font-size: 24px !important;
+    line-height: 1.12 !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.035em !important;
+
+    color: var(--st3-black) !important;
+    text-decoration: none !important;
+
+    /*
+     * Smooth underline:
+     * grows from left -> right without moving the text.
+     */
+    background-image:
+      linear-gradient(
+        currentColor,
+        currentColor
+      ) !important;
+
+    background-repeat:
+      no-repeat !important;
+
+    background-position:
+      left calc(100% + 2px) !important;
+
+    background-size:
+      0 1.5px !important;
+
+    transition:
+      color 180ms ease,
+      background-size 220ms
+        cubic-bezier(0.22, 1, 0.36, 1) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * OFFERS remains mustard/gold everywhere.
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__primary-link.st3-mega__accent {
+    color: #8a5b00 !important;
+  }
+
+
+  /*
+   * Primary option hover/focus.
+   *
+   * Underline animation only.
+   * ZERO physical movement.
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__primary-link:hover,
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__primary-link:focus-visible {
+    background-size:
+      100% 1.5px !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * QUICK LINKS + SHOP BY SUBCATEGORY OPTIONS
+   * ==========================================================
+   *
+   * Keep their existing smaller professional hierarchy,
+   * but add the same smooth underline interaction.
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__secondary-link {
+    position: relative !important;
+
+    width: fit-content !important;
+
+    text-decoration: none !important;
+
+    background-image:
+      linear-gradient(
+        currentColor,
+        currentColor
+      ) !important;
+
+    background-repeat:
+      no-repeat !important;
+
+    background-position:
+      left calc(100% + 2px) !important;
+
+    background-size:
+      0 1px !important;
+
+    transition:
+      color 180ms ease,
+      background-size 220ms
+        cubic-bezier(0.22, 1, 0.36, 1) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__secondary-link:hover,
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__secondary-link:focus-visible {
+    text-decoration: none !important;
+
+    background-size:
+      100% 1px !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * ==========================================================
+   * HARD ZERO-MOVEMENT AUTHORITY
+   * ==========================================================
+   *
+   * No generic storefront hover rule is allowed to translate
+   * any Mega Menu option.
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ),
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):hover,
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):focus,
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):active {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+/* === ST HEADER MEGA UNIFIED TYPOGRAPHY + HOVER FINAL END === */
+
+/* === ST STORE MEGA TRUE PRIMARY MATCH FINAL START === */
+
+@media (min-width: 901px) {
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__links--store-categories {
+    gap: 7px !important;
+    row-gap: 7px !important;
+  }
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__links--store-categories
+  > .st3-mega__primary-link {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.035em !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__links--store-categories
+  > .st3-mega__primary-link.st3-mega__accent {
+    color: #8a5b00 !important;
+  }
+
+}
+
+/* === ST STORE MEGA TRUE PRIMARY MATCH FINAL END === */
+
+/* === ST PRODUCT IMMERSIVE ARROWS ABSOLUTE STATIONARY FINAL START === */
+
+/*
+ * FULLSCREEN PRODUCT GALLERY ARROWS
+ *
+ * Previous architecture:
+ *
+ *   top: 50%;
+ *   transform: translateY(-50%);
+ *
+ * That makes the arrow's physical position depend on `transform`.
+ * Any generic hover rule that temporarily resets transform can
+ * therefore make the arrow jump downward.
+ *
+ * Final architecture:
+ *
+ *   top: 0;
+ *   bottom: 0;
+ *   margin-block: auto;
+ *
+ * This centers the fixed-height arrow WITHOUT any transform.
+ * Hover can now change paint only and can never affect geometry.
+ */
+
+html body .st-pg-immersive__arrow,
+html body .st-pg-immersive__arrow:hover,
+html body .st-pg-immersive__arrow:focus,
+html body .st-pg-immersive__arrow:focus-visible,
+html body .st-pg-immersive__arrow:active {
+  top: 0 !important;
+  bottom: 0 !important;
+
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+  margin-block: auto !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/*
+ * Keep the arrow icon itself stationary as well.
+ */
+
+html body .st-pg-immersive__arrow svg,
+html body .st-pg-immersive__arrow:hover svg,
+html body .st-pg-immersive__arrow:focus svg,
+html body .st-pg-immersive__arrow:focus-visible svg,
+html body .st-pg-immersive__arrow:active svg {
+  margin: 0 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/*
+ * Hover appearance stays exactly visual:
+ * mustard border/background/shadow are allowed.
+ * No movement.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+  html body .st-pg-immersive__arrow:hover {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+}
+
+/* === ST PRODUCT IMMERSIVE ARROWS ABSOLUTE STATIONARY FINAL END === */
+
+/* === ST HEADER MEGA SMOOTH UNDERLINE HOVER FINAL START === */
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) {
+
+  /*
+   * ==========================================================
+   * MEGA MENU CLICKABLE LINK UNDERLINE
+   * ==========================================================
+   *
+   * Hover IN:
+   *
+   *   0 --------> 100%
+   *
+   * Hover OUT:
+   *
+   *   100% <-------- 0
+   *
+   * There is NO opacity fade anymore.
+   *
+   * This guarantees that the customer actually SEES the line
+   * physically retract instead of the line fading away before
+   * its reverse movement is visible.
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ) {
+    position: relative !important;
+
+    width: fit-content !important;
+
+    text-decoration: none !important;
+
+    background-image: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  )::after {
+    content: "" !important;
+
+    display: block !important;
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    bottom: 0 !important;
+
+    width: 100% !important;
+    height: 1.5px !important;
+
+    border-radius: 999px !important;
+
+    background: currentColor !important;
+
+    /*
+     * NEVER fade the underline.
+     *
+     * Its visibility comes exclusively from scaleX.
+     */
+    opacity: 1 !important;
+
+    pointer-events: none !important;
+
+    transform: scaleX(0) !important;
+
+    transform-origin: left center !important;
+
+    /*
+     * SAME EXACT transition IN and OUT.
+     *
+     * When hover begins:
+     *   scaleX(0) -> scaleX(1)
+     *
+     * When hover ends:
+     *   scaleX(1) -> scaleX(0)
+     *
+     * Because origin stays on the LEFT,
+     * the outgoing animation visually retracts
+     * from RIGHT back toward LEFT.
+     */
+    transition:
+      transform
+        260ms
+        cubic-bezier(0.22, 1, 0.36, 1) !important;
+
+    will-change: transform !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):hover::after,
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):focus-visible::after {
+    transform: scaleX(1) !important;
+  }
+
+
+  /*
+   * Absolutely no physical Link movement.
+   */
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):hover,
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):focus,
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  ):active {
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  html body
+  .st3-header
+  .st3-mega
+  .st3-mega__primary-link.st3-mega__accent {
+    color: #8a5b00 !important;
+  }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  html body
+  .st3-header
+  .st3-mega
+  :is(
+    .st3-mega__primary-link,
+    .st3-mega__secondary-link
+  )::after {
+    transition-duration: 1ms !important;
+  }
+
+}
+
+/* === ST HEADER MEGA SMOOTH UNDERLINE HOVER FINAL END === */
+
+/* === ST PRODUCT SHELF CTA PROFESSIONAL HOVER FINAL START === */
+
+/*
+ * Applies to:
+ *
+ * Homepage
+ * - Just Arrived -> View all
+ * - Coming Soon -> Explore store
+ * - More for less -> View offers
+ * - Worth discovering -> Explore store
+ *
+ * Product page
+ * - You May Also Like -> View all
+ *
+ * Hover is paint-only.
+ * Absolutely NO movement / lift / scaling.
+ */
+
+html body
+:is(
+  .st3-home-shop-products,
+  .st-product-v5__related-explore
+)
+.st3-home-product-shelf__see-all {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition:
+    color 190ms ease,
+    background-color 190ms ease,
+    border-color 190ms ease,
+    box-shadow 220ms ease !important;
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  :is(
+    .st3-home-shop-products,
+    .st-product-v5__related-explore
+  )
+  .st3-home-product-shelf__see-all:hover {
+    color: #7a5100 !important;
+
+    background:
+      rgba(255, 250, 238, 0.98) !important;
+
+    border-color:
+      rgba(245, 179, 53, 0.55) !important;
+
+    box-shadow:
+      0 7px 22px rgba(0, 0, 0, 0.055),
+      0 0 0 3px rgba(245, 179, 53, 0.07) !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  /*
+   * Arrow can change color with the parent,
+   * but must remain physically stationary.
+   */
+
+  html body
+  :is(
+    .st3-home-shop-products,
+    .st-product-v5__related-explore
+  )
+  .st3-home-product-shelf__see-all:hover
+  > span:last-child {
+    transform: translateY(-1px) !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+}
+
+
+/*
+ * Keyboard focus gets the same polished visual cue.
+ */
+
+html body
+:is(
+  .st3-home-shop-products,
+  .st-product-v5__related-explore
+)
+.st3-home-product-shelf__see-all:focus-visible {
+  outline: none !important;
+
+  border-color:
+    rgba(245, 179, 53, 0.62) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.11),
+    0 7px 22px rgba(0, 0, 0, 0.05) !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+/*
+ * Hard zero-motion authority in every interaction state.
+ */
+
+html body
+:is(
+  .st3-home-shop-products,
+  .st-product-v5__related-explore
+)
+.st3-home-product-shelf__see-all:active {
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* === ST PRODUCT SHELF CTA PROFESSIONAL HOVER FINAL END === */
+
+
+/* === ST DELIVERY STEPS NEUTRAL FINAL START === */
+
+/*
+ * HOW DELIVERY WORKS
+ *
+ * Informational only.
+ * All three cards are visually identical.
+ * No selected state.
+ * No hover state.
+ * No physical movement.
+ */
+
+html body
+.st-delivery-page__steps {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+
+html body
+.st-delivery-page__steps
+> article,
+
+html body
+.st-delivery-page__steps
+> article:first-child,
+
+html body
+.st-delivery-page__steps
+> article:last-child,
+
+html body
+.st-delivery-page__steps
+> article:hover,
+
+html body
+.st-delivery-page__steps
+> article:focus,
+
+html body
+.st-delivery-page__steps
+> article:focus-visible,
+
+html body
+.st-delivery-page__steps
+> article:active {
+  min-height: 70px !important;
+
+  padding: 14px 17px !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.08) !important;
+
+  border-radius: 15px !important;
+
+  background: #ffffff !important;
+  background-image: none !important;
+
+  box-shadow: none !important;
+
+  cursor: default !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+
+  transition: none !important;
+}
+
+
+html body
+.st-delivery-page__steps
+.st-delivery-page__step-number {
+  color: #a96d00 !important;
+
+  transform: none !important;
+}
+
+
+html body
+.st-delivery-page__steps
+.st-delivery-page__step-icon,
+
+html body
+.st-delivery-page__steps
+> article:hover
+.st-delivery-page__step-icon,
+
+html body
+.st-delivery-page__steps
+> article:first-child
+.st-delivery-page__step-icon,
+
+html body
+.st-delivery-page__steps
+> article:last-child
+.st-delivery-page__step-icon {
+  width: 38px !important;
+  height: 38px !important;
+
+  min-width: 38px !important;
+  flex: 0 0 38px !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.075) !important;
+
+  border-radius: 11px !important;
+
+  background: #f6f6f7 !important;
+
+  color: #68686d !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+
+  transition: none !important;
+}
+
+
+html body
+.st-delivery-page__steps
+.st-delivery-page__step-icon
+> svg {
+  transform: none !important;
+}
+
+
+/*
+ * Explicitly defeat the old Delivery hover rule that used:
+ *
+ * transform: translateY(-1px)
+ *
+ * and highlighted the icon.
+ */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  .st-delivery-page__steps
+  > article:hover {
+    border-color:
+      rgba(29, 29, 31, 0.08) !important;
+
+    background:
+      #ffffff !important;
+
+    box-shadow:
+      none !important;
+
+    transform:
+      none !important;
+  }
+
+
+  html body
+  .st-delivery-page__steps
+  > article:hover
+  .st-delivery-page__step-icon {
+    border-color:
+      rgba(29, 29, 31, 0.075) !important;
+
+    background:
+      #f6f6f7 !important;
+
+    color:
+      #68686d !important;
+
+    transform:
+      none !important;
+  }
+
+}
+
+/* === ST DELIVERY STEPS NEUTRAL FINAL END === */
+
+/* === ST DELIVERY FACT CARD ALIGNMENT FINAL START === */
+
+/*
+ * DELIVERY PAGE — TOP FOUR INFORMATION CARDS ONLY
+ *
+ * Keep the approved original card appearance.
+ *
+ * Row 1:
+ * [icon] COVERAGE
+ *
+ * Then both:
+ * Lebanon
+ * Delivery is currently...
+ *
+ * begin at the SAME horizontal position as the icon.
+ */
+
+html body
+.st-delivery-page__fact-grid
+> article {
+  display: grid !important;
+
+  grid-template-columns:
+    11px minmax(0, 1fr) !important;
+
+  grid-template-rows:
+    auto auto auto !important;
+
+  column-gap: 8px !important;
+
+  align-items: center !important;
+}
+
+
+/*
+ * Icon = exact same nominal size as the 11px eyebrow label.
+ */
+
+html body
+.st-delivery-page__fact-grid
+> article
+> svg {
+  position: static !important;
+
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+
+  width: 11px !important;
+  height: 11px !important;
+
+  min-width: 11px !important;
+
+  margin: 0 !important;
+
+  align-self: center !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+
+/*
+ * COVERAGE / ORDERS BELOW $150 / etc.
+ */
+
+html body
+.st-delivery-page__fact-grid
+> article
+> p {
+  position: static !important;
+
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  align-self: center !important;
+}
+
+
+/*
+ * Main value starts at EXACTLY the icon's left edge.
+ */
+
+html body
+.st-delivery-page__fact-grid
+> article
+> h3 {
+  position: static !important;
+
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+
+  margin:
+    12px 0 0 !important;
+
+  padding: 0 !important;
+}
+
+
+/*
+ * Description also starts at EXACTLY the icon's left edge.
+ */
+
+html body
+.st-delivery-page__fact-grid
+> article
+> span {
+  position: static !important;
+
+  grid-column: 1 / -1 !important;
+  grid-row: 3 !important;
+
+  margin:
+    8px 0 0 !important;
+
+  padding: 0 !important;
+}
+
+
+/*
+ * Prevent historical positioning rules from adding an offset.
+ */
+
+html body
+.st-delivery-page__fact-grid
+> article
+> :is(svg, p, h3, span) {
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+}
+
+/* === ST DELIVERY FACT CARD ALIGNMENT FINAL END === */

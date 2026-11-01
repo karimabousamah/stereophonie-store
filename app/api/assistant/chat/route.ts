@@ -1,7 +1,65 @@
+import { SHOP_CATALOGUE_CACHE_TAG } from "@/lib/storefront-cache-tags";
+import {
+  parseAssistantMixedQuestions,
+  mixedQuestionsNeedSeparateHandling,
+  mixedQuestionsSeparateMessage,
+  combineAssistantMixedQuestions,
+} from "@/lib/stereophonie-v3/assistant/mixed-questions";
+
+/*
+ * Internal subrequests use object identity rather than
+ * any client-supplied flag to prevent recursion.
+ */
+const internalMixedAssistantRequests = new WeakSet<Request>();
+
+import {
+  resolveAssistantEllipticalFollowUp,
+} from "@/lib/stereophonie-v3/assistant/contextual-followups";
+
+import {
+  resolveAssistantConversationLanguage,
+} from "@/lib/stereophonie-v3/assistant/conversation-language";
+
+import { resolveAssistantConversationProductReference } from "@/lib/stereophonie-v3/assistant/conversation-product-reference";
+import { createAssistantGroundedProductAdvice } from "@/lib/stereophonie-v3/assistant/ai-grounded-advice";
 import { NextResponse } from "next/server";
+import { unstable_cache } from "next/cache";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { resolveStoreKnowledge, resolveCompoundStoreKnowledge } from "@/lib/stereophonie-v3/assistant/store-knowledge";
+import { resolveAssistantShoppingContext } from "@/lib/stereophonie-v3/assistant/shopping-context";
+import {
+  parseGuidedShoppingRequest,
+  resolveGuidedShopping,
+  guidedProductMatchesRequestedType,
+} from "@/lib/stereophonie-v3/assistant/guided-shopping";
+import {
+  getGeneralCatalogQuery,
+  matchGeneralCatalogProducts,
+  generalCatalogFoundMessage,
+  generalCatalogNotFoundMessage,
+} from "@/lib/stereophonie-v3/assistant/general-catalog-discovery";
+
+import { resolveAssistantVerifiedAIAnswer } from "@/lib/stereophonie-v3/assistant/ai-verified-answers";
+import {
+  parsePowerBankCapacityRequest,
+  matchingPowerBankCapacityVariants,
+} from "@/lib/stereophonie-v3/assistant/verified-capacity-search";
+
+import {
+  interpretAssistantCustomerQuestion,
+} from "@/lib/stereophonie-v3/assistant/ai-interpretation";
+
+import {
+  loadShopSearchIndex,
+} from "@/lib/storefront-shop-loader";
+
+import {
+  parseAssistantDiscoveryRequest,
+  curateAssistantDiscoveryProducts,
+  findAssistantNamedCatalogProduct,
+} from "@/lib/stereophonie-v3/assistant/catalog-discovery";
 
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 import {
@@ -106,6 +164,11 @@ type ProductRow = {
 type AssistantVariant = {
   id: string;
   size: string;
+
+  // Server-only metadata: deliberately non-enumerable.
+  variantName?: string;
+  displayPosition?: number | null;
+  attributes?: Record<string, unknown> | null;
   regularPrice: number;
   salePrice: number | null;
   currentPrice: number;
@@ -127,6 +190,7 @@ type AssistantProduct = {
    * configuration names and variant attributes.
    */
   catalogKnowledge?: string;
+  brand?: string;
   category: string;
   imageUrl: string | null;
   hoverImageUrl: string | null;
@@ -488,7 +552,7 @@ function mapVariant(variant: ProductVariantRow): AssistantVariant {
       availabilityStatus === "low_stock"
     );
 
-  return {
+  const mappedVariant: AssistantVariant = {
     id: variant.id,
     size: cleanText(variant.size) || "One Size",
     regularPrice,
@@ -498,6 +562,34 @@ function mapVariant(variant: ProductVariantRow): AssistantVariant {
     availabilityStatus,
     purchasable,
   };
+
+  /*
+   * ST_ASSISTANT_VERIFIED_PRODUCT_KNOWLEDGE_V1
+   *
+   * Retain authentic configuration facts on the server,
+   * without adding these fields to browser product cards.
+   */
+  Object.defineProperties(mappedVariant, {
+    variantName: {
+      value: cleanText(variant.variant_name),
+      enumerable: false,
+    },
+    displayPosition: {
+      value: variant.display_position ?? null,
+      enumerable: false,
+    },
+    attributes: {
+      value:
+        variant.attributes &&
+        typeof variant.attributes === "object" &&
+        !Array.isArray(variant.attributes)
+          ? variant.attributes
+          : null,
+      enumerable: false,
+    },
+  });
+
+  return mappedVariant;
 }
 
 
@@ -651,6 +743,11 @@ function mapProduct(
     variants,
   };
 
+  Object.defineProperty(mappedProduct, "brand", {
+    value: brandName,
+    enumerable: false,
+  });
+
   Object.defineProperty(mappedProduct, "catalogKnowledge", {
     value: catalogKnowledge,
     enumerable: false,
@@ -768,50 +865,18 @@ function productMatchesQuery(product: AssistantProduct, query: string) {
   );
 }
 
-async function searchProducts(argumentsValue: Record<string, unknown>) {
-  const query = cleanText(argumentsValue.query).slice(0, 100);
-
-  const category = cleanText(argumentsValue.category)
-    .toLowerCase()
-    .slice(0, 60);
-
-  const size = cleanText(argumentsValue.size).toLowerCase().slice(0, 30);
-
-  const maximumPriceValue = Number(argumentsValue.maximum_price);
-
-  const maximumPrice =
-    Number.isFinite(maximumPriceValue) && maximumPriceValue > 0
-      ? maximumPriceValue
-      : null;
-
-  const returnAll = argumentsValue.return_all === true;
-
-  const requestedLimit = Number(argumentsValue.limit);
-
-  const limit = Number.isInteger(requestedLimit)
-    ? Math.min(Math.max(requestedLimit, 1), 100)
-    : 6;
-
-  const supabase = createAdminClient();
-
-  /*
-   * Load the published catalog in deterministic pages.
-   *
-   * This avoids the previous hard 100-product knowledge ceiling.
-   * Public/tool searches still respect their requested result limit,
-   * while the main assistant brain can explicitly request the full
-   * published catalog with return_all: true.
-   */
-  const pageSize = 250;
-  let offset = 0;
-
-  const catalogRows: ProductRow[] = [];
-
-  while (true) {
-    const { data, error } = await supabase
-      .from("products")
-      .select(
-        `
+/*
+ * ST_ASSISTANT_PUBLISHED_ROWS_CACHE_V1
+ *
+ * Share a briefly cached read-only catalogue between
+ * conversational questions. All published statuses,
+ * configuration attributes, stock and image fields
+ * remain included in the original database query.
+ *
+ * Product actions use the uncached loader by default.
+ */
+/* ST_ASSISTANT_TARGETED_RETRIEVAL_V1 */
+const ASSISTANT_PRODUCT_SELECT = `
           id,
           name,
           slug,
@@ -851,8 +916,28 @@ async function searchProducts(argumentsValue: Record<string, unknown>) {
             stock_quantity,
             availability_status
           )
-        `,
-      )
+        `;
+
+async function loadAssistantPublishedRowsUncached(): Promise<ProductRow[]> {
+  const supabase = createAdminClient();
+
+  /*
+   * Load the published catalog in deterministic pages.
+   *
+   * This avoids the previous hard 100-product knowledge ceiling.
+   * Public/tool searches still respect their requested result limit,
+   * while the main assistant brain can explicitly request the full
+   * published catalog with return_all: true.
+   */
+  const pageSize = 250;
+  let offset = 0;
+
+  const catalogRows: ProductRow[] = [];
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("products")
+      .select(ASSISTANT_PRODUCT_SELECT)
       .eq("status", "published")
       .order("name", {
         ascending: true,
@@ -875,6 +960,97 @@ async function searchProducts(argumentsValue: Record<string, unknown>) {
 
     offset += pageSize;
   }
+
+  return catalogRows;
+}
+
+const loadAssistantPublishedRowsCached = unstable_cache(
+  loadAssistantPublishedRowsUncached,
+  ["stereophonie-assistant-published-rows-v1"],
+  {
+    revalidate: 5,
+    tags: [
+      "stereophonie-assistant-published-rows",
+      SHOP_CATALOGUE_CACHE_TAG,
+    ],
+  },
+);
+
+
+async function loadAssistantPublishedRowsByIds(
+  productIds: string[],
+): Promise<ProductRow[]> {
+  if (productIds.length === 0) return [];
+
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(ASSISTANT_PRODUCT_SELECT)
+    .eq("status", "published")
+    .in("id", productIds)
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error(
+      "Assistant targeted catalogue retrieval failed:",
+      error.message,
+    );
+    throw new Error("Unable to verify matching products.");
+  }
+
+  return (data ?? []) as ProductRow[];
+}
+
+async function searchProducts(argumentsValue: Record<string, unknown>) {
+  const query = cleanText(argumentsValue.query).slice(0, 100);
+
+  const category = cleanText(argumentsValue.category)
+    .toLowerCase()
+    .slice(0, 60);
+
+  const size = cleanText(argumentsValue.size).toLowerCase().slice(0, 30);
+
+  const maximumPriceValue = Number(argumentsValue.maximum_price);
+
+  const maximumPrice =
+    Number.isFinite(maximumPriceValue) && maximumPriceValue > 0
+      ? maximumPriceValue
+      : null;
+
+  const returnAll = argumentsValue.return_all === true;
+
+  const requestedLimit = Number(argumentsValue.limit);
+
+  const limit = Number.isInteger(requestedLimit)
+    ? Math.min(Math.max(requestedLimit, 1), 100)
+    : 6;
+
+  const supabase = createAdminClient();
+
+  const requestedProductIds = Array.isArray(
+    argumentsValue.product_ids,
+  )
+    ? Array.from(
+        new Set(
+          argumentsValue.product_ids.filter(
+            (id): id is string =>
+              typeof id === "string" &&
+              id.length > 0 &&
+              id.length <= 128,
+          ),
+        ),
+      ).slice(0, 12)
+    : [];
+
+  const catalogRows =
+    requestedProductIds.length > 0
+      ? await loadAssistantPublishedRowsByIds(
+          requestedProductIds,
+        )
+      : argumentsValue.cache_catalog === true
+        ? await loadAssistantPublishedRowsCached()
+        : await loadAssistantPublishedRowsUncached();
 
   const matchingProducts = catalogRows.map((product) =>
     mapProduct(product, supabase),
@@ -8531,6 +8707,147 @@ function directStoreSupportResponse(
   return null;
 }
 
+
+/*
+ * ST_ASSISTANT_CURRENT_MESSAGE_LANGUAGE_V2
+ *
+ * A clearly expressed language in the CURRENT customer message
+ * must override older conversation/browser language.
+ *
+ * Ambiguous short follow-ups such as:
+ *   "price?"
+ *   "stock?"
+ *   "20000mAh?"
+ * do not force a switch and therefore keep the conversation language.
+ */
+function detectExplicitCurrentMessageLanguage(
+  message: string,
+): Language | null {
+  const raw = message.trim();
+
+  if (!raw) {
+    return null;
+  }
+
+  /*
+   * Arabic script is unambiguous and must immediately win.
+   */
+  if (/[\u0600-\u06FF]/u.test(raw)) {
+    return "ar";
+  }
+
+  const normalized = raw
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[’']/g, " ")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!normalized) {
+    return null;
+  }
+
+  let frenchScore = 0;
+  let englishScore = 0;
+
+  const frenchSignals = [
+    /\bje\b/,
+    /\bj\b/,
+    /\bcherche\b/,
+    /\brecherche\b/,
+    /\bveux\b/,
+    /\bvoudrais\b/,
+    /\bbesoin\b/,
+    /\bavez\b/,
+    /\bvous\b/,
+    /\best ce\b/,
+    /\bcombien\b/,
+    /\bquel(?:le|les|s)?\b/,
+    /\bune\b/,
+    /\bdes\b/,
+    /\bbatterie\b/,
+    /\bexterne\b/,
+    /\bmagasin\b/,
+    /\bhoraires?\b/,
+    /\blivraison\b/,
+    /\bcommande\b/,
+    /\bproduits?\b/,
+    /\bdisponible\b/,
+    /\bdisponibilite\b/,
+    /\bprix\b/,
+    /\bmontrez\b/,
+    /\bdonnez\b/,
+  ];
+
+  const englishSignals = [
+    /\bi\b/,
+    /\byou\b/,
+    /\byour\b/,
+    /\bwe\b/,
+    /\bneed\b/,
+    /\bwant\b/,
+    /\blooking\b/,
+    /\bfind\b/,
+    /\bshow\b/,
+    /\bdo\b/,
+    /\bdoes\b/,
+    /\bhave\b/,
+    /\bwhat\b/,
+    /\bwhich\b/,
+    /\bhow\b/,
+    /\bmuch\b/,
+    /\bavailable\b/,
+    /\bavailability\b/,
+    /\bstore\b/,
+    /\bhours\b/,
+    /\bdelivery\b/,
+    /\border\b/,
+    /\bproducts?\b/,
+  ];
+
+  for (const signal of frenchSignals) {
+    if (signal.test(normalized)) {
+      frenchScore += 1;
+    }
+  }
+
+  for (const signal of englishSignals) {
+    if (signal.test(normalized)) {
+      englishScore += 1;
+    }
+  }
+
+  /*
+   * Accented French is very strong evidence even if the
+   * sentence contains model names or English product terms.
+   */
+  if (/[àâçéèêëîïôùûüÿœæ]/i.test(raw)) {
+    frenchScore += 2;
+  }
+
+  /*
+   * Require multiple signals so isolated product terminology
+   * does not accidentally switch the conversation language.
+   */
+  if (
+    frenchScore >= 2 &&
+    frenchScore > englishScore
+  ) {
+    return "fr";
+  }
+
+  if (
+    englishScore >= 2 &&
+    englishScore > frenchScore
+  ) {
+    return "en";
+  }
+
+  return null;
+}
+
 export async function POST(request: Request) {
   let language: Language = "en";
 
@@ -8568,10 +8885,22 @@ export async function POST(request: Request) {
      */
     const firstParse = parseAssistantRequest(rawMessage);
 
+    /*
+     * ST_ASSISTANT_CONVERSATION_LANGUAGE_LOCK_V1
+     *
+     * Keep the reply language stable across follow-ups.
+     * Explicit language changes remain supported.
+     */
+    const explicitCurrentMessageLanguage =
+      detectExplicitCurrentMessageLanguage(rawMessage);
+
     language =
-      normalizeLanguage(body.language) !== "en"
-        ? normalizeLanguage(body.language)
-        : firstParse.language;
+      explicitCurrentMessageLanguage ??
+      resolveAssistantConversationLanguage(
+        incomingMessages,
+        firstParse.language,
+        body.language,
+      );
 
     const cart = normalizeCart(body.cart);
 
@@ -8581,6 +8910,88 @@ export async function POST(request: Request) {
       normalizeAssistantContext(
         body.assistantContext,
       );
+    /*
+     * ST_ASSISTANT_MIXED_QUESTIONS_V1
+     *
+     * Information-only orchestration.
+     * Existing verified chat handling answers each part.
+     */
+    const mixedQuestions =
+      internalMixedAssistantRequests.has(request)
+        ? null
+        : parseAssistantMixedQuestions(rawMessage);
+
+    if (mixedQuestions) {
+      if (mixedQuestionsNeedSeparateHandling(mixedQuestions)) {
+        return NextResponse.json({
+          message: mixedQuestionsSeparateMessage(language),
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-mixed-safety-v1",
+        });
+      }
+
+      const combined = await combineAssistantMixedQuestions(
+        mixedQuestions,
+        language,
+        incomingMessages.slice(0, -1),
+        assistantContext,
+        async (question, history, context) => {
+          const headers = new Headers(request.headers);
+
+          headers.delete("content-length");
+          headers.delete("content-encoding");
+          headers.delete("transfer-encoding");
+          headers.set("content-type", "application/json");
+
+          const child = new Request(request.url, {
+            method: "POST",
+            headers,
+            signal: request.signal,
+            body: JSON.stringify({
+              message: question,
+              messages: [
+                ...history,
+                {
+                  role: "user",
+                  content: question,
+                },
+              ],
+              language,
+              cart,
+              wishlist,
+              assistantContext: context,
+            }),
+          });
+
+          internalMixedAssistantRequests.add(child);
+
+          const result = await POST(child);
+
+          if (!result.ok) {
+            throw new Error(
+              "Mixed question verification failed.",
+            );
+          }
+
+          return await result.json();
+        },
+        request.signal,
+      );
+
+      return NextResponse.json({
+        ...combined,
+        cartActions: [],
+        wishlistActions: [],
+        navigationActions: [],
+        language,
+        engine: "stereophonie-mixed-verified-v1",
+      });
+    }
+
 
     /*
      * Reconstruct lightweight conversational memory
@@ -8599,6 +9010,8 @@ export async function POST(request: Request) {
 
       memory = mergeAssistantMemory(memory, historicalRequest);
     }
+
+    const assistantPerfStartedAt = Date.now();
 
     let parsed = parseAssistantRequest(rawMessage);
 
@@ -8622,6 +9035,777 @@ export async function POST(request: Request) {
       parsed,
       rawMessage,
     );
+
+    /*
+     * ST_ASSISTANT_VERIFIED_STORE_KNOWLEDGE_V1
+     * Resolve real store facts before legacy generic routing.
+     * Personal orders remain in the authenticated tracking flow.
+     */
+    /*
+     * ST_ASSISTANT_ELLIPTICAL_FOLLOWUPS_V1
+     * Interpret short follow-ups before product discovery.
+     */
+    if (parsed.intent !== "order_tracking") {
+      const followUp = resolveAssistantEllipticalFollowUp(
+        rawMessage,
+        incomingMessages.slice(0, -1),
+        assistantContext.displayedProducts.length,
+        language,
+      );
+
+      if (followUp?.kind === "clarify") {
+        return NextResponse.json({
+          message: followUp.message,
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-context-clarify-v1",
+        });
+      }
+
+      if (followUp?.kind === "store") {
+        const answer = await resolveStoreKnowledge(
+          followUp.question,
+          language,
+        );
+
+        if (answer) {
+          return NextResponse.json({
+            message: answer.message,
+            links: answer.links ?? [],
+            products: [],
+            cartActions: [],
+            wishlistActions: [],
+            navigationActions: [],
+            language,
+            engine: "stereophonie-context-store-v1",
+          });
+        }
+      }
+    }
+
+    if (parsed.intent !== "order_tracking") {
+      /*
+       * ST_ASSISTANT_COMPOUND_STORE_QUESTIONS_V2
+       * Resolve all recognized public store questions
+       * before the existing single-intent early return.
+       */
+      const compoundAnswer =
+        await resolveCompoundStoreKnowledge(
+          rawMessage,
+          language,
+        );
+
+      if (compoundAnswer) {
+        return NextResponse.json({
+          message: compoundAnswer.message,
+          links: compoundAnswer.links ?? [],
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-verified-compound-store-v2",
+        });
+      }
+
+      const verifiedStoreAnswer = await resolveStoreKnowledge(
+        rawMessage,
+        language,
+      );
+
+      if (verifiedStoreAnswer) {
+        return NextResponse.json({
+          message: verifiedStoreAnswer.message,
+          links: verifiedStoreAnswer.links ?? [],
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-verified-store-v1",
+        });
+      }
+    }
+
+    /*
+     * ST_ASSISTANT_AI_INTERPRETATION_V1
+     *
+     * Only ambiguous questions are interpreted by AI.
+     * The model never supplies business facts or product data.
+     * Normal storefront behavior remains the default.
+     *
+     * AI is off by default and local-development-only.
+     */
+    /*
+     * ST_ASSISTANT_CONTEXT_PRICE_V3
+     *
+     * Resolve price follow-ups before Gemini and the
+     * expensive full-catalogue fallback.
+     *
+     * Conversation references contain identities only.
+     * Prices, availability and variants are verified
+     * against current published Supabase records.
+     */
+    const priceReferenceText = rawMessage.trim();
+
+    const isContextPriceRequest =
+      /^(?:how much\b|what(?:'s| is)\s+(?:the\s+)?(?:price|cost)\b|(?:the\s+)?(?:price|cost)\s+(?:of|for)\b|price\??$)/i.test(
+        priceReferenceText,
+      ) &&
+      !/\b(?:delivery|shipping|tax|discount|coupon|difference|compare|color|colour|storage|ram|gb|tb|configuration|variant)\b/i.test(
+        priceReferenceText,
+      );
+
+    if (isContextPriceRequest) {
+      const selection =
+        resolveAssistantConversationProductReference(
+          priceReferenceText,
+          assistantContext,
+          "price",
+        );
+
+      if (selection.handled) {
+        const reference = selection.reference;
+
+        const emptyActions = {
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+        };
+
+        if (!reference) {
+          return NextResponse.json({
+            ...emptyActions,
+            message:
+              language === "fr"
+                ? "De quel produit parlez-vous ? Je ne retrouve pas cette position dans la liste."
+                : language === "ar"
+                  ? "أي منتج تقصد؟ لا أجد هذا الخيار في القائمة الحالية."
+                  : "Which product do you mean? I can't identify that position in the current list.",
+            products: [],
+            engine: "stereophonie-price-clarify-v3",
+          });
+        }
+
+        const matches = await searchProducts({
+          query: "",
+          product_ids: [reference.id],
+          return_all: true,
+        });
+
+        const product = matches.find(
+          (item) => item.id === reference.id,
+        );
+
+        if (!product) {
+          return NextResponse.json({
+            ...emptyActions,
+            message:
+              language === "fr"
+                ? "Je ne peux pas vérifier le prix actuel de ce produit."
+                : language === "ar"
+                  ? "لا أستطيع التحقق من السعر الحالي لهذا المنتج."
+                  : "I can't verify that product's current price.",
+            products: [],
+            engine: "stereophonie-price-unverified-v3",
+          });
+        }
+
+        const priced = product.variants
+          .filter(
+            (variant) =>
+              Number.isFinite(variant.currentPrice) &&
+              variant.currentPrice > 0,
+          )
+          .sort(
+            (a, b) =>
+              a.currentPrice - b.currentPrice,
+          );
+
+        const purchasable = priced.filter(
+          (variant) => variant.purchasable,
+        );
+
+        const relevant =
+          purchasable.length
+            ? purchasable
+            : priced;
+
+        const amount =
+          relevant[0]?.currentPrice ?? null;
+
+        const varies =
+          new Set(
+            relevant.map(
+              (variant) => variant.currentPrice,
+            ),
+          ).size > 1;
+
+        const money =
+          amount === null
+            ? ""
+            : `$${amount.toFixed(2)}`;
+
+        let answer: string;
+
+        if (language === "fr") {
+          answer = amount === null
+            ? `Le prix de ${product.name} n'est pas indiqué actuellement.`
+            : `${product.name} est affiché ${varies ? "à partir de " : "à "}${money}.`;
+
+          if (varies) {
+            answer += " Le prix dépend de la configuration.";
+          }
+
+          if (!purchasable.length) {
+            answer += " Ce produit n'est pas disponible à l'achat actuellement.";
+          }
+        } else if (language === "ar") {
+          answer = amount === null
+            ? `السعر غير مدرج حالياً لمنتج ${product.name}.`
+            : `سعر ${product.name} ${varies ? "يبدأ من " : "هو "}${money}.`;
+
+          if (varies) {
+            answer += " يختلف السعر حسب المواصفات.";
+          }
+
+          if (!purchasable.length) {
+            answer += " المنتج غير متاح للشراء حالياً.";
+          }
+        } else {
+          answer = amount === null
+            ? `A price isn't currently listed for ${product.name}.`
+            : `${product.name} is listed ${varies ? "from " : "at "}${money}.`;
+
+          if (varies) {
+            answer += " The price depends on the configuration.";
+          }
+
+          if (!purchasable.length) {
+            answer += " It isn't currently available to purchase.";
+          }
+        }
+
+        return NextResponse.json({
+          ...emptyActions,
+          message: answer,
+          products: [
+            assistantProductForResponse(product),
+          ],
+          engine: "stereophonie-price-reference-v3",
+        });
+      }
+    }
+
+    /*
+     * ST_ASSISTANT_CONTEXT_AVAILABILITY_V1
+     *
+     * Exact conversational product identity takes precedence
+     * over general inventory search.
+     *
+     * Recheck current published variants by product ID.
+     * No inventory facts are trusted from the browser.
+     */
+    const availabilityText = rawMessage.trim();
+
+    const availabilityFollowUp =
+      /^(?:is|are|what(?:'s| is)|do you have)\b.*\b(?:available|availability|in stock|out of stock|low stock|coming soon)\b/i.test(
+        availabilityText,
+      );
+
+    if (availabilityFollowUp) {
+      const selection =
+        resolveAssistantConversationProductReference(
+          availabilityText,
+          assistantContext,
+          "availability",
+        );
+
+      if (selection.handled) {
+        const reference = selection.reference;
+
+        const emptyActions = {
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+        };
+
+        if (!reference) {
+          return NextResponse.json({
+            ...emptyActions,
+            message:
+              language === "fr"
+                ? "De quel produit parlez-vous ? Je ne peux pas identifier cette position dans la liste."
+                : language === "ar"
+                  ? "أي منتج تقصد؟ لا يمكنني تحديد هذا الخيار من القائمة."
+                  : "Which product do you mean? I can't identify that position in the current list.",
+            products: [],
+            engine: "stereophonie-availability-clarify-v1",
+          });
+        }
+
+        const verifiedProducts = await searchProducts({
+          query: "",
+          product_ids: [reference.id],
+          return_all: true,
+        });
+
+        const product = verifiedProducts.find(
+          (item) => item.id === reference.id,
+        );
+
+        if (!product) {
+          return NextResponse.json({
+            ...emptyActions,
+            message:
+              language === "fr"
+                ? "Je ne peux pas confirmer la disponibilité actuelle de ce produit."
+                : language === "ar"
+                  ? "لا أستطيع تأكيد توفر هذا المنتج حالياً."
+                  : "I can't verify that product's current availability.",
+            products: [],
+            engine: "stereophonie-availability-unverified-v1",
+          });
+        }
+
+        const variants = product.variants;
+        const available = variants.filter(
+          (variant) => variant.purchasable,
+        );
+
+        const statuses = new Set(
+          variants.map(
+            (variant) => variant.availabilityStatus,
+          ),
+        );
+
+        const limited =
+          available.length > 0 &&
+          available.every(
+            (variant) =>
+              variant.availabilityStatus === "low_stock",
+          );
+
+        const multipleStatuses =
+          statuses.size > 1;
+
+        let status: string;
+
+        if (available.length > 0) {
+          status = limited
+            ? "limited"
+            : "available";
+        } else if (statuses.has("coming_soon")) {
+          status = "coming_soon";
+        } else if (statuses.has("out_of_stock")) {
+          status = "out_of_stock";
+        } else {
+          status = "unverified";
+        }
+
+        let message: string;
+
+        if (language === "fr") {
+          message =
+            status === "limited"
+              ? `${product.name} est disponible, mais le stock est limité.`
+              : status === "available"
+                ? `${product.name} est actuellement en stock.`
+                : status === "coming_soon"
+                  ? `${product.name} est annoncé prochainement, mais n'est pas encore disponible à l'achat.`
+                  : status === "out_of_stock"
+                    ? `${product.name} est actuellement en rupture de stock.`
+                    : `Je ne peux pas confirmer le stock actuel de ${product.name}.`;
+
+          if (multipleStatuses) {
+            message += " La disponibilité varie selon la configuration.";
+          }
+        } else if (language === "ar") {
+          message =
+            status === "limited"
+              ? `${product.name} متوفر حالياً بكمية محدودة.`
+              : status === "available"
+                ? `${product.name} متوفر حالياً.`
+                : status === "coming_soon"
+                  ? `${product.name} قادم قريباً وليس متاحاً للشراء حالياً.`
+                  : status === "out_of_stock"
+                    ? `${product.name} غير متوفر في المخزون حالياً.`
+                    : `لا أستطيع تأكيد المخزون الحالي لمنتج ${product.name}.`;
+
+          if (multipleStatuses) {
+            message += " يختلف التوفر حسب المواصفات.";
+          }
+        } else {
+          message =
+            status === "limited"
+              ? `${product.name} is available, but stock is limited.`
+              : status === "available"
+                ? `${product.name} is currently in stock.`
+                : status === "coming_soon"
+                  ? `${product.name} is listed as coming soon and isn't currently available to purchase.`
+                  : status === "out_of_stock"
+                    ? `${product.name} is currently out of stock.`
+                    : `I can't confirm the current stock status of ${product.name}.`;
+
+          if (multipleStatuses) {
+            message += " Availability varies by configuration.";
+          }
+        }
+
+        return NextResponse.json({
+          ...emptyActions,
+          message,
+          products: [
+            assistantProductForResponse(product),
+          ],
+          engine: "stereophonie-context-availability-v1",
+        });
+      }
+    }
+
+    /*
+     * ST_ASSISTANT_EARLY_REFERENCE_CONFLICT_V1
+     *
+     * "The second one, the G3416" uses two descriptions
+     * of what appears to be the same product.
+     *
+     * If they identify different products, clarify
+     * before Gemini or any feature/catalogue fallback
+     * can silently choose one.
+     *
+     * Ordinary product names, references and
+     * comparisons are otherwise left unchanged.
+     */
+    const appositionalReference =
+      /\b(?:first|1st|second|2nd|third|3rd|fourth|4th|last)(?:\s+(?:one|item|product|printer))?\s*,\s*(?:the\s+)?/i.test(
+        rawMessage,
+      );
+
+    if (
+      appositionalReference &&
+      assistantContext.displayedProducts.length > 1
+    ) {
+      const referenceConflict =
+        resolveAssistantConversationProductReference(
+          rawMessage,
+          assistantContext,
+          "availability",
+        );
+
+      if (referenceConflict.reason === "ambiguous") {
+        return NextResponse.json({
+          message:
+            language === "fr"
+              ? "Vous avez mentionné deux produits différents. Parlez-vous du produit à cette position dans la liste, ou du modèle que vous avez nommé ?"
+              : language === "ar"
+                ? "ذكرت منتجين مختلفين. هل تقصد المنتج في هذا الترتيب من القائمة أم الموديل الذي ذكرته؟"
+                : "You mentioned two different products. Do you mean the item at that position in the list, or the model you named?",
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine:
+            "stereophonie-context-reference-conflict-v1",
+        });
+      }
+    }
+
+    /*
+     * ST_ASSISTANT_LOCAL_FEATURE_FASTPATH_V1
+     *
+     * Answer only simple, unambiguous feature questions
+     * using published product records and the existing
+     * per-configuration verified-answer engine.
+     *
+     * Keep complex, comparative, qualified and multilingual
+     * questions eligible for the normal interpretation flow.
+     *
+     * The customer's remembered IDs are not trusted as
+     * product evidence: hydrate them from published rows.
+     */
+    const fastFeatureDefinitions = [
+      {
+        feature: "scan",
+        pattern: /\b(?:scan|scanner|scanning)\b/i,
+      },
+      {
+        feature: "copy",
+        pattern: /\b(?:copy|copies|copying)\b/i,
+      },
+      {
+        feature: "wifi",
+        pattern: /\b(?:wi[\s-]?fi|wireless)\b/i,
+      },
+      {
+        feature: "bluetooth",
+        pattern: /\bbluetooth\b/i,
+      },
+      {
+        feature: "duplex",
+        pattern: /\b(?:duplex|double[- ]sided|two[- ]sided)\b/i,
+      },
+    ];
+
+    const fastRequestedFeatures = fastFeatureDefinitions
+      .filter(({ pattern }) => pattern.test(rawMessage))
+      .map(({ feature }) => feature);
+
+    const straightforwardFeatureQuestion =
+      language === "en" &&
+      rawMessage.length <= 160 &&
+      /^(?:does|do|can|is|are)\b/i.test(
+        rawMessage.trim(),
+      ) &&
+      fastRequestedFeatures.length > 0 &&
+      fastRequestedFeatures.length <= 3 &&
+      assistantContext.displayedProducts.length > 0 &&
+      !/\b(?:you|your|i|my|we|our|recommend|suggest|compare|comparison|versus|vs|best|better|cheaper|price|cost|budget|stock|availability|available|compatible|compatibility|works|working|how|why|which|what|where|when|phone|mobile|iphone|ipad|android|cloud|speed|resolution|quality|color|colour|fax|print|photo|ink|paper|usb|cable|via|without|under|over)\b/i.test(
+        rawMessage,
+      );
+
+    if (straightforwardFeatureQuestion) {
+      const fastFeatureSelection =
+        resolveAssistantConversationProductReference(
+          rawMessage,
+          assistantContext,
+          "availability",
+        );
+
+      if (fastFeatureSelection.reason === "ambiguous") {
+        return NextResponse.json({
+          message:
+            "You've mentioned different products. Which one should I check?",
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine:
+            "stereophonie-feature-reference-clarify-v1",
+        });
+      }
+
+      if (fastFeatureSelection.reference) {
+        const fastReferenceIds = Array.from(
+          new Set(
+            [
+              assistantContext.focusedProduct?.id,
+              ...assistantContext.displayedProducts.map(
+                (product) => product.id,
+              ),
+            ].filter(
+              (id): id is string =>
+                typeof id === "string" && id.length > 0,
+            ),
+          ),
+        ).slice(0, 8);
+
+        if (
+          fastReferenceIds.includes(
+            fastFeatureSelection.reference.id,
+          )
+        ) {
+          const fastOrdinal = /\b(?:first|1st|second|2nd|third|3rd|fourth|4th|last)\b/i
+            .exec(rawMessage)?.[0]?.toLowerCase() ?? "";
+
+          const fastOrdinalNames: Record<
+            string,
+            "first" | "second" | "third" | "fourth" | "last"
+          > = {
+            first: "first",
+            "1st": "first",
+            second: "second",
+            "2nd": "second",
+            third: "third",
+            "3rd": "third",
+            fourth: "fourth",
+            "4th": "fourth",
+            last: "last",
+          };
+
+          const fastVerifiedProducts = await searchProducts({
+            query: "",
+            product_ids: fastReferenceIds,
+            return_all: true,
+          });
+
+          const fastVerifiedFeatureAnswer =
+            resolveAssistantVerifiedAIAnswer({
+              question: rawMessage,
+              interpretation: {
+                intent: "feature_question",
+                query: "",
+                reference:
+                  fastOrdinalNames[fastOrdinal] ??
+                  (
+                    fastFeatureSelection.reason === "focused"
+                      ? "focused"
+                      : "none"
+                  ),
+                features: fastRequestedFeatures,
+                options: [],
+                useCase: "",
+              },
+              context: assistantContext,
+              catalog: fastVerifiedProducts,
+              language,
+            });
+
+          if (fastVerifiedFeatureAnswer) {
+            const answeredProducts =
+              fastVerifiedFeatureAnswer.products;
+
+            const correctReference =
+              answeredProducts.length === 0 ||
+              (
+                answeredProducts.length === 1 &&
+                answeredProducts[0].id ===
+                  fastFeatureSelection.reference.id
+              );
+
+            if (!correctReference) {
+              return NextResponse.json({
+                message:
+                  "I couldn't safely identify the product for that feature. Which model do you mean?",
+                products: [],
+                cartActions: [],
+                wishlistActions: [],
+                navigationActions: [],
+                language,
+                engine:
+                  "stereophonie-feature-reference-clarify-v1",
+              });
+            }
+
+            return NextResponse.json({
+              message: fastVerifiedFeatureAnswer.message,
+              products: answeredProducts.map(
+                assistantProductForResponse,
+              ),
+              cartActions: [],
+              wishlistActions: [],
+              navigationActions: [],
+              language,
+              engine:
+                "stereophonie-verified-feature-fast-v1",
+            });
+          }
+        }
+      }
+    }
+
+    const guidedForAI =
+      parseGuidedShoppingRequest(rawMessage);
+
+    /*
+     * ST_ASSISTANT_FAST_INTENT_GATE_V1
+     *
+     * A plainly expressed catalogue lookup does not need a
+     * paid AI interpretation before the fast search index.
+     *
+     * Keep ambiguous, misspelled, detailed and conversational
+     * questions eligible for Gemini interpretation.
+     */
+    const straightforwardCatalogQuestion =
+      /^(?:do you (?:have|sell|carry)|show me|list|find me)\b/i.test(
+        rawMessage.trim(),
+      ) &&
+      !/\b(?:gb|tb|storage|ram|color|colour|scan|copy|compatible|compatibility|configuration|variant|compare|comparison|best|better|recommend|suggest|which|price|cost|stock)\b/i.test(
+        rawMessage,
+      );
+
+    const aiInterpretation =
+      guidedForAI?.budget != null ||
+      straightforwardCatalogQuestion
+        ? null
+        : await interpretAssistantCustomerQuestion(
+        rawMessage,
+        parsed.intent,
+        request.headers,
+        {
+          focusedProductName:
+            assistantContext.focusedProduct?.name ?? "",
+          displayedProductNames:
+            assistantContext.displayedProducts.map(
+              (product) => product.name,
+            ),
+          category: memory.category,
+          brand: memory.brand,
+          useCases: memory.useCases,
+          budgetMax: memory.budgetMax,
+        },
+      );
+
+    if (process.env.NODE_ENV === "development") {
+      console.info(
+        "[ST_ASSISTANT_PERF] interpretation_phase_ms=",
+        Date.now() - assistantPerfStartedAt,
+      );
+    }
+
+    const aiStoreQuestion: Record<string, string> = {
+      store_hours: "When do you open?",
+      store_location: "Where is your store?",
+      store_history: "When was Stereophonie created?",
+      delivery_fee: "What is your delivery fee?",
+      delivery_time: "How long does delivery take?",
+    };
+
+    if (
+      aiInterpretation &&
+      aiInterpretation.intent in aiStoreQuestion
+    ) {
+      const verifiedAnswer = await resolveStoreKnowledge(
+        aiStoreQuestion[aiInterpretation.intent],
+        language,
+      );
+
+      if (verifiedAnswer) {
+        return NextResponse.json({
+          message: verifiedAnswer.message,
+          links: verifiedAnswer.links ?? [],
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-ai-verified-knowledge-v1",
+        });
+      }
+    }
+
+    if (aiInterpretation?.intent === "order_tracking") {
+      parsed = {
+        ...parsed,
+        intent: "order_tracking",
+      };
+    }
+
+    if (aiInterpretation?.intent === "product_search") {
+      const interpreted = parseAssistantRequest(
+        aiInterpretation.query,
+      );
+
+      parsed = {
+        ...parsed,
+        intent: "product_search",
+        productQuery: aiInterpretation.query,
+        category: interpreted.category ?? parsed.category,
+        brand: interpreted.brand ?? parsed.brand,
+        needsClarification: false,
+      };
+    }
+
+    const aiSearchQuestion =
+      aiInterpretation?.intent === "product_search"
+        ? aiInterpretation.query
+        : rawMessage;
 
     const normalizedFreshProductQuery =
       parsed.productQuery
@@ -9116,6 +10300,584 @@ export async function POST(request: Request) {
      * --------------------------------------------------------
      */
 
+    /*
+     * ST_ASSISTANT_TARGETED_RETRIEVAL_V1
+     *
+     * Fast path for direct searches, budget requests,
+     * and contextual budget follow-ups.
+     *
+     * Store questions and protected customer actions
+     * were handled before this point.
+     *
+     * Exact-model accessory discovery retains its
+     * existing specialized resolution path.
+     */
+
+    /*
+     * ST_ASSISTANT_TARGETED_VERIFIED_FOLLOWUP_V1
+     *
+     * Resolve conversational feature/configuration questions
+     * against the server's published versions of remembered
+     * products, before the full-catalogue fallback.
+     */
+    if (
+      aiInterpretation &&
+      (
+        aiInterpretation.intent === "feature_question" ||
+        aiInterpretation.intent === "variant_question"
+      ) &&
+      (
+        assistantContext.focusedProduct ||
+        assistantContext.displayedProducts.length > 0
+      )
+    ) {
+      const referencedIds = Array.from(
+        new Set(
+          [
+            assistantContext.focusedProduct?.id,
+            ...assistantContext.displayedProducts.map(
+              (product) => product.id,
+            ),
+          ].filter(
+            (id): id is string =>
+              typeof id === "string" && id.length > 0,
+          ),
+        ),
+      ).slice(0, 8);
+
+      const referencedProducts = await searchProducts({
+        query: "",
+        product_ids: referencedIds,
+        return_all: true,
+      });
+
+      const verifiedFollowUp =
+        resolveAssistantVerifiedAIAnswer({
+          question: rawMessage,
+          interpretation: aiInterpretation,
+          context: assistantContext,
+          catalog: referencedProducts,
+          language,
+        });
+
+      if (verifiedFollowUp) {
+        return NextResponse.json({
+          message: verifiedFollowUp.message,
+          products: verifiedFollowUp.products.map(
+            assistantProductForResponse,
+          ),
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-targeted-followup-v1",
+        });
+      }
+    }
+
+    const fastBudgetFollowUp =
+      parseGuidedShoppingRequest(rawMessage);
+
+    if (
+      fastBudgetFollowUp?.budget != null &&
+      !fastBudgetFollowUp.subject &&
+      assistantContext.displayedProducts.length > 0
+    ) {
+      const referenceIds = Array.from(
+        new Set(
+          assistantContext.displayedProducts
+            .map((product) => product.id)
+            .filter(Boolean),
+        ),
+      ).slice(0, 8);
+
+      if (referenceIds.length > 0) {
+        const rememberedProducts = await searchProducts({
+          query: "",
+          product_ids: referenceIds,
+          return_all: true,
+        });
+
+        if (rememberedProducts.length > 0) {
+          const answer = resolveGuidedShopping(
+            fastBudgetFollowUp,
+            rememberedProducts,
+            language,
+          );
+
+          return NextResponse.json({
+            message: answer.message,
+            products: answer.products.map(
+              assistantProductForResponse,
+            ),
+            cartActions: [],
+            wishlistActions: [],
+            navigationActions: [],
+            language,
+            engine: "stereophonie-targeted-budget-v1",
+          });
+        }
+      }
+    }
+
+    /*
+     * ST_ASSISTANT_VERIFIED_CAPACITY_SEARCH_V1
+     *
+     * This narrow path resolves a power bank with an exact
+     * stated mAh capacity. General discovery and all
+     * existing specialized routes remain unchanged.
+     */
+    const capacityRequest =
+      parsePowerBankCapacityRequest(rawMessage);
+
+    if (capacityRequest) {
+      const lookupTerms = [
+        "power bank",
+        "powerbank",
+        "portable charger",
+        "battery pack",
+        "batterie externe",
+        "chargeur portable",
+      ];
+
+      const indexedById = new Map<
+        string,
+        { id: string }
+      >();
+
+      for (const term of lookupTerms) {
+        const indexed = await loadShopSearchIndex(term);
+
+        for (const product of indexed) {
+          indexedById.set(product.id, product);
+        }
+      }
+
+      // Keep this more expensive verification path
+      // bounded, without affecting regular fast search.
+      const indexedCandidates =
+        [...indexedById.values()].slice(0, 96);
+
+      const selectedProducts: AssistantProduct[] = [];
+
+      for (
+        let offset = 0;
+        offset < indexedCandidates.length &&
+          selectedProducts.length < 4;
+        offset += 12
+      ) {
+        const batch = indexedCandidates.slice(
+          offset,
+          offset + 12,
+        );
+
+        const verified = await searchProducts({
+          query: "",
+          product_ids: batch.map((item) => item.id),
+          return_all: true,
+        });
+
+        for (const product of verified) {
+          const matchingVariants =
+            matchingPowerBankCapacityVariants(
+              product,
+              capacityRequest.capacityMah,
+            );
+
+          if (!matchingVariants.length) {
+            continue;
+          }
+
+          const purchasablePrices = matchingVariants
+            .filter(
+              (variant) =>
+                variant.purchasable &&
+                variant.currentPrice > 0
+            )
+            .map((variant) => variant.currentPrice);
+
+          const listedPrices = matchingVariants
+            .map((variant) => variant.currentPrice)
+            .filter((price) => price > 0);
+
+          const price =
+            purchasablePrices.length > 0
+              ? Math.min(...purchasablePrices)
+              : listedPrices.length > 0
+                ? Math.min(...listedPrices)
+                : null;
+
+          selectedProducts.push({
+            ...product,
+            variants: matchingVariants,
+            price,
+          });
+
+          if (selectedProducts.length >= 4) {
+            break;
+          }
+        }
+      }
+
+      const capacityLabel =
+        capacityRequest.capacityMah.toLocaleString("en-US");
+
+      const message = selectedProducts.length > 0
+        ? language === "fr"
+          ? `Voici des batteries externes dont la capacité de ${capacityLabel} mAh est indiquée dans les informations publiées. Vérifiez la configuration souhaitée avant de commander.`
+          : language === "ar"
+            ? `لقيت باور بانك مذكور بمواصفاته سعة ${capacityLabel} mAh. تأكد من النسخة المطلوبة قبل الطلب.`
+            : `Here are power banks with a verified ${capacityLabel} mAh capacity in their published product information. Please check the selected configuration before ordering.`
+        : language === "fr"
+          ? `Je n’ai pas pu confirmer une batterie externe de ${capacityLabel} mAh dans les fiches produits vérifiées.`
+          : language === "ar"
+            ? `ما قدرت أكد وجود باور بانك بسعة ${capacityLabel} mAh ضمن معلومات المنتجات اللي تحققت منها.`
+            : `I couldn't verify an exact ${capacityLabel} mAh power bank in the published product information checked.`;
+
+      return NextResponse.json({
+        message,
+        products: selectedProducts.map(
+          assistantProductForResponse,
+        ),
+        cartActions: [],
+        wishlistActions: [],
+        navigationActions: [],
+        language,
+        engine: "stereophonie-verified-capacity-v1",
+      });
+    }
+
+    const specializedFastRequest =
+      parseAssistantDiscoveryRequest(aiSearchQuestion);
+
+    const protectedAccessoryRequest =
+      /\b(?:iphone|ipad|galaxy|pixel|macbook)\b/i.test(
+        rawMessage,
+      ) &&
+      /\b(?:case|cover|sleeve)\b/i.test(
+        rawMessage,
+      );
+
+    const fastGuidedRequest =
+      !specializedFastRequest &&
+      !protectedAccessoryRequest &&
+      assistantContext.displayedProducts.length === 0
+        ? parseGuidedShoppingRequest(rawMessage)
+        : null;
+
+    const fastCatalogRequest =
+      !specializedFastRequest &&
+      !protectedAccessoryRequest
+        ? getGeneralCatalogQuery(
+            rawMessage,
+            aiSearchQuestion,
+            parsed.intent,
+            aiInterpretation?.intent ?? null,
+          )
+        : null;
+
+    if (fastGuidedRequest?.subject || fastCatalogRequest) {
+      const fastSearchPhrase =
+        fastGuidedRequest?.subject ||
+        fastCatalogRequest?.query ||
+        "";
+
+      const fastStartedAt = Date.now();
+
+      const indexedProducts = await loadShopSearchIndex(
+        fastSearchPhrase,
+      );
+
+      const correctProductType = indexedProducts.filter(
+        (product) =>
+          guidedProductMatchesRequestedType(
+            product.name,
+            fastSearchPhrase,
+          ),
+      );
+
+      const matchedIndex = matchGeneralCatalogProducts(
+        correctProductType,
+        correctProductType,
+        fastSearchPhrase,
+        fastGuidedRequest ? 12 : 4,
+      );
+
+      const indexedAt = Date.now();
+
+      const verifiedProducts = matchedIndex.length > 0
+        ? await searchProducts({
+            query: "",
+            product_ids: matchedIndex.map(
+              (product) => product.id,
+            ),
+            return_all: true,
+          })
+        : [];
+
+      const verifiedById = new Map(
+        verifiedProducts.map((product) => [
+          product.id,
+          product,
+        ]),
+      );
+
+      const selectedProducts = matchedIndex.flatMap(
+        (product) => {
+          const verified = verifiedById.get(product.id);
+          return verified ? [verified] : [];
+        },
+      );
+
+      if (process.env.NODE_ENV === "development") {
+        console.info(
+          "[ST_ASSISTANT_FAST] index_ms=",
+          indexedAt - fastStartedAt,
+          "hydration_ms=",
+          Date.now() - indexedAt,
+          "verified_count=",
+          selectedProducts.length,
+        );
+      }
+
+      if (fastGuidedRequest) {
+        const answer = resolveGuidedShopping(
+          fastGuidedRequest,
+          selectedProducts,
+          language,
+        );
+
+        const groundedAdvice =
+          answer.products.length > 0
+            ? await createAssistantGroundedProductAdvice({
+                question: rawMessage,
+                language,
+                candidates: answer.products,
+                budget: fastGuidedRequest.budget,
+                purpose: fastGuidedRequest.purpose,
+                headers: request.headers,
+              })
+            : null;
+
+        return NextResponse.json({
+          message: groundedAdvice?.message ?? answer.message,
+          products: answer.products.map(
+            assistantProductForResponse,
+          ),
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: groundedAdvice?.usedModel
+            ? "stereophonie-grounded-advice-ai-v1"
+            : groundedAdvice
+              ? "stereophonie-grounded-advice-v1"
+              : "stereophonie-targeted-guided-v1",
+        });
+      }
+
+      if (selectedProducts.length > 0) {
+        return NextResponse.json({
+          message: generalCatalogFoundMessage(
+            selectedProducts.length,
+            language,
+          ),
+          products: selectedProducts.map(
+            assistantProductForResponse,
+          ),
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-targeted-search-v1",
+        });
+      }
+
+      /*
+       * ST_ASSISTANT_FAST_EMPTY_SAFE_V1
+       *
+       * An empty fast-search result does not prove that
+       * no published product exists. The shared index
+       * currently returns [] on transient database errors
+       * and that value can be cached briefly.
+       *
+       * Do not report confirmed nonexistence unless an
+       * independently reliable lookup establishes it.
+       * Preserve the fast successful search path.
+       */
+      if (
+        fastCatalogRequest?.explicit &&
+        matchedIndex.length === 0
+      ) {
+        /*
+         * Assistant-only recovery for a temporarily empty
+         * fast index. Do not change the shared storefront
+         * cache or trust unverified product metadata.
+         */
+        const recoveryTag =
+          "[ST_ASSISTANT_SEARCH_RECOVERY_V2]";
+
+        const recoveryTerms = fastSearchPhrase
+          .normalize("NFKD")
+          .toLowerCase()
+          .replace(/[^a-z0-9 ]/g, " ")
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((word) => {
+            if (
+              word.length > 4 &&
+              /[^aeiou]ies$/.test(word)
+            ) {
+              return word.slice(0, -3) + "y";
+            }
+
+            if (
+              word.length > 4 &&
+              word.endsWith("s") &&
+              !/(?:ss|us|is)$/.test(word)
+            ) {
+              return word.slice(0, -1);
+            }
+
+            return word;
+          });
+
+        const recoveryNeedle = recoveryTerms
+          .join(" ")
+          .slice(0, 80)
+          .trim();
+
+        if (recoveryNeedle.length >= 3) {
+          try {
+            const {
+              data: recoveryRows,
+              error: recoveryError,
+            } = await createAdminClient()
+              .from("products")
+              .select("id, name")
+              .eq("status", "published")
+              .ilike("name", `%${recoveryNeedle}%`)
+              .order("name", { ascending: true })
+              .limit(24);
+
+            if (recoveryError) {
+              console.warn(
+                recoveryTag,
+                "published_name_lookup_failed",
+                recoveryError.message,
+              );
+            } else {
+              const recoveryIds = (recoveryRows ?? [])
+                .filter(
+                  (row) =>
+                    typeof row.id === "string" &&
+                    typeof row.name === "string" &&
+                    guidedProductMatchesRequestedType(
+                      row.name,
+                      fastSearchPhrase,
+                    ),
+                )
+                .slice(0, 12)
+                .map((row) => row.id);
+
+              if (recoveryIds.length > 0) {
+                const publishedRecovery =
+                  await searchProducts({
+                    query: "",
+                    product_ids: recoveryIds,
+                    return_all: true,
+                  });
+
+                const publishedById = new Map(
+                  publishedRecovery.map(
+                    (product) => [
+                      product.id,
+                      product,
+                    ],
+                  ),
+                );
+
+                const recoveredProducts = recoveryIds
+                  .flatMap((id) => {
+                    const product = publishedById.get(id);
+                    return product ? [product] : [];
+                  })
+                  .slice(0, 4);
+
+                if (recoveredProducts.length > 0) {
+                  if (
+                    process.env.NODE_ENV === "development"
+                  ) {
+                    console.info(
+                      recoveryTag,
+                      "recovered_count=",
+                      recoveredProducts.length,
+                    );
+                  }
+
+                  return NextResponse.json({
+                    message: generalCatalogFoundMessage(
+                      recoveredProducts.length,
+                      language,
+                    ),
+                    products: recoveredProducts.map(
+                      assistantProductForResponse,
+                    ),
+                    cartActions: [],
+                    wishlistActions: [],
+                    navigationActions: [],
+                    language,
+                    engine:
+                      "stereophonie-targeted-search-recovered-v1",
+                  });
+                }
+              }
+            }
+          } catch (error) {
+            console.warn(
+              recoveryTag,
+              "recovery_unavailable",
+              error instanceof Error
+                ? error.message
+                : "Unknown recovery error",
+            );
+          }
+        }
+
+
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "[ST_ASSISTANT_FAST_EMPTY_SAFE_V1]",
+            "search_candidates=",
+            indexedProducts.length,
+            "type_candidates=",
+            correctProductType.length,
+            "ranked_candidates=",
+            matchedIndex.length,
+          );
+        }
+
+        return NextResponse.json({
+          message:
+            language === "fr"
+              ? "Je n’ai pas pu confirmer les résultats de cette recherche pour le moment. Réessayez dans un instant ou indiquez-moi une marque ou un modèle."
+              : language === "ar"
+                ? "لم أتمكن من التحقق من نتائج البحث حاليًا. جرّب مرة أخرى بعد قليل أو اذكر العلامة التجارية أو الموديل."
+                : "I couldn't verify matching products right now. Please try again shortly, or tell me a brand or model to check.",
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-targeted-search-unverified-v1",
+        });
+      }
+
+      // If an indexed product could not be verified against
+      // live published data, retain the original fallback.
+    }
+
     const catalog = await searchProducts({
       query: "",
       category: "",
@@ -9138,7 +10900,357 @@ export async function POST(request: Request) {
        */
       limit: 5000,
       return_all: true,
+      cache_catalog: true,
+      // Only the read-only conversational catalogue.
     });
+
+    /*
+     * ST_ASSISTANT_CATEGORY_DISCOVERY_V1
+     *
+     * Real category/subcategory search for direct customer
+     * shopping requests. Use the same published-product index
+     * as the header and Shop.
+     *
+     * Do not intercept:
+     * - cart / wishlist actions
+     * - order tracking
+     * - prices, budgets, comparisons or offers
+     * - unrelated conversation follow-ups
+     */
+    if (process.env.NODE_ENV === "development") {
+      console.info(
+        "[ST_ASSISTANT_PERF] through_catalog_ms=",
+        Date.now() - assistantPerfStartedAt,
+      );
+    }
+
+    const discoveryRequest =
+      (
+        parsed.intent === "product_search" ||
+        parsed.intent === "availability" ||
+        parsed.intent === "unknown"
+      )
+        ? parseAssistantDiscoveryRequest(aiSearchQuestion)
+        : null;
+
+    /*
+     * ST_ASSISTANT_SHOPPING_CONTEXT_V1
+     *
+     * Preserve the customer's current shopping subject.
+     * All product IDs are resolved against the live published
+     * catalogue. Existing exact-model discovery takes priority.
+     */
+    /*
+     * ST_ASSISTANT_AI_VERIFIED_ANSWERS_V1
+     *
+     * Interpret conversational feature and configuration
+     * requests against real published product data.
+     * Cart, order, and account actions remain in their
+     * original protected branches.
+     */
+    const aiVerifiedAnswer =
+      resolveAssistantVerifiedAIAnswer({
+        question: rawMessage,
+        interpretation: aiInterpretation,
+        context: assistantContext,
+        catalog,
+        language,
+      });
+
+    if (aiVerifiedAnswer) {
+      return NextResponse.json({
+        message: aiVerifiedAnswer.message,
+        products: aiVerifiedAnswer.products.map(
+          assistantProductForResponse,
+        ),
+        cartActions: [],
+        wishlistActions: [],
+        navigationActions: [],
+        language,
+        engine: "stereophonie-ai-verified-answers-v1",
+      });
+    }
+
+    /*
+     * ST_ASSISTANT_CONTEXTUAL_BUDGET_V2
+     *
+     * "Which one under $200?" must be answered using the
+     * actual products displayed in this conversation.
+     *
+     * Re-resolve product IDs against the current published
+     * server catalogue. Do not trust browser-supplied prices.
+     */
+    const contextualBudgetRequest =
+      parseGuidedShoppingRequest(rawMessage);
+
+    if (
+      contextualBudgetRequest?.budget != null &&
+      !contextualBudgetRequest.subject &&
+      assistantContext.displayedProducts.length > 0
+    ) {
+      const rememberedBudgetProducts =
+        assistantContext.displayedProducts
+          .map((reference) =>
+            catalog.find(
+              (product) => product.id === reference.id,
+            ),
+          )
+          .filter(
+            (product): product is (typeof catalog)[number] =>
+              Boolean(product),
+          );
+
+      if (rememberedBudgetProducts.length > 0) {
+        const budgetAnswer = resolveGuidedShopping(
+          contextualBudgetRequest,
+          rememberedBudgetProducts,
+          language,
+        );
+
+        return NextResponse.json({
+          message: budgetAnswer.message,
+          products: budgetAnswer.products.map(
+            assistantProductForResponse,
+          ),
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-contextual-budget-v2",
+        });
+      }
+    }
+
+    const shoppingContextAnswer =
+      resolveAssistantShoppingContext({
+        question: aiSearchQuestion,
+        intent: parsed.intent,
+        context: assistantContext,
+        catalog,
+        language,
+        allowNounSearch: discoveryRequest === null,
+      });
+
+    if (shoppingContextAnswer) {
+      return NextResponse.json({
+        message: shoppingContextAnswer.message,
+        products: shoppingContextAnswer.products.map(
+          assistantProductForResponse,
+        ),
+        cartActions: [],
+        wishlistActions: [],
+        navigationActions: [],
+        language,
+        engine: "stereophonie-shopping-context-v1",
+      });
+    }
+
+    /*
+     * ST_ASSISTANT_MODEL_AWARE_DISCOVERY_V2
+     *
+     * Exact named products take priority over generic ranking.
+     * Accessory requests must never resolve to the device itself.
+     */
+    /*
+     * ST_ASSISTANT_GUIDED_SHOPPING_V1
+     * Verified price ceilings and use-case guidance.
+     * Existing contextual follow-ups have already had priority.
+     */
+    const guidedRequest = parseGuidedShoppingRequest(rawMessage);
+
+    if (guidedRequest) {
+      const indexedGuidedProducts = guidedRequest.subject
+        ? await loadShopSearchIndex(guidedRequest.subject)
+        : [];
+
+      const matchedGuidedProducts = guidedRequest.subject
+        ? matchGeneralCatalogProducts(
+            indexedGuidedProducts,
+            catalog,
+            guidedRequest.subject,
+            12,
+          )
+        : [];
+
+      const guidedAnswer = resolveGuidedShopping(
+        guidedRequest,
+        matchedGuidedProducts,
+        language,
+      );
+
+      return NextResponse.json({
+        message: guidedAnswer.message,
+        products: guidedAnswer.products.map(
+          assistantProductForResponse,
+        ),
+        cartActions: [],
+        wishlistActions: [],
+        navigationActions: [],
+        language,
+        engine: "stereophonie-guided-shopping-v1",
+      });
+    }
+
+    const namedCatalogProduct =
+      (
+        !discoveryRequest ||
+        discoveryRequest.kind !== "case"
+      )
+        ? findAssistantNamedCatalogProduct(
+            catalog,
+            aiSearchQuestion,
+          )
+        : null;
+
+    if (namedCatalogProduct) {
+      return NextResponse.json({
+        message: directCatalogProductResponse(
+          namedCatalogProduct,
+          language,
+        ),
+        products: [
+          assistantProductForResponse(namedCatalogProduct),
+        ],
+        cartActions: [],
+        wishlistActions: [],
+        navigationActions: [],
+        language,
+        engine: "stereophonie-model-discovery-v2",
+      });
+    }
+
+    if (discoveryRequest) {
+      let discoveredProducts: AssistantProduct[] = [];
+
+      for (const lookup of discoveryRequest.lookups) {
+        const indexedProducts =
+          await loadShopSearchIndex(lookup);
+
+        const candidates = curateAssistantDiscoveryProducts(
+          indexedProducts,
+          catalog,
+          discoveryRequest,
+        );
+
+        if (candidates.length > 0) {
+          discoveredProducts = candidates;
+          break;
+        }
+      }
+
+      if (discoveredProducts.length > 0) {
+        const selected = discoveredProducts.slice(0, 4);
+
+        const message =
+          discoveryRequest.deviceModel
+            ? (
+                language === "fr"
+                  ? `J’ai trouvé des accessoires dont les informations mentionnent ${discoveryRequest.deviceModel}. Vérifiez le modèle exact et la taille de votre appareil avant de commander.`
+                  : language === "ar"
+                    ? `وجدت منتجات تذكر توافقها مع ${discoveryRequest.deviceModel}. يرجى التأكد من موديل الجهاز ومقاسه قبل الطلب.`
+                    : `I found cases whose product information mentions ${discoveryRequest.deviceModel} compatibility. Please verify your exact device generation and size before ordering.`
+              )
+            : (
+                language === "fr"
+                  ? "Voici les produits correspondants dans notre catalogue. Consultez chaque fiche pour les options et la disponibilité actuelles."
+                  : language === "ar"
+                    ? "هذه المنتجات المطابقة في كتالوجنا. يمكنك مراجعة صفحة كل منتج للتأكد من الخيارات والتوفر الحالي."
+                    : "Here are matching products from our current catalogue. Open a product to check its options and availability."
+              );
+
+        return NextResponse.json({
+          message,
+          products: selected.map(assistantProductForResponse),
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-category-discovery-v1",
+        });
+      }
+
+      // A specified accessory model must never fall back to
+      // unrelated generic products presented as compatible.
+      if (
+        discoveryRequest.kind === "case" &&
+        discoveryRequest.deviceModel
+      ) {
+        return NextResponse.json({
+          message:
+            language === "fr"
+              ? `Je n’ai trouvé aucun étui dont la fiche confirme la compatibilité avec ${discoveryRequest.deviceModel}. Donnez-moi votre modèle exact si vous souhaitez vérifier une autre option.`
+              : language === "ar"
+                ? `لم أجد غطاءً تؤكد معلوماته التوافق مع ${discoveryRequest.deviceModel}. أرسل لي موديل جهازك بالتحديد للتحقق من خيارات أخرى.`
+                : `I couldn't verify a case for ${discoveryRequest.deviceModel} in our current catalogue. Tell me your exact model and size if you'd like help checking alternatives.`,
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-category-discovery-v1",
+        });
+      }
+    }
+
+    /*
+     * ST_ASSISTANT_GENERAL_CATALOG_DISCOVERY_V1
+     *
+     * Specialised model compatibility and remembered-product
+     * follow-ups have already had first priority.
+     *
+     * Search the authoritative published catalogue by title,
+     * assigned category, subcategory and brand.
+     *
+     * Explicit direct product requests with no verified match
+     * MUST NOT fall through to unrelated recommendations.
+     */
+    const generalCatalogQuery = getGeneralCatalogQuery(
+      rawMessage,
+      aiSearchQuestion,
+      parsed.intent,
+      aiInterpretation?.intent ?? null,
+    );
+
+    if (generalCatalogQuery) {
+      const indexedGeneralProducts = await loadShopSearchIndex(
+        generalCatalogQuery.query,
+      );
+
+      const generalProducts = matchGeneralCatalogProducts(
+        indexedGeneralProducts,
+        catalog,
+        generalCatalogQuery.query,
+      );
+
+      if (generalProducts.length > 0) {
+        return NextResponse.json({
+          message: generalCatalogFoundMessage(
+            generalProducts.length,
+            language,
+          ),
+          products: generalProducts.map(
+            assistantProductForResponse,
+          ),
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-general-catalog-v1",
+        });
+      }
+
+      if (generalCatalogQuery.explicit) {
+        return NextResponse.json({
+          message: generalCatalogNotFoundMessage(language),
+          products: [],
+          cartActions: [],
+          wishlistActions: [],
+          navigationActions: [],
+          language,
+          engine: "stereophonie-general-catalog-v1",
+        });
+      }
+    }
 
     const rankedCatalog = catalog.map(toRankedProduct);
 

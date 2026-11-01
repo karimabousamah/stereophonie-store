@@ -263,6 +263,117 @@ export type StorefrontSearchProductRelevance = {
   score: number;
 };
 
+
+/*
+ * ST_CATEGORY_AWARE_SEARCH_V1
+ *
+ * Search real catalogue taxonomy, not just product names.
+ * Synonyms are tightly scoped to recognizable customer intent.
+ */
+export function storefrontSearchCategoryRelevance({
+  categoryNames,
+  brand = "",
+  query,
+}: {
+  categoryNames: string[];
+  brand?: string;
+  query: string;
+}): StorefrontSearchProductRelevance | null {
+  const normalizedQuery = normalizeStorefrontSearchText(query);
+  const normalizedBrand = normalizeStorefrontSearchText(brand);
+
+  if (!normalizedQuery || categoryNames.length === 0) {
+    return null;
+  }
+
+  // A brand-qualified search must still respect that brand.
+  const categoryIntent =
+    normalizedBrand &&
+    normalizedQuery.startsWith(`${normalizedBrand} `)
+      ? normalizedQuery.slice(normalizedBrand.length).trim()
+      : normalizedQuery;
+
+  if (!categoryIntent) {
+    return null;
+  }
+
+  const aliases: Record<string, string> = {
+    "virtual reality headset": "vr headsets",
+    "virtual reality headsets": "vr headsets",
+    "virtual reality goggles": "vr headsets",
+    "virtual reality glasses": "vr headsets",
+    "vr goggles": "vr headsets",
+    "vr glasses": "vr headsets",
+    "gaming headphone": "gaming headsets",
+    "gaming headphones": "gaming headsets",
+    "gamer headset": "gaming headsets",
+    "gamer headsets": "gaming headsets",
+    "headphones for gaming": "gaming headsets",
+  };
+
+  const queries = Array.from(
+    new Set([
+      categoryIntent,
+      ...(aliases[categoryIntent]
+        ? [aliases[categoryIntent]]
+        : []),
+    ]),
+  );
+
+  let best: StorefrontSearchProductRelevance | null = null;
+
+  for (const categoryName of categoryNames) {
+    for (const candidateQuery of queries) {
+      // ST_CATEGORY_SEARCH_RANKING_V2
+      // Extra search terms must not accidentally match a
+      // shorter category through compact substring matching.
+      const categoryWords = normalizeStorefrontSearchText(
+        categoryName,
+      ).split(" ").filter(Boolean);
+
+      const queryWords = normalizeStorefrontSearchText(
+        candidateQuery,
+      ).split(" ").filter(Boolean);
+
+      if (queryWords.length > categoryWords.length) {
+        continue;
+      }
+
+      const matchScore = storefrontSearchValueScore(
+        categoryName,
+        candidateQuery,
+      );
+
+      if (matchScore === null) {
+        continue;
+      }
+
+      const relevance = {
+        // Real category membership is a strong match.
+        // Fuzzy category matches remain fallback matches.
+        tier: matchScore <= 6 ? 1 : 3,
+        // Exact product titles still win, but a real category
+        // match ranks above a partial accessory-title match.
+        score:
+          matchScore <= 6
+            ? 0.5 + matchScore / 20
+            : 12 + matchScore,
+      };
+
+      if (
+        !best ||
+        relevance.tier < best.tier ||
+        (relevance.tier === best.tier &&
+          relevance.score < best.score)
+      ) {
+        best = relevance;
+      }
+    }
+  }
+
+  return best;
+}
+
 export function storefrontSearchProductRelevance({
   name,
   brand = "",

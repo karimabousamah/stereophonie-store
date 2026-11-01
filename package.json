@@ -9,10 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@huggingface/transformers": "3.8.1",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@supabase/ssr": "^0.12.1",
     "@supabase/supabase-js": "^2.110.4",
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.40.0",
     "@zxing/browser": "^0.2.1",
     "lucide-react": "^1.24.0",
     "motion": "^12.42.2",

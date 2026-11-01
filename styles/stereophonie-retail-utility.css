@@ -11651,7 +11651,12 @@ html body main.st-retail-compact-v1.st-about-page
     flex-shrink: 0 !important;
 
     line-height: 1.3 !important;
-    padding-bottom: 6px !important;
+
+    /* ST_PRODUCT_CARD_TITLE_CLIP_FIX_V1
+       Keep all spacing outside the clamped text box,
+       preventing Safari from revealing the third line. */
+    padding-bottom: 0 !important;
+    margin-bottom: 6px !important;
 
     overflow: hidden !important;
 
@@ -12989,7 +12994,7 @@ html body
     position: absolute !important;
     display: block !important;
     top: 50% !important;
-    right: -14px !important;
+    right: 5px !important;
     width: 1px !important;
     height: 20px !important;
     background: rgba(29, 29, 31, 0.085) !important;

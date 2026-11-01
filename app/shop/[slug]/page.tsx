@@ -11,7 +11,6 @@ import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 import { STOREFRONT_RECOMMENDATION_CACHE_TAG } from "@/lib/storefront-cache-tags";
 
 import ProductConfigurationPrice from "./product-configuration-price";
-import ProductConfigurationAvailability from "./product-configuration-availability";
 import ProductConfigurationSpecifications from "./product-configuration-specifications";
 import ProductGallery from "./product-gallery";
 import ProductPurchaseControls from "./product-purchase-controls";
@@ -1654,15 +1653,6 @@ export default async function ProductPage({
                 }))}
               />
 
-              <ProductConfigurationAvailability
-                variants={variants.map((variant) => ({
-                  id: variant.id,
-                  variant_name: variant.variant_name,
-                  display_position: variant.display_position,
-                  stock_quantity: variant.stock_quantity,
-                  availability_status: variant.availability_status,
-                }))}
-              />
             </div>
           </header>
 

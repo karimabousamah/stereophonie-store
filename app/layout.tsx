@@ -8,8 +8,10 @@ import StoreAvailabilityGate from "@/components/storefront/store-availability-ga
 import StorefrontRouteScrollReset from "@/components/storefront/storefront-route-scroll-reset";
 import StorefrontPageTransitionIsland from "@/components/storefront/storefront-page-transition-island";
 import { StoreSettingsProvider } from "@/components/storefront/store-settings-provider";
+import { HeaderNavigationProvider } from "@/components/storefront/header-navigation-provider";
 import { WishlistProvider } from "@/components/wishlist/wishlist-provider";
 import { getPublicStoreSettings } from "@/lib/store-settings";
+import { getHeaderNavigationCategories } from "@/lib/storefront-header-navigation";
 import { getPublicWelcomeOfferSettings } from "@/lib/welcome-offer-settings";
 
 import "./globals.css";
@@ -93,9 +95,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [settings, homepageSettings] = await Promise.all([
+  const [
+    settings,
+    homepageSettings,
+    headerCategories,
+  ] = await Promise.all([
     getPublicStoreSettings(),
     getPublicWelcomeOfferSettings(),
+    getHeaderNavigationCategories(),
   ]);
 
   const siteUrl = "https://www.stereophoniestore.com";
@@ -139,6 +146,7 @@ export default async function RootLayout({
         />
 
         <StoreSettingsProvider settings={settings}>
+          <HeaderNavigationProvider categories={headerCategories}>
           <StorefrontRouteScrollReset />
           <Suspense fallback={null}>
               <StorefrontPageTransitionIsland />
@@ -163,6 +171,7 @@ export default async function RootLayout({
               </WishlistProvider>
             </CartProvider>
           </StoreAvailabilityGate>
+          </HeaderNavigationProvider>
         </StoreSettingsProvider>
       </body>
     </html>

@@ -43,6 +43,54 @@ export default function CategorySubcategoryNavigation({
   const [hasOverflow, setHasOverflow] =
     useState(false);
 
+  const [canScrollPrevious, setCanScrollPrevious] =
+    useState(false);
+
+  const [canScrollNext, setCanScrollNext] =
+    useState(false);
+
+  const updateScrollButtons =
+    useCallback(() => {
+      const list =
+        listRef.current;
+
+      if (
+        cardMode ||
+        !list
+      ) {
+        setCanScrollPrevious(false);
+        setCanScrollNext(false);
+        return;
+      }
+
+      const maximum =
+        Math.max(
+          0,
+          list.scrollWidth -
+            list.clientWidth,
+        );
+
+      const overflowing =
+        maximum > 1;
+
+      const current =
+        Math.max(
+          0,
+          list.scrollLeft,
+        );
+
+      setCanScrollPrevious(
+        overflowing &&
+          current > 2,
+      );
+
+      setCanScrollNext(
+        overflowing &&
+          current <
+            maximum - 2,
+      );
+    }, [cardMode]);
+
   const groupSignature =
     navigation.items
       .map((item) => item.id)
@@ -230,6 +278,113 @@ export default function CategorySubcategoryNavigation({
     selectedSubcategoryId,
   ]);
 
+  useEffect(() => {
+    const list =
+      listRef.current;
+
+    if (
+      cardMode ||
+      !list
+    ) {
+      setCanScrollPrevious(false);
+      setCanScrollNext(false);
+      return;
+    }
+
+    const sync =
+      () => {
+        updateScrollButtons();
+      };
+
+    let secondFrame = 0;
+
+    const firstFrame =
+      window.requestAnimationFrame(
+        () => {
+          secondFrame =
+            window.requestAnimationFrame(
+              sync,
+            );
+        },
+      );
+
+    list.addEventListener(
+      "scroll",
+      sync,
+      { passive: true },
+    );
+
+    window.addEventListener(
+      "resize",
+      sync,
+    );
+
+    return () => {
+      window.cancelAnimationFrame(
+        firstFrame,
+      );
+
+      if (secondFrame) {
+        window.cancelAnimationFrame(
+          secondFrame,
+        );
+      }
+
+      list.removeEventListener(
+        "scroll",
+        sync,
+      );
+
+      window.removeEventListener(
+        "resize",
+        sync,
+      );
+    };
+  }, [
+    cardMode,
+    groupSignature,
+    selectedSubcategoryId,
+    updateScrollButtons,
+  ]);
+
+
+  function scrollSubcategories(
+    direction: "previous" | "next",
+  ) {
+    const list =
+      listRef.current;
+
+    if (!list) {
+      return;
+    }
+
+    const distance =
+      Math.max(
+        280,
+        Math.min(
+          list.clientWidth * 0.72,
+          720,
+        ),
+      );
+
+    const reducedMotion =
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+    list.scrollBy({
+      left:
+        direction === "previous"
+          ? -distance
+          : distance,
+      behavior:
+        reducedMotion
+          ? "auto"
+          : "smooth",
+    });
+  }
+
+
   function rememberScrollPosition() {
     const list =
       listRef.current;
@@ -358,6 +513,33 @@ export default function CategorySubcategoryNavigation({
             </div>
           ) : (
             <>
+              <div className="st3-shop-subcategories__scroller">
+                {hasOverflow ? (
+                  <button
+                    type="button"
+                    className="st3-shop-subcategories__scroll-button st3-shop-subcategories__scroll-button--previous"
+                    aria-label="Previous subcategories"
+                    disabled={!canScrollPrevious}
+                    onClick={() =>
+                      scrollSubcategories("previous")
+                    }
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="m15 18-6-6 6-6"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                ) : null}
+
               <div
                 ref={listRef}
                 className="st3-shop-subcategories__list"
@@ -439,6 +621,33 @@ export default function CategorySubcategoryNavigation({
                     </Link>
                   ),
                 )}
+              </div>
+
+                {hasOverflow ? (
+                  <button
+                    type="button"
+                    className="st3-shop-subcategories__scroll-button st3-shop-subcategories__scroll-button--next"
+                    aria-label="Next subcategories"
+                    disabled={!canScrollNext}
+                    onClick={() =>
+                      scrollSubcategories("next")
+                    }
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="m9 6 6 6-6 6"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                ) : null}
               </div>
 
               {navigation.items.length > 1 ? (
