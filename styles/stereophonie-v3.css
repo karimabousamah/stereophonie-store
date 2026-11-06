@@ -97416,613 +97416,6 @@ html body
 
 /* === ST DELIVERY FACT CARD ALIGNMENT FINAL END === */
 
-/* === ST MOBILE ASSISTANT TRUE COMPOSER CENTER FINAL START === */
-
-/*
- * MOBILE ASSISTANT COMPOSER
- *
- * Both states must be vertically centered inside the same bracket:
- *
- * NORMAL
- * text / placeholder + mic + send
- *
- * DICTATING
- * waveform + Listening + voice controls + send
- *
- * No arbitrary top offset.
- * The composer itself owns the vertical centering.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer {
-    align-items: center !important;
-  }
-
-
-  /*
-   * NORMAL TYPING STATE
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea {
-    position: static !important;
-
-    align-self: center !important;
-
-    min-height: 38px !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  /*
-   * DICTATING STATE
-   *
-   * Waveform + Listening text occupy the same centered 38px lane.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > .st3-ai-composer__recording {
-    position: static !important;
-
-    align-self: center !important;
-    align-items: center !important;
-
-    min-height: 38px !important;
-    height: 38px !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  /*
-   * Voice / dictation control lane.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > .st3-ai-dictation {
-    position: relative !important;
-
-    align-self: center !important;
-    align-items: center !important;
-
-    min-height: 38px !important;
-    height: 38px !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  /*
-   * Every direct dictation control sits on the same vertical center.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > .st3-ai-dictation
-  > button {
-    align-self: center !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  /*
-   * SEND BUTTON
-   *
-   * Override the historical align-self:flex-end rule.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > button[type="submit"] {
-    position: static !important;
-
-    align-self: center !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  /*
-   * Interaction states never move the send button.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > button[type="submit"]:hover,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > button[type="submit"]:focus,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > button[type="submit"]:focus-visible,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > button[type="submit"]:active {
-    align-self: center !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-}
-
-/* === ST MOBILE ASSISTANT TRUE COMPOSER CENTER FINAL END === */
-
-/* === ST MOBILE ASSISTANT TEXTAREA TEXT CENTER FINAL START === */
-
-/*
- * Mobile only.
- *
- * The composer row itself is already correctly centered.
- * This adjusts only the TEXT inside the textarea so the placeholder
- * and typed message no longer sit visually too low.
- *
- * Outer composer / mic / send / dictation geometry stays untouched.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea {
-    padding-top: 6px !important;
-    padding-bottom: 14px !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-  }
-
-}
-
-/* === ST MOBILE ASSISTANT TEXTAREA TEXT CENTER FINAL END === */
-
-/* === ST MOBILE AI COMPOSER PERFECT VERTICAL CENTER V1 START === */
-
-/*
- * Mobile assistant composer:
- * make placeholder text, typed text, listening state,
- * mic controls, and send button share the same vertical center.
- *
- * Desktop stays untouched.
- */
-
-@media (max-width: 600px) {
-
-  html body .st3-ai-panel .st3-ai-composer {
-    align-items: center !important;
-  }
-
-  html body .st3-ai-panel .st3-ai-composer > textarea {
-    align-self: center !important;
-    min-height: 42px !important;
-    padding-top: 11px !important;
-    padding-bottom: 11px !important;
-    line-height: 20px !important;
-  }
-
-  html body .st3-ai-panel .st3-ai-composer__recording {
-    align-self: center !important;
-    min-height: 42px !important;
-    display: flex !important;
-    align-items: center !important;
-  }
-
-  html body .st3-ai-panel .st3-ai-composer .st3-ai-dictation,
-  html body .st3-ai-panel .st3-ai-composer button[type="submit"] {
-    align-self: center !important;
-  }
-}
-
-/* === ST MOBILE AI COMPOSER PERFECT VERTICAL CENTER V1 END === */
-
-/* === ST MOBILE AI TEXT STATE CENTERING FINAL START === */
-
-/*
- * Mobile assistant textarea text alignment.
- *
- * EMPTY FIELD:
- * keep the placeholder balance that visually worked.
- *
- * TYPED / DICTATED TEXT:
- * move the actual entered text slightly further upward so its
- * baseline sits visually centered inside the composer.
- *
- * Outer bracket, microphone, dictation controls and send button
- * remain completely unchanged.
- */
-
-@media (max-width: 600px) {
-
-  /*
-   * Empty state / placeholder.
-   */
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:placeholder-shown {
-    padding-top: 6px !important;
-    padding-bottom: 14px !important;
-
-    line-height: 18px !important;
-  }
-
-
-  /*
-   * Typed text or completed dictation text.
-   *
-   * Slightly stronger upward optical correction than placeholder.
-   */
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:not(:placeholder-shown) {
-    padding-top: 4px !important;
-    padding-bottom: 16px !important;
-
-    line-height: 18px !important;
-  }
-
-
-  /*
-   * Same geometry while focused / active.
-   */
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus:placeholder-shown,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus-visible:placeholder-shown {
-    padding-top: 6px !important;
-    padding-bottom: 14px !important;
-  }
-
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus-visible:not(:placeholder-shown) {
-    padding-top: 4px !important;
-    padding-bottom: 16px !important;
-  }
-
-}
-
-/* === ST MOBILE AI TEXT STATE CENTERING FINAL END === */
-
-/* === ST MOBILE AI EMPTY PLACEHOLDER FINAL CENTER START === */
-
-/*
- * ONLY the empty placeholder:
- * "Ask about products, offers or orders"
- *
- * Move it slightly upward.
- *
- * Typed text, dictated text, mic, send button,
- * recording state and outer composer stay untouched.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:placeholder-shown,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus:placeholder-shown,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus-visible:placeholder-shown {
-    padding-top: 4px !important;
-    padding-bottom: 16px !important;
-
-    line-height: 18px !important;
-  }
-
-}
-
-/* === ST MOBILE AI EMPTY PLACEHOLDER FINAL CENTER END === */
-
-/* === ST MOBILE AI MULTILINE TEXT BLOCK CENTER FINAL START === */
-
-/*
- * MOBILE — NON-EMPTY ASSISTANT TEXT ONLY
- *
- * Keep the complete text block vertically centered:
- *
- * 1 line  -> centered
- * 2 lines -> both lines centered together
- * 3 lines -> all three lines centered together
- *
- * Empty placeholder styling is intentionally NOT touched.
- *
- * Equal top/bottom textarea padding keeps the multiline block
- * geometrically balanced while the existing auto-height logic
- * grows the textarea with its content.
- *
- * A tiny 2px optical correction compensates for iOS textarea
- * baseline rendering.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus-visible:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:active:not(:placeholder-shown) {
-    box-sizing: border-box !important;
-
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-
-    line-height: 18px !important;
-
-    align-self: center !important;
-
-    position: relative !important;
-    top: -2px !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-}
-
-/* === ST MOBILE AI MULTILINE TEXT BLOCK CENTER FINAL END === */
-
-/* === ST MOBILE AI NONEMPTY TRUE GEOMETRIC CENTER FINAL START === */
-
-/*
- * NON-EMPTY TEXT ONLY.
- *
- * 1 line, 2 lines, 3 lines, etc. must remain centered
- * as one complete text block.
- *
- * Remove the previous -2px optical offset.
- * Equal padding + the existing auto-height logic gives the
- * textarea true geometric centering as it grows.
- *
- * Placeholder styling is not touched.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus-visible:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:active:not(:placeholder-shown) {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-
-    line-height: 18px !important;
-
-    position: relative !important;
-    top: 0 !important;
-    bottom: auto !important;
-
-    align-self: center !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-}
-
-/* === ST MOBILE AI NONEMPTY TRUE GEOMETRIC CENTER FINAL END === */
-
-/* === ST MOBILE AI CONTENT-HEIGHT VERTICAL CENTER FINAL START === */
-
-/*
- * RULE-BASED CENTERING — NOT PIXEL GUESSING
- *
- * When actual text exists:
- *
- * textarea height = actual text block height
- * composer align-items:center = vertical centering
- *
- * Therefore the same rule works automatically for:
- *
- * 1 line
- * 2 lines
- * 3 lines
- * 4 lines
- * ...
- *
- * The EMPTY placeholder state is intentionally untouched.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer {
-    align-items: center !important;
-  }
-
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:focus-visible:not(:placeholder-shown),
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea:active:not(:placeholder-shown) {
-    /*
-     * Critical:
-     *
-     * No vertical padding is used to position the text.
-     * The textarea itself fits the text block.
-     */
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-
-    min-height: 18px !important;
-    max-height: 160px !important;
-
-    line-height: 18px !important;
-
-    align-self: center !important;
-
-    position: static !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-}
-
-/* === ST MOBILE AI CONTENT-HEIGHT VERTICAL CENTER FINAL END === */
-
 /* === ST ASSISTANT PLACEHOLDER HIDE ON FOCUS FINAL START === */
 
 /*
@@ -98059,353 +97452,6 @@ html body
 
 /* === ST ASSISTANT PLACEHOLDER HIDE ON FOCUS FINAL END === */
 
-/* === ST MOBILE AI TRUE TEXT BLOCK CENTERING FINAL START === */
-
-/*
- * This is the authoritative mobile textarea geometry.
- *
- * We do NOT vertically position text using asymmetric padding.
- *
- * ACTIVE EMPTY:
- * textarea = exactly one line tall.
- *
- * HAS TEXT:
- * textarea height is controlled by the existing JS scrollHeight
- * measurement, so its box equals the actual rendered text block.
- *
- * The composer itself uses align-items:center, therefore the
- * complete text block is automatically centered for any line count.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer {
-    align-items: center !important;
-  }
-
-
-  /*
-   * Focused but still empty:
-   * center the caret itself as one true line.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-focused="true"][data-st-composer-has-value="false"] {
-    height: 18px !important;
-    min-height: 18px !important;
-    max-height: 18px !important;
-
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-
-    line-height: 18px !important;
-
-    align-self: center !important;
-
-    position: static !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  /*
-   * Any real typed OR dictated text:
-   *
-   * No vertical padding.
-   * No minimum 38/42px textarea box.
-   *
-   * Its inline height comes from the existing scrollHeight logic:
-   *
-   * 1 line  = ~18px
-   * 2 lines = ~36px
-   * 3 lines = ~54px
-   * etc.
-   *
-   * Then flexbox centers that complete box inside the bracket.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"] {
-    min-height: 18px !important;
-    max-height: 160px !important;
-
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-
-    line-height: 18px !important;
-
-    align-self: center !important;
-
-    position: static !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  /*
-   * Focus / active state must not alter the geometry.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"]:focus,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"]:focus-visible,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"]:active {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-
-    align-self: center !important;
-
-    position: static !important;
-
-    top: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-  }
-
-}
-
-/* === ST MOBILE AI TRUE TEXT BLOCK CENTERING FINAL END === */
-
-/* === ST MOBILE AI MEASURED TEXT CENTERING FINAL START === */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer {
-    align-items: center !important;
-  }
-
-
-  /*
-   * Active empty field OR field containing text.
-   *
-   * JS measures the real wrapped text block and provides:
-   *
-   * --st-ai-textarea-height
-   * --st-ai-textarea-pad-top
-   * --st-ai-textarea-pad-bottom
-   *
-   * Top and bottom padding are exactly equal.
-   */
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-focused="true"],
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"] {
-    box-sizing: border-box !important;
-
-    height:
-      var(
-        --st-ai-textarea-height,
-        38px
-      ) !important;
-
-    min-height: 0 !important;
-    max-height: 160px !important;
-
-    padding-top:
-      var(
-        --st-ai-textarea-pad-top,
-        10px
-      ) !important;
-
-    padding-bottom:
-      var(
-        --st-ai-textarea-pad-bottom,
-        10px
-      ) !important;
-
-    overflow-y:
-      var(
-        --st-ai-textarea-overflow,
-        hidden
-      ) !important;
-
-    line-height: 18px !important;
-
-    align-self: center !important;
-
-    position: static !important;
-
-    top: auto !important;
-    bottom: auto !important;
-
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-focused="true"]:focus,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-focused="true"]:focus-visible,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"]:focus,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"]:focus-visible {
-    height:
-      var(
-        --st-ai-textarea-height,
-        38px
-      ) !important;
-
-    padding-top:
-      var(
-        --st-ai-textarea-pad-top,
-        10px
-      ) !important;
-
-    padding-bottom:
-      var(
-        --st-ai-textarea-pad-bottom,
-        10px
-      ) !important;
-
-    position: static !important;
-
-    top: auto !important;
-
-    transform: none !important;
-    translate: none !important;
-  }
-
-}
-
-/* === ST MOBILE AI MEASURED TEXT CENTERING FINAL END === */
-
-/* === ST MOBILE AI MEASURED OPTICAL CENTER V3 START === */
-
-/*
- * Mobile active/typed assistant input.
- *
- * The textarea's geometric height and padding are already calculated
- * from the actual wrapped text block.
- *
- * Safari's textarea glyph/caret rendering sits visually high inside
- * that geometric line box, so the final optical correction is supplied
- * by JS as:
- *
- * --st-ai-textarea-optical-shift
- *
- * That value is derived from the remaining measured vertical space,
- * not from a fixed px guess.
- */
-
-@media (max-width: 600px) {
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-focused="true"],
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"] {
-    position: relative !important;
-
-    top:
-      var(
-        --st-ai-textarea-optical-shift,
-        0px
-      ) !important;
-
-    transform: none !important;
-    translate: none !important;
-    scale: 1 !important;
-    rotate: none !important;
-  }
-
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-focused="true"]:focus,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"]:focus,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-focused="true"]:focus-visible,
-
-  html body
-  .st3-ai-panel
-  .st3-ai-composer
-  > textarea[data-st-composer-has-value="true"]:focus-visible {
-    position: relative !important;
-
-    top:
-      var(
-        --st-ai-textarea-optical-shift,
-        0px
-      ) !important;
-
-    transform: none !important;
-    translate: none !important;
-  }
-
-}
-
-/* === ST MOBILE AI MEASURED OPTICAL CENTER V3 END === */
-
 /* === ST PRODUCT MESSAGE BODY PORTAL FINAL START === */
 
 /*
@@ -98429,3 +97475,4002 @@ html body > .st-purchase-v6__message {
 }
 
 /* === ST PRODUCT MESSAGE BODY PORTAL FINAL END === */
+
+/* === ST ACCOUNT AUTH CHECKOUT-FOCUS + RECOVERY START === */
+
+/*
+ * AUTH INPUTS = CHECKOUT DETAILS INPUTS
+ *
+ * Exact Checkout field geometry:
+ *   height: 56px
+ *   border: 1px
+ *   radius: 16px
+ *   idle: #f5f5f7
+ *
+ * Exact Checkout active state:
+ *   border: #f5b335
+ *   background: #ffffff
+ *   halo: 0 0 0 4px rgba(245,179,53,.16)
+ */
+
+
+/* ==========================================================
+   NORMAL INPUTS
+   Sign in email
+   Create account first / last / email
+   Forgot-password email
+   ========================================================== */
+
+html body main.st-auth-clean
+.st-auth-clean-field
+> input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) {
+  box-sizing: border-box !important;
+
+  width: 100% !important;
+  min-height: 56px !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.12) !important;
+
+  border-radius:
+    16px !important;
+
+  outline:
+    none !important;
+
+  background:
+    #f5f5f7 !important;
+
+  box-shadow:
+    none !important;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-field
+> input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus,
+html body main.st-auth-clean
+.st-auth-clean-field
+> input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):focus-visible {
+  border: 1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  outline:
+    none !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow: 0 0 0 4px #fff8ee !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/* ==========================================================
+   PASSWORD INPUTS
+   Sign in password
+   Create / Confirm password
+   New / Confirm new password
+   ========================================================== */
+
+html body main.st-auth-clean
+.st-auth-clean-password {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    56px !important;
+
+  display:
+    flex !important;
+
+  align-items:
+    center !important;
+
+  padding:
+    0 !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.12) !important;
+
+  border-radius:
+    16px !important;
+
+  outline:
+    none !important;
+
+  background:
+    #f5f5f7 !important;
+
+  box-shadow:
+    none !important;
+
+  overflow:
+    hidden !important;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-password:focus-within {
+  border: 1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  outline:
+    none !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow: 0 0 0 4px #fff8ee !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-password
+> input,
+html body main.st-auth-clean
+.st-auth-clean-password
+> input:focus,
+html body main.st-auth-clean
+.st-auth-clean-password
+> input:focus-visible {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    54px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/* ==========================================================
+   TELEPHONE FIELD
+   ========================================================== */
+
+html body main.st-auth-clean
+.st-auth-clean-phone {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    56px !important;
+
+  display:
+    flex !important;
+
+  align-items:
+    stretch !important;
+
+  padding:
+    0 !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.12) !important;
+
+  border-radius:
+    16px !important;
+
+  outline:
+    none !important;
+
+  background:
+    #f5f5f7 !important;
+
+  box-shadow:
+    none !important;
+
+  overflow:
+    hidden !important;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-phone:focus-within {
+  border: 1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  outline:
+    none !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow: 0 0 0 4px #fff8ee !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-phone
+> select,
+html body main.st-auth-clean
+.st-auth-clean-phone
+> input,
+html body main.st-auth-clean
+.st-auth-clean-phone
+> select:focus,
+html body main.st-auth-clean
+.st-auth-clean-phone
+> select:focus-visible,
+html body main.st-auth-clean
+.st-auth-clean-phone
+> input:focus,
+html body main.st-auth-clean
+.st-auth-clean-phone
+> input:focus-visible {
+  min-height:
+    54px !important;
+
+  border:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+/* ==========================================================
+   EMAIL VERIFICATION = CHECKOUT 11% VAT TREATMENT
+   ========================================================== */
+
+html body main.st-auth-clean
+.st-auth-clean-verification {
+  display:
+    flex !important;
+
+  align-items:
+    center !important;
+
+  gap:
+    8px !important;
+
+  padding:
+    10px 12px !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.07) !important;
+
+  border-radius:
+    12px !important;
+
+  background:
+    #f7f7f9 !important;
+
+  background-image:
+    none !important;
+
+  color:
+    rgba(29, 29, 31, 0.48) !important;
+
+  box-shadow:
+    none !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-verification
+> svg {
+  width:
+    14px !important;
+
+  height:
+    14px !important;
+
+  flex:
+    0 0 auto !important;
+
+  color:
+    #a66b00 !important;
+
+  stroke:
+    currentColor !important;
+
+  stroke-width:
+    1.8 !important;
+
+  fill:
+    none !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-verification
+strong {
+  color:
+    #1d1d1f !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-verification
+p {
+  color:
+    rgba(29, 29, 31, 0.48) !important;
+}
+
+
+/* ==========================================================
+   SMALL FORGOT PASSWORD LINK
+   ========================================================== */
+
+html body main.st-auth-clean
+.st-auth-clean-forgot-row {
+  display:
+    flex !important;
+
+  justify-content:
+    flex-end !important;
+
+  margin-top:
+    -5px !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a {
+  font-size:
+    10px !important;
+
+  line-height:
+    1.3 !important;
+
+  font-weight:
+    600 !important;
+
+  color:
+    rgba(29, 29, 31, 0.48) !important;
+
+  text-decoration:
+    none !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body main.st-auth-clean
+  .st-auth-clean-forgot-row
+  a:hover {
+    color:
+      #a66b00 !important;
+
+    transform:
+      none !important;
+
+    translate:
+      none !important;
+
+    scale:
+      1 !important;
+  }
+}
+
+
+/* ==========================================================
+   AUTH NOTIFICATION ICON
+   ========================================================== */
+
+html body main.st-auth-clean
+.st-auth-clean-message {
+  align-items:
+    center !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-message
+> span:first-child {
+  align-self:
+    center !important;
+
+  display:
+    grid !important;
+
+  place-items:
+    center !important;
+
+  margin:
+    0 !important;
+
+  line-height:
+    1 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+}
+
+/* === ST ACCOUNT AUTH CHECKOUT-FOCUS + RECOVERY END === */
+
+/* === ST AUTH FORGOT PASSWORD FINAL POSITION START === */
+
+/*
+ * Forgot password:
+ * - visually neutral in every mouse state
+ * - vertically centered between Password and Sign in
+ * - absolutely no movement
+ */
+
+html body main.st-auth-clean
+.st-auth-clean-forgot-row {
+  display: flex !important;
+
+  min-height: 24px !important;
+
+  align-items: center !important;
+  justify-content: flex-end !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a,
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a:hover,
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a:focus,
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a:active {
+  color: rgba(29, 29, 31, 0.48) !important;
+
+  background: transparent !important;
+
+  text-decoration: none !important;
+
+  transition: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+/* === ST AUTH FORGOT PASSWORD FINAL POSITION END === */
+
+/* === ST FORGOT PASSWORD COMPACT BALANCED GAP FINAL START === */
+
+/*
+ * Keep Forgot password centered between the Password field
+ * and Sign in button, but reduce the white space equally
+ * above and below it.
+ */
+
+html body main.st-auth-clean
+.st-auth-clean-forgot-row {
+  min-height:
+    14px !important;
+
+  height:
+    14px !important;
+
+  display:
+    flex !important;
+
+  align-items:
+    center !important;
+
+  justify-content:
+    flex-end !important;
+
+  margin-block:
+    -7px !important;
+
+  padding:
+    0 !important;
+}
+
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a,
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a:hover,
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a:focus,
+html body main.st-auth-clean
+.st-auth-clean-forgot-row
+a:active {
+  color:
+    rgba(29, 29, 31, 0.48) !important;
+
+  background:
+    transparent !important;
+
+  text-decoration:
+    none !important;
+
+  transition:
+    none !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+/* === ST FORGOT PASSWORD COMPACT BALANCED GAP FINAL END === */
+
+/* === ST STOREFRONT FIELD FOCUS AUTHORITY V4 START === */
+
+/*
+ * ============================================================
+ * FINAL STOREFRONT FIELD SYSTEM
+ * ============================================================
+ *
+ * Exact approved Sign-in Email reference:
+ *
+ * min-height:   56px
+ * radius:       16px
+ *
+ * ACTIVE:
+ * border:       1px solid #e7b866
+ * surface:      #ffffff
+ * halo:         0 0 0 4px #fff8ee
+ *
+ * STOREFRONT ONLY.
+ * Checkout remains untouched.
+ * Admin remains untouched.
+ */
+
+:root {
+  --st-field-focus-border: #e7b866;
+  --st-field-focus-surface: #ffffff;
+  --st-field-focus-halo: #fff8ee;
+}
+
+
+/*
+ * ============================================================
+ * 1. ALL NORMAL STOREFRONT FIELDS
+ * ============================================================
+ *
+ * IMPORTANT:
+ * The input:not(...) chain is intentionally written WITHOUT
+ * whitespace between pseudo-classes.
+ */
+
+html body:has(.st3-header)
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"])
+:not(.st-checkout-v2 *)
+:not(.st-checkout-review-v2 *)
+:not(.st-auth-clean-phone *)
+:not(.st-account-field-shell--phone *)
+:not(.st-filter-v4__search *)
+:not(.st-filter-v4__picker-search *)
+:not(.st-filter-v4__sort *)
+:not(.st3-utility-search__form *)
+:not(.st-retail-field *)
+:not(.st-media-request__quantity-shell *)
+:not(.st3-ai-composer *)
+:focus,
+
+html body:has(.st3-header)
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"])
+:not(.st-checkout-v2 *)
+:not(.st-checkout-review-v2 *)
+:not(.st-auth-clean-phone *)
+:not(.st-account-field-shell--phone *)
+:not(.st-filter-v4__search *)
+:not(.st-filter-v4__picker-search *)
+:not(.st-filter-v4__sort *)
+:not(.st3-utility-search__form *)
+:not(.st-retail-field *)
+:not(.st-media-request__quantity-shell *)
+:not(.st3-ai-composer *)
+:focus-visible,
+
+html body:has(.st3-header)
+textarea:not(.st-checkout-v2 *):not(.st-checkout-review-v2 *):focus,
+
+html body:has(.st3-header)
+textarea:not(.st-checkout-v2 *):not(.st-checkout-review-v2 *):focus-visible,
+
+html body:has(.st3-header)
+select:not(.st-checkout-v2 *):not(.st-checkout-review-v2 *):not(.st-auth-clean-phone *):not(.st-account-field-shell--phone *):focus,
+
+html body:has(.st3-header)
+select:not(.st-checkout-v2 *):not(.st-checkout-review-v2 *):not(.st-auth-clean-phone *):not(.st-account-field-shell--phone *):focus-visible {
+  border:
+    1px solid var(--st-field-focus-border) !important;
+
+  border-color:
+    var(--st-field-focus-border) !important;
+
+  outline:
+    none !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  background-color:
+    var(--st-field-focus-surface) !important;
+
+  box-shadow:
+    0 0 0 4px
+    var(--st-field-focus-halo) !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px
+    var(--st-field-focus-halo) !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * ============================================================
+ * 2. AUTH DIRECT FIELDS
+ * ============================================================
+ *
+ * Stronger than all historical auth rules.
+ */
+
+html body:has(.st3-header)
+main.st-auth-clean
+label.st-auth-clean-field
+> input:focus,
+
+html body:has(.st3-header)
+main.st-auth-clean
+label.st-auth-clean-field
+> input:focus-visible {
+  border:
+    1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * ============================================================
+ * 3. CREATE ACCOUNT PHONE — REBUILD CLEANLY
+ * ============================================================
+ */
+
+html body:has(.st3-header)
+main.st-auth-clean
+label.st-auth-clean-field
+> .st-auth-clean-phone {
+  box-sizing:
+    border-box !important;
+
+  display:
+    grid !important;
+
+  grid-template-columns:
+    160px minmax(0, 1fr) !important;
+
+  align-items:
+    stretch !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    56px !important;
+
+  padding:
+    0 !important;
+
+  overflow:
+    hidden !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.12) !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #f5f5f7 !important;
+
+  box-shadow:
+    none !important;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+
+html body:has(.st3-header)
+main.st-auth-clean
+label.st-auth-clean-field
+> .st-auth-clean-phone:focus-within {
+  border:
+    1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+html body:has(.st3-header)
+main.st-auth-clean
+label.st-auth-clean-field
+> .st-auth-clean-phone
+> select {
+  box-sizing:
+    border-box !important;
+
+  display:
+    block !important;
+
+  width:
+    160px !important;
+
+  min-width:
+    160px !important;
+
+  height:
+    54px !important;
+
+  min-height:
+    54px !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 30px 0 14px !important;
+
+  border:
+    0 !important;
+
+  border-right:
+    1px solid rgba(29, 29, 31, 0.08) !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  outline:
+    none !important;
+
+  font:
+    inherit !important;
+
+  line-height:
+    normal !important;
+}
+
+
+html body:has(.st3-header)
+main.st-auth-clean
+label.st-auth-clean-field
+> .st-auth-clean-phone
+> input {
+  box-sizing:
+    border-box !important;
+
+  display:
+    block !important;
+
+  width:
+    100% !important;
+
+  min-width:
+    0 !important;
+
+  height:
+    54px !important;
+
+  min-height:
+    54px !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 16px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  outline:
+    none !important;
+
+  font:
+    inherit !important;
+
+  line-height:
+    normal !important;
+}
+
+
+html body:has(.st3-header)
+main.st-auth-clean
+.st-auth-clean-phone
+> :is(input, select):focus,
+html body:has(.st3-header)
+main.st-auth-clean
+.st-auth-clean-phone
+> :is(input, select):focus-visible {
+  border-top:
+    0 !important;
+
+  border-bottom:
+    0 !important;
+
+  outline:
+    none !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+}
+
+
+/*
+ * Kill Safari/credential decoration inside phone fields.
+ */
+
+html body
+.st-auth-clean-phone
+> input::-webkit-contacts-auto-fill-button,
+html body
+.st-auth-clean-phone
+> input::-webkit-credentials-auto-fill-button,
+html body
+.st-account-field-shell--phone
+> input::-webkit-contacts-auto-fill-button,
+html body
+.st-account-field-shell--phone
+> input::-webkit-credentials-auto-fill-button {
+  display:
+    none !important;
+
+  visibility:
+    hidden !important;
+
+  opacity:
+    0 !important;
+
+  width:
+    0 !important;
+
+  height:
+    0 !important;
+
+  margin:
+    0 !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/*
+ * ============================================================
+ * 4. SIGNED-IN ACCOUNT — STANDARD FIELD GEOMETRY
+ * ============================================================
+ *
+ * Profile + saved addresses + security.
+ */
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-focus-control.st-account-focus-control {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    56px !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.12) !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #f5f5f7 !important;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-focus-control.st-account-focus-control:focus,
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-focus-control.st-account-focus-control:focus-visible {
+  border:
+    1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * Textarea keeps its height but receives the same geometry/focus.
+ */
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+textarea.st-account-focus-control {
+  min-height:
+    112px !important;
+}
+
+
+/*
+ * ============================================================
+ * 5. SIGNED-IN ACCOUNT PHONE
+ * ============================================================
+ */
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-field-shell.st-account-field-shell--phone {
+  box-sizing:
+    border-box !important;
+
+  display:
+    grid !important;
+
+  grid-template-columns:
+    220px minmax(0, 1fr) !important;
+
+  align-items:
+    stretch !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    56px !important;
+
+  overflow:
+    hidden !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.12) !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #f5f5f7 !important;
+
+  box-shadow:
+    none !important;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-field-shell.st-account-field-shell--phone:focus-within {
+  border:
+    1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+}
+
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-field-shell--phone
+> select {
+  box-sizing:
+    border-box !important;
+
+  width:
+    220px !important;
+
+  min-width:
+    220px !important;
+
+  height:
+    54px !important;
+
+  min-height:
+    54px !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 32px 0 14px !important;
+
+  border:
+    0 !important;
+
+  border-right:
+    1px solid rgba(29, 29, 31, 0.08) !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  outline:
+    none !important;
+}
+
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-field-shell--phone
+> input {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  min-width:
+    0 !important;
+
+  height:
+    54px !important;
+
+  min-height:
+    54px !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 16px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  outline:
+    none !important;
+}
+
+
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-field-shell--phone
+> :is(input, select):focus,
+html body:has(.st3-header)
+[id^="account-panel-"]
+.st-account-field-shell--phone
+> :is(input, select):focus-visible {
+  outline:
+    none !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+}
+
+
+/*
+ * ============================================================
+ * 6. VERIFICATION / MOVIES / SEARCH / TRACK / OTHER STOREFRONT
+ * ============================================================
+ *
+ * Compound shells receive the exact same active paint.
+ */
+
+html body:has(.st3-header)
+:is(
+  .st-filter-v4__search,
+  .st-filter-v4__picker-search,
+  .st3-utility-search__form,
+  .st-retail-field,
+  .st-media-request__quantity-shell,
+  .st3-ai-composer
+):focus-within {
+  border:
+    1px solid #e7b866 !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+/*
+ * ============================================================
+ * 7. ZERO MOVEMENT
+ * ============================================================
+ */
+
+html body:has(.st3-header)
+:is(input, textarea, select):focus,
+html body:has(.st3-header)
+:is(input, textarea, select):focus-visible {
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+/* === ST STOREFRONT FIELD FOCUS AUTHORITY V4 END === */
+
+/* === ST ACCOUNT + MOVIES + AI FOCUS POLISH START === */
+
+/*
+ * ============================================================
+ * 1. PHONE CONTROLS — TRUE STRAIGHT INTERNAL SEPARATOR
+ * ============================================================
+ *
+ * Both phone controls use identical 160px country sections.
+ * The separator belongs to the OUTER shell so it is a perfectly
+ * straight full-height line rather than part of a rounded child.
+ */
+
+html body
+main.st-auth-clean
+.st-auth-clean-phone,
+
+html body
+[id^="account-panel-"]
+.st-account-field-shell--phone {
+  position:
+    relative !important;
+
+  display:
+    grid !important;
+
+  grid-template-columns:
+    160px minmax(0, 1fr) !important;
+
+  overflow:
+    hidden !important;
+}
+
+
+/*
+ * Remove child border separator.
+ */
+
+html body
+main.st-auth-clean
+.st-auth-clean-phone
+> select,
+
+html body
+[id^="account-panel-"]
+.st-account-field-shell--phone
+> select {
+  width:
+    160px !important;
+
+  min-width:
+    160px !important;
+
+  border-right:
+    0 !important;
+}
+
+
+/*
+ * One exact straight divider from top to bottom.
+ */
+
+html body
+main.st-auth-clean
+.st-auth-clean-phone::after,
+
+html body
+[id^="account-panel-"]
+.st-account-field-shell--phone::after {
+  content:
+    "" !important;
+
+  position:
+    absolute !important;
+
+  z-index:
+    2 !important;
+
+  top:
+    0 !important;
+
+  bottom:
+    0 !important;
+
+  left:
+    160px !important;
+
+  width:
+    1px !important;
+
+  background:
+    rgba(29, 29, 31, 0.08) !important;
+
+  pointer-events:
+    none !important;
+
+  transform:
+    none !important;
+}
+
+
+/*
+ * Phone active state remains exactly the approved field focus.
+ */
+
+html body
+main.st-auth-clean
+.st-auth-clean-phone:focus-within,
+
+html body
+[id^="account-panel-"]
+.st-account-field-shell--phone:focus-within {
+  border:
+    1px solid #e7b866 !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+}
+
+
+/*
+ * No independent inner focus ring.
+ */
+
+html body
+main.st-auth-clean
+.st-auth-clean-phone
+> :is(input, select):focus,
+
+html body
+main.st-auth-clean
+.st-auth-clean-phone
+> :is(input, select):focus-visible,
+
+html body
+[id^="account-panel-"]
+.st-account-field-shell--phone
+> :is(input, select):focus,
+
+html body
+[id^="account-panel-"]
+.st-account-field-shell--phone
+> :is(input, select):focus-visible {
+  border:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  background:
+    transparent !important;
+}
+
+
+/*
+ * ============================================================
+ * 2. ADD / EDIT DELIVERY ADDRESS FIELDS
+ * ============================================================
+ *
+ * Explicit final authority because these forms previously kept
+ * their own Account-specific focus appearance.
+ */
+
+html body
+[id^="account-panel-"]
+:is(
+  .st-account-address-form,
+  .st-account-address-edit-form
+)
+.st-account-focus-control:focus,
+
+html body
+[id^="account-panel-"]
+:is(
+  .st-account-address-form,
+  .st-account-address-edit-form
+)
+.st-account-focus-control:focus-visible {
+  border:
+    1px solid #e7b866 !important;
+
+  border-color:
+    #e7b866 !important;
+
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * ============================================================
+ * 3. MOVIES & SERIES REQUEST FIELDS
+ * ============================================================
+ *
+ * Only the Movie/Series title and Optional details fields.
+ * Quantity selector is intentionally untouched.
+ */
+
+html body
+.st-entertainment-request
+.st-entertainment-request__form
+> label
+> input:focus,
+
+html body
+.st-entertainment-request
+.st-entertainment-request__form
+> label
+> input:focus-visible,
+
+html body
+.st-entertainment-request
+.st-entertainment-request__form
+> label
+> textarea:focus,
+
+html body
+.st-entertainment-request
+.st-entertainment-request__form
+> label
+> textarea:focus-visible {
+  border:
+    1px solid #e7b866 !important;
+
+  border-color:
+    #e7b866 !important;
+
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * ============================================================
+ * 4. AI ASSISTANT — ONE ROUNDED FOCUS ONLY
+ * ============================================================
+ *
+ * The composer shell owns the active state.
+ * The textarea must NEVER draw a second rectangular ring.
+ */
+
+html body
+.st3-ai-panel
+form.st3-ai-composer:focus-within {
+  border-color:
+    #e7b866 !important;
+
+  outline:
+    none !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+html body
+.st3-ai-panel
+form.st3-ai-composer
+> textarea,
+
+html body
+.st3-ai-panel
+form.st3-ai-composer
+> textarea:focus,
+
+html body
+.st3-ai-panel
+form.st3-ai-composer
+> textarea:focus-visible {
+  border:
+    0 !important;
+
+  border-color:
+    transparent !important;
+
+  outline:
+    0 !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  background-color:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * Safari must not add its own textarea focus appearance.
+ */
+
+html body
+.st3-ai-panel
+form.st3-ai-composer
+> textarea {
+  -webkit-appearance:
+    none !important;
+
+  appearance:
+    none !important;
+}
+
+/* === ST ACCOUNT + MOVIES + AI FOCUS POLISH END === */
+
+/* === ST FINAL FOUR STOREFRONT FIXES START === */
+
+
+/*
+ * ============================================================
+ * 1. ACCOUNT PROFILE PHONE — VISUAL REVERT
+ * ============================================================
+ *
+ * Restore the Account phone field geometry from BEFORE the
+ * latest separator experiment.
+ *
+ * Do not affect Create Account phone.
+ */
+
+html body
+#account-panel-profile
+.st-account-field-shell.st-account-field-shell--phone {
+  position:
+    relative !important;
+
+  display:
+    grid !important;
+
+  grid-template-columns:
+    220px minmax(0, 1fr) !important;
+
+  align-items:
+    stretch !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    56px !important;
+
+  overflow:
+    hidden !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.12) !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #f5f5f7 !important;
+}
+
+
+/*
+ * Completely remove the experimental pseudo-divider.
+ */
+
+html body
+#account-panel-profile
+.st-account-field-shell.st-account-field-shell--phone::after {
+  content:
+    none !important;
+
+  display:
+    none !important;
+}
+
+
+/*
+ * Restore the original country selector width and separator.
+ */
+
+html body
+#account-panel-profile
+.st-account-field-shell--phone
+> select {
+  box-sizing:
+    border-box !important;
+
+  width:
+    220px !important;
+
+  min-width:
+    220px !important;
+
+  height:
+    54px !important;
+
+  min-height:
+    54px !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 32px 0 14px !important;
+
+  border-top:
+    0 !important;
+
+  border-bottom:
+    0 !important;
+
+  border-left:
+    0 !important;
+
+  border-right:
+    1px solid rgba(29, 29, 31, 0.08) !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  outline:
+    none !important;
+}
+
+
+html body
+#account-panel-profile
+.st-account-field-shell--phone
+> input {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  min-width:
+    0 !important;
+
+  height:
+    54px !important;
+
+  min-height:
+    54px !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 16px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  outline:
+    none !important;
+}
+
+
+/*
+ * Keep its approved outer active state.
+ */
+
+html body
+#account-panel-profile
+.st-account-field-shell.st-account-field-shell--phone:focus-within {
+  border:
+    1px solid #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  outline:
+    none !important;
+}
+
+
+/*
+ * ============================================================
+ * 2. SAVED / NEW ADDRESS — EXACT APPROVED FOCUS
+ * ============================================================
+ *
+ * Strong final authority specifically inside Addresses.
+ *
+ * Covers BOTH:
+ * - Add new address
+ * - Edit saved address
+ */
+
+html body:has(.st3-header)
+#account-panel-addresses
+form.st-account-address-form
+:is(
+  input.st-account-focus-control,
+  textarea.st-account-focus-control,
+  select.st-account-focus-control
+):focus,
+
+html body:has(.st3-header)
+#account-panel-addresses
+form.st-account-address-form
+:is(
+  input.st-account-focus-control,
+  textarea.st-account-focus-control,
+  select.st-account-focus-control
+):focus-visible,
+
+html body:has(.st3-header)
+#account-panel-addresses
+form.st-account-address-edit-form
+:is(
+  input.st-account-focus-control,
+  textarea.st-account-focus-control,
+  select.st-account-focus-control
+):focus,
+
+html body:has(.st3-header)
+#account-panel-addresses
+form.st-account-address-edit-form
+:is(
+  input.st-account-focus-control,
+  textarea.st-account-focus-control,
+  select.st-account-focus-control
+):focus-visible {
+  border:
+    1px solid #e7b866 !important;
+
+  border-color:
+    #e7b866 !important;
+
+  border-radius:
+    16px !important;
+
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+
+  outline:
+    0 !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * ============================================================
+ * 3. AI ASSISTANT — OUTER FOCUS ONLY
+ * ============================================================
+ *
+ * Absolutely no rectangular focus/border/shadow is permitted
+ * on the textarea itself.
+ *
+ * ONLY .st3-ai-composer receives the visible active state.
+ */
+
+
+/*
+ * Extremely specific on purpose so old assistant rules cannot
+ * reintroduce the inner rectangle.
+ */
+
+html body
+.st3-ai-panel.st3-ai-panel
+form.st3-ai-composer.st3-ai-composer
+> textarea[data-st-composer-focused],
+
+html body
+.st3-ai-panel.st3-ai-panel
+form.st3-ai-composer.st3-ai-composer
+> textarea[data-st-composer-focused]:focus,
+
+html body
+.st3-ai-panel.st3-ai-panel
+form.st3-ai-composer.st3-ai-composer
+> textarea[data-st-composer-focused]:focus-visible,
+
+html body
+.st3-ai-panel.st3-ai-panel
+form.st3-ai-composer.st3-ai-composer
+> textarea[data-st-composer-has-value] {
+  border:
+    0 !important;
+
+  border-width:
+    0 !important;
+
+  border-style:
+    none !important;
+
+  border-color:
+    transparent !important;
+
+  border-image:
+    none !important;
+
+  outline:
+    0 !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  outline-color:
+    transparent !important;
+
+  background:
+    transparent !important;
+
+  background-color:
+    transparent !important;
+
+  background-image:
+    none !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  -webkit-appearance:
+    none !important;
+
+  appearance:
+    none !important;
+
+  filter:
+    none !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * The rounded OUTER composer is the sole focus indicator.
+ */
+
+html body
+.st3-ai-panel.st3-ai-panel
+form.st3-ai-composer.st3-ai-composer:focus-within {
+  border:
+    1px solid #e7b866 !important;
+
+  border-color:
+    #e7b866 !important;
+
+  outline:
+    none !important;
+
+  box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  -webkit-box-shadow:
+    0 0 0 4px #fff8ee !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * ============================================================
+ * 4. SHOP / CATEGORY SEARCH BUTTON SPACING
+ * ============================================================
+ *
+ * Move Search slightly toward the right edge without changing
+ * its hover/active position.
+ *
+ * Same component is used by Shop All + category pages.
+ */
+
+@media (min-width: 761px) {
+  html body
+  .st-filter-v4
+  form.st-filter-v4__search
+  > button.st-filter-v4__search-button {
+    position:
+      relative !important;
+
+    right:
+      -14px !important;
+
+    transform:
+      none !important;
+
+    translate:
+      none !important;
+
+    scale:
+      1 !important;
+  }
+
+
+  /*
+   * Interaction states stay in the EXACT same coordinates.
+   */
+
+  html body
+  .st-filter-v4
+  form.st-filter-v4__search
+  > button.st-filter-v4__search-button:hover,
+
+  html body
+  .st-filter-v4
+  form.st-filter-v4__search
+  > button.st-filter-v4__search-button:focus,
+
+  html body
+  .st-filter-v4
+  form.st-filter-v4__search
+  > button.st-filter-v4__search-button:active {
+    right:
+      -14px !important;
+
+    transform:
+      none !important;
+
+    translate:
+      none !important;
+
+    scale:
+      1 !important;
+  }
+}
+
+/* === ST FINAL FOUR STOREFRONT FIXES END === */
+
+/* === ST HEADER SEARCH + SORT INNER FOCUS REMOVAL START === */
+
+/*
+ * ============================================================
+ * HEADER SEARCH OVERLAY
+ * ============================================================
+ *
+ * Search Stereophonie had NO special active/focus surround
+ * before the storefront-wide focus work.
+ *
+ * Restore that neutral behavior.
+ */
+
+html body
+input[placeholder="Search Stereophonie"],
+
+html body
+input[placeholder="Search Stereophonie"]:focus,
+
+html body
+input[placeholder="Search Stereophonie"]:focus-visible {
+  border:
+    0 !important;
+
+  border-color:
+    transparent !important;
+
+  outline:
+    0 !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+/* === ST HEADER SEARCH + SORT INNER FOCUS REMOVAL END === */
+
+/* === ST TRUE HEADER SEARCH + SORT FOCUS FIX START === */
+
+/*
+ * ============================================================
+ * HEADER SEARCH — RESTORE ORIGINAL NEUTRAL WRAPPER
+ * ============================================================
+ *
+ * The orange rectangle was not the input.
+ * It was .st3-utility-search__form:focus-within.
+ *
+ * Original design:
+ * only a subtle bottom divider.
+ */
+
+html body
+.st3-mega--search
+.st3-utility-search__form,
+
+html body
+.st3-mega--search
+.st3-utility-search__form:focus-within {
+  border:
+    0 !important;
+
+  border-top:
+    0 !important;
+
+  border-left:
+    0 !important;
+
+  border-right:
+    0 !important;
+
+  border-bottom:
+    1px solid rgba(29, 29, 31, 0.13) !important;
+
+  border-radius:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  outline-width:
+    0 !important;
+
+  outline-offset:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  background-color:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+
+/*
+ * The actual Header search input must remain neutral too.
+ */
+
+html body
+.st3-mega--search
+.st3-utility-search__form
+input[type="search"],
+
+html body
+.st3-mega--search
+.st3-utility-search__form
+input[type="search"]:focus,
+
+html body
+.st3-mega--search
+.st3-utility-search__form
+input[type="search"]:focus-visible {
+  border:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  background:
+    transparent !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+}
+
+/* === ST TRUE HEADER SEARCH + SORT FOCUS FIX END === */
+
+/* === ST PAYMENT + DELETE MODAL POLISH START === */
+
+/*
+ * ============================================================
+ * DELIVERY — PAYMENT OPTION CONTENT ALIGNMENT
+ * ============================================================
+ *
+ * Cash on delivery + Whish Money:
+ *
+ * Icon stays vertically centered.
+ * Entire text block is centered vertically inside the card.
+ * Text itself remains left-aligned.
+ */
+
+html body
+.st-delivery-page
+.st-delivery-page__payment-grid
+> article {
+  align-items:
+    center !important;
+}
+
+
+html body
+.st-delivery-page
+.st-delivery-page__payment-grid
+.st-delivery-page__payment-icon {
+  align-self:
+    center !important;
+
+  margin-top:
+    0 !important;
+
+  margin-bottom:
+    0 !important;
+}
+
+
+html body
+.st-delivery-page
+.st-delivery-page__payment-grid
+.st-delivery-page__payment-copy {
+  display:
+    flex !important;
+
+  min-width:
+    0 !important;
+
+  align-self:
+    stretch !important;
+
+  flex-direction:
+    column !important;
+
+  justify-content:
+    center !important;
+
+  gap:
+    4px !important;
+
+  margin-top:
+    0 !important;
+
+  margin-bottom:
+    0 !important;
+}
+
+
+html body
+.st-delivery-page
+.st-delivery-page__payment-copy
+.st-delivery-page__payment-status,
+
+html body
+.st-delivery-page
+.st-delivery-page__payment-copy
+h3,
+
+html body
+.st-delivery-page
+.st-delivery-page__payment-copy
+p {
+  margin-top:
+    0 !important;
+
+  margin-bottom:
+    0 !important;
+}
+
+
+/*
+ * ============================================================
+ * DELETE ACCOUNT — RED NUMBERED CIRCLES
+ * ============================================================
+ *
+ * Same professional numbered-circle language as the
+ * policy/delivery system, adapted to destructive red.
+ */
+
+html body
+.st-account-delete-modal
+.st-account-delete-signout__row {
+  align-items:
+    center !important;
+}
+
+
+html body
+.st-account-delete-modal
+.st-account-delete-signout__number {
+  box-sizing:
+    border-box !important;
+
+  display:
+    inline-flex !important;
+
+  width:
+    24px !important;
+
+  min-width:
+    24px !important;
+
+  height:
+    24px !important;
+
+  flex:
+    0 0 24px !important;
+
+  align-items:
+    center !important;
+
+  justify-content:
+    center !important;
+
+  align-self:
+    center !important;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  border:
+    1px solid rgba(220, 38, 38, 0.34) !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    rgba(254, 242, 242, 0.96) !important;
+
+  color:
+    #c81e1e !important;
+
+  font-size:
+    9px !important;
+
+  font-weight:
+    700 !important;
+
+  line-height:
+    1 !important;
+
+  letter-spacing:
+    0 !important;
+
+  text-align:
+    center !important;
+
+  box-shadow:
+    0 0 0 3px rgba(220, 38, 38, 0.035) !important;
+
+  transform:
+    none !important;
+}
+
+/* === ST PAYMENT + DELETE MODAL POLISH END === */
+
+
+/* === ST SORT EXACT PRODUCTION RESTORE 1C8D185 START === */
+
+/*
+ * EXACT SORT APPEARANCE RESTORED FROM PRODUCTION:
+ * commit 1c8d1856de5bfe645ae86ae7dafb984de4767b80
+ *
+ * ONLY the Sort control is targeted.
+ */
+
+
+/* ---------------------------------------------------------
+   BASE LIVE SORT SHELL
+   --------------------------------------------------------- */
+
+html body .st-retail-shop .st-filter-v4__sort {
+  position: relative !important;
+
+  min-width: 170px !important;
+  height: 44px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  border:
+    1px solid transparent !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    var(--st-v4-soft) !important;
+
+  overflow:
+    hidden !important;
+
+  transition:
+    background-color var(--st-shop-motion-normal) var(--st-shop-motion-ease),
+    border-color var(--st-shop-motion-normal) var(--st-shop-motion-ease),
+    color var(--st-shop-motion-normal) var(--st-shop-motion-ease),
+    box-shadow var(--st-shop-motion-normal) var(--st-shop-motion-ease) !important;
+
+  transform:
+    none !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIVE "SORT" LABEL
+   --------------------------------------------------------- */
+
+html body .st-retail-shop .st-filter-v4__sort > span {
+  padding-left:
+    16px !important;
+
+  border:
+    0 !important;
+
+  border-left:
+    0 !important;
+
+  border-right:
+    0 !important;
+
+  border-inline:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  color:
+    #8b8b90 !important;
+
+  box-shadow:
+    none !important;
+
+  font-size:
+    12px !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIVE NATIVE SELECT
+   --------------------------------------------------------- */
+
+html body .st-retail-shop .st-filter-v4__sort select,
+html body .st-retail-shop .st-filter-v4__sort select:hover,
+html body .st-retail-shop .st-filter-v4__sort select:focus,
+html body .st-retail-shop .st-filter-v4__sort select:focus-visible,
+html body .st-retail-shop .st-filter-v4__sort select:active {
+  -webkit-appearance:
+    none !important;
+
+  appearance:
+    none !important;
+
+  flex:
+    1 !important;
+
+  height:
+    100% !important;
+
+  padding:
+    0 38px 0 8px !important;
+
+  border:
+    0 !important;
+
+  border-width:
+    0 !important;
+
+  border-style:
+    none !important;
+
+  border-left:
+    0 !important;
+
+  border-right:
+    0 !important;
+
+  border-inline:
+    0 !important;
+
+  border-color:
+    transparent !important;
+
+  outline:
+    0 !important;
+
+  outline-width:
+    0 !important;
+
+  outline-style:
+    none !important;
+
+  outline-offset:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  background-color:
+    transparent !important;
+
+  color:
+    var(--st-v4-text) !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  font-size:
+    13px !important;
+
+  font-weight:
+    590 !important;
+
+  cursor:
+    pointer !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  --tw-shadow:
+    0 0 #0000 !important;
+}
+
+
+/* Safari must not manufacture an internal divider. */
+
+html body .st-retail-shop .st-filter-v4__sort > span::before,
+html body .st-retail-shop .st-filter-v4__sort > span::after,
+html body .st-retail-shop .st-filter-v4__sort select::before,
+html body .st-retail-shop .st-filter-v4__sort select::after {
+  content:
+    none !important;
+
+  display:
+    none !important;
+}
+
+
+/* ---------------------------------------------------------
+   EXACT LIVE HOVER
+   --------------------------------------------------------- */
+
+html body .st-retail-shop .st-filter-v4__sort:hover {
+  border-color:
+    rgba(29, 29, 31, 0.24) !important;
+
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.035) !important;
+}
+
+
+/* ---------------------------------------------------------
+   EXACT LIVE FOCUS
+   OUTER PILL ONLY
+   --------------------------------------------------------- */
+
+html body .st-retail-shop .st-filter-v4__sort:focus-within {
+  border-color:
+    rgba(245, 179, 53, 0.7) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.1) !important;
+}
+
+
+/* ---------------------------------------------------------
+   EXACT LIVE CHEVRON
+   --------------------------------------------------------- */
+
+html body .st-retail-shop .st-filter-v4__sort > svg {
+  position:
+    absolute !important;
+
+  right:
+    14px !important;
+
+  width:
+    14px !important;
+
+  height:
+    14px !important;
+
+  pointer-events:
+    none !important;
+
+  transition:
+    color var(--st-shop-motion-normal) ease,
+    transform var(--st-shop-motion-normal) var(--st-shop-motion-ease) !important;
+}
+
+html body .st-retail-shop .st-filter-v4__sort:focus-within > svg {
+  color:
+    #a86b00 !important;
+
+  transform:
+    translate3d(0, 1px, 0) !important;
+}
+
+
+/* Exact live mobile behavior. */
+
+@media (max-width: 820px) {
+  html body .st-retail-shop .st-filter-v4__sort {
+    width:
+      100% !important;
+  }
+}
+
+/* === ST SORT EXACT PRODUCTION RESTORE 1C8D185 END === */
+
+/* === ST SORT SAFARI NATIVE OVERLAY FINAL START === */
+
+/*
+ * FINAL SORT ARCHITECTURE
+ *
+ * Safari must never visibly render the native select.
+ *
+ * The select remains:
+ * - clickable
+ * - keyboard accessible
+ * - responsible for opening the native option menu
+ * - responsible for :focus-within on the outer pill
+ *
+ * But its own visual surface is completely invisible.
+ *
+ * Therefore ONLY .st-filter-v4__sort can show focus.
+ */
+
+
+/* Visible selected value */
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> .st-filter-v4__sort-value {
+  display:
+    flex !important;
+
+  flex:
+    1 1 auto !important;
+
+  min-width:
+    0 !important;
+
+  height:
+    100% !important;
+
+  align-items:
+    center !important;
+
+  padding:
+    0 38px 0 8px !important;
+
+  margin:
+    0 !important;
+
+  border:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  color:
+    var(--st-v4-text) !important;
+
+  box-shadow:
+    none !important;
+
+  font-size:
+    13px !important;
+
+  font-weight:
+    590 !important;
+
+  line-height:
+    1 !important;
+
+  white-space:
+    nowrap !important;
+
+  overflow:
+    hidden !important;
+
+  text-overflow:
+    ellipsis !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/*
+ * Real native select:
+ * full-pill invisible interaction layer.
+ *
+ * Opacity zero is deliberate.
+ * Safari's native focus painting therefore cannot be visible.
+ */
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> select.st-filter-v4__sort-native,
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> select.st-filter-v4__sort-native:hover,
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> select.st-filter-v4__sort-native:focus,
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> select.st-filter-v4__sort-native:focus-visible,
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> select.st-filter-v4__sort-native:active {
+  position:
+    absolute !important;
+
+  inset:
+    0 !important;
+
+  z-index:
+    10 !important;
+
+  width:
+    100% !important;
+
+  min-width:
+    100% !important;
+
+  max-width:
+    none !important;
+
+  height:
+    100% !important;
+
+  padding:
+    0 !important;
+
+  margin:
+    0 !important;
+
+  border:
+    0 !important;
+
+  border-width:
+    0 !important;
+
+  border-style:
+    none !important;
+
+  border-color:
+    transparent !important;
+
+  outline:
+    0 !important;
+
+  outline-width:
+    0 !important;
+
+  outline-style:
+    none !important;
+
+  outline-color:
+    transparent !important;
+
+  outline-offset:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  background-color:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  -webkit-box-shadow:
+    none !important;
+
+  opacity:
+    0 !important;
+
+  -webkit-appearance:
+    none !important;
+
+  appearance:
+    none !important;
+
+  cursor:
+    pointer !important;
+
+  transform:
+    none !important;
+
+  --tw-ring-offset-width:
+    0px !important;
+
+  --tw-ring-offset-color:
+    transparent !important;
+
+  --tw-ring-color:
+    transparent !important;
+
+  --tw-ring-shadow:
+    0 0 #0000 !important;
+
+  --tw-shadow:
+    0 0 #0000 !important;
+}
+
+
+/*
+ * Keep visible content above the pill background.
+ * The select remains the interaction layer.
+ */
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> span:first-child {
+  position:
+    relative !important;
+
+  z-index:
+    1 !important;
+}
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> .st-filter-v4__sort-value {
+  position:
+    relative !important;
+
+  z-index:
+    1 !important;
+}
+
+html body
+.st-retail-shop
+.st-filter-v4__sort
+> svg {
+  z-index:
+    11 !important;
+
+  pointer-events:
+    none !important;
+}
+
+
+/*
+ * The OUTER pill is the sole visible focus state.
+ */
+
+html body
+.st-retail-shop
+.st-filter-v4__sort:focus-within {
+  border-color:
+    rgba(245, 179, 53, 0.7) !important;
+
+  outline:
+    0 !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.1) !important;
+}
+
+/* === ST SORT SAFARI NATIVE OVERLAY FINAL END === */
+
+/* === ST NEW ADDRESS COMPACT ACTIONS FINAL START === */
+
+/*
+ * ADD NEW ADDRESS ONLY
+ *
+ * Keep the approved visual language and interactions.
+ * Reduce only the physical size so Save address / Cancel
+ * feel lighter and more minimal.
+ *
+ * Edit-address actions are intentionally untouched.
+ */
+
+html body
+#account-panel-addresses
+form.st-account-address-form
+button.st-account-new-address-action {
+  box-sizing:
+    border-box !important;
+
+  width:
+    auto !important;
+
+  min-width:
+    0 !important;
+
+  height:
+    42px !important;
+
+  min-height:
+    42px !important;
+
+  padding:
+    0 18px !important;
+
+  margin:
+    0 !important;
+
+  line-height:
+    1 !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+/*
+ * Interaction must never enlarge or move the buttons.
+ */
+
+html body
+#account-panel-addresses
+form.st-account-address-form
+button.st-account-new-address-action:hover,
+
+html body
+#account-panel-addresses
+form.st-account-address-form
+button.st-account-new-address-action:focus,
+
+html body
+#account-panel-addresses
+form.st-account-address-form
+button.st-account-new-address-action:focus-visible,
+
+html body
+#account-panel-addresses
+form.st-account-address-form
+button.st-account-new-address-action:active {
+  height:
+    42px !important;
+
+  min-height:
+    42px !important;
+
+  padding:
+    0 18px !important;
+
+  transform:
+    none !important;
+
+  translate:
+    none !important;
+
+  scale:
+    1 !important;
+}
+
+/* === ST NEW ADDRESS COMPACT ACTIONS FINAL END === */
+
+/* === ST NEW ADDRESS CANCEL TEXT MATCH START === */
+
+html body
+#account-panel-addresses
+form.st-account-address-form
+button.st-account-new-address-action--cancel {
+  font-size:
+    10px !important;
+}
+
+/* === ST NEW ADDRESS CANCEL TEXT MATCH END === */
+
+/* === ST ACCOUNT ACTION TYPOGRAPHY FINAL START === */
+
+/*
+ * ADD NEW ADDRESS
+ *
+ * Save address + Cancel must use exactly the same typography.
+ * Button colors/borders/sizing stay untouched.
+ */
+
+html body
+#account-panel-addresses
+form.st-account-address-form
+button.st-account-new-address-action {
+  font-family:
+    inherit !important;
+
+  font-size:
+    10px !important;
+
+  font-weight:
+    600 !important;
+
+  line-height:
+    1 !important;
+
+  letter-spacing:
+    0 !important;
+
+  text-transform:
+    none !important;
+}
+
+
+/*
+ * PERSONAL DETAILS
+ *
+ * Keep the approved mustard Save personal details button,
+ * but use black text instead of white.
+ */
+
+html body
+#account-panel-profile
+button.st-player-command-button--primary,
+
+html body
+#account-panel-profile
+button.st-player-command-button--primary:hover,
+
+html body
+#account-panel-profile
+button.st-player-command-button--primary:focus,
+
+html body
+#account-panel-profile
+button.st-player-command-button--primary:focus-visible,
+
+html body
+#account-panel-profile
+button.st-player-command-button--primary:active {
+  color:
+    #111111 !important;
+}
+
+/* === ST ACCOUNT ACTION TYPOGRAPHY FINAL END === */
+
+/* === ST SAVE PERSONAL DETAILS BLACK TEXT SAFARI FINAL START === */
+
+/*
+ * Personal details save button only.
+ * Safari can preserve a separate text-fill color,
+ * so force both normal color + WebKit text fill.
+ */
+
+html body
+.st-account-retail
+#account-panel-profile
+form
+button.st-player-command-button.st-player-command-button--primary,
+
+html body
+.st-account-retail
+#account-panel-profile
+form
+button.st-player-command-button.st-player-command-button--primary:hover,
+
+html body
+.st-account-retail
+#account-panel-profile
+form
+button.st-player-command-button.st-player-command-button--primary:focus,
+
+html body
+.st-account-retail
+#account-panel-profile
+form
+button.st-player-command-button.st-player-command-button--primary:focus-visible,
+
+html body
+.st-account-retail
+#account-panel-profile
+form
+button.st-player-command-button.st-player-command-button--primary:active {
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+/* === ST SAVE PERSONAL DETAILS BLACK TEXT SAFARI FINAL END === */
+
+/* === ST ACCOUNT CONTINUE SHOPPING BLACK TEXT FINAL START === */
+
+html body
+.st-account-retail
+.st-player-order-empty
+a.st-player-command-button.st-player-command-button--primary,
+
+html body
+.st-account-retail
+.st-player-order-empty
+a.st-player-command-button.st-player-command-button--primary:hover,
+
+html body
+.st-account-retail
+.st-player-order-empty
+a.st-player-command-button.st-player-command-button--primary:focus,
+
+html body
+.st-account-retail
+.st-player-order-empty
+a.st-player-command-button.st-player-command-button--primary:focus-visible,
+
+html body
+.st-account-retail
+.st-player-order-empty
+a.st-player-command-button.st-player-command-button--primary:active {
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f !important;
+  text-shadow: none !important;
+}
+
+/* === ST ACCOUNT CONTINUE SHOPPING BLACK TEXT FINAL END === */
+
+/* === ST CHECKOUT WISHLIST-STYLE EMPTY STATE START === */
+
+/*
+ * EMPTY CHECKOUT ONLY
+ *
+ * Match the premium visual language of the Wishlist empty state:
+ *
+ * - white page
+ * - softly rounded bordered card
+ * - circular mustard icon treatment
+ * - centered editorial typography
+ * - mustard Explore the store pill
+ *
+ * Checkout containing products remains untouched.
+ */
+
+html body
+main.st-checkout-v2.st-checkout-v2--empty {
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+}
+
+
+/* ==========================================================
+   EMPTY STATE CARD
+   ========================================================== */
+
+html body
+.st-checkout-v2--empty
+.st-checkout-empty-card {
+  box-sizing:
+    border-box !important;
+
+  width:
+    100% !important;
+
+  min-height:
+    430px !important;
+
+  display:
+    flex !important;
+
+  flex-direction:
+    column !important;
+
+  align-items:
+    center !important;
+
+  justify-content:
+    center !important;
+
+  padding:
+    54px 32px !important;
+
+  border:
+    1px solid rgba(29, 29, 31, 0.11) !important;
+
+  border-radius:
+    34px !important;
+
+  background:
+    #ffffff !important;
+
+  background-color:
+    #ffffff !important;
+
+  text-align:
+    center !important;
+
+  box-shadow:
+    none !important;
+}
+
+
+/* ==========================================================
+   CART ICON — SAME FAMILY AS WISHLIST BOOKMARK
+   ========================================================== */
+
+html body
+.st-checkout-v2--empty
+.st-checkout-empty-card__icon {
+  box-sizing:
+    border-box !important;
+
+  width:
+    66px !important;
+
+  height:
+    66px !important;
+
+  display:
+    flex !important;
+
+  align-items:
+    center !important;
+
+  justify-content:
+    center !important;
+
+  flex:
+    0 0 66px !important;
+
+  border:
+    1px solid rgba(245, 179, 53, 0.7) !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #fffaf0 !important;
+
+  background-color:
+    #fffaf0 !important;
+
+  color:
+    #bd7400 !important;
+
+  box-shadow:
+    none !important;
+}
+
+html body
+.st-checkout-v2--empty
+.st-checkout-empty-card__icon
+svg {
+  width:
+    25px !important;
+
+  height:
+    25px !important;
+
+  color:
+    #bd7400 !important;
+
+  stroke:
+    currentColor !important;
+
+  stroke-width:
+    1.8 !important;
+}
+
+
+/* ==========================================================
+   EYEBROW
+   ========================================================== */
+
+html body
+.st-checkout-v2--empty
+.st-checkout-empty-card__eyebrow {
+  margin:
+    20px 0 0 !important;
+
+  color:
+    rgba(29, 29, 31, 0.43) !important;
+
+  font-size:
+    10px !important;
+
+  font-weight:
+    650 !important;
+
+  line-height:
+    1 !important;
+
+  letter-spacing:
+    0.19em !important;
+
+  text-transform:
+    uppercase !important;
+}
+
+
+/* ==========================================================
+   TITLE
+   ========================================================== */
+
+html body
+.st-checkout-v2--empty
+.st-checkout-empty-card
+h2 {
+  margin:
+    23px 0 0 !important;
+
+  color:
+    #1d1d1f !important;
+
+  -webkit-text-fill-color:
+    #1d1d1f !important;
+
+  font-size:
+    clamp(28px, 3vw, 38px) !important;
+
+  font-weight:
+    650 !important;
+
+  line-height:
+    1.05 !important;
+
+  letter-spacing:
+    -0.04em !important;
+}
+
+
+/* ==========================================================
+   SUPPORT COPY
+   ========================================================== */
+
+html body
+.st-checkout-v2--empty
+.st-checkout-empty-card__copy {
+  max-width:
+    560px !important;
+
+  margin:
+    18px 0 0 !important;
+
+  color:
+    rgba(29, 29, 31, 0.55) !important;
+
+  -webkit-text-fill-color:
+    rgba(29, 29, 31, 0.55) !important;
+
+  font-size:
+    14px !important;
+
+  font-weight:
+    400 !important;
+
+  line-height:
+    1.65 !important;
+}
+
+
+/* ==========================================================
+   EXPLORE THE STORE
+   ========================================================== */
+
+html body
+.st-checkout-v2--empty
+a.st-checkout-empty-card__action {
+  box-sizing:
+    border-box !important;
+
+  min-height:
+    48px !important;
+
+  display:
+    inline-flex !important;
+
+  align-items:
+    center !important;
+
+  justify-content:
+    center !important;
+
+  gap:
+    14px !important;
+
+  margin:
+    27px 0 0 !important;
+
+  padding:
+    0 23px !important;
+
+  border:
+    0 !important;
+
+  border-radius:
+    999px !important;
+
+  background:
+    #fdb73e !important;
+
+  background-color:
+    #fdb73e !important;
+
+  color:
+    #171717 !important;
+
+  -webkit-text-fill-color:
+    #171717 !important;
+
+  font-size:
+    13px !important;
+
+  font-weight:
+    650 !important;
+
+  line-height:
+    1 !important;
+
+  letter-spacing:
+    -0.01em !important;
+
+  text-decoration:
+    none !important;
+
+  box-shadow:
+    0 10px 30px rgba(189, 116, 0, 0.12) !important;
+
+  transform:
+    none !important;
+
+  transition:
+    background-color 180ms ease,
+    box-shadow 200ms ease,
+    transform 200ms ease !important;
+}
+
+html body
+.st-checkout-v2--empty
+a.st-checkout-empty-card__action
+span {
+  color:
+    #171717 !important;
+
+  -webkit-text-fill-color:
+    #171717 !important;
+}
+
+html body
+.st-checkout-v2--empty
+a.st-checkout-empty-card__action
+svg {
+  width:
+    15px !important;
+
+  height:
+    15px !important;
+
+  color:
+    #171717 !important;
+
+  stroke:
+    currentColor !important;
+
+  flex:
+    0 0 auto !important;
+}
+
+
+/* ==========================================================
+   INTERACTION
+   ========================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  .st-checkout-v2--empty
+  a.st-checkout-empty-card__action:hover {
+    background:
+      #f5b335 !important;
+
+    background-color:
+      #f5b335 !important;
+
+    color:
+      #171717 !important;
+
+    -webkit-text-fill-color:
+      #171717 !important;
+
+    box-shadow:
+      0 12px 32px rgba(189, 116, 0, 0.17) !important;
+
+    transform:
+      translateY(-1px) !important;
+  }
+}
+
+html body
+.st-checkout-v2--empty
+a.st-checkout-empty-card__action:focus-visible {
+  outline:
+    none !important;
+
+  box-shadow:
+    0 0 0 4px rgba(245, 179, 53, 0.14),
+    0 10px 30px rgba(189, 116, 0, 0.12) !important;
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 600px) {
+
+  html body
+  .st-checkout-v2--empty
+  .st-checkout-empty-card {
+    min-height:
+      390px !important;
+
+    padding:
+      44px 22px !important;
+
+    border-radius:
+      26px !important;
+  }
+
+  html body
+  .st-checkout-v2--empty
+  .st-checkout-empty-card
+  h2 {
+    font-size:
+      28px !important;
+  }
+}
+
+/* === ST CHECKOUT WISHLIST-STYLE EMPTY STATE END === */
+
+/* === ST CHECKOUT EMPTY CARD SOFT GRAY BACKGROUND FINAL START === */
+
+html body
+.st-checkout-v2--empty
+.st-checkout-empty-card {
+  background: #f7f7f8 !important;
+  background-color: #f7f7f8 !important;
+}
+
+/* === ST CHECKOUT EMPTY CARD SOFT GRAY BACKGROUND FINAL END === */
+
+/* === ST CHECKOUT GLOBAL WHITE PAGE BACKGROUND FINAL START === */
+
+/*
+ * Entire checkout flow must use the same pure-white page canvas
+ * as the rest of the Stereophonie storefront.
+ *
+ * Applies to:
+ * - Details
+ * - Review
+ * - Confirmation
+ * - Checkout loading / submitting / error states
+ *
+ * Individual checkout cards and component backgrounds are untouched.
+ */
+
+html body:has(main.st-checkout-v2),
+html body:has(main.st-checkout-review-v2),
+html body:has(main.st-confirmation-v4),
+html body:has(main.st-checkout-error-v2),
+html body:has(main.st-checkout-loading),
+html body:has(main.st-order-transmission) {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
+html body main.st-checkout-v2,
+html body main.st-checkout-review-v2,
+html body main.st-confirmation-v4,
+html body main.st-checkout-error-v2,
+html body main.st-checkout-loading,
+html body main.st-order-transmission {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
+/* === ST CHECKOUT GLOBAL WHITE PAGE BACKGROUND FINAL END === */

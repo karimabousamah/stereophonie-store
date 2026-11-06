@@ -242,9 +242,6 @@ export default function AccountCommandCenter({
               </p>
             </div>
 
-            <div className="st-account-retail__module-mark">
-              <UserRound aria-hidden="true" />
-            </div>
           </header>
 
           <div className="st-account-retail__module-content">
@@ -266,9 +263,6 @@ export default function AccountCommandCenter({
               </p>
             </div>
 
-            <div className="st-account-retail__module-mark">
-              <Package aria-hidden="true" />
-            </div>
           </header>
 
           <div className="st-account-retail__module-content">

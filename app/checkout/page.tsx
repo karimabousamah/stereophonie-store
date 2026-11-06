@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
+  ArrowRight,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -1879,7 +1880,13 @@ export default function CheckoutPage() {
   return (
     <>
       <V3Header />
-      <main className="st-checkout-v2 min-h-screen bg-[#f7f7f5] text-black">
+      <main
+        className={`st-checkout-v2 min-h-screen text-black ${
+          isCartReady && items.length === 0
+            ? "st-checkout-v2--empty"
+            : "bg-[#f7f7f5]"
+        }`}
+      >
         {!isCartReady ? (
           <div
             className="st-checkout-live-preparing"
@@ -1948,26 +1955,37 @@ export default function CheckoutPage() {
             />
 
             {items.length === 0 ? (
-              <div className="flex min-h-[440px] flex-col items-center justify-center border border-dashed border-black/15 bg-white px-6 text-center">
-                <div className="flex h-16 w-16 items-center justify-center border border-black/10 bg-black/[0.025]">
-                  <ShoppingBag className="h-7 w-7 text-black/30" />
+              <section
+                className="st-checkout-empty-card"
+                aria-labelledby="checkout-empty-title"
+              >
+                <div
+                  className="st-checkout-empty-card__icon"
+                  aria-hidden="true"
+                >
+                  <ShoppingBag />
                 </div>
 
-                <h2 className="mt-6 text-2xl font-semibold">
+                <p className="st-checkout-empty-card__eyebrow">
+                  Ready when you are
+                </p>
+
+                <h2 id="checkout-empty-title">
                   Your cart is empty
                 </h2>
 
-                <p className="mt-3 max-w-md text-sm leading-6 text-black/45">
-                  Select a product configuration before proceeding to checkout.
+                <p className="st-checkout-empty-card__copy">
+                  Select a product before proceeding to checkout.
                 </p>
 
                 <Link
                   href="/shop"
-                  className="mt-7 bg-black px-7 py-4 text-xs font-semibold uppercase tracking-[0.17em] !text-black transition hover:bg-[#242424]"
+                  className="st-checkout-empty-card__action"
                 >
-                  Browse products
+                  <span>Explore the store</span>
+                  <ArrowRight aria-hidden="true" />
                 </Link>
-              </div>
+              </section>
             ) : (
               <form
                 ref={formRef}

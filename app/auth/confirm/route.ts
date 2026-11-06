@@ -16,6 +16,9 @@ export async function GET(request: Request) {
 
   const next = requestedNext?.startsWith("/") ? requestedNext : "/account";
 
+  const isPasswordRecovery =
+    next === "/account/reset-password";
+
   const supabase = await createClient();
 
   let confirmationError: Error | null = null;
@@ -36,14 +39,37 @@ export async function GET(request: Request) {
   }
 
   if (confirmationError) {
-    return NextResponse.redirect(
-      new URL(
-        `/account?mode=login&error=${encodeURIComponent(
+    const errorDestination = isPasswordRecovery
+      ? `/account?mode=forgot&error=${encodeURIComponent(
+          "The password reset link has expired or is invalid. Request a new one.",
+        )}`
+      : `/account?mode=login&error=${encodeURIComponent(
           "The confirmation link has expired or is invalid.",
-        )}`,
-        requestUrl.origin,
-      ),
+        )}`;
+
+    return NextResponse.redirect(
+      new URL(errorDestination, requestUrl.origin),
     );
+  }
+
+  if (isPasswordRecovery) {
+    const response = NextResponse.redirect(
+      new URL("/account/reset-password", requestUrl.origin),
+    );
+
+    response.cookies.set(
+      "stereophonie-password-recovery",
+      "active",
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 15 * 60,
+      },
+    );
+
+    return response;
   }
 
   return NextResponse.redirect(

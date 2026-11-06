@@ -2,7 +2,7 @@
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import {
@@ -13,10 +13,11 @@ import {
   verifyCustomerOtpChallenge,
 } from "@/lib/customer-security/otp";
 import { sendCustomerVerificationOtp } from "@/lib/email/send-customer-verification-otp";
+import { sendCustomerPasswordResetEmail } from "@/lib/email/send-customer-password-reset";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-type AccountMode = "login" | "register";
+type AccountMode = "login" | "register" | "forgot";
 
 export type DeleteAccountState = {
   status: "idle" | "error";
@@ -62,6 +63,76 @@ function redirectToVerification(
   );
 }
 
+function redirectToPasswordReset(
+  message: string,
+  type: "message" | "error" = "error",
+): never {
+  redirect(
+    `/account/reset-password?${type}=${encodeURIComponent(message)}`,
+  );
+}
+
+async function getRequestOrigin() {
+  /*
+   * Production password-reset links must always point to the
+   * real storefront domain.
+   *
+   * Development keeps the browser's current host so devices
+   * on the local network can open the development website.
+   */
+  if (process.env.NODE_ENV === "production") {
+    const configuredSite =
+      process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+    if (configuredSite) {
+      try {
+        return new URL(configuredSite).origin;
+      } catch {
+        // Fall through to canonical production URL.
+      }
+    }
+
+    return "https://stereophoniestore.com";
+  }
+
+  const requestHeaders = await headers();
+
+  const explicitOrigin =
+    requestHeaders.get("origin");
+
+  if (explicitOrigin) {
+    try {
+      return new URL(explicitOrigin).origin;
+    } catch {
+      // Fall through to host detection.
+    }
+  }
+
+  const host =
+    requestHeaders.get("x-forwarded-host") ??
+    requestHeaders.get("host");
+
+  const forwardedProtocol =
+    requestHeaders.get("x-forwarded-proto")
+      ?.split(",")[0]
+      ?.trim();
+
+  if (host) {
+    const protocol =
+      forwardedProtocol ||
+      (
+        host.startsWith("localhost") ||
+        host.startsWith("127.0.0.1")
+          ? "http"
+          : "https"
+      );
+
+    return `${protocol}://${host}`;
+  }
+
+  return "http://localhost:3000";
+}
+
 async function getAuthenticatedCustomer() {
   const supabase = await createClient();
 
@@ -81,6 +152,212 @@ async function getAuthenticatedCustomer() {
     supabase,
     user,
   };
+}
+
+/* =========================================================
+   PASSWORD RECOVERY REQUEST
+========================================================= */
+
+export async function requestCustomerPasswordReset(
+  formData: FormData,
+) {
+  const email =
+    cleanEmail(readText(formData, "email"));
+
+  if (!email || !email.includes("@")) {
+    redirectToAuthentication(
+      "Enter a valid email address.",
+      "forgot",
+    );
+  }
+
+  /*
+   * Generate the recovery token ourselves.
+   *
+   * Supabase does NOT send the email here.
+   * Stereophonie sends it through Resend so the
+   * customer always lands on our own reset page.
+   */
+  const admin = createAdminClient();
+
+  const {
+    data,
+    error,
+  } = await admin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+  });
+
+  if (!error && data?.properties?.hashed_token) {
+    const origin =
+      await getRequestOrigin();
+
+    const resetUrl =
+      new URL(
+        "/account/reset-password",
+        origin,
+      );
+
+    resetUrl.searchParams.set(
+      "token_hash",
+      data.properties.hashed_token,
+    );
+
+    const delivery =
+      await sendCustomerPasswordResetEmail(
+        email,
+        resetUrl.toString(),
+      );
+
+    if (!delivery.success) {
+      console.error(
+        "Password reset email delivery failed:",
+        delivery.message,
+      );
+    }
+  } else if (error) {
+    /*
+     * Do not reveal whether the account exists.
+     */
+    console.warn(
+      "Password recovery link generation skipped:",
+      error.message,
+    );
+  }
+
+  /*
+   * Same response whether the email exists or not.
+   * Prevents account enumeration.
+   */
+  redirectToAuthentication(
+    "If an account exists with this email address, a secure password reset link has been sent. Check your inbox and spam folder.",
+    "forgot",
+    "message",
+  );
+}
+
+/* =========================================================
+   COMPLETE PASSWORD RECOVERY
+========================================================= */
+
+export async function completeCustomerPasswordReset(
+  formData: FormData,
+) {
+  const tokenHash =
+    readText(formData, "tokenHash");
+
+  const newPassword =
+    String(
+      formData.get("newPassword") ?? "",
+    );
+
+  const confirmPassword =
+    String(
+      formData.get("confirmPassword") ?? "",
+    );
+
+  if (!tokenHash) {
+    redirectToAuthentication(
+      "Your password reset link is invalid. Request a new one.",
+      "forgot",
+    );
+  }
+
+  if (!newPassword || !confirmPassword) {
+    redirect(
+      `/account/reset-password?token_hash=${encodeURIComponent(
+        tokenHash,
+      )}&error=${encodeURIComponent(
+        "Enter and confirm your new password.",
+      )}`,
+    );
+  }
+
+  if (newPassword.length < 8) {
+    redirect(
+      `/account/reset-password?token_hash=${encodeURIComponent(
+        tokenHash,
+      )}&error=${encodeURIComponent(
+        "Your new password must contain at least 8 characters.",
+      )}`,
+    );
+  }
+
+  if (newPassword !== confirmPassword) {
+    redirect(
+      `/account/reset-password?token_hash=${encodeURIComponent(
+        tokenHash,
+      )}&error=${encodeURIComponent(
+        "The passwords do not match.",
+      )}`,
+    );
+  }
+
+  /*
+   * The recovery token is consumed only here,
+   * AFTER the customer entered the new password.
+   *
+   * Email security scanners can therefore open the
+   * reset page without destroying the one-time token.
+   */
+  const supabase =
+    await createClient();
+
+  const {
+    data: verification,
+    error: verificationError,
+  } = await supabase.auth.verifyOtp({
+    token_hash: tokenHash,
+    type: "recovery",
+  });
+
+  if (
+    verificationError ||
+    !verification.user
+  ) {
+    redirectToAuthentication(
+      "Your password reset link has expired or is invalid. Request a new one.",
+      "forgot",
+    );
+  }
+
+  const admin =
+    createAdminClient();
+
+  const {
+    error: passwordUpdateError,
+  } =
+    await admin.auth.admin.updateUserById(
+      verification.user.id,
+      {
+        password: newPassword,
+      },
+    );
+
+  if (passwordUpdateError) {
+    console.error(
+      "Customer password recovery update failed:",
+      passwordUpdateError.message,
+    );
+
+    redirectToAuthentication(
+      "Your password could not be updated. Request a new reset link and try again.",
+      "forgot",
+    );
+  }
+
+  /*
+   * Recovery verification may establish a temporary
+   * session. Clear it so the customer signs in normally
+   * using the newly chosen password.
+   */
+  await supabase.auth.signOut();
+
+  redirectToAuthentication(
+    "Your password was changed successfully. Sign in with your new password.",
+    "login",
+    "message",
+  );
 }
 
 /* =========================================================

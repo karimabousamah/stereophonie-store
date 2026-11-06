@@ -448,263 +448,39 @@ export default function V3ShoppingAssistant() {
   /* ST_ASSISTANT_MULTILINE_V3 */
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  /*
+   * ST_ASSISTANT_STABLE_TEXTAREA_RESIZE_RESTORED
+   *
+   * Restore the original stable behavior:
+   *
+   * - base textarea height = 38px
+   * - grow naturally with real scrollHeight
+   * - maximum height = 160px
+   *
+   * No optical offsets.
+   * No measured padding.
+   * No Safari-specific vertical shifting.
+   */
   useEffect(() => {
     const field = textAreaRef.current;
 
-    if (
-      !field ||
-      dictating
-    ) {
+    if (!field) {
       return;
     }
 
-    /*
-     * ST_ASSISTANT_MEASURED_TEXT_CENTERING_V2
-     *
-     * Measure the REAL wrapped text block.
-     *
-     * Remaining vertical space is divided equally above
-     * and below the text, regardless of line count.
-     *
-     * 1 line -> centered
-     * 2 lines -> centered
-     * 3 lines -> centered
-     * etc.
-     */
-    const measureAndCenterText = () => {
-      /*
-       * Idle + empty keeps the approved placeholder appearance.
-       */
-      if (
-        !composerFocused &&
-        input.length === 0
-      ) {
-        field.style.removeProperty(
-          "--st-ai-textarea-height",
-        );
+    field.style.height = "38px";
 
-        field.style.removeProperty(
-          "--st-ai-textarea-pad-top",
-        );
-
-        field.style.removeProperty(
-          "--st-ai-textarea-pad-bottom",
-        );
-
-        field.style.removeProperty(
-          "--st-ai-textarea-overflow",
-        );
-
-        field.style.removeProperty(
-          "--st-ai-textarea-optical-shift",
-        );
-
-        return;
-      }
-
-      const composer =
-        field.closest(
-          ".st3-ai-composer",
-        );
-
-      const submitButton =
-        composer?.querySelector<HTMLButtonElement>(
-          'button[type="submit"]',
-        );
-
-      const fieldRect =
-        field.getBoundingClientRect();
-
-      if (
-        fieldRect.width <= 0
-      ) {
-        return;
-      }
-
-      const style =
-        window.getComputedStyle(
-          field,
-        );
-
-      const mirror =
-        document.createElement(
-          "div",
-        );
-
-      mirror.setAttribute(
-        "aria-hidden",
-        "true",
-      );
-
-      Object.assign(
-        mirror.style,
-        {
-          position: "fixed",
-          left: "-100000px",
-          top: "0",
-          visibility: "hidden",
-          pointerEvents: "none",
-
-          boxSizing: "border-box",
-
-          width:
-            `${fieldRect.width}px`,
-
-          margin: "0",
-          padding: "0",
-          border: "0",
-
-          whiteSpace: "pre-wrap",
-          overflowWrap: "anywhere",
-          wordBreak: "break-word",
-
-          fontFamily:
-            style.fontFamily,
-
-          fontSize:
-            style.fontSize,
-
-          fontWeight:
-            style.fontWeight,
-
-          fontStyle:
-            style.fontStyle,
-
-          letterSpacing:
-            style.letterSpacing,
-
-          lineHeight:
-            style.lineHeight,
-        },
-      );
-
-      /*
-       * Preserve an active empty line and final newline.
-       */
-      mirror.textContent =
-        `${input}\u200b`;
-
-      document.body.appendChild(
-        mirror,
-      );
-
-      const resolvedLineHeight =
-        Number.parseFloat(
-          style.lineHeight,
-        ) || 18;
-
-      const measuredTextHeight =
+    field.style.height =
+      `${Math.min(
         Math.max(
-          resolvedLineHeight,
-          Math.ceil(
-            mirror
-              .getBoundingClientRect()
-              .height,
-          ),
-        );
-
-      mirror.remove();
-
-      /*
-       * Center relative to the real mic/send control lane.
-       */
-      const controlLaneHeight =
-        Math.max(
+          field.scrollHeight,
           38,
-          submitButton
-            ?.getBoundingClientRect()
-            .height ?? 38,
-        );
-
-      const maximumHeight =
-        160;
-
-      const targetHeight =
-        Math.min(
-          maximumHeight,
-          Math.max(
-            controlLaneHeight,
-            measuredTextHeight,
-          ),
-        );
-
-      const remainingSpace =
-        Math.max(
-          0,
-          targetHeight -
-            measuredTextHeight,
-        );
-
-      const equalPadding =
-        remainingSpace / 2;
-
-      /*
-       * ST_ASSISTANT_OPTICAL_CENTER_V3
-       *
-       * Safari draws textarea glyphs/caret visually above the
-       * geometric center of the line box.
-       *
-       * Do NOT use a fixed pixel offset.
-       *
-       * Derive the downward optical correction from the actual
-       * unused vertical space around the measured text block.
-       *
-       * One line has more available breathing room and therefore
-       * receives a larger correction.
-       *
-       * As the message becomes 2, 3, 4... lines tall, the available
-       * room becomes smaller automatically, so the correction also
-       * becomes smaller automatically.
-       */
-      const opticalShift =
-        equalPadding / 2;
-
-      field.style.setProperty(
-        "--st-ai-textarea-optical-shift",
-        `${opticalShift}px`,
-      );
-
-      field.style.setProperty(
-        "--st-ai-textarea-height",
-        `${targetHeight}px`,
-      );
-
-      field.style.setProperty(
-        "--st-ai-textarea-pad-top",
-        `${equalPadding}px`,
-      );
-
-      field.style.setProperty(
-        "--st-ai-textarea-pad-bottom",
-        `${equalPadding}px`,
-      );
-
-      field.style.setProperty(
-        "--st-ai-textarea-overflow",
-        measuredTextHeight >
-          maximumHeight
-          ? "auto"
-          : "hidden",
-      );
-    };
-
-    measureAndCenterText();
-
-    window.addEventListener(
-      "resize",
-      measureAndCenterText,
-    );
-
-    return () => {
-      window.removeEventListener(
-        "resize",
-        measureAndCenterText,
-      );
-    };
+        ),
+        160,
+      )}px`;
   }, [
     input,
     dictating,
-    composerFocused,
   ]);
 
 

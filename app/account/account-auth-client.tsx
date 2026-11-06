@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  Check,
   Eye,
   EyeOff,
   LockKeyhole,
@@ -13,10 +12,14 @@ import {
 import { useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 
-import { loginCustomer, registerCustomer } from "./actions";
+import {
+  loginCustomer,
+  registerCustomer,
+  requestCustomerPasswordReset,
+} from "./actions";
 
 type Props = {
-  mode: "login" | "register";
+  mode: "login" | "register" | "forgot";
   error?: string;
   message?: string;
 };
@@ -127,6 +130,8 @@ function AuthMessage({
 export default function AccountAuthClient({ mode, error, message }: Props) {
   const isRegister = mode === "register";
 
+  const isForgot = mode === "forgot";
+
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
@@ -175,12 +180,20 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
           <div className="st-auth-clean-heading">
             <span>My account</span>
 
-            <h1>{isRegister ? "Create your account" : "Welcome back"}</h1>
+            <h1>
+              {isForgot
+                ? "Reset your password"
+                : isRegister
+                  ? "Create your account"
+                  : "Welcome back"}
+            </h1>
 
             <p>
-              {isRegister
-                ? "Create an account to manage orders, addresses and your saved items."
-                : "Sign in to manage your orders, addresses and account details."}
+              {isForgot
+                ? "Enter the email address linked to your account and we’ll send you a secure password reset link."
+                : isRegister
+                  ? "Create an account to manage orders, addresses and your saved items."
+                  : "Sign in to manage your orders, addresses and account details."}
             </p>
           </div>
 
@@ -204,7 +217,29 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
 
           {message ? <AuthMessage type="success">{message}</AuthMessage> : null}
 
-          {!isRegister ? (
+          {isForgot ? (
+            <form
+              action={requestCustomerPasswordReset}
+              className="st-auth-clean-form"
+            >
+              <label className="st-auth-clean-field">
+                <span>Email address</span>
+
+                <input
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  placeholder="name@example.com"
+                  required
+                />
+              </label>
+
+              <SubmitButton
+                idle="Send reset link"
+                pending="Sending reset link..."
+              />
+            </form>
+          ) : !isRegister ? (
             <form action={loginCustomer} className="st-auth-clean-form">
               <label className="st-auth-clean-field">
                 <span>Email address</span>
@@ -232,24 +267,22 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                   </button>
                 </span>
 
-                <span className="st-auth-clean-password">
-                  <input
+                <input
                     type={showLoginPassword ? "text" : "password"}
                     name="password"
                     autoComplete="current-password"
                     placeholder="Enter your password"
                     required
                   />
-                </span>
               </label>
+
+              <div className="st-auth-clean-forgot-row">
+                <Link href="/account?mode=forgot">Forgot password?</Link>
+              </div>
 
               <SubmitButton idle="Sign in" pending="Signing in..." />
 
-              <div className="st-auth-clean-note">
-                <Check />
 
-                <span>Your account details are securely protected.</span>
-              </div>
             </form>
           ) : (
             <form action={registerCustomer} className="st-auth-clean-form">
@@ -309,8 +342,9 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                   </select>
 
                   <input
-                    type="tel"
+                    type="text"
                     name="phone"
+                    autoComplete="off"
                     inputMode="numeric"
                     value={phone}
                     maxLength={phoneRule.digits}
@@ -351,8 +385,7 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                     </button>
                   </span>
 
-                  <span className="st-auth-clean-password">
-                    <input
+                  <input
                       type={showRegisterPassword ? "text" : "password"}
                       name="password"
                       autoComplete="new-password"
@@ -360,7 +393,6 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                       minLength={8}
                       required
                     />
-                  </span>
                 </label>
 
                 <label className="st-auth-clean-field">
@@ -379,8 +411,7 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                     </button>
                   </span>
 
-                  <span className="st-auth-clean-password">
-                    <input
+                  <input
                       type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       autoComplete="new-password"
@@ -388,7 +419,6 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
                       minLength={8}
                       required
                     />
-                  </span>
                 </label>
               </div>
 
@@ -414,15 +444,27 @@ export default function AccountAuthClient({ mode, error, message }: Props) {
 
           <footer className="st-auth-clean-footer">
             <span>
-              {isRegister ? "Already have an account?" : "New to Stereophonie?"}
+              {isForgot
+                ? "Remember your password?"
+                : isRegister
+                  ? "Already have an account?"
+                  : "New to Stereophonie?"}
             </span>
 
             <Link
               href={
-                isRegister ? "/account?mode=login" : "/account?mode=register"
+                isForgot
+                  ? "/account?mode=login"
+                  : isRegister
+                    ? "/account?mode=login"
+                    : "/account?mode=register"
               }
             >
-              {isRegister ? "Sign in" : "Create account"}
+              {isForgot
+                ? "Sign in"
+                : isRegister
+                  ? "Sign in"
+                  : "Create account"}
 
               <ArrowRight />
             </Link>

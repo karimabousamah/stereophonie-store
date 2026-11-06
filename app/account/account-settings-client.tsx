@@ -278,8 +278,7 @@ function PasswordInput({
         </button>
       </span>
 
-      <span className="st-account-password-control">
-        <input
+      <input
           id={id}
           name={name}
           type={visible ? "text" : "password"}
@@ -287,8 +286,8 @@ function PasswordInput({
           minLength={8}
           required
           placeholder={placeholder}
+          className="st-account-focus-control mt-2 w-full border border-neutral-300 px-4 py-4 text-sm outline-none transition"
         />
-      </span>
     </label>
   );
 }
@@ -855,7 +854,8 @@ export default function AccountSettingsClient({
                         <input
                           id="phoneNumber"
                           name="phoneNumber"
-                          type="tel"
+                          autoComplete="off"
+                          type="text"
                           inputMode="numeric"
                           defaultValue={profile.phoneNumber}
                           required
@@ -928,7 +928,7 @@ export default function AccountSettingsClient({
 
                 <section className="mt-12 border border-red-200 bg-red-50/40">
                   <div className="border-b border-red-200 px-5 py-5 sm:px-6">
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-center gap-4">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-red-200 bg-white text-sm font-semibold text-red-700">
                         !
                       </div>
@@ -1087,7 +1087,7 @@ export default function AccountSettingsClient({
                     <div className="mt-6 flex gap-3">
                       <button
                         type="submit"
-                        className="border border-black bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white"
+                        className="st-account-new-address-action st-account-new-address-action--save border border-black bg-black px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-white"
                       >
                         Save address
                       </button>
@@ -1095,7 +1095,7 @@ export default function AccountSettingsClient({
                       <button
                         type="button"
                         onClick={() => setShowNewAddress(false)}
-                        className="border border-neutral-300 px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em]"
+                        className="st-account-new-address-action st-account-new-address-action--cancel border border-neutral-300 px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.15em]"
                       >
                         Cancel
                       </button>

@@ -85,7 +85,12 @@ type AddressRow = {
 export default async function AccountPage({ searchParams }: AccountPageProps) {
   const params = await searchParams;
 
-  const mode = params.mode === "register" ? "register" : "login";
+  const mode =
+    params.mode === "register"
+      ? "register"
+      : params.mode === "forgot"
+        ? "forgot"
+        : "login";
 
   const supabase = await createClient();
 

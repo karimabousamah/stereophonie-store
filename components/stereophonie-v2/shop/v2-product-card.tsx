@@ -32,6 +32,14 @@ import { useWishlist } from "@/components/wishlist/wishlist-provider";
 type Props = {
   product: StoreProductCardProduct;
   index?: number;
+
+  /*
+   * Explicit storefront context.
+   *
+   * Homepage cards may receive homepage-only visual treatment
+   * without affecting Shop / Category / Subcategory cards.
+   */
+  homeShelf?: boolean;
 };
 
 type StockAlertResponse = {
@@ -626,7 +634,11 @@ function productCardBadgeClass(badge: string | null) {
   return classes.join(" ");
 }
 
-export default function V2ProductCard({ product, index = 0 }: Props) {
+export default function V2ProductCard({
+  product,
+  index = 0,
+  homeShelf = false,
+}: Props) {
   const { whatsappNumber } = useStoreSettings();
   const router = useRouter();
   const defaultImages = useMemo(
@@ -1379,7 +1391,19 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
             {productAvailability === "coming_soon" ? (
               <button
                 type="button"
-                className="st-retail-card__preorder"
+                className={`st-retail-card__preorder${
+                  homeShelf
+                    ? " st-retail-card__preorder--home"
+                    : ""
+                }`}
+                style={
+                  homeShelf
+                    ? {
+                        position: "relative",
+                        top: "-8px",
+                      }
+                    : undefined
+                }
                 disabled={preorderLoading || !preorderVariant?.id}
                 onClick={(event) => {
                   event.preventDefault();
@@ -1398,7 +1422,19 @@ export default function V2ProductCard({ product, index = 0 }: Props) {
             ) : productAvailability === "ask_for_price" ? (
               <button
                 type="button"
-                className="st-retail-card__preorder"
+                className={`st-retail-card__preorder${
+                  homeShelf
+                    ? " st-retail-card__preorder--home"
+                    : ""
+                }`}
+                style={
+                  homeShelf
+                    ? {
+                        position: "relative",
+                        top: "-8px",
+                      }
+                    : undefined
+                }
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();

@@ -1405,7 +1405,20 @@ export default function V2CatalogControls({
         <label className="st-filter-v4__sort">
           <span>Sort</span>
 
+          <span
+            className="st-filter-v4__sort-value"
+            aria-hidden="true"
+          >
+            {selectedSort === "price-asc"
+              ? "Price: low to high"
+              : selectedSort === "price-desc"
+                ? "Price: high to low"
+                : "Newest"}
+          </span>
+
           <select
+            className="st-filter-v4__sort-native"
+            aria-label="Sort products"
             value={selectedSort}
             onChange={(event) =>
               navigate({

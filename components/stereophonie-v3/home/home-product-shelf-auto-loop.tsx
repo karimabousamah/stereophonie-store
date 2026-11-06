@@ -569,6 +569,7 @@ export default function HomeProductShelfAutoLoop({
             key={product.id}
             product={product}
             index={index}
+            homeShelf={variant === "home"}
           />
         ))}
 
@@ -579,6 +580,7 @@ export default function HomeProductShelfAutoLoop({
                   key={`home-loop-${product.id}`}
                   product={product}
                   index={index}
+                  homeShelf={variant === "home"}
                 />
               ),
             )

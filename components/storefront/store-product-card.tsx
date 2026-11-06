@@ -99,9 +99,11 @@ export type StoreProductCardProduct = {
 export default function StoreProductCard({
   product,
   index = 0,
+  homeShelf = false,
 }: {
   product: StoreProductCardProduct;
   index?: number;
+  homeShelf?: boolean;
 }) {
   /*
    * ============================================================
@@ -149,5 +151,11 @@ export default function StoreProductCard({
     defaultImages: authoritativeDefaultImages,
   };
 
-  return <V2ProductCard product={authoritativeProduct} index={index} />;
+  return (
+    <V2ProductCard
+      product={authoritativeProduct}
+      index={index}
+      homeShelf={homeShelf}
+    />
+  );
 }
