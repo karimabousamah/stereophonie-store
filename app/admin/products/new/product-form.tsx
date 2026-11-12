@@ -22,7 +22,7 @@ import {
 import ImageUploader from "./image-uploader";
 
 import ProductBrandPicker from "@/components/admin/product-brand-picker";
-import ProductCategoryPicker from "@/components/admin/product-category-picker";
+import ProductOrganizationMultiPicker from "@/components/admin/product-organization-multi-picker";
 import ElectronicsVariantEditor, {
   type AdminElectronicsVariant,
 } from "@/components/admin/products/electronics-variant-editor";
@@ -39,9 +39,13 @@ import ProductActionNotice from "@/components/admin/products/product-action-noti
 type Category = {
   id: string;
   name: string;
-  rootCategoryId?: string;
-  subcategoryId?: string | null;
-  editable?: boolean;
+};
+
+type Subcategory = {
+  id: string;
+  category_id: string;
+  parent_subcategory_id: string | null;
+  name: string;
 };
 
 type Brand = {
@@ -51,6 +55,7 @@ type Brand = {
 
 type ProductFormProps = {
   categories: Category[];
+  subcategories: Subcategory[];
 
   brands: Brand[];
   errorMessage?: string;
@@ -102,6 +107,7 @@ function SectionHeader({
 
 export default function ProductForm({
   categories,
+  subcategories,
   brands,
   errorMessage,
 }: ProductFormProps) {
@@ -158,34 +164,163 @@ export default function ProductForm({
     newArrival: false,
   });
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  const [selectedCategoryName, setSelectedCategoryName] = useState("");
-  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState("");
-  const [selectedAdditionalCategoryIds, setSelectedAdditionalCategoryIds] =
-    useState<string[]>([]);
+  const [
+    selectedCategoryIds,
+    setSelectedCategoryIds,
+  ] = useState<string[]>([]);
 
-  const [selectedBrandName, setSelectedBrandName] = useState("");
+  const [
+    selectedSubcategoryIds,
+    setSelectedSubcategoryIds,
+  ] = useState<string[]>([]);
 
-  const additionalCategoryAssignments = useMemo(
-    () =>
-      selectedAdditionalCategoryIds.flatMap((selectedId) => {
-        const option = categories.find(
-          (category) => category.id === selectedId,
-        );
+  const [selectedBrandName, setSelectedBrandName] =
+    useState("");
 
-        if (!option) {
-          return [];
+  const selectedSubcategoryRows =
+    useMemo(
+      () =>
+        selectedSubcategoryIds.flatMap(
+          (id) => {
+            const subcategory =
+              subcategories.find(
+                (candidate) =>
+                  candidate.id === id,
+              );
+
+            return subcategory
+              ? [subcategory]
+              : [];
+          },
+        ),
+      [
+        selectedSubcategoryIds,
+        subcategories,
+      ],
+    );
+
+  /*
+   * Translate the new independent selectors back into the
+   * existing canonical + additional-placement database contract.
+   */
+  const organizationAssignments =
+    useMemo(
+      () => {
+        const assignments: {
+          category_id: string;
+          subcategory_id: string | null;
+        }[] = [];
+
+        for (
+          const categoryId
+          of selectedCategoryIds
+        ) {
+          const categorySubcategories =
+            selectedSubcategoryRows.filter(
+              (subcategory) =>
+                subcategory.category_id ===
+                categoryId,
+            );
+
+          if (
+            categorySubcategories.length ===
+            0
+          ) {
+            assignments.push({
+              category_id:
+                categoryId,
+              subcategory_id:
+                null,
+            });
+
+            continue;
+          }
+
+          for (
+            const subcategory
+            of categorySubcategories
+          ) {
+            assignments.push({
+              category_id:
+                categoryId,
+              subcategory_id:
+                subcategory.id,
+            });
+          }
         }
 
-        return [
-          {
-            category_id: option.rootCategoryId ?? option.id,
-            subcategory_id: option.subcategoryId ?? null,
-          },
-        ];
-      }),
-    [categories, selectedAdditionalCategoryIds],
-  );
+        /*
+         * INDEPENDENT_SUBCATEGORY_PLACEMENTS_V17
+         *
+         * Category and Subcategory are independent selectors.
+         * A subcategory remains a valid placement even when its
+         * own root category was not separately selected above.
+         */
+        for (
+          const subcategory
+          of selectedSubcategoryRows
+        ) {
+          if (
+            selectedCategoryIds.includes(
+              subcategory.category_id,
+            )
+          ) {
+            continue;
+          }
+
+          assignments.push({
+            category_id:
+              subcategory.category_id,
+            subcategory_id:
+              subcategory.id,
+          });
+        }
+
+        return assignments;
+      },
+      [
+        selectedCategoryIds,
+        selectedSubcategoryRows,
+      ],
+    );
+
+  const primaryOrganizationAssignment =
+    organizationAssignments[0] ??
+    null;
+
+  const selectedCategoryId =
+    primaryOrganizationAssignment
+      ?.category_id ?? "";
+
+  const selectedSubcategoryId =
+    primaryOrganizationAssignment
+      ?.subcategory_id ?? "";
+
+  const selectedCategoryName =
+    categories.find(
+      (category) =>
+        category.id ===
+        selectedCategoryId,
+    )?.name ?? "";
+
+  const additionalCategoryAssignments =
+    organizationAssignments.slice(
+      1,
+    );
+
+  const availableSubcategoryOptions =
+    useMemo(
+      () =>
+        subcategories.map(
+          (subcategory) => ({
+            id:
+              subcategory.id,
+            name:
+              subcategory.name,
+          }),
+        ),
+      [subcategories],
+    );
 
   const totalStock = useMemo(() => {
     return variants.reduce((total, variant) => {
@@ -547,10 +682,24 @@ export default function ProductForm({
           }
         }
 
+        const stockOptional =
+          variant.availability_status === "coming_soon" ||
+          variant.availability_status === "ask_for_price" ||
+          variant.availability_status === "out_of_stock";
+
+        const stockText =
+          variant.stock_quantity === ""
+            ? ""
+            : String(
+                variant.stock_quantity,
+              ).trim();
+
         const stock =
-          Number(
-            variant.stock_quantity,
-          );
+          stockText === ""
+            ? stockOptional
+              ? 0
+              : Number.NaN
+            : Number(stockText);
 
         const lowStock =
           Number(
@@ -1124,6 +1273,12 @@ export default function ProductForm({
 
       <input
         type="hidden"
+        name="category_id"
+        value={selectedCategoryId}
+      />
+
+      <input
+        type="hidden"
         name="subcategory_id"
         value={selectedSubcategoryId}
       />
@@ -1189,7 +1344,9 @@ export default function ProductForm({
                   <ProductBrandPicker
                     brands={brands}
                     onBrandChange={(brand) =>
-                      setSelectedBrandName(brand?.name ?? "")
+                      setSelectedBrandName(
+                        brand?.name ?? "",
+                      )
                     }
                   />
                 </div>
@@ -1197,36 +1354,68 @@ export default function ProductForm({
                 <div>
                   <label>Category</label>
 
-                  <ProductCategoryPicker
-                    categories={categories}
-                    multiselect
-                    onCategoriesChange={(selectedCategories) => {
-                      const primary =
-                        selectedCategories[0] ?? null;
-
-                      setSelectedCategoryId(
-                        primary?.rootCategoryId ??
-                          primary?.id ??
-                          "",
+                  <ProductOrganizationMultiPicker
+                    label="Category"
+                    options={categories}
+                    selectedIds={
+                      selectedCategoryIds
+                    }
+                    onSelectionChange={(
+                      nextIds,
+                    ) => {
+                      setSelectedCategoryIds(
+                        nextIds,
                       );
 
-                      setSelectedCategoryName(
-                        primary?.name ?? "",
-                      );
+                      setSelectedSubcategoryIds(
+                        (current) =>
+                          current.filter(
+                            (subcategoryId) => {
+                              const subcategory =
+                                subcategories.find(
+                                  (candidate) =>
+                                    candidate.id ===
+                                    subcategoryId,
+                                );
 
-                      setSelectedSubcategoryId(
-                        primary?.subcategoryId ?? "",
-                      );
-
-                      setSelectedAdditionalCategoryIds(
-                        selectedCategories
-                          .slice(1)
-                          .map(
-                            (category) =>
-                              category.id,
+                              return Boolean(
+                                subcategory &&
+                                  nextIds.includes(
+                                    subcategory.category_id,
+                                  ),
+                              );
+                            },
                           ),
                       );
                     }}
+                  />
+                </div>
+
+                <div>
+                  <label>
+                    Subcategory
+                  </label>
+
+                  <ProductOrganizationMultiPicker
+                    label="Subcategory"
+                    options={
+                      availableSubcategoryOptions
+                    }
+                    selectedIds={
+                      selectedSubcategoryIds
+                    }
+                    disabled={
+                      selectedCategoryIds.length ===
+                      0
+                    }
+                    placeholder={
+                      selectedCategoryIds.length
+                        ? "Select subcategory"
+                        : "Select category first"
+                    }
+                    onSelectionChange={
+                      setSelectedSubcategoryIds
+                    }
                   />
                 </div>
               </div>
@@ -1413,6 +1602,13 @@ export default function ProductForm({
               fallbackLabel: `Configuration ${index + 1}`,
             }))}
             onImagesChange={handleImagesChange}
+            onErrorMessage={(message) => {
+              setSubmissionError(
+                message,
+              );
+
+              smoothScrollProductResultToTop();
+            }}
           />
         </div>
       </ProductCard>

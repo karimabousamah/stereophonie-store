@@ -316,7 +316,7 @@ export default function DashboardClient({
         "Published products should belong to a clear storefront category.",
       count: catalogueHealth.missingCategory,
       icon: Layers3,
-      href: "/admin/products",
+      href: "/admin/products?issue=missing_category",
     },
     {
       title: "Missing brand",
@@ -324,7 +324,7 @@ export default function DashboardClient({
         "Add a manufacturer where applicable so products are easier to find.",
       count: catalogueHealth.missingBrand,
       icon: Tag,
-      href: "/admin/products",
+      href: "/admin/products?issue=missing_brand",
     },
     {
       title: "Missing photographs",
@@ -332,7 +332,7 @@ export default function DashboardClient({
         "Published products without imagery can look incomplete to customers.",
       count: catalogueHealth.productsWithoutImages,
       icon: ImageOff,
-      href: "/admin/products",
+      href: "/admin/products?issue=missing_photographs",
     },
     {
       title: "Old drafts",
@@ -340,7 +340,7 @@ export default function DashboardClient({
         "Drafts untouched for more than 14 days may need completion or cleanup.",
       count: catalogueHealth.oldDrafts,
       icon: Boxes,
-      href: "/admin/products",
+      href: "/admin/products?issue=old_drafts",
     },
   ];
 
@@ -348,6 +348,13 @@ export default function DashboardClient({
     (total, item) => total + item.count,
     0,
   );
+
+  const activeAttentionItems = [...attentionItems]
+    .filter((item) => item.count > 0)
+    .sort((first, second) => second.count - first.count);
+
+  const activeCheckCount = activeAttentionItems.length;
+  const clearCheckCount = attentionItems.length - activeCheckCount;
 
   return (
     <AdminShell
@@ -357,8 +364,6 @@ export default function DashboardClient({
     >
       <main className="st-dash-intel st-admin-dashboard-v2">
         <section className="st-dash-intel-section st-dash-overview-section-v2">
-          <h2 className="st-admin-dashboard-v2__overview-title">Overview</h2>
-
           <div className="st-dash-intel-metrics">
             <MetricCard
               icon={Eye}
@@ -420,8 +425,8 @@ export default function DashboardClient({
               <h2>Needs your attention</h2>
 
               <p>
-                Review catalogue issues that may affect product quality or
-                storefront organization.
+                Resolve the catalogue issues with the greatest storefront
+                impact first.
               </p>
             </div>
 
@@ -435,16 +440,14 @@ export default function DashboardClient({
               <div>
                 <span>
                   {attentionCount === 0
-                    ? "Everything clear"
-                    : attentionCount === 1
-                      ? "Item to review"
-                      : "Items to review"}
+                    ? "Catalogue clear"
+                    : "Affected records"}
                 </span>
 
                 <small>
                   {attentionCount === 0
-                    ? "No catalogue action needed"
-                    : "Across catalogue checks"}
+                    ? `${attentionItems.length}/${attentionItems.length} checks clear`
+                    : `${activeCheckCount} of ${attentionItems.length} checks need action`}
                 </small>
               </div>
             </div>
@@ -459,14 +462,12 @@ export default function DashboardClient({
                 </div>
 
                 <small>
-                  {attentionItems.filter((item) => item.count > 0).length} active
+                  {activeCheckCount} active
                 </small>
               </div>
 
               <div className="st-admin-action-center__issue-list">
-                {attentionItems
-                  .filter((item) => item.count > 0)
-                  .map((item) => {
+                {activeAttentionItems.map((item) => {
                     const Icon = item.icon;
 
                     return (
@@ -523,8 +524,7 @@ export default function DashboardClient({
                 </div>
 
                 <small>
-                  {attentionItems.filter((item) => item.count === 0).length}/
-                  {attentionItems.length} clear
+                  {clearCheckCount}/{attentionItems.length} clear
                 </small>
               </div>
 

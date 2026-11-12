@@ -79,6 +79,80 @@ function isAcceptedImageFile(file: File) {
   return file.type.startsWith("image/");
 }
 
+
+/* PRODUCT_MEDIA_DIRTY_SIGNATURE_V1 */
+const productMediaDirtyEvent = "stereophonie:admin-product-media-dirty";
+
+function createProductMediaDirtySignature(
+  currentImages: ProductImage[],
+  pendingUsage: Record<string, string[]> = {},
+) {
+  const normalizedImages =
+    currentImages
+      .map((image) => ({
+        id: image.id,
+        storage_path: image.storage_path ?? "",
+        alt_text: image.alt_text ?? "",
+        position: Number(image.position ?? 0),
+        is_primary: Boolean(image.is_primary),
+        variant_name: image.variant_name ?? "",
+        variant_id: image.variant_id ?? "",
+        variant_position: Number(
+          image.variant_position ?? 0,
+        ),
+        is_variant_primary: Boolean(
+          image.is_variant_primary,
+        ),
+        assignments: [
+          ...(image.product_image_variants ?? []),
+        ]
+          .map((assignment) => ({
+            variant_id: assignment.variant_id,
+            position: Number(
+              assignment.position ?? 0,
+            ),
+            is_primary: Boolean(
+              assignment.is_primary,
+            ),
+          }))
+          .sort((first, second) => {
+            const idDifference =
+              first.variant_id.localeCompare(
+                second.variant_id,
+              );
+
+            if (idDifference !== 0) {
+              return idDifference;
+            }
+
+            return (
+              first.position -
+              second.position
+            );
+          }),
+      }))
+      .sort((first, second) =>
+        first.id.localeCompare(second.id),
+      );
+
+  const normalizedPendingUsage =
+    Object.entries(pendingUsage)
+      .map(([imageId, configurationIds]) => [
+        imageId,
+        Array.from(
+          new Set(configurationIds),
+        ).sort(),
+      ] as const)
+      .sort((first, second) =>
+        first[0].localeCompare(second[0]),
+      );
+
+  return JSON.stringify({
+    images: normalizedImages,
+    pendingUsage: normalizedPendingUsage,
+  });
+}
+
 export default function ImageManager({
   productId,
   productName,
@@ -111,6 +185,20 @@ export default function ImageManager({
    * Main/order/usage operation.
    */
   const [managedImages, setManagedImages] = useState<ProductImage[]>(images);
+
+  const initialMediaDirtySignatureRef =
+    useRef<string | null>(null);
+
+  if (
+    initialMediaDirtySignatureRef.current ===
+    null
+  ) {
+    initialMediaDirtySignatureRef.current =
+      createProductMediaDirtySignature(
+        images,
+        {},
+      );
+  }
   const [pendingImageOperation, setPendingImageOperation] = useState("");
   const [usageSaveProgress, setUsageSaveProgress] = useState<{
     imageId: string;
@@ -118,6 +206,26 @@ export default function ImageManager({
   } | null>(null);
 
   const usageSaveProgressTimerRef =
+    useRef<number | null>(null);
+
+  /*
+   * Keep the deleting card physically in place until the server
+   * confirms deletion. This prevents the whole gallery from
+   * jumping the instant Delete is clicked.
+   */
+  const [
+    deletingImageId,
+    setDeletingImageId,
+  ] = useState("");
+
+  const [
+    deleteProgress,
+    setDeleteProgress,
+  ] = useState<number | null>(
+    null,
+  );
+
+  const deleteProgressTimerRef =
     useRef<number | null>(null);
   const [pendingMovementImageId, setPendingMovementImageId] = useState("");
   const [pendingMovementDirection, setPendingMovementDirection] = useState("");
@@ -136,6 +244,35 @@ export default function ImageManager({
 
   const [pendingClientUsage, setPendingClientUsage] =
     useState<Record<string, string[]>>({});
+
+  /* PRODUCT_MEDIA_DIRTY_EVENT_EFFECT_V1 */
+  useEffect(() => {
+    const currentSignature =
+      createProductMediaDirtySignature(
+        managedImages,
+        pendingClientUsage,
+      );
+
+    const initialSignature =
+      initialMediaDirtySignatureRef.current ??
+      "";
+
+    window.dispatchEvent(
+      new CustomEvent(
+        productMediaDirtyEvent,
+        {
+          detail: {
+            isDirty:
+              currentSignature !==
+              initialSignature,
+          },
+        },
+      ),
+    );
+  }, [
+    managedImages,
+    pendingClientUsage,
+  ]);
 
   /*
    * One exact configuration at a time keeps the media manager simple:
@@ -599,6 +736,44 @@ export default function ImageManager({
       realStatus: "waiting" | "uploading" | "finalizing";
     }[]
   >([]);
+
+
+  /*
+   * Product image failures belong beside the normal Product
+   * success/error feedback at the top of the editor.
+   */
+  useEffect(() => {
+    const message =
+      imageOperationErrorMessage ||
+      uploadError;
+
+    if (!message) {
+      return;
+    }
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "st:admin-product-runtime-notice",
+        {
+          detail: {
+            variant: "error",
+            title:
+              "Product image update failed",
+            message,
+          },
+        },
+      ),
+    );
+
+    setImageOperationErrorMessage(
+      "",
+    );
+
+    setUploadError("");
+  }, [
+    imageOperationErrorMessage,
+    uploadError,
+  ]);
 
   /*
    * Keep the percentage shown inside an inline upload card visually alive
@@ -2254,6 +2429,55 @@ const difference =
 
     setPendingImageOperation(operationLabel);
 
+    if (
+      operation === "delete" &&
+      imageId
+    ) {
+      if (
+        deleteProgressTimerRef.current !==
+        null
+      ) {
+        window.clearInterval(
+          deleteProgressTimerRef.current,
+        );
+      }
+
+      setDeletingImageId(
+        imageId,
+      );
+
+      setDeleteProgress(4);
+
+      deleteProgressTimerRef.current =
+        window.setInterval(() => {
+          setDeleteProgress(
+            (current) => {
+              if (
+                current === null ||
+                current >= 92
+              ) {
+                return current;
+              }
+
+              const remaining =
+                92 - current;
+
+              return Math.min(
+                92,
+                current +
+                  Math.max(
+                    1,
+                    Math.ceil(
+                      remaining *
+                        0.14,
+                    ),
+                  ),
+              );
+            },
+          );
+        }, 90);
+    }
+
     if (operation === "usage" && imageId) {
       if (usageSaveProgressTimerRef.current !== null) {
         window.clearInterval(
@@ -2313,12 +2537,6 @@ const difference =
      * roll back instantly without disturbing the surrounding product editor.
      */
     const previousImages = managedImages;
-
-    if (operation === "delete" && imageId) {
-      setManagedImages((currentImages) =>
-        currentImages.filter((image) => image.id !== imageId),
-      );
-    }
 
     /*
      * ========================================================
@@ -2648,7 +2866,41 @@ const difference =
        * Once the mutation finishes, reconcile the optimistic image state with
        * the exact rows returned by the server.
        */
-      setManagedImages(result.images as ProductImage[]);
+      if (
+        operation === "delete" &&
+        imageId
+      ) {
+        if (
+          deleteProgressTimerRef.current !==
+          null
+        ) {
+          window.clearInterval(
+            deleteProgressTimerRef.current,
+          );
+
+          deleteProgressTimerRef.current =
+            null;
+        }
+
+        setDeleteProgress(100);
+
+        /*
+         * Let the administrator see completion on the exact
+         * card before the confirmed server result removes it.
+         */
+        await new Promise<void>(
+          (resolve) => {
+            window.setTimeout(
+              resolve,
+              180,
+            );
+          },
+        );
+      }
+
+      setManagedImages(
+        result.images as ProductImage[],
+      );
 
       if (operation === "usage" && imageId) {
         if (
@@ -2685,6 +2937,23 @@ const difference =
       controls.forEach((control, index) => {
         control.disabled = previousDisabledState[index];
       });
+
+      if (operation === "delete") {
+        if (
+          deleteProgressTimerRef.current !==
+          null
+        ) {
+          window.clearInterval(
+            deleteProgressTimerRef.current,
+          );
+
+          deleteProgressTimerRef.current =
+            null;
+        }
+
+        setDeleteProgress(null);
+        setDeletingImageId("");
+      }
 
       if (operation === "usage") {
         if (
@@ -3274,9 +3543,16 @@ const difference =
       return;
     }
 
-    const selected = Array.from(files);
+    const selected =
+      Array.from(files);
 
-    const invalidType = selected.find((file) => !isAcceptedImageFile(file));
+    const invalidType =
+      selected.find(
+        (file) =>
+          !isAcceptedImageFile(
+            file,
+          ),
+      );
 
     if (invalidType) {
       setUploadError(
@@ -3286,24 +3562,123 @@ const difference =
       return;
     }
 
-    const oversizedFile = selected.find((file) => file.size > maximumFileSize);
+    const oversizedFile =
+      selected.find(
+        (file) =>
+          file.size >
+          maximumFileSize,
+      );
 
     if (oversizedFile) {
-      setUploadError(`${oversizedFile.name} is larger than 10 MB.`);
+      setUploadError(
+        `${oversizedFile.name} is larger than 10 MB.`,
+      );
 
       return;
+    }
+
+    /*
+     * Put the administrator's actual selected photographs into
+     * their final-size gallery slots IMMEDIATELY.
+     *
+     * Background removal / standardization happens behind the
+     * same cards. No preparation sticker and no layout jump.
+     */
+    const uploadConfigurationId =
+      selectedGalleryConfigurationId;
+
+    const preparedVariantIds =
+      selected.map(() =>
+        uploadConfigurationId
+          ? [
+              uploadConfigurationId,
+            ]
+          : [],
+      );
+
+    const immediatePreviewUrls =
+      selected.map(
+        (file) =>
+          URL.createObjectURL(
+            file,
+          ),
+      );
+
+    const inlineIds =
+      selected.map(
+        (_, index) =>
+          `inline-upload-${Date.now()}-${index}`,
+      );
+
+    setPendingUploadConfigurationId(
+      uploadConfigurationId,
+    );
+
+    setInlineUploadCards(
+      selected.map(
+        (file, index) => ({
+          id:
+            inlineIds[index],
+          previewUrl:
+            immediatePreviewUrls[
+              index
+            ],
+          fileName:
+            file.name,
+          percentage:
+            0,
+          targetPercentage:
+            0,
+          status:
+            "waiting" as const,
+          realStatus:
+            "waiting" as const,
+        }),
+      ),
+    );
+
+    if (
+      fileInputRef.current
+    ) {
+      fileInputRef.current.value =
+        "";
     }
 
     let processedFiles: File[];
 
     try {
-      setIsPreparingSelectedImages(true);
-      setUploadError("");
-
-      processedFiles = await Promise.all(
-        selected.map((file) => processImageBeforeUpload(file, "product")),
+      setIsPreparingSelectedImages(
+        true,
       );
+
+      processedFiles =
+        await Promise.all(
+          selected.map(
+            (file) =>
+              processImageBeforeUpload(
+                file,
+                "product",
+              ),
+          ),
+        );
     } catch (error) {
+      setInlineUploadCards(
+        (current) =>
+          current.filter(
+            (card) =>
+              !inlineIds.includes(
+                card.id,
+              ),
+          ),
+      );
+
+      immediatePreviewUrls.forEach(
+        (url) =>
+          URL.revokeObjectURL(
+            url,
+          ),
+      );
+
       setUploadError(
         error instanceof Error
           ? error.message
@@ -3312,87 +3687,23 @@ const difference =
 
       return;
     } finally {
-      setIsPreparingSelectedImages(false);
+      setIsPreparingSelectedImages(
+        false,
+      );
     }
 
-    previewUrls.forEach((previewUrl) => {
-      URL.revokeObjectURL(previewUrl);
-    });
-
-    setUploadError("");
-
-    /*
-     * Capture the active configuration before any upload begins.
-     * A later gallery-tab change cannot redirect this batch.
-     */
-    const uploadConfigurationId =
-      selectedGalleryConfigurationId;
-
-    const preparedVariantIds = processedFiles.map(() =>
-      uploadConfigurationId ? [uploadConfigurationId] : [],
-    );
-
-    /*
-     * Configuration gallery:
-     * the native file picker is the final confirmation.
-     * Upload immediately after preparation with local authoritative
-     * file/configuration values, avoiding stale React state.
-     */
-    if (uploadConfigurationId) {
-      setPendingUploadConfigurationId(
-        uploadConfigurationId,
-      );
-
-      const inlinePreviewUrls = processedFiles.map(
-        (file) => URL.createObjectURL(file),
-      );
-
-      const inlineIds = processedFiles.map(
-        (_, index) =>
-          `inline-upload-${Date.now()}-${index}`,
-      );
-
-      setInlineUploadCards(
-        processedFiles.map((file, index) => ({
-          id: inlineIds[index],
-          previewUrl: inlinePreviewUrls[index],
-          fileName: file.name,
-          percentage: 0,
-          targetPercentage: 0,
-          status: "waiting" as const,
-          realStatus: "waiting" as const,
-        })),
-      );
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-
-      await uploadPreparedImages(
-        processedFiles,
-        preparedVariantIds,
-        {
-          ids: inlineIds,
-          previewUrls: inlinePreviewUrls,
-        },
-      );
-
-      return;
-    }
-
-    /*
-     * Shared-image uploads preserve the existing staging workflow
-     * so administrators can review and assign usage before upload.
-     */
-    setSelectedFiles(processedFiles);
-    setPendingUploadConfigurationId("");
-    setSelectedVariantIds(preparedVariantIds);
-    setPreviewUrls(
-      processedFiles.map((file) =>
-        URL.createObjectURL(file),
-      ),
+    await uploadPreparedImages(
+      processedFiles,
+      preparedVariantIds,
+      {
+        ids:
+          inlineIds,
+        previewUrls:
+          immediatePreviewUrls,
+      },
     );
   }
+
 
 
   useEffect(() => {
@@ -3532,14 +3843,14 @@ const difference =
                   ? "st-admin-existing-media-v2__select is-disabled"
                   : "st-admin-existing-media-v2__select"
               }
-              aria-disabled={isUploading}
+              aria-disabled={isUploading || isPreparingSelectedImages}
             >
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 multiple
-                disabled={isUploading}
+                disabled={isUploading || isPreparingSelectedImages}
                 onChange={(event) => {
                   void selectFiles(event.currentTarget.files);
                 }}
@@ -3547,10 +3858,6 @@ const difference =
               Add images
             </label>
           </div>
-
-          {uploadError ? (
-            <div className="st-admin-media-manager__error">{uploadError}</div>
-          ) : null}
 
           {isPreparingSelectedImages ? (
             <div
@@ -3808,13 +4115,10 @@ const difference =
           </div>
         ) : null}
 
-        {imageOperationErrorMessage ? (
-          <div className="st-admin-media-manager__error">
-            {imageOperationErrorMessage}
-          </div>
-        ) : null}
-
-        {pendingImageOperation !== "Deleting image…" ? (
+        {inlineUploadCards.length === 0 &&
+        !isUploading &&
+        !isPreparingSelectedImages &&
+        pendingImageOperation !== "Deleting image…" ? (
           <div
             className="st-admin-existing-media-v2__activity-slot"
             aria-live="polite"
@@ -3986,6 +4290,43 @@ const difference =
                       <span className="st-admin-media-item__main">
                         Main
                       </span>
+                    ) : null}
+
+                    {deletingImageId === image.id &&
+                    deleteProgress !== null ? (
+                      <>
+                        <div
+                          className="st-admin-inline-upload-v33__veil"
+                          aria-hidden="true"
+                        />
+
+                        <div
+                          className="st-admin-inline-upload-v33__progress"
+                          role="progressbar"
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={
+                            deleteProgress
+                          }
+                          aria-label="Deleting photo"
+                          style={{
+                            "--st-admin-inline-upload-progress":
+                              `${deleteProgress * 3.6}deg`,
+                          } as React.CSSProperties}
+                        >
+                          <div className="st-admin-inline-upload-v33__ring">
+                            <div className="st-admin-inline-upload-v33__ring-core">
+                              <strong>
+                                {deleteProgress}%
+                              </strong>
+
+                              <span>
+                                Deleting
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
                     ) : null}
 
                     {usageProgress !== null ? (
@@ -4164,6 +4505,9 @@ const difference =
                           />
                           <button
                             type="submit"
+                            disabled={Boolean(
+                              deletingImageId,
+                            )}
                             data-secondary-action="true"
                             className="is-danger st-admin-image-destructive-v32"
                             title="Delete photo"
@@ -4500,6 +4844,9 @@ const difference =
 
                       <button
                         type="submit"
+                        disabled={Boolean(
+                          deletingImageId,
+                        )}
                         aria-label="Delete image"
                         title="Delete image"
                         className="st-admin-existing-media-v2__delete"

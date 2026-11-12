@@ -9,6 +9,7 @@ import ShopRoutePrefetch from "@/components/storefront/shop-route-prefetch";
 import {
   isMoviesSeriesCategory,
   stereophonieEntertainment,
+  type StereophonieEntertainmentItem,
 } from "@/lib/stereophonie-entertainment";
 
 import V3ProductCard, {
@@ -217,6 +218,7 @@ function ProductSection({
 
 export default function V3Homepage({
   categories,
+  entertainmentItems,
   latestProducts,
   offerProducts,
   featuredProducts,
@@ -236,6 +238,7 @@ export default function V3Homepage({
   secondaryButtonHref,
 }: {
   categories: V3HomeCategory[];
+  entertainmentItems?: StereophonieEntertainmentItem[];
   latestProducts: V3Product[];
   offerProducts: V3Product[];
   featuredProducts: V3Product[];
@@ -380,7 +383,10 @@ export default function V3Homepage({
                           category.homepage_description?.trim() ||
                           "Discover a cinematic selection, preview trailers and ask Stereophonie about any title."
                         }
-                        items={stereophonieEntertainment}
+                        items={
+                          entertainmentItems ??
+                          stereophonieEntertainment
+                        }
                       />
                     </V3Reveal>
                   );

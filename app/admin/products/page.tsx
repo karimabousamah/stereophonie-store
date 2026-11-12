@@ -17,11 +17,21 @@ import ProductSearch from "@/components/admin/product-search";
 import ProductDirectoryThumbnail from "@/components/admin/products/product-directory-thumbnail";
 import QuickPriceEditor from "./quick-price-editor";
 
+type DashboardIssueFilter =
+  | "missing_category"
+  | "missing_brand"
+  | "missing_photographs"
+  | "old_drafts"
+  | null;
+
+
 
 async function ProductsDirectory({
   initialProductFilter,
+  initialIssueFilter,
 }: {
   initialProductFilter: "all" | "published" | "draft" | "archived";
+  initialIssueFilter: DashboardIssueFilter;
 }) {
   const productsPerfStartedAt = performance.now();
   const supabase = await createClient();
@@ -602,6 +612,9 @@ async function ProductsDirectory({
     (directoryBrands ?? []).map((brand) => [String(brand.id), brand.name]),
   );
 
+  const dashboardOldDraftBoundary =
+    Date.now() - 14 * 24 * 60 * 60 * 1000;
+
   return (
           <section className="st-admin-products-v2__directory">
             {!products?.length ? (
@@ -658,6 +671,7 @@ async function ProductsDirectory({
                       .length
                   }
                   initialFilter={initialProductFilter}
+                  initialIssueFilter={initialIssueFilter}
                   outOfStockTotal={
                     products.filter((product) => {
                       /*
@@ -761,6 +775,26 @@ async function ProductsDirectory({
                       const productImages =
                         directoryImagesByProductId.get(String(product.id)) ?? [];
 
+                      const isMissingCategory =
+                        product.status === "published" &&
+                        product.category_id === null;
+
+                      const isMissingBrand =
+                        product.status === "published" &&
+                        product.brand_id === null;
+
+                      const isMissingPhotographs =
+                        product.status === "published" &&
+                        productImages.length === 0;
+
+                      const productCreatedAt =
+                        new Date(product.created_at).getTime();
+
+                      const isOldDraft =
+                        product.status === "draft" &&
+                        Number.isFinite(productCreatedAt) &&
+                        productCreatedAt < dashboardOldDraftBoundary;
+
                       const primaryImage =
                         storefrontConfigurationImages(
                           productImages,
@@ -828,6 +862,24 @@ async function ProductsDirectory({
                           data-admin-product-out-of-stock={
                             isOutOfStock ? "true" : "false"
                           }
+                          data-admin-product-missing-category={
+                            isMissingCategory ? "true" : "false"
+                          }
+                          data-admin-product-missing-brand={
+                            isMissingBrand ? "true" : "false"
+                          }
+                          data-admin-product-missing-photographs={
+                            isMissingPhotographs ? "true" : "false"
+                          }
+                          data-admin-product-old-draft={
+                            isOldDraft ? "true" : "false"
+                          }
+                          data-admin-product-issues={[
+                            isMissingCategory ? "missing_category" : "",
+                            isMissingBrand ? "missing_brand" : "",
+                            isMissingPhotographs ? "missing_photographs" : "",
+                            isOldDraft ? "old_drafts" : "",
+                          ].filter(Boolean).join(" ")}
                           data-admin-product-search={[
                             product.name,
                             category ?? "",
@@ -980,6 +1032,7 @@ export default async function AdminProductsPage({
   searchParams?: Promise<{
     saved?: string;
     filter?: string;
+    issue?: string;
   }>;
 }) {
   const resolvedSearchParams = (await searchParams) ?? {};
@@ -994,6 +1047,17 @@ export default async function AdminProductsPage({
         : resolvedSearchParams.filter === "archived"
           ? "archived"
           : "all";
+
+  const initialIssueFilter: DashboardIssueFilter =
+    resolvedSearchParams.issue === "missing_category"
+      ? "missing_category"
+      : resolvedSearchParams.issue === "missing_brand"
+        ? "missing_brand"
+        : resolvedSearchParams.issue === "missing_photographs"
+          ? "missing_photographs"
+          : resolvedSearchParams.issue === "old_drafts"
+            ? "old_drafts"
+            : null;
 
   const supabase = await createClient();
 
@@ -1017,6 +1081,7 @@ export default async function AdminProductsPage({
 
   const productsDirectory = await ProductsDirectory({
     initialProductFilter,
+    initialIssueFilter,
   });
 
   return (

@@ -42,7 +42,7 @@ export type AdminElectronicsVariant = {
  barcode?: string;
  regular_price: number | "";
  sale_price: number | "";
- stock_quantity: number;
+ stock_quantity: number | "";
  low_stock_threshold: number;
  availability_status: AvailabilityStatus | "";
 };
@@ -4771,6 +4771,10 @@ export default function ElectronicsVariantEditor({
  const unavailable =
                   variant.availability_status === "out_of_stock";
 
+ const inventoryOptional =
+                  variant.availability_status === "coming_soon" ||
+                  variant.availability_status === "ask_for_price";
+
  const label =
  clean(
  variant.variant_name,
@@ -4934,6 +4938,11 @@ export default function ElectronicsVariantEditor({
                           ? 0
                           : variant.stock_quantity
                       }
+ placeholder={
+ inventoryOptional
+                          ? "—"
+                          : undefined
+                      }
  aria-label={`Stock for ${label}`}
  data-config-numeric-field="stock"
  data-config-row-index={index}
@@ -4961,15 +4970,14 @@ export default function ElectronicsVariantEditor({
  variant.clientId,
                           {
  stock_quantity:
- Math.max(
- 0,
- Number(
- event
-                                    .target
-                                    .value,
-                                ) ||
- 0,
-                              ),
+ event.target.value === ""
+                              ? ""
+                              : Math.max(
+                                  0,
+                                  Number(
+                                    event.target.value,
+                                  ) || 0,
+                                ),
                           },
                         )
                       }

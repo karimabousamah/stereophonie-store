@@ -30,7 +30,7 @@ type VariantInput = {
   barcode: string;
   regular_price: number | "";
   sale_price: number | "" | null;
-  stock_quantity: number;
+  stock_quantity: number | "";
   low_stock_threshold: number;
   availability_status: AvailabilityStatus;
 };
@@ -52,6 +52,18 @@ type DirectUploadedImage = {
    */
   configuration_ids?: string[];
   configuration_id?: string;
+
+  /*
+   * Exact per-configuration ordering submitted by the browser.
+   *
+   * Older open browser tabs may omit this field; the existing
+   * fallback ordering remains supported for them.
+   */
+  configuration_assignments?: {
+    configuration_id: string;
+    position: number;
+    is_primary: boolean;
+  }[];
 
   original_name: string;
   content_type: string;
@@ -516,14 +528,60 @@ async function createProductUnsafe(formData: FormData) {
       );
     }
 
-    const stockQuantity = Number(variant.stock_quantity);
-    const lowStockThreshold = Number(variant.low_stock_threshold);
+    const stockQuantityText =
+      variant.stock_quantity === "" ||
+      variant.stock_quantity === null ||
+      variant.stock_quantity === undefined
+        ? ""
+        : String(
+            variant.stock_quantity,
+          ).trim();
 
-    if (!Number.isFinite(stockQuantity) || stockQuantity < 0) {
+    const stockQuantity =
+      stockQuantityText === ""
+        ? null
+        : Number(
+            stockQuantityText,
+          );
+
+    const stockRequired =
+      publishingIntent === "publish" &&
+      (
+        variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock"
+      );
+
+    if (
+      stockRequired &&
+      (
+        stockQuantity === null ||
+        !Number.isFinite(
+          stockQuantity,
+        ) ||
+        stockQuantity < 0
+      )
+    ) {
       redirectWithError(
         `Enter a valid stock quantity for ${configurationName}.`,
       );
     }
+
+    if (
+      !stockRequired &&
+      stockQuantity !== null &&
+      (
+        !Number.isFinite(
+          stockQuantity,
+        ) ||
+        stockQuantity < 0
+      )
+    ) {
+      redirectWithError(
+        `Enter a valid stock quantity for ${configurationName}.`,
+      );
+    }
+
+    const lowStockThreshold = Number(variant.low_stock_threshold);
 
     if (!Number.isFinite(lowStockThreshold) || lowStockThreshold < 0) {
       redirectWithError(
@@ -575,23 +633,80 @@ async function createProductUnsafe(formData: FormData) {
   );
 
   directUploadedImages = directUploadedImages.map((image) => {
-    const submittedIds = Array.isArray(image.configuration_ids)
-      ? image.configuration_ids
-      : image.configuration_id
-        ? [image.configuration_id]
+    const submittedAssignments =
+      Array.isArray(
+        image.configuration_assignments,
+      )
+        ? image.configuration_assignments
         : [];
+
+    const assignmentByConfiguration =
+      new Map<
+        string,
+        {
+          configuration_id: string;
+          position: number;
+          is_primary: boolean;
+        }
+      >();
+
+    for (
+      const assignment
+      of submittedAssignments
+    ) {
+      const configurationId =
+        String(
+          assignment?.configuration_id ??
+            "",
+        ).trim();
+
+      const position =
+        Number(
+          assignment?.position,
+        );
+
+      if (
+        !configurationId ||
+        !configurationNameByClientId.has(
+          configurationId,
+        ) ||
+        !Number.isInteger(position) ||
+        position < 0
+      ) {
+        continue;
+      }
+
+      assignmentByConfiguration.set(
+        configurationId,
+        {
+          configuration_id:
+            configurationId,
+          position,
+          is_primary:
+            Boolean(
+              assignment.is_primary,
+            ),
+        },
+      );
+    }
+
+    const submittedIds =
+      assignmentByConfiguration.size > 0
+        ? Array.from(
+            assignmentByConfiguration.keys(),
+          )
+        : Array.isArray(
+              image.configuration_ids,
+            )
+          ? image.configuration_ids
+          : image.configuration_id
+            ? [image.configuration_id]
+            : [];
 
     /*
      * Configuration IDs originate in the browser while the product
-     * is still unsaved. If the administrator regenerates or removes
-     * a configuration after assigning a photo, an older browser
-     * payload may still contain the retired temporary client ID.
-     *
-     * Preserve every assignment that still resolves against the
-     * submitted configuration set and discard only stale IDs.
-     *
-     * An image with no remaining exact assignments is Shared,
-     * which is the existing canonical media behavior.
+     * is still unsaved. Retired configuration IDs are discarded,
+     * while every still-valid exact assignment keeps its position.
      */
     const configurationIds = Array.from(
       new Set(
@@ -603,7 +718,9 @@ async function createProductUnsafe(formData: FormData) {
           )
           .filter(
             (configurationId) =>
-              Boolean(configurationId) &&
+              Boolean(
+                configurationId,
+              ) &&
               configurationNameByClientId.has(
                 configurationId,
               ),
@@ -613,7 +730,23 @@ async function createProductUnsafe(formData: FormData) {
 
     return {
       ...image,
-      configuration_ids: configurationIds,
+
+      configuration_ids:
+        configurationIds,
+
+      configuration_assignments:
+        configurationIds.flatMap(
+          (configurationId) => {
+            const assignment =
+              assignmentByConfiguration.get(
+                configurationId,
+              );
+
+            return assignment
+              ? [assignment]
+              : [];
+          },
+        ),
     };
   });
 
@@ -1063,29 +1196,93 @@ async function createProductUnsafe(formData: FormData) {
           .from("product-images")
           .getPublicUrl(destinationPath);
 
+        const exactAssignmentByClientId =
+          new Map(
+            (
+              image.configuration_assignments ??
+              []
+            ).map(
+              (assignment) => [
+                String(
+                  assignment.configuration_id ??
+                    "",
+                ).trim(),
+                assignment,
+              ] as const,
+            ),
+          );
+
         const configurationClientIds = Array.from(
           new Set(
             (image.configuration_ids ?? [])
-              .map((configurationId) => String(configurationId ?? "").trim())
+              .map((configurationId) =>
+                String(
+                  configurationId ?? "",
+                ).trim(),
+              )
               .filter(Boolean),
           ),
         );
 
-        const configurationVariantIds = configurationClientIds.map(
-          (configurationClientId) => {
-            const variantId = persistedVariantIdByClientId.get(
-              configurationClientId,
-            );
+        const configurationVariantAssignments =
+          configurationClientIds.map(
+            (configurationClientId) => {
+              const variantId =
+                persistedVariantIdByClientId.get(
+                  configurationClientId,
+                );
 
-            if (!variantId) {
-              throw new Error(
-                "A image configuration could not be resolved after creating the product configurations.",
-              );
-            }
+              if (!variantId) {
+                throw new Error(
+                  "A image configuration could not be resolved after creating the product configurations.",
+                );
+              }
 
-            return variantId;
-          },
-        );
+              const exactAssignment =
+                exactAssignmentByClientId.get(
+                  configurationClientId,
+                );
+
+              const fallbackPosition =
+                nextConfigurationPosition.get(
+                  variantId,
+                ) ?? 0;
+
+              const position =
+                exactAssignment &&
+                Number.isInteger(
+                  Number(
+                    exactAssignment.position,
+                  ),
+                )
+                  ? Math.max(
+                      0,
+                      Number(
+                        exactAssignment.position,
+                      ),
+                    )
+                  : fallbackPosition;
+
+              return {
+                clientId:
+                  configurationClientId,
+                variantId,
+                position,
+                isPrimary:
+                  exactAssignment
+                    ? Boolean(
+                        exactAssignment.is_primary,
+                      )
+                    : position === 0,
+              };
+            },
+          );
+
+        const configurationVariantIds =
+          configurationVariantAssignments.map(
+            (assignment) =>
+              assignment.variantId,
+          );
 
         /*
          * Legacy columns can truthfully represent only one
@@ -1102,9 +1299,18 @@ async function createProductUnsafe(formData: FormData) {
               null)
             : null;
 
-        const legacyVariantPosition = legacyVariantId
-          ? (nextConfigurationPosition.get(legacyVariantId) ?? 0)
-          : 0;
+        const legacyVariantPosition =
+          legacyVariantId
+            ? (
+                configurationVariantAssignments[
+                  0
+                ]?.position ??
+                nextConfigurationPosition.get(
+                  legacyVariantId,
+                ) ??
+                0
+              )
+            : 0;
 
         const { data: insertedImage, error: imageInsertError } = await supabase
           .from("product_images")
@@ -1122,7 +1328,13 @@ async function createProductUnsafe(formData: FormData) {
             variant_name: legacyVariantName,
             variant_position: legacyVariantPosition,
             is_variant_primary: Boolean(
-              legacyVariantId && legacyVariantPosition === 0,
+              legacyVariantId &&
+                (
+                  configurationVariantAssignments[
+                    0
+                  ]?.isPrimary ??
+                  legacyVariantPosition === 0
+                ),
             ),
           })
           .select("id")
@@ -1140,16 +1352,19 @@ async function createProductUnsafe(formData: FormData) {
          * Zero rows = Shared.
          * One or more rows = exact configuration assignments.
          */
-        const junctionRows = configurationVariantIds.map((variantId) => {
-          const position = nextConfigurationPosition.get(variantId) ?? 0;
-
-          return {
-            image_id: insertedImage.id,
-            variant_id: variantId,
-            position,
-            is_primary: position === 0,
-          };
-        });
+        const junctionRows =
+          configurationVariantAssignments.map(
+            (assignment) => ({
+              image_id:
+                insertedImage.id,
+              variant_id:
+                assignment.variantId,
+              position:
+                assignment.position,
+              is_primary:
+                assignment.isPrimary,
+            }),
+          );
 
         if (junctionRows.length > 0) {
           /*
@@ -1170,7 +1385,12 @@ async function createProductUnsafe(formData: FormData) {
           for (const row of junctionRows) {
             nextConfigurationPosition.set(
               row.variant_id,
-              row.position + 1,
+              Math.max(
+                nextConfigurationPosition.get(
+                  row.variant_id,
+                ) ?? 0,
+                row.position + 1,
+              ),
             );
           }
         }

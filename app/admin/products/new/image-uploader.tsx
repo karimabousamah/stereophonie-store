@@ -55,6 +55,13 @@ type ImageManagerProps = {
   }[];
 
   onImagesChange?: (images: DirectUploadSelectedImage[]) => void;
+
+  /*
+   * Product-level feedback belongs at the top of the page.
+   */
+  onErrorMessage?: (
+    message: string,
+  ) => void;
 };
 
 const maximumImagesPerConfiguration = 15;
@@ -68,6 +75,7 @@ export default function ImageManager({
   disabled = false,
   configurations = [],
   onImagesChange,
+  onErrorMessage,
 }: ImageManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -106,14 +114,74 @@ export default function ImageManager({
           return null;
         }
 
+        const assignments =
+          [...(
+            image.product_image_variants ??
+            []
+          )].sort(
+            (first, second) =>
+              Number(
+                first.position ?? 0,
+              ) -
+              Number(
+                second.position ?? 0,
+              ),
+          );
+
         return {
           file: localImage.__createFile,
-          configurationIds: (
-            image.product_image_variants ?? []
-          ).map((assignment) => assignment.variant_id),
-          altText: image.alt_text ?? "",
-          isPrimary: index === 0,
-          position: index,
+
+          configurationIds:
+            assignments.map(
+              (assignment) =>
+                assignment.variant_id,
+            ),
+
+          /*
+           * Preserve the exact visual configuration order.
+           *
+           * Previously only IDs survived into Publish Live,
+           * causing the server to recreate positions from
+           * upload-loop order and reshuffle photographs.
+           */
+          configurationAssignments:
+            assignments.map(
+              (assignment) => ({
+                configurationId:
+                  assignment.variant_id,
+                position:
+                  Number(
+                    assignment.position ??
+                      0,
+                  ),
+                isPrimary:
+                  Boolean(
+                    assignment.is_primary,
+                  ),
+              }),
+            ),
+
+          altText:
+            image.alt_text ?? "",
+
+          isPrimary:
+            Boolean(
+              image.is_primary,
+            ),
+
+          position:
+            Number.isInteger(
+              Number(
+                image.position,
+              ),
+            )
+              ? Math.max(
+                  0,
+                  Number(
+                    image.position,
+                  ),
+                )
+              : index,
         };
       })
       .filter(
@@ -396,6 +464,36 @@ export default function ImageManager({
       realStatus: "waiting" | "uploading" | "finalizing";
     }[]
   >([]);
+
+
+  /*
+   * Never leave Product image errors buried inside the Media card.
+   * Forward them to the same ProductActionNotice shown at page top.
+   */
+  useEffect(() => {
+    const message =
+      imageOperationErrorMessage ||
+      uploadError;
+
+    if (
+      !message ||
+      !onErrorMessage
+    ) {
+      return;
+    }
+
+    onErrorMessage(message);
+
+    setImageOperationErrorMessage(
+      "",
+    );
+
+    setUploadError("");
+  }, [
+    imageOperationErrorMessage,
+    uploadError,
+    onErrorMessage,
+  ]);
 
   /*
    * Keep the percentage shown inside an inline upload card visually alive
@@ -2437,9 +2535,16 @@ const difference =
       return;
     }
 
-    const selected = Array.from(files);
+    const selected =
+      Array.from(files);
 
-    const invalidType = selected.find((file) => !isAcceptedImageFile(file));
+    const invalidType =
+      selected.find(
+        (file) =>
+          !isAcceptedImageFile(
+            file,
+          ),
+      );
 
     if (invalidType) {
       setUploadError(
@@ -2449,24 +2554,123 @@ const difference =
       return;
     }
 
-    const oversizedFile = selected.find((file) => file.size > maximumFileSize);
+    const oversizedFile =
+      selected.find(
+        (file) =>
+          file.size >
+          maximumFileSize,
+      );
 
     if (oversizedFile) {
-      setUploadError(`${oversizedFile.name} is larger than 10 MB.`);
+      setUploadError(
+        `${oversizedFile.name} is larger than 10 MB.`,
+      );
 
       return;
+    }
+
+    /*
+     * Put the administrator's actual selected photographs into
+     * their final-size gallery slots IMMEDIATELY.
+     *
+     * Background removal / standardization happens behind the
+     * same cards. No preparation sticker and no layout jump.
+     */
+    const uploadConfigurationId =
+      selectedGalleryConfigurationId;
+
+    const preparedVariantIds =
+      selected.map(() =>
+        uploadConfigurationId
+          ? [
+              uploadConfigurationId,
+            ]
+          : [],
+      );
+
+    const immediatePreviewUrls =
+      selected.map(
+        (file) =>
+          URL.createObjectURL(
+            file,
+          ),
+      );
+
+    const inlineIds =
+      selected.map(
+        (_, index) =>
+          `inline-upload-${Date.now()}-${index}`,
+      );
+
+    setPendingUploadConfigurationId(
+      uploadConfigurationId,
+    );
+
+    setInlineUploadCards(
+      selected.map(
+        (file, index) => ({
+          id:
+            inlineIds[index],
+          previewUrl:
+            immediatePreviewUrls[
+              index
+            ],
+          fileName:
+            file.name,
+          percentage:
+            0,
+          targetPercentage:
+            0,
+          status:
+            "waiting" as const,
+          realStatus:
+            "waiting" as const,
+        }),
+      ),
+    );
+
+    if (
+      fileInputRef.current
+    ) {
+      fileInputRef.current.value =
+        "";
     }
 
     let processedFiles: File[];
 
     try {
-      setIsPreparingSelectedImages(true);
-      setUploadError("");
-
-      processedFiles = await Promise.all(
-        selected.map((file) => processImageBeforeUpload(file, "product")),
+      setIsPreparingSelectedImages(
+        true,
       );
+
+      processedFiles =
+        await Promise.all(
+          selected.map(
+            (file) =>
+              processImageBeforeUpload(
+                file,
+                "product",
+              ),
+          ),
+        );
     } catch (error) {
+      setInlineUploadCards(
+        (current) =>
+          current.filter(
+            (card) =>
+              !inlineIds.includes(
+                card.id,
+              ),
+          ),
+      );
+
+      immediatePreviewUrls.forEach(
+        (url) =>
+          URL.revokeObjectURL(
+            url,
+          ),
+      );
+
       setUploadError(
         error instanceof Error
           ? error.message
@@ -2475,87 +2679,23 @@ const difference =
 
       return;
     } finally {
-      setIsPreparingSelectedImages(false);
+      setIsPreparingSelectedImages(
+        false,
+      );
     }
 
-    previewUrls.forEach((previewUrl) => {
-      URL.revokeObjectURL(previewUrl);
-    });
-
-    setUploadError("");
-
-    /*
-     * Capture the active configuration before any upload begins.
-     * A later gallery-tab change cannot redirect this batch.
-     */
-    const uploadConfigurationId =
-      selectedGalleryConfigurationId;
-
-    const preparedVariantIds = processedFiles.map(() =>
-      uploadConfigurationId ? [uploadConfigurationId] : [],
-    );
-
-    /*
-     * Configuration gallery:
-     * the native file picker is the final confirmation.
-     * Upload immediately after preparation with local authoritative
-     * file/configuration values, avoiding stale React state.
-     */
-    if (uploadConfigurationId) {
-      setPendingUploadConfigurationId(
-        uploadConfigurationId,
-      );
-
-      const inlinePreviewUrls = processedFiles.map(
-        (file) => URL.createObjectURL(file),
-      );
-
-      const inlineIds = processedFiles.map(
-        (_, index) =>
-          `inline-upload-${Date.now()}-${index}`,
-      );
-
-      setInlineUploadCards(
-        processedFiles.map((file, index) => ({
-          id: inlineIds[index],
-          previewUrl: inlinePreviewUrls[index],
-          fileName: file.name,
-          percentage: 0,
-          targetPercentage: 0,
-          status: "waiting" as const,
-          realStatus: "waiting" as const,
-        })),
-      );
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-
-      await uploadPreparedImages(
-        processedFiles,
-        preparedVariantIds,
-        {
-          ids: inlineIds,
-          previewUrls: inlinePreviewUrls,
-        },
-      );
-
-      return;
-    }
-
-    /*
-     * Shared-image uploads preserve the existing staging workflow
-     * so administrators can review and assign usage before upload.
-     */
-    setSelectedFiles(processedFiles);
-    setPendingUploadConfigurationId("");
-    setSelectedVariantIds(preparedVariantIds);
-    setPreviewUrls(
-      processedFiles.map((file) =>
-        URL.createObjectURL(file),
-      ),
+    await uploadPreparedImages(
+      processedFiles,
+      preparedVariantIds,
+      {
+        ids:
+          inlineIds,
+        previewUrls:
+          immediatePreviewUrls,
+      },
     );
   }
+
 
 
   return (
@@ -2635,14 +2775,14 @@ const difference =
                   ? "st-admin-existing-media-v2__select is-disabled"
                   : "st-admin-existing-media-v2__select"
               }
-              aria-disabled={disabled || isUploading}
+              aria-disabled={disabled || isUploading || isPreparingSelectedImages}
             >
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 multiple
-                disabled={disabled || isUploading}
+                disabled={disabled || isUploading || isPreparingSelectedImages}
                 onChange={(event) => {
                   void selectFiles(event.currentTarget.files);
                 }}
@@ -2650,10 +2790,6 @@ const difference =
               Add images
             </label>
           </div>
-
-          {uploadError ? (
-            <div className="st-admin-media-manager__error">{uploadError}</div>
-          ) : null}
 
           {isPreparingSelectedImages ? (
             <div
@@ -2917,13 +3053,10 @@ const difference =
           </div>
         ) : null}
 
-        {imageOperationErrorMessage ? (
-          <div className="st-admin-media-manager__error">
-            {imageOperationErrorMessage}
-          </div>
-        ) : null}
-
-        {pendingImageOperation !== "Deleting image…" ? (
+        {inlineUploadCards.length === 0 &&
+        !isUploading &&
+        !isPreparingSelectedImages &&
+        pendingImageOperation !== "Deleting image…" ? (
           <div
             className="st-admin-existing-media-v2__activity-slot"
             aria-live="polite"

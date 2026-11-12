@@ -39,6 +39,23 @@ const ProductBarcodeScanner =
     },
   );
 
+type ProductIssueFilter =
+  | "missing_category"
+  | "missing_brand"
+  | "missing_photographs"
+  | "old_drafts"
+  | null;
+
+const PRODUCT_ISSUE_LABELS: Record<
+  Exclude<ProductIssueFilter, null>,
+  string
+> = {
+  missing_category: "Missing category",
+  missing_brand: "Missing brand",
+  missing_photographs: "Missing photographs",
+  old_drafts: "Old drafts",
+};
+
 type Props = {
   total: number;
   liveTotal: number;
@@ -48,6 +65,7 @@ type Props = {
   outOfStockTotal: number;
   archivedTotal: number;
   initialFilter?: ProductStatusFilter;
+  initialIssueFilter?: ProductIssueFilter;
 };
 
 export default function ProductSearch({
@@ -58,9 +76,12 @@ export default function ProductSearch({
   askForPriceTotal,
   outOfStockTotal,
   initialFilter = "all",
+  initialIssueFilter = null,
 }: Props) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ProductStatusFilter>(initialFilter);
+  const [issueFilter, setIssueFilter] =
+    useState<ProductIssueFilter>(initialIssueFilter);
 
   const [visibleCount, setVisibleCount] = useState(total);
 
@@ -69,6 +90,9 @@ export default function ProductSearch({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scannerButtonRef = useRef<HTMLButtonElement>(null);
+  const directoryRef = useRef<HTMLElement>(null);
+
+  const [isSticky, setIsSticky] = useState(false);
 
   const [scannerOpen, setScannerOpen] = useState(false);
 
@@ -90,6 +114,10 @@ export default function ProductSearch({
 
     returnStateConsumedRef.current = true;
 
+    if (initialIssueFilter) {
+      return;
+    }
+
     const snapshot =
       consumeProductDirectoryReturnState();
 
@@ -102,6 +130,58 @@ export default function ProductSearch({
     setPendingRestoreScrollY(
       snapshot.scrollY,
     );
+  }, [initialIssueFilter]);
+
+  /*
+   * ST_ADMIN_PRODUCTS_STICKY_CORNER_STATE_V1
+   *
+   * Keep the Products navigator rounded in its natural position,
+   * but make its top corners square only while position: sticky
+   * is actually engaged beneath the Admin header.
+   *
+   * Read the element's computed CSS top so desktop (64px) and
+   * mobile (56px) stay aligned with the existing sticky rules.
+   */
+  useEffect(() => {
+    const element = directoryRef.current;
+
+    if (!element) {
+      return;
+    }
+
+    let animationFrame = 0;
+
+    const updateStickyState = () => {
+      cancelAnimationFrame(animationFrame);
+
+      animationFrame = requestAnimationFrame(() => {
+        const rect = element.getBoundingClientRect();
+        const computedTop = Number.parseFloat(
+          window.getComputedStyle(element).top,
+        );
+
+        const nextSticky =
+          Number.isFinite(computedTop) &&
+          rect.top <= computedTop + 0.5;
+
+        setIsSticky((current) =>
+          current === nextSticky ? current : nextSticky,
+        );
+      });
+    };
+
+    updateStickyState();
+
+    window.addEventListener("scroll", updateStickyState, {
+      passive: true,
+    });
+    window.addEventListener("resize", updateStickyState);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener("scroll", updateStickyState);
+      window.removeEventListener("resize", updateStickyState);
+    };
   }, []);
 
   /*
@@ -204,7 +284,19 @@ export default function ProductSearch({
               ? productOutOfStock
               : productStatus === status);
 
-      const matches = matchesQuery && matchesStatus;
+      const productIssues =
+        (card.dataset.adminProductIssues ?? "")
+          .split(" ")
+          .filter(Boolean);
+
+      const matchesIssue =
+        issueFilter === null ||
+        productIssues.includes(issueFilter);
+
+      const matches =
+        matchesQuery &&
+        matchesStatus &&
+        matchesIssue;
 
       card.hidden = !matches;
 
@@ -246,6 +338,7 @@ export default function ProductSearch({
   }, [
     normalizedQuery,
     status,
+    issueFilter,
     pendingRestoreScrollY,
   ]);
 
@@ -271,7 +364,9 @@ export default function ProductSearch({
      * The decoded value still flows through the exact same search
      * state used by typing and USB/Bluetooth barcode readers.
      */
+    setIssueFilter(null);
     setStatus("all");
+    removeIssueQueryFromUrl();
     setQuery(cleanBarcode);
     setScannerOpen(false);
 
@@ -288,11 +383,36 @@ export default function ProductSearch({
     });
   }
 
+  function removeIssueQueryFromUrl() {
+    const url = new URL(window.location.href);
+
+    url.searchParams.delete("issue");
+
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }
+
+  function clearIssueFilter() {
+    setIssueFilter(null);
+    removeIssueQueryFromUrl();
+  }
+
+  function selectStatus(nextStatus: ProductStatusFilter) {
+    setIssueFilter(null);
+    setStatus(nextStatus);
+    removeIssueQueryFromUrl();
+  }
+
   return (
     <section
+      ref={directoryRef}
       className="st-admin-directory-search st-admin-product-directory-v2"
       aria-label="Product directory"
       data-product-filter={status}
+      data-sticky={isSticky ? "true" : "false"}
     >
       <div className="st-admin-product-directory-v2__toolbar">
         <label className="st-admin-directory-search__field">
@@ -354,7 +474,7 @@ export default function ProductSearch({
           <button
             type="button"
             className={status === "all" ? "is-active" : ""}
-            onClick={() => setStatus("all")}
+            onClick={() => selectStatus("all")}
           >
             <span>All</span>
             <strong>{total}</strong>
@@ -363,7 +483,7 @@ export default function ProductSearch({
           <button
             type="button"
             className={status === "published" ? "is-active" : ""}
-            onClick={() => setStatus("published")}
+            onClick={() => selectStatus("published")}
           >
             <span>Live</span>
             <strong>{liveTotal}</strong>
@@ -372,7 +492,7 @@ export default function ProductSearch({
           <button
             type="button"
             className={status === "draft" ? "is-active" : ""}
-            onClick={() => setStatus("draft")}
+            onClick={() => selectStatus("draft")}
           >
             <span>Drafts</span>
             <strong>{draftTotal}</strong>
@@ -381,7 +501,7 @@ export default function ProductSearch({
           <button
             type="button"
             className={status === "coming_soon" ? "is-active" : ""}
-            onClick={() => setStatus("coming_soon")}
+            onClick={() => selectStatus("coming_soon")}
           >
             <span>Coming soon</span>
             <strong>{comingSoonTotal}</strong>
@@ -390,7 +510,7 @@ export default function ProductSearch({
           <button
             type="button"
             className={status === "ask_for_price" ? "is-active" : ""}
-            onClick={() => setStatus("ask_for_price")}
+            onClick={() => selectStatus("ask_for_price")}
           >
             <span>Ask for price</span>
             <strong>{askForPriceTotal}</strong>
@@ -399,7 +519,7 @@ export default function ProductSearch({
           <button
             type="button"
             className={status === "out_of_stock" ? "is-active" : ""}
-            onClick={() => setStatus("out_of_stock")}
+            onClick={() => selectStatus("out_of_stock")}
           >
             <span>Out of stock</span>
             <strong>{outOfStockTotal}</strong>
@@ -408,6 +528,30 @@ export default function ProductSearch({
 
         {/* ST_ADMIN_PRODUCTS_RIGHT_COUNT_REMOVED_V1 */}
       </div>
+
+      {issueFilter ? (
+        <div className="st-admin-product-issue-filter">
+          <div>
+            <span>Dashboard filter</span>
+
+            <strong>{PRODUCT_ISSUE_LABELS[issueFilter]}</strong>
+
+            <small>
+              {visibleCount}{" "}
+              {visibleCount === 1 ? "product" : "products"}
+            </small>
+          </div>
+
+          <button
+            type="button"
+            onClick={clearIssueFilter}
+            aria-label="Clear dashboard issue filter"
+          >
+            <span>Clear filter</span>
+            <X aria-hidden="true" />
+          </button>
+        </div>
+      ) : null}
 
       {normalizedQuery ? (
         <p className="st-admin-directory-search__status">

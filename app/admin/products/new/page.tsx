@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 
 import ProductForm from "./product-form";
 import ProductPageBehavior from "@/components/admin/products/product-page-behavior";
-import { buildProductCategoryLeafOptions } from "@/components/admin/product-category-leaf-options";
 
 type NewProductPageProps = {
   searchParams: Promise<{
@@ -57,12 +56,6 @@ export default async function NewProductPage({
         .order("name", { ascending: true }),
     ]);
 
-  const productCategoryOptions =
-    buildProductCategoryLeafOptions(
-      categoriesResult.data ?? [],
-      subcategoriesResult.data ?? [],
-    );
-
   const resolvedSearchParams = await searchParams;
 
   const loadingError =
@@ -84,7 +77,8 @@ export default async function NewProductPage({
           <ProductPageBehavior />
 
           <ProductForm
-            categories={productCategoryOptions}
+            categories={categoriesResult.data ?? []}
+            subcategories={subcategoriesResult.data ?? []}
             brands={brandsResult.data ?? []}
             errorMessage={errorMessage}
           />

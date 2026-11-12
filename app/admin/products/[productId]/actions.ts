@@ -25,7 +25,7 @@ type VariantInput = {
   barcode: string;
   regular_price: number | "";
   sale_price: number | "";
-  stock_quantity: number;
+  stock_quantity: number | "";
   low_stock_threshold: number;
   availability_status: AvailabilityStatus;
 };
@@ -218,15 +218,62 @@ function validateVariants(
       }
     }
 
-    const stockQuantity = Number(variant.stock_quantity);
-    const lowStockThreshold = Number(variant.low_stock_threshold);
+    const stockQuantityText =
+      variant.stock_quantity === "" ||
+      variant.stock_quantity === null ||
+      variant.stock_quantity === undefined
+        ? ""
+        : String(
+            variant.stock_quantity,
+          ).trim();
 
-    if (!Number.isFinite(stockQuantity) || stockQuantity < 0) {
+    const stockQuantity =
+      stockQuantityText === ""
+        ? null
+        : Number(
+            stockQuantityText,
+          );
+
+    const stockRequired =
+      publishingIntent === "publish" &&
+      (
+        variant.availability_status === "in_stock" ||
+        variant.availability_status === "low_stock"
+      );
+
+    if (
+      stockRequired &&
+      (
+        stockQuantity === null ||
+        !Number.isFinite(
+          stockQuantity,
+        ) ||
+        stockQuantity < 0
+      )
+    ) {
       redirectWithError(
         productId,
         `Enter a valid stock quantity for ${configurationName}.`,
       );
     }
+
+    if (
+      !stockRequired &&
+      stockQuantity !== null &&
+      (
+        !Number.isFinite(
+          stockQuantity,
+        ) ||
+        stockQuantity < 0
+      )
+    ) {
+      redirectWithError(
+        productId,
+        `Enter a valid stock quantity for ${configurationName}.`,
+      );
+    }
+
+    const lowStockThreshold = Number(variant.low_stock_threshold);
 
     if (!Number.isFinite(lowStockThreshold) || lowStockThreshold < 0) {
       redirectWithError(

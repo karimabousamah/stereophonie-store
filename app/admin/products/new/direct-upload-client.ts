@@ -16,6 +16,18 @@ export type DirectUploadSelectedImage = {
    * Empty array means Shared.
    */
   configurationIds: string[];
+
+  /*
+   * Exact customer-facing order inside every configuration.
+   *
+   * This must survive Publish Live unchanged.
+   */
+  configurationAssignments: {
+    configurationId: string;
+    position: number;
+    isPrimary: boolean;
+  }[];
+
   altText: string;
   isPrimary: boolean;
   position: number;
@@ -29,6 +41,13 @@ export type DirectUploadProgress = {
 export type DirectUploadedImagePayload = {
   storage_path: string;
   configuration_ids: string[];
+
+  configuration_assignments: {
+    configuration_id: string;
+    position: number;
+    is_primary: boolean;
+  }[];
+
   original_name: string;
   content_type: string;
   size: number;
@@ -255,6 +274,37 @@ export async function uploadImagesBeforeProductSubmission(
               .filter(Boolean),
           ),
         ),
+
+        /*
+         * Do not rebuild this ordering after Publish.
+         * It is the exact arrangement the administrator saw.
+         */
+        configuration_assignments:
+          image.configurationAssignments
+            .map((assignment) => ({
+              configuration_id:
+                assignment.configurationId.trim(),
+              position:
+                Math.max(
+                  0,
+                  Math.trunc(
+                    Number(
+                      assignment.position,
+                    ),
+                  ),
+                ),
+              is_primary:
+                Boolean(
+                  assignment.isPrimary,
+                ),
+            }))
+            .filter(
+              (assignment) =>
+                Boolean(
+                  assignment.configuration_id,
+                ),
+            ),
+
         original_name: image.file.name,
         content_type: image.file.type,
         size: image.file.size,

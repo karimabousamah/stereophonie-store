@@ -381,8 +381,9 @@ export default async function AdminStockAlertsPage({
 
                   return (
                     <article
+                      id={`alert-${alert.id}`}
                       key={alert.id}
-                      className="grid gap-5 p-5 transition hover:bg-white/[0.025] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_auto] lg:items-center"
+                      className="scroll-mt-24 grid gap-5 p-5 transition hover:bg-white/[0.025] lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_auto] lg:items-center"
                     >
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-3">

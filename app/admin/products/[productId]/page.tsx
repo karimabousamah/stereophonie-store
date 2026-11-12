@@ -7,7 +7,6 @@ import ProductPageBehavior from "@/components/admin/products/product-page-behavi
 import { createClient } from "@/lib/supabase/server";
 
 import EditProductForm from "./edit-product-form";
-import { buildProductCategoryLeafOptions } from "@/components/admin/product-category-leaf-options";
 import ImageManager from "./image-manager";
 
 type EditProductPageProps = {
@@ -265,28 +264,6 @@ export default async function EditProductPage({
 
   const salePrice = firstVariant?.sale_price ?? null;
 
-  const productCategoryOptions =
-    buildProductCategoryLeafOptions(
-      categoriesResult.data ?? [],
-      subcategoriesResult.data ?? [],
-    );
-
-  const validProductCategoryOptionIds = new Set(
-    productCategoryOptions.map((option) => option.id),
-  );
-
-  const additionalCategoryIds = (
-    additionalCategoriesResult.data ?? []
-  )
-    .map(
-      (assignment) =>
-        assignment.subcategory_id ??
-        assignment.category_id,
-    )
-    .filter((id) =>
-      validProductCategoryOptionIds.has(id),
-    );
-
   const loadingError =
     categoriesResult.error ||
     subcategoriesResult.error ||
@@ -364,7 +341,16 @@ export default async function EditProductPage({
               description: product.description ?? "",
               categoryId: product.category_id ?? "",
               subcategoryId: product.subcategory_id ?? "",
-              additionalCategoryIds,
+              additionalCategoryAssignments:
+                (
+                  additionalCategoriesResult.data ??
+                  []
+                ).map((assignment) => ({
+                  category_id:
+                    assignment.category_id,
+                  subcategory_id:
+                    assignment.subcategory_id,
+                })),
               brandId: product.brand_id ?? "",
               status: product.status,
               availability: product.availability,
@@ -375,7 +361,8 @@ export default async function EditProductPage({
               salePrice,
               variants,
             }}
-            categories={productCategoryOptions}
+            categories={categoriesResult.data ?? []}
+            subcategories={subcategoriesResult.data ?? []}
             brands={brandsResult.data ?? []}
             errorMessage={errorMessage}
             mediaManager={

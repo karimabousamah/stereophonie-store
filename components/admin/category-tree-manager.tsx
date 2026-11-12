@@ -19,7 +19,11 @@ import {
 import { useFormStatus } from "react-dom";
 
 import CategoryHomepageControls from "@/components/admin/category-homepage-controls";
+import MoviesSeriesManager, {
+  type EntertainmentAdminItem,
+} from "@/components/admin/movies-series-manager";
 import SubcategoryStorefrontControls from "./subcategory-storefront-controls";
+import { isMoviesSeriesCategory } from "@/lib/stereophonie-entertainment";
 import ConfirmSubmitButton from "@/components/admin/confirm-submit-button";
 import {
   createCategory,
@@ -100,6 +104,7 @@ type Selection =
 type Props = {
   categories: CategoryTreeRoot[];
   subcategories: CategoryTreeNode[];
+  entertainmentTitles: EntertainmentAdminItem[];
 };
 
 function categoryClientSlugify(
@@ -135,6 +140,7 @@ function descendants(
 export default function CategoryTreeManager({
   categories,
   subcategories,
+  entertainmentTitles,
 }: Props) {
   const router = useRouter();
 
@@ -295,6 +301,12 @@ export default function CategoryTreeManager({
       [`${type}:${id}`]: value,
     }));
   }
+
+  // MOVIES_SERIES_TREE_TITLE_SELECTION
+  const [
+    selectedEntertainmentId,
+    setSelectedEntertainmentId,
+  ] = useState<string | null>(null);
 
   const selectedCategory =
     selection?.type === "category"
@@ -885,9 +897,15 @@ export default function CategoryTreeManager({
     setAddingRootCategory(false);
     setAddingTo(null);
 
+    const hadEntertainmentSelection =
+      selectedEntertainmentId !== null;
+
+    setSelectedEntertainmentId(null);
+
     const isAlreadySelected =
       selection?.type === "category" &&
-      selection.id === categoryId;
+      selection.id === categoryId &&
+      !hadEntertainmentSelection;
 
     /*
      * Clicking the currently selected Category again closes its
@@ -917,6 +935,7 @@ export default function CategoryTreeManager({
   function selectSubcategoryNode(subcategoryId: string) {
     setAddingRootCategory(false);
     setAddingTo(null);
+    setSelectedEntertainmentId(null);
 
     expandSubcategoryNode(subcategoryId);
 
@@ -1064,7 +1083,12 @@ export default function CategoryTreeManager({
               const key = `category:${category.id}`;
               const isExpanded = expanded.has(key);
               const isSelected =
-                selection?.type === "category" && selection.id === category.id;
+                selection?.type === "category" &&
+                selection.id === category.id &&
+                !(
+                  isMoviesSeriesCategory(category) &&
+                  selectedEntertainmentId
+                );
 
               const isActive = statusValue(
                 "category",
@@ -1137,7 +1161,8 @@ export default function CategoryTreeManager({
                     </button>
                   </div>
 
-                  {children.length > 0 ? (
+                  {children.length > 0 ||
+                  isMoviesSeriesCategory(category) ? (
                     <div
                       className={`st-category-tree__children ${
                         isExpanded ? "is-open" : "is-closed"
@@ -1146,6 +1171,170 @@ export default function CategoryTreeManager({
                     >
                       <div className="st-category-tree__children-inner">
                         {children.map((node) => renderNode(node, 1))}
+
+                        {/* MOVIES_SERIES_TITLE_TREE_CHILDREN */}
+                        {isMoviesSeriesCategory(category)
+                          ? entertainmentTitles.map((item) => {
+                              const titleSelected =
+                                selectedEntertainmentId ===
+                                item.id;
+
+                              const titleActive =
+                                item.is_active;
+
+                              return (
+                                <div
+                                  key={`entertainment:${item.id}`}
+                                  className="st-category-tree__branch"
+                                >
+                                  <div
+                                    className={`st-category-tree__node ${
+                                      titleSelected
+                                        ? "is-selected"
+                                        : ""
+                                    } ${
+                                      titleActive
+                                        ? "is-active"
+                                        : "is-inactive"
+                                    }`}
+                                    style={
+                                      {
+                                        "--tree-depth": 1,
+                                      } as React.CSSProperties
+                                    }
+                                  >
+                                    <button
+                                      type="button"
+                                      className="st-category-tree__expand"
+                                      tabIndex={-1}
+                                      aria-hidden="true"
+                                    >
+                                      <span />
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      className="st-category-tree__select"
+                                      onClick={() => {
+                                        setAddingRootCategory(
+                                          false,
+                                        );
+
+                                        setAddingTo(null);
+
+                                        setSelectedEntertainmentId(
+                                          item.id,
+                                        );
+
+                                        setSelection({
+                                          type: "category",
+                                          id: category.id,
+                                        });
+
+                                        expandCategoryNode(
+                                          category.id,
+                                        );
+
+                                        window.setTimeout(
+                                          () => {
+                                            window.dispatchEvent(
+                                              new CustomEvent(
+                                                "st:movies-series-title-action",
+                                                {
+                                                  detail: {
+                                                    action:
+                                                      "edit",
+                                                    id:
+                                                      item.id,
+                                                  },
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          0,
+                                        );
+                                      }}
+                                    >
+                                      <span className="st-category-tree__folder">
+                                        <Folder
+                                          aria-hidden="true"
+                                        />
+                                      </span>
+
+                                      <span className="st-category-tree__label">
+                                        <strong>
+                                          {item.title}
+                                        </strong>
+
+                                        <small>
+                                          {item.kind}
+                                          {" · "}
+                                          {item.year}
+                                        </small>
+                                      </span>
+
+                                      <span
+                                        className={`st-category-tree__state ${
+                                          titleActive
+                                            ? "is-active"
+                                            : "is-inactive"
+                                        }`}
+                                      >
+                                        {titleActive
+                                          ? "Visible"
+                                          : "Hidden"}
+                                      </span>
+                                    </button>
+                                  </div>
+
+                                  {/* MOVIES_SERIES_SELECTED_TITLE_ADD */}
+                                  {titleSelected ? (
+                                    <div
+                                      className="st-category-tree__add-slot-v2"
+                                      style={
+                                        {
+                                          "--tree-depth": 1,
+                                        } as React.CSSProperties
+                                      }
+                                    >
+                                      <button
+                                        type="button"
+                                        className="st-category-tree__add-subcategory-v2"
+                                        onClick={() => {
+                                          window.setTimeout(
+                                            () => {
+                                              window.dispatchEvent(
+                                                new CustomEvent(
+                                                  "st:movies-series-title-action",
+                                                  {
+                                                    detail: {
+                                                      action:
+                                                        "add",
+                                                      afterId:
+                                                        item.id,
+                                                    },
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            0,
+                                          );
+                                        }}
+                                      >
+                                        <FolderPlus
+                                          aria-hidden="true"
+                                        />
+
+                                        <span>
+                                          Add title
+                                        </span>
+                                      </button>
+                                    </div>
+                                  ) : null}
+                                </div>
+                              );
+                            })
+                          : null}
                       </div>
                     </div>
                   ) : null}
@@ -1163,6 +1352,37 @@ export default function CategoryTreeManager({
                         onClick={() => {
                           expandCategoryNode(category.id);
 
+                          // MOVIES_SERIES_ROOT_ADD_TITLE
+                          if (
+                            isMoviesSeriesCategory(
+                              category,
+                            )
+                          ) {
+                            setSelectedEntertainmentId(
+                              null,
+                            );
+
+                            setSelection({
+                              type: "category",
+                              id: category.id,
+                            });
+
+                            window.setTimeout(() => {
+                              window.dispatchEvent(
+                                new CustomEvent(
+                                  "st:movies-series-title-action",
+                                  {
+                                    detail: {
+                                      action: "add",
+                                    },
+                                  },
+                                ),
+                              );
+                            }, 0);
+
+                            return;
+                          }
+
                           setAddingTo({
                             categoryId: category.id,
                             parentId: null,
@@ -1171,7 +1391,11 @@ export default function CategoryTreeManager({
                         }}
                       >
                         <FolderPlus aria-hidden="true" />
-                        <span>Add subcategory</span>
+                        <span>
+                          {isMoviesSeriesCategory(category)
+                            ? "Add title"
+                            : "Add subcategory"}
+                        </span>
                       </button>
                     </div>
                 </div>
@@ -1469,28 +1693,60 @@ export default function CategoryTreeManager({
                 <h2>{selectedCategory.name}</h2>
               </div>
 
-              <div className="st-category-workspace__summary">
-                <div className="st-category-workspace__product-count">
-                  <Package aria-hidden="true" />
-                  <span>
-                    <strong>{selectedCategory.productCount}</strong>
-                    {selectedCategory.productCount === 1
-                      ? " product"
-                      : " products"}
+              {isMoviesSeriesCategory(
+                selectedCategory,
+              ) ? (
+                <div className="st-category-workspace__summary st-category-workspace__summary--entertainment">
+                  <div className="st-category-workspace__product-count">
+                    <span>
+                      <strong>
+                        {entertainmentTitles.length}
+                      </strong>
+
+                      {entertainmentTitles.length === 1
+                        ? " title"
+                        : " titles"}
+                    </span>
+                  </div>
+
+
+                </div>
+              ) : (
+                <div className="st-category-workspace__summary">
+                  <div className="st-category-workspace__product-count">
+                    <Package aria-hidden="true" />
+                    <span>
+                      <strong>{selectedCategory.productCount}</strong>
+                      {selectedCategory.productCount === 1
+                        ? " product"
+                        : " products"}
+                    </span>
+                  </div>
+
+                  <span
+                    className={`st-category-workspace__status ${
+                      selectedCategoryStatus
+                        ? "is-active"
+                        : "is-inactive"
+                    }`}
+                  >
+                    {selectedCategoryStatus
+                      ? "Active"
+                      : "Inactive"}
                   </span>
                 </div>
-
-                <span
-                  className={`st-category-workspace__status ${
-                    selectedCategoryStatus ? "is-active" : "is-inactive"
-                  }`}
-                >
-                  {selectedCategoryStatus ? "Active" : "Inactive"}
-                </span>
-              </div>
+              )}
             </div>
 
-            <div className="st-category-workspace__body">
+            <div
+              className={`st-category-workspace__body ${
+                isMoviesSeriesCategory(
+                  selectedCategory,
+                )
+                  ? "is-movies-series"
+                  : ""
+              }`}
+            >
               <div className="st-category-workspace__section">
                 <div className="st-category-workspace__section-head">
                   <div>
@@ -1609,6 +1865,17 @@ export default function CategoryTreeManager({
                     </>
                   }
                 />
+
+              {isMoviesSeriesCategory(
+                selectedCategory,
+              ) ? (
+                <MoviesSeriesManager
+                  items={
+                    entertainmentTitles
+                  }
+                selectedId={selectedEntertainmentId}
+                />
+              ) : null}
             </div>
           </>
         ) : selectedSubcategory && selectedRoot ? (

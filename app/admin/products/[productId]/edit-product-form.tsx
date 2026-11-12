@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 import ProductBrandPicker from "@/components/admin/product-brand-picker";
-import ProductCategoryPicker from "@/components/admin/product-category-picker";
+import ProductOrganizationMultiPicker from "@/components/admin/product-organization-multi-picker";
 import ElectronicsVariantEditor, {
   type AdminElectronicsVariant,
 } from "@/components/admin/products/electronics-variant-editor";
@@ -97,7 +97,16 @@ function createInitialVariants(
         ? ""
         : Number(variant.sale_price),
 
-    stock_quantity: variant.stock_quantity ?? 0,
+    stock_quantity:
+      (
+        variant.availability_status === "coming_soon" ||
+        variant.availability_status === "ask_for_price"
+      ) &&
+      Number(
+        variant.stock_quantity ?? 0,
+      ) === 0
+        ? ""
+        : variant.stock_quantity ?? 0,
     low_stock_threshold: variant.low_stock_threshold ?? 2,
     availability_status: variant.availability_status,
   }));
@@ -111,7 +120,10 @@ type EditProductFormProps = {
     description: string;
     categoryId: string;
     subcategoryId: string;
-    additionalCategoryIds: string[];
+    additionalCategoryAssignments?: {
+      category_id: string;
+      subcategory_id: string | null;
+    }[];
     brandId: string;
     status: string;
     availability: string | null;
@@ -125,9 +137,13 @@ type EditProductFormProps = {
   categories: {
     id: string;
     name: string;
-    rootCategoryId?: string;
-    subcategoryId?: string | null;
-    editable?: boolean;
+  }[];
+
+  subcategories: {
+    id: string;
+    category_id: string;
+    parent_subcategory_id: string | null;
+    name: string;
   }[];
 
   brands: {
@@ -141,6 +157,7 @@ type EditProductFormProps = {
 export default function EditProductForm({
   product,
   categories,
+  subcategories,
   brands,
   errorMessage,
   mediaManager,
@@ -180,74 +197,207 @@ export default function EditProductForm({
 
   const [productName, setProductName] = useState(product.name);
 
-  const initialCategorySelectionId =
-    product.subcategoryId || product.categoryId;
+  const initialCategoryIds =
+    Array.from(
+      new Set(
+        [
+          product.categoryId,
+          ...(product.additionalCategoryAssignments ?? []).map(
+            (assignment) =>
+              assignment.category_id,
+          ),
+        ].filter(Boolean),
+      ),
+    );
 
-  const initialCategoryOption =
-    categories.find(
-      (category) => category.id === initialCategorySelectionId,
-    ) ?? null;
-
-  const initialCategoryName =
-    initialCategoryOption?.name ?? "";
-
-  /*
-   * If a legacy product points only at a parent Category which
-   * now contains children, that parent is no longer a valid
-   * product destination. The administrator must choose a leaf
-   * before the next save.
-   */
-  const initialCategoryRootId =
-    initialCategoryOption?.rootCategoryId ??
-    initialCategoryOption?.id ??
-    "";
-
-  const initialCategorySubcategoryId =
-    initialCategoryOption?.subcategoryId ?? "";
+  const initialSubcategoryIds =
+    Array.from(
+      new Set(
+        [
+          product.subcategoryId,
+          ...(product.additionalCategoryAssignments ?? []).flatMap(
+            (assignment) =>
+              assignment.subcategory_id
+                ? [
+                    assignment.subcategory_id,
+                  ]
+                : [],
+          ),
+        ].filter(Boolean),
+      ),
+    );
 
   const initialBrandName =
-    brands.find((brand) => brand.id === product.brandId)?.name ?? "";
+    brands.find(
+      (brand) =>
+        brand.id ===
+        product.brandId,
+    )?.name ?? "";
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState(
-    initialCategoryRootId,
+  const [
+    selectedCategoryIds,
+    setSelectedCategoryIds,
+  ] = useState<string[]>(
+    initialCategoryIds,
   );
 
-  const [selectedCategoryName, setSelectedCategoryName] =
-    useState(initialCategoryName);
-
-  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(
-    initialCategorySubcategoryId,
+  const [
+    selectedSubcategoryIds,
+    setSelectedSubcategoryIds,
+  ] = useState<string[]>(
+    initialSubcategoryIds,
   );
 
-  const [selectedAdditionalCategoryIds, setSelectedAdditionalCategoryIds] =
-    useState<string[]>(product.additionalCategoryIds);
+  const [selectedBrandId, setSelectedBrandId] =
+    useState(
+      product.brandId,
+    );
 
-  const [selectedBrandId, setSelectedBrandId] = useState(
-    product.brandId,
-  );
+  const [selectedBrandName, setSelectedBrandName] =
+    useState(
+      initialBrandName,
+    );
 
-  const [selectedBrandName, setSelectedBrandName] = useState(initialBrandName);
+  const selectedSubcategoryRows =
+    useMemo(
+      () =>
+        selectedSubcategoryIds.flatMap(
+          (id) => {
+            const subcategory =
+              subcategories.find(
+                (candidate) =>
+                  candidate.id === id,
+              );
 
-  const additionalCategoryAssignments = useMemo(
-    () =>
-      selectedAdditionalCategoryIds.flatMap((selectedId) => {
-        const option = categories.find(
-          (category) => category.id === selectedId,
-        );
+            return subcategory
+              ? [subcategory]
+              : [];
+          },
+        ),
+      [
+        selectedSubcategoryIds,
+        subcategories,
+      ],
+    );
 
-        if (!option) {
-          return [];
+  const organizationAssignments =
+    useMemo(
+      () => {
+        const assignments: {
+          category_id: string;
+          subcategory_id: string | null;
+        }[] = [];
+
+        for (
+          const categoryId
+          of selectedCategoryIds
+        ) {
+          const categorySubcategories =
+            selectedSubcategoryRows.filter(
+              (subcategory) =>
+                subcategory.category_id ===
+                categoryId,
+            );
+
+          if (
+            categorySubcategories.length ===
+            0
+          ) {
+            assignments.push({
+              category_id:
+                categoryId,
+              subcategory_id:
+                null,
+            });
+
+            continue;
+          }
+
+          for (
+            const subcategory
+            of categorySubcategories
+          ) {
+            assignments.push({
+              category_id:
+                categoryId,
+              subcategory_id:
+                subcategory.id,
+            });
+          }
         }
 
-        return [
-          {
-            category_id: option.rootCategoryId ?? option.id,
-            subcategory_id: option.subcategoryId ?? null,
-          },
-        ];
-      }),
-    [categories, selectedAdditionalCategoryIds],
-  );
+        /*
+         * INDEPENDENT_SUBCATEGORY_PLACEMENTS_V17
+         *
+         * Category and Subcategory are independent selectors.
+         * A subcategory remains a valid placement even when its
+         * own root category was not separately selected above.
+         */
+        for (
+          const subcategory
+          of selectedSubcategoryRows
+        ) {
+          if (
+            selectedCategoryIds.includes(
+              subcategory.category_id,
+            )
+          ) {
+            continue;
+          }
+
+          assignments.push({
+            category_id:
+              subcategory.category_id,
+            subcategory_id:
+              subcategory.id,
+          });
+        }
+
+        return assignments;
+      },
+      [
+        selectedCategoryIds,
+        selectedSubcategoryRows,
+      ],
+    );
+
+  const primaryOrganizationAssignment =
+    organizationAssignments[0] ??
+    null;
+
+  const selectedCategoryId =
+    primaryOrganizationAssignment
+      ?.category_id ?? "";
+
+  const selectedSubcategoryId =
+    primaryOrganizationAssignment
+      ?.subcategory_id ?? "";
+
+  const selectedCategoryName =
+    categories.find(
+      (category) =>
+        category.id ===
+        selectedCategoryId,
+    )?.name ?? "";
+
+  const additionalCategoryAssignments =
+    organizationAssignments.slice(
+      1,
+    );
+
+  const availableSubcategoryOptions =
+    useMemo(
+      () =>
+        subcategories.map(
+          (subcategory) => ({
+            id:
+              subcategory.id,
+            name:
+              subcategory.name,
+          }),
+        ),
+      [subcategories],
+    );
 
   const [productDescription, setProductDescription] = useState(
     product.description,
@@ -263,36 +413,77 @@ export default function EditProductForm({
     return initialVariants;
   });
 
+  /* PRODUCT_MEDIA_DIRTY_LISTENER_V1 */
+  const [
+    mediaHasUnsavedChanges,
+    setMediaHasUnsavedChanges,
+  ] = useState(false);
+
+  useEffect(() => {
+    const handleMediaDirty =
+      (event: Event) => {
+        const detail =
+          (event as CustomEvent<{
+            isDirty?: boolean;
+          }>).detail;
+
+        setMediaHasUnsavedChanges(
+          Boolean(detail?.isDirty),
+        );
+      };
+
+    window.addEventListener(
+      "stereophonie:admin-product-media-dirty",
+      handleMediaDirty,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "stereophonie:admin-product-media-dirty",
+        handleMediaDirty,
+      );
+    };
+  }, []);
+
   const hasUnsavedChanges = useMemo(() => {
     const initialVariants = initialVariantsRef.current ?? [];
 
     return (
+      mediaHasUnsavedChanges ||
       productName !== product.name ||
       productDescription !== product.description ||
       selectedBrandId !== product.brandId ||
-      selectedCategoryId !== initialCategoryRootId ||
-      selectedSubcategoryId !== initialCategorySubcategoryId ||
-      JSON.stringify([...selectedAdditionalCategoryIds].sort()) !==
-        JSON.stringify([...product.additionalCategoryIds].sort()) ||
+      JSON.stringify(
+        [...selectedCategoryIds].sort(),
+      ) !==
+        JSON.stringify(
+          [...initialCategoryIds].sort(),
+        ) ||
+      JSON.stringify(
+        [...selectedSubcategoryIds].sort(),
+      ) !==
+        JSON.stringify(
+          [...initialSubcategoryIds].sort(),
+        ) ||
       placementSelection.featured !== product.isFeatured ||
       placementSelection.trending !== product.isTrending ||
       placementSelection.newArrival !== product.isNewArrival ||
       JSON.stringify(variants) !== JSON.stringify(initialVariants)
     );
   }, [
+    mediaHasUnsavedChanges,
     productName,
     productDescription,
     selectedBrandId,
-    selectedCategoryId,
-    selectedSubcategoryId,
-    selectedAdditionalCategoryIds,
+    selectedCategoryIds,
+    selectedSubcategoryIds,
     placementSelection,
     variants,
     product.name,
     product.description,
     product.brandId,
-    initialCategoryRootId,
-    initialCategorySubcategoryId,
+    initialCategoryIds,
+    initialSubcategoryIds,
     product.isFeatured,
     product.isTrending,
     product.isNewArrival,
@@ -763,6 +954,12 @@ export default function EditProductForm({
 
         <input
           type="hidden"
+          name="category_id"
+          value={selectedCategoryId}
+        />
+
+        <input
+          type="hidden"
           name="subcategory_id"
           value={selectedSubcategoryId}
         />
@@ -840,7 +1037,9 @@ export default function EditProductForm({
 
                       <ProductBrandPicker
                         brands={brands}
-                        defaultValue={product.brandId}
+                        defaultValue={
+                          product.brandId
+                        }
                         onBrandChange={(brand) => {
                           setSelectedBrandId(
                             brand?.id ?? "",
@@ -858,40 +1057,68 @@ export default function EditProductForm({
                         Category
                       </label>
 
-                      <ProductCategoryPicker
-                        categories={categories}
-                        defaultValue={initialCategorySelectionId}
-                        defaultAdditionalValues={
-                          product.additionalCategoryIds
+                      <ProductOrganizationMultiPicker
+                        label="Category"
+                        options={categories}
+                        selectedIds={
+                          selectedCategoryIds
                         }
-                        multiselect
-                        onCategoriesChange={(selectedCategories) => {
-                          const primary =
-                            selectedCategories[0] ?? null;
-
-                          setSelectedCategoryId(
-                            primary?.rootCategoryId ??
-                              primary?.id ??
-                              "",
+                        onSelectionChange={(
+                          nextIds,
+                        ) => {
+                          setSelectedCategoryIds(
+                            nextIds,
                           );
 
-                          setSelectedCategoryName(
-                            primary?.name ?? "",
-                          );
+                          setSelectedSubcategoryIds(
+                            (current) =>
+                              current.filter(
+                                (subcategoryId) => {
+                                  const subcategory =
+                                    subcategories.find(
+                                      (candidate) =>
+                                        candidate.id ===
+                                        subcategoryId,
+                                    );
 
-                          setSelectedSubcategoryId(
-                            primary?.subcategoryId ?? "",
-                          );
-
-                          setSelectedAdditionalCategoryIds(
-                            selectedCategories
-                              .slice(1)
-                              .map(
-                                (category) =>
-                                  category.id,
+                                  return Boolean(
+                                    subcategory &&
+                                      nextIds.includes(
+                                        subcategory.category_id,
+                                      ),
+                                  );
+                                },
                               ),
                           );
                         }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="st-admin-product-sidebar-label-v2">
+                        Subcategory
+                      </label>
+
+                      <ProductOrganizationMultiPicker
+                        label="Subcategory"
+                        options={
+                          availableSubcategoryOptions
+                        }
+                        selectedIds={
+                          selectedSubcategoryIds
+                        }
+                        disabled={
+                          selectedCategoryIds.length ===
+                          0
+                        }
+                        placeholder={
+                          selectedCategoryIds.length
+                            ? "Select subcategory"
+                            : "Select category first"
+                        }
+                        onSelectionChange={
+                          setSelectedSubcategoryIds
+                        }
                       />
                     </div>
                   </div>

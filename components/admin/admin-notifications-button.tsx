@@ -13,20 +13,50 @@ import {
   RefreshCw,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-type NotificationCounts = {
-  pendingOrders: number;
-  draftProducts: number;
-  lowStockVariants: number;
-  pendingStockAlerts: number;
+type NotificationCategory =
+  | "pendingOrders"
+  | "draftProducts"
+  | "lowStockVariants"
+  | "pendingStockAlerts";
+
+type NotificationCounts = Record<
+  NotificationCategory,
+  number
+>;
+
+type AdminNotification = {
+  id: string;
+  category: NotificationCategory;
+  sourceId: string;
+  title: string;
+  description: string;
+  href: string;
+  tone:
+    | "amber"
+    | "red"
+    | "blue"
+    | "neutral";
 };
 
 type NotificationsResponse =
   | {
       success: true;
       counts: NotificationCounts;
-      itemIds: Record<keyof NotificationCounts, string[]>;
+
+      itemIds: Record<
+        NotificationCategory,
+        string[]
+      >;
+
+      notifications: AdminNotification[];
+
       total: number;
       generatedAt: string;
     }
@@ -35,121 +65,189 @@ type NotificationsResponse =
       message?: string;
     };
 
-const emptyCounts: NotificationCounts = {
-  pendingOrders: 0,
-  draftProducts: 0,
-  lowStockVariants: 0,
-  pendingStockAlerts: 0,
+const emptySeenIds: Record<
+  NotificationCategory,
+  string[]
+> = {
+  pendingOrders: [],
+  draftProducts: [],
+  lowStockVariants: [],
+  pendingStockAlerts: [],
 };
 
+const storageKey =
+  "stereophonie-admin-seen-notifications-v1";
+
+function getNotificationIcon(
+  category: NotificationCategory,
+) {
+  if (category === "pendingOrders") {
+    return PackageCheck;
+  }
+
+  if (category === "lowStockVariants") {
+    return AlertTriangle;
+  }
+
+  if (category === "pendingStockAlerts") {
+    return BellRing;
+  }
+
+  return Box;
+}
+
 export default function AdminNotificationsButton() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef =
+    useRef<HTMLDivElement>(null);
 
   const [open, setOpen] = useState(false);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
-  const [counts, setCounts] = useState<NotificationCounts>(emptyCounts);
+  const [notifications, setNotifications] =
+    useState<AdminNotification[]>([]);
 
-  const [itemIds, setItemIds] = useState<
-    Record<keyof NotificationCounts, string[]>
-  >({
-    pendingOrders: [],
-    draftProducts: [],
-    lowStockVariants: [],
-    pendingStockAlerts: [],
-  });
-
-  const [seenIds, setSeenIds] = useState<
-    Record<keyof NotificationCounts, string[]>
-  >({
-    pendingOrders: [],
-    draftProducts: [],
-    lowStockVariants: [],
-    pendingStockAlerts: [],
-  });
-
-  const storageKey = "stereophonie-admin-seen-notifications-v1";
+  const [seenIds, setSeenIds] =
+    useState<
+      Record<
+        NotificationCategory,
+        string[]
+      >
+    >(emptySeenIds);
 
   useEffect(() => {
     try {
-      const stored = window.localStorage.getItem(storageKey);
+      const stored =
+        window.localStorage.getItem(
+          storageKey,
+        );
 
       if (!stored) {
         return;
       }
 
-      const parsed = JSON.parse(stored) as Partial<
-        Record<keyof NotificationCounts, string[]>
+      const parsed = JSON.parse(
+        stored,
+      ) as Partial<
+        Record<
+          NotificationCategory,
+          string[]
+        >
       >;
 
       setSeenIds({
-        pendingOrders: parsed.pendingOrders ?? [],
-        draftProducts: parsed.draftProducts ?? [],
-        lowStockVariants: parsed.lowStockVariants ?? [],
-        pendingStockAlerts: parsed.pendingStockAlerts ?? [],
+        pendingOrders:
+          parsed.pendingOrders ?? [],
+
+        draftProducts:
+          parsed.draftProducts ?? [],
+
+        lowStockVariants:
+          parsed.lowStockVariants ?? [],
+
+        pendingStockAlerts:
+          parsed.pendingStockAlerts ?? [],
       });
     } catch {
-      // Ignore corrupt browser storage and start fresh.
+      // Ignore corrupt local storage.
     }
   }, []);
 
-  function persistSeenIds(next: Record<keyof NotificationCounts, string[]>) {
+  function persistSeenIds(
+    next: Record<
+      NotificationCategory,
+      string[]
+    >,
+  ) {
     setSeenIds(next);
 
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify(next));
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify(next),
+      );
     } catch {
       // Browser privacy settings may block storage.
     }
   }
 
-  function markCategorySeen(category: keyof NotificationCounts) {
-    const next = {
-      ...seenIds,
-      [category]: Array.from(
-        new Set([...seenIds[category], ...itemIds[category]]),
-      ),
-    };
+  function markNotificationSeen(
+    notification: AdminNotification,
+  ) {
+    const current =
+      seenIds[notification.category];
 
-    persistSeenIds(next);
+    if (
+      current.includes(
+        notification.sourceId,
+      )
+    ) {
+      return;
+    }
+
+    persistSeenIds({
+      ...seenIds,
+
+      [notification.category]:
+        Array.from(
+          new Set([
+            ...current,
+            notification.sourceId,
+          ]),
+        ),
+    });
   }
 
-  const loadNotifications = useCallback(async () => {
-    setLoading(true);
-    setError("");
+  const loadNotifications =
+    useCallback(async () => {
+      setLoading(true);
+      setError("");
 
-    try {
-      const response = await fetch("/api/admin/notifications", {
-        method: "GET",
-        cache: "no-store",
-        credentials: "same-origin",
-      });
+      try {
+        const response =
+          await fetch(
+            "/api/admin/notifications",
+            {
+              method: "GET",
+              cache: "no-store",
+              credentials:
+                "same-origin",
+            },
+          );
 
-      const data = (await response.json()) as NotificationsResponse;
+        const data =
+          (await response.json()) as
+            NotificationsResponse;
 
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.success
-            ? "Notifications could not be loaded."
-            : data.message || "Notifications could not be loaded.",
+        if (
+          !response.ok ||
+          !data.success
+        ) {
+          throw new Error(
+            data.success
+              ? "Notifications could not be loaded."
+              : data.message ||
+                  "Notifications could not be loaded.",
+          );
+        }
+
+        setNotifications(
+          data.notifications,
         );
+      } catch (loadError) {
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "Notifications could not be loaded.",
+        );
+      } finally {
+        setLoading(false);
       }
-
-      setCounts(data.counts);
-      setItemIds(data.itemIds);
-    } catch (loadError) {
-      setError(
-        loadError instanceof Error
-          ? loadError.message
-          : "Notifications could not be loaded.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    }, []);
 
   useEffect(() => {
     void loadNotifications();
@@ -160,29 +258,47 @@ export default function AdminNotificationsButton() {
       return;
     }
 
-    function handleOutsideClick(event: MouseEvent) {
+    function handleOutsideClick(
+      event: MouseEvent,
+    ) {
       if (
         containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
+        !containerRef.current.contains(
+          event.target as Node,
+        )
       ) {
         setOpen(false);
       }
     }
 
-    function handleEscape(event: KeyboardEvent) {
+    function handleEscape(
+      event: KeyboardEvent,
+    ) {
       if (event.key === "Escape") {
         setOpen(false);
       }
     }
 
-    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener(
+      "mousedown",
+      handleOutsideClick,
+    );
 
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener(
+      "keydown",
+      handleEscape,
+    );
 
     return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener(
+        "mousedown",
+        handleOutsideClick,
+      );
 
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener(
+        "keydown",
+        handleEscape,
+      );
     };
   }, [open]);
 
@@ -198,88 +314,31 @@ export default function AdminNotificationsButton() {
     });
   }
 
-  const unseenCounts: NotificationCounts = {
-    pendingOrders: itemIds.pendingOrders.filter(
-      (id) => !seenIds.pendingOrders.includes(id),
-    ).length,
-
-    draftProducts: itemIds.draftProducts.filter(
-      (id) => !seenIds.draftProducts.includes(id),
-    ).length,
-
-    lowStockVariants: itemIds.lowStockVariants.filter(
-      (id) => !seenIds.lowStockVariants.includes(id),
-    ).length,
-
-    pendingStockAlerts: itemIds.pendingStockAlerts.filter(
-      (id) => !seenIds.pendingStockAlerts.includes(id),
-    ).length,
-  };
+  const unseenNotifications =
+    notifications.filter(
+      (notification) =>
+        !seenIds[
+          notification.category
+        ].includes(
+          notification.sourceId,
+        ),
+    );
 
   const total =
-    unseenCounts.pendingOrders +
-    unseenCounts.draftProducts +
-    unseenCounts.lowStockVariants +
-    unseenCounts.pendingStockAlerts;
-
-  const notificationItems = [
-    {
-      key: "pendingOrders" as const,
-      title: "Pending orders",
-      description:
-        unseenCounts.pendingOrders === 1
-          ? "1 order is waiting for confirmation."
-          : `${unseenCounts.pendingOrders} orders are waiting for confirmation.`,
-      count: unseenCounts.pendingOrders,
-      href: "/admin/orders",
-      icon: PackageCheck,
-      tone: "amber",
-    },
-    {
-      key: "lowStockVariants" as const,
-      title: "Inventory warnings",
-      description:
-        unseenCounts.lowStockVariants === 1
-          ? "1 product variant requires stock attention."
-          : `${unseenCounts.lowStockVariants} product variants require stock attention.`,
-      count: unseenCounts.lowStockVariants,
-      href: "/admin/products",
-      icon: AlertTriangle,
-      tone: "red",
-    },
-    {
-      key: "pendingStockAlerts" as const,
-      title: "Customer stock requests",
-      description:
-        unseenCounts.pendingStockAlerts === 1
-          ? "1 customer is waiting for a restock notification."
-          : `${unseenCounts.pendingStockAlerts} customers are waiting for restock notifications.`,
-      count: unseenCounts.pendingStockAlerts,
-      href: "/admin/stock-alerts",
-      icon: BellRing,
-      tone: "blue",
-    },
-    {
-      key: "draftProducts" as const,
-      title: "Draft products",
-      description:
-        unseenCounts.draftProducts === 1
-          ? "1 product is currently hidden from the storefront."
-          : `${unseenCounts.draftProducts} products are currently hidden from the storefront.`,
-      count: unseenCounts.draftProducts,
-      href: "/admin/products",
-      icon: Box,
-      tone: "neutral",
-    },
-  ];
+    unseenNotifications.length;
 
   return (
-    <div ref={containerRef} className="relative">
+    <div
+      ref={containerRef}
+      className="relative"
+    >
       <button
         type="button"
         onClick={togglePanel}
         aria-label={`Notifications${
-          total > 0 ? `, ${total} requiring attention` : ""
+          total > 0
+            ? `, ${total} requiring attention`
+            : ""
         }`}
         aria-expanded={open}
         aria-haspopup="dialog"
@@ -293,7 +352,9 @@ export default function AdminNotificationsButton() {
 
         {!loading && total > 0 ? (
           <span className="st-admin-v2-notifications-badge absolute -right-1.5 -top-1.5 flex min-h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#080808] bg-amber-400 px-1 text-[9px] font-bold leading-none text-black">
-            {total > 99 ? "99+" : total}
+            {total > 99
+              ? "99+"
+              : total}
           </span>
         ) : null}
       </button>
@@ -313,7 +374,9 @@ export default function AdminNotificationsButton() {
               Activity centre
             </p>
 
-            <h2 className="mt-2 text-lg font-semibold">Notifications</h2>
+            <h2 className="mt-2 text-lg font-semibold">
+              Notifications
+            </h2>
 
             <p className="mt-1 text-xs text-white/40">
               Live operational updates
@@ -323,20 +386,28 @@ export default function AdminNotificationsButton() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => void loadNotifications()}
+              onClick={() =>
+                void loadNotifications()
+              }
               disabled={loading}
               aria-label="Refresh notifications"
               title="Refresh notifications"
               className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/45 transition hover:border-white/25 hover:text-white disabled:cursor-wait disabled:opacity-40"
             >
               <RefreshCw
-                className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                className={`h-4 w-4 ${
+                  loading
+                    ? "animate-spin"
+                    : ""
+                }`}
               />
             </button>
 
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() =>
+                setOpen(false)
+              }
               aria-label="Close notifications"
               className="flex h-9 w-9 items-center justify-center border border-white/10 text-white/45 transition hover:border-white/25 hover:bg-white hover:text-black"
             >
@@ -372,10 +443,13 @@ export default function AdminNotificationsButton() {
 
               <button
                 type="button"
-                onClick={() => void loadNotifications()}
+                onClick={() =>
+                  void loadNotifications()
+                }
                 className="mt-4 inline-flex min-h-10 items-center gap-2 border border-red-300/20 px-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-red-200 transition hover:bg-red-200 hover:text-black"
               >
                 Try again
+
                 <RefreshCw className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -391,42 +465,59 @@ export default function AdminNotificationsButton() {
             </h3>
 
             <p className="mt-2 max-w-xs text-xs leading-5 text-white/40">
-              There are no pending orders, inventory warnings, customer stock
-              requests or draft products requiring attention.
+              There are no new orders,
+              inventory warnings, customer
+              stock requests or draft
+              products requiring attention.
             </p>
           </div>
         ) : (
           <div className="max-h-[470px] overflow-y-auto">
             <div className="border-b border-white/[0.07] px-5 py-4">
               <p className="text-xs text-white/45">
-                <span className="font-semibold text-white">{total}</span>{" "}
-                {total === 1 ? "item requires" : "items require"} attention
+                <span className="font-semibold text-white">
+                  {total}
+                </span>{" "}
+                {total === 1
+                  ? "item requires"
+                  : "items require"}{" "}
+                attention
               </p>
             </div>
 
             <div className="divide-y divide-white/[0.07]">
-              {notificationItems
-                .filter((item) => item.count > 0)
-                .map((item) => {
-                  const Icon = item.icon;
+              {unseenNotifications.map(
+                (notification) => {
+                  const Icon =
+                    getNotificationIcon(
+                      notification.category,
+                    );
 
                   return (
                     <Link
-                      key={item.title}
-                      href={item.href}
+                      key={notification.id}
+                      href={
+                        notification.href
+                      }
                       onClick={() => {
-                        markCategorySeen(item.key);
+                        markNotificationSeen(
+                          notification,
+                        );
+
                         setOpen(false);
                       }}
                       className="st-admin-v2-notification-item group flex items-start gap-4 px-5 py-5 transition"
                     >
                       <div
                         className={`flex h-10 w-10 shrink-0 items-center justify-center border ${
-                          item.tone === "amber"
+                          notification.tone ===
+                          "amber"
                             ? "border-[#d9dbdd] bg-[#f6f6f7] text-[#6d7175]"
-                            : item.tone === "red"
+                            : notification.tone ===
+                                "red"
                               ? "border-red-400/20 bg-red-400/[0.07] text-red-300"
-                              : item.tone === "blue"
+                              : notification.tone ===
+                                  "blue"
                                 ? "border-sky-400/20 bg-sky-400/[0.07] text-sky-300"
                                 : "border-white/10 bg-white/[0.04] text-white/55"
                         }`}
@@ -436,32 +527,39 @@ export default function AdminNotificationsButton() {
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-4">
-                          <p className="text-sm font-semibold">{item.title}</p>
+                          <p className="text-sm font-semibold">
+                            {
+                              notification.title
+                            }
+                          </p>
 
-                          <span className="flex min-h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-white px-2 text-[10px] font-bold text-black">
-                            {item.count}
-                          </span>
+                          <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-white/25 transition group-hover:text-white" />
                         </div>
 
                         <p className="mt-2 text-xs leading-5 text-white/40">
-                          {item.description}
+                          {
+                            notification.description
+                          }
                         </p>
 
                         <span className="mt-3 inline-flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-white/35 transition group-hover:text-white">
-                          Review
-                          <ChevronRight className="h-3 w-3 transition group-hover:translate-x-0.5" />
+                          Open exact item
+
+                          <ChevronRight className="h-3 w-3" />
                         </span>
                       </div>
                     </Link>
                   );
-                })}
+                },
+              )}
             </div>
           </div>
         )}
 
         <div className="st-admin-v2-notifications-footer border-t px-5 py-3">
           <p className="text-[9px] uppercase tracking-[0.14em] text-white/25">
-            Data refreshes whenever the panel opens
+            Click a notification to open
+            its exact admin record
           </p>
         </div>
       </div>

@@ -2,7 +2,10 @@
 
 import {
   useEffect,
+  useState,
 } from "react";
+
+import ProductActionNotice from "@/components/admin/products/product-action-notice";
 
 type LifecycleHandles = {
   firstFrame: number;
@@ -28,6 +31,83 @@ export default function ProductPageBehavior({
 }: {
   collapseSpecificationsInitially?: boolean;
 }) {
+  const [
+    runtimeNotice,
+    setRuntimeNotice,
+  ] = useState<{
+    key: number;
+    variant: "success" | "error";
+    title: string;
+    message: string;
+  } | null>(null);
+
+  useEffect(() => {
+    function handleRuntimeNotice(
+      rawEvent: Event,
+    ) {
+      const event =
+        rawEvent as CustomEvent<{
+          variant?: "success" | "error";
+          title?: string;
+          message?: string;
+        }>;
+
+      const message =
+        String(
+          event.detail?.message ??
+            "",
+        ).trim();
+
+      if (!message) {
+        return;
+      }
+
+      setRuntimeNotice(
+        (current) => ({
+          key:
+            (current?.key ?? 0) +
+            1,
+
+          variant:
+            event.detail?.variant ===
+            "success"
+              ? "success"
+              : "error",
+
+          title:
+            String(
+              event.detail?.title ??
+                (
+                  event.detail?.variant ===
+                  "success"
+                    ? "Product updated"
+                    : "Product update failed"
+                ),
+            ).trim(),
+
+          message,
+        }),
+      );
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+
+    window.addEventListener(
+      "st:admin-product-runtime-notice",
+      handleRuntimeNotice,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "st:admin-product-runtime-notice",
+        handleRuntimeNotice,
+      );
+    };
+  }, []);
+
   useEffect(() => {
     const handles =
       new Map<
@@ -502,5 +582,29 @@ export default function ProductPageBehavior({
     collapseSpecificationsInitially,
   ]);
 
-  return null;
+  if (!runtimeNotice) {
+    return null;
+  }
+
+  return (
+    <div className="st-admin-product-editor-page-shell pt-6 sm:pt-7">
+      <div className="mx-auto max-w-[1540px]">
+        <ProductActionNotice
+          key={runtimeNotice.key}
+          variant={
+            runtimeNotice.variant
+          }
+          title={
+            runtimeNotice.title
+          }
+          message={
+            runtimeNotice.message
+          }
+          onDismiss={() => {
+            setRuntimeNotice(null);
+          }}
+        />
+      </div>
+    </div>
+  );
 }

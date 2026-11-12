@@ -21,6 +21,7 @@ import HomepageAccountSuccessToasts from "@/components/storefront/homepage-accou
 import StorefrontServiceUnavailable from "@/components/storefront/storefront-service-unavailable";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizeHomepageSettings } from "@/lib/homepage-settings";
+import type { StereophonieEntertainmentItem } from "@/lib/stereophonie-entertainment";
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 
 export const metadata: Metadata = {
@@ -109,6 +110,20 @@ type CategoryRow = {
   slug: string | null;
   image_url: string | null;
   homepage_theme: "light" | "dark" | null;
+};
+
+type EntertainmentTitleRow = {
+  id: string;
+  slug: string;
+  title: string;
+  kind: "Movie" | "Series";
+  year: string;
+  genre: string;
+  tagline: string;
+  poster_url: string;
+  backdrop_url: string;
+  trailer_url: string;
+  sort_order: number;
 };
 
 function storefrontThumbnailPath(storagePath: string) {
@@ -307,6 +322,7 @@ export default async function HomePage() {
     categoriesResult,
     homepageSettingsResult,
     announcementsResult,
+    entertainmentResult,
   ] = await Promise.all([
           supabase
         .from("products")
@@ -383,6 +399,31 @@ export default async function HomePage() {
       .order("created_at", {
         ascending: true,
       }),
+
+    supabase
+      .from("entertainment_titles")
+      .select(
+        `
+          id,
+          slug,
+          title,
+          kind,
+          year,
+          genre,
+          tagline,
+          poster_url,
+          backdrop_url,
+          trailer_url,
+          sort_order
+        `,
+      )
+      .eq("is_active", true)
+      .order("sort_order", {
+        ascending: true,
+      })
+      .order("created_at", {
+        ascending: true,
+      }),
   ]);
 
   if (productIndexResult.error) {
@@ -430,6 +471,38 @@ export default async function HomePage() {
 
   const announcements = (announcementsResult.data ??
     []) as StorefrontAnnouncement[];
+
+  /*
+   * Movies & Series database bridge.
+   *
+   * Undefined means the database source could not be loaded and allows
+   * V3Homepage to preserve the existing static storefront list as a
+   * fail-safe. An intentionally empty database list remains an empty list.
+   */
+  const entertainmentItems:
+    | StereophonieEntertainmentItem[]
+    | undefined = entertainmentResult.error
+    ? undefined
+    : ((entertainmentResult.data ?? []) as EntertainmentTitleRow[]).map(
+        (item) => ({
+          id: item.slug,
+          title: item.title,
+          kind: item.kind,
+          year: item.year,
+          genre: item.genre,
+          tagline: item.tagline,
+          posterUrl: item.poster_url,
+          backdropUrl: item.backdrop_url,
+          trailerPath: item.trailer_url,
+        }),
+      );
+
+  if (entertainmentResult.error) {
+    console.error(
+      "Movies & Series titles could not load; using static storefront fallback:",
+      entertainmentResult.error,
+    );
+  }
 
   if (announcementsResult.error) {
     console.error(
@@ -730,6 +803,7 @@ export default async function HomePage() {
 
       <V3Homepage
         categories={categories}
+        entertainmentItems={entertainmentItems}
         latestProducts={latestProducts}
         offerProducts={offerProducts}
         featuredProducts={featuredProducts}

@@ -43,6 +43,23 @@ export default function ProductActionNotice({
     setVisible(true);
     setPhase("enter");
 
+    /*
+     * PRODUCT_NOTICE_SCROLL_TO_TOP_V17
+     *
+     * The Product notice is always rendered at the top.
+     * Bring the administrator to it automatically for both
+     * success and error feedback.
+     */
+    const scrollFrame =
+      window.requestAnimationFrame(
+        () => {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        },
+      );
+
     let secondFrame = 0;
 
     const firstFrame =
@@ -89,6 +106,10 @@ export default function ProductActionNotice({
       }, 5450);
 
     return () => {
+      window.cancelAnimationFrame(
+        scrollFrame,
+      );
+
       window.cancelAnimationFrame(
         firstFrame,
       );

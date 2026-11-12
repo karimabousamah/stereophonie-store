@@ -9,6 +9,7 @@ import CategoryTreeManager, {
   type CategoryTreeNode,
   type CategoryTreeRoot,
 } from "@/components/admin/category-tree-manager";
+import type { EntertainmentAdminItem } from "@/components/admin/movies-series-manager";
 import { createClient } from "@/lib/supabase/server";
 
 
@@ -47,8 +48,12 @@ export default async function AdminCategoriesPage({
     redirect("/admin/login");
   }
 
-  const [categoriesResult, subcategoriesResult, productsResult] =
-    await Promise.all([
+  const [
+    categoriesResult,
+    subcategoriesResult,
+    productsResult,
+    entertainmentResult,
+  ] = await Promise.all([
       supabase
         .from("categories")
         .select(
@@ -64,6 +69,34 @@ export default async function AdminCategoriesPage({
         .order("name", { ascending: true }),
 
       supabase.from("products").select("category_id,subcategory_id"),
+
+      supabase
+        .from("entertainment_titles")
+        .select(
+          `
+            id,
+            slug,
+            title,
+            kind,
+            year,
+            genre,
+            tagline,
+            poster_url,
+            poster_storage_path,
+            backdrop_url,
+            backdrop_storage_path,
+            trailer_url,
+            trailer_storage_path,
+            sort_order,
+            is_active
+          `,
+        )
+        .order("sort_order", {
+          ascending: true,
+        })
+        .order("created_at", {
+          ascending: true,
+        }),
     ]);
 
   const products = (productsResult.data ?? []) as ProductLink[];
@@ -157,6 +190,10 @@ export default async function AdminCategoriesPage({
     productCount: nodeProductCounts.get(subcategory.id) ?? 0,
   }));
 
+  const entertainmentTitles =
+    (entertainmentResult.data ??
+      []) as EntertainmentAdminItem[];
+
   const activeRoots = categories.filter(
     (category) => category.is_active,
   ).length;
@@ -188,7 +225,8 @@ export default async function AdminCategoriesPage({
 
         {categoriesResult.error ||
         subcategoriesResult.error ||
-        productsResult.error ? (
+        productsResult.error ||
+        entertainmentResult.error ? (
           <div className="st-category-admin__notice is-error">
             <span>
               Some category information could not be loaded. The hierarchy
@@ -206,6 +244,7 @@ export default async function AdminCategoriesPage({
           <CategoryTreeManager
             categories={categories}
             subcategories={subcategories}
+            entertainmentTitles={entertainmentTitles}
           />
         </div>
       </main>

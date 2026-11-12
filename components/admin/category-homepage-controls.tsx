@@ -107,7 +107,33 @@ export default function CategoryHomepageControls({
   return (
     <section className="st-category-homepage">
       <div className="st-category-homepage__media">
-      <div className="st-category-homepage__preview">
+      <div
+        className={`st-category-homepage__preview ${
+          imageUrl ? "is-clickable" : ""
+        }`}
+        role={imageUrl ? "button" : undefined}
+        tabIndex={imageUrl ? 0 : undefined}
+        aria-label={
+          imageUrl
+            ? `View ${categoryName} wallpaper`
+            : undefined
+        }
+        onClick={() => {
+          if (imageUrl) {
+            setIsWallpaperOpen(true);
+          }
+        }}
+        onKeyDown={(event) => {
+          if (
+            imageUrl &&
+            (event.key === "Enter" ||
+              event.key === " ")
+          ) {
+            event.preventDefault();
+            setIsWallpaperOpen(true);
+          }
+        }}
+      >
         {imageUrl ? (
           <img
             src={imageUrl}

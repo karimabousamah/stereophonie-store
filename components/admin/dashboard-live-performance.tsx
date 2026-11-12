@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  type PointerEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -83,6 +88,78 @@ function fullDate(date: Date) {
   }).format(date);
 }
 
+
+function niceChartMaximum(value: number) {
+  if (value <= 0) {
+    return 100;
+  }
+
+  const target = value * 1.12;
+  const roughStep = target / 4;
+
+  const magnitude =
+    10 ** Math.floor(Math.log10(Math.max(roughStep, 1)));
+
+  const normalized = roughStep / magnitude;
+
+  const niceNormalized =
+    normalized <= 1
+      ? 1
+      : normalized <= 2
+        ? 2
+        : normalized <= 2.5
+          ? 2.5
+          : normalized <= 4
+            ? 4
+            : normalized <= 5
+              ? 5
+              : normalized <= 8
+                ? 8
+                : 10;
+
+  return niceNormalized * magnitude * 4;
+}
+
+
+/*
+ * Smooth cubic curve.
+ *
+ * The control points use the actual endpoint Y values, so the
+ * curve passes through every exact revenue point without
+ * inventing extra peaks or dropping below the real baseline.
+ */
+function buildRevenuePath(
+  points: Array<{
+    x: number;
+    y: number;
+  }>,
+) {
+  if (points.length === 0) {
+    return "";
+  }
+
+  if (points.length === 1) {
+    return `M ${points[0].x},${points[0].y}`;
+  }
+
+  let path = `M ${points[0].x},${points[0].y}`;
+
+  for (let index = 1; index < points.length; index += 1) {
+    const previous = points[index - 1];
+    const current = points[index];
+
+    const distance = current.x - previous.x;
+    const control = distance * 0.38;
+
+    path +=
+      ` C ${previous.x + control},${previous.y}` +
+      ` ${current.x - control},${current.y}` +
+      ` ${current.x},${current.y}`;
+  }
+
+  return path;
+}
+
 function liveTime(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
@@ -108,6 +185,7 @@ function Trend({ value, period }: { value: number; period: number }) {
 export default function DashboardLivePerformance({ orders }: Props) {
   const [period, setPeriod] = useState<Period>(30);
   const [now, setNow] = useState<Date | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const update = () => setNow(new Date());
@@ -169,14 +247,20 @@ export default function DashboardLivePerformance({ orders }: Props) {
       const date = addDays(currentStart, index);
       const key = dayKey(date);
 
-      const revenue = current
-        .filter((order) => dayKey(order.date) === key)
-        .reduce((sum, order) => sum + order.numericTotal, 0);
+      const dailyOrders = current.filter(
+        (order) => dayKey(order.date) === key,
+      );
+
+      const revenue = dailyOrders.reduce(
+        (sum, order) => sum + order.numericTotal,
+        0,
+      );
 
       return {
         date,
         key,
         revenue,
+        orders: dailyOrders.length,
       };
     });
 
@@ -199,6 +283,21 @@ export default function DashboardLivePerformance({ orders }: Props) {
     const width = 1000;
     const height = 250;
 
+    /*
+     * Keep the first and last day safely inside the plot.
+     *
+     * The padding is expressed in the SAME SVG coordinate system
+     * used by columns, crosshair and date labels.
+     */
+    const horizontalPadding =
+      period === 7
+        ? 34
+        : period === 30
+          ? 28
+          : period === 60
+            ? 24
+            : 22;
+
     const values = analysis.daily.map((entry) => entry.revenue);
 
     const actualMax = Math.max(...values, 0);
@@ -208,13 +307,15 @@ export default function DashboardLivePerformance({ orders }: Props) {
      * A visual range of $0–$100 prevents the chart from
      * collapsing into an empty canvas.
      */
-    const scaleMax = actualMax <= 0 ? 100 : actualMax * 1.12;
+    const scaleMax = niceChartMaximum(actualMax);
 
     const points = analysis.daily.map((entry, index) => {
       const x =
         analysis.daily.length <= 1
-          ? 0
-          : (index / (analysis.daily.length - 1)) * width;
+          ? width / 2
+          : horizontalPadding +
+            (index / (analysis.daily.length - 1)) *
+              (width - horizontalPadding * 2);
 
       const y = height - (entry.revenue / scaleMax) * (height - 18);
 
@@ -225,35 +326,132 @@ export default function DashboardLivePerformance({ orders }: Props) {
       };
     });
 
-    const polyline = points.map((point) => `${point.x},${point.y}`).join(" ");
+    const linePath = buildRevenuePath(points);
 
-    const area =
-      points.length > 0 ? `0,${height} ${polyline} ${width},${height}` : "";
+    const areaPath =
+      linePath
+        ? `${linePath} L ${width},${height} L 0,${height} Z`
+        : "";
 
     return {
       width,
       height,
       actualMax,
       scaleMax,
+      horizontalPadding,
       points,
-      polyline,
-      area,
+      linePath,
+      areaPath,
     };
   }, [analysis.daily]);
 
   const axisIndexes = useMemo(() => {
-    const last = Math.max(analysis.daily.length - 1, 0);
+    const length = analysis.daily.length;
 
-    return Array.from(
-      new Set([
-        0,
-        Math.round(last * 0.25),
-        Math.round(last * 0.5),
-        Math.round(last * 0.75),
-        last,
-      ]),
+    if (length <= 0) {
+      return [];
+    }
+
+    /*
+     * Exact requested label cadence:
+     *
+     *  7D  -> every 1 day
+     * 30D  -> every 5 days
+     * 60D  -> every 10 days
+     * 90D  -> every 20 days
+     *
+     * The current/final date is ALWAYS included even when it does
+     * not fall exactly on the cadence.
+     */
+    const labelStep =
+      period === 7
+        ? 1
+        : period === 30
+          ? 5
+          : period === 60
+            ? 10
+            : 20;
+
+    const indexes: number[] = [];
+
+    for (
+      let index = 0;
+      index < length;
+      index += labelStep
+    ) {
+      indexes.push(index);
+    }
+
+    const lastIndex = length - 1;
+
+    if (
+      indexes[indexes.length - 1] !==
+      lastIndex
+    ) {
+      indexes.push(lastIndex);
+    }
+
+    return indexes;
+  }, [analysis.daily.length, period]);
+
+  const hoveredPoint =
+    hoveredIndex === null ? null : chart.points[hoveredIndex] ?? null;
+
+  const hoveredXPercent = hoveredPoint
+    ? (hoveredPoint.x / chart.width) * 100
+    : 0;
+
+  const hoveredYPercent = hoveredPoint
+    ? (hoveredPoint.y / chart.height) * 100
+    : 0;
+
+  /*
+   * Keep DOM labels inside a safe visual region while the
+   * analytical crosshair itself remains at the exact data point.
+   */
+  const safeHoveredValueYPercent = hoveredPoint
+    ? Math.max(5, Math.min(94, hoveredYPercent))
+    : 0;
+
+  const safeHoveredLabelXPercent = hoveredPoint
+    ? Math.max(2.5, Math.min(97.5, hoveredXPercent))
+    : 0;
+
+  const safeTooltipXPercent = hoveredPoint
+    ? Math.max(4, Math.min(96, hoveredXPercent))
+    : 0;
+
+  const hoveredMarkerY = hoveredPoint
+    ? Math.min(
+        chart.height - 7,
+        Math.max(7, hoveredPoint.y),
+      )
+    : 0;
+
+  const tooltipTopPercent = hoveredPoint
+    ? Math.max(15, Math.min(72, hoveredYPercent))
+    : 0;
+
+  function handleChartPointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "touch" || chart.points.length === 0) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+
+    if (bounds.width <= 0) {
+      return;
+    }
+
+    const ratio = Math.max(
+      0,
+      Math.min(1, (event.clientX - bounds.left) / bounds.width),
     );
-  }, [analysis.daily.length]);
+
+    const index = Math.round(ratio * (chart.points.length - 1));
+
+    setHoveredIndex(index);
+  }
 
   return (
     <section className="st-dash-live-performance">
@@ -304,24 +502,30 @@ export default function DashboardLivePerformance({ orders }: Props) {
       <div className="st-dash-performance">
         <div className="st-dash-performance__stats">
           <div className="st-dash-performance-stat">
-            <span>Revenue</span>
-            <strong>{money(analysis.currentRevenue)}</strong>
+            <div className="st-dash-performance-stat__content">
+              <span>Revenue</span>
+              <strong>{money(analysis.currentRevenue)}</strong>
 
-            <Trend value={analysis.revenueChange} period={period} />
+              <Trend value={analysis.revenueChange} period={period} />
+            </div>
           </div>
 
           <div className="st-dash-performance-stat">
-            <span>Paid orders</span>
-            <strong>{analysis.currentPaidOrders}</strong>
+            <div className="st-dash-performance-stat__content">
+              <span>Paid orders</span>
+              <strong>{analysis.currentPaidOrders}</strong>
 
-            <Trend value={analysis.paidOrdersChange} period={period} />
+              <Trend value={analysis.paidOrdersChange} period={period} />
+            </div>
           </div>
 
           <div className="st-dash-performance-stat">
-            <span>Average order</span>
-            <strong>{money(analysis.currentAverage)}</strong>
+            <div className="st-dash-performance-stat__content">
+              <span>Average order</span>
+              <strong>{money(analysis.currentAverage)}</strong>
 
-            <Trend value={analysis.averageChange} period={period} />
+              <Trend value={analysis.averageChange} period={period} />
+            </div>
           </div>
         </div>
 
@@ -341,13 +545,31 @@ export default function DashboardLivePerformance({ orders }: Props) {
           <div className="st-dash-chart-shell">
             <div className="st-dash-chart-y-axis">
               {[100, 75, 50, 25, 0].map((percentage) => {
-                const value = chart.scaleMax * (percentage / 100);
+                const value =
+                  chart.scaleMax *
+                  (percentage / 100);
 
-                return <span key={percentage}>{money(value)}</span>;
+                const top =
+                  100 - percentage;
+
+                return (
+                  <span
+                    key={percentage}
+                    style={{
+                      top: `${top}%`,
+                    }}
+                  >
+                    {money(value)}
+                  </span>
+                );
               })}
             </div>
 
-            <div className="st-dash-chart__canvas">
+            <div
+              className="st-dash-chart__canvas"
+              onPointerMove={handleChartPointerMove}
+              onPointerLeave={() => setHoveredIndex(null)}
+            >
               <div className="st-dash-chart__grid" />
 
               <svg
@@ -371,29 +593,100 @@ export default function DashboardLivePerformance({ orders }: Props) {
                       stopOpacity=".015"
                     />
                   </linearGradient>
+
+                  <linearGradient
+                    id="stRevenueColumns"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor="#202223"
+                      stopOpacity=".92"
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor="#5f6368"
+                      stopOpacity=".7"
+                    />
+                  </linearGradient>
                 </defs>
 
-                {chart.area && (
-                  <polygon points={chart.area} fill="url(#stRevenueArea)" />
-                )}
+                <g
+                  className="st-dash-chart-reference-grid"
+                  aria-hidden="true"
+                >
+                  {[0, 1, 2, 3, 4].map((step) => {
+                    const y =
+                      (step / 4) * chart.height;
 
-                <polyline
-                  points={chart.polyline}
-                  fill="none"
-                  stroke="#202223"
-                  strokeWidth="3"
-                  vectorEffect="non-scaling-stroke"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
+                    return (
+                      <line
+                        key={`revenue-grid-${step}`}
+                        x1="0"
+                        y1={y}
+                        x2={chart.width}
+                        y2={y}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    );
+                  })}
+                </g>
+
+                <g
+                  className="st-dash-chart-day-ticks"
+                  aria-hidden="true"
+                >
+                  {chart.points.map((point) => (
+                    <line
+                      key={`day-tick-${point.key}`}
+                      x1={point.x}
+                      y1={chart.height}
+                      x2={point.x}
+                      y2={chart.height + 4}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  ))}
+                </g>
 
                 {chart.points
-                  .filter(
-                    (_, index) =>
-                      period <= 7 ||
-                      index % Math.ceil(period / 15) === 0 ||
-                      index === chart.points.length - 1,
-                  )
+                  .filter((point) => point.revenue > 0)
+                  .map((point) => {
+                    const barWidth =
+                      period <= 7
+                        ? 28
+                        : period <= 30
+                          ? 17
+                          : period <= 60
+                            ? 11
+                            : 8;
+
+                    const isHovered =
+                      hoveredIndex !== null &&
+                      chart.points[hoveredIndex]?.key === point.key;
+
+                    return (
+                      <rect
+                        key={`revenue-column-${point.key}`}
+                        className={`st-dash-revenue-column ${
+                          isHovered ? "is-hovered" : ""
+                        }`}
+                        x={Math.max(0, point.x - barWidth / 2)}
+                        y={point.y}
+                        width={barWidth}
+                        height={Math.max(1, chart.height - point.y)}
+                        rx="3"
+                        ry="3"
+                        fill="url(#stRevenueColumns)"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    );
+                  })}
+
+                {chart.points
+                  .filter((point) => point.revenue > 0)
                   .map((point) => (
                     <circle
                       key={point.key}
@@ -406,7 +699,80 @@ export default function DashboardLivePerformance({ orders }: Props) {
                       vectorEffect="non-scaling-stroke"
                     />
                   ))}
+                {hoveredPoint ? (
+                  <g
+                    className="st-dash-chart-crosshair"
+                    aria-hidden="true"
+                  >
+                    <line
+                      x1={hoveredPoint.x}
+                      y1="0"
+                      x2={hoveredPoint.x}
+                      y2={chart.height}
+                      vectorEffect="non-scaling-stroke"
+                    />
+
+                    <line
+                      x1="0"
+                      y1={hoveredPoint.y}
+                      x2={chart.width}
+                      y2={hoveredPoint.y}
+                      vectorEffect="non-scaling-stroke"
+                    />
+
+                    <path
+                      className="st-dash-chart-crosshair__diamond"
+                      d={`M ${hoveredPoint.x} ${hoveredMarkerY - 5}
+                          L ${hoveredPoint.x + 5} ${hoveredMarkerY}
+                          L ${hoveredPoint.x} ${hoveredMarkerY + 5}
+                          L ${hoveredPoint.x - 5} ${hoveredMarkerY}
+                          Z`}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </g>
+                ) : null}
               </svg>
+
+              {hoveredPoint ? (
+                <>
+                  <span
+                    className="st-dash-chart-hover-value"
+                    style={{
+                      top: `${safeHoveredValueYPercent}%`,
+                    }}
+                  >
+                    {money(hoveredPoint.revenue)}
+                  </span>
+
+                  <span
+                    className="st-dash-chart-hover-date"
+                    style={{
+                      left: `${safeHoveredLabelXPercent}%`,
+                    }}
+                  >
+                    {shortDate(hoveredPoint.date)}
+                  </span>
+
+                  <div
+                    className={`st-dash-chart-tooltip ${
+                      hoveredXPercent > 72 ? "is-left" : ""
+                    }`}
+                    style={{
+                      left: `${hoveredXPercent}%`,
+                      top: `${tooltipTopPercent}%`,
+                    }}
+                  >
+                    <span>{fullDate(hoveredPoint.date)}</span>
+
+                    <strong>{money(hoveredPoint.revenue)}</strong>
+
+                    <small>
+                      {hoveredPoint.orders} paid{" "}
+                      {hoveredPoint.orders === 1 ? "order" : "orders"}
+                    </small>
+                  </div>
+                </>
+              ) : null}
 
               {chart.actualMax === 0 && (
                 <div className="st-dash-chart-zero-note">
@@ -420,11 +786,29 @@ export default function DashboardLivePerformance({ orders }: Props) {
 
           <div className="st-dash-chart__axis st-dash-chart__axis--live">
             {axisIndexes.map((index) => {
-              const entry = analysis.daily[index];
+              const entry =
+                analysis.daily[index];
 
-              if (!entry) return null;
+              const point =
+                chart.points[index];
 
-              return <span key={entry.key}>{shortDate(entry.date)}</span>;
+              if (!entry || !point) {
+                return null;
+              }
+
+              const left =
+                (point.x / chart.width) * 100;
+
+              return (
+                <span
+                  key={entry.key}
+                  style={{
+                    left: `${left}%`,
+                  }}
+                >
+                  {shortDate(entry.date)}
+                </span>
+              );
             })}
           </div>
         </div>
