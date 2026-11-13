@@ -1597,7 +1597,15 @@ export default function V2ProductCard({
            : "Currently unavailable"}
                   </div>
 
-                  {product.description ? <p>{product.description}</p> : null}
+                  {product.description ? (
+                    <div
+                      className="st-retail-qv__description"
+                      tabIndex={0}
+                      aria-label="Product description"
+                    >
+                      <p>{product.description}</p>
+                    </div>
+                  ) : null}
 
                   <Link
                     href={href}

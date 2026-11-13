@@ -106,11 +106,16 @@ function SectionHeader({
 }
 
 export default function ProductForm({
-  categories,
-  subcategories,
+  categories: initialCategories,
+  subcategories: initialSubcategories,
   brands,
   errorMessage,
 }: ProductFormProps) {
+  const [categories, setCategories] =
+    useState<typeof initialCategories>(initialCategories);
+  const [subcategories, setSubcategories] =
+    useState<typeof initialSubcategories>(initialSubcategories);
+
   const formRef = useRef<HTMLFormElement>(null);
   const directUploadedImagesInputRef = useRef<HTMLInputElement>(null);
 
@@ -415,6 +420,20 @@ export default function ProductForm({
               (configurationId, configurationIndex) =>
                 configurationId ===
                 incoming.configurationIds[configurationIndex],
+            ) &&
+            existing.configurationAssignments.length ===
+              incoming.configurationAssignments.length &&
+            existing.configurationAssignments.every(
+              (assignment, assignmentIndex) =>
+                assignment.configurationId ===
+                  incoming.configurationAssignments[assignmentIndex]
+                    ?.configurationId &&
+                assignment.position ===
+                  incoming.configurationAssignments[assignmentIndex]
+                    ?.position &&
+                assignment.isPrimary ===
+                  incoming.configurationAssignments[assignmentIndex]
+                    ?.isPrimary,
             )
           );
         });
@@ -729,16 +748,6 @@ export default function ProductForm({
         }
       }
 
-      if (
-        !placementSelection.featured &&
-        !placementSelection.trending &&
-        !placementSelection.newArrival
-      ) {
-        register(
-          ".st-admin-product-placement-v2",
-          "Select at least one store placement before publishing.",
-        );
-      }
     }
 
     if (firstInvalid) {
@@ -1356,6 +1365,22 @@ export default function ProductForm({
 
                   <ProductOrganizationMultiPicker
                     label="Category"
+                    onCreated={(created) => {
+                      setCategories((current) =>
+                        current.some((item) => item.id === created.id)
+                          ? current
+                          : [...current, { id: created.id, name: created.name }],
+                      );
+                    }}
+                    onRenamed={(renamed) => {
+                      setCategories((current) =>
+                        current.map((item) =>
+                          item.id === renamed.id
+                            ? { ...item, name: renamed.name }
+                            : item,
+                        ),
+                      );
+                    }}
                     options={categories}
                     selectedIds={
                       selectedCategoryIds
@@ -1398,6 +1423,31 @@ export default function ProductForm({
 
                   <ProductOrganizationMultiPicker
                     label="Subcategory"
+                    parentCategories={categories.filter((category) =>
+                      selectedCategoryIds.includes(category.id),
+                    )}
+                    onCreated={(created) => {
+                      if (!created.category_id) return;
+                      setSubcategories((current) => {
+                        const item = {
+                          id: created.id,
+                          name: created.name,
+                          category_id: created.category_id!,
+                          parent_subcategory_id:
+                            created.parent_subcategory_id ?? null,
+                        };
+                        return [...current.filter((entry) => entry.id !== item.id), item];
+                      });
+                    }}
+                    onRenamed={(renamed) => {
+                      setSubcategories((current) =>
+                        current.map((item) =>
+                          item.id === renamed.id
+                            ? { ...item, name: renamed.name }
+                            : item,
+                        ),
+                      );
+                    }}
                     options={
                       availableSubcategoryOptions
                     }

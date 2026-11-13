@@ -1,6 +1,5 @@
 import {
   Archive,
-  ArrowLeft,
   ArrowUpRight,
   CheckCircle2,
   Clock3,
@@ -8,6 +7,7 @@ import {
   Gift,
   PackageCheck,
   PackageOpen,
+  Plus,
   RotateCcw,
   Store,
   Truck,
@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 
 import AdminShell from "@/components/admin/admin-shell";
 import OrderSearch from "@/components/admin/order-search";
+import OrderCopyValue from "@/components/admin/order-copy-value";
 import { createClient } from "@/lib/supabase/server";
 
 type OrderItem = {
@@ -440,282 +441,420 @@ export default async function AdminOrdersPage({
       pageTitle="Orders"
       pageDescription="Review customer orders, delivery details, payment status and fulfilment progress."
     >
-      <div className="px-5 py-5 sm:px-7 sm:py-7">
-        <div className="mx-auto max-w-[1540px]">
-          <header className="border-b border-white/10 pb-8">
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/40 transition hover:text-white"
+      <main className="st-admin-orders-v4">
+        <div className="st-admin-orders-v4__page-actions">
+          <Link
+            href="/admin/orders/new"
+            className="st-admin-orders-v4__create-order"
+          >
+            <Plus aria-hidden="true" />
+            <span>Create order</span>
+          </Link>
+        </div>
+
+        <div className="st-admin-orders-v4__inner">
+          {ordersError ? (
+            <div className="st-admin-orders-v4__error">
+              Orders could not be loaded:{" "}
+              {ordersError.message}
+            </div>
+          ) : null}
+
+          <section
+            className="st-admin-orders-v4__toolbar"
+            aria-label="Order directory controls"
+          >
+            <OrderSearch
+              total={visibleOrders.length}
+            />
+
+            <nav
+              className="st-admin-orders-v4__queue-filters"
+              aria-label="Order queues"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Dashboard
-            </Link>
-
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.24em] text-white/35">
-              Commerce management
-            </p>
-
-            <h1 className="mt-3 text-2xl font-semibold tracking-[-0.045em] sm:text-4xl">
-              Orders
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/45">
-              Manage live fulfilment first, then move through individual order
-              statuses or historical records when needed.
-            </p>
-          </header>
-
-          {ordersError && (
-            <div className="mt-5 border border-red-400/25 bg-red-400/[0.07] p-5 text-sm text-red-700">
-              Orders could not be loaded: {ordersError.message}
-            </div>
-          )}
-
-          <OrderSearch total={visibleOrders.length} />
-
-          <section className="st-admin-order-hub">
-            <div className="st-admin-order-hub__section">
-              <header className="st-admin-order-hub__section-title">
-                <div>
-                  <span>Operations</span>
-                  <strong>Live order queues</strong>
-                </div>
-
-                <small>Completed orders do not inflate live counters</small>
-              </header>
-
-              <nav
-                className="st-admin-order-hub__operations"
-                aria-label="Order operation filters"
-              >
-                {operationFilters.map((filter) => {
-                  const Icon = filter.icon;
+              {operationFilters.map(
+                (filter) => {
+                  const Icon =
+                    filter.icon;
 
                   return (
                     <Link
                       key={filter.value}
                       href={`/admin/orders?filter=${filter.value}`}
-                      className={`st-admin-order-hub__operation ${
-                        selectedFilter === filter.value ? "is-active" : ""
-                      }`}
+                      className={
+                        selectedFilter ===
+                        filter.value
+                          ? "is-active"
+                          : undefined
+                      }
+                      title={
+                        filter.description
+                      }
                     >
-                      <span className="st-admin-order-hub__operation-icon">
-                        <Icon aria-hidden="true" />
+                      <Icon
+                        aria-hidden="true"
+                      />
+
+                      <span>
+                        {filter.label}
                       </span>
 
-                      <span className="st-admin-order-hub__operation-copy">
-                        <strong>{filter.label}</strong>
-                        <small>{filter.description}</small>
-                      </span>
-
-                      <span className="st-admin-order-hub__counter">
+                      <small>
                         {filter.count}
-                      </span>
+                      </small>
                     </Link>
                   );
-                })}
-              </nav>
-            </div>
-
-            <div className="st-admin-order-hub__section">
-              <header className="st-admin-order-hub__section-title">
-                <div>
-                  <span>Workflow</span>
-                  <strong>Quick status access</strong>
-                </div>
-
-                <small>Open any stage immediately</small>
-              </header>
-
-              <nav
-                className="st-admin-order-hub__workflow"
-                aria-label="Order status filters"
-              >
-                {workflowFilters.map((filter) => {
-                  const Icon = filter.icon;
-
-                  return (
-                    <Link
-                      key={filter.value}
-                      href={`/admin/orders?filter=${filter.value}`}
-                      className={`st-admin-order-hub__workflow-item ${
-                        selectedFilter === filter.value ? "is-active" : ""
-                      }`}
-                    >
-                      <Icon aria-hidden="true" />
-
-                      <span>{filter.label}</span>
-
-                      <strong>{filter.count}</strong>
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
+                },
+              )}
+            </nav>
           </section>
 
-          <section className="st-admin-order-directory-v3">
-            <header className="st-admin-order-directory-v3__header">
+          <nav
+            className="st-admin-orders-v4__workflow"
+            aria-label="Order workflow status"
+          >
+            {workflowFilters.map(
+              (filter) => {
+                const Icon =
+                  filter.icon;
+
+                return (
+                  <Link
+                    key={filter.value}
+                    href={`/admin/orders?filter=${filter.value}`}
+                    className={
+                      selectedFilter ===
+                      filter.value
+                        ? "is-active"
+                        : undefined
+                    }
+                  >
+                    <Icon
+                      aria-hidden="true"
+                    />
+
+                    <span>
+                      {filter.label}
+                    </span>
+
+                    <small>
+                      {filter.count}
+                    </small>
+                  </Link>
+                );
+              },
+            )}
+          </nav>
+
+          <section className="st-admin-orders-v4__directory">
+            <header className="st-admin-orders-v4__directory-head">
               <div>
-                <p>Current view</p>
+                <strong>
+                  {filterTitle(
+                    selectedFilter,
+                  )}
+                </strong>
 
-                <h2>{filterTitle(selectedFilter)}</h2>
-
-                <span>{filterDescription(selectedFilter)}</span>
+                <span>
+                  {filterDescription(
+                    selectedFilter,
+                  )}
+                </span>
               </div>
 
-              <div className="st-admin-order-directory-v3__result">
-                <strong>{visibleOrders.length}</strong>
-                <span>{visibleOrders.length === 1 ? "order" : "orders"}</span>
+              <div className="st-admin-orders-v4__directory-count">
+                <strong>
+                  {visibleOrders.length}
+                </strong>
+
+                <span>
+                  {visibleOrders.length ===
+                  1
+                    ? "order"
+                    : "orders"}
+                </span>
               </div>
             </header>
 
             {visibleOrders.length === 0 ? (
-              <div className="st-admin-order-directory-v3__empty">
-                <Archive aria-hidden="true" />
+              <div className="st-admin-orders-v4__empty">
+                <Archive
+                  aria-hidden="true"
+                />
 
-                <h3>No matching orders</h3>
+                <strong>
+                  No matching orders
+                </strong>
 
-                <p>
-                  There are currently no orders in the{" "}
-                  {filterTitle(selectedFilter).toLowerCase()} view.
-                </p>
+                <span>
+                  There are currently no
+                  orders in this view.
+                </span>
               </div>
             ) : (
-              <div className="st-admin-order-directory-v3__list">
-                {visibleOrders.map((order) => {
-                  const statusDetails = getStatusDetails(order.status);
-                  const StatusIcon = statusDetails.icon;
+              <>
+                <div
+                  className="st-admin-orders-v4__columns"
+                  aria-hidden="true"
+                >
+                  <span>
+                    Order number
+                  </span>
 
-                  const itemQuantity = order.order_items.reduce(
-                    (total, item) => total + Number(item.quantity),
-                    0,
-                  );
+                  <span>
+                    Customer
+                  </span>
 
-                  return (
-                    <article
-                      key={order.id}
-                      data-admin-order-search-card="true"
-                      data-admin-order-search={[
-                        order.order_number,
-                        order.status,
-                        order.payment_status,
-                        order.fulfillment_method,
-                        order.gift_wrapping_requested
-                          ? "gift wrapping requested"
-                          : "",
-                        order.customer_first_name,
-                        order.customer_last_name,
-                        order.customer_email,
-                        order.customer_phone,
-                        order.delivery_city,
-                        order.delivery_area,
-                        ...(order.order_items ?? []).flatMap((item) => [
-                          item.product_name,
-                          item.size,
-                        ]),
-                      ].join(" ")}
-                      className="st-admin-order-row-v3"
-                    >
-                      <div className="st-admin-order-row-v3__main">
-                        <div className="st-admin-order-row-v3__heading">
-                          <h3>{order.order_number}</h3>
+                  <span>
+                    Phone
+                  </span>
 
-                          <div className="st-admin-order-row-v3__badges">
+                  <span>
+                    Fulfilment
+                  </span>
+
+                  <span>
+                    Gift wrap
+                  </span>
+
+                  <span>
+                    Items
+                  </span>
+
+                  <span>
+                    Status
+                  </span>
+
+                  <span>
+                    Payment
+                  </span>
+
+                  <span>
+                    Total
+                  </span>
+
+                  <span>
+                    Date
+                  </span>
+
+                  <span>
+                    Action
+                  </span>
+                </div>
+
+                <div className="st-admin-orders-v4__list">
+                  {visibleOrders.map(
+                    (order) => {
+                      const statusDetails =
+                        getStatusDetails(
+                          order.status,
+                        );
+
+                      const StatusIcon =
+                        statusDetails.icon;
+
+                      const itemQuantity =
+                        order.order_items.reduce(
+                          (
+                            total,
+                            item,
+                          ) =>
+                            total +
+                            Number(
+                              item.quantity,
+                            ),
+                          0,
+                        );
+
+                      const customerName =
+                        `${order.customer_first_name} ${order.customer_last_name}`.trim();
+
+                      const location =
+                        order.fulfillment_method ===
+                        "pickup"
+                          ? "Stereophonie Store · Mtaileb"
+                          : `${order.delivery_area}, ${order.delivery_city}`;
+
+                      return (
+                        <article
+                          key={order.id}
+                          data-admin-order-search-card="true"
+                          data-admin-order-search={[
+                            order.order_number,
+                            order.status,
+                            order.payment_status,
+                            order.fulfillment_method,
+                            order.gift_wrapping_requested
+                              ? "gift wrapping requested"
+                              : "",
+                            order.customer_first_name,
+                            order.customer_last_name,
+                            order.customer_email,
+                            order.customer_phone,
+                            order.delivery_city,
+                            order.delivery_area,
+                            ...(order.order_items ??
+                              []).flatMap(
+                              (item) => [
+                                item.product_name,
+                                item.size,
+                              ],
+                            ),
+                          ].join(" ")}
+                          className="st-admin-orders-v4__row"
+                        >
+                          <div className="st-admin-orders-v4__order-cell">
+                            <OrderCopyValue
+                              value={order.order_number}
+                              label="order number"
+                            />
+                          </div>
+
+                          <div className="st-admin-orders-v4__customer-cell">
+                            <OrderCopyValue
+                              value={customerName}
+                              label="customer name"
+                            />
+                          </div>
+
+                          <div className="st-admin-orders-v4__phone-cell">
+                            <OrderCopyValue
+                              value={order.customer_phone}
+                              label="phone number"
+                            />
+                          </div>
+
+                          <div className="st-admin-orders-v4__fulfilment">
+
                             <span
-                              className={`st-admin-order-chip ${statusDetails.tone}`}
-                            >
-                              <StatusIcon aria-hidden="true" />
-                              {statusDetails.label}
-                            </span>
-
-                            <span
-                              className={`st-admin-order-chip ${
-                                order.fulfillment_method === "pickup"
+                              className={`st-admin-orders-v4__fulfilment-pill ${
+                                order.fulfillment_method ===
+                                "pickup"
                                   ? "is-pickup"
                                   : "is-delivery"
                               }`}
                             >
-                              {order.fulfillment_method === "pickup" ? (
-                                <Store aria-hidden="true" />
+                              {order.fulfillment_method ===
+                              "pickup" ? (
+                                <Store
+                                  aria-hidden="true"
+                                />
                               ) : (
-                                <Truck aria-hidden="true" />
+                                <Truck
+                                  aria-hidden="true"
+                                />
                               )}
 
-                              {order.fulfillment_method === "pickup"
-                                ? "Store pickup"
+                              {order.fulfillment_method ===
+                              "pickup"
+                                ? "Pickup"
                                 : "Delivery"}
                             </span>
 
-                            {/*
-                              ST_GIFT_WRAP_ADMIN_V2
-                              One gift indicator for wrapping requests.
-                            */}
-                            {order.gift_wrapping_requested && (
-                              <span
-                                className="st-admin-order-chip border border-white/20 bg-white/[0.07] text-white/85"
-                                title="Gift wrapping requested by customer"
-                              >
-                                <Gift aria-hidden="true" />
-                                Gift wrap
+                            <small>
+                              {location}
+                            </small>
+                          </div>
+
+                          <div className="st-admin-orders-v4__gift-cell">
+                            {order.gift_wrapping_requested ? (
+                              <span className="st-admin-orders-v4__gift-badge">
+                                <Gift
+                                  aria-hidden="true"
+                                />
+
+                                <span>
+                                  Gift wrap
+                                </span>
+                              </span>
+                            ) : (
+                              <span className="st-admin-orders-v4__gift-none">
+                                No
                               </span>
                             )}
+                          </div>
 
-                            <span
-                              className={`st-admin-order-chip ${
-                                order.payment_status === "paid"
-                                  ? "is-paid"
-                                  : order.payment_status === "refunded"
-                                    ? "is-refunded"
-                                    : "is-unpaid"
-                              }`}
-                            >
-                              {order.payment_status}
+                          <div className="st-admin-orders-v4__items-cell">
+                            <strong>
+                              {itemQuantity}
+                            </strong>
+
+                            <span>
+                              {itemQuantity === 1
+                                ? "item"
+                                : "items"}
                             </span>
                           </div>
-                        </div>
 
-                        <p className="st-admin-order-row-v3__customer">
-                          {order.customer_first_name} {order.customer_last_name}
-                        </p>
+                          <div className="st-admin-orders-v4__status-cell">
+                            <span
+                              className={`st-admin-orders-v4__status ${statusDetails.tone}`}
+                            >
+                              <StatusIcon
+                                aria-hidden="true"
+                              />
 
-                        <div className="st-admin-order-row-v3__contact">
-                          <span>{order.customer_email}</span>
-                          <span>{order.customer_phone}</span>
-                        </div>
-                      </div>
+                              {
+                                statusDetails.label
+                              }
+                            </span>
+                          </div>
 
-                      <div className="st-admin-order-row-v3__details">
-                        <span>
-                          {itemQuantity} {itemQuantity === 1 ? "item" : "items"}
-                        </span>
+                          <div className="st-admin-orders-v4__payment-cell">
+                            <span
+                              className={`st-admin-orders-v4__payment is-${order.payment_status}`}
+                            >
+                              {
+                                order.payment_status
+                              }
+                            </span>
+                          </div>
 
-                        <span>
-                          {order.fulfillment_method === "pickup"
-                            ? "Stereophonie Store · Mtaileb"
-                            : `${order.delivery_area}, ${order.delivery_city}`}
-                        </span>
+                          <div className="st-admin-orders-v4__total">
+                            <strong>
+                              $
+                              {Number(
+                                order.total,
+                              ).toFixed(
+                                2,
+                              )}
+                            </strong>
+                          </div>
 
-                        <span>{formatOrderDate(order.created_at)}</span>
+                          <div className="st-admin-orders-v4__date">
+                            <span>
+                              {formatOrderDate(
+                                order.created_at,
+                              )}
+                            </span>
+                          </div>
 
-                        <strong>${Number(order.total).toFixed(2)}</strong>
-                      </div>
+                          <div className="st-admin-orders-v4__action-cell st-admin-products-directory__preview">
+                            <Link
+                              href={`/admin/orders/${order.id}`}
+                              className="st-admin-products-directory__preview-link"
+                              title="View order"
+                              aria-label={`View order ${order.order_number}`}
+                            >
+                              <span>
+                                View
+                              </span>
 
-                      <Link
-                        href={`/admin/orders/${order.id}`}
-                        className="st-admin-order-row-v3__open"
-                      >
-                        View order
-                        <ArrowUpRight aria-hidden="true" />
-                      </Link>
-                    </article>
-                  );
-                })}
-              </div>
+                              <ArrowUpRight
+                                aria-hidden="true"
+                              />
+                            </Link>
+                          </div>
+                        </article>
+                      );
+                    },
+                  )}
+                </div>
+              </>
             )}
           </section>
         </div>
-      </div>
+      </main>
     </AdminShell>
   );
 }

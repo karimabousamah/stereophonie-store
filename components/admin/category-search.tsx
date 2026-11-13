@@ -1,104 +1,230 @@
 "use client";
 
-import { Search, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Search,
+  X,
+} from "lucide-react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+type CategoryStatusFilter =
+  | "all"
+  | "active"
+  | "inactive";
 
 type Props = {
-  categoryCount: number;
-  subcategoryCount: number;
+  totalCount: number;
+  activeCount: number;
+  inactiveCount: number;
 };
 
+function normalize(value: string) {
+  return value
+    .trim()
+    .toLocaleLowerCase();
+}
+
 export default function CategorySearch({
-  categoryCount,
-  subcategoryCount,
+  totalCount,
+  activeCount,
+  inactiveCount,
 }: Props) {
-  const [query, setQuery] = useState("");
-  const [visibleCategoryCount, setVisibleCategoryCount] =
-    useState(categoryCount);
-  const [visibleSubcategoryCount, setVisibleSubcategoryCount] =
-    useState(subcategoryCount);
+  const inputRef =
+    useRef<HTMLInputElement>(null);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [query, setQuery] =
+    useState("");
 
-  const normalizedQuery = useMemo(
-    () => query.trim().toLocaleLowerCase(),
-    [query],
+  const [
+    statusFilter,
+    setStatusFilter,
+  ] = useState<CategoryStatusFilter>(
+    "all",
   );
 
+  const [
+    visibleCount,
+    setVisibleCount,
+  ] = useState(totalCount);
+
+  /*
+   * Let the Category tree know when a status filter changes.
+   * The tree uses this only to expand branches required to
+   * reveal matching nested subcategories.
+   */
   useEffect(() => {
-    const categoryCards = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        '[data-admin-category-card="true"]',
+    window.dispatchEvent(
+      new CustomEvent(
+        "st-admin:category-status-filter",
+        {
+          detail: {
+            status: statusFilter,
+          },
+        },
       ),
     );
+  }, [statusFilter]);
 
-    const subcategoryCards = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        '[data-admin-subcategory-card="true"]',
-      ),
+
+  useEffect(() => {
+    const normalizedQuery =
+      normalize(query);
+
+    const categoryCards =
+      Array.from(
+        document.querySelectorAll<HTMLElement>(
+          '[data-admin-category-card="true"]',
+        ),
+      );
+
+    const subcategoryCards =
+      Array.from(
+        document.querySelectorAll<HTMLElement>(
+          '[data-admin-subcategory-card="true"]',
+        ),
+      );
+
+    function statusMatches(
+      status: string | undefined,
+    ) {
+      if (statusFilter === "all") {
+        return true;
+      }
+
+      return status === statusFilter;
+    }
+
+    let nextVisibleCount = 0;
+
+    /*
+     * Resolve subcategories first.
+     *
+     * Root Category visibility can then remain on when
+     * one of its descendants matches the current search /
+     * status filter.
+     */
+    subcategoryCards.forEach(
+      (card) => {
+        const searchText =
+          normalize(
+            card.dataset
+              .adminSubcategorySearch ??
+              "",
+          );
+
+        const queryMatches =
+          !normalizedQuery ||
+          searchText.includes(
+            normalizedQuery,
+          );
+
+        const matches =
+          queryMatches &&
+          statusMatches(
+            card.dataset
+              .adminSubcategoryStatus,
+          );
+
+        card.hidden = !matches;
+
+        if (matches) {
+          nextVisibleCount += 1;
+        }
+      },
     );
 
-    let nextVisibleCategories = 0;
-    let nextVisibleSubcategories = 0;
+    categoryCards.forEach(
+      (card) => {
+        const searchText =
+          normalize(
+            card.dataset
+              .adminCategorySearch ??
+              "",
+          );
 
-    categoryCards.forEach((card) => {
-      const searchable = String(
-        card.dataset.adminCategorySearch ?? "",
-      ).toLocaleLowerCase();
+        const queryMatches =
+          !normalizedQuery ||
+          searchText.includes(
+            normalizedQuery,
+          );
 
-      const matches = !normalizedQuery || searchable.includes(normalizedQuery);
+        const selfMatches =
+          queryMatches &&
+          statusMatches(
+            card.dataset
+              .adminCategoryStatus,
+          );
 
-      card.hidden = !matches;
+        const matchingChild =
+          Array.from(
+            card.querySelectorAll<HTMLElement>(
+              '[data-admin-subcategory-card="true"]',
+            ),
+          ).some(
+            (child) =>
+              !child.hidden,
+          );
 
-      if (matches) {
-        nextVisibleCategories += 1;
-      }
-    });
+        /*
+         * Keep the root branch available when a matching
+         * descendant lives inside it.
+         */
+        const groupMatches =
+          selfMatches ||
+          matchingChild;
 
-    subcategoryCards.forEach((card) => {
-      const searchable = String(
-        card.dataset.adminSubcategorySearch ?? "",
-      ).toLocaleLowerCase();
+        card.hidden =
+          !groupMatches;
 
-      const matches = !normalizedQuery || searchable.includes(normalizedQuery);
+        if (selfMatches) {
+          nextVisibleCount += 1;
+        }
+      },
+    );
 
-      card.hidden = !matches;
-
-      if (matches) {
-        nextVisibleSubcategories += 1;
-      }
-    });
-
-    setVisibleCategoryCount(nextVisibleCategories);
-    setVisibleSubcategoryCount(nextVisibleSubcategories);
-  }, [normalizedQuery]);
+    setVisibleCount(
+      nextVisibleCount,
+    );
+  }, [
+    query,
+    statusFilter,
+    totalCount,
+  ]);
 
   function clearSearch() {
     setQuery("");
 
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-    });
+    window.requestAnimationFrame(
+      () => {
+        inputRef.current?.focus();
+      },
+    );
   }
 
-  const displayedCategories = normalizedQuery
-    ? visibleCategoryCount
-    : categoryCount;
+  const normalizedQuery =
+    normalize(query);
 
-  const displayedSubcategories = normalizedQuery
-    ? visibleSubcategoryCount
-    : subcategoryCount;
-
-  const displayedTotal = displayedCategories + displayedSubcategories;
+  const filtering =
+    Boolean(normalizedQuery) ||
+    statusFilter !== "all";
 
   return (
     <section
       className="st-admin-directory-search st-admin-product-directory-v2 st-admin-category-directory-v2"
       aria-label="Search category directory"
+      data-category-status-filter={
+        statusFilter
+      }
     >
       <div className="st-admin-product-directory-v2__toolbar st-category-directory-search-row">
         <label className="st-admin-directory-search__field">
-          <span className="st-admin-directory-search__icon" aria-hidden="true">
+          <span
+            className="st-admin-directory-search__icon"
+            aria-hidden="true"
+          >
             <Search />
           </span>
 
@@ -106,7 +232,11 @@ export default function CategorySearch({
             ref={inputRef}
             type="search"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) =>
+              setQuery(
+                event.target.value,
+              )
+            }
             placeholder="Search categories or subcategories"
             aria-label="Search categories or subcategories"
             autoComplete="off"
@@ -125,33 +255,88 @@ export default function CategorySearch({
         </label>
 
         <div
-          className="st-category-directory-counters"
-          aria-label="Category directory totals"
+          className="st-category-directory-status-filters"
+          aria-label="Filter categories by status"
         >
-          <div className="st-category-directory-counter is-total">
+          <button
+            type="button"
+            className={
+              statusFilter === "all"
+                ? "is-active"
+                : undefined
+            }
+            aria-pressed={
+              statusFilter === "all"
+            }
+            onClick={() =>
+              setStatusFilter("all")
+            }
+          >
             <span>All</span>
-            <strong>{displayedTotal}</strong>
-          </div>
+            <small>
+              {totalCount}
+            </small>
+          </button>
 
-          <div className="st-category-directory-counter">
-            <span>Categories</span>
-            <strong>{displayedCategories}</strong>
-          </div>
+          <button
+            type="button"
+            className={
+              statusFilter ===
+              "active"
+                ? "is-active"
+                : undefined
+            }
+            aria-pressed={
+              statusFilter ===
+              "active"
+            }
+            onClick={() =>
+              setStatusFilter(
+                "active",
+              )
+            }
+          >
+            <span>Active</span>
+            <small>
+              {activeCount}
+            </small>
+          </button>
 
-          <div className="st-category-directory-counter">
-            <span>Subcategories</span>
-            <strong>{displayedSubcategories}</strong>
-          </div>
+          <button
+            type="button"
+            className={
+              statusFilter ===
+              "inactive"
+                ? "is-active"
+                : undefined
+            }
+            aria-pressed={
+              statusFilter ===
+              "inactive"
+            }
+            onClick={() =>
+              setStatusFilter(
+                "inactive",
+              )
+            }
+          >
+            <span>Inactive</span>
+            <small>
+              {inactiveCount}
+            </small>
+          </button>
         </div>
       </div>
 
-      {normalizedQuery ? (
+      {filtering ? (
         <p className="st-admin-directory-search__status">
-          {displayedTotal > 0
-            ? `${displayedTotal} ${
-                displayedTotal === 1 ? "result matches" : "results match"
-              } “${query.trim()}”.`
-            : `No category or subcategory matches “${query.trim()}”.`}
+          {visibleCount > 0
+            ? `${visibleCount} ${
+                visibleCount === 1
+                  ? "result matches"
+                  : "results match"
+              } the current filters.`
+            : "No category or subcategory matches the current filters."}
         </p>
       ) : null}
     </section>

@@ -21,6 +21,7 @@ import {
   type ShopNamedRelation,
   type ShopSortOption,
 } from "@/lib/storefront-shop-catalog";
+import { isCurrentNewDrop } from "@/components/stereophonie-v3/shared/v3-product-card";
 import { storefrontConfigurationImages } from "@/lib/storefront-product-media";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -37,6 +38,13 @@ type ShopIndexRow = ShopCatalogueProduct & {
   is_new_arrival: boolean | null;
   new_drop_started_at: string | null;
 };
+
+function shopCurrentNewDrop(product: ShopIndexRow) {
+  return isCurrentNewDrop({
+    is_new_arrival: product.is_new_arrival,
+    new_drop_started_at: product.new_drop_started_at,
+  } as Parameters<typeof isCurrentNewDrop>[0]);
+}
 
 
 /*
@@ -283,6 +291,7 @@ export type ShopBatchFilters = {
   category: string;
   subcategoryId: string;
   offers: boolean;
+  arrivals: boolean;
   brand: string;
   availability: ShopAvailabilityFilter;
   requestedMinimumPrice: number | null;
@@ -525,6 +534,10 @@ export async function loadShopBrandFacetOptions(
    */
   const scopedCandidates = products.filter(
     (product) => {
+      if (filters.arrivals && !shopCurrentNewDrop(product)) {
+        return false;
+      }
+
       if (
         filters.offers &&
         !shopProductOnOffer(product)
@@ -742,6 +755,10 @@ export async function loadShopProductBatch({
   const products = await loadShopCatalogueIndex();
 
   const priceWindowCandidates = products.filter((product) => {
+    if (filters.arrivals && !shopCurrentNewDrop(product)) {
+      return false;
+    }
+
     if (filters.offers && !shopProductOnOffer(product)) {
       return false;
     }
@@ -802,6 +819,10 @@ export async function loadShopProductBatch({
   });
 
   const filteredCandidates = products.filter((product) => {
+    if (filters.arrivals && !shopCurrentNewDrop(product)) {
+      return false;
+    }
+
     if (filters.offers && !shopProductOnOffer(product)) {
       return false;
     }

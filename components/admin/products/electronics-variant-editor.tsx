@@ -1958,7 +1958,7 @@ function defaultVariant(
  attributes: Record<string, string>,
  levels: OptionLevel[],
  position: number,
- lowStockThreshold = 5,
+ lowStockThreshold = 1,
 ): AdminElectronicsVariant {
  return {
  clientId: crypto.randomUUID(),
@@ -4358,8 +4358,8 @@ export default function ElectronicsVariantEditor({
   /*
    * Spreadsheet-style row entry for the compact configuration table.
    *
-   * Enter advances Price -> Sale -> Stock -> Low stock, then continues
-   * at Price in the next configuration. The final Low stock stays put,
+   * Enter advances Price -> Stock -> Low stock -> Sale, then continues
+   * at Price in the next configuration. The final Sale stays put,
    * and Enter never submits the form.
    */
  function moveToNextConfigurationNumericField(
@@ -4374,7 +4374,7 @@ export default function ElectronicsVariantEditor({
  event.preventDefault();
  event.stopPropagation();
 
- const fieldOrder = ["price", "sale", "stock", "low-stock"] as const;
+ const fieldOrder = ["price", "stock", "low-stock", "sale"] as const;
  const fieldIndex = fieldOrder.indexOf(field);
 
  if (fieldIndex < 0) {
@@ -4756,9 +4756,9 @@ export default function ElectronicsVariantEditor({
             <div className="st-admin-config-table-header-v2">
               <span>Configuration</span>
               <span>Price</span>
-              <span>Sale</span>
               <span>Stock</span>
               <span>Low stock</span>
+              <span>Sale</span>
               <span>Availability</span>
             </div>
 
@@ -4880,58 +4880,6 @@ export default function ElectronicsVariantEditor({
                     <input
  type="number"
  min="0"
- step="0.01"
- value={
- variant.sale_price
-                      }
- placeholder="—"
- aria-label={`Sale price for ${label}`}
- data-config-numeric-field="sale"
- data-config-row-index={index}
- onKeyDown={(event) =>
- moveToNextConfigurationNumericField(
- event,
- index,
-                          "sale",
-                        )
-                      }
- onFocus={() =>
- setActiveClientId(
- variant.clientId,
-                        )
-                      }
- onClick={(
- event,
-                      ) =>
- event.stopPropagation()
-                      }
- onChange={(
- event,
-                      ) =>
- updateVariant(
- variant.clientId,
-                          {
- sale_price:
- event.target
-                                .value ===
-                              ""
-                                ? ""
-                                : Math.max(
- 0,
- Number(
- event
-                                        .target
-                                        .value,
-                                    ),
-                                  ),
-                          },
-                        )
-                      }
-                    />
-
-                    <input
- type="number"
- min="0"
  disabled={unavailable}
  value={
  unavailable
@@ -5024,6 +4972,58 @@ export default function ElectronicsVariantEditor({
                                     .value,
                                 ) || 0,
                               ),
+                          },
+                        )
+                      }
+                    />
+
+                    <input
+ type="number"
+ min="0"
+ step="0.01"
+ value={
+ variant.sale_price
+                      }
+ placeholder="—"
+ aria-label={`Sale price for ${label}`}
+ data-config-numeric-field="sale"
+ data-config-row-index={index}
+ onKeyDown={(event) =>
+ moveToNextConfigurationNumericField(
+ event,
+ index,
+                          "sale",
+                        )
+                      }
+ onFocus={() =>
+ setActiveClientId(
+ variant.clientId,
+                        )
+                      }
+ onClick={(
+ event,
+                      ) =>
+ event.stopPropagation()
+                      }
+ onChange={(
+ event,
+                      ) =>
+ updateVariant(
+ variant.clientId,
+                          {
+ sale_price:
+ event.target
+                                .value ===
+                              ""
+                                ? ""
+                                : Math.max(
+ 0,
+ Number(
+ event
+                                        .target
+                                        .value,
+                                    ),
+                                  ),
                           },
                         )
                       }

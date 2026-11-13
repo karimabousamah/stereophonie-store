@@ -938,23 +938,6 @@ async function createProductUnsafe(formData: FormData) {
     availability = "out_of_stock";
   }
 
-/*
-   * Available live products still require at least one normal
-   * store-placement choice.
-   *
-   * Out-of-Stock products are intentionally exempt because their
-   * only storefront badge is Out of Stock.
-   */
-  if (
-    publishingIntent === "publish" &&
-    !isFeatured &&
-    !isTrending &&
-    !isNewArrival
-  ) {
-    redirectWithError(
-      "Select at least one store placement before publishing: Featured, Trending or New arrival.",
-    );
-  }
 
   const { data: product, error: productError } = await supabase
     .from("products")

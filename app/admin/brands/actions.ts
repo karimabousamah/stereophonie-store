@@ -32,16 +32,6 @@ function redirectWithMessage(
   redirect(`${brandsPath}?${type}=${encodeURIComponent(message)}`);
 }
 
-function parseSortOrder(formData: FormData) {
-  const value = Number(formData.get("sort_order") ?? 0);
-
-  if (!Number.isInteger(value) || value < 0) {
-    return 0;
-  }
-
-  return value;
-}
-
 function friendlyDatabaseError(message: string) {
   const normalized = message.toLowerCase();
 
@@ -100,7 +90,7 @@ export async function createBrand(formData: FormData) {
     name,
     slug,
     description: description || null,
-    sort_order: parseSortOrder(formData),
+    sort_order: 0,
     is_active: formData.get("is_active") === "on",
   });
 
@@ -384,7 +374,6 @@ export async function updateBrand(formData: FormData) {
       name,
       slug,
       description: description || null,
-      sort_order: parseSortOrder(formData),
       is_active: formData.get("is_active") === "on",
       updated_at: new Date().toISOString(),
     })

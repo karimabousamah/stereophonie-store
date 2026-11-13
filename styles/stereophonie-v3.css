@@ -101474,3 +101474,1071 @@ html body main.st-order-transmission {
 }
 
 /* === ST CHECKOUT GLOBAL WHITE PAGE BACKGROUND FINAL END === */
+
+/* === ST HOMEPAGE CATEGORY GRID 3X2 V1 START === */
+
+/*
+ * Homepage category campaign grid only.
+ *
+ * Desktop / laptop:
+ *   [ Category ] [ Category ] [ Category ]
+ *
+ * Phone:
+ *   [ Category ] [ Category ]
+ *
+ * Card artwork, links, category data and commerce behaviour
+ * remain untouched.
+ */
+
+@media (min-width: 701px) {
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid {
+    display: grid !important;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      ) !important;
+
+    gap:
+      10px !important;
+  }
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-cat-tile {
+    min-width:
+      0 !important;
+
+    width:
+      100% !important;
+  }
+}
+
+
+@media (max-width: 700px) {
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid {
+    display:
+      grid !important;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      ) !important;
+
+    gap:
+      10px !important;
+  }
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-cat-tile {
+    min-width:
+      0 !important;
+
+    width:
+      100% !important;
+  }
+}
+
+/* === ST HOMEPAGE CATEGORY GRID 3X2 V1 END === */
+
+/* === ST HOMEPAGE CATEGORY PROPORTION V2 START === */
+
+/*
+ * HOMEPAGE CATEGORY PROPORTIONS
+ *
+ * Existing responsive grid remains:
+ *
+ * Desktop:
+ *   3 categories per row
+ *
+ * Phone:
+ *   2 categories per row
+ *
+ * This authority fixes the actual nested structure:
+ *
+ * .st3-cat-grid
+ *   > .st3-reveal
+ *     > .st3-cat-tile
+ *
+ * Goals:
+ * - substantially less vertical empty space
+ * - more square campaign proportions
+ * - artwork closer to title / Shop CTA
+ * - smaller mobile typography + CTA
+ */
+
+
+/* ==========================================================
+   DESKTOP / LAPTOP
+   ========================================================== */
+
+@media (min-width: 701px) {
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-reveal {
+    min-width:
+      0 !important;
+
+    align-self:
+      start !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-reveal
+  > .st3-cat-tile,
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-cat-tile {
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    height:
+      auto !important;
+
+    min-height:
+      0 !important;
+
+    max-height:
+      none !important;
+
+    aspect-ratio:
+      1 / 1.05 !important;
+
+    grid-template-rows:
+      auto
+      minmax(0, 1fr) !important;
+
+    overflow:
+      hidden !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-tile__copy {
+    padding:
+      24px
+      18px
+      4px !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-actions {
+    margin-top:
+      10px !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-media--tile {
+    min-height:
+      0 !important;
+
+    height:
+      100% !important;
+
+    padding:
+      0
+      14px
+      14px !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-media--tile
+  img {
+    width:
+      100% !important;
+
+    height:
+      100% !important;
+
+    max-width:
+      100% !important;
+
+    max-height:
+      100% !important;
+
+    object-fit:
+      contain !important;
+
+    object-position:
+      center
+      center !important;
+  }
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-reveal {
+    min-width:
+      0 !important;
+
+    height:
+      auto !important;
+
+    align-self:
+      start !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-reveal
+  > .st3-cat-tile,
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  > .st3-cat-tile {
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    height:
+      auto !important;
+
+    min-height:
+      0 !important;
+
+    max-height:
+      none !important;
+
+    aspect-ratio:
+      0.80 / 1 !important;
+
+    grid-template-rows:
+      auto
+      minmax(0, 1fr) !important;
+
+    overflow:
+      hidden !important;
+  }
+
+
+  /*
+   * IMPORTANT:
+   *
+   * A previous phone authority pushed this block down 32px.
+   * That contributed directly to the excessive empty space.
+   */
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-tile__copy {
+    transform:
+      none !important;
+
+    padding:
+      16px
+      9px
+      3px !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-tile__copy
+  h3 {
+    font-size:
+      clamp(
+        20px,
+        5.8vw,
+        27px
+      ) !important;
+
+    line-height:
+      0.95 !important;
+
+    letter-spacing:
+      -0.045em !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-actions {
+    margin:
+      8px
+      auto
+      0 !important;
+
+    gap:
+      6px !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-button {
+    min-height:
+      32px !important;
+
+    padding-left:
+      13px !important;
+
+    padding-right:
+      13px !important;
+
+    font-size:
+      12px !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-media--tile {
+    min-height:
+      0 !important;
+
+    height:
+      100% !important;
+
+    margin:
+      0 !important;
+
+    padding:
+      0
+      7px
+      9px !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-media--tile
+  img {
+    width:
+      100% !important;
+
+    height:
+      100% !important;
+
+    max-width:
+      100% !important;
+
+    max-height:
+      100% !important;
+
+    object-fit:
+      contain !important;
+
+    object-position:
+      center
+      center !important;
+  }
+}
+
+
+/* === ST HOMEPAGE CATEGORY PROPORTION V2 END === */
+
+/* === ST HOMEPAGE MOBILE CATEGORY ART V3 START === */
+
+/*
+ * Phone only.
+ *
+ * Keep:
+ * - 2 category cards per row
+ * - current compact/square card proportions
+ * - current title sizing
+ *
+ * Change:
+ * - make category artwork larger / easier to see
+ * - make Shop CTA slightly smaller
+ */
+
+@media (max-width: 700px) {
+
+  /*
+   * Give the artwork slightly more usable room.
+   */
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-media--tile {
+    padding:
+      0
+      0
+      2px !important;
+
+    overflow:
+      hidden !important;
+  }
+
+
+  /*
+   * Scale the actual transparent category artwork up inside
+   * its existing media area without changing the card itself.
+   */
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-cat-media--tile
+  img {
+    width:
+      100% !important;
+
+    height:
+      100% !important;
+
+    max-width:
+      100% !important;
+
+    max-height:
+      100% !important;
+
+    object-fit:
+      contain !important;
+
+    object-position:
+      center center !important;
+
+    transform:
+      scale(1.24) !important;
+
+    transform-origin:
+      center center !important;
+  }
+
+
+  /*
+   * Smaller Shop button for the tighter 2-column mobile cards.
+   */
+  html body
+  .st3-home-live
+  .st3-cat-world
+  .st3-cat-grid
+  .st3-cat-tile
+  .st3-button {
+    min-height:
+      29px !important;
+
+    padding-left:
+      11px !important;
+
+    padding-right:
+      11px !important;
+
+    font-size:
+      11.25px !important;
+
+    line-height:
+      1 !important;
+  }
+
+}
+
+/* === ST HOMEPAGE MOBILE CATEGORY ART V3 END === */
+
+/* === ST GLOBAL PRODUCT CARD 80 V1 START === */
+
+/*
+ * GLOBAL STOREFRONT PRODUCT CARD SIZE
+ *
+ * Applies to the shared live retail product card used by:
+ * - Homepage product shelves
+ * - Shop / All Products
+ * - Category / subcategory product grids
+ * - Product-page related products
+ * - Other storefront surfaces using the canonical retail card
+ *
+ * The COMPLETE card is scaled as one unit:
+ *
+ *   current size × 0.80
+ *
+ * Therefore ALL card geometry scales together:
+ * - outer card
+ * - border / radius
+ * - product image
+ * - media area
+ * - category text
+ * - product title
+ * - pricing
+ * - stock text
+ * - badges
+ * - wishlist control
+ * - colour/configuration controls
+ * - quick view
+ * - buttons
+ * - padding
+ * - gaps
+ * - icons
+ *
+ * No Admin Dashboard selectors are included.
+ */
+
+html body .st-retail-card {
+  zoom:
+    0.8 !important;
+}
+
+/* === ST GLOBAL PRODUCT CARD 80 V1 END === */
+
+/* === ST HOMEPAGE SOLID MUSTARD SHELF CTA V2 START === */
+
+/*
+ * HOMEPAGE PRODUCT-SHELF CTAs ONLY.
+ *
+ * Preserve the requested solid mustard treatment for:
+ *
+ * - Just Arrived       -> View all
+ * - Coming Soon        -> Explore store
+ * - More for less      -> View offers
+ * - Worth discovering  -> Explore store
+ *
+ * Category layout / spacing is completely untouched.
+ * Product-page related-product CTA is also untouched.
+ */
+
+html body
+.st3-home-live
+.st3-products-section.st3-home-shop-products
+.st3-home-product-shelf__see-all {
+  color: #000 !important;
+
+  background: #fdb73e !important;
+  background-color: #fdb73e !important;
+
+  border-color: #fdb73e !important;
+
+  -webkit-text-fill-color: #000 !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+
+html body
+.st3-home-live
+.st3-products-section.st3-home-shop-products
+.st3-home-product-shelf__see-all
+> span {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+
+  html body
+  .st3-home-live
+  .st3-products-section.st3-home-shop-products
+  .st3-home-product-shelf__see-all:hover {
+    color: #000 !important;
+
+    background: #f5b335 !important;
+    background-color: #f5b335 !important;
+
+    border-color: #f5b335 !important;
+
+    -webkit-text-fill-color: #000 !important;
+
+    box-shadow: none !important;
+
+    transform: none !important;
+    translate: none !important;
+    scale: 1 !important;
+    rotate: none !important;
+  }
+
+
+  html body
+  .st3-home-live
+  .st3-products-section.st3-home-shop-products
+  .st3-home-product-shelf__see-all:hover
+  > span {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
+  }
+
+}
+
+
+html body
+.st3-home-live
+.st3-products-section.st3-home-shop-products
+.st3-home-product-shelf__see-all:focus-visible {
+  color: #000 !important;
+
+  background: #fdb73e !important;
+
+  border-color: #000 !important;
+
+  -webkit-text-fill-color: #000 !important;
+
+  outline: none !important;
+
+  box-shadow:
+    0 0 0 3px rgba(245, 179, 53, 0.24) !important;
+}
+
+
+html body
+.st3-home-live
+.st3-products-section.st3-home-shop-products
+.st3-home-product-shelf__see-all:active {
+  color: #000 !important;
+
+  background: #f5b335 !important;
+
+  border-color: #f5b335 !important;
+
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  rotate: none !important;
+}
+
+/* === ST HOMEPAGE SOLID MUSTARD SHELF CTA V2 END === */
+
+/* === ST SHOP MOBILE ACTIVE FILTER BALANCED GAP V1 START === */
+
+/*
+ * Mobile only.
+ *
+ * Balance the active-filter summary between
+ * the Filters control above and product results below.
+ *
+ * No desktop, card, search or filter behavior changes.
+ */
+
+@media (max-width: 700px) {
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__controls.has-active-state {
+    margin-bottom: 0 !important;
+  }
+
+  html body
+  main.st3-shop-v4.st-retail-shop.st-retail-shop-v4
+  .st3-shop-v4__active-state {
+    margin-top: 16px !important;
+    margin-bottom: 24px !important;
+    min-height: auto !important;
+
+    /* Cancel the old mobile upward translation. */
+    transform: none !important;
+    translate: none !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+}
+
+/* === ST SHOP MOBILE ACTIVE FILTER BALANCED GAP V1 END === */
+
+/* === ST QUICK VIEW FIXED LAYOUT V1 START === */
+
+/*
+ * Mouse-enabled Quick View.
+ *
+ * Keep the popup, media and actions stationary.
+ * Long descriptions alone can scroll.
+ * Center below the visible storefront header.
+ *
+ * Preserve existing modal animations and interactions.
+ */
+
+@media (min-width: 701px) {
+
+  html body .st-retail-qv {
+    top: var(--st3-header-height, 58px) !important;
+    bottom: 0 !important;
+    padding: 24px !important;
+    overflow: hidden !important;
+    place-items: center !important;
+  }
+
+  html body .st-retail-qv__window {
+    box-sizing: border-box !important;
+
+    width: min(960px, 100%) !important;
+
+    height: min(
+      650px,
+      calc(
+        100dvh -
+        var(--st3-header-height, 58px) -
+        48px
+      )
+    ) !important;
+
+    max-height: calc(
+      100dvh -
+      var(--st3-header-height, 58px) -
+      48px
+    ) !important;
+
+    min-height: 0 !important;
+
+    display: grid !important;
+    grid-template-columns:
+      minmax(0, 1.04fr)
+      minmax(0, 0.96fr) !important;
+
+    overflow: hidden !important;
+  }
+
+  html body .st-retail-qv__visual {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+
+    padding: clamp(24px, 4vw, 60px) !important;
+
+    overflow: hidden !important;
+  }
+
+  html body .st-retail-qv__visual img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+  }
+
+  html body .st-retail-qv__info {
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    overflow: hidden !important;
+
+    padding:
+      clamp(42px, 5vh, 66px)
+      clamp(26px, 3.2vw, 50px)
+      30px !important;
+  }
+
+  html body .st-retail-qv__category {
+    flex: 0 0 auto !important;
+  }
+
+  html body .st-retail-qv__info h2 {
+    flex: 0 0 auto !important;
+
+    margin: 10px 0 16px !important;
+
+    font-size: clamp(23px, 2vw, 30px) !important;
+    line-height: 1.14 !important;
+    letter-spacing: -0.035em !important;
+
+    overflow-wrap: anywhere;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  html body .st-retail-qv__price {
+    flex: 0 0 auto !important;
+  }
+
+  html body .st-retail-qv__availability {
+    flex: 0 0 auto !important;
+    margin-top: 16px !important;
+  }
+
+  /*
+   * The description owns the ONLY scrolling area.
+   * The bottom actions remain outside this container.
+   */
+
+  html body .st-retail-qv__description {
+    flex: 1 1 auto !important;
+
+    min-height: 0 !important;
+    min-width: 0 !important;
+
+    margin: 18px 0 14px !important;
+    padding: 0 8px 0 0 !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-gutter: stable;
+  }
+
+  html body .st-retail-qv__description p {
+    margin: 0 !important;
+
+    color: #6e6e73;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /*
+   * Permanent bottom actions.
+   * Neither button participates in description scrolling.
+   */
+
+  html body
+  .st-retail-qv__info > .st-retail-qv__primary {
+    flex: 0 0 auto !important;
+
+    min-height: 48px !important;
+    margin-top: auto !important;
+  }
+
+  html body
+  .st-retail-qv__info > .st-retail-qv__save {
+    flex: 0 0 auto !important;
+
+    min-height: 48px !important;
+    margin-top: 9px !important;
+  }
+
+}
+
+/*
+ * Compact mouse-enabled tablets and smaller laptops.
+ * Keep the same stationary two-column architecture.
+ */
+
+@media (min-width: 701px) and (max-width: 900px) {
+
+  html body .st-retail-qv__window {
+    grid-template-columns:
+      minmax(0, 0.9fr)
+      minmax(0, 1.1fr) !important;
+  }
+
+  html body .st-retail-qv__visual {
+    padding: 26px !important;
+  }
+
+  html body .st-retail-qv__info {
+    padding: 42px 30px 26px !important;
+  }
+
+}
+
+/*
+ * Short desktop windows.
+ * Preserve both actions before allocating
+ * the remaining height to the description.
+ */
+
+@media (min-width: 701px) and (max-height: 650px) {
+
+  html body .st-retail-qv__info {
+    padding-top: 32px !important;
+    padding-bottom: 20px !important;
+  }
+
+  html body .st-retail-qv__info h2 {
+    font-size: 23px !important;
+    -webkit-line-clamp: 2;
+    margin-bottom: 10px !important;
+  }
+
+  html body .st-retail-qv__availability {
+    margin-top: 9px !important;
+  }
+
+  html body .st-retail-qv__description {
+    margin-top: 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  html body .st-retail-qv__info > .st-retail-qv__primary,
+  html body .st-retail-qv__info > .st-retail-qv__save {
+    min-height: 42px !important;
+  }
+
+}
+
+/* === ST QUICK VIEW FIXED LAYOUT V1 END === */
+
+/* === ST LARGE SCREEN PRODUCT PHOTOGRAPH 120 V1 START === */
+
+/*
+ * GLOBAL STOREFRONT PRODUCT PHOTOGRAPH ENLARGEMENT
+ *
+ * Tablets, large iPads, laptops and desktop monitors.
+ *
+ * Enlarge ONLY the actual primary and secondary photographs
+ * by 20% relative to their existing displayed dimensions.
+ *
+ * Preserve:
+ * - complete product card geometry
+ * - existing 80% overall card scaling
+ * - image containers
+ * - title and price geometry
+ * - badges and wishlist controls
+ * - image hover crossfade behavior
+ *
+ * Mobile phones remain unchanged.
+ */
+
+@media (min-width: 768px) and (min-height: 500px) {
+
+  html body
+  .st-retail-card.st-product-card-canonical
+  .st-retail-card__image-link
+  > img.st-retail-card__image,
+
+  html body
+  .st-retail-card.st-product-card-canonical:hover
+  .st-retail-card__image-link
+  > img.st-retail-card__image,
+
+  html body
+  .st-retail-card.st-product-card-canonical
+  .st-retail-card__image-link:hover
+  > img.st-retail-card__image {
+
+    /*
+     * Add 20% to the existing image transform,
+     * rather than replacing its original zoom.
+     */
+    scale: 1.2 !important;
+
+    transform-origin: center center !important;
+
+  }
+
+}
+
+/* === ST LARGE SCREEN PRODUCT PHOTOGRAPH 120 V1 END === */
+
+/* === ST QUICK VIEW INDICATOR NO HALO V1 START === */
+
+/*
+ * Quick View availability indicators only.
+ *
+ * Preserve the existing small status icon and its color.
+ * Remove the unwanted soft background/glow behind it.
+ *
+ * No changes to product-card badges or other components.
+ */
+
+html body .st-retail-qv
+.st-retail-qv__availability i,
+html body .st-retail-qv
+.st-retail-qv__availability::before {
+  box-shadow: none !important;
+}
+
+
+/* ST QV INDICATOR CENTERED SIZE V2 */
+
+/* Center every availability status indicator with its label. */
+html body .st-retail-qv .st-retail-qv__availability {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Match the square to the status text's font size. */
+html body .st-retail-qv .st-retail-qv__availability > i {
+  display: block !important;
+  box-sizing: border-box !important;
+
+  width: 7px !important;
+  height: 7px !important;
+  min-width: 7px !important;
+  min-height: 7px !important;
+  flex: 0 0 7px !important;
+
+  align-self: center !important;
+  margin: 0 !important;
+
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* === ST QUICK VIEW INDICATOR NO HALO V1 END === */

@@ -30,6 +30,7 @@ type Props = {
   categoryContext?: boolean;
   selectedBrand: string;
   selectedOffers: boolean;
+  selectedArrivals: boolean;
   selectedAvailability: string;
   selectedSort: SortOption;
   selectedMinPrice: number | null;
@@ -70,6 +71,7 @@ export default function V2ShopPage({
   categoryContext = false,
   selectedBrand,
   selectedOffers,
+  selectedArrivals,
   selectedAvailability,
   selectedSort,
   selectedMinPrice,
@@ -110,6 +112,7 @@ export default function V2ShopPage({
     selectedSubcategoryId,
     selectedBrand,
     selectedOffers,
+    selectedArrivals,
     selectedAvailability,
     selectedSort,
     selectedMinPrice,
@@ -158,6 +161,10 @@ export default function V2ShopPage({
 
       if (selectedOffers) {
         parameters.set("offers", "true");
+      }
+
+      if (selectedArrivals) {
+        parameters.set("arrivals", "true");
       }
 
       if (selectedBrand) {
@@ -265,6 +272,7 @@ export default function V2ShopPage({
     (!categoryContext && Boolean(selectedSubcategoryId)) ||
     Boolean(selectedBrand) ||
     selectedOffers ||
+    selectedArrivals ||
     selectedAvailability === "in-stock" ||
     selectedSort !== "newest" ||
     selectedMinPrice !== null ||
@@ -331,7 +339,7 @@ export default function V2ShopPage({
 
             {hasFilters ? (
               <div className="st3-shop-v4__active-state">
-                <span>Showing filtered results</span>
+                <span>{selectedArrivals ? "Just Arrived products" : "Showing filtered results"}</span>
 
                 <Link href={clearFiltersHref}>Clear all</Link>
               </div>

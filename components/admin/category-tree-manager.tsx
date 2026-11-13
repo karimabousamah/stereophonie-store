@@ -302,6 +302,154 @@ export default function CategoryTreeManager({
     }));
   }
 
+  // ST_CATEGORY_STATUS_FILTER_AUTO_EXPAND_V1
+  /*
+   * Active / Inactive filtering can match a Subcategory that
+   * lives inside a currently collapsed Category.
+   *
+   * Automatically open only the hierarchy required to reveal
+   * matching Subcategories.
+   *
+   * "All" intentionally does not alter manual expansion state.
+   */
+  useEffect(() => {
+    function handleCategoryStatusFilter(
+      event: Event,
+    ) {
+      const status = (
+        event as CustomEvent<{
+          status?:
+            | "all"
+            | "active"
+            | "inactive";
+        }>
+      ).detail?.status;
+
+      /*
+       * Returning to All restores the clean default tree:
+       * every Category/Subcategory branch is collapsed.
+       */
+      if (status === "all") {
+        setExpanded(
+          new Set<string>(),
+        );
+
+        return;
+      }
+
+      if (
+        status !== "active" &&
+        status !== "inactive"
+      ) {
+        return;
+      }
+
+      const targetActive =
+        status === "active";
+
+      const nodesById =
+        new Map(
+          subcategories.map(
+            (node) => [
+              node.id,
+              node,
+            ],
+          ),
+        );
+
+      const matchingNodes =
+        subcategories.filter(
+          (node) =>
+            (
+              statusDrafts[
+                `subcategory:${node.id}`
+              ] ??
+              node.is_active
+            ) === targetActive,
+        );
+
+      if (!matchingNodes.length) {
+        return;
+      }
+
+      setExpanded((current) => {
+        const next =
+          new Set(current);
+
+        let changed = false;
+
+        function addExpandedKey(
+          key: string,
+        ) {
+          if (!next.has(key)) {
+            next.add(key);
+            changed = true;
+          }
+        }
+
+        matchingNodes.forEach(
+          (node) => {
+            /*
+             * Root Category must be open for any matching
+             * Subcategory beneath it to be visible.
+             */
+            addExpandedKey(
+              `category:${node.category_id}`,
+            );
+
+            /*
+             * For deeper hierarchy levels, open every
+             * ancestor Subcategory as well.
+             */
+            let parentId =
+              node.parent_subcategory_id;
+
+            const visited =
+              new Set<string>();
+
+            while (
+              parentId &&
+              !visited.has(parentId)
+            ) {
+              visited.add(parentId);
+
+              addExpandedKey(
+                `subcategory:${parentId}`,
+              );
+
+              parentId =
+                nodesById.get(
+                  parentId,
+                )
+                  ?.parent_subcategory_id ??
+                null;
+            }
+          },
+        );
+
+        return changed
+          ? next
+          : current;
+      });
+    }
+
+    window.addEventListener(
+      "st-admin:category-status-filter",
+      handleCategoryStatusFilter,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "st-admin:category-status-filter",
+        handleCategoryStatusFilter,
+      );
+    };
+  }, [
+    subcategories,
+    statusDrafts,
+  ]);
+
+
   // MOVIES_SERIES_TREE_TITLE_SELECTION
   const [
     selectedEntertainmentId,
@@ -960,7 +1108,22 @@ export default function CategoryTreeManager({
     );
 
     return (
-      <div key={node.id} className="st-category-tree__branch">
+      <div
+        key={node.id}
+        className="st-category-tree__branch"
+        data-admin-subcategory-card="true"
+        data-admin-category-id={
+          node.category_id
+        }
+        data-admin-subcategory-search={`${node.name} ${node.slug} ${
+          node.description ?? ""
+        }`}
+        data-admin-subcategory-status={
+          isActive
+            ? "active"
+            : "inactive"
+        }
+      >
         <div
           className={`st-category-tree__node ${
             isSelected ? "is-selected" : ""
@@ -1101,6 +1264,12 @@ export default function CategoryTreeManager({
                   key={category.id}
                   className="st-category-tree__root-group"
                   data-admin-category-card="true"
+                  data-admin-category-id={category.id}
+                  data-admin-category-status={
+                    isActive
+                      ? "active"
+                      : "inactive"
+                  }
                   data-admin-category-search={`${category.name} ${category.slug} ${
                     category.description ?? ""
                   } ${children.map((child) => child.name).join(" ")}`}

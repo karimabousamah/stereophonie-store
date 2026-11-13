@@ -2275,15 +2275,45 @@ const difference =
           };
         }
 
+        const previousAssignments = image.product_image_variants ?? [];
+
         return {
           ...image,
-          product_image_variants: normalizedIds.map(
-            (variantId, index) => ({
+          product_image_variants: normalizedIds.map((variantId) => {
+            const previous = previousAssignments.find(
+              (assignment) => assignment.variant_id === variantId,
+            );
+
+            // A retained assignment must keep the order chosen by the admin.
+            if (previous) {
+              return previous;
+            }
+
+            // A newly assigned photo goes after existing photos in that
+            // exact configuration, not at the configuration's list index.
+            const otherAssignments = current.flatMap((candidate) =>
+              candidate.id === imageId
+                ? []
+                : (candidate.product_image_variants ?? []).filter(
+                    (assignment) => assignment.variant_id === variantId,
+                  ),
+            );
+
+            const nextPosition =
+              otherAssignments.reduce(
+                (highest, assignment) =>
+                  Math.max(highest, Number(assignment.position) || 0),
+                -1,
+              ) + 1;
+
+            return {
               variant_id: variantId,
-              position: index,
-              is_primary: index === 0,
-            }),
-          ),
+              position: nextPosition,
+              is_primary: !otherAssignments.some(
+                (assignment) => assignment.is_primary,
+              ),
+            };
+          }),
         };
       }),
     );
@@ -2746,9 +2776,8 @@ const difference =
                     <span>
                       {configuration.variant_name ||
                         configuration.fallbackLabel ||
-                        `Configuration ${index + 1}`}
+                        `Configuration ${index + 1}`}: {count}
                     </span>
-                    <small>{count}</small>
                   </button>
                 );
               })}

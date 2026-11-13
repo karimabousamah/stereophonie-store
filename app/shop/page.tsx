@@ -40,6 +40,7 @@ type ShopPageProps = {
     category?: string | string[];
     subcategory?: string | string[];
     offers?: string | string[];
+    arrivals?: string | string[];
     brand?: string | string[];
     availability?: string | string[];
     minPrice?: string | string[];
@@ -100,6 +101,11 @@ export async function StereophonieShopPage({
       .trim()
       .toLowerCase() === "true";
 
+  const arrivals =
+    shopSingleParameter(parameters.arrivals)
+      .trim()
+      .toLowerCase() === "true";
+
   const brand = shopSingleParameter(
     parameters.brand,
   ).trim();
@@ -151,6 +157,7 @@ export async function StereophonieShopPage({
         category,
         subcategoryId,
         offers,
+        arrivals,
         brand,
         availability,
         requestedMinimumPrice,
@@ -167,6 +174,7 @@ export async function StereophonieShopPage({
         category,
         subcategoryId,
         offers,
+        arrivals,
         availability,
         requestedMinimumPrice,
         requestedMaximumPrice,
@@ -199,6 +207,7 @@ export async function StereophonieShopPage({
       categoryContext={categoryContext}
       selectedBrand={brand}
       selectedOffers={offers}
+      selectedArrivals={arrivals}
       selectedAvailability={availability}
       selectedSort={sort}
       selectedMinPrice={initialBatch.minimumPrice}

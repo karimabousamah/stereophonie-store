@@ -3800,9 +3800,8 @@ const difference =
                     <span>
                       {configuration.variant_name ||
                         configuration.fallbackLabel ||
-                        `Configuration ${index + 1}`}
+                        `Configuration ${index + 1}`}: {count}
                     </span>
-                    <small>{count}</small>
                   </button>
                 );
               })}

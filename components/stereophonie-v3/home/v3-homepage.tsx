@@ -346,7 +346,7 @@ export default function V3Homepage({
         <ProductSection
           title="Just arrived."
           products={latestProducts}
-          href="/shop?sort=newest"
+          href="/shop?arrivals=true"
           linkLabel="View all"
         />
       </div>

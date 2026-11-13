@@ -41,6 +41,9 @@ export async function GET(request: NextRequest) {
   const offers =
     parameters.get("offers")?.trim().toLowerCase() === "true";
 
+  const arrivals =
+    parameters.get("arrivals")?.trim().toLowerCase() === "true";
+
   const brand = parameters.get("brand")?.trim() ?? "";
 
   const availability = shopSelectedAvailability(
@@ -79,6 +82,7 @@ export async function GET(request: NextRequest) {
         category,
         subcategoryId,
         offers,
+        arrivals,
         brand,
         availability,
         requestedMinimumPrice,

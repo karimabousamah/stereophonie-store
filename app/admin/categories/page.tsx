@@ -237,8 +237,34 @@ export default async function AdminCategoriesPage({
 
         <div className="st-category-directory">
           <CategorySearch
-            categoryCount={categories.length}
-            subcategoryCount={subcategories.length}
+            totalCount={
+              categories.length +
+              subcategories.length
+            }
+            activeCount={
+              categories.filter(
+                (category) =>
+                  category.is_active,
+              ).length +
+              subcategories.filter(
+                (subcategory) =>
+                  subcategory.is_active,
+              ).length
+            }
+            inactiveCount={
+              categories.length +
+              subcategories.length -
+              (
+                categories.filter(
+                  (category) =>
+                    category.is_active,
+                ).length +
+                subcategories.filter(
+                  (subcategory) =>
+                    subcategory.is_active,
+                ).length
+              )
+            }
           />
 
           <CategoryTreeManager
